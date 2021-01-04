@@ -1,4 +1,3 @@
-import 'package:basic_utils/basic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -7,12 +6,14 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'components/helpIcon.dart';
 import 'components/laAppBar.dart';
+import 'components/laServiceWidget.dart';
+import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laServer.dart';
-import 'models/laServiceDesc.dart';
 import 'utils/debounce.dart';
 
 class LAProjectPage extends StatefulWidget {
@@ -100,7 +101,6 @@ class _LAProjectPageState extends State<LAProjectPage> {
                   TextFormField(
                       // LONG NAME
                       decoration: const InputDecoration(
-                        // icon: Icon(Icons.language),
                         labelText: 'Your LA Project Long Name',
                         hintText: 'Living Atlas Of Wakanda',
                       ),
@@ -119,18 +119,14 @@ class _LAProjectPageState extends State<LAProjectPage> {
                   TextFormField(
                       // SHORT NAME
                       decoration: InputDecoration(
-                        // icon: Icon(Icons.language),
                         labelText: 'Short Name',
                         // isDense: true,
                         hintText: 'LA Wakanda',
                         suffixIcon: Padding(
-                          padding: EdgeInsets.only(
-                              top: 5), // add padding to adjust icon
-                          child: IconButton(
-                              onPressed: () => {},
-                              icon: Icon(Icons.help_outline),
-                              /*size: 24,*/ color: Colors.blueGrey),
-                        ),
+                            padding: EdgeInsets.only(
+                                top: 5), // add padding to adjust icon
+                            child: HelpIcon(
+                                wikipage: "Create-Project#Short-name")),
                       ),
                       initialValue: _project.shortName,
                       onChanged: (String value) => _debouncer.run(() {
@@ -265,22 +261,31 @@ If you are unsure type something like "server1, server2, server3".
               ),
             )),
         Step(
-          isActive: _setIsActive(2),
-          state: _setSetStatus(2),
-          title: const Text('Define how your services URLs will look like'),
-          // subtitle: const Text("Error!"),
-          content: Form(
-              key: _formKeys[2],
-              child: Column(children: [
-                ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: serviceDescList.length,
-                    // itemCount: appStateProv.appState.projects.length,
-                    itemBuilder: (BuildContext context, int index) =>
-                        _serviceForm(serviceDescList.values.elementAt(index)))
-              ])),
-        ),
+            isActive: _setIsActive(2),
+            state: _setSetStatus(2),
+            title: const Text('Define how your services URLs will look like'),
+            // subtitle: const Text("Error!"),
+            content: Form(
+                key: _formKeys[2],
+                child: Column(
+                  children: [
+                    ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: serviceDescList.length,
+                        // itemCount: appStateProv.appState.projects.length,
+                        itemBuilder: (BuildContext context, int index) =>
+                            LaServiceWidget(
+                                service: _project.getService(serviceDescList
+                                    .values
+                                    .elementAt(index)
+                                    .nameInt),
+                                dependsOn: _project.getService(serviceDescList
+                                    .values
+                                    .elementAt(index)
+                                    .depends)))
+                  ],
+                ))),
         Step(
           isActive: _setIsActive(3),
           state: _setSetStatus(3),
@@ -366,60 +371,58 @@ If you are unsure type something like "server1, server2, server3".
         ),
       ];
       return new Scaffold(
-          key: _scaffoldKey,
-          appBar: LAAppBar(title: vm.state.status.title, showLaIcon: true),
-          body: Column(children: <Widget>[
-            Expanded(
-              child: Stepper(
-                  steps: _steps,
-                  currentStep: _currentStep,
-                  type: stepperType,
-                  onStepContinue: () {
-                    // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                    // setState(() {
-                    if (_formKeys[_currentStep].currentState.validate() ||
-                        (_currentStep == 1 && _project.servers.length > 0)) {
-                      next();
-                    }
-                    vm.onSaveCurrentProject();
-                    // });
-                  },
-                  onStepTapped: (step) {
-                    goTo(step);
-                    vm.onSaveCurrentProject();
-                  },
-                  onStepCancel: () {
-                    cancel();
-                    vm.onSaveCurrentProject();
-                  },
-
-                  // https://github.com/flutter/flutter/issues/11133
-                  controlsBuilder: (BuildContext context,
-                      {VoidCallback onStepContinue,
-                      VoidCallback onStepCancel}) {
-                    return ButtonBar(
-                      alignment: MainAxisAlignment.start,
-                      // mainAxisSize: MainAxisSize.max,
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        RaisedButton(
-                          onPressed: onStepContinue,
-                          textColor: Colors.white,
-                          color: LaColorTheme.laPalette,
-                          child: const Text('NEXT'),
-                        ),
-                        _currentStep == 0
-                            ? null
-                            : OutlineButton(
-                                onPressed: onStepCancel,
-                                textColor: LaColorTheme.laPalette,
-                                child: const Text('PREVIOUS'),
-                              ),
-                      ],
-                    );
-                  }),
-            ),
-          ]));
+        key: _scaffoldKey,
+        appBar: LAAppBar(title: vm.state.status.title, showLaIcon: true),
+        body: ScrollPanel(
+          child: Stepper(
+              steps: _steps,
+              currentStep: _currentStep,
+              type: stepperType,
+              onStepContinue: () {
+                // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
+                // setState(() {
+                if (_formKeys[_currentStep].currentState.validate() ||
+                    (_currentStep == 1 && _project.servers.length > 0)) {
+                  next();
+                }
+                vm.onSaveCurrentProject();
+                // });
+              },
+              onStepTapped: (step) {
+                goTo(step);
+                vm.onSaveCurrentProject();
+              },
+              onStepCancel: () {
+                cancel();
+                vm.onSaveCurrentProject();
+              },
+              // https://github.com/flutter/flutter/issues/11133
+              controlsBuilder: (BuildContext context,
+                  {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+                return ButtonBar(
+                  alignment: MainAxisAlignment.start,
+                  // mainAxisSize: MainAxisSize.max,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    RaisedButton(
+                      onPressed: onStepContinue,
+                      textColor: Colors.white,
+                      color: LAColorTheme.laPalette,
+                      child: const Text('NEXT'),
+                    ),
+                    _currentStep == 0
+                        ? null
+                        : OutlineButton(
+                            onPressed: onStepCancel,
+                            textColor: LAColorTheme.laPalette,
+                            child: const Text('PREVIOUS'),
+                          ),
+                  ],
+                );
+              }),
+        ),
+        //     ])
+      );
     });
   }
 
@@ -431,10 +434,6 @@ If you are unsure type something like "server1, server2, server3".
       _serverFocus.requestFocus();
       onSaveCurrentProject();
     });
-  }
-
-  Widget _serviceForm(LaServiceDesc service) {
-    return Text("${StringUtils.capitalize(service.desc)}:");
   }
 
   bool _setIsActive(step) {

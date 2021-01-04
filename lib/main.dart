@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
             LAProjectPage.routeName: (context) => LAProjectPage(),
           }, */
 
-          theme: LaColorTheme.laThemeData,
+          theme: LAColorTheme.laThemeData,
           debugShowCheckedModeBanner: false,
         ));
   }

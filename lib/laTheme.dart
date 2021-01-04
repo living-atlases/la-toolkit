@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class LaColorTheme {
+class LAColorTheme {
   static const MaterialColor laPalette =
       MaterialColor(_laPalettePrimaryValue, <int, Color>{
     50: Color(0xFFEFF6EF),
@@ -27,7 +27,7 @@ class LaColorTheme {
   static const int _laPaletteAccentValue = 0xFFB6FFB6;
 
   static ThemeData laThemeData = ThemeData(
-      primarySwatch: LaColorTheme.laPalette, // Color(0xFF78B578),
+      primarySwatch: LAColorTheme.laPalette, // Color(0xFF78B578),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         foregroundColor: Colors.white,
         // splashColor: Colors.white.withOpacity(0.25),

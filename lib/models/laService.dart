@@ -1,5 +1,6 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
 
 import 'laServer.dart';
 
@@ -7,10 +8,34 @@ part 'laService.g.dart';
 
 enum ServiceStatus { unknown, success, failed }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAService {
   String name;
+  String iniPath;
+  bool use;
+  bool usesSubdomain;
+  // @JsonSerializable(nullable: true)
+  List<LAServer> servers;
+  String suburl;
+
+  LAService(
+      {this.name,
+      this.iniPath,
+      this.use,
+      this.usesSubdomain,
+      List<LAServer> servers,
+      this.suburl})
+      : servers = servers ?? List<LAServer>.empty();
+
+  LAService.fromDesc(LAServiceDesc desc)
+      : name = desc.nameInt,
+        iniPath = desc.path,
+        use = !desc.optional ? true : desc.initUse,
+        usesSubdomain = true,
+        servers = List<LAServer>.empty(),
+        suburl = desc.name;
+
   String get path => usesSubdomain
       ? iniPath.startsWith("/")
           ? ""
@@ -18,21 +43,17 @@ class LAService {
       : suburl.startsWith("/")
           ? ""
           : "/" + suburl;
-  String iniPath;
-  bool usesSubdomain;
-  List<LAServer> servers;
-  String suburl;
   String url(domain) => usesSubdomain ? suburl + "." + domain : domain;
-
-  LAService({this.name, this.iniPath, this.usesSubdomain, servers, this.suburl})
-      : servers = servers ?? [];
 
   factory LAService.fromJson(Map<String, dynamic> json) =>
       _$LAServiceFromJson(json);
   Map<String, dynamic> toJson() => _$LAServiceToJson(this);
 
   @override
-  String toString() {
-    return "name: $name, path: $path, usesSubdomain: $usesSubdomain, servers: $servers";
+  String toString({String domain = 'somedomain'}) {
+    if (use)
+      return "$name: http?://${url(domain)}${this.path}";
+    else
+      return "$name not used";
   }
 }

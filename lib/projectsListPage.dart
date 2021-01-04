@@ -8,6 +8,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 
 class LAProjectsPage extends StatelessWidget {
@@ -22,28 +23,21 @@ class LAProjectsPage extends StatelessWidget {
     }, builder: (BuildContext context, _ProjectsPageViewModel vm) {
       var num = vm.state.projects.length;
       return num > 0
-          ? new Container(
-              constraints: new BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.9),
-              child: new Scrollbar(
-                  child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 160, vertical: 20),
-                          child: Column(children: <Widget>[
-                            ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemCount: num,
-                                // itemCount: appStateProv.appState.projects.length,
-                                itemBuilder:
-                                    (BuildContext context, int index) =>
-                                        ProjectCard(
-                                            vm.state.projects[index],
-                                            () => vm.onEditProject(
-                                                vm.state.projects[index])))
-                          ])))))
+          ? new ScrollPanel(
+              child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 160, vertical: 20),
+                  child: Column(children: <Widget>[
+                    ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: num,
+                        // itemCount: appStateProv.appState.projects.length,
+                        itemBuilder: (BuildContext context, int index) =>
+                            ProjectCard(
+                                vm.state.projects[index],
+                                () =>
+                                    vm.onEditProject(vm.state.projects[index])))
+                  ])))
           : Center(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -52,7 +46,7 @@ class LAProjectsPage extends StatelessWidget {
                   RaisedButton(
                       onPressed: () => vm.onAddProject(),
                       textColor: Colors.white,
-                      color: LaColorTheme.laPalette,
+                      color: LAColorTheme.laPalette,
                       // padding: const EdgeInsets.all(8.0),
                       child: new Text(
                         "Create a New LA Project",
@@ -94,7 +88,7 @@ class ProjectCard extends StatelessWidget {
                           Text(project.shortName),
                           SelectableLinkify(
                               linkStyle:
-                                  TextStyle(color: LaColorTheme.laPalette),
+                                  TextStyle(color: LAColorTheme.laPalette),
                               options: LinkifyOptions(humanize: false),
                               text:
                                   "${project.useSSL ? 'https://' : 'http://'}${project.domain}",

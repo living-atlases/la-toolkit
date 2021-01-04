@@ -31,8 +31,9 @@ extension AppStateCopyWith on AppState {
 AppState _$AppStateFromJson(Map<String, dynamic> json) {
   return AppState(
     projects: (json['projects'] as List)
-        .map((e) => LAProject.fromJson(e as Map<String, dynamic>))
-        .toList(),
+        ?.map((e) =>
+            e == null ? null : LAProject.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
     firstUsage: json['firstUsage'] as bool,
     currentProject: json['currentProject'] == null
         ? null
@@ -44,10 +45,10 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'firstUsage': instance.firstUsage,
-      'currentProject': instance.currentProject,
+      'currentProject': instance.currentProject?.toJson(),
       'status': _$LAProjectStatusEnumMap[instance.status],
       'currentStep': instance.currentStep,
-      'projects': instance.projects,
+      'projects': instance.projects?.map((e) => e?.toJson())?.toList(),
     };
 
 T _$enumDecode<T>(

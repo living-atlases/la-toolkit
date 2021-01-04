@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'appActions.dart';
 
 class AppStateMiddleware implements MiddlewareClass<AppState> {
-  final String key = "laTool1";
+  final String key = "laTool4";
   SharedPreferences _pref;
 
   _initPrefs() async {

@@ -5,7 +5,7 @@ part 'laServer.g.dart';
 
 enum ServiceStatus { unknown, success, failed }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServer {
   String name;
@@ -26,7 +26,7 @@ class LAServer {
       {this.name,
       this.ipv4,
       this.sshPort: 22,
-      aliases,
+      List<String> aliases,
       this.sshPrivateKey,
       this.proxyJump,
       this.proxyJumpPort,

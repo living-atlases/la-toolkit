@@ -4,10 +4,11 @@ import 'package:uuid/uuid.dart';
 
 import 'laServer.dart';
 import 'laService.dart';
+import 'laServiceDescList.dart';
 
 part 'laProject.g.dart';
 
-@JsonSerializable(nullable: false)
+@JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAProject {
   @JsonSerializable(nullable: false)
@@ -23,7 +24,7 @@ class LAProject {
   @JsonSerializable(nullable: false)
   List<LAServer> servers;
   @JsonSerializable(nullable: false)
-  List<LAService> services;
+  Map<String, LAService> services;
 
   static final def = LAProject(
       longName: "Living Atlas of Wakanda",
@@ -37,10 +38,10 @@ class LAProject {
       this.domain = "",
       this.useSSL = true,
       List<LAServer> servers,
-      List<LAService> services})
+      Map<String, LAService> services})
       : uuid = uuid ?? Uuid().v4(),
-        servers = servers ?? [],
-        services = servers ?? [];
+        servers = servers ?? List<LAServer>.empty(),
+        services = services ?? initialServices;
 
   factory LAProject.fromJson(Map<String, dynamic> json) =>
       _$LAProjectFromJson(json);
@@ -48,6 +49,21 @@ class LAProject {
 
   @override
   String toString() {
-    return "longName: $longName ($shortName), domain: $domain, servers: $servers";
+    return "longName: $longName ($shortName), domain: $domain, servers: $servers, services: $services";
+  }
+
+  static Map<String, LAService> initialServices = getInitialServices();
+
+  static Map<String, LAService> getInitialServices() {
+    final Map<String, LAService> services = {};
+    serviceDescList.forEach((key, desc) {
+      services[key] = LAService.fromDesc(desc);
+    });
+    return services;
+  }
+
+  LAService getService(String nameInt) {
+    if (nameInt == null) return null;
+    return services[nameInt] ?? LAService.fromDesc(serviceDescList[nameInt]);
   }
 }

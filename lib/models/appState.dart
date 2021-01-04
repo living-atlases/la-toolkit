@@ -30,7 +30,7 @@ extension LAProjectStatusExtension on LAProjectStatus {
 }
 
 @immutable
-@JsonSerializable(nullable: false)
+@JsonSerializable(explicitToJson: true)
 @CopyWith()
 class AppState {
   // from SharedPreferences

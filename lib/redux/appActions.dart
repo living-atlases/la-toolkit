@@ -1,5 +1,6 @@
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laService.dart';
 
 abstract class AppActions {}
 
@@ -29,6 +30,12 @@ class EditProject extends AppActions {
   LAProject project;
 
   EditProject(this.project);
+}
+
+class EditService extends AppActions {
+  LAService service;
+
+  EditService(this.service);
 }
 
 class SaveCurrentProject extends AppActions {

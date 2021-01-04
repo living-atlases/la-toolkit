@@ -11,7 +11,7 @@ extension LAProjectCopyWith on LAProject {
     String domain,
     String longName,
     List<LAServer> servers,
-    List<LAService> services,
+    Map<String, LAService> services,
     String shortName,
     bool useSSL,
     dynamic uuid,
@@ -40,11 +40,13 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     domain: json['domain'] as String,
     useSSL: json['useSSL'] as bool,
     servers: (json['servers'] as List)
-        .map((e) => LAServer.fromJson(e as Map<String, dynamic>))
-        .toList(),
-    services: (json['services'] as List)
-        .map((e) => LAService.fromJson(e as Map<String, dynamic>))
-        .toList(),
+        ?.map((e) =>
+            e == null ? null : LAServer.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    services: (json['services'] as Map<String, dynamic>)?.map(
+      (k, e) => MapEntry(
+          k, e == null ? null : LAService.fromJson(e as Map<String, dynamic>)),
+    ),
   );
 }
 
@@ -54,6 +56,6 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'shortName': instance.shortName,
       'domain': instance.domain,
       'useSSL': instance.useSSL,
-      'servers': instance.servers,
-      'services': instance.services,
+      'servers': instance.servers?.map((e) => e?.toJson())?.toList(),
+      'services': instance.services?.map((k, e) => MapEntry(k, e?.toJson())),
     };

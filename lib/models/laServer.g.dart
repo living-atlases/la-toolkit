@@ -8,7 +8,7 @@ part of 'laServer.dart';
 
 extension LAServerCopyWith on LAServer {
   LAServer copyWith({
-    dynamic aliases,
+    List<String> aliases,
     String ipv4,
     String name,
     String proxyJump,
@@ -45,14 +45,16 @@ LAServer _$LAServerFromJson(Map<String, dynamic> json) {
     name: json['name'] as String,
     ipv4: json['ipv4'] as String,
     sshPort: json['sshPort'] as int,
-    aliases: json['aliases'],
+    aliases: (json['aliases'] as List)?.map((e) => e as String)?.toList(),
     sshPrivateKey: json['sshPrivateKey'] as String,
     proxyJump: json['proxyJump'] as String,
     proxyJumpPort: json['proxyJumpPort'] as int,
     proxyJumpUser: json['proxyJumpUser'] as String,
-    reachable: _$enumDecode(_$ServiceStatusEnumMap, json['reachable']),
-    sshReachable: _$enumDecode(_$ServiceStatusEnumMap, json['sshReachable']),
-    sudoEnabled: _$enumDecode(_$ServiceStatusEnumMap, json['sudoEnabled']),
+    reachable: _$enumDecodeNullable(_$ServiceStatusEnumMap, json['reachable']),
+    sshReachable:
+        _$enumDecodeNullable(_$ServiceStatusEnumMap, json['sshReachable']),
+    sudoEnabled:
+        _$enumDecodeNullable(_$ServiceStatusEnumMap, json['sudoEnabled']),
   );
 }
 
@@ -89,6 +91,17 @@ T _$enumDecode<T>(
         '${enumValues.values.join(', ')}');
   }
   return value ?? unknownValue;
+}
+
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$ServiceStatusEnumMap = {

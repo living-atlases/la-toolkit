@@ -1,4 +1,4 @@
-class LaServiceDesc {
+class LAServiceDesc {
   String name;
   String nameInt;
   String desc;
@@ -10,8 +10,9 @@ class LaServiceDesc {
   String hint;
   bool recommended;
   String path;
+  bool initUse;
 
-  LaServiceDesc(
+  LAServiceDesc(
       {this.name,
       this.nameInt,
       this.desc,
@@ -22,5 +23,6 @@ class LaServiceDesc {
       this.hint,
       this.recommended,
       this.path,
-      this.depends});
+      this.depends,
+      this.initUse});
 }
