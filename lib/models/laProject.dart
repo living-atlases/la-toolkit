@@ -40,7 +40,7 @@ class LAProject {
       List<LAServer> servers,
       Map<String, LAService> services})
       : uuid = uuid ?? Uuid().v4(),
-        servers = servers ?? List<LAServer>.empty(),
+        servers = servers ?? [], //List<LAServer>.empty(growable:true)
         services = services ?? initialServices;
 
   factory LAProject.fromJson(Map<String, dynamic> json) =>

@@ -40,4 +40,38 @@ void main() {
     var string = 'vm-1-01';
     expect(FieldValidators.hostnameRegexp.hasMatch(string), equals(true));
   });
+
+  test('hostname aliases regexp should allow valid hostnames', () {
+    var string = 'vm-1-01   vm2 vm3';
+    expect(FieldValidators.aliasesRegexp.hasMatch(string), equals(true));
+  });
+
+  test('hostname aliases empty regexp should be valid', () {
+    var string = '';
+    expect(FieldValidators.aliasesRegexp.hasMatch(string), equals(true));
+  });
+
+  test('ipv4', () {
+    List<String> ipAddresses = ['127.0.0.1', '10.0.0.1', '1.1.1.1'];
+    ipAddresses.forEach((ipv4) {
+      expect(FieldValidators.ipv4.hasMatch(ipv4), equals(true));
+    });
+  });
+
+  test('ipv4 failed', () {
+    List<String> ipAddresses = [
+      'vm1',
+      '260.0.0.1',
+      '1.1.1.1.1',
+      '111',
+      '255.255.255.256',
+      // Not empty
+      '',
+      // Neither ipv6
+      '::1'
+    ];
+    ipAddresses.forEach((ipv4) {
+      expect(FieldValidators.ipv4.hasMatch(ipv4), equals(false));
+    });
+  });
 }

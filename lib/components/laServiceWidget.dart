@@ -11,19 +11,15 @@ import '../laTheme.dart';
 import 'helpIcon.dart';
 
 class LaServiceWidget extends StatelessWidget {
-  LAService _service;
-  LAService _dependsOn;
+  final LAService service;
+  final LAService dependsOn;
 
-  LaServiceWidget({Key key, LAService service, LAService dependsOn})
-      : super(key: key) {
-    _service = service;
-    _dependsOn = dependsOn;
-  }
+  LaServiceWidget({Key key, this.service, this.dependsOn}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    bool visible = _dependsOn == null || _dependsOn.use;
-    var serviceDesc = serviceDescList[_service.name];
+    bool visible = dependsOn == null || dependsOn.use;
+    var serviceDesc = serviceDescList[service.name];
     return StoreConnector<AppState, _LAServiceViewModel>(converter: (store) {
       return _LAServiceViewModel(
         state: store.state,
@@ -40,34 +36,47 @@ class LaServiceWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text("${StringUtils.capitalize(serviceDesc.desc)}:",
-                            style: GoogleFonts.signika(
-                                textStyle: TextStyle(
-                                    color: LAColorTheme.laPalette.shade500,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400))),
-                        HelpIcon.url(
-                            url: serviceDesc.sample,
-                            tooltip: "See a similar service in production"),
+                        ListTile(
+                          leading: serviceDesc.optional
+                              ? Switch(
+                                  value: service.use,
+                                  // activeColor: Color(0xFF6200EE),
+                                  onChanged: (bool newValue) {
+                                    service.use = newValue;
+                                    vm.onEditService(service);
+                                  },
+                                )
+                              : null,
+                          contentPadding: EdgeInsets.zero,
+                          title: (serviceDesc.optional)
+                              ? _formatTitle(
+                                  "Use the ${serviceDesc.name} service (${serviceDesc.desc})?")
+                              : _formatTitle("${serviceDesc.desc}:"),
+                          // subtitle: Text('TWICE', style: TextStyle(color: Colors.white)),
+                          trailing: HelpIcon.url(
+                              url: serviceDesc.sample,
+                              tooltip: "See a similar service in production"),
+                        ),
                         if (!serviceDesc.optional)
                           ListTile(
                             contentPadding: EdgeInsets.zero,
                             title: Text(
-                                "Use the ${_service.name} service (${serviceDesc.desc})?"),
-                            trailing: Switch(
-                              value: _service.use,
-                              // activeColor: Color(0xFF6200EE),
-                              onChanged: (bool newValue) {
-                                _service.use = newValue;
-                                vm.onEditService(_service);
-                              },
-                            ),
+                                "Use the ${serviceDesc.name} service (${serviceDesc.desc})?"),
                           ),
                         Text(
-                            "http${vm.state.currentProject.useSSL ? 's' : ''}://${_service.url(vm.state.currentProject.domain)}")
+                            "http${vm.state.currentProject.useSSL ? 's' : ''}://${service.url(vm.state.currentProject.domain)}")
                       ])))
           : null;
     });
+  }
+
+  Widget _formatTitle(String text) {
+    return Text("${StringUtils.capitalize(text)}",
+        style: GoogleFonts.signika(
+            textStyle: TextStyle(
+                color: LAColorTheme.laPalette.shade500,
+                fontSize: 18,
+                fontWeight: FontWeight.w400)));
   }
 }
 

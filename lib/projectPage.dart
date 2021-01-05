@@ -6,7 +6,7 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'components/helpIcon.dart';
+import 'components/genericTextFormField.dart';
 import 'components/laAppBar.dart';
 import 'components/laServiceWidget.dart';
 import 'components/scrollPanel.dart';
@@ -27,7 +27,7 @@ class LAProjectPage extends StatefulWidget {
 
 class _LAProjectPageState extends State<LAProjectPage> {
   int _currentStep;
-  final _debouncer = Debouncer(milliseconds: 1000);
+  final _debouncer = Debouncer.def();
   bool _complete = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<GlobalKey<FormState>> _formKeys = [
@@ -67,7 +67,7 @@ class _LAProjectPageState extends State<LAProjectPage> {
 
   StepperType stepperType = StepperType.vertical;
 
-  switchStepType() {
+  _switchStepType() {
     setState(() => stepperType == StepperType.horizontal
         ? stepperType = StepperType.vertical
         : stepperType = StepperType.horizontal);
@@ -98,47 +98,32 @@ class _LAProjectPageState extends State<LAProjectPage> {
               key: _formKeys[0],
               child: Column(
                 children: <Widget>[
-                  TextFormField(
+                  GenericTextFormField(
+                      //_createTextField(
                       // LONG NAME
-                      decoration: const InputDecoration(
-                        labelText: 'Your LA Project Long Name',
-                        hintText: 'Living Atlas Of Wakanda',
-                      ),
-                      onChanged: (String value) => _debouncer.run(() {
-                            _project.longName = value;
-                            vm.onSaveCurrentProject();
-                          }),
+                      //  key: _formKeys[0],
+                      label: 'Your LA Project Long Name',
+                      hint: 'Living Atlas Of Wakanda',
+                      wikipage: "Glosary#Long-name",
+                      error: 'Project name invalid.',
                       initialValue: _project.longName,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String value) {
-                        return !FieldValidators.projectNameRegexp
-                                .hasMatch(value) //
-                            ? 'Project name invalid.'
-                            : null;
+                      //vm: vm,
+                      regexp: FieldValidators.projectNameRegexp,
+                      onChanged: (value) {
+                        _project.longName = value;
+                        vm.onSaveCurrentProject();
                       }),
-                  TextFormField(
+                  GenericTextFormField(
                       // SHORT NAME
-                      decoration: InputDecoration(
-                        labelText: 'Short Name',
-                        // isDense: true,
-                        hintText: 'LA Wakanda',
-                        suffixIcon: Padding(
-                            padding: EdgeInsets.only(
-                                top: 5), // add padding to adjust icon
-                            child: HelpIcon(
-                                wikipage: "Create-Project#Short-name")),
-                      ),
+                      label: 'Short Name',
+                      hint: 'LA Wakanda',
+                      wikipage: "Glosary#Short-name",
+                      error: 'Project short name invalid.',
                       initialValue: _project.shortName,
-                      onChanged: (String value) => _debouncer.run(() {
-                            _project.shortName = value;
-                            vm.onSaveCurrentProject();
-                          }),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String value) {
-                        return !FieldValidators.projectNameRegexp
-                                .hasMatch(value) //
-                            ? 'Project short name invalid.'
-                            : null;
+                      regexp: FieldValidators.projectNameRegexp,
+                      onChanged: (value) {
+                        _project.shortName = value;
+                        vm.onSaveCurrentProject();
                       }),
                   Tooltip(
                       // SSL
@@ -159,26 +144,18 @@ class _LAProjectPageState extends State<LAProjectPage> {
                           },
                         ),
                       )),
-                  TextFormField(
+                  GenericTextFormField(
                       // DOMAIN
-                      decoration: InputDecoration(
-                        prefixText: _protocolToS(_project.useSSL),
-                        labelText: 'The domain of your LA node',
-                        isDense: true,
-                        hintText: 'your.l-a.site',
-                      ),
+                      label: 'The domain of your LA node',
+                      hint: 'your.l-a.site',
+                      prefixText: _protocolToS(_project.useSSL),
+                      wikipage: "Glosary#Domain",
+                      error: 'Project short name invalid.',
                       initialValue: _project.domain,
-                      onChanged: (String value) => _debouncer.run(() {
-                            // setState(() {
-                            _project.domain = value;
-                            vm.onSaveCurrentProject();
-                            // });
-                          }),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String value) {
-                        return !FieldValidators.domainRegexp.hasMatch(value) //
-                            ? 'You need to provide some-atlas-domain.org'
-                            : null;
+                      regexp: FieldValidators.domainRegexp,
+                      onChanged: (value) {
+                        _project.domain = value;
+                        vm.onSaveCurrentProject();
                       }),
                 ],
               ),
@@ -198,17 +175,22 @@ class _LAProjectPageState extends State<LAProjectPage> {
                       itemCount: _project.servers.length,
                       // itemCount: appStateProv.appState.projects.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          title: Text(_project.servers[index].name),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () => setState(() {
-                              _project.servers.removeAt(index);
-                              vm.onSaveCurrentProject();
-                            }),
-                          ),
-                        );
+                        return Card(
+                            elevation: 1,
+                            child: Container(
+                                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                child: ListTile(
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                  title: Text(_project.servers[index].name),
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () => setState(() {
+                                      _project.servers.removeAt(index);
+                                      vm.onSaveCurrentProject();
+                                    }),
+                                  ),
+                                )));
                       }),
                   // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
                   TextFormField(
@@ -312,53 +294,60 @@ If you are unsure type something like "server1, server2, server3".
                             tooltip: "This is the server hostname",
                           ),
                           DataColumn(
-                            label: Text("IP"),
+                            label: Text("IP ADDRESS"),
                             numeric: false,
                             tooltip: "This is IPv4 address",
                           ),
                           DataColumn(
-                            label: Text("ALIASES"),
+                            label: Text("ADDITIONAL ALIASES"),
                             numeric: false,
-                            tooltip:
-                                "Alternative hostnames comma or space separated",
+                            tooltip: "Alternative hostnames space separated",
                           ),
                         ],
                         rows: _project.servers
                             .map(
-                              (server) => DataRow(
-                                  // selected: selectedUsers.contains(server),
-                                  /* onSelectChanged: (b) {
-                                print("Onselect");
-                                // onSelectedRow(b, user);
-                              }, */
-                                  cells: [
-                                    DataCell(
-                                      //Text(user.firstName),
-                                      Text(server.name),
-                                    ),
-                                    DataCell(TextFormField(
-                                        initialValue: server.ipv4,
-                                        onChanged: (String value) {
-                                          setState(() {});
-                                        },
-                                        autovalidateMode:
-                                            AutovalidateMode.onUserInteraction,
-                                        validator: (String value) {
-                                          return null;
-                                        })),
-                                    DataCell(TextFormField(
-                                        initialValue: server.aliases.length > 0
-                                            ? server.aliases.join(', ')
-                                            : "",
-                                        onChanged: (String value) {
-                                          setState(() {});
-                                        },
-                                        autovalidateMode:
-                                            AutovalidateMode.onUserInteraction,
-                                        validator: (String value) {
-                                          return null;
-                                        }))
-                                  ]),
+                              (server) => DataRow(cells: [
+                                DataCell(
+                                  //Text(user.firstName),
+                                  Text(server.name),
+                                ),
+                                DataCell(
+                                  GenericTextFormField(
+                                      // IPv4
+                                      hint: "ex: '10.0.0.1' or '84.120.10.4'",
+                                      error: 'Wrong IP address.',
+                                      initialValue: server.ipv4,
+                                      isCollapsed: true,
+                                      regexp: FieldValidators.ipv4,
+                                      onChanged: (value) {
+                                        _project.servers =
+                                            _project.servers.map((current) {
+                                          if (server.name == current.name)
+                                            current.ipv4 = value;
+                                          return current;
+                                        }).toList();
+                                        vm.onSaveCurrentProject();
+                                      }),
+                                  // placeholder: true,
+                                ),
+                                DataCell(GenericTextFormField(
+                                    // ALIASES
+                                    hint:
+                                        'e.g. \'${_project.getService('collectory')?.url(_project.domain)} ${_project.getService('ala_hub')?.url(_project.domain)} ${_project.getService('ala_bie')?.suburl}\' ',
+                                    error: 'Wrong aliases.',
+                                    initialValue: server.aliases.join(' '),
+                                    isCollapsed: true,
+                                    regexp: FieldValidators.aliasesRegexp,
+                                    onChanged: (value) {
+                                      _project.servers =
+                                          _project.servers.map((current) {
+                                        if (server.name == current.name)
+                                          current.aliases = value.split(' ');
+                                        return current;
+                                      }).toList();
+                                      vm.onSaveCurrentProject();
+                                    })),
+                              ]),
                             )
                             .toList(),
                       )),
@@ -373,6 +362,13 @@ If you are unsure type something like "server1, server2, server3".
       return new Scaffold(
         key: _scaffoldKey,
         appBar: LAAppBar(title: vm.state.status.title, showLaIcon: true),
+        /* bottomNavigationBar: BottomNavigationBar(items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'PREVIOUS'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'NEXT',
+          )
+        ]), */
         body: ScrollPanel(
           child: Stepper(
               steps: _steps,
