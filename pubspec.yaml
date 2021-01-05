@@ -56,7 +56,6 @@ dependencies:
   redux_logging: ^0.4.0
 
   # utils
-  basic_utils: ^2.6.3
 
 
 dev_dependencies:

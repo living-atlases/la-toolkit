@@ -66,7 +66,7 @@ class ProjectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 30.0),
+      padding: const EdgeInsets.only(top: 40.0),
       child: Container(
         child: new Stack(
           children: <Widget>[
@@ -74,8 +74,8 @@ class ProjectCard extends StatelessWidget {
                 onTap: () => {print("Click")},
                 child: Card(
                   child: Container(
-                    height: 130.0,
-                    margin: EdgeInsets.fromLTRB(20, 20, 10, 20),
+                    height: 120.0,
+                    margin: EdgeInsets.fromLTRB(20, 30, 10, 20),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

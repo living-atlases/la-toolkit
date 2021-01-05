@@ -14,7 +14,6 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laServer.dart';
-import 'utils/debounce.dart';
 
 class LAProjectPage extends StatefulWidget {
   static const routeName = "project";
@@ -27,7 +26,6 @@ class LAProjectPage extends StatefulWidget {
 
 class _LAProjectPageState extends State<LAProjectPage> {
   int _currentStep;
-  final _debouncer = Debouncer.def();
   bool _complete = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<GlobalKey<FormState>> _formKeys = [
@@ -83,7 +81,7 @@ class _LAProjectPageState extends State<LAProjectPage> {
       return _ProjectPageViewModel(
         state: store.state,
         onAddProject: () => store.dispatch(AddProject(_project)),
-        onEditProject: () => store.dispatch(UpdateProject(_project)),
+        onUpdateProject: () => store.dispatch(UpdateProject(_project)),
         onSaveCurrentProject: () =>
             store.dispatch(SaveCurrentProject(_project, _currentStep)),
       );
@@ -371,7 +369,7 @@ If you are unsure type something like "server1, server2, server3".
                 message: "Save the current LA project"),
             onPressed: () {
               if (vm.state.status == LAProjectStatus.create) vm.onAddProject();
-              if (vm.state.status == LAProjectStatus.create) vm.onEditProject();
+              if (vm.state.status == LAProjectStatus.edit) vm.onUpdateProject();
             },
           )
         ]),
@@ -458,11 +456,11 @@ class _ProjectPageViewModel {
   final AppState state;
   final Function onSaveCurrentProject;
   final Function onAddProject;
-  final Function onEditProject;
+  final Function onUpdateProject;
 
   _ProjectPageViewModel(
       {this.state,
       this.onSaveCurrentProject,
       this.onAddProject,
-      this.onEditProject});
+      this.onUpdateProject});
 }

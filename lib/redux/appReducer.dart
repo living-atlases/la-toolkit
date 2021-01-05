@@ -40,9 +40,7 @@ AppState _openProject(AppState state, OpenProject action) {
 
 AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
   return state.copyWith(
-      currentProject: action.project,
-      status: LAProjectStatus.create,
-      currentStep: action.currentStep);
+      currentProject: action.project, currentStep: action.currentStep);
 }
 
 AppState _addProject(AppState state, AddProject action) {

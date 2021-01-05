@@ -21,6 +21,11 @@ void main() {
     expect(FieldValidators.projectNameRegexp.hasMatch(string), equals(true));
   });
 
+  test('project long name regexp should allow names with dot', () {
+    var string = 'AEIOU.1';
+    expect(FieldValidators.projectNameRegexp.hasMatch(string), equals(true));
+  });
+
   test('project long name regexp should allow valid tilde names', () {
     var string = 'áéíóú';
     expect(FieldValidators.projectNameRegexp.hasMatch(string), equals(true));

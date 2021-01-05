@@ -26,8 +26,8 @@ void main() {
         AppState(projects: List<LAProject>.empty(), firstUsage: false),
     middleware: [
       customLogPrinter(),
+      appStateMiddleware,
       NavigationMiddleware(),
-      appStateMiddleware
     ],
   );
   store.onChange.listen((state) {
