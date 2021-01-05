@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
               // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
               // App bar with floating: true, pinned: true, snap: false:
               appBar: LAAppBar(title: appName, showLaIcon: true),
-              body: LAProjectsPage(),
+              body: LAProjectsListPage(),
               floatingActionButton: vm.state.projects.length > 0
                   ? FloatingActionButton.extended(
                       onPressed: () {

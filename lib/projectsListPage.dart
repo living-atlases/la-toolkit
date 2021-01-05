@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/laProjectTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
@@ -11,7 +12,7 @@ import 'components/formattedTitle.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 
-class LAProjectsPage extends StatelessWidget {
+class LAProjectsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectsPageViewModel>(converter: (store) {
@@ -25,7 +26,7 @@ class LAProjectsPage extends StatelessWidget {
       return num > 0
           ? new ScrollPanel(
               child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 160, vertical: 20),
+                  margin: EdgeInsets.symmetric(horizontal: 80, vertical: 20),
                   child: Column(children: <Widget>[
                     ListView.builder(
                         scrollDirection: Axis.vertical,
@@ -70,19 +71,31 @@ class ProjectCard extends StatelessWidget {
         child: new Stack(
           children: <Widget>[
             GestureDetector(
-                onTap: () => {print("Click")},
+                onTap: () => onEdit(),
                 child: Card(
                   child: Container(
-                    height: 320.0,
-                    margin: EdgeInsets.fromLTRB(20, 30, 10, 20),
+                    height: 200.0,
+                    margin: EdgeInsets.fromLTRB(30, 30, 20, 30),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          FormattedTitle(
-                              title: project.longName,
-                              fontSize: 22,
-                              color: LAColorTheme.inactive),
+                          ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: FormattedTitle(
+                                  title: project.longName,
+                                  fontSize: 22,
+                                  color: LAColorTheme.inactive),
+                              trailing: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: BoxConstraints(),
+                                icon: Icon(
+                                  Icons.settings,
+                                  color: Colors.grey,
+                                ),
+                                // label: Text("Settings"),
+                                onPressed: () => onEdit(),
+                              )),
                           Text(project.shortName),
                           SelectableLinkify(
                               linkStyle:
@@ -92,7 +105,7 @@ class ProjectCard extends StatelessWidget {
                                   "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
                               onOpen: (link) async => await launch(link.url)),
                           ButtonBar(
-                              alignment: MainAxisAlignment.spaceBetween,
+                              alignment: MainAxisAlignment.center,
                               buttonPadding: EdgeInsets.fromLTRB(0, 5, 0, 0),
                               children: <Widget>[
                                 Wrap(
@@ -100,6 +113,7 @@ class ProjectCard extends StatelessWidget {
                                     crossAxisAlignment:
                                         WrapCrossAlignment.start,
                                     children: [
+                                      LAProjectTimeline(),
                                       // Text('Configured: '),
                                       /* LinearPercentIndicator(
                                           width: 300,
@@ -115,16 +129,6 @@ class ProjectCard extends StatelessWidget {
                                           progressColor: LAColorTheme
                                               .laThemeData.primaryColorLight), */
                                     ]),
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: BoxConstraints(),
-                                  icon: Icon(
-                                    Icons.settings,
-                                    color: Colors.grey,
-                                  ),
-                                  // label: Text("Settings"),
-                                  onPressed: () => onEdit(),
-                                ),
                               ]),
                           /* ButtonBar(
                               alignment: MainAxisAlignment.end,
