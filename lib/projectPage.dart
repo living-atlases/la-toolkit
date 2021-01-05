@@ -38,7 +38,7 @@ class _LAProjectPageState extends State<LAProjectPage> {
   ];
   var _steps;
   LAProject _project;
-  static const _markdownColor = Colors.blueGrey;
+  static const _markdownColor = LAColorTheme.inactive;
   static const _markdownStyle = const TextStyle(color: _markdownColor);
   static const _serverHint =
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
@@ -82,6 +82,8 @@ class _LAProjectPageState extends State<LAProjectPage> {
     return StoreConnector<AppState, _ProjectPageViewModel>(converter: (store) {
       return _ProjectPageViewModel(
         state: store.state,
+        onAddProject: () => store.dispatch(AddProject(_project)),
+        onEditProject: () => store.dispatch(UpdateProject(_project)),
         onSaveCurrentProject: () =>
             store.dispatch(SaveCurrentProject(_project, _currentStep)),
       );
@@ -213,7 +215,7 @@ class _LAProjectPageState extends State<LAProjectPage> {
                                     vm.onSaveCurrentProject);
                               }
                             },
-                            color: Colors.blueGrey),
+                            color: LAColorTheme.inactive),
                         hintText: _serverHint,
                         labelText:
                             'Type the name of one of your servers (Press \'enter\' to add it)'),
@@ -361,7 +363,18 @@ If you are unsure type something like "server1, server2, server3".
       ];
       return new Scaffold(
         key: _scaffoldKey,
-        appBar: LAAppBar(title: vm.state.status.title, showLaIcon: true),
+        appBar:
+            LAAppBar(title: vm.state.status.title, showLaIcon: true, actions: [
+          new IconButton(
+            icon: Tooltip(
+                child: Icon(Icons.save, color: Colors.white),
+                message: "Save the current LA project"),
+            onPressed: () {
+              if (vm.state.status == LAProjectStatus.create) vm.onAddProject();
+              if (vm.state.status == LAProjectStatus.create) vm.onEditProject();
+            },
+          )
+        ]),
         /* bottomNavigationBar: BottomNavigationBar(items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'PREVIOUS'),
           BottomNavigationBarItem(
@@ -444,6 +457,12 @@ If you are unsure type something like "server1, server2, server3".
 class _ProjectPageViewModel {
   final AppState state;
   final Function onSaveCurrentProject;
+  final Function onAddProject;
+  final Function onEditProject;
 
-  _ProjectPageViewModel({this.state, this.onSaveCurrentProject});
+  _ProjectPageViewModel(
+      {this.state,
+      this.onSaveCurrentProject,
+      this.onAddProject,
+      this.onEditProject});
 }

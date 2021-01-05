@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
       return _HomePageViewModel(
         state: store.state,
         onAddProject: () {
-          store.dispatch(AddProject());
+          store.dispatch(CreateProject());
           // Navigator.pushNamed(context, LAProjectPage.routeName);
         },
       );
@@ -152,8 +152,11 @@ class _HomePageViewModel {
 class NavigationMiddleware implements MiddlewareClass<AppState> {
   @override
   call(Store<AppState> store, action, next) {
-    if (action is AddProject) {
+    if (action is CreateProject || action is OpenProject) {
       navigatorKey.currentState.pushNamed(LAProjectPage.routeName);
+    }
+    if (action is AddProject || action is UpdateProject) {
+      navigatorKey.currentState.pushNamed(HomePage.routeName);
     }
     next(action);
   }

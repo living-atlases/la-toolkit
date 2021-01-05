@@ -37,4 +37,6 @@ class LAColorTheme {
         textTheme:
             ButtonTextTheme.primary, //  <-- this auto selects the right color
       ));
+
+  static const Color inactive = Colors.blueGrey;
 }

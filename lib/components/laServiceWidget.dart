@@ -1,13 +1,11 @@
-import 'package:basic_utils/basic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDescList.dart';
 import 'package:la_toolkit/redux/actions.dart';
 
-import '../laTheme.dart';
+import 'formattedTitle.dart';
 import 'helpIcon.dart';
 
 class LaServiceWidget extends StatelessWidget {
@@ -49,9 +47,10 @@ class LaServiceWidget extends StatelessWidget {
                               : null,
                           contentPadding: EdgeInsets.zero,
                           title: (serviceDesc.optional)
-                              ? _formatTitle(
-                                  "Use the ${serviceDesc.name} service (${serviceDesc.desc})?")
-                              : _formatTitle("${serviceDesc.desc}:"),
+                              ? FormattedTitle(
+                                  title:
+                                      "Use the ${serviceDesc.name} service (${serviceDesc.desc})?")
+                              : FormattedTitle(title: "${serviceDesc.desc}:"),
                           // subtitle: Text('TWICE', style: TextStyle(color: Colors.white)),
                           trailing: HelpIcon.url(
                               url: serviceDesc.sample,
@@ -69,7 +68,7 @@ class LaServiceWidget extends StatelessWidget {
           : null;
     });
   }
-
+/*
   Widget _formatTitle(String text) {
     return Text("${StringUtils.capitalize(text)}",
         style: GoogleFonts.signika(
@@ -77,7 +76,7 @@ class LaServiceWidget extends StatelessWidget {
                 color: LAColorTheme.laPalette.shade500,
                 fontSize: 18,
                 fontWeight: FontWeight.w400)));
-  }
+  } */
 }
 
 class _LAServiceViewModel {

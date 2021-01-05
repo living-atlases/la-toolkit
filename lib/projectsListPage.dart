@@ -2,12 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'components/formattedTitle.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 
@@ -17,8 +18,8 @@ class LAProjectsPage extends StatelessWidget {
     return StoreConnector<AppState, _ProjectsPageViewModel>(converter: (store) {
       return _ProjectsPageViewModel(
         state: store.state,
-        onAddProject: () => store.dispatch(AddProject()),
-        onEditProject: (project) => store.dispatch(EditProject(project)),
+        onCreateProject: () => store.dispatch(CreateProject()),
+        onOpenProject: (project) => store.dispatch(OpenProject(project)),
       );
     }, builder: (BuildContext context, _ProjectsPageViewModel vm) {
       var num = vm.state.projects.length;
@@ -36,7 +37,7 @@ class LAProjectsPage extends StatelessWidget {
                             ProjectCard(
                                 vm.state.projects[index],
                                 () =>
-                                    vm.onEditProject(vm.state.projects[index])))
+                                    vm.onOpenProject(vm.state.projects[index])))
                   ])))
           : Center(
               child: Column(
@@ -44,7 +45,7 @@ class LAProjectsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                   RaisedButton(
-                      onPressed: () => vm.onAddProject(),
+                      onPressed: () => vm.onCreateProject(),
                       textColor: Colors.white,
                       color: LAColorTheme.laPalette,
                       // padding: const EdgeInsets.all(8.0),
@@ -73,18 +74,16 @@ class ProjectCard extends StatelessWidget {
                 onTap: () => {print("Click")},
                 child: Card(
                   child: Container(
-                    height: 100.0,
-                    margin: EdgeInsets.fromLTRB(30, 30, 0, 0),
-                    child:
-                        Column(crossAxisAlignment: CrossAxisAlignment.stretch,
-                            // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                          Text(project.longName,
-                              style: GoogleFonts.signika(
-                                  textStyle: TextStyle(
-                                      // color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w300))),
+                    height: 130.0,
+                    margin: EdgeInsets.fromLTRB(20, 20, 10, 20),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          FormattedTitle(
+                              title: project.longName,
+                              fontSize: 22,
+                              color: LAColorTheme.inactive),
                           Text(project.shortName),
                           SelectableLinkify(
                               linkStyle:
@@ -94,8 +93,29 @@ class ProjectCard extends StatelessWidget {
                                   "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
                               onOpen: (link) async => await launch(link.url)),
                           ButtonBar(
-                              alignment: MainAxisAlignment.end,
+                              alignment: MainAxisAlignment.spaceBetween,
+                              buttonPadding: EdgeInsets.fromLTRB(0, 5, 0, 0),
                               children: <Widget>[
+                                Wrap(
+                                    direction: Axis.horizontal,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.start,
+                                    children: [
+                                      // Text('Configured: '),
+                                      LinearPercentIndicator(
+                                          width: 300,
+                                          // MediaQuery.of(context).size.width - 50,
+                                          animation: true,
+                                          lineHeight: 25.0,
+                                          animationDuration: 1500,
+                                          percent: 0.70,
+                                          center: Text(
+                                              "Basic configuration at 70.0%"),
+                                          linearStrokeCap:
+                                              LinearStrokeCap.roundAll,
+                                          progressColor: LAColorTheme
+                                              .laThemeData.primaryColorLight),
+                                    ]),
                                 IconButton(
                                   padding: EdgeInsets.zero,
                                   constraints: BoxConstraints(),
@@ -165,8 +185,9 @@ class ProjectCard extends StatelessWidget {
 
 class _ProjectsPageViewModel {
   final AppState state;
-  final void Function(LAProject project) onEditProject;
-  final void Function() onAddProject;
+  final void Function(LAProject project) onOpenProject;
+  final void Function() onCreateProject;
 
-  _ProjectsPageViewModel({this.state, this.onEditProject, this.onAddProject});
+  _ProjectsPageViewModel(
+      {this.state, this.onOpenProject, this.onCreateProject});
 }

@@ -7,11 +7,13 @@ import 'actions.dart';
 final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
   new TypedReducer<AppState, OnFetchState>(_onFetchState),
+  new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, AddProject>(_addProject),
+  new TypedReducer<AppState, OpenProject>(_openProject),
   new TypedReducer<AppState, EditService>(_editService),
   new TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
   new TypedReducer<AppState, DelProject>(_delProject),
-  new TypedReducer<AppState, EditProject>(_editProject),
+  new TypedReducer<AppState, UpdateProject>(_updateProject),
 ]);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
@@ -22,10 +24,17 @@ AppState _onFetchState(AppState state, OnFetchState action) {
   return action.state;
 }
 
-AppState _addProject(AppState state, AddProject action) {
+AppState _createProject(AppState state, CreateProject action) {
   return state.copyWith(
       currentProject: LAProject.def,
       status: LAProjectStatus.create,
+      currentStep: 0);
+}
+
+AppState _openProject(AppState state, OpenProject action) {
+  return state.copyWith(
+      currentProject: action.project,
+      status: LAProjectStatus.edit,
       currentStep: 0);
 }
 
@@ -36,14 +45,18 @@ AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
       currentStep: action.currentStep);
 }
 
+AppState _addProject(AppState state, AddProject action) {
+  return state.copyWith(
+      projects: new List<LAProject>.from(state.projects)..add(action.project));
+}
+
 AppState _delProject(AppState state, DelProject action) {
   return state.copyWith(
       projects: new List<LAProject>.from(state.projects)
         ..removeWhere((item) => item.uuid == action.uuid));
 }
 
-AppState _editProject(AppState state, EditProject action) {
-  // Rewritte this
+AppState _updateProject(AppState state, UpdateProject action) {
   return state.copyWith(
       projects: state.projects
           .map((project) =>

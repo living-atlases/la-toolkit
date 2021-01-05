@@ -16,8 +16,14 @@ class OnFetchState extends AppActions {
 
 class OnFetchProjectsFailed extends AppActions {}
 
+class CreateProject extends AppActions {
+  CreateProject();
+}
+
 class AddProject extends AppActions {
-  AddProject();
+  LAProject project;
+
+  AddProject(this.project);
 }
 
 class DelProject extends AppActions {
@@ -26,10 +32,16 @@ class DelProject extends AppActions {
   DelProject(this.uuid);
 }
 
-class EditProject extends AppActions {
+class OpenProject extends AppActions {
   LAProject project;
 
-  EditProject(this.project);
+  OpenProject(this.project);
+}
+
+class UpdateProject extends AppActions {
+  LAProject project;
+
+  UpdateProject(this.project);
 }
 
 class EditService extends AppActions {

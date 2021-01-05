@@ -46,7 +46,7 @@ class _IntroState extends State<Intro> {
     return StoreConnector<AppState, _IntroViewModel>(converter: (store) {
       return _IntroViewModel(
         state: store.state,
-        onAddProject: () => store.dispatch(AddProject()),
+        onAddProject: () => store.dispatch(CreateProject()),
         onIntroEnd: () => store.dispatch(OnIntroEnd()),
       );
     }, builder: (BuildContext context, _IntroViewModel vm) {
