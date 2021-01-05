@@ -15,9 +15,11 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import 'intro.dart';
 import 'laTheme.dart';
+import 'mainDrawer.dart';
 import 'models/appState.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
 void main() {
   var appStateMiddleware = AppStateMiddleware();
@@ -109,8 +111,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _HomePageViewModel>(converter: (store) {
@@ -124,7 +124,8 @@ class _HomePageState extends State<HomePage> {
     }, builder: (BuildContext context, _HomePageViewModel vm) {
       return !vm.state.firstUsage
           ? Scaffold(
-              key: _scaffoldKey,
+              key: scaffoldKey,
+              drawer: new MainDrawer(context, HomePage.routeName, appName),
               // Maybe:
               // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
               // App bar with floating: true, pinned: true, snap: false:

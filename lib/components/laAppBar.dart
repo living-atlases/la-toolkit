@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_toolkit/main.dart';
 
 import 'laIcon.dart';
 
 class LAAppBar extends AppBar {
-  final List<Widget> defActions = [
-    new IconButton(
-        icon: Icon(Icons.menu, color: Colors.white), onPressed: () {})
-  ];
+  final List<Widget> defActions = [];
 
   LAAppBar({String title, bool showLaIcon: false, List<Widget> actions})
       : super(
+            leading: new IconButton(
+                icon: Icon(Icons.menu, color: Colors.white),
+                onPressed: () {
+                  scaffoldKey.currentState.openDrawer();
+                }),
             actions: actions ?? List<Widget>.empty(growable: true),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,

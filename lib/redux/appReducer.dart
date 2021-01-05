@@ -26,7 +26,7 @@ AppState _onFetchState(AppState state, OnFetchState action) {
 
 AppState _createProject(AppState state, CreateProject action) {
   return state.copyWith(
-      currentProject: LAProject.def,
+      currentProject: new LAProject(),
       status: LAProjectStatus.create,
       currentStep: 0);
 }

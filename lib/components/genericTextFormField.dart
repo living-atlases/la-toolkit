@@ -63,7 +63,6 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
             // onChanged: ,
             onChanged: (String value) => debouncer.run(() {
                   if (formKey.currentState.validate()) {
-                    print('On save');
                     widget.onChanged(value);
                   }
                 }),

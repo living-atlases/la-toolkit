@@ -82,6 +82,7 @@ class ProjectCard extends StatelessWidget {
                         children: [
                           ListTile(
                               contentPadding: EdgeInsets.zero,
+                              // LONG NAME
                               title: FormattedTitle(
                                   title: project.longName,
                                   fontSize: 22,
@@ -93,10 +94,13 @@ class ProjectCard extends StatelessWidget {
                                   Icons.settings,
                                   color: Colors.grey,
                                 ),
-                                // label: Text("Settings"),
                                 onPressed: () => onEdit(),
                               )),
-                          Text(project.shortName),
+                          Text(
+                            // SHORT NAME
+                            project.shortName,
+                            style: TextStyle(fontSize: 16),
+                          ),
                           SelectableLinkify(
                               linkStyle:
                                   TextStyle(color: LAColorTheme.laPalette),

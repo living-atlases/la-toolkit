@@ -26,7 +26,7 @@ class LAProject {
   @JsonSerializable(nullable: false)
   Map<String, LAService> services;
 
-  static final def = LAProject(
+  static final def2 = LAProject(
       longName: "Living Atlas of Wakanda",
       shortName: "LA Wakanda",
       domain: "your.l-a.site");

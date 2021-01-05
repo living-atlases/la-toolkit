@@ -44,21 +44,21 @@ class _LAProjectPageState extends State<LAProjectPage> {
   var _serverFocus = FocusNode();
 
   next() {
-    print('next: $_currentStep');
+    // print('next: $_currentStep');
     _currentStep + 1 != _steps.length
         ? goTo(_currentStep + 1)
         : setState(() => _complete = true);
   }
 
   cancel() {
-    print('cancel: $_currentStep');
+    // print('cancel: $_currentStep');
     if (_currentStep > 0) {
       goTo(_currentStep - 1);
     }
   }
 
   goTo(int step) {
-    print('goTo: $step/$_currentStep');
+    // print('goTo: $step/$_currentStep');
     // if (_formKeys[step - 1].currentState.validate()) {
     setState(() => _currentStep = step);
   }
@@ -86,7 +86,7 @@ class _LAProjectPageState extends State<LAProjectPage> {
             store.dispatch(SaveCurrentProject(_project, _currentStep)),
       );
     }, builder: (BuildContext context, _ProjectPageViewModel vm) {
-      print('build project page');
+      // print('build project page');
       _project = vm.state.currentProject;
       _currentStep = vm.state.currentStep ?? 0;
       _steps = [
@@ -103,7 +103,8 @@ class _LAProjectPageState extends State<LAProjectPage> {
                       // LONG NAME
                       //  key: _formKeys[0],
                       label: 'Your LA Project Long Name',
-                      hint: 'Living Atlas Of Wakanda',
+                      hint:
+                          "Similar to e.g: 'Atlas of Living Australia', 'BioAtlas Sweden', 'NBN Atlas', ...",
                       wikipage: "Glosary#Long-name",
                       error: 'Project name invalid.',
                       initialValue: _project.longName,
@@ -116,7 +117,7 @@ class _LAProjectPageState extends State<LAProjectPage> {
                   GenericTextFormField(
                       // SHORT NAME
                       label: 'Short Name',
-                      hint: 'LA Wakanda',
+                      hint: "Similar to for e.g.: 'ALA', 'GBIF.ES', 'NBN',...",
                       wikipage: "Glosary#Short-name",
                       error: 'Project short name invalid.',
                       initialValue: _project.shortName,
@@ -147,7 +148,8 @@ class _LAProjectPageState extends State<LAProjectPage> {
                   GenericTextFormField(
                       // DOMAIN
                       label: 'The domain of your LA node',
-                      hint: 'your.l-a.site',
+                      hint:
+                          " Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'datos.gbif.es', ...",
                       prefixText: _protocolToS(_project.useSSL),
                       wikipage: "Glosary#Domain",
                       error: 'Project short name invalid.',
