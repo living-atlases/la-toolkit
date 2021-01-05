@@ -5,7 +5,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/formattedTitle.dart';
@@ -74,7 +73,7 @@ class ProjectCard extends StatelessWidget {
                 onTap: () => {print("Click")},
                 child: Card(
                   child: Container(
-                    height: 120.0,
+                    height: 320.0,
                     margin: EdgeInsets.fromLTRB(20, 30, 10, 20),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -102,7 +101,7 @@ class ProjectCard extends StatelessWidget {
                                         WrapCrossAlignment.start,
                                     children: [
                                       // Text('Configured: '),
-                                      LinearPercentIndicator(
+                                      /* LinearPercentIndicator(
                                           width: 300,
                                           // MediaQuery.of(context).size.width - 50,
                                           animation: true,
@@ -114,7 +113,7 @@ class ProjectCard extends StatelessWidget {
                                           linearStrokeCap:
                                               LinearStrokeCap.roundAll,
                                           progressColor: LAColorTheme
-                                              .laThemeData.primaryColorLight),
+                                              .laThemeData.primaryColorLight), */
                                     ]),
                                 IconButton(
                                   padding: EdgeInsets.zero,

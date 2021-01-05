@@ -9,6 +9,7 @@ import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
 import 'package:la_toolkit/routes.dart';
+import 'package:la_toolkit/sandboxPage.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -74,6 +75,9 @@ class MyApp extends StatelessWidget {
                   break;
                 case LAProjectPage.routeName:
                   return LAProjectPage();
+                  break;
+                case SandboxPage.routeName:
+                  return SandboxPage();
                   break;
                 default:
                   return HomePage(title: appName);
