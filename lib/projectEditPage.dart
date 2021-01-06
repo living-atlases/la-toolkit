@@ -14,6 +14,7 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laServer.dart';
+import 'utils/utils.dart';
 
 class LAProjectEditPage extends StatefulWidget {
   static const routeName = "project";
@@ -25,7 +26,7 @@ class LAProjectEditPage extends StatefulWidget {
 class _LAProjectEditPageState extends State<LAProjectEditPage> {
   int _currentStep;
   bool _complete = false;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
@@ -358,20 +359,36 @@ If you are unsure type something like "server1, server2, server3".
               )),
         ),
       ];
-      return new Scaffold(
+      return Scaffold(
         key: _scaffoldKey,
-        appBar:
-            LAAppBar(title: vm.state.status.title, showLaIcon: true, actions: [
-          new IconButton(
-            icon: Tooltip(
-                child: Icon(Icons.save, color: Colors.white),
-                message: "Save the current LA project"),
-            onPressed: () {
-              if (vm.state.status == LAProjectStatus.create) vm.onAddProject();
-              if (vm.state.status == LAProjectStatus.edit) vm.onUpdateProject();
-            },
-          )
-        ]),
+        appBar: LAAppBar(
+            title: vm.state.status.title,
+            showLaIcon: true,
+            actions: ListUtils.listWithoutNulls([
+              _currentStep == 0
+                  ? null
+                  : FlatButton(
+                      child: Text('PREVIOUS'),
+                      textColor: Colors.white,
+                      onPressed: () => onStepCancel(vm)),
+              _currentStep == _steps.length - 1
+                  ? null
+                  : FlatButton(
+                      child: Text('NEXT'),
+                      textColor: Colors.white,
+                      onPressed: () => onStepContinue(vm)),
+              IconButton(
+                icon: Tooltip(
+                    child: Icon(Icons.save, color: Colors.white),
+                    message: "Save the current LA project"),
+                onPressed: () {
+                  if (vm.state.status == LAProjectStatus.create)
+                    vm.onAddProject();
+                  if (vm.state.status == LAProjectStatus.edit)
+                    vm.onUpdateProject();
+                },
+              )
+            ])),
         /* bottomNavigationBar: BottomNavigationBar(items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'PREVIOUS'),
           BottomNavigationBarItem(
@@ -386,21 +403,14 @@ If you are unsure type something like "server1, server2, server3".
               type: stepperType,
               onStepContinue: () {
                 // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                // setState(() {
-                if (_formKeys[_currentStep].currentState.validate() ||
-                    (_currentStep == 1 && _project.servers.length > 0)) {
-                  next();
-                }
-                vm.onSaveCurrentProject();
-                // });
+                onStepContinue(vm);
               },
               onStepTapped: (step) {
                 goTo(step);
                 vm.onSaveCurrentProject();
               },
               onStepCancel: () {
-                cancel();
-                vm.onSaveCurrentProject();
+                onStepCancel(vm);
               },
               // https://github.com/flutter/flutter/issues/11133
               controlsBuilder: (BuildContext context,
@@ -410,7 +420,7 @@ If you are unsure type something like "server1, server2, server3".
                   // mainAxisSize: MainAxisSize.max,
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    RaisedButton(
+                    /*  RaisedButton(
                       onPressed: onStepContinue,
                       textColor: Colors.white,
                       color: LAColorTheme.laPalette,
@@ -422,7 +432,7 @@ If you are unsure type something like "server1, server2, server3".
                             onPressed: onStepCancel,
                             textColor: LAColorTheme.laPalette,
                             child: const Text('PREVIOUS'),
-                          ),
+                          ), */
                   ],
                 );
               }),
@@ -432,8 +442,22 @@ If you are unsure type something like "server1, server2, server3".
     });
   }
 
+  void onStepCancel(_ProjectPageViewModel vm) {
+    cancel();
+    vm.onSaveCurrentProject();
+  }
+
+  void onStepContinue(_ProjectPageViewModel vm) {
+    // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
+    if (_formKeys[_currentStep].currentState.validate() ||
+        (_currentStep == 1 && _project.servers.length > 0)) {
+      next();
+    }
+    vm.onSaveCurrentProject();
+  }
+
   void _addServer(String value, void Function() onSaveCurrentProject) {
-    _project.servers.add(new LAServer(name: value));
+    _project.servers.add(LAServer(name: value));
     _serverAddController.clear();
     _formKeys[1].currentState.reset();
     _serverFocus.requestFocus();
