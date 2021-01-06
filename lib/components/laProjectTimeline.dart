@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mdi/mdi.dart';
 import 'package:timelines/timelines.dart';
 
 import '../laTheme.dart';
@@ -281,6 +282,6 @@ final _icons = [
   Icons.dns,
   Icons.playlist_add_check, // playlistAdd
   Icons.settings_ethernet,
-  Icons.play_circle_outline,
+  Mdi.rocketLaunch,
   Icons.cached
 ];

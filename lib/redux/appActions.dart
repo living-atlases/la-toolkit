@@ -27,15 +27,21 @@ class AddProject extends AppActions {
 }
 
 class DelProject extends AppActions {
-  String uuid;
+  LAProject project;
 
-  DelProject(this.uuid);
+  DelProject(this.project);
 }
 
 class OpenProject extends AppActions {
   LAProject project;
 
   OpenProject(this.project);
+}
+
+class OpenProjectTools extends AppActions {
+  LAProject project;
+
+  OpenProjectTools(this.project);
 }
 
 class UpdateProject extends AppActions {

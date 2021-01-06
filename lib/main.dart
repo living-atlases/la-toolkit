@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
+import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/projectPage.dart';
+import 'package:la_toolkit/projectEditPage.dart';
+import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/projectsListPage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/redux/appReducer.dart';
@@ -19,7 +23,6 @@ import 'mainDrawer.dart';
 import 'models/appState.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
-final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
 void main() {
   var appStateMiddleware = AppStateMiddleware();
@@ -39,7 +42,21 @@ void main() {
   });
   store.dispatch(FetchProjects());
 
-  runApp(MyApp(store: store));
+  runApp(BetterFeedback(
+    child: MyApp(store: store),
+    onFeedback: (
+      BuildContext context,
+      String feedbackText,
+      Uint8List feedbackScreenshot,
+    ) {
+      // upload to server, share whatever
+      // for example purposes just show it to the user
+
+      // https://github.com/ueman/feedback#upload-feedback
+      alertFeedbackFunction(context, feedbackText, feedbackScreenshot);
+      return;
+    },
+  ));
 }
 
 final String appName = 'Living Atlases Toolkit';
@@ -75,8 +92,11 @@ class MyApp extends StatelessWidget {
                 case HomePage.routeName:
                   return HomePage(title: appName);
                   break;
-                case LAProjectPage.routeName:
-                  return LAProjectPage();
+                case LAProjectEditPage.routeName:
+                  return LAProjectEditPage();
+                  break;
+                case LAProjectViewPage.routeName:
+                  return LAProjectViewPage();
                   break;
                 case SandboxPage.routeName:
                   return SandboxPage();
@@ -111,6 +131,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _HomePageViewModel>(converter: (store) {
@@ -124,8 +146,8 @@ class _HomePageState extends State<HomePage> {
     }, builder: (BuildContext context, _HomePageViewModel vm) {
       return !vm.state.firstUsage
           ? Scaffold(
-              key: scaffoldKey,
-              drawer: new MainDrawer(context, HomePage.routeName, appName),
+              key: _scaffoldKey,
+              drawer: MainDrawer(context, HomePage.routeName, appName),
               // Maybe:
               // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
               // App bar with floating: true, pinned: true, snap: false:
@@ -158,10 +180,16 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
   @override
   call(Store<AppState> store, action, next) {
     if (action is CreateProject || action is OpenProject) {
-      navigatorKey.currentState.pushNamed(LAProjectPage.routeName);
+      navigatorKey.currentState.pushNamed(LAProjectEditPage.routeName);
     }
-    if (action is AddProject || action is UpdateProject) {
-      navigatorKey.currentState.pushNamed(HomePage.routeName);
+    if (action is OpenProjectTools) {
+      navigatorKey.currentState.pushNamed(LAProjectViewPage.routeName);
+    }
+    if (action is AddProject ||
+        action is UpdateProject ||
+        action is DelProject) {
+      navigatorKey.currentState.pop();
+      // navigatorKey.currentState.pushNamed(HomePage.routeName);
     }
     next(action);
   }

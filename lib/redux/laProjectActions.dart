@@ -1,5 +1,4 @@
-import 'package:la_toolkit/models/laProject.dart';
-
+/*
 abstract class LAProjectActions {}
 
 class LAViewProject extends LAProjectActions {
@@ -13,3 +12,4 @@ class LAEditProject extends LAProjectActions {
 
   LAEditProject(this.project);
 }
+*/

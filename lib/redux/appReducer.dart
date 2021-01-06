@@ -10,6 +10,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
+  new TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
   new TypedReducer<AppState, EditService>(_editService),
   new TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
   new TypedReducer<AppState, DelProject>(_delProject),
@@ -38,6 +39,11 @@ AppState _openProject(AppState state, OpenProject action) {
       currentStep: 0);
 }
 
+AppState _openProjectTools(AppState state, OpenProjectTools action) {
+  return state.copyWith(
+      currentProject: action.project, status: LAProjectStatus.view);
+}
+
 AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
   return state.copyWith(
       currentProject: action.project, currentStep: action.currentStep);
@@ -51,7 +57,7 @@ AppState _addProject(AppState state, AddProject action) {
 AppState _delProject(AppState state, DelProject action) {
   return state.copyWith(
       projects: new List<LAProject>.from(state.projects)
-        ..removeWhere((item) => item.uuid == action.uuid));
+        ..removeWhere((item) => item.uuid == state.currentProject.uuid));
 }
 
 AppState _updateProject(AppState state, UpdateProject action) {

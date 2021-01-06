@@ -19,7 +19,8 @@ class LAProjectsListPage extends StatelessWidget {
       return _ProjectsPageViewModel(
         state: store.state,
         onCreateProject: () => store.dispatch(CreateProject()),
-        onOpenProject: (project) => store.dispatch(OpenProject(project)),
+        onOpenProjectTools: (project) =>
+            store.dispatch(OpenProjectTools(project)),
       );
     }, builder: (BuildContext context, _ProjectsPageViewModel vm) {
       var num = vm.state.projects.length;
@@ -36,8 +37,8 @@ class LAProjectsListPage extends StatelessWidget {
                         itemBuilder: (BuildContext context, int index) =>
                             ProjectCard(
                                 vm.state.projects[index],
-                                () =>
-                                    vm.onOpenProject(vm.state.projects[index])))
+                                () => vm.onOpenProjectTools(
+                                    vm.state.projects[index])))
                   ])))
           : Center(
               child: Column(
@@ -59,9 +60,9 @@ class LAProjectsListPage extends StatelessWidget {
 
 class ProjectCard extends StatelessWidget {
   final LAProject project;
-  final void Function() onEdit;
+  final void Function() onOpen;
 
-  ProjectCard(this.project, this.onEdit);
+  ProjectCard(this.project, this.onOpen);
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +72,10 @@ class ProjectCard extends StatelessWidget {
         child: new Stack(
           children: <Widget>[
             GestureDetector(
-                onTap: () => onEdit(),
+                onTap: () => onOpen(),
                 child: Card(
                   child: Container(
-                    height: 200.0,
+                    height: 250.0,
                     margin: EdgeInsets.fromLTRB(30, 30, 20, 30),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -94,7 +95,7 @@ class ProjectCard extends StatelessWidget {
                                   Icons.settings,
                                   color: Colors.grey,
                                 ),
-                                onPressed: () => onEdit(),
+                                onPressed: () => onOpen(),
                               )),
                           Text(
                             // SHORT NAME
@@ -134,40 +135,6 @@ class ProjectCard extends StatelessWidget {
                                               .laThemeData.primaryColorLight), */
                                     ]),
                               ]),
-                          /* ButtonBar(
-                              alignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                FlatButton.icon(
-                                  icon: Icon(
-                                    Icons.remove_red_eye_rounded,
-                                    // color: LaColorTheme.laPalette,
-                                  ),
-                                  label: Text('VIEW'),
-                                  // color: Color.fromRGBO(68, 153, 213, 1.0),
-                                  // shape: CircleBorder(),
-                                  onPressed: () {},
-                                ),
-                                FlatButton.icon(
-                                  icon: Icon(
-                                    Icons.edit,
-                                    // color: Colors.white,
-                                  ),
-                                  label: Text('EDIT'),
-                                  // color: Color.fromRGBO(68, 153, 213, 1.0),
-                                  // shape: CircleBorder(),
-                                  onPressed: () {},
-                                ),
-                                FlatButton.icon(
-                                  // color: Color.fromRGBO(161, 108, 164, 1.0),
-                                  icon: Icon(Icons.delete),
-                                  label: Text('ARCHIVE'),
-                                  /* shape: new RoundedRectangleBorder(
-                                          borderRadius:
-                                              new BorderRadius.circular(30.0)), */
-                                  // textColor: Colors.white,
-                                  onPressed: () {},
-                                ),
-                              ]) */
                         ]),
                   ),
                 )),
@@ -192,9 +159,9 @@ class ProjectCard extends StatelessWidget {
 
 class _ProjectsPageViewModel {
   final AppState state;
-  final void Function(LAProject project) onOpenProject;
+  final void Function(LAProject project) onOpenProjectTools;
   final void Function() onCreateProject;
 
   _ProjectsPageViewModel(
-      {this.state, this.onOpenProject, this.onCreateProject});
+      {this.state, this.onOpenProjectTools, this.onCreateProject});
 }

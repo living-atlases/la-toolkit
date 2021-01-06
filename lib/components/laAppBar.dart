@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_toolkit/main.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
 import 'laIcon.dart';
 
@@ -9,15 +9,22 @@ class LAAppBar extends AppBar {
 
   LAAppBar({String title, bool showLaIcon: false, List<Widget> actions})
       : super(
-            leading: new IconButton(
-                icon: Icon(Icons.menu, color: Colors.white),
-                onPressed: () {
-                  scaffoldKey.currentState.openDrawer();
-                }),
+            leading: Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  icon: Icon(Icons.menu, color: Colors.white),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  tooltip:
+                      MaterialLocalizations.of(context).openAppDrawerTooltip,
+                );
+              },
+            ),
             actions: actions ?? List<Widget>.empty(growable: true),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [
+              children: ListUtils.listWithoutNulls(<Widget>[
                 showLaIcon
                     ? Icon(LAIcon.la, size: 32, color: Colors.white)
                     : null,
@@ -29,7 +36,7 @@ class LAAppBar extends AppBar {
                                 color: Colors.white,
                                 fontSize: 28,
                                 fontWeight: FontWeight.w400))))
-              ],
+              ]),
             )) {
     super.actions.addAll(defActions);
   }

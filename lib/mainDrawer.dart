@@ -1,3 +1,4 @@
+import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/sandboxPage.dart';
@@ -12,40 +13,40 @@ class MainDrawer extends Drawer {
 }
 
 Widget mainDrawer(BuildContext context, String currentRoute, String appName) {
-  return new ListView(
+  return ListView(
       // Important: Remove any padding from the ListView.
       padding: EdgeInsets.zero,
-      children: listWithoutNulls(<Widget>[
-        new GestureDetector(
+      children: ListUtils.listWithoutNulls(<Widget>[
+        GestureDetector(
           onTap: () {
             Navigator.popAndPushNamed(context, '/');
           },
-          child: new DrawerHeader(
-            child: new Column(
+          child: DrawerHeader(
+            child: Column(
               children: <Widget>[
-                new Image.asset(
+                Image.asset(
                   'assets/images/la-icon.png',
                   fit: BoxFit.scaleDown,
                   height: 80.0,
                 ),
                 const SizedBox(height: 20.0),
-                new Text(appName,
-                    style: new TextStyle(
+                Text(appName,
+                    style: TextStyle(
                       fontSize: 24.0,
                       color: Colors.white,
                     )),
               ],
             ),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: LAColorTheme.laPalette.shade300,
             ),
           ),
         ),
-        new Divider(),
-        /*  new ListTile(
+        Divider(),
+        /*  ListTile(
                 leading: const Icon(Icons.favorite),
                 selected: currentRoute == SupportPage.routeName,
-                title: new Text(S.of(context).supportThisInitiative),
+                title: Text(S.of(context).supportThisInitiative),
                 onTap: () {
                   Navigator.popAndPushNamed(context, SupportPage.routeName);
                 },
@@ -53,16 +54,24 @@ Widget mainDrawer(BuildContext context, String currentRoute, String appName) {
 
         // globals.isDevelopment
         true
-            ? new ListTile(
+            ? ListTile(
                 leading: const Icon(Icons.bug_report),
-                title: new Text('Sandbox'),
+                title: Text('Sandbox'),
                 selected: currentRoute == SandboxPage.routeName,
                 onTap: () {
                   Navigator.popAndPushNamed(context, SandboxPage.routeName);
                 },
               )
             : null,
-        new AboutListTile(
+        ListTile(
+          leading: const Icon(Icons.feedback),
+          title: Text('Feedback (WIP)'),
+          // selected: currentRoute == SandboxPage.routeName,
+          onTap: () {
+            BetterFeedback.of(context).show();
+          },
+        ),
+        AboutListTile(
             icon: Icon(LAIcon.la),
             // Icon(LAIcon.la, size: 32, color: Colors.white)
             applicationName: appName,
@@ -72,11 +81,11 @@ Widget mainDrawer(BuildContext context, String currentRoute, String appName) {
             /* applicationLegalese:
                       S.of(context).appLicense(DateTime.now().year.toString()), */
             aboutBoxChildren: <Widget>[
-              new SizedBox(height: 10.0),
-              /* new Text(S.of(context).appMoto),
-                    // , style: new TextStyle(fontStyle: FontStyle.italic)),
-                    new SizedBox(height: 10.0),
-                    new Text(S.of(context).NASAAck, style: bottomTextStyle), */
+              SizedBox(height: 10.0),
+              /* Text(S.of(context).appMoto),
+                    // , style: TextStyle(fontStyle: FontStyle.italic)),
+                    SizedBox(height: 10.0),
+                    Text(S.of(context).NASAAck, style: bottomTextStyle), */
               // More ?
             ])
       ]));

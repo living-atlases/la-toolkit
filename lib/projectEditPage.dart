@@ -15,16 +15,9 @@ import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laServer.dart';
 
-class LAProjectPage extends StatefulWidget {
+class LAProjectEditPage extends StatelessWidget {
   static const routeName = "project";
 
-  LAProjectPage({Key key}) : super(key: key);
-
-  @override
-  _LAProjectPageState createState() => new _LAProjectPageState();
-}
-
-class _LAProjectPageState extends State<LAProjectPage> {
   int _currentStep;
   bool _complete = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -47,7 +40,7 @@ class _LAProjectPageState extends State<LAProjectPage> {
     // print('next: $_currentStep');
     _currentStep + 1 != _steps.length
         ? goTo(_currentStep + 1)
-        : setState(() => _complete = true);
+        : () => _complete = true;
   }
 
   cancel() {
@@ -58,18 +51,17 @@ class _LAProjectPageState extends State<LAProjectPage> {
   }
 
   goTo(int step) {
-    // print('goTo: $step/$_currentStep');
-    // if (_formKeys[step - 1].currentState.validate()) {
-    setState(() => _currentStep = step);
+    _currentStep = step;
   }
 
   StepperType stepperType = StepperType.vertical;
 
+  /*
   _switchStepType() {
     setState(() => stepperType == StepperType.horizontal
         ? stepperType = StepperType.vertical
         : stepperType = StepperType.horizontal);
-  }
+  } */
 
   _protocolToS(useSSL) {
     return useSSL ? "https://" : "http://";
@@ -187,10 +179,10 @@ class _LAProjectPageState extends State<LAProjectPage> {
                                   title: Text(_project.servers[index].name),
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
-                                    onPressed: () => setState(() {
+                                    onPressed: () {
                                       _project.servers.removeAt(index);
                                       vm.onSaveCurrentProject();
-                                    }),
+                                    },
                                   ),
                                 )));
                       }),
@@ -436,13 +428,11 @@ If you are unsure type something like "server1, server2, server3".
   }
 
   void _addServer(String value, void Function() onSaveCurrentProject) {
-    setState(() {
-      _project.servers.add(new LAServer(name: value));
-      _serverAddController.clear();
-      _formKeys[1].currentState.reset();
-      _serverFocus.requestFocus();
-      onSaveCurrentProject();
-    });
+    _project.servers.add(new LAServer(name: value));
+    _serverAddController.clear();
+    _formKeys[1].currentState.reset();
+    _serverFocus.requestFocus();
+    onSaveCurrentProject();
   }
 
   bool _setIsActive(step) {

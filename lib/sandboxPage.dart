@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'components/laProjectTimeline.dart';
+import 'components/laAppBar.dart';
 
 class SandboxPage extends StatelessWidget {
   static const routeName = "sandbox";
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        // appBar: LAAppBar(title: 'Sandbox'),
-        body: LAProjectTimeline());
+        key: _scaffoldKey,
+        // backgroundColor: Colors.white,
+        appBar: LAAppBar(title: 'Sandbox'),
+        body: Column(children: [Container()]));
   }
 }
