@@ -389,13 +389,6 @@ If you are unsure type something like "server1, server2, server3".
                 },
               )
             ])),
-        /* bottomNavigationBar: BottomNavigationBar(items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'PREVIOUS'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'NEXT',
-          )
-        ]), */
         body: ScrollPanel(
           child: Stepper(
               steps: _steps,
