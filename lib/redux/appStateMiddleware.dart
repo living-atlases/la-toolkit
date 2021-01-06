@@ -27,7 +27,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       print("Load prefs: $asJ.toString()");
       appState = AppState.fromJson(asJ);
     }
-    print("Load prefs: $appState");
+    // print("Load prefs: $appState");
     return appState;
   }
 
@@ -35,7 +35,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   call(Store<AppState> store, action, next) async {
     if (action is FetchProjects) {
       var state = await _load();
-      print("Loaded prefs: $state");
+      // print("Loaded prefs: $state");
       store.dispatch(OnFetchState(state));
     }
     next(action);
@@ -44,7 +44,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   saveAppState(AppState state) async {
     await _initPrefs();
     var toJ = state.toJson();
-    print("Saved prefs: $toJ.toString()");
+    // print("Saved prefs: $toJ.toString()");
     _pref.setString(key, json.encode(toJ));
   }
 }

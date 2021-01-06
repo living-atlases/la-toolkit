@@ -1,6 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:feedback/feedback.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -12,10 +9,9 @@ import 'package:la_toolkit/projectsListPage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
-import 'package:la_toolkit/redux/loggingMiddleware.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/sandboxPage.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -24,16 +20,15 @@ import 'intro.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
-
 void main() {
+  final GlobalKey<NavigatorState> _mainKey = new GlobalKey<NavigatorState>();
   var appStateMiddleware = AppStateMiddleware();
-  final store = Store<AppState>(
+  var store = Store<AppState>(
     appReducer,
     initialState:
         AppState(projects: List<LAProject>.empty(), firstUsage: false),
     middleware: [
-      customLogPrinter(),
+      //     customLogPrinter(),
       appStateMiddleware,
       NavigationMiddleware(),
     ],
@@ -52,7 +47,12 @@ void main() {
   }
   // print("Environment: ${Env.sentryDsn}");
 
+  runApp(MyApp(store: store));
+
+  /*
+  Does not work because creates an addtional new MaterialApp and this breaks the navigation
   runApp(BetterFeedback(
+    key: _mainKey,
     child: MyApp(store: store),
     onFeedback: (
       BuildContext context,
@@ -66,13 +66,15 @@ void main() {
       alertFeedbackFunction(context, feedbackText, feedbackScreenshot);
       return;
     },
-  ));
+  )); */
 }
 
 final String appName = 'Living Atlases Toolkit';
 
 class MyApp extends StatelessWidget {
   final Store<AppState> store;
+  static final GlobalKey<NavigatorState> _navigatorKey =
+      new GlobalKey<NavigatorState>();
 
   const MyApp({Key key, this.store}) : super(key: key);
 
@@ -81,7 +83,7 @@ class MyApp extends StatelessWidget {
     return StoreProvider<AppState>(
         store: store,
         child: MaterialApp(
-          navigatorKey: navigatorKey,
+          navigatorKey: _navigatorKey,
           builder: (context, widget) => ResponsiveWrapper.builder(
               BouncingScrollWrapper.builder(context, widget),
               maxWidth: 1200,
@@ -112,6 +114,7 @@ class MyApp extends StatelessWidget {
                   return SandboxPage();
                   break;
                 default:
+                  print('Going to home -------------------');
                   return HomePage(title: appName);
                   break;
               }
@@ -189,12 +192,10 @@ class _HomePageState extends State<HomePage> {
               floatingActionButton: vm.state.projects.length > 0
                   ? FloatingActionButton.extended(
                       onPressed: () {
-                        // Navigator.pushNamed(context, LAProjectPage.routeName);
                         vm.onAddProject();
                       },
                       label: Text('Create a new LA Project'),
                       icon: Icon(Icons.add_circle_outline),
-                      // backgroundColor: Colors.pink,
                     )
                   : null)
           : Intro();
@@ -213,15 +214,15 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
   @override
   call(Store<AppState> store, action, next) {
     if (action is CreateProject || action is OpenProject) {
-      navigatorKey.currentState.pushNamed(LAProjectEditPage.routeName);
+      MyApp._navigatorKey.currentState.pushNamed(LAProjectEditPage.routeName);
     }
     if (action is OpenProjectTools) {
-      navigatorKey.currentState.pushNamed(LAProjectViewPage.routeName);
+      MyApp._navigatorKey.currentState.pushNamed(LAProjectViewPage.routeName);
     }
     if (action is AddProject ||
         action is UpdateProject ||
         action is DelProject) {
-      navigatorKey.currentState.pop();
+      MyApp._navigatorKey.currentState.pop();
       // navigatorKey.currentState.pushNamed(HomePage.routeName);
     }
     next(action);

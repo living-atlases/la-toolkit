@@ -1,10 +1,9 @@
-import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'laIcon.dart';
@@ -79,10 +78,14 @@ class _MainDrawerState extends State<MainDrawer> {
                       title: Text('Sandbox'),
                       selected: currentRoute == SandboxPage.routeName,
                       onTap: () {
-                        Navigator.pushNamed(context, SandboxPage.routeName);
+                        Navigator.popAndPushNamed(
+                            context, SandboxPage.routeName);
                       },
                     )
                   : null,
+              /*
+              Screenshots does not work yet:
+              https://github.com/ueman/feedback/issues/13
               ListTile(
                 leading: const Icon(Icons.feedback),
                 title: Text('Feedback (WIP)'),
@@ -90,7 +93,7 @@ class _MainDrawerState extends State<MainDrawer> {
                 onTap: () {
                   BetterFeedback.of(context).show();
                 },
-              ),
+              ),*/
               Divider(),
               createLinkItem(
                   icon: Icon(LAIcon.la),
@@ -110,7 +113,8 @@ class _MainDrawerState extends State<MainDrawer> {
               AboutListTile(
                   icon: Icon(LAIcon.la),
                   applicationName: appName,
-                  applicationVersion: packageInfo.buildNumber,
+                  applicationVersion:
+                      "Version: ${packageInfo.version} build: ${packageInfo.buildNumber}",
                   applicationIcon: Icon(LAIcon.la),
                   applicationLegalese:
                       "© 2020-${DateTime.now().year.toString()} Living Atlases, under Apache 2.0",
