@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:mdi/mdi.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -62,24 +63,16 @@ class _MainDrawerState extends State<MainDrawer> {
                   ),
                 ),
               ),
-              Divider(),
-              /*  ListTile(
-                leading: const Icon(Icons.favorite),
-                selected: currentRoute == SupportPage.routeName,
-                title: Text(S.of(context).supportThisInitiative),
-                onTap: () {
-                  Navigator.popAndPushNamed(context, SupportPage.routeName);
-                },
-              ), */
-              ListTile(
-                leading: const Icon(Icons.bug_report),
-                title: Text('Report an issue'),
-                selected: currentRoute == SandboxPage.routeName,
-                onTap: () async {
-                  await launch(
-                      "https://github.com/living-atlases/la-toolkit/issues");
-                },
-              ),
+
+              createLinkItem(
+                  icon: Icon(Icons.bug_report),
+                  title: 'Report an issue',
+                  url: "https://github.com/living-atlases/la-toolkit/issues"),
+
+              // TODO:
+              // - Verify environment
+              // - ssh-keys
+              // - check for updates
               AppUtils.isDev()
                   ? ListTile(
                       leading: const Icon(Icons.build),
@@ -98,6 +91,22 @@ class _MainDrawerState extends State<MainDrawer> {
                   BetterFeedback.of(context).show();
                 },
               ),
+              Divider(),
+              createLinkItem(
+                  icon: Icon(LAIcon.la),
+                  title: 'Living Atlases Community',
+                  url: "https://living-atlases.gbif.org"),
+              createLinkItem(
+                  icon: ImageIcon(AssetImage("images/ala-icon.png")),
+                  /* NetworkImage(
+                          "https://www.ala.org.au/app/uploads/2019/01/cropped-favicon-32x32.png")), */
+                  title: 'Atlas of Living Australia',
+                  url: "https://ala.org.au"),
+              Divider(),
+              createLinkItem(
+                  icon: Icon(Mdi.github),
+                  title: 'This software on github',
+                  url: "https://github.com/living-atlases/la-toolkit/"),
               AboutListTile(
                   icon: Icon(LAIcon.la),
                   applicationName: appName,
@@ -114,5 +123,15 @@ class _MainDrawerState extends State<MainDrawer> {
                     // More ?
                   ])
             ])));
+  }
+
+  Widget createLinkItem({Widget icon, String title, String url}) {
+    return ListTile(
+      leading: icon,
+      title: Text(title),
+      onTap: () async {
+        await launch(url);
+      },
+    );
   }
 }
