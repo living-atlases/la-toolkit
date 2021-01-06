@@ -69,9 +69,7 @@ class ToolShortcut extends StatelessWidget {
     Widget cancelButton = FlatButton(
       child: Text("CANCEL"),
       onPressed: () {
-        //Navigator.of(context).pop();
         Navigator.of(context, rootNavigator: true).pop();
-        // Navigator.pop(context, false);
       },
     );
     Widget continueButton = FlatButton(
@@ -96,14 +94,5 @@ class ToolShortcut extends StatelessWidget {
         return alert;
       },
     );
-    /* .then((exit) {
-      if (exit == null) return;
-
-      if (exit) {
-        // user pressed Yes button
-      } else {
-        // user pressed No button
-      }
-    }); */
   }
 }
