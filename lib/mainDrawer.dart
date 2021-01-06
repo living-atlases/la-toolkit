@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'components/laIcon.dart';
 
@@ -51,11 +52,17 @@ Widget mainDrawer(BuildContext context, String currentRoute, String appName) {
                   Navigator.popAndPushNamed(context, SupportPage.routeName);
                 },
               ), */
-
-        // globals.isDevelopment
-        true
+        ListTile(
+          leading: const Icon(Icons.bug_report),
+          title: Text('Report an issue'),
+          selected: currentRoute == SandboxPage.routeName,
+          onTap: () async {
+            await launch("https://github.com/living-atlases/la-toolkit/issues");
+          },
+        ),
+        AppUtils.isDev()
             ? ListTile(
-                leading: const Icon(Icons.bug_report),
+                leading: const Icon(Icons.build),
                 title: Text('Sandbox'),
                 selected: currentRoute == SandboxPage.routeName,
                 onTap: () {

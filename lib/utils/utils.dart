@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 class ListUtils {
@@ -8,4 +9,10 @@ class ListUtils {
 
   static List<Widget> listWithoutNulls(List<Widget> children) =>
       children.where(notNull).toList();
+}
+
+class AppUtils {
+  static bool isDev() {
+    return !kReleaseMode;
+  }
 }

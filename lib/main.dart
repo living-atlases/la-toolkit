@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:feedback/feedback.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
@@ -41,6 +42,14 @@ void main() {
     appStateMiddleware.saveAppState(state);
   });
   store.dispatch(FetchProjects());
+
+  if (kReleaseMode) {
+    // is Release Mode ??
+    print('Running in release mode');
+  } else {
+    print('Running in debug mode');
+  }
+  // print("Environment: ${Env.sentryDsn}");
 
   runApp(BetterFeedback(
     child: MyApp(store: store),

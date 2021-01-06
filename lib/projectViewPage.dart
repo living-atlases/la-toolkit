@@ -14,7 +14,7 @@ import 'redux/actions.dart';
 
 class LAProjectViewPage extends projectViewPage.StatelessWidget {
   static const routeName = "tools";
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   projectViewPage.Widget build(projectViewPage.BuildContext context) {
@@ -41,7 +41,7 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
             icon: Icon(Icons.tune),
             title: "Tune Configuration",
             tooltip: "Fine tune the configuration",
-            enabled: true),
+            enabled: false),
         Tool(icon: Icon(Icons.foundation), title: "Pre-Deploy Tasks"),
         Tool(
             icon: Icon(Mdi.rocketLaunch),

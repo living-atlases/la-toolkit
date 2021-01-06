@@ -4,7 +4,7 @@ import 'components/laAppBar.dart';
 
 class SandboxPage extends StatelessWidget {
   static const routeName = "sandbox";
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {

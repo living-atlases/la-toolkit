@@ -63,6 +63,7 @@ dependencies:
   redux_logging: ^0.4.0
 
   # utils
+  envify: # ^2.0.0
 
 
 dev_dependencies:
@@ -70,6 +71,7 @@ dev_dependencies:
   json_serializable: ^3.5.1
   copy_with_extension_gen: ^1.4.0
   test: ^1.15.7
+  envify_generator:
 
   flutter_test:
     sdk: flutter

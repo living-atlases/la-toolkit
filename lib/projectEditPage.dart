@@ -15,9 +15,14 @@ import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laServer.dart';
 
-class LAProjectEditPage extends StatelessWidget {
+class LAProjectEditPage extends StatefulWidget {
   static const routeName = "project";
 
+  @override
+  _LAProjectEditPageState createState() => _LAProjectEditPageState();
+}
+
+class _LAProjectEditPageState extends State<LAProjectEditPage> {
   int _currentStep;
   bool _complete = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -40,7 +45,7 @@ class LAProjectEditPage extends StatelessWidget {
     // print('next: $_currentStep');
     _currentStep + 1 != _steps.length
         ? goTo(_currentStep + 1)
-        : () => _complete = true;
+        : _complete = true;
   }
 
   cancel() {

@@ -41,158 +41,141 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
 
   @override
   Widget build(BuildContext context) {
-    return /* Scaffold(
-        backgroundColor: Colors.white,
-        // appBar: LAAppBar(title:'Process Timeline'),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(FontAwesomeIcons.chevronRight),
-          onPressed: () {
-            setState(() {
-              _processIndex = (_processIndex + 1) % _processes.length;
-            });
-          },
-          backgroundColor: inProgressColor,
-        ),
-        body: */
-        SizedBox(
-            height: 100.0,
-            child: Timeline.tileBuilder(
-              shrinkWrap: true,
-              theme: TimelineThemeData(
-                direction: Axis.horizontal,
-                connectorTheme: ConnectorThemeData(
-                  space: 30.0,
-                  thickness: 5.0,
+    return SizedBox(
+        height: 100.0,
+        child: Timeline.tileBuilder(
+          shrinkWrap: true,
+          theme: TimelineThemeData(
+            direction: Axis.horizontal,
+            connectorTheme: ConnectorThemeData(
+              space: 30.0,
+              thickness: 5.0,
+            ),
+          ),
+          builder: TimelineTileBuilder.connected(
+            connectionDirection: ConnectionDirection.before,
+            itemExtentBuilder: (_, __) => 100,
+            oppositeContentsBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: _iconsVerticalPadding),
+                // steps icons size
+                child: Icon(
+                  _icons[index],
+                  // Image.asset(
+                  // 'assets/images/process_timeline/status${index + 1}.png',
+                  // width: 50.0,
+                  size: 25.0,
+                  color: getColor(index),
                 ),
-              ),
-              builder: TimelineTileBuilder.connected(
-                connectionDirection: ConnectionDirection.before,
-                itemExtentBuilder: (_, __) => 100,
-                oppositeContentsBuilder: (context, index) {
-                  return Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: _iconsVerticalPadding),
-                    // steps icons size
-                    child: Icon(
-                      _icons[index],
-                      // Image.asset(
-                      // 'assets/images/process_timeline/status${index + 1}.png',
-                      // width: 50.0,
-                      size: 25.0,
+              );
+            },
+            contentsBuilder: (context, index) {
+              return Padding(
+                // Top of step titles
+                padding: const EdgeInsets.only(top: _iconsVerticalPadding),
+                child: Text(
+                  _processes[index],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      // fontWeight: FontWeight.bold,
                       color: getColor(index),
-                    ),
-                  );
-                },
-                contentsBuilder: (context, index) {
-                  return Padding(
-                    // Top of step titles
-                    padding: const EdgeInsets.only(top: _iconsVerticalPadding),
-                    child: Text(
-                      _processes[index],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          // fontWeight: FontWeight.bold,
-                          color: getColor(index),
-                          fontSize: 11),
-                    ),
-                  );
-                },
-                indicatorBuilder: (_, index) {
-                  var color;
-                  var child;
-                  if (index == _processIndex) {
-                    color = inProgressColor;
-                    child = Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3.0,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    );
-                  } else if (index < _processIndex) {
-                    color = completeColor;
-                    child = Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 15.0,
-                    );
-                  } else {
-                    color = todoColor;
-                  }
+                      fontSize: 11),
+                ),
+              );
+            },
+            indicatorBuilder: (_, index) {
+              var color;
+              var child;
+              if (index == _processIndex) {
+                color = inProgressColor;
+                child = Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3.0,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                  ),
+                );
+              } else if (index < _processIndex) {
+                color = completeColor;
+                child = Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 15.0,
+                );
+              } else {
+                color = todoColor;
+              }
 
-                  // <= to show spinner
-                  if (index < _processIndex) {
-                    return Stack(
-                      children: [
-                        CustomPaint(
-                          size: Size(30.0, 30.0),
-                          painter: _BezierPainter(
-                            color: color,
-                            drawStart: index > 0,
-                            drawEnd: index < _processIndex,
-                          ),
-                        ),
-                        DotIndicator(
-                          size: 30.0,
-                          color: color,
-                          child: child,
-                        ),
-                      ],
-                    );
+              // <= to show spinner
+              if (index < _processIndex) {
+                return Stack(
+                  children: [
+                    CustomPaint(
+                      size: Size(30.0, 30.0),
+                      painter: _BezierPainter(
+                        color: color,
+                        drawStart: index > 0,
+                        drawEnd: index < _processIndex,
+                      ),
+                    ),
+                    DotIndicator(
+                      size: 30.0,
+                      color: color,
+                      child: child,
+                    ),
+                  ],
+                );
+              } else {
+                return Stack(
+                  children: [
+                    CustomPaint(
+                      size: Size(15.0, 15.0),
+                      painter: _BezierPainter(
+                        color: color,
+                        drawEnd: index < _processes.length - 1,
+                      ),
+                    ),
+                    OutlinedDotIndicator(
+                      borderWidth: 4.0,
+                      color: color,
+                    ),
+                  ],
+                );
+              }
+            },
+            connectorBuilder: (_, index, type) {
+              if (index > 0) {
+                if (index == _processIndex) {
+                  final prevColor = getColor(index - 1);
+                  final color = getColor(index);
+                  var gradientColors;
+                  if (type == ConnectorType.start) {
+                    gradientColors = [Color.lerp(prevColor, color, 0.5), color];
                   } else {
-                    return Stack(
-                      children: [
-                        CustomPaint(
-                          size: Size(15.0, 15.0),
-                          painter: _BezierPainter(
-                            color: color,
-                            drawEnd: index < _processes.length - 1,
-                          ),
-                        ),
-                        OutlinedDotIndicator(
-                          borderWidth: 4.0,
-                          color: color,
-                        ),
-                      ],
-                    );
+                    gradientColors = [
+                      prevColor,
+                      Color.lerp(prevColor, color, 0.5)
+                    ];
                   }
-                },
-                connectorBuilder: (_, index, type) {
-                  if (index > 0) {
-                    if (index == _processIndex) {
-                      final prevColor = getColor(index - 1);
-                      final color = getColor(index);
-                      var gradientColors;
-                      if (type == ConnectorType.start) {
-                        gradientColors = [
-                          Color.lerp(prevColor, color, 0.5),
-                          color
-                        ];
-                      } else {
-                        gradientColors = [
-                          prevColor,
-                          Color.lerp(prevColor, color, 0.5)
-                        ];
-                      }
-                      return DecoratedLineConnector(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: gradientColors,
-                          ),
-                        ),
-                      );
-                    } else {
-                      return SolidLineConnector(
-                        color: getColor(index),
-                      );
-                    }
-                  } else {
-                    return null;
-                  }
-                },
-                itemCount: _processes.length,
-              ),
-            ));
+                  return DecoratedLineConnector(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: gradientColors,
+                      ),
+                    ),
+                  );
+                } else {
+                  return SolidLineConnector(
+                    color: getColor(index),
+                  );
+                }
+              } else {
+                return null;
+              }
+            },
+            itemCount: _processes.length,
+          ),
+        ));
   }
 }
 
