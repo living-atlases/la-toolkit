@@ -66,7 +66,7 @@ Widget mainDrawer(BuildContext context, String currentRoute, String appName) {
                 title: Text('Sandbox'),
                 selected: currentRoute == SandboxPage.routeName,
                 onTap: () {
-                  Navigator.popAndPushNamed(context, SandboxPage.routeName);
+                  Navigator.pushNamed(context, SandboxPage.routeName);
                 },
               )
             : null,
