@@ -41,6 +41,8 @@ dependencies:
   timelines: ^0.0.2+1
   responsive_grid: ^1.2.1+1
   feedback: ^0.3.0
+  flutter_advanced_switch: ^0.0.9+3
+  # flutter_neumorphic: ^3.0.3
 
   # icon
   mdi: ^5.0.0-nullsafety.0

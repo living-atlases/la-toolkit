@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class LAServiceDesc {
   String name;
   String nameInt;
@@ -13,16 +15,18 @@ class LAServiceDesc {
   bool initUse;
 
   LAServiceDesc(
-      {this.name,
-      this.nameInt,
-      this.desc,
-      this.optional,
-      this.withoutUrl,
-      this.forceSubdomain,
+      {@required this.name,
+      @required this.nameInt,
+      @required this.desc,
+      @required this.optional,
+      this.withoutUrl = false,
+      this.forceSubdomain = false,
+      // Optional Some backend services don't have sample urls
       this.sample,
+      // Optional: Not all services has a hint to show in the textfield
       this.hint,
-      this.recommended,
-      this.path,
+      this.recommended = false,
+      @required this.path,
       this.depends,
       this.initUse});
 }

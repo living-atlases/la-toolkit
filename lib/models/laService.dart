@@ -52,8 +52,8 @@ class LAService {
   @override
   String toString({String domain = 'somedomain'}) {
     if (use)
-      return "$name: http?://${url(domain)}${this.path}";
+      return "http?://${url(domain)}${this.path}";
     else
-      return "$name not used";
+      return "not used";
   }
 }

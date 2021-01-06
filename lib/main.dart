@@ -21,7 +21,6 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 
 void main() {
-  final GlobalKey<NavigatorState> _mainKey = new GlobalKey<NavigatorState>();
   var appStateMiddleware = AppStateMiddleware();
   var store = Store<AppState>(
     appReducer,

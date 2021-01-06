@@ -129,7 +129,7 @@ final Map<String, LAServiceDesc> serviceDescList = {
   "dashboard": LAServiceDesc(
       name: "dashboard",
       nameInt: "dashboard",
-      desc: "work in progress",
+      desc: "",
       optional: true,
       initUse: false,
       sample: "https://dashboard.ala.org.au",
@@ -158,12 +158,3 @@ final Map<String, LAServiceDesc> serviceDescList = {
       optional: false,
       path: "")
 };
-
-/*
-Map<String, bool> getLAServicesDefUse() {
-  final Map<String, bool> serviceDescUseList = {};
-  serviceDescList.forEach((key, value) {
-    serviceDescUseList[key] = !value.optional ? true : value.initUse;
-  });
-  return serviceDescUseList;
-} */

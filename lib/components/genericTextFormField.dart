@@ -15,18 +15,17 @@ class GenericTextFormField extends StatefulWidget {
   final bool isCollapsed;
   final ValueChanged<String> onChanged;
 
-  GenericTextFormField({
-    this.label,
-    this.hint,
-    @required this.initialValue,
-    this.prefixText,
-    this.wikipage,
-    @required this.regexp,
-    @required this.error,
-    @required this.onChanged,
-    this.isDense = false,
-    this.isCollapsed = false,
-  });
+  GenericTextFormField(
+      {this.label,
+      this.hint,
+      @required this.initialValue,
+      this.prefixText,
+      this.wikipage,
+      @required this.regexp,
+      @required this.error,
+      @required this.onChanged,
+      this.isDense = false,
+      this.isCollapsed = false});
 
   @override
   _GenericTextFormFieldState createState() => _GenericTextFormFieldState();
