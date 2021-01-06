@@ -15,12 +15,13 @@ import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/sandboxPage.dart';
+import 'package:package_info/package_info.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import 'components/mainDrawer.dart';
 import 'intro.dart';
 import 'laTheme.dart';
-import 'mainDrawer.dart';
 import 'models/appState.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
@@ -142,6 +143,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _initPackageInfo();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _HomePageViewModel>(converter: (store) {
@@ -156,7 +177,10 @@ class _HomePageState extends State<HomePage> {
       return !vm.state.firstUsage
           ? Scaffold(
               key: _scaffoldKey,
-              drawer: MainDrawer(context, HomePage.routeName, appName),
+              drawer: MainDrawer(
+                  currentRoute: HomePage.routeName,
+                  appName: appName,
+                  packageInfo: _packageInfo),
               // Maybe:
               // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
               // App bar with floating: true, pinned: true, snap: false:

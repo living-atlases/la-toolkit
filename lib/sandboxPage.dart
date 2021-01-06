@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'components/laAppBar.dart';
+import 'package:la_toolkit/components/laAppBar.dart';
 
 class SandboxPage extends StatelessWidget {
   static const routeName = "sandbox";

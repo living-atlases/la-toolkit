@@ -9,6 +9,8 @@ class LAAppBar extends AppBar {
 
   LAAppBar({String title, bool showLaIcon: false, List<Widget> actions})
       : super(
+            /*
+            // This breaks the Navigation
             leading: Builder(
               builder: (BuildContext context) {
                 return IconButton(
@@ -20,7 +22,7 @@ class LAAppBar extends AppBar {
                       MaterialLocalizations.of(context).openAppDrawerTooltip,
                 );
               },
-            ),
+            ),*/
             actions: actions ?? List<Widget>.empty(growable: true),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,
