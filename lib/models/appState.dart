@@ -20,7 +20,7 @@ extension LAProjectStatusExtension on LAProjectStatus {
       case LAProjectStatus.edit:
         return 'Editing project';
       case LAProjectStatus.create:
-        return 'Creating a new Living Atlas Project';
+        return 'Creating a new LA Project';
       case LAProjectStatus.view:
         return 'Project details';
       default:
