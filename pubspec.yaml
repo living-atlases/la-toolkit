@@ -43,6 +43,7 @@ dependencies:
   feedback: ^0.3.0
   flutter_advanced_switch: ^0.0.9+3
   search_choices: ^1.0.17
+  chips_choice: ^2.0.1
   # Fails a bit in web
   # https://github.com/icemanbsi/searchable_dropdown/issues?q=is%3Aissue+web
   # searchable_dropdown: ^1.1.3
