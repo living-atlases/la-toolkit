@@ -50,6 +50,11 @@ AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
 }
 
 AppState _addProject(AppState state, AddProject action) {
+  state.projects.forEach((project) {
+    if (project.uuid == action.project.uuid)
+      throw ("Trying to add an existing project.");
+    return state;
+  });
   return state.copyWith(
       projects: new List<LAProject>.from(state.projects)..add(action.project));
 }
