@@ -22,7 +22,8 @@ class LaServiceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var serviceDesc = serviceDescList[service.name];
-    bool visible = serviceDesc.depends == null || dependsOn.use;
+    bool visible = (serviceDesc.depends == null || dependsOn.use) &&
+        !serviceDesc.withoutUrl;
     var optional = serviceDesc.optional;
     bool canUseSubdomain =
         !serviceDesc.forceSubdomain && !serviceDesc.withoutUrl;
@@ -51,7 +52,7 @@ class LaServiceWidget extends StatelessWidget {
               .values
               .toList();
       print("Server list: ${searchServerList.length}"); */
-      print('Processing service ${serviceDesc.nameInt}');
+      // print('Processing service ${serviceDesc.nameInt}');
       return visible
           ? Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
@@ -139,15 +140,18 @@ class LaServiceWidget extends StatelessWidget {
                                   padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
                                   child: Text(
                                       "http${vm.state.currentProject.useSSL ? 's' : ''}://")),
-                            if (usesSubdomain)
+                            if (!serviceDesc.withoutUrl && usesSubdomain)
                               _createSubUrlField(service, serviceDesc, vm,
                                   'Invalid subdomain.'),
-                            if (usesSubdomain) Text('.$domain'),
-                            if (!usesSubdomain) Text('$domain/'),
-                            if (!usesSubdomain)
+                            if (!serviceDesc.withoutUrl && usesSubdomain)
+                              Text('.$domain'),
+                            if (!serviceDesc.withoutUrl && !usesSubdomain)
+                              Text('$domain/'),
+                            if (!serviceDesc.withoutUrl && !usesSubdomain)
                               _createSubUrlField(
                                   service, serviceDesc, vm, 'Invalid path.'),
-                            if (!usesSubdomain) Text("/"),
+                            if (!serviceDesc.withoutUrl && !usesSubdomain)
+                              Text("/"),
                             /* SearchChoices.single(
                               items: searchServerList,
                               // vm.state.currentProject.servers.toList(),
