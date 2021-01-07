@@ -1,6 +1,5 @@
-import 'package:la_toolkit/models/laServiceDesc.dart';
-
-final Map<String, LAServiceDesc> serviceDescList = {
+/*
+final Map<String, LAServiceDesc> serviceDescMap = {
   "collectory": LAServiceDesc(
       name: "collections",
       nameInt: "collectory",
@@ -160,3 +159,6 @@ final Map<String, LAServiceDesc> serviceDescList = {
       withoutUrl: true,
       path: "")
 };
+
+final List<LAServiceDesc> serviceDescMapList = serviceDescMap.values;
+*/

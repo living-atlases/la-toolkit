@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/models/laServiceDescList.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,6 +13,7 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laServer.dart';
+import 'models/laServiceDesc.dart';
 import 'utils/utils.dart';
 
 class LAProjectEditPage extends StatefulWidget {
@@ -259,16 +259,15 @@ If you are unsure type something like "server1, server2, server3".
                     ListView.builder(
                         scrollDirection: Axis.vertical,
                         shrinkWrap: true,
-                        itemCount: serviceDescList.length,
+                        itemCount: LAServiceDesc.map.length,
                         // itemCount: appStateProv.appState.projects.length,
                         itemBuilder: (BuildContext context, int index) =>
                             LaServiceWidget(
-                                service: _project.getService(serviceDescList
-                                    .values
+                                service: _project.getService(LAServiceDesc.list
                                     .elementAt(index)
                                     .nameInt),
-                                dependsOn: _project.getService(serviceDescList
-                                    .values
+                                dependsOn: _project.getService(LAServiceDesc
+                                    .list
                                     .elementAt(index)
                                     .depends)))
                   ],

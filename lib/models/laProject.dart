@@ -1,10 +1,10 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:uuid/uuid.dart';
 
 import 'laServer.dart';
 import 'laService.dart';
-import 'laServiceDescList.dart';
 
 part 'laProject.g.dart';
 
@@ -56,7 +56,7 @@ class LAProject {
 
   static Map<String, LAService> getInitialServices() {
     final Map<String, LAService> services = {};
-    serviceDescList.forEach((key, desc) {
+    LAServiceDesc.map.forEach((key, desc) {
       services[key] = LAService.fromDesc(desc);
     });
     return services;
@@ -64,6 +64,6 @@ class LAProject {
 
   LAService getService(String nameInt) {
     if (nameInt == null) return null;
-    return services[nameInt] ?? LAService.fromDesc(serviceDescList[nameInt]);
+    return services[nameInt] ?? LAService.fromDesc(LAServiceDesc.map[nameInt]);
   }
 }

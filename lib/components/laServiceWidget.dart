@@ -6,7 +6,6 @@ import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/models/laServiceDescList.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
@@ -21,7 +20,7 @@ class LaServiceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var serviceDesc = serviceDescList[service.name];
+    var serviceDesc = LAServiceDesc.map[service.name];
     bool visible = (serviceDesc.depends == null || dependsOn.use) &&
         !serviceDesc.withoutUrl;
     var optional = serviceDesc.optional;
