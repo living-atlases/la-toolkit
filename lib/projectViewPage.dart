@@ -68,6 +68,7 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
           key: _scaffoldKey,
           backgroundColor: Colors.white,
           appBar: LAAppBar(
+              context: context,
               showLaIcon: true,
               title: "Toolkit of ${vm.state.currentProject.shortName} Portal"),
           body: Container(

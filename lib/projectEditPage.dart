@@ -78,8 +78,13 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
     return StoreConnector<AppState, _ProjectPageViewModel>(converter: (store) {
       return _ProjectPageViewModel(
         state: store.state,
-        onAddProject: () => store.dispatch(AddProject(_project)),
-        onUpdateProject: () => store.dispatch(UpdateProject(_project)),
+        onFinish: () {
+          if (store.state.status == LAProjectStatus.create)
+            store.dispatch(AddProject(_project));
+          if (store.state.status == LAProjectStatus.edit)
+            store.dispatch(UpdateProject(_project));
+          store.dispatch(OpenProjectTools(_project));
+        },
         onSaveCurrentProject: () =>
             store.dispatch(SaveCurrentProject(_project, _currentStep)),
       );
@@ -147,7 +152,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       // DOMAIN
                       label: 'The domain of your LA node',
                       hint:
-                          " Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'datos.gbif.es', ...",
+                          " Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
                       prefixText: _protocolToS(_project.useSSL),
                       wikipage: "Glosary#Domain",
                       error: 'Project short name invalid.',
@@ -362,6 +367,7 @@ If you are unsure type something like "server1, server2, server3".
       return Scaffold(
         key: _scaffoldKey,
         appBar: LAAppBar(
+            context: context,
             title: vm.state.status.title,
             showLaIcon: true,
             actions: ListUtils.listWithoutNulls([
@@ -382,10 +388,7 @@ If you are unsure type something like "server1, server2, server3".
                     child: Icon(Icons.save, color: Colors.white),
                     message: "Save the current LA project"),
                 onPressed: () {
-                  if (vm.state.status == LAProjectStatus.create)
-                    vm.onAddProject();
-                  if (vm.state.status == LAProjectStatus.edit)
-                    vm.onUpdateProject();
+                  vm.onFinish();
                 },
               )
             ])),
@@ -469,12 +472,7 @@ If you are unsure type something like "server1, server2, server3".
 class _ProjectPageViewModel {
   final AppState state;
   final Function onSaveCurrentProject;
-  final Function onAddProject;
-  final Function onUpdateProject;
+  final Function onFinish;
 
-  _ProjectPageViewModel(
-      {this.state,
-      this.onSaveCurrentProject,
-      this.onAddProject,
-      this.onUpdateProject});
+  _ProjectPageViewModel({this.state, this.onSaveCurrentProject, this.onFinish});
 }
