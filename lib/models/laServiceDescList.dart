@@ -108,7 +108,7 @@ final Map<String, LAServiceDesc> serviceDescList = {
   "dashboard": LAServiceDesc(
       name: "dashboard",
       nameInt: "dashboard",
-      desc: "",
+      desc: "Dashboard with portal stats",
       optional: true,
       initUse: false,
       sample: "https://dashboard.ala.org.au",
