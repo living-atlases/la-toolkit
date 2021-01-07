@@ -100,7 +100,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   title: 'Living Atlases Community',
                   url: "https://living-atlases.gbif.org"),
               createLinkItem(
-                  icon: ImageIcon(AssetImage("images/ala-icon.png")),
+                  icon: ImageIcon(AssetImage("assets/images/ala-icon.png")),
                   /* NetworkImage(
                           "https://www.ala.org.au/app/uploads/2019/01/cropped-favicon-32x32.png")), */
                   title: 'Atlas of Living Australia',
