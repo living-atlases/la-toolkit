@@ -88,28 +88,6 @@ final Map<String, LAServiceDesc> serviceDescList = {
       sample: "https://auth.ala.org.au/cas/",
       recommended: true,
       path: ""),
-  "biocache_backend": LAServiceDesc(
-      name: "biocache-backend",
-      nameInt: "biocache_backend",
-      desc: "cassandra and biocache-store backend",
-      withoutUrl: true,
-      optional: false,
-      path: ""),
-  "branding": LAServiceDesc(
-      name: "branding",
-      nameInt: "branding",
-      desc: "Web branding used by all services",
-      withoutUrl: true,
-      optional: false,
-      path: ""),
-  "biocache_cli": LAServiceDesc(
-      name: "biocache-cli",
-      nameInt: "biocache_cli",
-      desc:
-          "manages the loading, sampling, processing and indexing of occurrence records",
-      optional: false,
-      withoutUrl: true,
-      path: ""),
   "spatial": LAServiceDesc(
       name: "spatial",
       nameInt: "spatial",
@@ -122,7 +100,7 @@ final Map<String, LAServiceDesc> serviceDescList = {
   "webapi": LAServiceDesc(
       name: "webapi",
       nameInt: "webapi",
-      desc: "API front-end",
+      desc: "API documentation service",
       optional: true,
       initUse: false,
       sample: "https://api.ala.org.au",
@@ -151,6 +129,28 @@ final Map<String, LAServiceDesc> serviceDescList = {
       optional: true,
       initUse: false,
       sample: "https://doi.ala.org.au",
+      path: ""),
+  "biocache_backend": LAServiceDesc(
+      name: "biocache-backend",
+      nameInt: "biocache_backend",
+      desc: "cassandra and biocache-store backend",
+      withoutUrl: true,
+      optional: false,
+      path: ""),
+  "branding": LAServiceDesc(
+      name: "branding",
+      nameInt: "branding",
+      desc: "Web branding used by all services",
+      withoutUrl: true,
+      optional: false,
+      path: ""),
+  "biocache_cli": LAServiceDesc(
+      name: "biocache-cli",
+      nameInt: "biocache_cli",
+      desc:
+          "manages the loading, sampling, processing and indexing of occurrence records",
+      optional: false,
+      withoutUrl: true,
       path: ""),
   "nameindexer": LAServiceDesc(
       name: "nameindexer",
