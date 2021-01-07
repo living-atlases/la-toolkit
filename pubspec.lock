@@ -312,13 +312,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.1"
-  flutter_neumorphic:
-    dependency: "direct main"
-    description:
-      name: flutter_neumorphic
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.3"
   flutter_redux:
     dependency: "direct main"
     description:
@@ -682,6 +675,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1+1"
+  search_choices:
+    dependency: "direct main"
+    description:
+      name: search_choices
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.17"
   shared_preferences:
     dependency: "direct main"
     description:

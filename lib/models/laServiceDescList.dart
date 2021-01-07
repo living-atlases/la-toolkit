@@ -108,6 +108,7 @@ final Map<String, LAServiceDesc> serviceDescList = {
       desc:
           "manages the loading, sampling, processing and indexing of occurrence records",
       optional: false,
+      withoutUrl: true,
       path: ""),
   "spatial": LAServiceDesc(
       name: "spatial",
@@ -156,5 +157,6 @@ final Map<String, LAServiceDesc> serviceDescList = {
       nameInt: "nameindexer",
       desc: "nameindexer",
       optional: false,
+      withoutUrl: true,
       path: "")
 };

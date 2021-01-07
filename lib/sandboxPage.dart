@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
+import 'package:search_choices/search_choices.dart';
 
 class SandboxPage extends StatelessWidget {
   static const routeName = "sandbox";
@@ -8,6 +8,9 @@ class SandboxPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var searchServerList = List<DropdownMenuItem<String>>.empty(growable: true);
+    searchServerList.add(DropdownMenuItem(child: Text('vm1'), value: 'vm1'));
+    searchServerList.add(DropdownMenuItem(child: Text('vm2'), value: 'vm2'));
     return Scaffold(
         key: _scaffoldKey,
         // backgroundColor: Colors.white,
@@ -16,7 +19,22 @@ class SandboxPage extends StatelessWidget {
           Container(
               child: Column(
             children: [
-              IconButton(icon: Icon(Icons.swap_horiz))
+              SearchChoices.single(
+                items: searchServerList,
+                // searchFn: (value) ,
+
+                // vm.state.currentProject.servers.toList(),
+                // value: searchServerList[0].value ?? "vm1",
+                hint: "Select one",
+                searchHint: "Select one",
+                onChanged: (value) {
+                  print(value);
+                  // service.servers[0] = value;
+                },
+                isExpanded: false,
+              )
+
+              // IconButton(icon: Icon(Icons.swap_horiz))
               /* NeumorphicCheckbox(
                 // margin: EdgeInsets.only(top: 12),
                 padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),

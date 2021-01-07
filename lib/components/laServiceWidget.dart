@@ -34,6 +34,24 @@ class LaServiceWidget extends StatelessWidget {
     }, builder: (BuildContext context, _LAServiceViewModel vm) {
       var domain = vm.state.currentProject.domain;
       var usesSubdomain = !serviceDesc.withoutUrl && service.usesSubdomain;
+      /* List<DropdownMenuItem<LAServer>> serversMap =
+          List<DropdownMenuItem<LAServer>>.empty(growable: true); */
+      // TODO move this outside
+      /* List<DropdownMenuItem<String>> searchServerList =
+          vm.state.currentProject.servers
+              .asMap()
+              .map((i, server) {
+                return MapEntry(
+                    server.name,
+                    DropdownMenuItem<String>(
+                      child: Text(server.name),
+                      value: server.name,
+                    ));
+              })
+              .values
+              .toList();
+      print("Server list: ${searchServerList.length}"); */
+      print('Processing service ${serviceDesc.nameInt}');
       return visible
           ? Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
@@ -63,7 +81,6 @@ class LaServiceWidget extends StatelessWidget {
                                                     fontSize: 12,
                                                     color: Colors.grey[600])),
                                           ]),
-                                      // serviceDesc.desc),
                                       Switch(
                                         value: service.use,
                                         // activeColor: Color(0xFF6200EE),
@@ -77,33 +94,38 @@ class LaServiceWidget extends StatelessWidget {
                                       Text(
                                           "${StringUtils.capitalize(serviceDesc.desc)}:")
                                     ]),
-                          trailing: HelpIcon.url(
-                              url: serviceDesc.sample,
-                              tooltip: "See a similar service in production"),
+                          trailing: serviceDesc.sample != null
+                              ? HelpIcon.url(
+                                  url: serviceDesc.sample,
+                                  tooltip:
+                                      "See a similar service in production")
+                              : null,
                         ),
                         if (!optional || service.use)
                           Row(children: [
-                            if (canUseSubdomain)
-                              Tooltip(
-                                message: "Use a subdomain for this service?",
-                                child: Container(
-                                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                                    child: AdvancedSwitch(
-                                        value:
-                                            !service.usesSubdomain, // Boolean
-                                        height: 16.0,
-                                        width: 60.0,
-                                        activeColor: LAColorTheme.inactive,
-                                        // activeColor: Color(0xFF009688),
-                                        inactiveChild: Text('SUBD'),
-                                        activeChild: Text('PATH'),
-                                        borderRadius: BorderRadius.all(
-                                            const Radius.circular(4)),
-                                        onChanged: (bool newValue) {
-                                          service.usesSubdomain = !newValue;
-                                          vm.onEditService(service);
-                                        })),
-                                /* Switch(
+                            Tooltip(
+                              message: canUseSubdomain
+                                  ? "Use a subdomain for this service?"
+                                  : "This service requires a subdomain",
+                              child: Container(
+                                  padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                  child: AdvancedSwitch(
+                                      value: !service.usesSubdomain, // Boolean
+                                      height: 16.0,
+                                      width: 60.0,
+                                      activeColor: LAColorTheme.inactive,
+                                      // activeColor: Color(0xFF009688),
+                                      inactiveChild: Text('SUBD'),
+                                      activeChild: Text('PATH'),
+                                      borderRadius: BorderRadius.all(
+                                          const Radius.circular(4)),
+                                      onChanged: canUseSubdomain
+                                          ? (bool newValue) {
+                                              service.usesSubdomain = !newValue;
+                                              vm.onEditService(service);
+                                            }
+                                          : null)),
+                              /* Switch(
                                 value: service.usesSubdomain,
                                 activeColor: Color(0xFF009688),
                                 onChanged: (bool newValue) {
@@ -111,7 +133,7 @@ class LaServiceWidget extends StatelessWidget {
                                   vm.onEditService(service);
                                 },
                               ) */
-                              ),
+                            ),
                             if (!serviceDesc.withoutUrl)
                               Container(
                                   padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
@@ -125,10 +147,27 @@ class LaServiceWidget extends StatelessWidget {
                             if (!usesSubdomain)
                               _createSubUrlField(
                                   service, serviceDesc, vm, 'Invalid path.'),
-                            if (!usesSubdomain) Text("/")
+                            if (!usesSubdomain) Text("/"),
+                            /* SearchChoices.single(
+                              items: searchServerList,
+                              // vm.state.currentProject.servers.toList(),
+                              // value: service.servers[0] ??
+                              //  searchServerList[0].value,
+                              hint: "deploy it in",
+                              searchHint:
+                                  "Select one server to deploy this service:",
+                              onChanged: (value) {
+                                print(value);
+                                // service.servers[0] = value;
+                              },
+                              /* dialogBox: false,
+                              menuConstraints:
+                                  BoxConstraints.tight(Size.fromHeight(350)), */
+                              isExpanded: false,
+                            ) */
                           ])
                       ])))
-          : null;
+          : Container();
     });
   }
 
