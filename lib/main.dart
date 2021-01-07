@@ -113,7 +113,6 @@ class MyApp extends StatelessWidget {
                   return SandboxPage();
                   break;
                 default:
-                  print('Going to home -------------------');
                   return HomePage(title: appName);
                   break;
               }
@@ -186,7 +185,8 @@ class _HomePageState extends State<HomePage> {
               // Maybe:
               // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
               // App bar with floating: true, pinned: true, snap: false:
-              appBar: LAAppBar(title: appName, showLaIcon: true),
+              appBar:
+                  LAAppBar(context: context, title: appName, showLaIcon: true),
               body: LAProjectsListPage(),
               floatingActionButton: vm.state.projects.length > 0
                   ? FloatingActionButton.extended(
@@ -218,11 +218,16 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
     if (action is OpenProjectTools) {
       MyApp._navigatorKey.currentState.pushNamed(LAProjectViewPage.routeName);
     }
-    if (action is AddProject ||
-        action is UpdateProject ||
-        action is DelProject) {
-      MyApp._navigatorKey.currentState.pop();
-      // navigatorKey.currentState.pushNamed(HomePage.routeName);
+    if (action is DelProject) {
+      MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
+    }
+    if (action is AddProject) {
+      // We open Tools instead of:
+      // MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
+    }
+    if (action is UpdateProject) {
+      // We open Tools instead of:
+      // MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
     }
     next(action);
   }

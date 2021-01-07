@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_toolkit/main.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
 import 'laIcon.dart';
@@ -7,7 +8,11 @@ import 'laIcon.dart';
 class LAAppBar extends AppBar {
   final List<Widget> defActions = [];
 
-  LAAppBar({String title, bool showLaIcon: false, List<Widget> actions})
+  LAAppBar(
+      {@required BuildContext context,
+      @required String title,
+      bool showLaIcon: false,
+      List<Widget> actions})
       : super(
             /*
             // This breaks the Navigation
@@ -28,7 +33,11 @@ class LAAppBar extends AppBar {
               mainAxisAlignment: MainAxisAlignment.start,
               children: ListUtils.listWithoutNulls(<Widget>[
                 showLaIcon
-                    ? Icon(LAIcon.la, size: 32, color: Colors.white)
+                    ? IconButton(
+                        icon: Icon(LAIcon.la, size: 32, color: Colors.white),
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(HomePage.routeName);
+                        })
                     : null,
                 Container(
                     padding: const EdgeInsets.all(8.0),

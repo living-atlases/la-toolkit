@@ -14,7 +14,7 @@ class SandboxPage extends StatelessWidget {
     return Scaffold(
         key: _scaffoldKey,
         // backgroundColor: Colors.white,
-        appBar: LAAppBar(title: 'Sandbox'),
+        appBar: LAAppBar(context: context, title: 'Sandbox'),
         body: Column(children: [
           Container(
               child: Column(
@@ -53,12 +53,5 @@ class SandboxPage extends StatelessWidget {
             ],
           ))
         ]));
-  }
-
-  Color _textColor(BuildContext context) {
-    //if (NeumorphicTheme.isUsingDark(context)) {
-    return Colors.black;
-    ////return Colors.black;
-    //}
   }
 }
