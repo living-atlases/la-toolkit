@@ -27,7 +27,7 @@ class _IntroState extends State<Intro> {
 
   Widget _buildImage(String assetName) {
     return Align(
-      child: Image.asset('images/la-icon.png', width: 100.0),
+      child: Image.asset('assets/images/la-icon.png', width: 100.0),
       // Image.asset('assets/$assetName.jpg', width: 350.0),
       alignment: Alignment.bottomCenter,
     );
@@ -62,14 +62,14 @@ class _IntroState extends State<Intro> {
           ),
           PageViewModel(
             titleWidget: _buildTitle("How?"),
-            body: "Using a more easy web user interface ... ",
+            body: "Using a more easy web user interface blah blah blah... ",
             image: _buildImage('img2'),
             decoration: pageDecoration,
           ),
           PageViewModel(
-            titleWidget: _buildTitle("Kids and teens"),
+            titleWidget: _buildTitle("Just a demo"),
             body:
-                "Kids and teens can track their stocks 24/7 and place trades that you approve.",
+                "Right now this website is only a demo of the toolkit for demonstration purposes",
             image: _buildImage('img3'),
             decoration: pageDecoration,
           ),
