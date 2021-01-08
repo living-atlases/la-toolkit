@@ -94,7 +94,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   BetterFeedback.of(context).show();
                 },
               ),*/
-              Divider(),
+              Divider(indent: 20),
               createLinkItem(
                   icon: Icon(LAIcon.la),
                   title: 'Living Atlases Community',
@@ -105,7 +105,7 @@ class _MainDrawerState extends State<MainDrawer> {
                           "https://www.ala.org.au/app/uploads/2019/01/cropped-favicon-32x32.png")), */
                   title: 'Atlas of Living Australia',
                   url: "https://ala.org.au"),
-              Divider(),
+              Divider(indent: 20),
               createLinkItem(
                   icon: Icon(Mdi.github),
                   title: 'This software on github',

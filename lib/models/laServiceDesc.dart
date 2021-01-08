@@ -192,4 +192,5 @@ class LAServiceDesc {
   };
 
   static List<LAServiceDesc> list = map.values.toList();
+  static List<String> names = map.keys.toList();
 }

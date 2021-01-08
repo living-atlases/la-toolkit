@@ -17,6 +17,8 @@ class LAService {
   bool usesSubdomain;
   // @JsonSerializable(nullable: true)
   List<LAServer> servers;
+  @JsonKey(ignore: true)
+  List<String> _serversNameList;
   String suburl;
 
   LAService(
@@ -35,6 +37,17 @@ class LAService {
         usesSubdomain = true,
         servers = List<LAServer>.empty(),
         suburl = desc.name;
+
+  void initView() {
+    _serversNameList = null;
+  }
+
+  List<String> getServersNameList() {
+    // If we change server map we'll set serverNameList to null
+    if (_serversNameList == null)
+      _serversNameList = servers.map((server) => server.name).toList();
+    return _serversNameList;
+  }
 
   String get path => usesSubdomain
       ? iniPath.startsWith("/")

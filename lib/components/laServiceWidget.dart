@@ -61,6 +61,7 @@ class LaServiceWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        const Divider(indent: 20),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           title: Row(

@@ -58,6 +58,10 @@ class AppState {
 
   @override
   String toString() {
-    return "firstUse: $firstUsage, currentProject: $currentProject, status: $status, projects: ${projects.length}";
+    return '''firstUse: $firstUsage,
+    projects: ${projects.length} 
+    currentProject: $currentProject, 
+    status: $status, 
+    ''';
   }
 }

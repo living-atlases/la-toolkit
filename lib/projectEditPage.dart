@@ -9,6 +9,7 @@ import 'components/genericTextFormField.dart';
 import 'components/laAppBar.dart';
 import 'components/laServiceWidget.dart';
 import 'components/scrollPanel.dart';
+import 'components/servicesInServerChooser.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
@@ -28,6 +29,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   bool _complete = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<GlobalKey<FormState>> _formKeys = [
+    GlobalKey<FormState>(),
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
@@ -78,11 +80,30 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
     return StoreConnector<AppState, _ProjectPageViewModel>(converter: (store) {
       return _ProjectPageViewModel(
         state: store.state,
+        onAddServicesToServer: (server, asignedServices) {
+          _project.services = _project.services.map((nameInt, service) {
+            // Remove previous service in server assignments
+            if (service.getServersNameList().contains(server.name)) {
+              service.servers.clear();
+            }
+            if (asignedServices.contains(service.name)) {
+              service.servers.add(server);
+              // Clear view lists to force recalculation
+              service.initView();
+            }
+            return MapEntry(nameInt, service);
+          });
+          store.dispatch(UpdateProject(_project));
+          _project.initViews();
+        },
         onFinish: () {
           if (store.state.status == LAProjectStatus.create)
             store.dispatch(AddProject(_project));
-          if (store.state.status == LAProjectStatus.edit)
+          if (store.state.status == LAProjectStatus.edit) {
             store.dispatch(UpdateProject(_project));
+            // Clear view lists to force recalculation
+            _project.initViews();
+          }
           store.dispatch(OpenProjectTools(_project));
         },
         onSaveCurrentProject: () =>
@@ -92,9 +113,12 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
       // print('build project page');
       _project = vm.state.currentProject;
       _currentStep = vm.state.currentStep ?? 0;
+
       _steps = [
         Step(
-            title: const Text('Basic info'),
+            title: const Text('Basic information'),
+            subtitle: const Text(
+                'Define the main information of your portal, like name, ...'),
             isActive: _setIsActive(0),
             state: _setSetStatus(0),
             content: Form(
@@ -169,6 +193,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
             isActive: _setIsActive(1),
             state: _setSetStatus(1),
             title: const Text('Servers'),
+            subtitle: const Text('Inventory of the servers of your LA portal'),
             content: Form(
               key: _formKeys[1],
               child: Column(
@@ -250,7 +275,9 @@ If you are unsure type something like "server1, server2, server3".
         Step(
             isActive: _setIsActive(2),
             state: _setSetStatus(2),
-            title: const Text('Define how your services URLs will look like'),
+            title: const Text('Services'),
+            subtitle: const Text(
+                'Choose the services of your portal and how your services URLs will look like'),
             // subtitle: const Text("Error!"),
             content: Form(
                 key: _formKeys[2],
@@ -273,12 +300,35 @@ If you are unsure type something like "server1, server2, server3".
                   ],
                 ))),
         Step(
-          isActive: _setIsActive(3),
-          state: _setSetStatus(3),
+            isActive: _setIsActive(3),
+            state: _setSetStatus(3),
+            title: const Text(
+                'Define which LA services will run in which of these servers'),
+            // subtitle: const Text("Error!"),
+            content: Column(
+                children: (_project.servers.length > 0)
+                    ? _project.servers
+                        .map((s) => ServicesInServerChooser(
+                            server: s,
+                            servicesSelected:
+                                _project.getServicesNameListSelected(),
+                            servicesInUse: _project.getServicesNameListInUse(),
+                            servicesNotInUse:
+                                _project.getServicesNameListNotInUse(),
+                            servicesInServer:
+                                _project.getServicesNameListInServer(s.name),
+                            onChange: (servicesList) =>
+                                vm.onAddServicesToServer(s, servicesList)))
+                        .toList()
+                    : [Container()])),
+        Step(
+          isActive: _setIsActive(4),
+          state: _setSetStatus(4),
           title: const Text('Define better your servers'),
-          // subtitle: const Text("Error!"),
+          subtitle: const Text(
+              "Information to know how to reach and access to your servers, like IP Addressing, names aliases, SSH keys"),
           content: Form(
-              key: _formKeys[3],
+              key: _formKeys[4],
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -472,6 +522,11 @@ class _ProjectPageViewModel {
   final AppState state;
   final Function onSaveCurrentProject;
   final Function onFinish;
+  final Function(LAServer, List<String>) onAddServicesToServer;
 
-  _ProjectPageViewModel({this.state, this.onSaveCurrentProject, this.onFinish});
+  _ProjectPageViewModel(
+      {this.state,
+      this.onSaveCurrentProject,
+      this.onFinish,
+      this.onAddServicesToServer});
 }
