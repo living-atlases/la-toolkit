@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'basicService.dart';
+
 class LAServiceDesc {
   String name;
   String nameInt;
@@ -7,6 +9,7 @@ class LAServiceDesc {
   bool optional;
   bool withoutUrl;
   String depends;
+  List<BasicService> basicDepends;
   bool forceSubdomain;
   String sample;
   String hint;
@@ -28,6 +31,7 @@ class LAServiceDesc {
       this.recommended = false,
       @required this.path,
       this.depends,
+      @required this.basicDepends,
       this.initUse});
 
   static Map<String, LAServiceDesc> map = {
@@ -37,6 +41,7 @@ class LAServiceDesc {
         desc: "biodiversity collections",
         optional: false,
         sample: "https://collections.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         path: ""),
     "ala_hub": LAServiceDesc(
         name: "records",
@@ -45,6 +50,7 @@ class LAServiceDesc {
         optional: false,
         hint: "Typically 'records' or similar",
         sample: "https://biocache.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
     "biocache_service": LAServiceDesc(
         name: "records-ws",
@@ -52,6 +58,7 @@ class LAServiceDesc {
         desc: "occurrences web service",
         optional: false,
         sample: "https://biocache.ala.org.au/ws",
+        basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
     "ala_bie": LAServiceDesc(
         name: "species",
@@ -60,6 +67,7 @@ class LAServiceDesc {
         optional: true,
         initUse: true,
         sample: "https://bie.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
     "bie_index": LAServiceDesc(
         name: "species-ws",
@@ -68,6 +76,7 @@ class LAServiceDesc {
         depends: "ala_bie",
         optional: false,
         sample: "https://bie.ala.org.au/ws",
+        basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
     "images": LAServiceDesc(
         name: "images",
@@ -76,6 +85,13 @@ class LAServiceDesc {
         optional: true,
         initUse: true,
         sample: "https://images.ala.org.au",
+        basicDepends: [
+          Java.v8,
+          Nginx.def,
+          ElasticSearch.v7_7_1,
+          PostGis.v2_4,
+          PostgresSql.v10
+        ],
         path: ""),
     "species_lists": LAServiceDesc(
         name: "lists",
@@ -85,6 +101,7 @@ class LAServiceDesc {
         optional: true,
         initUse: true,
         sample: "https://lists.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         path: ""),
     "regions": LAServiceDesc(
         name: "regions",
@@ -94,6 +111,7 @@ class LAServiceDesc {
         optional: true,
         initUse: true,
         sample: "https://regions.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
     "logger": LAServiceDesc(
         name: "logger",
@@ -101,12 +119,14 @@ class LAServiceDesc {
         desc: "event logging (downloads stats, etc)",
         optional: false,
         sample: "https://logger.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         path: ""),
     "solr": LAServiceDesc(
         name: "index",
         nameInt: "solr",
         desc: "indexing (Solr)",
         optional: false,
+        basicDepends: [Java.v8, Solr.v7],
         path: ""),
     "cas": LAServiceDesc(
         name: "auth",
@@ -117,6 +137,7 @@ class LAServiceDesc {
         forceSubdomain: true,
         sample: "https://auth.ala.org.au/cas/",
         recommended: true,
+        basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Mongo.v4_0, Nginx.def],
         path: ""),
     "spatial": LAServiceDesc(
         name: "spatial",
@@ -126,6 +147,7 @@ class LAServiceDesc {
         initUse: true,
         forceSubdomain: true,
         sample: "https://spatial.ala.org.au",
+        basicDepends: [Java.v8, Nginx.def, PostGis.v2_4, PostgresSql.v9_6],
         path: ""),
     "webapi": LAServiceDesc(
         name: "webapi",
@@ -134,6 +156,7 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://api.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         path: ""),
     "dashboard": LAServiceDesc(
         name: "dashboard",
@@ -142,6 +165,7 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://dashboard.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
     "alerts": LAServiceDesc(
         name: "alerts",
@@ -151,6 +175,7 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://alerts.ala.org.au",
+        basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         path: ""),
     "doi": LAServiceDesc(
         name: "doi",
@@ -159,6 +184,12 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://doi.ala.org.au",
+        basicDepends: [
+          Java.v8,
+          Nginx.def,
+          ElasticSearch.v7_3_0,
+          PostgresSql.v9_6
+        ],
         path: ""),
     "biocache_backend": LAServiceDesc(
         name: "biocache-backend",
@@ -166,6 +197,7 @@ class LAServiceDesc {
         desc: "cassandra and biocache-store backend",
         withoutUrl: true,
         optional: false,
+        basicDepends: [Java.v8, Cassandra.v3],
         path: ""),
     "branding": LAServiceDesc(
         name: "branding",
@@ -173,6 +205,7 @@ class LAServiceDesc {
         desc: "Web branding used by all services",
         withoutUrl: true,
         optional: false,
+        basicDepends: [Nginx.def],
         path: ""),
     "biocache_cli": LAServiceDesc(
         name: "biocache-cli",
@@ -181,6 +214,7 @@ class LAServiceDesc {
             "manages the loading, sampling, processing and indexing of occurrence records",
         optional: false,
         withoutUrl: true,
+        basicDepends: [Java.v8],
         path: ""),
     "nameindexer": LAServiceDesc(
         name: "nameindexer",
@@ -188,9 +222,21 @@ class LAServiceDesc {
         desc: "nameindexer",
         optional: false,
         withoutUrl: true,
+        basicDepends: [Java.v8],
         path: "")
   };
 
   static List<LAServiceDesc> list = map.values.toList();
   static List<String> names = map.keys.toList();
+  static Map<String, List<String>> incompatibilities = {"": []};
+
+  bool isCompatibleWith(LAServiceDesc otherService) {
+    var compatible = true;
+    this.basicDepends.forEach((service) {
+      otherService.basicDepends.forEach((otherService) {
+        compatible = compatible && !service.isCompatible(otherService);
+      });
+    });
+    return compatible;
+  }
 }
