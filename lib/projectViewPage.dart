@@ -8,6 +8,7 @@ import 'package:responsive_grid/responsive_grid.dart';
 
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
+import 'components/scrollPanel.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'redux/actions.dart';
@@ -71,28 +72,29 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
               context: context,
               showLaIcon: true,
               title: "Toolkit of ${vm.state.currentProject.shortName} Portal"),
-          body: Container(
-              margin: EdgeInsets.symmetric(horizontal: 80, vertical: 20),
-              child: Column(children: [
-                Container(
-                    padding: EdgeInsets.only(top: 80, bottom: 50),
-                    child: LAProjectTimeline()),
-                ResponsiveGridRow(
-                    // desiredItemWidth: 120,
-                    // minSpacing: 20,
-                    children: tools.map((tool) {
-                  return ResponsiveGridCol(
-                      lg: tool.grid,
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        height: 120,
-                        alignment: Alignment(0, 0),
-                        color: Colors.white,
-                        // color: LAColorTheme.laPalette.shade50,
-                        child: ToolShortcut(tool: tool),
-                      ));
-                }).toList())
-              ])));
+          body: new ScrollPanel(
+              child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                  child: Column(children: [
+                    Container(
+                        padding: EdgeInsets.only(top: 80, bottom: 50),
+                        child: LAProjectTimeline()),
+                    ResponsiveGridRow(
+                        // desiredItemWidth: 120,
+                        // minSpacing: 20,
+                        children: tools.map((tool) {
+                      return ResponsiveGridCol(
+                          lg: tool.grid,
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            height: 120,
+                            alignment: Alignment(0, 0),
+                            color: Colors.white,
+                            // color: LAColorTheme.laPalette.shade50,
+                            child: ToolShortcut(tool: tool),
+                          ));
+                    }).toList())
+                  ]))));
     });
   }
 }
