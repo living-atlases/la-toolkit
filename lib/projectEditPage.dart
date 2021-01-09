@@ -306,9 +306,9 @@ If you are unsure type something like "server1, server2, server3".
         Step(
             isActive: _setIsActive(3),
             state: _setSetStatus(3),
-            title: const Text(
-                'Define which LA services will run in which of these servers'),
-            // subtitle: const Text("Error!"),
+            title:
+                const Text('Define which services will run in which servers'),
+            // subtitle: const Text("Compatibilities"),
             content: Column(
                 children: (_project.servers.length > 0)
                     ? _project.servers
