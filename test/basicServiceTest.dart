@@ -53,6 +53,6 @@ void main() {
     expect(
         LAServiceDesc.map["collectory"]
             .isCompatibleWith(LAServiceDesc.map["species_lists"]),
-        equals(false));
+        equals(true));
   });
 }

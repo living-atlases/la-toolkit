@@ -38,24 +38,49 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
       placeholder: 'Server empty, select one or more services',
       value: widget.servicesInServer,
       // choiceItems: LAServiceDesc.names,
+      modalValidation: (List<String> selection) {
+        Set<String> incompatible = {};
+        selection.forEach((first) {
+          // print("${otherNameInt} compatible with ${nameInt}");
+          selection.forEach((second) {
+            if (first != second &&
+                !LAServiceDesc.map[first]
+                    .isCompatibleWith(LAServiceDesc.map[second])) {
+              incompatible.addAll({first, second});
+            }
+          });
+        });
+        return incompatible.length == 0
+            ? ""
+            : "Services: ${incompatible.join(', ')} cannot installed together.";
+      },
       choiceItems: S2Choice.listFrom<String, String>(
         //source: widget.servicesInUse, // LAServiceDesc.names,
-        source: LAServiceDesc.names, // widget.servicesInUse,
-        value: (index, item) => item,
-        title: (index, item) => LAServiceDesc.map[item].name,
-        hidden: (index, item) {
+        source: LAServiceDesc.names,
+        // This fails
+        // source: widget.servicesInUse,
+        value: (index, nameInt) => nameInt,
+        title: (index, nameInt) => LAServiceDesc.map[nameInt].name,
+        hidden: (index, nameInt) {
           // If is some service in this server => show
-          if (widget.servicesInServer.contains(item)) return false;
+          if (widget.servicesInServer.contains(nameInt)) return false;
           // If is some service in other server => hide
-          if (widget.servicesSelected.contains(item) ||
-              widget.servicesNotInUse.contains(item)) return true;
+          if (widget.servicesSelected.contains(nameInt) ||
+              widget.servicesNotInUse.contains(nameInt)) return true;
           return false;
         },
         // useful for disable elements (incompatibility):
-        /* disabled: (index, item) {
-           return servicesInServer
-              .contains(item); // item widget.servicesInServer.contains(item)
-        }, */
+        /* disabled: (index, nameInt) {
+          var compatible = true;
+          // widget.servicesInUse
+          widget.servicesInServer.forEach((otherNameInt) {
+            // print("${otherNameInt} compatible with ${nameInt}");
+            compatible = compatible &&
+                LAServiceDesc.map[nameInt]
+                    .isCompatibleWith(LAServiceDesc.map[otherNameInt]);
+          });
+          return !compatible;
+        },*/
       ),
       onChange: (state) => setState(() => widget.onChange(state.value)),
       // modalType: S2ModalType.popupDialog,
@@ -68,10 +93,16 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
       modalType: S2ModalType.bottomSheet,
       choiceStyle: S2ChoiceStyle(
           showCheckmark: true,
-          color: Colors.blueGrey,
+          color: Colors.blueGrey[300],
+          titleStyle: TextStyle(fontWeight: FontWeight.w500),
+          // subtitleStyle: TextStyle(fontWeight: FontWeight.w500),
+          borderOpacity: 0.4,
+          activeBorderOpacity: 1,
           activeColor: LAColorTheme.laPalette),
-      modalHeaderStyle:
-          S2ModalHeaderStyle(backgroundColor: LAColorTheme.laPalette),
+      modalHeaderStyle: S2ModalHeaderStyle(
+          backgroundColor: LAColorTheme.laPalette,
+          textStyle: TextStyle(color: Colors.white)),
+      modalStyle: S2ModalStyle(backgroundColor: Colors.grey[300]),
       tileBuilder: (context, state) => S2Tile.fromState(
         state,
         isTwoLine: true,

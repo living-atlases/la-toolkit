@@ -9,7 +9,7 @@ part of 'laService.dart';
 extension LAServiceCopyWith on LAService {
   LAService copyWith({
     String iniPath,
-    String name,
+    String nameInt,
     List<LAServer> servers,
     String suburl,
     bool use,
@@ -17,7 +17,7 @@ extension LAServiceCopyWith on LAService {
   }) {
     return LAService(
       iniPath: iniPath ?? this.iniPath,
-      name: name ?? this.name,
+      nameInt: nameInt ?? this.nameInt,
       servers: servers ?? this.servers,
       suburl: suburl ?? this.suburl,
       use: use ?? this.use,
@@ -32,7 +32,7 @@ extension LAServiceCopyWith on LAService {
 
 LAService _$LAServiceFromJson(Map<String, dynamic> json) {
   return LAService(
-    name: json['name'] as String,
+    nameInt: json['nameInt'] as String,
     iniPath: json['iniPath'] as String,
     use: json['use'] as bool,
     usesSubdomain: json['usesSubdomain'] as bool,
@@ -45,7 +45,7 @@ LAService _$LAServiceFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$LAServiceToJson(LAService instance) => <String, dynamic>{
-      'name': instance.name,
+      'nameInt': instance.nameInt,
       'iniPath': instance.iniPath,
       'use': instance.use,
       'usesSubdomain': instance.usesSubdomain,

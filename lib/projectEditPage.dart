@@ -84,30 +84,34 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
           _project.services = _project.services.map((nameInt, service) {
             // Remove previous service in server assignments
             if (service.getServersNameList().contains(server.name)) {
+              // This is not possible (immutable)
               service.servers.clear();
             }
-            if (asignedServices.contains(service.name)) {
+            if (asignedServices.contains(service.nameInt)) {
+              // This is not possible (immutable)
               service.servers.add(server);
               // Clear view lists to force recalculation
               service.initView();
             }
             return MapEntry(nameInt, service);
           });
-          store.dispatch(UpdateProject(_project));
           _project.initViews();
+          store.dispatch(UpdateProject(_project));
         },
         onFinish: () {
+          _project.initViews();
           if (store.state.status == LAProjectStatus.create)
             store.dispatch(AddProject(_project));
           if (store.state.status == LAProjectStatus.edit) {
             store.dispatch(UpdateProject(_project));
             // Clear view lists to force recalculation
-            _project.initViews();
           }
           store.dispatch(OpenProjectTools(_project));
         },
-        onSaveCurrentProject: () =>
-            store.dispatch(SaveCurrentProject(_project, _currentStep)),
+        onSaveCurrentProject: () {
+          _project.initViews();
+          store.dispatch(SaveCurrentProject(_project, _currentStep));
+        },
       );
     }, builder: (BuildContext context, _ProjectPageViewModel vm) {
       // print('build project page');

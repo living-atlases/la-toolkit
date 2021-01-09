@@ -46,9 +46,7 @@ class LAProject {
     this.domain = "",
     this.useSSL = true,
     List<LAServer> servers,
-    // List<String> serversNameList,
     Map<String, LAService> services,
-    // List<String> servicesNameList
   })  : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],
         // serversNameList = serversNameList ?? [],
@@ -73,7 +71,7 @@ class LAProject {
     if (_servicesInUseNameList == null)
       _servicesInUseNameList = services.values
           .where((service) => service.use)
-          .map((service) => service.name)
+          .map((service) => service.nameInt)
           .toList();
     return _servicesInUseNameList;
   }
@@ -83,7 +81,7 @@ class LAProject {
     if (_servicesNotInUseNameList == null)
       _servicesNotInUseNameList = services.values
           .where((service) => !service.use)
-          .map((service) => service.name)
+          .map((service) => service.nameInt)
           .toList();
     return _servicesNotInUseNameList;
   }
@@ -93,7 +91,7 @@ class LAProject {
     if (_servicesSelectedNameList == null)
       _servicesSelectedNameList = services.values
           .where((service) => service.use && service.servers.length > 0)
-          .map((service) => service.name)
+          .map((service) => service.nameInt)
           .toList();
     return _servicesSelectedNameList;
   }
@@ -130,7 +128,7 @@ class LAProject {
     return services.values
         .where((service) =>
             (service.use && service.getServersNameList().contains(serverName)))
-        .map((service) => service.name)
+        .map((service) => service.nameInt)
         .toList();
   }
 }

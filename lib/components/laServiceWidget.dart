@@ -20,7 +20,7 @@ class LaServiceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var serviceDesc = LAServiceDesc.map[service.name];
+    var serviceDesc = LAServiceDesc.map[service.nameInt];
     bool visible = (serviceDesc.depends == null || dependsOn.use) &&
         !serviceDesc.withoutUrl;
     var optional = serviceDesc.optional;

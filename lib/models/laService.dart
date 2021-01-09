@@ -11,7 +11,7 @@ enum ServiceStatus { unknown, success, failed }
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAService {
-  String name;
+  String nameInt;
   String iniPath;
   bool use;
   bool usesSubdomain;
@@ -22,7 +22,7 @@ class LAService {
   String suburl;
 
   LAService(
-      {this.name,
+      {this.nameInt,
       this.iniPath,
       this.use,
       this.usesSubdomain,
@@ -31,7 +31,7 @@ class LAService {
       : servers = servers ?? List<LAServer>.empty();
 
   LAService.fromDesc(LAServiceDesc desc)
-      : name = desc.nameInt,
+      : nameInt = desc.nameInt,
         iniPath = desc.path,
         use = !desc.optional ? true : desc.initUse,
         usesSubdomain = true,

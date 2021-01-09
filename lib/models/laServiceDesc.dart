@@ -228,15 +228,23 @@ class LAServiceDesc {
 
   static List<LAServiceDesc> list = map.values.toList();
   static List<String> names = map.keys.toList();
+
+  // Index by name instead of nameInt
+  static Map<String, LAServiceDesc> mapNameIndexed =
+      map.map((st, s) => MapEntry(s.name, s));
+
   static Map<String, List<String>> incompatibilities = {"": []};
 
   bool isCompatibleWith(LAServiceDesc otherService) {
     var compatible = true;
+    if (otherService == this) return true;
+
     this.basicDepends.forEach((service) {
       otherService.basicDepends.forEach((otherService) {
-        compatible = compatible && !service.isCompatible(otherService);
+        compatible = compatible && service.isCompatible(otherService);
       });
     });
+    // print("${nameInt} is compatible with ${otherService.nameInt}: ${compatible}");
     return compatible;
   }
 }

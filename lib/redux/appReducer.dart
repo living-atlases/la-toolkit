@@ -75,6 +75,6 @@ AppState _updateProject(AppState state, UpdateProject action) {
 
 AppState _editService(AppState state, EditService action) {
   LAProject currentProject = state.currentProject;
-  currentProject.services[action.service.name] = action.service;
+  currentProject.services[action.service.nameInt] = action.service;
   return state.copyWith(currentProject: currentProject);
 }
