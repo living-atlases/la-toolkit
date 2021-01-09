@@ -28,27 +28,32 @@ class LAAppBar extends AppBar {
                 );
               },
             ),*/
+            toolbarHeight: kToolbarHeight * 1.2,
             actions: actions ?? List<Widget>.empty(growable: true),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: ListUtils.listWithoutNulls(<Widget>[
-                showLaIcon
-                    ? IconButton(
-                        icon: Icon(LAIcon.la, size: 32, color: Colors.white),
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(HomePage.routeName);
-                        })
-                    : null,
-                Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(title,
-                        style: GoogleFonts.signika(
-                            textStyle: TextStyle(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w400))))
-              ]),
-            )) {
+            title: SizedBox(
+                height: kToolbarHeight * 1.2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: ListUtils.listWithoutNulls(<Widget>[
+                    showLaIcon
+                        ? IconButton(
+                            icon:
+                                Icon(LAIcon.la, size: 32, color: Colors.white),
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushNamed(HomePage.routeName);
+                            })
+                        : null,
+                    Container(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(title,
+                            style: GoogleFonts.signika(
+                                textStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.w400))))
+                  ]),
+                ))) {
     super.actions.addAll(defActions);
   }
 }
