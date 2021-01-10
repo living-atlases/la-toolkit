@@ -10,6 +10,7 @@ import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 
+import 'defDivider.dart';
 import 'helpIcon.dart';
 
 class LaServiceWidget extends StatelessWidget {
@@ -61,19 +62,29 @@ class LaServiceWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const Divider(indent: 20),
+                        const DefDivider(),
                         ListTile(
+                          // leading: Icon(serviceDesc.icon),
                           contentPadding: EdgeInsets.zero,
                           title: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
-                              children: (optional)
-                                  ? [
-                                      Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
+                              children: [
+                                Icon(
+                                  serviceDesc.icon,
+                                  color: Colors.grey,
+                                  // color: LAColorTheme.inactive
+                                ),
+                                SizedBox(
+                                  width:
+                                      7, // here put the desired space between the icon and the text
+                                ),
+                                optional
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
                                             Text(
                                                 "Use the ${serviceDesc.name} service?"),
                                             Text(
@@ -81,8 +92,10 @@ class LaServiceWidget extends StatelessWidget {
                                                 style: TextStyle(
                                                     fontSize: 12,
                                                     color: Colors.grey[600])),
-                                          ]),
-                                      Switch(
+                                          ])
+                                    : Container(),
+                                optional
+                                    ? Switch(
                                         value: service.use,
                                         // activeColor: Color(0xFF6200EE),
                                         onChanged: (bool newValue) {
@@ -90,11 +103,12 @@ class LaServiceWidget extends StatelessWidget {
                                           vm.onEditService(service);
                                         },
                                       )
-                                    ]
-                                  : [
-                                      Text(
-                                          "${StringUtils.capitalize(serviceDesc.desc)}:")
-                                    ]),
+                                    : Container(),
+                                (!optional)
+                                    ? Text(
+                                        "${StringUtils.capitalize(serviceDesc.desc)}:")
+                                    : Container()
+                              ]),
                           trailing: serviceDesc.sample != null
                               ? HelpIcon.url(
                                   url: serviceDesc.sample,

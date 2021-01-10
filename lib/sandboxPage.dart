@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/components/servicesChipPanel.dart';
 
+import 'components/defDivider.dart';
+
 class SandboxPage extends StatefulWidget {
   static const routeName = "sandbox";
   @override
@@ -45,7 +47,7 @@ class _SandboxPageState extends State<SandboxPage> {
             Column(
               children: <Widget>[
                 const SizedBox(height: 7),
-                const Divider(indent: 20),
+                DefDivider(),
                 // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
                 const SizedBox(height: 7),
               ],

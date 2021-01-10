@@ -1,4 +1,8 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:la_toolkit/models/laSubService.dart';
+import 'package:mdi/mdi.dart';
 
 import 'basicService.dart';
 
@@ -6,6 +10,7 @@ class LAServiceDesc {
   String name;
   String nameInt;
   String desc;
+  IconData icon;
   bool optional;
   bool withoutUrl;
   String depends;
@@ -16,6 +21,9 @@ class LAServiceDesc {
   bool recommended;
   String path;
   bool initUse;
+  List<LASubServiceDesc> subServices;
+  bool admin;
+  bool alaAdmin;
 
   LAServiceDesc(
       {@required this.name,
@@ -32,7 +40,12 @@ class LAServiceDesc {
       @required this.path,
       this.depends,
       @required this.basicDepends,
-      this.initUse});
+      @required this.icon,
+      subServices,
+      this.admin: false,
+      this.alaAdmin: false,
+      this.initUse})
+      : subServices = subServices ?? [];
 
   static Map<String, LAServiceDesc> map = {
     "collectory": LAServiceDesc(
@@ -41,7 +54,10 @@ class LAServiceDesc {
         desc: "biodiversity collections",
         optional: false,
         sample: "https://collections.ala.org.au",
+        icon: Mdi.formatListBulletedType,
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
+        admin: true,
+        alaAdmin: true,
         path: ""),
     "ala_hub": LAServiceDesc(
         name: "records",
@@ -50,13 +66,17 @@ class LAServiceDesc {
         optional: false,
         hint: "Typically 'records' or similar",
         sample: "https://biocache.ala.org.au",
+        icon: Icons.web,
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
+        admin: true,
+        alaAdmin: false,
         path: ""),
     "biocache_service": LAServiceDesc(
         name: "records-ws",
         nameInt: "biocache_service",
         desc: "occurrences web service",
         optional: false,
+        icon: Mdi.databaseSearchOutline,
         sample: "https://biocache.ala.org.au/ws",
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
@@ -66,7 +86,10 @@ class LAServiceDesc {
         desc: "species search frontend",
         optional: true,
         initUse: true,
+        icon: Mdi.beeFlower,
         sample: "https://bie.ala.org.au",
+        admin: false,
+        alaAdmin: false,
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
     "bie_index": LAServiceDesc(
@@ -74,9 +97,12 @@ class LAServiceDesc {
         nameInt: "bie_index",
         desc: "species web service",
         depends: "ala_bie",
+        icon: Mdi.familyTree,
         optional: false,
         sample: "https://bie.ala.org.au/ws",
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
+        admin: true,
+        alaAdmin: false,
         path: ""),
     "images": LAServiceDesc(
         name: "images",
@@ -85,6 +111,7 @@ class LAServiceDesc {
         optional: true,
         initUse: true,
         sample: "https://images.ala.org.au",
+        icon: Mdi.imageMultipleOutline,
         basicDepends: [
           Java.v8,
           Nginx.def,
@@ -92,6 +119,7 @@ class LAServiceDesc {
           PostGis.v2_4,
           PostgresSql.v10
         ],
+        admin: true,
         path: ""),
     "species_lists": LAServiceDesc(
         name: "lists",
@@ -100,8 +128,10 @@ class LAServiceDesc {
         depends: "ala_bie",
         optional: true,
         initUse: true,
+        icon: Icons.playlist_add_outlined,
         sample: "https://lists.ala.org.au",
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
+        admin: true,
         path: ""),
     "regions": LAServiceDesc(
         name: "regions",
@@ -110,15 +140,20 @@ class LAServiceDesc {
         depends: "spatial",
         optional: true,
         initUse: true,
+        // icon: Mdi.mapSearchOutline,
+        icon: Mdi.foodSteak,
         sample: "https://regions.ala.org.au",
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
+        alaAdmin: true,
         path: ""),
     "logger": LAServiceDesc(
         name: "logger",
         nameInt: "logger",
         desc: "event logging (downloads stats, etc)",
         optional: false,
+        icon: Mdi.mathLog,
         sample: "https://logger.ala.org.au",
+        admin: true,
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         path: ""),
     "solr": LAServiceDesc(
@@ -126,7 +161,10 @@ class LAServiceDesc {
         nameInt: "solr",
         desc: "indexing (Solr)",
         optional: false,
+        icon: Mdi.weatherSunny,
         basicDepends: [Java.v8, Solr.v7],
+        admin: false,
+        alaAdmin: false,
         path: ""),
     "cas": LAServiceDesc(
         name: "auth",
@@ -136,8 +174,30 @@ class LAServiceDesc {
         initUse: true,
         forceSubdomain: true,
         sample: "https://auth.ala.org.au/cas/",
+        icon: Mdi.accountCheckOutline,
         recommended: true,
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Mongo.v4_0, Nginx.def],
+        subServices: [
+          LASubServiceDesc(
+            name: "CAS",
+            path: '/cas',
+            icon: Mdi.accountCheckOutline,
+            admin: false,
+            alaAdmin: false,
+          ),
+          LASubServiceDesc(
+            name: "User Details",
+            path: '/userdetails/',
+            icon: Mdi.accountGroup,
+            admin: true,
+            alaAdmin: true,
+          ),
+          LASubServiceDesc(name: "API keys", path: '/apikey/', icon: Mdi.api),
+          LASubServiceDesc(
+              name: "CAS Management",
+              path: '/cas-management/',
+              icon: Mdi.accountNetwork),
+        ],
         path: ""),
     "spatial": LAServiceDesc(
         name: "spatial",
@@ -146,8 +206,15 @@ class LAServiceDesc {
         optional: true,
         initUse: true,
         forceSubdomain: true,
+        icon: Mdi.layers,
         sample: "https://spatial.ala.org.au",
         basicDepends: [Java.v8, Nginx.def, PostGis.v2_4, PostgresSql.v9_6],
+        subServices: [
+          LASubServiceDesc(
+              name: 'Spatial Webservice', path: '/ws/', icon: Mdi.layersPlus),
+          LASubServiceDesc(
+              name: 'Geoserver', path: '/geoserver/', icon: Mdi.layersSearch)
+        ],
         path: ""),
     "webapi": LAServiceDesc(
         name: "webapi",
@@ -156,7 +223,9 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://api.ala.org.au",
+        icon: Icons.integration_instructions_outlined,
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
+        admin: true,
         path: ""),
     "dashboard": LAServiceDesc(
         name: "dashboard",
@@ -165,7 +234,9 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://dashboard.ala.org.au",
+        icon: Mdi.tabletDashboard,
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
+        alaAdmin: true,
         path: ""),
     "alerts": LAServiceDesc(
         name: "alerts",
@@ -175,7 +246,9 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://alerts.ala.org.au",
+        icon: Icons.notifications_active_outlined,
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
+        admin: true,
         path: ""),
     "doi": LAServiceDesc(
         name: "doi",
@@ -184,12 +257,14 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://doi.ala.org.au",
+        icon: Mdi.link,
         basicDepends: [
           Java.v8,
           Nginx.def,
           ElasticSearch.v7_3_0,
           PostgresSql.v9_6
         ],
+        admin: true,
         path: ""),
     "biocache_backend": LAServiceDesc(
         name: "biocache-backend",
@@ -197,12 +272,14 @@ class LAServiceDesc {
         desc: "cassandra and biocache-store backend",
         withoutUrl: true,
         optional: false,
+        icon: Mdi.eyeOutline,
         basicDepends: [Java.v8, Cassandra.v3],
         path: ""),
     "branding": LAServiceDesc(
         name: "branding",
         nameInt: "branding",
         desc: "Web branding used by all services",
+        icon: Mdi.formatWrapSquare,
         withoutUrl: true,
         optional: false,
         basicDepends: [Nginx.def],
@@ -215,6 +292,7 @@ class LAServiceDesc {
         optional: false,
         withoutUrl: true,
         basicDepends: [Java.v8],
+        icon: Mdi.powershell,
         path: ""),
     "nameindexer": LAServiceDesc(
         name: "nameindexer",
@@ -222,6 +300,7 @@ class LAServiceDesc {
         desc: "nameindexer",
         optional: false,
         withoutUrl: true,
+        icon: Mdi.tournament,
         basicDepends: [Java.v8],
         path: "")
   };

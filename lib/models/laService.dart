@@ -57,6 +57,7 @@ class LAService {
           ? ""
           : "/" + suburl;
   String url(domain) => usesSubdomain ? suburl + "." + domain : domain;
+  String fullUrl(ssl, domain) => 'http${ssl ? "s" : ""}://${url(domain)}';
 
   factory LAService.fromJson(Map<String, dynamic> json) =>
       _$LAServiceFromJson(json);

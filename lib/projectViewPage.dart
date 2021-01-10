@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' as projectViewPage;
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/servicesChipPanel.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
 import 'package:mdi/mdi.dart';
@@ -8,6 +9,7 @@ import 'package:responsive_grid/responsive_grid.dart';
 
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
+import 'components/projectDrawer.dart';
 import 'components/scrollPanel.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
@@ -34,6 +36,10 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
             tooltip: "Edit the basic configuration",
             enabled: true,
             action: () => vm.onOpenProject(vm.state.currentProject)),
+        Tool(
+            icon: Icon(Icons.file_download),
+            tooltip: "Generate your inventories to share or download",
+            title: "Generate inventories"),
         Tool(
             icon: Icon(Icons.settings_ethernet),
             tooltip: "Test if your servers are reachable from here",
@@ -68,7 +74,14 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
       return Scaffold(
           key: _scaffoldKey,
           backgroundColor: Colors.white,
+          drawer: ProjectDrawer(),
           appBar: LAAppBar(
+              leading: IconButton(
+                color: Colors.white,
+                icon: Icon(Mdi.vectorLink),
+                tooltip: "${vm.state.currentProject.shortName} links drawer",
+                onPressed: () => _scaffoldKey.currentState.openDrawer(),
+              ),
               context: context,
               showLaIcon: true,
               title: "Toolkit of ${vm.state.currentProject.shortName} Portal"),
@@ -79,6 +92,7 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
                     Container(
                         padding: EdgeInsets.only(top: 80, bottom: 50),
                         child: LAProjectTimeline()),
+                    ServicesChipPanel(),
                     ResponsiveGridRow(
                         // desiredItemWidth: 120,
                         // minSpacing: 20,

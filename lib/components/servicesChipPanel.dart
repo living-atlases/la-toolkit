@@ -33,12 +33,12 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
               });
             },
             validator: (List<String> value) {
-              if (value?.isEmpty ?? value == null) {
+              /* if (value?.isEmpty ?? value == null) {
                 return 'Please select some categories';
               }
               if (value.length > 5) {
                 return "Can't select more than 5 categories";
-              }
+              } */
               return null;
             },
             builder: (state) {
@@ -75,7 +75,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                       wrapped: true,
                     ),
                   ),
-                  Container(
+/*                  Container(
                       padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -86,8 +86,8 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                                 ? Colors.redAccent
                                 : Colors.green),
                       )),
-                  Divider(),
-                  Padding(
+                  DefDivider(), */
+                  /* Padding(
                     padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
                     child: Row(
                       children: [
@@ -116,7 +116,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                             }),
                       ],
                     ),
-                  ),
+                  ) */
                 ],
               );
             },
