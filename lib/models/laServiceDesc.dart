@@ -6,6 +6,45 @@ import 'package:mdi/mdi.dart';
 
 import 'basicService.dart';
 
+enum LAServiceName {
+  collectory,
+  ala_hub,
+  biocache_service,
+  ala_bie,
+  bie_index,
+  images,
+  species_lists,
+  regions,
+  logger,
+  solr,
+  cas,
+  spatial,
+  webapi,
+  dashboard,
+  alerts,
+  doi,
+  biocache_backend,
+  branding,
+  biocache_cli,
+  nameindexer,
+}
+
+extension ParseToString on LAServiceName {
+  String toS() {
+    return this.toString().split('.').last;
+  }
+}
+
+extension EnumParser on String {
+  LAServiceName toServiceDescName() {
+    return LAServiceName.values.firstWhere(
+        (e) =>
+            e.toString().toLowerCase() ==
+            'LAServiceNamesInt.$this'.toLowerCase(),
+        orElse: () => null); //return null if not found
+  }
+}
+
 class LAServiceDesc {
   String name;
   String nameInt;
@@ -47,8 +86,8 @@ class LAServiceDesc {
       this.initUse})
       : subServices = subServices ?? [];
 
-  static Map<String, LAServiceDesc> map = {
-    "collectory": LAServiceDesc(
+  static final Map<String, LAServiceDesc> map = {
+    LAServiceName.collectory.toS(): LAServiceDesc(
         name: "collections",
         nameInt: "collectory",
         desc: "biodiversity collections",
@@ -59,7 +98,7 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: true,
         path: ""),
-    "ala_hub": LAServiceDesc(
+    LAServiceName.ala_hub.toS(): LAServiceDesc(
         name: "records",
         nameInt: "ala_hub",
         desc: "occurrences search frontend",
@@ -71,7 +110,7 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: false,
         path: ""),
-    "biocache_service": LAServiceDesc(
+    LAServiceName.biocache_service.toS(): LAServiceDesc(
         name: "records-ws",
         nameInt: "biocache_service",
         desc: "occurrences web service",
@@ -80,7 +119,7 @@ class LAServiceDesc {
         sample: "https://biocache.ala.org.au/ws",
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
-    "ala_bie": LAServiceDesc(
+    LAServiceName.ala_bie.toS(): LAServiceDesc(
         name: "species",
         nameInt: "ala_bie",
         desc: "species search frontend",
@@ -92,7 +131,7 @@ class LAServiceDesc {
         alaAdmin: false,
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         path: ""),
-    "bie_index": LAServiceDesc(
+    LAServiceName.bie_index.toS(): LAServiceDesc(
         name: "species-ws",
         nameInt: "bie_index",
         desc: "species web service",
@@ -104,7 +143,7 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: false,
         path: ""),
-    "images": LAServiceDesc(
+    LAServiceName.images.toS(): LAServiceDesc(
         name: "images",
         nameInt: "images",
         desc: "images service",
@@ -121,7 +160,7 @@ class LAServiceDesc {
         ],
         admin: true,
         path: ""),
-    "species_lists": LAServiceDesc(
+    LAServiceName.species_lists.toS(): LAServiceDesc(
         name: "lists",
         nameInt: "species_lists",
         desc: "user provided species lists",
@@ -133,7 +172,7 @@ class LAServiceDesc {
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         admin: true,
         path: ""),
-    "regions": LAServiceDesc(
+    LAServiceName.regions.toS(): LAServiceDesc(
         name: "regions",
         nameInt: "regions",
         desc: "regional data frontend",
@@ -146,7 +185,7 @@ class LAServiceDesc {
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         alaAdmin: true,
         path: ""),
-    "logger": LAServiceDesc(
+    LAServiceName.logger.toS(): LAServiceDesc(
         name: "logger",
         nameInt: "logger",
         desc: "event logging (downloads stats, etc)",
@@ -156,7 +195,7 @@ class LAServiceDesc {
         admin: true,
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         path: ""),
-    "solr": LAServiceDesc(
+    LAServiceName.solr.toS(): LAServiceDesc(
         name: "index",
         nameInt: "solr",
         desc: "indexing (Solr)",
@@ -166,7 +205,7 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: false,
         path: ""),
-    "cas": LAServiceDesc(
+    LAServiceName.cas.toS(): LAServiceDesc(
         name: "auth",
         nameInt: "cas",
         desc: "CAS authentication system",
@@ -199,7 +238,7 @@ class LAServiceDesc {
               icon: Mdi.accountNetwork),
         ],
         path: ""),
-    "spatial": LAServiceDesc(
+    LAServiceName.spatial.toS(): LAServiceDesc(
         name: "spatial",
         nameInt: "spatial",
         desc: "spatial front-end",
@@ -216,7 +255,7 @@ class LAServiceDesc {
               name: 'Geoserver', path: '/geoserver/', icon: Mdi.layersSearch)
         ],
         path: ""),
-    "webapi": LAServiceDesc(
+    LAServiceName.webapi.toS(): LAServiceDesc(
         name: "webapi",
         nameInt: "webapi",
         desc: "API documentation service",
@@ -227,7 +266,7 @@ class LAServiceDesc {
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         admin: true,
         path: ""),
-    "dashboard": LAServiceDesc(
+    LAServiceName.dashboard.toS(): LAServiceDesc(
         name: "dashboard",
         nameInt: "dashboard",
         desc: "Dashboard with portal stats",
@@ -238,7 +277,7 @@ class LAServiceDesc {
         basicDepends: [Java.v8, Tomcat.v8, Nginx.def],
         alaAdmin: true,
         path: ""),
-    "alerts": LAServiceDesc(
+    LAServiceName.alerts.toS(): LAServiceDesc(
         name: "alerts",
         nameInt: "alerts",
         desc:
@@ -250,7 +289,7 @@ class LAServiceDesc {
         basicDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
         admin: true,
         path: ""),
-    "doi": LAServiceDesc(
+    LAServiceName.doi.toS(): LAServiceDesc(
         name: "doi",
         nameInt: "doi",
         desc: "mainly used for generating DOIs of user downloads",
@@ -266,7 +305,7 @@ class LAServiceDesc {
         ],
         admin: true,
         path: ""),
-    "biocache_backend": LAServiceDesc(
+    LAServiceName.biocache_backend.toS(): LAServiceDesc(
         name: "biocache-backend",
         nameInt: "biocache_backend",
         desc: "cassandra and biocache-store backend",
@@ -275,7 +314,7 @@ class LAServiceDesc {
         icon: Mdi.eyeOutline,
         basicDepends: [Java.v8, Cassandra.v3],
         path: ""),
-    "branding": LAServiceDesc(
+    LAServiceName.branding.toS(): LAServiceDesc(
         name: "branding",
         nameInt: "branding",
         desc: "Web branding used by all services",
@@ -284,7 +323,7 @@ class LAServiceDesc {
         optional: false,
         basicDepends: [Nginx.def],
         path: ""),
-    "biocache_cli": LAServiceDesc(
+    LAServiceName.biocache_cli.toS(): LAServiceDesc(
         name: "biocache-cli",
         nameInt: "biocache_cli",
         desc:
@@ -294,7 +333,7 @@ class LAServiceDesc {
         basicDepends: [Java.v8],
         icon: Mdi.powershell,
         path: ""),
-    "nameindexer": LAServiceDesc(
+    LAServiceName.nameindexer.toS(): LAServiceDesc(
         name: "nameindexer",
         nameInt: "nameindexer",
         desc: "nameindexer",
@@ -305,14 +344,23 @@ class LAServiceDesc {
         path: "")
   };
 
+  static LAServiceDesc get(String nameInt) {
+    return map[nameInt];
+  }
+
+  static LAServiceDesc getE(LAServiceName nameInt) {
+    return map[nameInt.toS()];
+  }
+
   static List<LAServiceDesc> list = map.values.toList();
-  static List<String> names = map.keys.toList();
+  static List<String> keyNames = map.keys.map((entry) => entry).toList();
 
   // Index by name instead of nameInt
+  /*
   static Map<String, LAServiceDesc> mapNameIndexed =
-      map.map((st, s) => MapEntry(s.name, s));
+      map.map((st, s) => MapEntry(s.name, s)); */
 
-  static Map<String, List<String>> incompatibilities = {"": []};
+  /* static Map<String, List<String>> incompatibilities = {"": []}; */
 
   bool isCompatibleWith(LAServiceDesc otherService) {
     var compatible = true;

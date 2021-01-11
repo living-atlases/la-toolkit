@@ -76,8 +76,8 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
           // print("${otherNameInt} compatible with ${nameInt}");
           selection.forEach((second) {
             if (first != second &&
-                !LAServiceDesc.map[first]
-                    .isCompatibleWith(LAServiceDesc.map[second])) {
+                !LAServiceDesc.get(first)
+                    .isCompatibleWith(LAServiceDesc.get(second))) {
               incompatible.addAll({first, second});
             }
           });
@@ -88,11 +88,11 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
       },
       choiceItems: S2Choice.listFrom<String, String>(
         //source: widget.servicesInUse, // LAServiceDesc.names,
-        source: LAServiceDesc.names,
+        source: LAServiceDesc.keyNames,
         // This fails
         // source: widget.servicesInUse,
         value: (index, nameInt) => nameInt,
-        title: (index, nameInt) => LAServiceDesc.map[nameInt].name,
+        title: (index, nameInt) => LAServiceDesc.get(nameInt).name,
         hidden: (index, nameInt) {
           // If is some service in this server => show
           if (widget.servicesInServer.contains(nameInt)) return false;

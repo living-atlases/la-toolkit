@@ -80,19 +80,19 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
     return StoreConnector<AppState, _ProjectPageViewModel>(converter: (store) {
       return _ProjectPageViewModel(
         state: store.state,
-        onAddServicesToServer: (server, asignedServices) {
+        onAddServicesToServer: (server, assignedServices) {
           _project.services = _project.services.map((nameInt, service) {
+            _project.assign(nameInt, server);
+            /*
             // Remove previous service in server assignments
             if (service.getServersNameList().contains(server.name)) {
-              // This is not possible (immutable)
               service.servers.clear();
             }
-            if (asignedServices.contains(service.nameInt)) {
-              // This is not possible (immutable)
-              service.servers.add(server);
+            if (assignedServices.contains(service.nameInt)) {
+              service.assign(server);
               // Clear view lists to force recalculation
               service.initView();
-            }
+            } */
             return MapEntry(nameInt, service);
           });
           _project.initViews();

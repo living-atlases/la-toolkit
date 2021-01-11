@@ -1,5 +1,4 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
@@ -11,7 +10,6 @@ import 'laService.dart';
 
 part 'laProject.g.dart';
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAProject {
@@ -83,7 +81,8 @@ class LAProject {
     if (valid && currentStep >= 3) {
       valid = valid &&
           (getServicesNameListInUse().length > 0 &&
-              getServicesNameListNotInUse().length == 0);
+              getServicesNameListInUse().length ==
+                  getServicesNameListSelected().length);
     }
     if (valid && currentStep >= 4) {
       if (valid)
@@ -150,9 +149,9 @@ class LAProject {
     isCreated: $isCreated, status: ${status.title}
     servers: $servers, 
     valid: ${validateCreation(0)} ${validateCreation(1)} ${validateCreation(2)} ${validateCreation(3)} ${validateCreation(4)}
-    services selected: [${getServicesNameListSelected().join(', ')}]
-    services in use: [${getServicesNameListInUse().join(', ')}].
-    services not in use: [${getServicesNameListNotInUse().join(', ')}].''';
+    services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]   
+    services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().map((s) => services[s].nameInt + "(" + (services[s].servers.length > 0 ? services[s].servers[0].name : "") + ")").toList().join(', ')}].
+    services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
   }
 
   static Map<String, LAService> initialServices = getInitialServices();
@@ -165,9 +164,13 @@ class LAProject {
     return services;
   }
 
+  LAService getServiceE(LAServiceName nameInt) {
+    return getService(nameInt.toS());
+  }
+
   LAService getService(String nameInt) {
     if (nameInt == null) return null;
-    return services[nameInt] ?? LAService.fromDesc(LAServiceDesc.map[nameInt]);
+    return services[nameInt] ?? LAService.fromDesc(LAServiceDesc.get(nameInt));
   }
 
   List<String> getServicesNameListInServer(String serverName) {
@@ -179,11 +182,7 @@ class LAProject {
   }
 
   void upsert(LAServer laServer) {
-    if (servers.contains(laServer)) {
-      servers.map((current) => current == laServer ? laServer : current);
-    } else {
-      servers.add(laServer);
-    }
+    servers = LAServer.upsert(servers, laServer);
   }
 
   void setProjectStatus(LAProjectStatus status) {
@@ -191,5 +190,16 @@ class LAProject {
       // only set if the new status is higher
       this.status = status;
     }
+  }
+
+  void assign(String serviceName, LAServer server) {
+    LAService service = getService(serviceName);
+    // We remove previously
+    service.servers.clear();
+    service.servers.add(server);
+    assert(service.servers.length > 0);
+    services[serviceName] = service;
+    assert(services[serviceName].servers[0] == server);
+    initViews();
   }
 }

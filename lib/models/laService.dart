@@ -28,14 +28,14 @@ class LAService {
       this.usesSubdomain,
       List<LAServer> servers,
       this.suburl})
-      : servers = servers ?? List<LAServer>.empty();
+      : servers = servers ?? List<LAServer>.empty(growable: true);
 
   LAService.fromDesc(LAServiceDesc desc)
       : nameInt = desc.nameInt,
         iniPath = desc.path,
         use = !desc.optional ? true : desc.initUse,
         usesSubdomain = true,
-        servers = List<LAServer>.empty(),
+        servers = List<LAServer>.empty(growable: true),
         suburl = desc.name;
 
   void initView() {

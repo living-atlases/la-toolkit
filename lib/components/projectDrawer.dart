@@ -105,9 +105,9 @@ class _ProjectDrawerState extends State<ProjectDrawer> {
   List<Widget> _createProjectLinks(LAProject currentProject) {
     return currentProject
         .getServicesNameListInUse()
-        .where((nameInt) => !LAServiceDesc.map[nameInt].withoutUrl)
+        .where((nameInt) => !LAServiceDesc.get(nameInt).withoutUrl)
         .map((nameInt) {
-      LAServiceDesc desc = LAServiceDesc.map[nameInt];
+      LAServiceDesc desc = LAServiceDesc.get(nameInt);
       String url = currentProject.services[nameInt]
           .fullUrl(currentProject.useSSL, currentProject.domain);
       String name = StringUtils.capitalize(desc.name);

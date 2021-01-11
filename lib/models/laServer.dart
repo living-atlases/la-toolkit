@@ -53,6 +53,17 @@ class LAServer {
 
   @override
   String toString() {
-    return "name: $name, ip: $ipv4, aliases: $aliases";
+    return "name: $name ${ipv4.length > 0 ? ',' + ipv4 : ''} ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
+  }
+
+  static List<LAServer> upsert(List<LAServer> servers, LAServer laServer) {
+    if (servers.contains(laServer)) {
+      servers = servers
+          .map((current) => current == laServer ? laServer : current)
+          .toList();
+    } else {
+      servers.add(laServer);
+    }
+    return servers;
   }
 }

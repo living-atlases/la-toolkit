@@ -25,34 +25,34 @@ void main() {
 
   test('LAServicesDesc spatial and images are incompatible', () {
     expect(
-        LAServiceDesc.map["images"]
-            .isCompatibleWith(LAServiceDesc.map["spatial"]),
+        LAServiceDesc.getE(LAServiceName.images)
+            .isCompatibleWith(LAServiceDesc.get("spatial")),
         equals(false));
   });
 
   test('LAServicesDesc spatial and images are incompatible', () {
     expect(
-        LAServiceDesc.map["images"]
-            .isCompatibleWith(LAServiceDesc.map["spatial"]),
+        LAServiceDesc.getE(LAServiceName.spatial)
+            .isCompatibleWith(LAServiceDesc.getE(LAServiceName.images)),
         equals(false));
   });
 
   test('LAServicesDesc spatial and doi are incompatible', () {
     expect(
-        LAServiceDesc.map["images"].isCompatibleWith(LAServiceDesc.map["doi"]),
+        LAServiceDesc.get("images").isCompatibleWith(LAServiceDesc.get("doi")),
         equals(false));
   });
 
   test('LAServicesDesc images and doi are incompatible', () {
     expect(
-        LAServiceDesc.map["images"].isCompatibleWith(LAServiceDesc.map["doi"]),
+        LAServiceDesc.get("images").isCompatibleWith(LAServiceDesc.get("doi")),
         equals(false));
   });
 
   test('LAServicesDesc collectory and species-lists are incompatible', () {
     expect(
-        LAServiceDesc.map["collectory"]
-            .isCompatibleWith(LAServiceDesc.map["species_lists"]),
+        LAServiceDesc.get("collectory")
+            .isCompatibleWith(LAServiceDesc.getE(LAServiceName.species_lists)),
         equals(true));
   });
 }
