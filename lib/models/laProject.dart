@@ -1,6 +1,9 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/utils/regexp.dart';
 import 'package:uuid/uuid.dart';
 
 import 'laServer.dart';
@@ -8,6 +11,7 @@ import 'laService.dart';
 
 part 'laProject.g.dart';
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAProject {
@@ -33,24 +37,64 @@ class LAProject {
   List<String> _servicesNotInUseNameList;
   @JsonKey(ignore: true)
   List<String> _servicesSelectedNameList;
+  @JsonKey(ignore: true)
+  bool isCreated;
+  @JsonSerializable(nullable: false)
+  LAProjectStatus status;
 
-  static final def2 = LAProject(
-      longName: "Living Atlas of Wakanda",
-      shortName: "LA Wakanda",
-      domain: "your.l-a.site");
-
-  LAProject({
-    uuid,
-    this.longName = "",
-    this.shortName = "",
-    this.domain = "",
-    this.useSSL = true,
-    List<LAServer> servers,
-    Map<String, LAService> services,
-  })  : uuid = uuid ?? Uuid().v4(),
+  LAProject(
+      {uuid,
+      this.longName = "",
+      this.shortName = "",
+      this.domain = "",
+      this.useSSL = true,
+      this.isCreated = false,
+      List<LAServer> servers,
+      Map<String, LAService> services,
+      LAProjectStatus status})
+      : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],
-        // serversNameList = serversNameList ?? [],
-        services = services ?? initialServices;
+        // _serversNameList = _serversNameList ?? [],
+        services = services ?? initialServices,
+        status = status ?? LAProjectStatus.created;
+
+  int numServers() => servers.length;
+
+  // List<LAServer> get servers => _servers;
+  //  set servers(servers) => _servers = servers;
+
+  bool validateCreation(int currentStep) {
+    bool valid = true;
+    if (currentStep >= 0)
+      valid = valid &&
+          LARegExp.projectNameRegexp.hasMatch(longName) &&
+          LARegExp.shortNameRegexp.hasMatch(shortName) &&
+          LARegExp.domainRegexp.hasMatch(domain);
+    if (currentStep >= 1) {
+      valid = valid && servers.length > 0;
+      if (valid)
+        servers.forEach((s) {
+          valid = valid && LARegExp.hostnameRegexp.hasMatch(s.name);
+        });
+    }
+    if (valid && currentStep >= 2) {
+      // If the previous steps are correct, this is also correct
+    }
+    if (valid && currentStep >= 3) {
+      valid = valid &&
+          (getServicesNameListInUse().length > 0 &&
+              getServicesNameListNotInUse().length == 0);
+    }
+    if (valid && currentStep >= 4) {
+      if (valid)
+        servers.forEach((s) {
+          valid = valid && LARegExp.ipv4.hasMatch(s.ipv4);
+        });
+    }
+    isCreated = valid && currentStep == 4;
+    setProjectStatus(LAProjectStatus.advancedDefined);
+    return valid;
+  }
 
   List<String> getServersNameList() {
     // If we change server map we'll set serverNameList to null
@@ -103,7 +147,9 @@ class LAProject {
   @override
   String toString() {
     return '''longName: $longName ($shortName), domain: $domain, 
+    isCreated: $isCreated, status: ${status.title}
     servers: $servers, 
+    valid: ${validateCreation(0)} ${validateCreation(1)} ${validateCreation(2)} ${validateCreation(3)} ${validateCreation(4)}
     services selected: [${getServicesNameListSelected().join(', ')}]
     services in use: [${getServicesNameListInUse().join(', ')}].
     services not in use: [${getServicesNameListNotInUse().join(', ')}].''';
@@ -130,5 +176,20 @@ class LAProject {
             (service.use && service.getServersNameList().contains(serverName)))
         .map((service) => service.nameInt)
         .toList();
+  }
+
+  void upsert(LAServer laServer) {
+    if (servers.contains(laServer)) {
+      servers.map((current) => current == laServer ? laServer : current);
+    } else {
+      servers.add(laServer);
+    }
+  }
+
+  void setProjectStatus(LAProjectStatus status) {
+    if (this.status == null || this.status.value < status.value) {
+      // only set if the new status is higher
+      this.status = status;
+    }
   }
 }

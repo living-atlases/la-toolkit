@@ -1,4 +1,4 @@
-class FieldValidators {
+class LARegExp {
   // https://www.regular-expressions.info/unicode.html
   static final projectNameRegexp = RegExp(r'^[\p{L}\p{N} .]+$', unicode: true);
   static final domainRegexp = RegExp(

@@ -39,6 +39,7 @@ class LAAppBar extends AppBar {
                   children: ListUtils.listWithoutNulls(<Widget>[
                     showLaIcon
                         ? IconButton(
+                            tooltip: "Homepage",
                             icon:
                                 Icon(LAIcon.la, size: 32, color: Colors.white),
                             onPressed: () {

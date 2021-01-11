@@ -9,7 +9,7 @@ part of 'laServer.dart';
 extension LAServerCopyWith on LAServer {
   LAServer copyWith({
     List<String> aliases,
-    String ipv4,
+    dynamic ipv4,
     String name,
     String proxyJump,
     int proxyJumpPort,
@@ -43,7 +43,7 @@ extension LAServerCopyWith on LAServer {
 LAServer _$LAServerFromJson(Map<String, dynamic> json) {
   return LAServer(
     name: json['name'] as String,
-    ipv4: json['ipv4'] as String,
+    ipv4: json['ipv4'],
     sshPort: json['sshPort'] as int,
     aliases: (json['aliases'] as List)?.map((e) => e as String)?.toList(),
     sshPrivateKey: json['sshPrivateKey'] as String,

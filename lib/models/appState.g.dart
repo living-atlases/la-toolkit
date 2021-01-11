@@ -12,7 +12,7 @@ extension AppStateCopyWith on AppState {
     int currentStep,
     bool firstUsage,
     List<LAProject> projects,
-    LAProjectStatus status,
+    LAProjectViewStatus status,
   }) {
     return AppState(
       currentProject: currentProject ?? this.currentProject,
@@ -39,14 +39,14 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
         ? null
         : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
     currentStep: json['currentStep'] as int,
-    status: _$enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']),
+    status: _$enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
   );
 }
 
 Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'firstUsage': instance.firstUsage,
       'currentProject': instance.currentProject?.toJson(),
-      'status': _$LAProjectStatusEnumMap[instance.status],
+      'status': _$LAProjectViewStatusEnumMap[instance.status],
       'currentStep': instance.currentStep,
       'projects': instance.projects?.map((e) => e?.toJson())?.toList(),
     };
@@ -83,8 +83,8 @@ T _$enumDecodeNullable<T>(
   return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
-const _$LAProjectStatusEnumMap = {
-  LAProjectStatus.view: 'view',
-  LAProjectStatus.edit: 'edit',
-  LAProjectStatus.create: 'create',
+const _$LAProjectViewStatusEnumMap = {
+  LAProjectViewStatus.view: 'view',
+  LAProjectViewStatus.edit: 'edit',
+  LAProjectViewStatus.create: 'create',
 };

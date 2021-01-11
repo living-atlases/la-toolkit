@@ -64,9 +64,9 @@ class LAService {
   Map<String, dynamic> toJson() => _$LAServiceToJson(this);
 
   @override
-  String toString({String domain = 'somedomain'}) {
+  String toString() {
     if (use)
-      return "http?://${url(domain)}${this.path}";
+      return 'LAService{name: $nameInt, servers: $_serversNameList}';
     else
       return "not used";
   }

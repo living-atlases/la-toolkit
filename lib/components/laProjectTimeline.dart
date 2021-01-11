@@ -2,37 +2,36 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:mdi/mdi.dart';
+import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:timelines/timelines.dart';
 
 import '../laTheme.dart';
 
-// const kTileHeight = 50.0;
-
-//const completeColor = Color(0xff5e6172);
-//const inProgressColor = Color(0xff5ec792);
-//const todoColor = Color(0xffd1d2d7);
-
 var completeColor = LAColorTheme.laPalette.shade400;
 var inProgressColor = LAColorTheme.laPalette.shade900;
-// const todoColor = LAColorTheme.inactive;
 const todoColor = Colors.grey;
 
 const _iconsVerticalPadding = 4.0;
 
 class LAProjectTimeline extends StatefulWidget {
+  final LAProject project;
+
+  LAProjectTimeline({@required this.project});
   @override
   _LAProjectTimelineState createState() => _LAProjectTimelineState();
 }
 
 // Based in https://github.com/chulwoo-park/timelines/blob/main/example/lib/showcase/process_timeline.dart
 class _LAProjectTimelineState extends State<LAProjectTimeline> {
-  int _processIndex = 1;
+  LAProject project;
+  final int size = LAProjectStatus.values.length;
+  bool small;
 
   Color getColor(int index) {
-    if (index == _processIndex) {
+    if (index == project.status.value) {
       return inProgressColor;
-    } else if (index < _processIndex) {
+    } else if (index < project.status.value) {
       return completeColor;
     } else {
       return todoColor;
@@ -41,12 +40,14 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
 
   @override
   Widget build(BuildContext context) {
+    project = widget.project;
+    small = MediaQuery.of(context).size.width < 750;
     return SizedBox(
-        height: 100.0,
+        height: small ? 600 : 100.0,
         child: Timeline.tileBuilder(
           shrinkWrap: true,
           theme: TimelineThemeData(
-            direction: Axis.horizontal,
+            direction: small ? Axis.vertical : Axis.horizontal,
             connectorTheme: ConnectorThemeData(
               space: 30.0,
               thickness: 5.0,
@@ -60,7 +61,7 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
                 padding: const EdgeInsets.only(bottom: _iconsVerticalPadding),
                 // steps icons size
                 child: Icon(
-                  _icons[index],
+                  LAProjectStatus.values[index].icon,
                   // Image.asset(
                   // 'assets/images/process_timeline/status${index + 1}.png',
                   // width: 50.0,
@@ -72,9 +73,11 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
             contentsBuilder: (context, index) {
               return Padding(
                 // Top of step titles
-                padding: const EdgeInsets.only(top: _iconsVerticalPadding),
+                padding: EdgeInsets.only(
+                    top: small ? 0 : _iconsVerticalPadding,
+                    left: small ? 20 : 0),
                 child: Text(
-                  _processes[index],
+                  LAProjectStatus.values[index].title.replaceAll(' ', '\n'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       // fontWeight: FontWeight.bold,
@@ -86,7 +89,7 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
             indicatorBuilder: (_, index) {
               var color;
               var child;
-              if (index == _processIndex) {
+              if (index == project.status.value) {
                 color = inProgressColor;
                 child = Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -95,7 +98,7 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
                     valueColor: AlwaysStoppedAnimation(Colors.white),
                   ),
                 );
-              } else if (index < _processIndex) {
+              } else if (index < project.status.value) {
                 color = completeColor;
                 child = Icon(
                   Icons.check,
@@ -107,7 +110,7 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
               }
 
               // <= to show spinner
-              if (index < _processIndex) {
+              if (index < project.status.value) {
                 return Stack(
                   children: [
                     CustomPaint(
@@ -115,7 +118,7 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
                       painter: _BezierPainter(
                         color: color,
                         drawStart: index > 0,
-                        drawEnd: index < _processIndex,
+                        drawEnd: index < project.status.value,
                       ),
                     ),
                     DotIndicator(
@@ -132,7 +135,7 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
                       size: Size(15.0, 15.0),
                       painter: _BezierPainter(
                         color: color,
-                        drawEnd: index < _processes.length - 1,
+                        drawEnd: index < size - 1,
                       ),
                     ),
                     OutlinedDotIndicator(
@@ -145,7 +148,7 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
             },
             connectorBuilder: (_, index, type) {
               if (index > 0) {
-                if (index == _processIndex) {
+                if (index == project.status.value) {
                   final prevColor = getColor(index - 1);
                   final color = getColor(index);
                   var gradientColors;
@@ -173,7 +176,7 @@ class _LAProjectTimelineState extends State<LAProjectTimeline> {
                 return null;
               }
             },
-            itemCount: _processes.length,
+            itemCount: size,
           ),
         ));
   }
@@ -249,22 +252,3 @@ class _BezierPainter extends CustomPainter {
         oldDelegate.drawEnd != drawEnd;
   }
 }
-
-final _processes = [
-  'Creation',
-  'Servers\nDefinition',
-  'Portal\nConfigured',
-  'Servers\nReachable',
-  '1st\nDeploy',
-  'Daily\nUsage'
-//  'Portal\nUpdate',
-];
-
-final _icons = [
-  Icons.create,
-  Icons.dns,
-  Icons.playlist_add_check, // playlistAdd
-  Icons.settings_ethernet,
-  Mdi.rocketLaunch,
-  Icons.cached
-];

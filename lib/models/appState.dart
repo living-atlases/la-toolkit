@@ -8,20 +8,20 @@ import 'package:la_toolkit/models/laProject.dart';
 
 part 'appState.g.dart';
 
-enum LAProjectStatus {
+enum LAProjectViewStatus {
   view,
   edit,
   create,
 }
 
-extension LAProjectStatusExtension on LAProjectStatus {
+extension LAProjectStatusExtension on LAProjectViewStatus {
   String get title {
     switch (this) {
-      case LAProjectStatus.edit:
+      case LAProjectViewStatus.edit:
         return 'Editing project';
-      case LAProjectStatus.create:
+      case LAProjectViewStatus.create:
         return 'Creating a new LA Project';
-      case LAProjectStatus.view:
+      case LAProjectViewStatus.view:
         return 'Project details';
       default:
         return null;
@@ -38,7 +38,7 @@ class AppState {
   @JsonKey(nullable: true)
   final LAProject currentProject;
   @JsonKey(nullable: true)
-  final LAProjectStatus status;
+  final LAProjectViewStatus status;
   @JsonKey(nullable: true)
   final int currentStep;
   // from server api call
@@ -61,7 +61,7 @@ class AppState {
     return '''firstUse: $firstUsage,
     projects: ${projects.length} 
     currentProject: $currentProject, 
-    status: $status, 
+    view status: $status, 
     ''';
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/laIcon.dart';
 import 'package:la_toolkit/components/listTileLink.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
@@ -9,6 +10,8 @@ import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../main.dart';
 
 class ProjectDrawer extends StatefulWidget {
   ProjectDrawer();
@@ -64,6 +67,13 @@ class _ProjectDrawerState extends State<ProjectDrawer> {
                       color: LAColorTheme.laPalette.shade300,
                     ),
                   ),
+                ),
+                ListTile(
+                  leading: const Icon(LAIcon.la),
+                  title: Text('Home'),
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, HomePage.routeName);
+                  },
                 ),
                 Column(children: _createProjectLinks(vm.state.currentProject)),
                 AppUtils.isDev()

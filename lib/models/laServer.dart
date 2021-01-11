@@ -24,7 +24,7 @@ class LAServer {
 
   LAServer(
       {this.name,
-      this.ipv4,
+      ipv4,
       this.sshPort: 22,
       List<String> aliases,
       this.sshPrivateKey,
@@ -34,11 +34,22 @@ class LAServer {
       this.reachable: ServiceStatus.unknown,
       this.sshReachable: ServiceStatus.unknown,
       this.sudoEnabled: ServiceStatus.unknown})
-      : this.aliases = aliases ?? [];
+      : this.aliases = aliases ?? [],
+        this.ipv4 = ipv4 ?? "";
 
   factory LAServer.fromJson(Map<String, dynamic> json) =>
       _$LAServerFromJson(json);
   Map<String, dynamic> toJson() => _$LAServerToJson(this);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LAServer &&
+          runtimeType == other.runtimeType &&
+          name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 
   @override
   String toString() {

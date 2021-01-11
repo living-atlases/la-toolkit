@@ -96,13 +96,15 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
             return MapEntry(nameInt, service);
           });
           _project.initViews();
+          _project.validateCreation(_currentStep);
           store.dispatch(UpdateProject(_project));
         },
         onFinish: () {
           _project.initViews();
-          if (store.state.status == LAProjectStatus.create)
+          _project.validateCreation(_currentStep);
+          if (store.state.status == LAProjectViewStatus.create)
             store.dispatch(AddProject(_project));
-          if (store.state.status == LAProjectStatus.edit) {
+          if (store.state.status == LAProjectViewStatus.edit) {
             store.dispatch(UpdateProject(_project));
             // Clear view lists to force recalculation
           }
@@ -110,6 +112,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
         },
         onSaveCurrentProject: () {
           _project.initViews();
+          _project.validateCreation(_currentStep);
           store.dispatch(SaveCurrentProject(_project, _currentStep));
         },
       );
@@ -140,7 +143,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       error: 'Project name invalid.',
                       initialValue: _project.longName,
                       //vm: vm,
-                      regexp: FieldValidators.projectNameRegexp,
+                      regexp: LARegExp.projectNameRegexp,
                       onChanged: (value) {
                         _project.longName = value;
                         vm.onSaveCurrentProject();
@@ -152,7 +155,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       wikipage: "Glosary#Short-name",
                       error: 'Project short name invalid.',
                       initialValue: _project.shortName,
-                      regexp: FieldValidators.projectNameRegexp,
+                      regexp: LARegExp.projectNameRegexp,
                       onChanged: (value) {
                         _project.shortName = value;
                         vm.onSaveCurrentProject();
@@ -185,7 +188,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       wikipage: "Glosary#Domain",
                       error: 'Project short name invalid.',
                       initialValue: _project.domain,
-                      regexp: FieldValidators.domainRegexp,
+                      regexp: LARegExp.domainRegexp,
                       onChanged: (value) {
                         _project.domain = value;
                         vm.onSaveCurrentProject();
@@ -206,7 +209,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                   ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
-                      itemCount: _project.servers.length,
+                      itemCount: _project.numServers(),
                       // itemCount: appStateProv.appState.projects.length,
                       itemBuilder: (BuildContext context, int index) {
                         return Card(
@@ -234,7 +237,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                     focusNode: _serverFocus,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (String value) {
-                      return !FieldValidators.hostnameRegexp.hasMatch(value) //
+                      return !LARegExp.hostnameRegexp.hasMatch(value) //
                           ? 'Invalid server name.'
                           : null;
                     },
@@ -310,7 +313,7 @@ If you are unsure type something like "server1, server2, server3".
                 const Text('Define which services will run in which servers'),
             // subtitle: const Text("Compatibilities"),
             content: Column(
-                children: (_project.servers.length > 0)
+                children: (_project.numServers() > 0)
                     ? _project.servers
                         .map((s) => ServicesInServerChooser(
                             server: s,
@@ -347,7 +350,7 @@ If you are unsure type something like "server1, server2, server3".
                         showCheckboxColumn: false,
                         columns: [
                           DataColumn(
-                            label: Text("SERVER NAME"),
+                            label: Text("NAME"),
                             numeric: false,
                             tooltip: "This is the server hostname",
                           ),
@@ -357,7 +360,7 @@ If you are unsure type something like "server1, server2, server3".
                             tooltip: "This is IPv4 address",
                           ),
                           DataColumn(
-                            label: Text("ADDITIONAL ALIASES"),
+                            label: Text("NAME ALIASES"),
                             numeric: false,
                             tooltip: "Alternative hostnames space separated",
                           ),
@@ -376,12 +379,13 @@ If you are unsure type something like "server1, server2, server3".
                                       error: 'Wrong IP address.',
                                       initialValue: server.ipv4,
                                       isCollapsed: true,
-                                      regexp: FieldValidators.ipv4,
+                                      regexp: LARegExp.ipv4,
                                       onChanged: (value) {
-                                        _project.servers =
-                                            _project.servers.map((current) {
-                                          if (server.name == current.name)
+                                        _project.servers.map((current) {
+                                          if (server.name == current.name) {
                                             current.ipv4 = value;
+                                            _project.upsert(current);
+                                          }
                                           return current;
                                         }).toList();
                                         vm.onSaveCurrentProject();
@@ -395,14 +399,16 @@ If you are unsure type something like "server1, server2, server3".
                                     error: 'Wrong aliases.',
                                     initialValue: server.aliases.join(' '),
                                     isCollapsed: true,
-                                    regexp: FieldValidators.aliasesRegexp,
+                                    regexp: LARegExp.aliasesRegexp,
                                     onChanged: (value) {
-                                      _project.servers =
-                                          _project.servers.map((current) {
-                                        if (server.name == current.name)
+                                      _project.servers.map((current) {
+                                        if (server.name == current.name) {
                                           current.aliases = value.split(' ');
+                                          _project.upsert(current);
+                                        }
                                         return current;
-                                      }).toList();
+                                      });
+
                                       vm.onSaveCurrentProject();
                                     })),
                               ]),
@@ -499,14 +505,14 @@ If you are unsure type something like "server1, server2, server3".
   void onStepContinue(_ProjectPageViewModel vm) {
     // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
     if (_formKeys[_currentStep].currentState.validate() ||
-        (_currentStep == 1 && _project.servers.length > 0)) {
+        (_currentStep == 1 && _project.numServers() > 0)) {
       next();
     }
     vm.onSaveCurrentProject();
   }
 
   void _addServer(String value, void Function() onSaveCurrentProject) {
-    _project.servers.add(LAServer(name: value));
+    _project.upsert(LAServer(name: value));
     _serverAddController.clear();
     _formKeys[1].currentState.reset();
     _serverFocus.requestFocus();

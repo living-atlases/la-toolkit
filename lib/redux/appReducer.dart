@@ -28,20 +28,20 @@ AppState _onFetchState(AppState state, OnFetchState action) {
 AppState _createProject(AppState state, CreateProject action) {
   return state.copyWith(
       currentProject: new LAProject(),
-      status: LAProjectStatus.create,
+      status: LAProjectViewStatus.create,
       currentStep: 0);
 }
 
 AppState _openProject(AppState state, OpenProject action) {
   return state.copyWith(
       currentProject: action.project,
-      status: LAProjectStatus.edit,
+      status: LAProjectViewStatus.edit,
       currentStep: 0);
 }
 
 AppState _openProjectTools(AppState state, OpenProjectTools action) {
   return state.copyWith(
-      currentProject: action.project, status: LAProjectStatus.view);
+      currentProject: action.project, status: LAProjectViewStatus.view);
 }
 
 AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {

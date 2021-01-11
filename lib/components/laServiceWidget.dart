@@ -197,7 +197,7 @@ class LaServiceWidget extends StatelessWidget {
             initialValue: service.suburl,
             hint: serviceDesc.hint,
             isCollapsed: true,
-            regexp: FieldValidators.subdomain,
+            regexp: LARegExp.subdomain,
             error: "Invalid subdomain.",
             onChanged: (value) {
               service.suburl = value;

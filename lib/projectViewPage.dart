@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart' as projectViewPage;
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/servicesChipPanel.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
 import 'package:mdi/mdi.dart';
@@ -15,12 +13,18 @@ import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'redux/actions.dart';
 
-class LAProjectViewPage extends projectViewPage.StatelessWidget {
+class LAProjectViewPage extends StatefulWidget {
   static const routeName = "tools";
+  @override
+  _LAProjectViewPageState createState() => _LAProjectViewPageState();
+}
+
+class _LAProjectViewPageState extends State<LAProjectViewPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  LAProject _currentProject;
 
   @override
-  projectViewPage.Widget build(projectViewPage.BuildContext context) {
+  Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(converter: (store) {
       return _ProjectPageViewModel(
         state: store.state,
@@ -29,13 +33,14 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
       );
     }, builder: (BuildContext context, _ProjectPageViewModel vm) {
       // TODO: Move this to constants and use the same in timeline
+      _currentProject = vm.state.currentProject;
       List<Tool> tools = [
         Tool(
             icon: Icon(Icons.edit),
             title: "Edit",
             tooltip: "Edit the basic configuration",
             enabled: true,
-            action: () => vm.onOpenProject(vm.state.currentProject)),
+            action: () => vm.onOpenProject(_currentProject)),
         Tool(
             icon: Icon(Icons.file_download),
             tooltip: "Generate your inventories to share or download",
@@ -66,7 +71,7 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
             tooltip: "Delete this LA project",
             enabled: true,
             askConfirmation: true,
-            action: () => vm.onDelProject(vm.state.currentProject)),
+            action: () => vm.onDelProject(_currentProject)),
         // To think about:
         // - Data generation
         // - Inventories download
@@ -79,20 +84,21 @@ class LAProjectViewPage extends projectViewPage.StatelessWidget {
               leading: IconButton(
                 color: Colors.white,
                 icon: Icon(Mdi.vectorLink),
-                tooltip: "${vm.state.currentProject.shortName} links drawer",
+                tooltip: "${_currentProject.shortName} links drawer",
                 onPressed: () => _scaffoldKey.currentState.openDrawer(),
               ),
               context: context,
               showLaIcon: true,
-              title: "Toolkit of ${vm.state.currentProject.shortName} Portal"),
+              title: "Toolkit of ${_currentProject.shortName} Portal"),
           body: new ScrollPanel(
               child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 80, vertical: 20),
                   child: Column(children: [
                     Container(
                         padding: EdgeInsets.only(top: 80, bottom: 50),
-                        child: LAProjectTimeline()),
-                    ServicesChipPanel(),
+                        child: LAProjectTimeline(project: _currentProject)),
+                    // Disabled for now
+                    // ServicesChipPanel(),
                     ResponsiveGridRow(
                         // desiredItemWidth: 120,
                         // minSpacing: 20,

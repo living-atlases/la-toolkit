@@ -33,11 +33,43 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
     return Container(
         // If we want to limit the size:
         // width: 500.0,
+        //
+        // https://github.com/davigmacode/flutter_smart_select/tree/master/example
+
         child: SmartSelect<String>.multiple(
       title: "Services to run in ${widget.server.name}:",
       placeholder: 'Server empty, select one or more services',
       value: widget.servicesInServer,
       // choiceItems: LAServiceDesc.names,
+      choiceEmptyBuilder: (a, b) => Container(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Icon(
+                Icons.search,
+                color: Colors.grey,
+                size: 120.0,
+              ),
+              const SizedBox(height: 25),
+              const Text(
+                'This server is empty',
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 7),
+              const Text(
+                "There aren't service available (also right now the multiple deploy of services is not supported)",
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 7),
+              const Text(
+                "Maybe you should distribute your services between your servers better",
+                style: TextStyle(color: Colors.grey),
+              )
+            ],
+          ),
+        ),
+      ),
       modalValidation: (List<String> selection) {
         Set<String> incompatible = {};
         selection.forEach((first) {
