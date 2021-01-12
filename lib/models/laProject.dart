@@ -202,4 +202,11 @@ class LAProject {
     assert(services[serviceName].servers[0] == server);
     initViews();
   }
+
+  void delete(LAServer serverToDelete) {
+    services.forEach((key, service) => service.servers.removeWhere(
+        (currentServer) => currentServer.name == serverToDelete.name));
+    servers.removeWhere(
+        (currentServer) => currentServer.name == serverToDelete.name);
+  }
 }

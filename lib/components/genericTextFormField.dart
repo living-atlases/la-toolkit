@@ -14,6 +14,7 @@ class GenericTextFormField extends StatefulWidget {
   final bool isDense;
   final bool isCollapsed;
   final ValueChanged<String> onChanged;
+  final FocusNode focusNode;
 
   GenericTextFormField(
       {this.label,
@@ -25,7 +26,8 @@ class GenericTextFormField extends StatefulWidget {
       @required this.error,
       @required this.onChanged,
       this.isDense = false,
-      this.isCollapsed = false});
+      this.isCollapsed = false,
+      this.focusNode});
 
   @override
   _GenericTextFormFieldState createState() => _GenericTextFormFieldState();
@@ -65,6 +67,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                     widget.onChanged(value);
                   }
                 }),
+            focusNode: widget.focusNode,
             initialValue: widget.initialValue,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String value) =>

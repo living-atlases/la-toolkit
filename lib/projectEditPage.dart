@@ -35,6 +35,13 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
     GlobalKey<FormState>(),
     GlobalKey<FormState>()
   ];
+  List<FocusNode> _focusNodes = [
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    null,
+    FocusNode(),
+  ];
   var _steps;
   LAProject _project;
   static const _markdownColor = LAColorTheme.inactive;
@@ -42,7 +49,6 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   static const _serverHint =
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
   var _serverAddController = TextEditingController();
-  var _serverFocus = FocusNode();
 
   next() {
     // print('next: $_currentStep');
@@ -59,6 +65,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   }
 
   goTo(int step) {
+    print('goto $step');
+    FocusScope.of(context).requestFocus(_focusNodes[_currentStep]);
     _currentStep = step;
   }
 
@@ -120,7 +128,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
       // print('build project page');
       _project = vm.state.currentProject;
       _currentStep = vm.state.currentStep ?? 0;
-
+      FocusScope.of(context).requestFocus(_focusNodes[_currentStep]);
       _steps = [
         Step(
             title: const Text('Basic information'),
@@ -144,6 +152,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       initialValue: _project.longName,
                       //vm: vm,
                       regexp: LARegExp.projectNameRegexp,
+                      focusNode: _focusNodes[0],
                       onChanged: (value) {
                         _project.longName = value;
                         vm.onSaveCurrentProject();
@@ -223,7 +232,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
-                                      _project.servers.removeAt(index);
+                                      _project.delete(_project.servers[index]);
                                       vm.onSaveCurrentProject();
                                     },
                                   ),
@@ -234,7 +243,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                     controller: _serverAddController,
                     onFieldSubmitted: (value) =>
                         _addServer(value, vm.onSaveCurrentProject),
-                    focusNode: _serverFocus,
+                    focusNode: _focusNodes[1],
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (String value) {
                       return !LARegExp.hostnameRegexp.hasMatch(value) //
@@ -303,7 +312,8 @@ If you are unsure type something like "server1, server2, server3".
                                 dependsOn: _project.getService(LAServiceDesc
                                     .list
                                     .elementAt(index)
-                                    .depends)))
+                                    .depends),
+                                collectoryFocusNode: _focusNodes[2]))
                   ],
                 ))),
         Step(
@@ -380,6 +390,9 @@ If you are unsure type something like "server1, server2, server3".
                                       initialValue: server.ipv4,
                                       isCollapsed: true,
                                       regexp: LARegExp.ipv4,
+                                      focusNode: server == _project.servers[0]
+                                          ? _focusNodes[4]
+                                          : null,
                                       onChanged: (value) {
                                         _project.servers.map((current) {
                                           if (server.name == current.name) {
@@ -515,7 +528,7 @@ If you are unsure type something like "server1, server2, server3".
     _project.upsert(LAServer(name: value));
     _serverAddController.clear();
     _formKeys[1].currentState.reset();
-    _serverFocus.requestFocus();
+    _focusNodes[2].requestFocus();
     onSaveCurrentProject();
   }
 

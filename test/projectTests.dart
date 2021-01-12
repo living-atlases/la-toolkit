@@ -149,6 +149,7 @@ void main() {
         equals("10.0.0.2"));
     print(testProject);
     verifyStepsValidation([true, true, true, true, true], testProject);
+    testProject.delete(vm1);
   });
 }
 

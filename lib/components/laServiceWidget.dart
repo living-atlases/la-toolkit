@@ -10,14 +10,15 @@ import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 
-import 'defDivider.dart';
 import 'helpIcon.dart';
 
 class LaServiceWidget extends StatelessWidget {
   final LAService service;
   final LAService dependsOn;
-
-  LaServiceWidget({Key key, this.service, this.dependsOn}) : super(key: key);
+  final FocusNode collectoryFocusNode;
+  LaServiceWidget(
+      {Key key, this.service, this.dependsOn, this.collectoryFocusNode})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +58,12 @@ class LaServiceWidget extends StatelessWidget {
           ? Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
               child: Container(
-                  padding: EdgeInsets.fromLTRB(20.0, 5.0, 10.0, 20.0),
+                  padding: EdgeInsets.fromLTRB(20.0, 0, 10.0, 20.0),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const DefDivider(),
+                        // const DefDivider(),
                         ListTile(
                           // leading: Icon(serviceDesc.icon),
                           contentPadding: EdgeInsets.zero,
@@ -76,7 +77,7 @@ class LaServiceWidget extends StatelessWidget {
                                 ),
                                 SizedBox(
                                   width:
-                                      7, // here put the desired space between the icon and the text
+                                      10, // here put the desired space between the icon and the text
                                 ),
                                 optional
                                     ? Column(
@@ -85,24 +86,39 @@ class LaServiceWidget extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                            Text(
-                                                "Use the ${serviceDesc.name} service?"),
-                                            Text(
-                                                "${StringUtils.capitalize(serviceDesc.desc)}",
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey[600])),
+                                            Row(children: [
+                                              Text(
+                                                  "Use the ${serviceDesc.name} service?"),
+                                              Transform.scale(
+                                                  scale: 0.8,
+                                                  child: Switch(
+                                                    value: service.use,
+                                                    // activeColor: Color(0xFF6200EE),
+                                                    onChanged: (bool newValue) {
+                                                      service.use = newValue;
+                                                      vm.onEditService(service);
+                                                    },
+                                                  ))
+                                            ]),
+                                            SizedBox(
+                                              height:
+                                                  0, // here put the desired space between the icon and the text
+                                            ),
+                                            SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.6,
+                                                child: Wrap(children: [
+                                                  Text(
+                                                      "${StringUtils.capitalize(serviceDesc.desc)}",
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          color:
+                                                              Colors.grey[600]))
+                                                ])),
+                                            SizedBox(height: 10)
                                           ])
-                                    : Container(),
-                                optional
-                                    ? Switch(
-                                        value: service.use,
-                                        // activeColor: Color(0xFF6200EE),
-                                        onChanged: (bool newValue) {
-                                          service.use = newValue;
-                                          vm.onEditService(service);
-                                        },
-                                      )
                                     : Container(),
                                 (!optional)
                                     ? Text(
@@ -151,7 +167,8 @@ class LaServiceWidget extends StatelessWidget {
                             ),
                             if (!serviceDesc.withoutUrl)
                               Container(
-                                  padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                  padding: EdgeInsets.fromLTRB(
+                                      0, 0, usesSubdomain ? 0 : 0, 0),
                                   child: Text(
                                       "http${vm.state.currentProject.useSSL ? 's' : ''}://")),
                             if (!serviceDesc.withoutUrl && usesSubdomain)
@@ -183,7 +200,8 @@ class LaServiceWidget extends StatelessWidget {
                                   BoxConstraints.tight(Size.fromHeight(350)), */
                               isExpanded: false,
                             ) */
-                          ])
+                          ]),
+                        SizedBox(height: 10)
                       ])))
           : Container();
     });
@@ -195,6 +213,9 @@ class LaServiceWidget extends StatelessWidget {
         width: 150,
         child: GenericTextFormField(
             initialValue: service.suburl,
+            focusNode: service.nameInt == LAServiceName.collectory.toS()
+                ? collectoryFocusNode
+                : null,
             hint: serviceDesc.hint,
             isCollapsed: true,
             regexp: LARegExp.subdomain,
