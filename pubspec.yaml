@@ -57,6 +57,7 @@ dependencies:
   json_annotation: ^3.0.0
   copy_with_extension: ^1.4.0
   uuid: ^2.2.2
+  http: ^0.12.2
 
   # Remove this in the future?
   shared_preferences: ^0.5.12+4

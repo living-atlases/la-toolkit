@@ -43,13 +43,15 @@ class AppState {
   final int currentStep;
   // from server api call
   final List<LAProject> projects;
+  final List<String> alaInstallReleases;
 
   AppState(
       {this.projects,
       this.firstUsage = true,
       this.currentProject,
       this.currentStep,
-      this.status});
+      this.status,
+      this.alaInstallReleases});
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
       _$AppStateFromJson(json);
@@ -62,6 +64,7 @@ class AppState {
     projects: ${projects.length} 
     currentProject: $currentProject, 
     view status: $status, 
+    ala-install releases: $alaInstallReleases
     ''';
   }
 }

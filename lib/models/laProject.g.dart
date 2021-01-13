@@ -8,6 +8,7 @@ part of 'laProject.dart';
 
 extension LAProjectCopyWith on LAProject {
   LAProject copyWith({
+    String alaInstallRelease,
     String domain,
     bool isCreated,
     String longName,
@@ -19,6 +20,7 @@ extension LAProjectCopyWith on LAProject {
     dynamic uuid,
   }) {
     return LAProject(
+      alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
       domain: domain ?? this.domain,
       isCreated: isCreated ?? this.isCreated,
       longName: longName ?? this.longName,
@@ -52,6 +54,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
           k, e == null ? null : LAService.fromJson(e as Map<String, dynamic>)),
     ),
     status: _$enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']),
+    alaInstallRelease: json['alaInstallRelease'] as String,
   );
 }
 
@@ -64,6 +67,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'servers': instance.servers?.map((e) => e?.toJson())?.toList(),
       'services': instance.services?.map((k, e) => MapEntry(k, e?.toJson())),
       'status': _$LAProjectStatusEnumMap[instance.status],
+      'alaInstallRelease': instance.alaInstallRelease,
     };
 
 T _$enumDecode<T>(

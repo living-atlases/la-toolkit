@@ -14,7 +14,19 @@ class OnFetchState extends AppActions {
   OnFetchState(this.state);
 }
 
+class OnFetchStateFailed extends AppActions {
+  OnFetchStateFailed();
+}
+
 class OnFetchProjectsFailed extends AppActions {}
+
+class OnFetchAlaInstallReleases extends AppActions {
+  List<String> releases;
+
+  OnFetchAlaInstallReleases(this.releases);
+}
+
+class OnFetchAlaInstallReleasesFailed extends AppActions {}
 
 class CreateProject extends AppActions {
   CreateProject();

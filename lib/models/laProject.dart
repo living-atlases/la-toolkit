@@ -39,6 +39,7 @@ class LAProject {
   bool isCreated;
   @JsonSerializable(nullable: false)
   LAProjectStatus status;
+  String alaInstallRelease;
 
   LAProject(
       {uuid,
@@ -49,7 +50,8 @@ class LAProject {
       this.isCreated = false,
       List<LAServer> servers,
       Map<String, LAService> services,
-      LAProjectStatus status})
+      LAProjectStatus status,
+      this.alaInstallRelease})
       : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],
         // _serversNameList = _serversNameList ?? [],
@@ -146,7 +148,7 @@ class LAProject {
   @override
   String toString() {
     return '''longName: $longName ($shortName), domain: $domain, 
-    isCreated: $isCreated, status: ${status.title}
+    isCreated: $isCreated, status: ${status.title}, ala-install: $alaInstallRelease
     servers: $servers, 
     valid: ${validateCreation()}
     services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]   

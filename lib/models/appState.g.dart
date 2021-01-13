@@ -8,6 +8,7 @@ part of 'appState.dart';
 
 extension AppStateCopyWith on AppState {
   AppState copyWith({
+    List<String> alaInstallReleases,
     LAProject currentProject,
     int currentStep,
     bool firstUsage,
@@ -15,6 +16,7 @@ extension AppStateCopyWith on AppState {
     LAProjectViewStatus status,
   }) {
     return AppState(
+      alaInstallReleases: alaInstallReleases ?? this.alaInstallReleases,
       currentProject: currentProject ?? this.currentProject,
       currentStep: currentStep ?? this.currentStep,
       firstUsage: firstUsage ?? this.firstUsage,
@@ -40,6 +42,8 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
         : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
     currentStep: json['currentStep'] as int,
     status: _$enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
+    alaInstallReleases:
+        (json['alaInstallReleases'] as List)?.map((e) => e as String)?.toList(),
   );
 }
 
@@ -49,6 +53,7 @@ Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'status': _$LAProjectViewStatusEnumMap[instance.status],
       'currentStep': instance.currentStep,
       'projects': instance.projects?.map((e) => e?.toJson())?.toList(),
+      'alaInstallReleases': instance.alaInstallReleases,
     };
 
 T _$enumDecode<T>(

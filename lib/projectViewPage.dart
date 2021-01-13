@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
 import 'package:mdi/mdi.dart';
@@ -105,6 +106,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                         child: LAProjectTimeline(project: _currentProject)),
                     // Disabled for now
                     // ServicesChipPanel(),
+                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      SizedBox(width: 250, child: ALAInstallSelector())
+                    ]),
+                    SizedBox(height: 20),
                     ResponsiveGridRow(
                         // desiredItemWidth: 120,
                         // minSpacing: 20,
@@ -128,7 +133,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
 class _ProjectPageViewModel {
   final AppState state;
   final void Function(LAProject project) onOpenProject;
+  final void Function(LAProject project) onEditProject;
   final void Function(LAProject project) onDelProject;
 
-  _ProjectPageViewModel({this.state, this.onOpenProject, this.onDelProject});
+  _ProjectPageViewModel(
+      {this.state, this.onOpenProject, this.onDelProject, this.onEditProject});
 }

@@ -48,7 +48,7 @@ class LaServiceWidget extends StatelessWidget {
                     DropdownMenuItem<String>(
                       child: Text(server.name),
                       value: server.name,
-                    ));
+                    ));color
               })
               .values
               .toList();

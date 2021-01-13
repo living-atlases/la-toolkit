@@ -7,6 +7,11 @@ import 'actions.dart';
 final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
   new TypedReducer<AppState, OnFetchState>(_onFetchState),
+  new TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
+  new TypedReducer<AppState, OnFetchAlaInstallReleases>(
+      _onFetchAlaInstallReleases),
+  new TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(
+      _onFetchAlaInstallReleasesFailed),
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
@@ -23,6 +28,20 @@ AppState _onIntroEnd(AppState state, OnIntroEnd action) {
 
 AppState _onFetchState(AppState state, OnFetchState action) {
   return action.state;
+}
+
+AppState _onFetchStateFailed(AppState state, OnFetchStateFailed action) {
+  return state;
+}
+
+AppState _onFetchAlaInstallReleases(
+    AppState state, OnFetchAlaInstallReleases action) {
+  return state.copyWith(alaInstallReleases: action.releases);
+}
+
+AppState _onFetchAlaInstallReleasesFailed(
+    AppState state, OnFetchAlaInstallReleasesFailed action) {
+  return state;
 }
 
 AppState _createProject(AppState state, CreateProject action) {

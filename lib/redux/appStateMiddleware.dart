@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,7 +26,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       appState = AppState(projects: List<LAProject>.empty());
     } else {
       var asJ = json.decode(asS);
-      print("Load prefs: $asJ.toString()");
+      // print("Load prefs: $asJ.toString()");
       appState = AppState.fromJson(asJ);
     }
     // print("Load prefs: $appState");
@@ -37,6 +39,26 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       var state = await _load();
       // print("Loaded prefs: $state");
       store.dispatch(OnFetchState(state));
+
+      if (!AppUtils.isDev() ||
+          store.state.alaInstallReleases == null ||
+          store.state.alaInstallReleases.length == 0) {
+        var url =
+            'https://api.github.com/repos/AtlasOfLivingAustralia/ala-install/releases';
+        var response = await http.get(url);
+        if (response.statusCode == 200) {
+          var l = jsonDecode(response.body) as List;
+          List<String> alaInstallReleases = [];
+          l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
+          // Remove the old ones
+          alaInstallReleases.removeRange(
+              alaInstallReleases.length - 6, alaInstallReleases.length);
+          alaInstallReleases.add('upstream');
+          store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
+        } else {
+          store.dispatch(OnFetchAlaInstallReleasesFailed());
+        }
+      }
     }
     next(action);
   }

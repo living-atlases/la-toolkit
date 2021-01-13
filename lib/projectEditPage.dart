@@ -38,9 +38,9 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
-    FocusNode(),
+    null, // FocusNode(), // this does not work well
     null,
-    FocusNode(),
+    null // FocusNode(), // this does not work well
   ];
   var _steps;
   LAProject _project;
@@ -66,6 +66,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
 
   goTo(int step) {
     print('goto $step');
+    context.nextEditableTextFocus();
     FocusScope.of(context).requestFocus(_focusNodes[_currentStep]);
     _currentStep = step;
   }
@@ -121,6 +122,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
         onSaveCurrentProject: () {
           _project.initViews();
           _project.validateCreation();
+
           store.dispatch(SaveCurrentProject(_project, _currentStep));
         },
       );
@@ -129,6 +131,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
       _project = vm.state.currentProject;
       _currentStep = vm.state.currentStep ?? 0;
       FocusScope.of(context).requestFocus(_focusNodes[_currentStep]);
+
       _steps = [
         Step(
             title: const Text('Basic information'),
@@ -552,4 +555,12 @@ class _ProjectPageViewModel {
       this.onSaveCurrentProject,
       this.onFinish,
       this.onAddServicesToServer});
+}
+
+extension Utility on BuildContext {
+  void nextEditableTextFocus() {
+    do {
+      FocusScope.of(this).nextFocus();
+    } while (FocusScope.of(this).focusedChild.context.widget is! EditableText);
+  }
 }
