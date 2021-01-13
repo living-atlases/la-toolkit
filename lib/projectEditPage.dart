@@ -104,12 +104,12 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
             return MapEntry(nameInt, service);
           });
           _project.initViews();
-          _project.validateCreation(_currentStep);
+          _project.validateCreation();
           store.dispatch(UpdateProject(_project));
         },
         onFinish: () {
           _project.initViews();
-          _project.validateCreation(_currentStep);
+          _project.validateCreation();
           if (store.state.status == LAProjectViewStatus.create)
             store.dispatch(AddProject(_project));
           if (store.state.status == LAProjectViewStatus.edit) {
@@ -120,7 +120,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
         },
         onSaveCurrentProject: () {
           _project.initViews();
-          _project.validateCreation(_currentStep);
+          _project.validateCreation();
           store.dispatch(SaveCurrentProject(_project, _currentStep));
         },
       );

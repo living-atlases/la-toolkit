@@ -61,37 +61,37 @@ class LAProject {
   // List<LAServer> get servers => _servers;
   //  set servers(servers) => _servers = servers;
 
-  bool validateCreation(int currentStep) {
+  bool validateCreation() {
     bool valid = true;
-    if (currentStep >= 0)
-      valid = valid &&
-          LARegExp.projectNameRegexp.hasMatch(longName) &&
-          LARegExp.shortNameRegexp.hasMatch(shortName) &&
-          LARegExp.domainRegexp.hasMatch(domain);
-    if (currentStep >= 1) {
-      valid = valid && servers.length > 0;
-      if (valid)
-        servers.forEach((s) {
-          valid = valid && LARegExp.hostnameRegexp.hasMatch(s.name);
-        });
-    }
-    if (valid && currentStep >= 2) {
-      // If the previous steps are correct, this is also correct
-    }
-    if (valid && currentStep >= 3) {
-      valid = valid &&
-          (getServicesNameListInUse().length > 0 &&
-              getServicesNameListInUse().length ==
-                  getServicesNameListSelected().length);
-    }
-    if (valid && currentStep >= 4) {
-      if (valid)
-        servers.forEach((s) {
-          valid = valid && LARegExp.ipv4.hasMatch(s.ipv4);
-        });
-    }
-    isCreated = valid && currentStep == 4;
-    setProjectStatus(LAProjectStatus.advancedDefined);
+    LAProjectStatus status = LAProjectStatus.created;
+
+    valid = valid &&
+        LARegExp.projectNameRegexp.hasMatch(longName) &&
+        LARegExp.shortNameRegexp.hasMatch(shortName) &&
+        LARegExp.domainRegexp.hasMatch(domain);
+    if (valid) status = LAProjectStatus.basicDefined;
+
+    valid = valid && servers.length > 0;
+    if (valid)
+      servers.forEach((s) {
+        valid = valid && LARegExp.hostnameRegexp.hasMatch(s.name);
+      });
+
+    // If the previous steps are correct, this is also correct
+
+    valid = valid &&
+        (getServicesNameListInUse().length > 0 &&
+            getServicesNameListInUse().length ==
+                getServicesNameListSelected().length);
+
+    if (valid)
+      servers.forEach((s) {
+        valid = valid && LARegExp.ipv4.hasMatch(s.ipv4);
+      });
+
+    isCreated = valid;
+    if (isCreated) status = LAProjectStatus.advancedDefined;
+    setProjectStatus(status);
     return valid;
   }
 
@@ -148,7 +148,7 @@ class LAProject {
     return '''longName: $longName ($shortName), domain: $domain, 
     isCreated: $isCreated, status: ${status.title}
     servers: $servers, 
-    valid: ${validateCreation(0)} ${validateCreation(1)} ${validateCreation(2)} ${validateCreation(3)} ${validateCreation(4)}
+    valid: ${validateCreation()}
     services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]   
     services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().map((s) => services[s].nameInt + "(" + (services[s].servers.length > 0 ? services[s].servers[0].name : "") + ")").toList().join(', ')}].
     services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
@@ -186,10 +186,7 @@ class LAProject {
   }
 
   void setProjectStatus(LAProjectStatus status) {
-    if (this.status == null || this.status.value < status.value) {
-      // only set if the new status is higher
-      this.status = status;
-    }
+    this.status = status;
   }
 
   void assign(String serviceName, LAServer server) {

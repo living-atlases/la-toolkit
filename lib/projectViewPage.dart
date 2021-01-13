@@ -11,6 +11,7 @@ import 'components/projectDrawer.dart';
 import 'components/scrollPanel.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
+import 'models/laProjectStatus.dart';
 import 'redux/actions.dart';
 
 class LAProjectViewPage extends StatefulWidget {
@@ -44,7 +45,12 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
         Tool(
             icon: Icon(Icons.file_download),
             tooltip: "Generate your inventories to share or download",
-            title: "Generate inventories"),
+            title: "Generate inventories",
+            enabled: _currentProject.status.value >
+                LAProjectStatus.basicDefined.value,
+            action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("In Development: come back soon!"),
+                ))),
         Tool(
             icon: Icon(Icons.settings_ethernet),
             tooltip: "Test if your servers are reachable from here",
