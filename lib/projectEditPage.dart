@@ -19,6 +19,8 @@ import 'utils/utils.dart';
 
 class LAProjectEditPage extends StatefulWidget {
   static const routeName = "project";
+  static final projectTextStyle =
+      TextStyle(color: LAColorTheme.laPalette.shade700);
 
   @override
   _LAProjectEditPageState createState() => _LAProjectEditPageState();
@@ -38,9 +40,9 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
-    null, // FocusNode(), // this does not work well
+    FocusNode(),
     null,
-    null // FocusNode(), // this does not work well
+    FocusNode(),
   ];
   var _steps;
   LAProject _project;
@@ -66,8 +68,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
 
   goTo(int step) {
     print('goto $step');
-    context.nextEditableTextFocus();
-    FocusScope.of(context).requestFocus(_focusNodes[_currentStep]);
+    FocusScope.of(context).requestFocus(_focusNodes[step]);
     _currentStep = step;
   }
 
@@ -130,7 +131,6 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
       // print('build project page');
       _project = vm.state.currentProject;
       _currentStep = vm.state.currentStep ?? 0;
-      FocusScope.of(context).requestFocus(_focusNodes[_currentStep]);
 
       _steps = [
         Step(
@@ -242,8 +242,12 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                                 )));
                       }),
                   // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
+
                   TextFormField(
                     controller: _serverAddController,
+                    showCursor: true,
+                    cursorColor: Colors.orange,
+                    style: LAProjectEditPage.projectTextStyle,
                     onFieldSubmitted: (value) =>
                         _addServer(value, vm.onSaveCurrentProject),
                     focusNode: _focusNodes[1],
@@ -283,8 +287,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                         ),
                         onTapLink: (text, href, title) async =>
                             await launch(href),
-                        data: """## Tips 
-See the [infrastructure requirements page](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Infrastructure-Requirements) and other portals infrastructure in [our documentation wiki](https://github.com/AtlasOfLivingAustralia/documentation/wiki/) to dimension your LA portal. For a test portal a big server can host the main basic LA services.  
+                        data: """## Tips
+See the [infrastructure requirements page](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Infrastructure-Requirements) and other portals infrastructure in [our documentation wiki](https://github.com/AtlasOfLivingAustralia/documentation/wiki/) to dimension your LA portal. For a test portal a big server can host the main basic LA services.
 If you are unsure type something like "server1, server2, server3".
 """),
                   ),
@@ -358,6 +362,7 @@ If you are unsure type something like "server1, server2, server3".
                   Expanded(
                       flex: 8, // 80%,
                       child: DataTable(
+                        dataRowHeight: 65,
                         // sortAscending: sort,
                         // sortColumnIndex: 0,
                         showCheckboxColumn: false,
@@ -381,18 +386,23 @@ If you are unsure type something like "server1, server2, server3".
                         rows: _project.servers
                             .map(
                               (server) => DataRow(cells: [
-                                DataCell(
-                                  //Text(user.firstName),
-                                  Text(server.name),
-                                ),
+                                DataCell(Padding(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  child: Text(server.name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16)),
+                                )),
                                 DataCell(
                                   GenericTextFormField(
                                       // IPv4
                                       hint: "ex: '10.0.0.1' or '84.120.10.4'",
                                       error: 'Wrong IP address.',
                                       initialValue: server.ipv4,
-                                      isCollapsed: true,
+                                      isDense: true,
+                                      /* isCollapsed: true, */
                                       regexp: LARegExp.ipv4,
+                                      allowEmpty: true,
                                       focusNode: server == _project.servers[0]
                                           ? _focusNodes[4]
                                           : null,
@@ -414,7 +424,8 @@ If you are unsure type something like "server1, server2, server3".
                                         'e.g. \'${_project.getService('collectory')?.url(_project.domain)} ${_project.getService('ala_hub')?.url(_project.domain)} ${_project.getService('ala_bie')?.suburl}\' ',
                                     error: 'Wrong aliases.',
                                     initialValue: server.aliases.join(' '),
-                                    isCollapsed: true,
+                                    isDense: true,
+                                    /* isCollapsed: true, */
                                     regexp: LARegExp.aliasesRegexp,
                                     onChanged: (value) {
                                       _project.servers.map((current) {
@@ -519,11 +530,7 @@ If you are unsure type something like "server1, server2, server3".
   }
 
   void onStepContinue(_ProjectPageViewModel vm) {
-    // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-    if (_formKeys[_currentStep].currentState.validate() ||
-        (_currentStep == 1 && _project.numServers() > 0)) {
-      next();
-    }
+    next();
     vm.onSaveCurrentProject();
   }
 
@@ -531,7 +538,7 @@ If you are unsure type something like "server1, server2, server3".
     _project.upsert(LAServer(name: value));
     _serverAddController.clear();
     _formKeys[1].currentState.reset();
-    _focusNodes[2].requestFocus();
+    _focusNodes[1].requestFocus();
     onSaveCurrentProject();
   }
 
@@ -555,12 +562,4 @@ class _ProjectPageViewModel {
       this.onSaveCurrentProject,
       this.onFinish,
       this.onAddServicesToServer});
-}
-
-extension Utility on BuildContext {
-  void nextEditableTextFocus() {
-    do {
-      FocusScope.of(this).nextFocus();
-    } while (FocusScope.of(this).focusedChild.context.widget is! EditableText);
-  }
 }
