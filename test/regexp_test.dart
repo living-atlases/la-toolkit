@@ -74,8 +74,8 @@ void main() {
       '1.1.1.1.1',
       '111',
       '255.255.255.256',
-      // Not empty
-      '',
+      // Not empty (lets allow)
+      //   '',
       // Neither ipv6
       '::1'
     ];
