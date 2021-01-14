@@ -19,7 +19,8 @@ class LaServiceWidget extends StatelessWidget {
   LaServiceWidget(
       {Key key, this.service, this.dependsOn, this.collectoryFocusNode})
       : super(key: key);
-
+  final domainTextStyle =
+      TextStyle(fontSize: 16, color: LAColorTheme.laThemeData.hintColor);
   @override
   Widget build(BuildContext context) {
     var serviceDesc = LAServiceDesc.get(service.nameInt);
@@ -54,6 +55,7 @@ class LaServiceWidget extends StatelessWidget {
               .toList();
       print("Server list: ${searchServerList.length}"); */
       // print('Processing service ${serviceDesc.nameInt}');
+
       return visible
           ? Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
@@ -170,19 +172,20 @@ class LaServiceWidget extends StatelessWidget {
                                   padding: EdgeInsets.fromLTRB(
                                       0, 0, usesSubdomain ? 0 : 0, 0),
                                   child: Text(
-                                      "http${vm.state.currentProject.useSSL ? 's' : ''}://")),
+                                      "http${vm.state.currentProject.useSSL ? 's' : ''}://",
+                                      style: domainTextStyle)),
                             if (!serviceDesc.withoutUrl && usesSubdomain)
                               _createSubUrlField(service, serviceDesc, vm,
                                   'Invalid subdomain.'),
                             if (!serviceDesc.withoutUrl && usesSubdomain)
-                              Text('.$domain'),
+                              Text('.$domain', style: domainTextStyle),
                             if (!serviceDesc.withoutUrl && !usesSubdomain)
-                              Text('$domain/'),
+                              Text('$domain/', style: domainTextStyle),
                             if (!serviceDesc.withoutUrl && !usesSubdomain)
                               _createSubUrlField(
                                   service, serviceDesc, vm, 'Invalid path.'),
                             if (!serviceDesc.withoutUrl && !usesSubdomain)
-                              Text("/"),
+                              Text("/", style: domainTextStyle),
                             /* SearchChoices.single(
                               items: searchServerList,
                               // vm.state.currentProject.servers.toList(),
