@@ -40,7 +40,7 @@ extension EnumParser on String {
     return LAServiceName.values.firstWhere(
         (e) =>
             e.toString().toLowerCase() ==
-            'LAServiceNamesInt.$this'.toLowerCase(),
+            '${(LAServiceName).toString()}.$this'.toLowerCase(),
         orElse: () => null); //return null if not found
   }
 }
