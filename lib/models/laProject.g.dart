@@ -12,6 +12,9 @@ extension LAProjectCopyWith on LAProject {
     String domain,
     bool isCreated,
     String longName,
+    List<double> mapBounds1stPoint,
+    List<double> mapBounds2ndPoint,
+    double mapZoom,
     List<LAServer> servers,
     Map<String, LAService> services,
     String shortName,
@@ -24,6 +27,9 @@ extension LAProjectCopyWith on LAProject {
       domain: domain ?? this.domain,
       isCreated: isCreated ?? this.isCreated,
       longName: longName ?? this.longName,
+      mapBounds1stPoint: mapBounds1stPoint ?? this.mapBounds1stPoint,
+      mapBounds2ndPoint: mapBounds2ndPoint ?? this.mapBounds2ndPoint,
+      mapZoom: mapZoom ?? this.mapZoom,
       servers: servers ?? this.servers,
       services: services ?? this.services,
       shortName: shortName ?? this.shortName,
@@ -55,6 +61,13 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     ),
     status: _$enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']),
     alaInstallRelease: json['alaInstallRelease'] as String,
+    mapBounds1stPoint: (json['mapBounds1stPoint'] as List)
+        ?.map((e) => (e as num)?.toDouble())
+        ?.toList(),
+    mapBounds2ndPoint: (json['mapBounds2ndPoint'] as List)
+        ?.map((e) => (e as num)?.toDouble())
+        ?.toList(),
+    mapZoom: (json['mapZoom'] as num)?.toDouble(),
   );
 }
 
@@ -68,6 +81,9 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'services': instance.services?.map((k, e) => MapEntry(k, e?.toJson())),
       'status': _$LAProjectStatusEnumMap[instance.status],
       'alaInstallRelease': instance.alaInstallRelease,
+      'mapBounds1stPoint': instance.mapBounds1stPoint,
+      'mapBounds2ndPoint': instance.mapBounds2ndPoint,
+      'mapZoom': instance.mapZoom,
     };
 
 T _$enumDecode<T>(

@@ -49,6 +49,10 @@ void main() {
     var string = 'vm-1-01';
     expect(LARegExp.hostnameRegexp.hasMatch(string), equals(true));
   });
+  test('hostname regexp should allow domains', () {
+    var string = 'demo.l-a.site';
+    expect(LARegExp.hostnameRegexp.hasMatch(string), equals(true));
+  });
 
   test('hostname aliases regexp should allow valid hostnames', () {
     var string = 'vm-1-01   vm2 vm3';

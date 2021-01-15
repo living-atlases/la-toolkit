@@ -7,5 +7,6 @@ part of 'env.dart';
 // **************************************************************************
 
 class _Env {
-  static const sentryDsn = 'dev';
+  static const String sentryDsn = 'dev';
+  static const bool demo = false;
 }

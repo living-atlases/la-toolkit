@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/mapAreaSelector.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/genericTextFormField.dart';
@@ -13,6 +15,7 @@ import 'components/servicesInServerChooser.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
+import 'models/laProjectStatus.dart';
 import 'models/laServer.dart';
 import 'models/laServiceDesc.dart';
 import 'utils/utils.dart';
@@ -35,10 +38,12 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
     GlobalKey<FormState>()
   ];
   List<FocusNode> _focusNodes = [
     FocusNode(),
+    null,
     FocusNode(),
     FocusNode(),
     null,
@@ -51,7 +56,12 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   static const _serverHint =
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
   var _serverAddController = TextEditingController();
-
+  var _basicStep = 0;
+  var _mapStep = 1;
+  var _serversStep = 2;
+  var _servicesStep = 3;
+  var _serverToServiceStep = 4;
+  var _serversAdditional = 5;
   next() {
     // print('next: $_currentStep');
     _currentStep + 1 != _steps.length
@@ -91,23 +101,10 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
       return _ProjectPageViewModel(
         state: store.state,
         onAddServicesToServer: (server, assignedServices) {
-          _project.services = _project.services.map((nameInt, service) {
-            _project.assign(nameInt, server);
-            /*
-            // Remove previous service in server assignments
-            if (service.getServersNameList().contains(server.name)) {
-              service.servers.clear();
-            }
-            if (assignedServices.contains(service.nameInt)) {
-              service.assign(server);
-              // Clear view lists to force recalculation
-              service.initView();
-            } */
-            return MapEntry(nameInt, service);
-          });
-          _project.initViews();
+          _project.assign(server, assignedServices);
           _project.validateCreation();
-          store.dispatch(UpdateProject(_project));
+          // store.dispatch(UpdateProject(_project));
+          store.dispatch(SaveCurrentProject(_project, _currentStep));
         },
         onFinish: () {
           _project.initViews();
@@ -137,10 +134,10 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
             title: const Text('Basic information'),
             subtitle: const Text(
                 'Define the main information of your portal, like name, ...'),
-            isActive: _setIsActive(0),
-            state: _setSetStatus(0),
+            isActive: _setIsActive(_basicStep),
+            state: _setSetStatus(_basicStep),
             content: Form(
-              key: _formKeys[0],
+              key: _formKeys[_basicStep],
               child: Column(
                 children: <Widget>[
                   GenericTextFormField(
@@ -155,7 +152,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       initialValue: _project.longName,
                       //vm: vm,
                       regexp: LARegExp.projectNameRegexp,
-                      focusNode: _focusNodes[0],
+                      focusNode: _focusNodes[_basicStep],
                       onChanged: (value) {
                         _project.longName = value;
                         vm.onSaveCurrentProject();
@@ -209,12 +206,19 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
               ),
             )),
         Step(
-            isActive: _setIsActive(1),
-            state: _setSetStatus(1),
+            isActive: _setIsActive(_mapStep),
+            state: _setSetStatus(_mapStep),
+            title: const Text('Location information'),
+            subtitle: const Text('Select the map area of your LA portal,...'),
+            content:
+                Column(children: [SizedBox(height: 20), MapAreaSelector()])),
+        Step(
+            isActive: _setIsActive(_serversStep),
+            state: _setSetStatus(_serversStep),
             title: const Text('Servers'),
             subtitle: const Text('Inventory of the servers of your LA portal'),
             content: Form(
-              key: _formKeys[1],
+              key: _formKeys[_serversStep],
               child: Column(
                 // SERVERS
                 children: <Widget>[
@@ -250,7 +254,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                     style: LAProjectEditPage.projectTextStyle,
                     onFieldSubmitted: (value) =>
                         _addServer(value, vm.onSaveCurrentProject),
-                    focusNode: _focusNodes[1],
+                    focusNode: _focusNodes[_serversStep],
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (String value) {
                       return !LARegExp.hostnameRegexp.hasMatch(value) //
@@ -261,7 +265,9 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                         suffixIcon: IconButton(
                             icon: Icon(Icons.add_circle),
                             onPressed: () {
-                              if (_formKeys[1].currentState.validate()) {
+                              if (_formKeys[_serversStep]
+                                  .currentState
+                                  .validate()) {
                                 _addServer(_serverAddController.text,
                                     vm.onSaveCurrentProject);
                               }
@@ -296,14 +302,14 @@ If you are unsure type something like "server1, server2, server3".
               ),
             )),
         Step(
-            isActive: _setIsActive(2),
-            state: _setSetStatus(2),
+            isActive: _setIsActive(_servicesStep),
+            state: _setSetStatus(_servicesStep),
             title: const Text('Services'),
             subtitle: const Text(
                 'Choose the services of your portal and how your services URLs will look like'),
             // subtitle: const Text("Error!"),
             content: Form(
-                key: _formKeys[2],
+                key: _formKeys[_servicesStep],
                 child: Column(
                   children: [
                     ListView.builder(
@@ -320,12 +326,13 @@ If you are unsure type something like "server1, server2, server3".
                                     .list
                                     .elementAt(index)
                                     .depends),
-                                collectoryFocusNode: _focusNodes[2]))
+                                collectoryFocusNode:
+                                    _focusNodes[_servicesStep]))
                   ],
                 ))),
         Step(
-            isActive: _setIsActive(3),
-            state: _setSetStatus(3),
+            isActive: _setIsActive(_serverToServiceStep),
+            state: _setSetStatus(_serverToServiceStep),
             title:
                 const Text('Define which services will run in which servers'),
             // subtitle: const Text("Compatibilities"),
@@ -346,13 +353,13 @@ If you are unsure type something like "server1, server2, server3".
                         .toList()
                     : [Container()])),
         Step(
-          isActive: _setIsActive(4),
-          state: _setSetStatus(4),
+          isActive: _setIsActive(_serversAdditional),
+          state: _setSetStatus(_serversAdditional),
           title: const Text('Define better your servers'),
           subtitle: const Text(
               "Information to know how to reach and access to your servers, like IP Addressing, names aliases, SSH keys"),
           content: Form(
-              key: _formKeys[4],
+              key: _formKeys[5],
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -404,7 +411,7 @@ If you are unsure type something like "server1, server2, server3".
                                       regexp: LARegExp.ipv4,
                                       allowEmpty: true,
                                       focusNode: server == _project.servers[0]
-                                          ? _focusNodes[4]
+                                          ? _focusNodes[_serversAdditional]
                                           : null,
                                       onChanged: (value) {
                                         _project.servers.map((current) {
@@ -457,6 +464,16 @@ If you are unsure type something like "server1, server2, server3".
             title: vm.state.status.title,
             showLaIcon: true,
             actions: ListUtils.listWithoutNulls([
+              Tooltip(
+                  message: "Project configuration progress",
+                  child: CircularPercentIndicator(
+                    radius: 45.0,
+                    lineWidth: 6.0,
+                    percent: _project.status.percent / 100,
+                    center: new Text("${_project.status.percent}%",
+                        style: TextStyle(color: Colors.white, fontSize: 12)),
+                    progressColor: Colors.white,
+                  )),
               _currentStep == 0
                   ? null
                   : FlatButton(
@@ -537,8 +554,8 @@ If you are unsure type something like "server1, server2, server3".
   void _addServer(String value, void Function() onSaveCurrentProject) {
     _project.upsert(LAServer(name: value));
     _serverAddController.clear();
-    _formKeys[1].currentState.reset();
-    _focusNodes[1].requestFocus();
+    _formKeys[_serversStep].currentState.reset();
+    _focusNodes[_serversStep].requestFocus();
     onSaveCurrentProject();
   }
 

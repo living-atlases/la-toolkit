@@ -223,7 +223,7 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is AddProject) {
       // We open Tools instead of:
-      // MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
+      MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
     }
     if (action is UpdateProject) {
       // We open Tools instead of:

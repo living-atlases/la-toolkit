@@ -10,6 +10,7 @@ import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
 import 'components/scrollPanel.dart';
+import 'env/env.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
@@ -32,6 +33,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
         state: store.state,
         onOpenProject: (project) => store.dispatch(OpenProject(project)),
         onDelProject: (project) => store.dispatch(DelProject(project)),
+        onGenInvProject: (project) =>
+            store.dispatch(GenerateInvProject(project)),
       );
     }, builder: (BuildContext context, _ProjectPageViewModel vm) {
       // TODO: Move this to constants and use the same in timeline
@@ -43,15 +46,18 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             tooltip: "Edit the basic configuration",
             enabled: true,
             action: () => vm.onOpenProject(_currentProject)),
-        Tool(
-            icon: Icon(Icons.file_download),
-            tooltip: "Generate your inventories to share or download",
-            title: "Generate inventories",
-            enabled: _currentProject.status.value >
-                LAProjectStatus.basicDefined.value,
-            action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        if (Env.demo)
+          Tool(
+              icon: Icon(Icons.file_download),
+              tooltip:
+                  "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories.",
+              title: "Generate inventories",
+              enabled: _currentProject.status.value >
+                  LAProjectStatus.basicDefined.value,
+              action: () => vm.onGenInvProject(_currentProject)),
+        /*     action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("In Development: come back soon!"),
-                ))),
+                ))), */
         Tool(
             icon: Icon(Icons.settings_ethernet),
             tooltip: "Test if your servers are reachable from here",
@@ -135,7 +141,12 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onOpenProject;
   final void Function(LAProject project) onEditProject;
   final void Function(LAProject project) onDelProject;
+  final void Function(LAProject project) onGenInvProject;
 
   _ProjectPageViewModel(
-      {this.state, this.onOpenProject, this.onDelProject, this.onEditProject});
+      {this.state,
+      this.onOpenProject,
+      this.onDelProject,
+      this.onEditProject,
+      this.onGenInvProject});
 }

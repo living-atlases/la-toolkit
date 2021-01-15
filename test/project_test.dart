@@ -2,6 +2,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:latlong/latlong.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -92,7 +93,7 @@ void main() {
     testProject.upsert(vm2);
     testProject.upsert(vm3);
     testProject.upsert(vm4);
-    testProject.assign(LAServiceName.collectory.toS(), vm1);
+    testProject.assign(vm1, [LAServiceName.collectory.toS()]);
 
     expect(
         testProject
@@ -109,22 +110,33 @@ void main() {
     expect(testProject.getServiceE(LAServiceName.regions).servers.contains(vm1),
         equals(false));
 
-    testProject.assign(LAServiceName.collectory.toS(), vm2);
-    testProject.assign(LAServiceName.ala_bie.toS(), vm1);
-    testProject.assign(LAServiceName.branding.toS(), vm1);
-    testProject.assign(LAServiceName.bie_index.toS(), vm2);
-    testProject.assign(LAServiceName.ala_hub.toS(), vm1);
-    testProject.assign(LAServiceName.regions.toS(), vm1);
-    testProject.assign(LAServiceName.biocache_service.toS(), vm2);
-    testProject.assign(LAServiceName.solr.toS(), vm3);
-    testProject.assign(LAServiceName.logger.toS(), vm3);
-    testProject.assign(LAServiceName.species_lists.toS(), vm3);
-    testProject.assign(LAServiceName.spatial.toS(), vm4);
-    testProject.assign(LAServiceName.cas.toS(), vm4);
-    testProject.assign(LAServiceName.images.toS(), vm4);
-    testProject.assign(LAServiceName.biocache_backend.toS(), vm4);
-    testProject.assign(LAServiceName.biocache_cli.toS(), vm4);
-    testProject.assign(LAServiceName.nameindexer.toS(), vm4);
+    testProject.assign(vm1, [
+      LAServiceName.ala_hub.toS(),
+      LAServiceName.regions.toS(),
+      LAServiceName.ala_bie.toS(),
+      LAServiceName.branding.toS()
+    ]);
+
+    testProject.assign(vm2, [
+      LAServiceName.collectory.toS(),
+      LAServiceName.bie_index.toS(),
+      LAServiceName.biocache_service.toS()
+    ]);
+
+    testProject.assign(vm3, [
+      LAServiceName.solr.toS(),
+      LAServiceName.logger.toS(),
+      LAServiceName.species_lists.toS()
+    ]);
+
+    testProject.assign(vm4, [
+      LAServiceName.spatial.toS(),
+      LAServiceName.cas.toS(),
+      LAServiceName.images.toS(),
+      LAServiceName.biocache_backend.toS(),
+      LAServiceName.biocache_cli.toS(),
+      LAServiceName.nameindexer.toS()
+    ]);
 
     expect(
         testProject
@@ -149,5 +161,15 @@ void main() {
     print(testProject);
     expect(testProject.status, equals(LAProjectStatus.advancedDefined));
     // testProject.delete(vm1);
+  });
+
+  test('Test lat/lng center', () {
+    var p = LAProject(mapBounds1stPoint: [10, 10], mapBounds2ndPoint: [20, 20]);
+    expect(p.getCenter(), equals(LatLng(15, 15)));
+    p.mapBounds1stPoint = [20, 20];
+    p.mapBounds2ndPoint = [40, 40];
+    p.setMap(LatLng(20, 20), LatLng(40, 40), 10);
+    expect(p.getCenter(), equals(LatLng(30, 30)));
+    expect(p.mapZoom, equals(10));
   });
 }

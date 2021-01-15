@@ -11,5 +11,6 @@ abstract class Env {
 
 @Envify(path: kReleaseMode ? '.env.production' : '.env.development')
 abstract class Env {
-  static const sentryDsn = _Env.sentryDsn;
+  static const String sentryDsn = _Env.sentryDsn;
+  static const bool demo = _Env.demo;
 }

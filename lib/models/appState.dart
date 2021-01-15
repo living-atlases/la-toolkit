@@ -60,11 +60,17 @@ class AppState {
 
   @override
   String toString() {
-    return '''firstUse: $firstUsage,
-    view status: $status, currentStep: $currentStep
-    currentProject: $currentProject
-    ala-install releases: $alaInstallReleases
-    projects: ${projects.length}
-    ''';
+    return '''
+
+=== AppState ===
+currentProject -----
+$currentProject
+
+view status: $status, currentStep: $currentStep
+ala-install releases: $alaInstallReleases
+
+projects (${projects.length}) ----- 
+$projects
+''';
   }
 }

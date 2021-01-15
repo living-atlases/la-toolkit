@@ -62,6 +62,12 @@ class UpdateProject extends AppActions {
   UpdateProject(this.project);
 }
 
+class GenerateInvProject extends AppActions {
+  LAProject project;
+
+  GenerateInvProject(this.project);
+}
+
 class EditService extends AppActions {
   LAService service;
 

@@ -6,7 +6,7 @@ import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
 
-class ServicesInServerChooser extends StatefulWidget {
+class ServicesInServerChooser extends StatelessWidget {
   final LAServer server;
   final List<String> servicesInUse;
   final List<String> servicesInServer;
@@ -22,13 +22,6 @@ class ServicesInServerChooser extends StatefulWidget {
     @required this.onChange,
   });
 
-  @override
-  _ServicesInServerChooserState createState() =>
-      _ServicesInServerChooserState();
-}
-
-class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
-  @override
   Widget build(BuildContext context) {
     return Container(
         // If we want to limit the size:
@@ -37,9 +30,9 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
         // https://github.com/davigmacode/flutter_smart_select/tree/master/example
 
         child: SmartSelect<String>.multiple(
-      title: "Services to run in ${widget.server.name}:",
+      title: "Services to run in ${server.name}:",
       placeholder: 'Server empty, select one or more services',
-      value: widget.servicesInServer,
+      value: servicesInServer,
       // choiceItems: LAServiceDesc.names,
       choiceEmptyBuilder: (a, b) => Container(
         child: Center(
@@ -95,10 +88,10 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
         title: (index, nameInt) => LAServiceDesc.get(nameInt).name,
         hidden: (index, nameInt) {
           // If is some service in this server => show
-          if (widget.servicesInServer.contains(nameInt)) return false;
+          if (servicesInServer.contains(nameInt)) return false;
           // If is some service in other server => hide
-          if (widget.servicesSelected.contains(nameInt) ||
-              widget.servicesNotInUse.contains(nameInt)) return true;
+          if (servicesSelected.contains(nameInt) ||
+              servicesNotInUse.contains(nameInt)) return true;
           return false;
         },
         // useful for disable elements (incompatibility):
@@ -114,7 +107,7 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
           return !compatible;
         },*/
       ),
-      onChange: (state) => setState(() => widget.onChange(state.value)),
+      onChange: (state) => onChange(state.value),
       // modalType: S2ModalType.popupDialog,
       choiceType: S2ChoiceType.chips,
       // The current confirm icon is not very clear

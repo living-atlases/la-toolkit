@@ -45,12 +45,13 @@ class LAProjectsListPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                  RaisedButton(
+                  RaisedButton.icon(
                       onPressed: () => vm.onCreateProject(),
                       textColor: Colors.white,
                       color: LAColorTheme.laPalette,
                       // padding: const EdgeInsets.all(8.0),
-                      child: new Text(
+                      icon: Icon(Icons.add_circle_outline),
+                      label: new Text(
                         "Create a New LA Project",
                       ))
                 ]));

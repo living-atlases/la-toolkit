@@ -73,3 +73,24 @@ extension LAProjectStatusValExtension on LAProjectStatus {
     }
   }
 }
+
+extension LAProjectStatusPercentExtension on LAProjectStatus {
+  int get percent {
+    switch (this) {
+      case LAProjectStatus.created:
+        return 0;
+      case LAProjectStatus.basicDefined:
+        return 33;
+      case LAProjectStatus.advancedDefined:
+        return 66;
+      case LAProjectStatus.reachable:
+        return 100;
+      case LAProjectStatus.firstDeploy:
+        return 100;
+      case LAProjectStatus.inProduction:
+        return 100;
+      default:
+        return null;
+    }
+  }
+}

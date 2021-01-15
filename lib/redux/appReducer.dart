@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:html' as html;
+
+import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:redux/redux.dart';
 
@@ -15,6 +19,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
+  new TypedReducer<AppState, GenerateInvProject>(_generateInvProject),
   new TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
   new TypedReducer<AppState, EditService>(_editService),
   new TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
@@ -58,6 +63,32 @@ AppState _openProject(AppState state, OpenProject action) {
       currentStep: 0);
 }
 
+AppState _generateInvProjectSave(AppState state, GenerateInvProject action) {
+  var body = jsonEncode(action.project.toGeneratorJson());
+  print(body);
+  http
+      .post('https://generator.l-a.site/v1/ses',
+          headers: <String, String>{
+            //  'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: body)
+      .then((response) => print(response.body))
+      .catchError((error) {
+    print(error);
+  });
+
+  return state;
+}
+
+AppState _generateInvProject(AppState state, GenerateInvProject action) {
+  const uuid = "edd2c7f7-6e8d-4cfe-b594-4741e2be1091";
+  const url = 'https://generator.l-a.site/gen/$uuid';
+  html.AnchorElement anchorElement = new html.AnchorElement(href: url);
+  anchorElement.download = url;
+  anchorElement.click();
+  return state;
+}
+
 AppState _openProjectTools(AppState state, OpenProjectTools action) {
   return state.copyWith(
       currentProject: action.project, status: LAProjectViewStatus.view);
@@ -75,6 +106,7 @@ AppState _addProject(AppState state, AddProject action) {
     return state;
   });
   return state.copyWith(
+      currentProject: action.project,
       projects: new List<LAProject>.from(state.projects)..add(action.project));
 }
 
@@ -86,6 +118,7 @@ AppState _delProject(AppState state, DelProject action) {
 
 AppState _updateProject(AppState state, UpdateProject action) {
   return state.copyWith(
+      currentProject: action.project,
       projects: state.projects
           .map((project) =>
               project.uuid == action.project.uuid ? action.project : project)
