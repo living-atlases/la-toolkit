@@ -8,6 +8,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/genericTextFormField.dart';
+import 'components/helpIcon.dart';
 import 'components/laAppBar.dart';
 import 'components/laServiceWidget.dart';
 import 'components/scrollPanel.dart';
@@ -150,7 +151,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       label: 'Your LA Project Long Name',
                       hint:
                           "Similar to e.g: 'Atlas of Living Australia', 'BioAtlas Sweden', 'NBN Atlas', ...",
-                      wikipage: "Glosary#Long-name",
+                      wikipage: "Glossary#Long-name",
                       error: 'Project name invalid.',
                       initialValue: _project.longName,
                       //vm: vm,
@@ -164,7 +165,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       // SHORT NAME
                       label: 'Short Name',
                       hint: "Similar to for e.g.: 'ALA', 'GBIF.ES', 'NBN',...",
-                      wikipage: "Glosary#Short-name",
+                      wikipage: "Glossary#Short-name",
                       error: 'Project short name invalid.',
                       initialValue: _project.shortName,
                       regexp: LARegExp.projectNameRegexp,
@@ -197,7 +198,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                       hint:
                           " Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
                       prefixText: _protocolToS(_project.useSSL),
-                      wikipage: "Glosary#Domain",
+                      wikipage: "Glossary#Domain",
                       error: 'Project short name invalid.',
                       initialValue: _project.domain,
                       regexp: LARegExp.domainRegexp,
@@ -213,8 +214,14 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
             state: _setSetStatus(_mapStep),
             title: const Text('Location information'),
             subtitle: const Text('Select the map area of your LA portal,...'),
-            content:
-                Column(children: [SizedBox(height: 20), MapAreaSelector()])),
+            content: Column(children: [
+              _stepIntro(
+                  text:
+                      "Tap in two points to select the default map area of your LA portal. This area is used in services like collections, regions and spatial in their main page.",
+                  helpPage: "Glossary#Services-default-map-area"),
+              SizedBox(height: 20),
+              MapAreaSelector()
+            ])),
         Step(
             isActive: _setIsActive(_serversStep),
             state: _setSetStatus(_serversStep),
@@ -249,7 +256,6 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                                 )));
                       }),
                   // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
-
                   TextFormField(
                     controller: _serverAddController,
                     showCursor: true,
@@ -315,6 +321,11 @@ If you are unsure type something like "server1, server2, server3".
                 key: _formKeys[_servicesStep],
                 child: Column(
                   children: [
+                    _stepIntro(
+                        text:
+                            "Please select the services of your LA Portal. Some services are mandatory, and some services are optional and you can use them later.",
+                        helpPage:
+                            "Infrastructure-Requirements#core-components-for-a-living-atlas"),
                     ListView.builder(
                         scrollDirection: Axis.vertical,
                         shrinkWrap: true,
@@ -566,6 +577,10 @@ If you are unsure type something like "server1, server2, server3".
 
   StepState _setSetStatus(step) {
     return _currentStep == step ? StepState.editing : StepState.complete;
+  }
+
+  Widget _stepIntro({String text, String helpPage}) {
+    return ListTile(title: Text(text), trailing: HelpIcon(wikipage: helpPage));
   }
 }
 
