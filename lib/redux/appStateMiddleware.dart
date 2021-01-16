@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'appActions.dart';
 
 class AppStateMiddleware implements MiddlewareClass<AppState> {
-  final String key = "laTool4";
+  final String key = "laTool20210116";
   SharedPreferences _pref;
 
   _initPrefs() async {
