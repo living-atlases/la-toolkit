@@ -62,6 +62,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   var _servicesStep = 3;
   var _serverToServiceStep = 4;
   var _serversAdditional = 5;
+
   next() {
     // print('next: $_currentStep');
     _currentStep + 1 != _steps.length
@@ -78,8 +79,10 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
 
   goTo(int step) {
     print('goto $step');
-    FocusScope.of(context).requestFocus(_focusNodes[step]);
-    _currentStep = step;
+    setState(() {
+      FocusScope.of(context).requestFocus(_focusNodes[step]);
+      _currentStep = step;
+    });
   }
 
   StepperType stepperType = StepperType.vertical;
@@ -344,8 +347,6 @@ If you are unsure type something like "server1, server2, server3".
                             servicesSelected:
                                 _project.getServicesNameListSelected(),
                             servicesInUse: _project.getServicesNameListInUse(),
-                            servicesNotInUse:
-                                _project.getServicesNameListNotInUse(),
                             servicesInServer:
                                 _project.getServicesNameListInServer(s.name),
                             onChange: (servicesList) =>

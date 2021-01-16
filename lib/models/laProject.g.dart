@@ -15,6 +15,7 @@ extension LAProjectCopyWith on LAProject {
     List<double> mapBounds1stPoint,
     List<double> mapBounds2ndPoint,
     double mapZoom,
+    Map<String, List<String>> serverServices,
     List<LAServer> servers,
     Map<String, LAService> services,
     String shortName,
@@ -30,6 +31,7 @@ extension LAProjectCopyWith on LAProject {
       mapBounds1stPoint: mapBounds1stPoint ?? this.mapBounds1stPoint,
       mapBounds2ndPoint: mapBounds2ndPoint ?? this.mapBounds2ndPoint,
       mapZoom: mapZoom ?? this.mapZoom,
+      serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
       services: services ?? this.services,
       shortName: shortName ?? this.shortName,
@@ -59,6 +61,9 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
       (k, e) => MapEntry(
           k, e == null ? null : LAService.fromJson(e as Map<String, dynamic>)),
     ),
+    serverServices: (json['serverServices'] as Map<String, dynamic>)?.map(
+      (k, e) => MapEntry(k, (e as List)?.map((e) => e as String)?.toList()),
+    ),
     status: _$enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']),
     alaInstallRelease: json['alaInstallRelease'] as String,
     mapBounds1stPoint: (json['mapBounds1stPoint'] as List)
@@ -79,6 +84,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'useSSL': instance.useSSL,
       'servers': instance.servers?.map((e) => e?.toJson())?.toList(),
       'services': instance.services?.map((k, e) => MapEntry(k, e?.toJson())),
+      'serverServices': instance.serverServices,
       'status': _$LAProjectStatusEnumMap[instance.status],
       'alaInstallRelease': instance.alaInstallRelease,
       'mapBounds1stPoint': instance.mapBounds1stPoint,

@@ -12,11 +12,9 @@ class ServicesInServerChooser extends StatelessWidget {
   final List<String> servicesInServer;
   final List<String> servicesSelected;
   final ValueChanged<List<String>> onChange;
-  final List<String> servicesNotInUse;
   ServicesInServerChooser({
     @required this.server,
     @required this.servicesInUse,
-    @required this.servicesNotInUse,
     @required this.servicesSelected,
     @required this.servicesInServer,
     @required this.onChange,
@@ -80,8 +78,8 @@ class ServicesInServerChooser extends StatelessWidget {
             : "Services: ${incompatible.join(', ')} cannot installed together.";
       },
       choiceItems: S2Choice.listFrom<String, String>(
-        //source: widget.servicesInUse, // LAServiceDesc.names,
-        source: LAServiceDesc.keyNames,
+        source: servicesInUse, // LAServiceDesc.names,
+        // source: LAServiceDesc.keyNames,
         // This fails
         // source: widget.servicesInUse,
         value: (index, nameInt) => nameInt,
@@ -90,8 +88,7 @@ class ServicesInServerChooser extends StatelessWidget {
           // If is some service in this server => show
           if (servicesInServer.contains(nameInt)) return false;
           // If is some service in other server => hide
-          if (servicesSelected.contains(nameInt) ||
-              servicesNotInUse.contains(nameInt)) return true;
+          if (servicesSelected.contains(nameInt)) return true;
           return false;
         },
         // useful for disable elements (incompatibility):

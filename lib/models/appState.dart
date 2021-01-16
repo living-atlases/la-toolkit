@@ -63,13 +63,12 @@ class AppState {
     return '''
 
 === AppState ===
-projects (${projects.length}) ----- 
-$projects
-currentProject -----
+currentProject of ${projects.length} -----
 $currentProject
 view status: $status, currentStep: $currentStep
 ala-install releases: $alaInstallReleases
 
 ''';
+    /* $projects */
   }
 }

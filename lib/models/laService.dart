@@ -2,8 +2,6 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 
-import 'laServer.dart';
-
 part 'laService.g.dart';
 
 enum ServiceStatus { unknown, success, failed }
@@ -15,39 +13,17 @@ class LAService {
   String iniPath;
   bool use;
   bool usesSubdomain;
-  // @JsonSerializable(nullable: true)
-  List<LAServer> servers;
-  @JsonKey(ignore: true)
-  List<String> _serversNameList;
   String suburl;
 
   LAService(
-      {this.nameInt,
-      this.iniPath,
-      this.use,
-      this.usesSubdomain,
-      List<LAServer> servers,
-      this.suburl})
-      : servers = servers ?? List<LAServer>.empty(growable: true);
+      {this.nameInt, this.iniPath, this.use, this.usesSubdomain, this.suburl});
 
   LAService.fromDesc(LAServiceDesc desc)
       : nameInt = desc.nameInt,
         iniPath = desc.path,
         use = !desc.optional ? true : desc.initUse,
         usesSubdomain = true,
-        servers = List<LAServer>.empty(growable: true),
         suburl = desc.name;
-
-  void initView() {
-    _serversNameList = null;
-  }
-
-  List<String> getServersNameList() {
-    // If we change server map we'll set serverNameList to null
-    if (_serversNameList == null)
-      _serversNameList = servers.map((server) => server.name).toList();
-    return _serversNameList;
-  }
 
   String get path => usesSubdomain
       ? iniPath.startsWith("/")
@@ -66,7 +42,7 @@ class LAService {
   @override
   String toString() {
     if (use)
-      return 'LAService{name: $nameInt, servers: $_serversNameList}';
+      return 'LAService{name: $nameInt';
     else
       return "not used";
   }

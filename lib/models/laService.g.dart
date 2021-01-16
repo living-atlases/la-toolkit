@@ -10,7 +10,6 @@ extension LAServiceCopyWith on LAService {
   LAService copyWith({
     String iniPath,
     String nameInt,
-    List<LAServer> servers,
     String suburl,
     bool use,
     bool usesSubdomain,
@@ -18,7 +17,6 @@ extension LAServiceCopyWith on LAService {
     return LAService(
       iniPath: iniPath ?? this.iniPath,
       nameInt: nameInt ?? this.nameInt,
-      servers: servers ?? this.servers,
       suburl: suburl ?? this.suburl,
       use: use ?? this.use,
       usesSubdomain: usesSubdomain ?? this.usesSubdomain,
@@ -36,10 +34,6 @@ LAService _$LAServiceFromJson(Map<String, dynamic> json) {
     iniPath: json['iniPath'] as String,
     use: json['use'] as bool,
     usesSubdomain: json['usesSubdomain'] as bool,
-    servers: (json['servers'] as List)
-        ?.map((e) =>
-            e == null ? null : LAServer.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
     suburl: json['suburl'] as String,
   );
 }
@@ -49,6 +43,5 @@ Map<String, dynamic> _$LAServiceToJson(LAService instance) => <String, dynamic>{
       'iniPath': instance.iniPath,
       'use': instance.use,
       'usesSubdomain': instance.usesSubdomain,
-      'servers': instance.servers?.map((e) => e?.toJson())?.toList(),
       'suburl': instance.suburl,
     };

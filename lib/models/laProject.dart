@@ -30,16 +30,12 @@ class LAProject {
   List<LAServer> servers;
   @JsonSerializable(nullable: false)
   Map<String, LAService> services;
-  @JsonKey(ignore: true)
-  List<String> _serversNameList;
+  @JsonSerializable(nullable: false)
+  Map<String, List<String>> serverServices;
   @JsonKey(ignore: true)
   List<String> _servicesInUseNameList;
   @JsonKey(ignore: true)
   List<String> _servicesNotInUseNameList;
-  @JsonKey(ignore: true)
-  List<String> _servicesSelectedNameList;
-  @JsonKey(ignore: true)
-  List<String> _servicesNotSelectedNameList;
   @JsonKey(ignore: true)
   bool isCreated;
   @JsonSerializable(nullable: false)
@@ -58,6 +54,7 @@ class LAProject {
       this.isCreated = false,
       List<LAServer> servers,
       Map<String, LAService> services,
+      Map<String, List<String>> serverServices,
       LAProjectStatus status,
       this.alaInstallRelease,
       this.mapBounds1stPoint,
@@ -67,6 +64,7 @@ class LAProject {
         servers = servers ?? [],
         // _serversNameList = _serversNameList ?? [],
         services = services ?? initialServices,
+        serverServices = serverServices ?? {},
         status = status ?? LAProjectStatus.created;
 
   int numServers() => servers.length;
@@ -83,6 +81,7 @@ class LAProject {
 
   bool validateCreation() {
     bool valid = true;
+    bool debug = false;
     LAProjectStatus status = LAProjectStatus.created;
 
     valid = valid &&
@@ -90,7 +89,7 @@ class LAProject {
         LARegExp.shortNameRegexp.hasMatch(shortName) &&
         LARegExp.domainRegexp.hasMatch(domain);
     if (valid) status = LAProjectStatus.basicDefined;
-    print("Step 1 valid: ${valid ? 'yes' : 'no'}");
+    if (debug) print("Step 1 valid: ${valid ? 'yes' : 'no'}");
 
     valid = valid && servers.length > 0;
     if (valid)
@@ -98,20 +97,20 @@ class LAProject {
         valid = valid && LARegExp.hostnameRegexp.hasMatch(s.name);
       });
 
-    print("Step 2 valid: ${valid ? 'yes' : 'no'}");
+    if (debug) print("Step 2 valid: ${valid ? 'yes' : 'no'}");
     // If the previous steps are correct, this is also correct
 
     valid = valid &&
         (getServicesNameListInUse().length > 0 &&
             getServicesNameListInUse().length ==
                 getServicesNameListSelected().length);
-    print("Step 3 valid: ${valid ? 'yes' : 'no'}");
+    if (debug) print("Step 3 valid: ${valid ? 'yes' : 'no'}");
 
     if (valid)
       servers.forEach((s) {
         valid = valid && LARegExp.ipv4.hasMatch(s.ipv4);
       });
-    print("Step 4 valid: ${valid ? 'yes' : 'no'}");
+    if (debug) print("Step 4 valid: ${valid ? 'yes' : 'no'}");
 
     isCreated = valid;
     if (isCreated) status = LAProjectStatus.advancedDefined;
@@ -120,18 +119,12 @@ class LAProject {
   }
 
   List<String> getServersNameList() {
-    // If we change server map we'll set serverNameList to null
-    if (_serversNameList == null)
-      _serversNameList = servers.map((server) => server.name).toList();
-    return _serversNameList;
+    return serverServices.keys;
   }
 
   void initViews() {
-    _serversNameList = null;
     _servicesNotInUseNameList = null;
     _servicesInUseNameList = null;
-    _servicesSelectedNameList = null;
-    _servicesNotSelectedNameList = null;
   }
 
   List<String> getServicesNameListInUse() {
@@ -155,23 +148,9 @@ class LAProject {
   }
 
   List<String> getServicesNameListSelected() {
-    // If we change services map we'll set servicesNameList to null
-    if (_servicesSelectedNameList == null)
-      _servicesSelectedNameList = services.values
-          .where((service) => service.use && service.servers.length > 0)
-          .map((service) => service.nameInt)
-          .toList();
-    return _servicesSelectedNameList;
-  }
-
-  List<String> getServicesNameListNotSelected() {
-    // If we change services map we'll set servicesNameList to null
-    if (_servicesNotSelectedNameList == null)
-      _servicesNotSelectedNameList = services.values
-          .where((service) => service.use && service.servers.length == 0)
-          .map((service) => service.nameInt)
-          .toList();
-    return _servicesNotSelectedNameList;
+    List<String> selected = [];
+    serverServices.forEach((key, value) => selected.addAll(value));
+    return selected;
   }
 
   factory LAProject.fromJson(Map<String, dynamic> json) =>
@@ -185,11 +164,11 @@ class LAProject {
     map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
     servers: $servers, 
     valid: ${validateCreation()}
-    services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().map((s) => services[s].nameInt + "(" + (services[s].servers.length > 0 ? services[s].servers[0].name : "") + ")").toList().join(', ')}].
+    services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().map((s) => services[s].nameInt + "(" + (getHostname(s).length > 0 ? getHostname(s)[0] : "") + ")").toList().join(', ')}].
     services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].
     services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
-    services not selected (${getServicesNameListNotSelected().length}): [${getServicesNameListNotSelected().join(', ')}]
     ''';
+    /* services not selected (${getServicesNameListNotSelected().length}): [${getServicesNameListNotSelected().join(', ')}] */
   }
 
   static Map<String, LAService> initialServices = getInitialServices();
@@ -212,15 +191,13 @@ class LAProject {
   }
 
   List<String> getServicesNameListInServer(String serverName) {
-    return services.values
-        .where((service) =>
-            (service.use && service.getServersNameList().contains(serverName)))
-        .map((service) => service.nameInt)
-        .toList();
+    return serverServices[serverName];
   }
 
   void upsert(LAServer laServer) {
     servers = LAServer.upsert(servers, laServer);
+    // NEW
+    serverServices[laServer.name] = [];
   }
 
   void setProjectStatus(LAProjectStatus status) {
@@ -228,28 +205,13 @@ class LAProject {
   }
 
   void assign(LAServer server, List<String> assignedServices) {
-    // Remove previous assignments
-    services.forEach((key, service) {
-      if (service.servers.length > 0 && service.servers[0] == server)
-        service.servers.clear();
-    });
-    assignedServices.forEach((serviceName) {
-      LAService service = getService(serviceName);
-      // We remove previously
-      service.servers.clear();
-      service.servers.add(server);
-      assert(service.servers.length > 0);
-      services[serviceName] = service;
-      assert(services[serviceName].servers[0] == server);
-    });
-    initViews();
+    // NEW
+    serverServices[server.name] = assignedServices;
   }
 
   void delete(LAServer serverToDelete) {
-    services.forEach((key, service) => service.servers.removeWhere(
-        (currentServer) => currentServer.name == serverToDelete.name));
-    servers.removeWhere(
-        (currentServer) => currentServer.name == serverToDelete.name);
+    serverServices.removeWhere((key, value) => key == serverToDelete.name);
+    servers.remove(serverToDelete);
   }
 
   Map<String, dynamic> toGeneratorJson() {
@@ -268,12 +230,22 @@ class LAProject {
     services.forEach((key, service) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
-      conf["LA_${service.nameInt}_hostname"] = service.servers[0].name;
+      conf["LA_${service.nameInt}_hostname"] = getHostname(service.nameInt)[0];
       conf["LA_${service.nameInt}_url"] = service.url(domain);
       conf["LA_${service.nameInt}_path"] = service.path;
     });
     obj["conf"] = jsonEncode(conf);
     return obj;
+  }
+
+  List<String> getHostname(String service) {
+    List<String> hostnames = [];
+    serverServices.forEach((serverName, services) {
+      services.forEach((currentService) {
+        if (service == currentService) hostnames.add(serverName);
+      });
+    });
+    return hostnames;
   }
 
   void setMap(LatLng firstPoint, LatLng sndPoint, double zoom) {

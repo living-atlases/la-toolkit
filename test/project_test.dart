@@ -101,14 +101,15 @@ void main() {
             .contains(LAServiceName.collectory.toS()),
         equals(true));
     expect(
-        testProject.getServiceE(LAServiceName.collectory).servers.contains(vm1),
+        testProject.getHostname(LAServiceName.collectory.toS())[0] == vm1.name,
         equals(true));
     print(testProject);
     print(testProject.servers);
     print(testProject.services);
     print(testProject.getServiceE(LAServiceName.collectory));
-    expect(testProject.getServiceE(LAServiceName.regions).servers.contains(vm1),
-        equals(false));
+
+    expect(testProject.getHostname(LAServiceName.regions.toS()).length == 0,
+        equals(true));
 
     testProject.assign(vm1, [
       LAServiceName.ala_hub.toS(),
@@ -144,10 +145,10 @@ void main() {
             .contains(LAServiceName.collectory.toS()),
         equals(true));
     expect(
-        testProject.getServiceE(LAServiceName.collectory).servers.contains(vm2),
+        testProject.getHostname(LAServiceName.collectory.toS())[0] == vm2.name,
         equals(true));
     expect(
-        testProject.getServiceE(LAServiceName.collectory).servers.contains(vm1),
+        testProject.getHostname(LAServiceName.collectory.toS())[0] == vm1.name,
         equals(false));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(4));
