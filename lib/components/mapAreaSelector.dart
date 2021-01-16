@@ -44,7 +44,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
         projectArea = [fstPoint, null, sndPoint, null, fstPoint];
         _calSquare(projectArea);
       } else {}
-      var markers = area.map((latLng) {
+      var markers = area.where((latLng) => latLng != null).map((latLng) {
         return Marker(
           width: 80.0,
           height: 80.0,
@@ -67,8 +67,8 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                     zoom: vm.state.currentProject.mapZoom ?? 1.0,
                     /* center: LatLng(-28.2, 134),
                     zoom: 3.0, */
-                    boundsOptions:
-                        FitBoundsOptions(padding: EdgeInsets.all(20)),
+                    /* boundsOptions:
+                        FitBoundsOptions(padding: EdgeInsets.all(20)), */
                     plugins: [
                       ZoomButtonsPlugin(),
                       ScaleLayerPlugin(),
