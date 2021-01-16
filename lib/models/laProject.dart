@@ -90,6 +90,7 @@ class LAProject {
         LARegExp.shortNameRegexp.hasMatch(shortName) &&
         LARegExp.domainRegexp.hasMatch(domain);
     if (valid) status = LAProjectStatus.basicDefined;
+    print("Step 1 valid: ${valid ? 'yes' : 'no'}");
 
     valid = valid && servers.length > 0;
     if (valid)
@@ -97,17 +98,20 @@ class LAProject {
         valid = valid && LARegExp.hostnameRegexp.hasMatch(s.name);
       });
 
+    print("Step 2 valid: ${valid ? 'yes' : 'no'}");
     // If the previous steps are correct, this is also correct
 
     valid = valid &&
         (getServicesNameListInUse().length > 0 &&
             getServicesNameListInUse().length ==
                 getServicesNameListSelected().length);
+    print("Step 3 valid: ${valid ? 'yes' : 'no'}");
 
     if (valid)
       servers.forEach((s) {
         valid = valid && LARegExp.ipv4.hasMatch(s.ipv4);
       });
+    print("Step 4 valid: ${valid ? 'yes' : 'no'}");
 
     isCreated = valid;
     if (isCreated) status = LAProjectStatus.advancedDefined;
