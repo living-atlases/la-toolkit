@@ -17,6 +17,10 @@ class GenericTextFormField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final FocusNode focusNode;
   final bool allowEmpty;
+  final int minLines;
+  final int maxLines;
+  final TextInputType keyboardType;
+  final bool filled;
 
   GenericTextFormField(
       {this.label,
@@ -30,7 +34,11 @@ class GenericTextFormField extends StatefulWidget {
       this.isDense = false,
       this.isCollapsed = false,
       this.focusNode,
-      this.allowEmpty = false});
+      this.minLines,
+      this.maxLines,
+      this.filled = false,
+      this.allowEmpty = false,
+      this.keyboardType});
 
   @override
   _GenericTextFormFieldState createState() => _GenericTextFormFieldState();
@@ -62,6 +70,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                     isCollapsed: widget.isCollapsed,
                     isDense: widget.isDense,
                     prefixText: widget.prefixText,
+                    filled: widget.filled,
                     suffixIcon: widget.wikipage == null
                         ? null
                         : Padding(
@@ -77,6 +86,9 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                       }),
                   style: LAProjectEditPage.projectTextStyle,
                   focusNode: widget.focusNode,
+                  minLines: widget.minLines,
+                  maxLines: widget.maxLines,
+                  keyboardType: widget.keyboardType,
                   initialValue: widget.initialValue,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (String value) => !widget.regexp.hasMatch(value) &&

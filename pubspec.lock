@@ -801,6 +801,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1+1"
+  rflutter_alert:
+    dependency: "direct main"
+    description:
+      name: rflutter_alert
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   rxdart:
     dependency: transitive
     description:
@@ -808,13 +815,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.25.0"
-  search_choices:
-    dependency: "direct main"
-    description:
-      name: search_choices
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.17"
   shared_preferences:
     dependency: "direct main"
     description:
