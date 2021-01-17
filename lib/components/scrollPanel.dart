@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 class ScrollPanel extends StatelessWidget {
   final Widget child;
 
-  ScrollPanel({this.child});
+  final bool withPadding;
+
+  ScrollPanel({this.child, this.withPadding = false});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -12,6 +14,12 @@ class ScrollPanel extends StatelessWidget {
             maxHeight: MediaQuery.of(context).size.height * 0.9),
         child: new Scrollbar(
             child: SingleChildScrollView(
-                scrollDirection: Axis.vertical, child: child)));
+                scrollDirection: Axis.vertical,
+                child: withPadding
+                    ? Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                        child: child)
+                    : child)));
   }
 }

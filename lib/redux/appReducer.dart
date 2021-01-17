@@ -19,6 +19,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
+  new TypedReducer<AppState, TuneProject>(_tuneProject),
   new TypedReducer<AppState, GenerateInvProject>(_generateInvProject),
   new TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
   new TypedReducer<AppState, EditService>(_editService),
@@ -63,6 +64,21 @@ AppState _openProject(AppState state, OpenProject action) {
       currentStep: 0);
 }
 
+AppState _tuneProject(AppState state, TuneProject action) {
+  return state.copyWith(
+      currentProject: action.project,
+      status: LAProjectViewStatus.tune,
+      currentStep: 0);
+}
+
+AppState _openProjectTools(AppState state, OpenProjectTools action) {
+  print('${action.project}');
+  return state.copyWith(
+      currentProject: action.project,
+      status: LAProjectViewStatus.view,
+      currentStep: 0);
+}
+
 AppState _generateInvProjectSave(AppState state, GenerateInvProject action) {
   var body = jsonEncode(action.project.toGeneratorJson());
   print(body);
@@ -87,11 +103,6 @@ AppState _generateInvProject(AppState state, GenerateInvProject action) {
   anchorElement.download = url;
   anchorElement.click();
   return state;
-}
-
-AppState _openProjectTools(AppState state, OpenProjectTools action) {
-  return state.copyWith(
-      currentProject: action.project, status: LAProjectViewStatus.view);
 }
 
 AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {

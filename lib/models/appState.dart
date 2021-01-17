@@ -11,6 +11,7 @@ part 'appState.g.dart';
 enum LAProjectViewStatus {
   view,
   edit,
+  tune,
   create,
 }
 
@@ -21,6 +22,8 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
         return 'Editing project';
       case LAProjectViewStatus.create:
         return 'Creating a new LA Project';
+      case LAProjectViewStatus.tune:
+        return 'Tune your LA Project';
       case LAProjectViewStatus.view:
         return 'Project details';
       default:
@@ -67,8 +70,8 @@ currentProject of ${projects.length} -----
 $currentProject
 view status: $status, currentStep: $currentStep
 ala-install releases: $alaInstallReleases
-
+LA projects: ${projects.length} 
+$projects
 ''';
-    /* $projects */
   }
 }

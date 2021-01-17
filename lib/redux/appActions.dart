@@ -50,6 +50,12 @@ class OpenProject extends AppActions {
   OpenProject(this.project);
 }
 
+class TuneProject extends AppActions {
+  LAProject project;
+
+  TuneProject(this.project);
+}
+
 class OpenProjectTools extends AppActions {
   LAProject project;
 

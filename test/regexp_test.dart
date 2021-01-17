@@ -119,4 +119,40 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
           LARegExp.sshPubKey.hasMatch(key.replaceAll('\n', '')), equals(true));
     });
   });
+
+  test('url regexp should allow valid urls', () {
+    List<String> urls = [
+      'http://example.com',
+      'https://example.com/favico.ico',
+    ];
+    List<String> wrongUrls = [
+      'http//example.com',
+      'http:/example.com/favico.ico',
+      'example.com',
+      ''
+    ];
+    urls.forEach((url) {
+      expect(LARegExp.url.hasMatch(url), equals(true));
+    });
+    wrongUrls.forEach((url) {
+      expect(LARegExp.url.hasMatch(url), equals(false));
+    });
+  });
+
+  test('email regexp should allow valid emails', () {
+    List<String> emails = [
+      'bob@example.com',
+      'alice@example.org',
+    ];
+    List<String> wrongEmails = [
+      'example.com',
+      '',
+    ];
+    emails.forEach((email) {
+      expect(LARegExp.email.hasMatch(email), equals(true));
+    });
+    wrongEmails.forEach((email) {
+      expect(LARegExp.email.hasMatch(email), equals(false));
+    });
+  });
 }

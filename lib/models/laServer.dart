@@ -53,7 +53,7 @@ class LAServer {
 
   @override
   String toString() {
-    return "name: $name${ipv4.length > 0 ? ', ' + ipv4 : ' '} ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
+    return "$name${ipv4.length > 0 ? ', ' + ipv4 : ' '} ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
   }
 
   static List<LAServer> upsert(List<LAServer> servers, LAServer laServer) {

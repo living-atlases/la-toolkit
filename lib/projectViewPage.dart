@@ -10,7 +10,6 @@ import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
 import 'components/scrollPanel.dart';
-import 'env/env.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
@@ -32,6 +31,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
       return _ProjectPageViewModel(
         state: store.state,
         onOpenProject: (project) => store.dispatch(OpenProject(project)),
+        onTuneProject: (project) => store.dispatch(TuneProject(project)),
         onDelProject: (project) => store.dispatch(DelProject(project)),
         onGenInvProject: (project) =>
             store.dispatch(GenerateInvProject(project)),
@@ -39,6 +39,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
     }, builder: (BuildContext context, _ProjectPageViewModel vm) {
       // TODO: Move this to constants and use the same in timeline
       _currentProject = vm.state.currentProject;
+      var basicDefined =
+          _currentProject.status.value > LAProjectStatus.basicDefined.value;
       List<Tool> tools = [
         Tool(
             icon: Icon(Icons.edit),
@@ -46,27 +48,33 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             tooltip: "Edit the basic configuration",
             enabled: true,
             action: () => vm.onOpenProject(_currentProject)),
-        if (Env.demo)
-          Tool(
-              icon: Icon(Icons.file_download),
-              tooltip:
-                  "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories.",
-              title: "Generate inventories",
-              enabled: _currentProject.status.value >
-                  LAProjectStatus.basicDefined.value,
-              action: () => vm.onGenInvProject(_currentProject)),
+        Tool(
+            icon: Icon(Icons.tune),
+            title: "Tune Configuration",
+            tooltip:
+                "Fine tune the portal configuration with other options different than the basic ones.",
+            enabled: _currentProject.status.value >=
+                LAProjectStatus.basicDefined.value,
+            action: () => vm.onTuneProject(_currentProject)),
+        Tool(
+            icon: Icon(Icons.file_download),
+            tooltip:
+                "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories.",
+            title: "Generate inventories",
+            enabled: basicDefined,
+            action: () => vm.onGenInvProject(_currentProject)),
         /*     action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("In Development: come back soon!"),
                 ))), */
         Tool(
             icon: Icon(Icons.settings_ethernet),
             tooltip: "Test if your servers are reachable from here",
-            title: "Test Connectivity"),
-        Tool(
-            icon: Icon(Icons.tune),
-            title: "Tune Configuration",
-            tooltip: "Fine tune the configuration",
-            enabled: false),
+            title: "Test Connectivity",
+            enabled: basicDefined,
+            action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("In Development: come back soon!"),
+                ))),
+
         Tool(icon: Icon(Icons.foundation), title: "Pre-Deploy Tasks"),
         Tool(
             icon: Icon(Mdi.rocketLaunch),
@@ -139,6 +147,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
 class _ProjectPageViewModel {
   final AppState state;
   final void Function(LAProject project) onOpenProject;
+  final void Function(LAProject project) onTuneProject;
   final void Function(LAProject project) onEditProject;
   final void Function(LAProject project) onDelProject;
   final void Function(LAProject project) onGenInvProject;
@@ -146,6 +155,7 @@ class _ProjectPageViewModel {
   _ProjectPageViewModel(
       {this.state,
       this.onOpenProject,
+      this.onTuneProject,
       this.onDelProject,
       this.onEditProject,
       this.onGenInvProject});

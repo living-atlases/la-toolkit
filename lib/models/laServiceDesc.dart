@@ -7,6 +7,7 @@ import 'package:mdi/mdi.dart';
 import 'basicService.dart';
 
 enum LAServiceName {
+  all,
   collectory,
   ala_hub,
   biocache_service,

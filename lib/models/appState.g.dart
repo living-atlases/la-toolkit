@@ -91,5 +91,6 @@ T _$enumDecodeNullable<T>(
 const _$LAProjectViewStatusEnumMap = {
   LAProjectViewStatus.view: 'view',
   LAProjectViewStatus.edit: 'edit',
+  LAProjectViewStatus.tune: 'tune',
   LAProjectViewStatus.create: 'create',
 };

@@ -4,11 +4,13 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/projectEditPage.dart';
+import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/projectsListPage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
+import 'package:la_toolkit/redux/loggingMiddleware.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -27,7 +29,7 @@ void main() {
     initialState:
         AppState(projects: List<LAProject>.empty(), firstUsage: false),
     middleware: [
-      //     customLogPrinter(),
+      customLogPrinter(),
       appStateMiddleware,
       NavigationMiddleware(),
     ],
@@ -49,7 +51,7 @@ void main() {
   runApp(MyApp(store: store));
 
   /*
-  Does not work because creates an addtional new MaterialApp and this breaks the navigation
+  Does not work because creates an additional new MaterialApp and this breaks the navigation
   runApp(BetterFeedback(
     key: _mainKey,
     child: MyApp(store: store),
@@ -111,6 +113,8 @@ class MyApp extends StatelessWidget {
                   break;
                 case SandboxPage.routeName:
                   return SandboxPage();
+                case LAProjectTunePage.routeName:
+                  return LAProjectTunePage();
                   break;
                 default:
                   return HomePage(title: appName);
@@ -119,11 +123,6 @@ class MyApp extends StatelessWidget {
             });
           },
           title: appName,
-          /*  routes: {
-            HomePage.routeName: (context) => HomePage(title: appName),
-            LAProjectPage.routeName: (context) => LAProjectPage(),
-          }, */
-
           theme: LAColorTheme.laThemeData,
           debugShowCheckedModeBanner: false,
         ));
@@ -214,6 +213,9 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
   call(Store<AppState> store, action, next) {
     if (action is CreateProject || action is OpenProject) {
       MyApp._navigatorKey.currentState.pushNamed(LAProjectEditPage.routeName);
+    }
+    if (action is TuneProject) {
+      MyApp._navigatorKey.currentState.pushNamed(LAProjectTunePage.routeName);
     }
     if (action is OpenProjectTools) {
       MyApp._navigatorKey.currentState.pushNamed(LAProjectViewPage.routeName);

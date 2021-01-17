@@ -111,7 +111,6 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
           store.dispatch(SaveCurrentProject(_project, _currentStep));
         },
         onFinish: () {
-          _project.initViews();
           _project.validateCreation();
           if (store.state.status == LAProjectViewStatus.create)
             store.dispatch(AddProject(_project));
@@ -121,10 +120,11 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
           }
           store.dispatch(OpenProjectTools(_project));
         },
+        onCancel: () {
+          store.dispatch(OpenProjectTools(_project));
+        },
         onSaveCurrentProject: () {
-          _project.initViews();
           _project.validateCreation();
-
           store.dispatch(SaveCurrentProject(_project, _currentStep));
         },
       );
@@ -132,7 +132,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
       // print('build project page');
       _project = vm.state.currentProject;
       _currentStep = vm.state.currentStep ?? 0;
-
+      print('CurrentStep: $_currentStep');
       _steps = [
         Step(
             title: const Text('Basic information'),
@@ -363,7 +363,11 @@ If you are unsure type something like "server1, server2, server3".
                             onChange: (servicesList) =>
                                 vm.onAddServicesToServer(s, servicesList)))
                         .toList()
-                    : [Container()])),
+                    : [
+                        Container(
+                            child: Text(
+                                'You need to add some server before to this step...'))
+                      ])),
         Step(
           isActive: _setIsActive(_serversAdditional),
           state: _setSetStatus(_serversAdditional),
@@ -498,6 +502,14 @@ If you are unsure type something like "server1, server2, server3".
                       child: Text('NEXT'),
                       textColor: Colors.white,
                       onPressed: () => onStepContinue(vm)),
+              FlatButton(
+                child: Tooltip(
+                    child: Icon(Icons.close, color: Colors.white),
+                    message: "Close without saving the changes"),
+                onPressed: () {
+                  vm.onFinish();
+                },
+              ),
               IconButton(
                 icon: Tooltip(
                     child: Icon(Icons.save, color: Colors.white),
@@ -528,22 +540,8 @@ If you are unsure type something like "server1, server2, server3".
                   {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
                 return ButtonBar(
                   alignment: MainAxisAlignment.start,
-                  // mainAxisSize: MainAxisSize.max,
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    /*  RaisedButton(
-                      onPressed: onStepContinue,
-                      textColor: Colors.white,
-                      color: LAColorTheme.laPalette,
-                      child: const Text('NEXT'),
-                    ),
-                    _currentStep == 0
-                        ? null
-                        : OutlineButton(
-                            onPressed: onStepCancel,
-                            textColor: LAColorTheme.laPalette,
-                            child: const Text('PREVIOUS'),
-                          ), */
+                    // empty and custom in the AppBar
                   ],
                 );
               }),
@@ -588,11 +586,13 @@ class _ProjectPageViewModel {
   final AppState state;
   final Function onSaveCurrentProject;
   final Function onFinish;
+  final Function onCancel;
   final Function(LAServer, List<String>) onAddServicesToServer;
 
   _ProjectPageViewModel(
       {this.state,
       this.onSaveCurrentProject,
       this.onFinish,
+      this.onCancel,
       this.onAddServicesToServer});
 }

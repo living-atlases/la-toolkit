@@ -33,10 +33,6 @@ class LAProject {
   @JsonSerializable(nullable: false)
   Map<String, List<String>> serverServices;
   @JsonKey(ignore: true)
-  List<String> _servicesInUseNameList;
-  @JsonKey(ignore: true)
-  List<String> _servicesNotInUseNameList;
-  @JsonKey(ignore: true)
   bool isCreated;
   @JsonSerializable(nullable: false)
   LAProjectStatus status;
@@ -55,7 +51,7 @@ class LAProject {
       List<LAServer> servers,
       Map<String, LAService> services,
       Map<String, List<String>> serverServices,
-      LAProjectStatus status,
+      this.status,
       this.alaInstallRelease,
       this.mapBounds1stPoint,
       this.mapBounds2ndPoint,
@@ -64,8 +60,9 @@ class LAProject {
         servers = servers ?? [],
         // _serversNameList = _serversNameList ?? [],
         services = services ?? initialServices,
-        serverServices = serverServices ?? {},
-        status = status ?? LAProjectStatus.created;
+        serverServices = serverServices ?? {} {
+    validateCreation();
+  }
 
   int numServers() => servers.length;
 
@@ -122,29 +119,18 @@ class LAProject {
     return serverServices.keys;
   }
 
-  void initViews() {
-    _servicesNotInUseNameList = null;
-    _servicesInUseNameList = null;
-  }
-
   List<String> getServicesNameListInUse() {
-    // If we change services map we'll set servicesNameList to null
-    if (_servicesInUseNameList == null)
-      _servicesInUseNameList = services.values
-          .where((service) => service.use)
-          .map((service) => service.nameInt)
-          .toList();
-    return _servicesInUseNameList;
+    return services.values
+        .where((service) => service.use)
+        .map((service) => service.nameInt)
+        .toList();
   }
 
   List<String> getServicesNameListNotInUse() {
-    // If we change services map we'll set servicesNameList to null
-    if (_servicesNotInUseNameList == null)
-      _servicesNotInUseNameList = services.values
-          .where((service) => !service.use)
-          .map((service) => service.nameInt)
-          .toList();
-    return _servicesNotInUseNameList;
+    return services.values
+        .where((service) => !service.use)
+        .map((service) => service.nameInt)
+        .toList();
   }
 
   List<String> getServicesNameListSelected() {
@@ -160,14 +146,14 @@ class LAProject {
   @override
   String toString() {
     return '''longName: $longName ($shortName), domain: $domain, 
-    isCreated: $isCreated, status: ${status.title}, ala-install: $alaInstallRelease
+    isCreated: $isCreated,  validCreated: ${validateCreation()}, status: ${status.title}, ala-install: $alaInstallRelease
     map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
-    servers: $servers, 
-    valid: ${validateCreation()}
-    services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().map((s) => services[s].nameInt + "(" + (getHostname(s).length > 0 ? getHostname(s)[0] : "") + ")").toList().join(', ')}].
-    services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].
+    servers (${servers.length}): $servers 
+      
     services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
+    services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].
     ''';
+    /* services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().map((s) => services[s].nameInt + "(" + (getHostname(s).length > 0 ? getHostname(s)[0] : "") + ")").toList().join(', ')}]. */
     /* services not selected (${getServicesNameListNotSelected().length}): [${getServicesNameListNotSelected().join(', ')}] */
   }
 
@@ -186,6 +172,7 @@ class LAProject {
   }
 
   LAService getService(String nameInt) {
+    // getDepends can be null so the getService returns also null. Find a better way to do this
     if (nameInt == null) return null;
     return services[nameInt] ?? LAService.fromDesc(LAServiceDesc.get(nameInt));
   }

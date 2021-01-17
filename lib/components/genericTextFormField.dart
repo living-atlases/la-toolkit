@@ -35,7 +35,7 @@ class GenericTextFormField extends StatefulWidget {
       this.isCollapsed = false,
       this.focusNode,
       this.minLines,
-      this.maxLines,
+      this.maxLines = 1,
       this.filled = false,
       this.allowEmpty = false,
       this.keyboardType});
@@ -45,8 +45,9 @@ class GenericTextFormField extends StatefulWidget {
 }
 
 class _GenericTextFormFieldState extends State<GenericTextFormField> {
-  final debouncer = Debouncer(milliseconds: 2000);
+  final debouncer = Debouncer(milliseconds: 100);
   var formKey;
+  String delayedValue;
 
   @override
   void initState() {
@@ -80,9 +81,12 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                   ),
                   // onChanged: ,
                   onChanged: (String value) => debouncer.run(() {
-                        if (formKey.currentState.validate()) {
-                          widget.onChanged(value);
-                        }
+                        setState(() {
+                          delayedValue = value;
+                          if (formKey.currentState.validate()) {
+                            widget.onChanged(value);
+                          }
+                        });
                       }),
                   style: LAProjectEditPage.projectTextStyle,
                   focusNode: widget.focusNode,
@@ -91,8 +95,9 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                   keyboardType: widget.keyboardType,
                   initialValue: widget.initialValue,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (String value) => !widget.regexp.hasMatch(value) &&
-                          !(widget.allowEmpty && value.isEmpty)
+                  validator: (_) => delayedValue != null &&
+                          !widget.regexp.hasMatch(delayedValue) &&
+                          !(widget.allowEmpty && delayedValue.isEmpty)
                       ? widget.error
                       : null)
             ]));
