@@ -80,20 +80,11 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
 
   goTo(int step) {
     print('goto $step');
-    setState(() {
-      FocusScope.of(context).requestFocus(_focusNodes[step]);
-      _currentStep = step;
-    });
+    FocusScope.of(context).requestFocus(_focusNodes[step]);
+    _currentStep = step;
   }
 
   StepperType stepperType = StepperType.vertical;
-
-  /*
-  _switchStepType() {
-    setState(() => stepperType == StepperType.horizontal
-        ? stepperType = StepperType.vertical
-        : stepperType = StepperType.horizontal);
-  } */
 
   _protocolToS(useSSL) {
     return useSSL ? "https://" : "http://";
@@ -104,13 +95,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
     return StoreConnector<AppState, _ProjectPageViewModel>(converter: (store) {
       return _ProjectPageViewModel(
         state: store.state,
-        onAddServicesToServer: (server, assignedServices) {
-          _project.assign(server, assignedServices);
-          _project.validateCreation();
-          // store.dispatch(UpdateProject(_project));
-          store.dispatch(SaveCurrentProject(_project, _currentStep));
-        },
         onFinish: () {
+          print('On Finish');
           _project.validateCreation();
           if (store.state.status == LAProjectViewStatus.create)
             store.dispatch(AddProject(_project));
@@ -118,11 +104,14 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
             store.dispatch(UpdateProject(_project));
             store.dispatch(OpenProjectTools(_project));
           }
+          dispose();
         },
         onCancel: () {
           store.dispatch(OpenProjectTools(_project));
+          dispose();
         },
         onSaveCurrentProject: () {
+          print('On Save Current Project');
           _project.validateCreation();
           store.dispatch(SaveCurrentProject(_project, _currentStep));
         },
@@ -131,7 +120,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
       // print('build project page');
       _project = vm.state.currentProject;
       _currentStep = vm.state.currentStep ?? 0;
-      print('CurrentStep: $_currentStep');
+      print('Project edit currentStep: $_currentStep');
       _steps = [
         Step(
             title: const Text('Basic information'),
@@ -184,10 +173,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                           value: _project.useSSL,
                           // activeColor: Color(0xFF6200EE),
                           onChanged: (bool newValue) {
-                            //    setState(() {
                             _project.useSSL = newValue;
                             vm.onSaveCurrentProject();
-                            // }),
                           },
                         ),
                       )),
@@ -352,15 +339,7 @@ If you are unsure type something like "server1, server2, server3".
             content: Column(
                 children: (_project.numServers() > 0)
                     ? _project.servers
-                        .map((s) => ServicesInServerChooser(
-                            server: s,
-                            servicesSelected:
-                                _project.getServicesNameListSelected(),
-                            servicesInUse: _project.getServicesNameListInUse(),
-                            servicesInServer:
-                                _project.getServicesNameListInServer(s.name),
-                            onChange: (servicesList) =>
-                                vm.onAddServicesToServer(s, servicesList)))
+                        .map((s) => ServicesInServerChooser(server: s))
                         .toList()
                     : [
                         Container(
@@ -586,12 +565,7 @@ class _ProjectPageViewModel {
   final Function onSaveCurrentProject;
   final Function onFinish;
   final Function onCancel;
-  final Function(LAServer, List<String>) onAddServicesToServer;
 
   _ProjectPageViewModel(
-      {this.state,
-      this.onSaveCurrentProject,
-      this.onFinish,
-      this.onCancel,
-      this.onAddServicesToServer});
+      {this.state, this.onSaveCurrentProject, this.onFinish, this.onCancel});
 }
