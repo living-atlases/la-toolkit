@@ -147,6 +147,7 @@ class LaServiceWidget extends StatelessWidget {
                                       height: 16.0,
                                       width: 60.0,
                                       activeColor: LAColorTheme.inactive,
+                                      inactiveColor: LAColorTheme.laPalette,
                                       // activeColor: Color(0xFF009688),
                                       inactiveChild: Text('SUBD'),
                                       activeChild: Text('PATH'),
