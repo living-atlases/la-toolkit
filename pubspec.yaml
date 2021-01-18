@@ -105,6 +105,13 @@ flutter:
   assets:
     - assets/images/la-icon.png
     - assets/images/ala-icon.png
+    - assets/images/la-toolkit-intro-images-2.png
+    - assets/images/la-toolkit-intro-images-3.png
+    - assets/images/la-toolkit-intro-images-4.png
+    - assets/images/la-toolkit-intro-images-5.png
+    - assets/
+    - assets/images/
+    - pubspec.yaml
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

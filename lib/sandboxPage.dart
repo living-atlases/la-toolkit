@@ -13,6 +13,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'components/defDivider.dart';
 import 'models/appState.dart';
+import 'models/laServiceDesc.dart';
 
 class SandboxPage extends StatefulWidget {
   static const routeName = "sandbox";
@@ -70,11 +71,36 @@ class _SandboxPageState extends State<SandboxPage> {
                     label: Text('SSH keys'),
                     onPressed: () => _onAlertWithCustomContentPressed(context),
                   ),
+                  Wrap(
+                      spacing: 6,
+                      children: vm.state.currentProject
+                          .getServicesNameListInUse()
+                          .map((service) =>
+                              _buildChip(LAServiceDesc.map[service].name))
+                          .toList())
                 ],
               ),
             ],
           ));
     });
+  }
+
+  Widget _buildChip(String label) {
+    return Chip(
+      // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      labelPadding: EdgeInsets.fromLTRB(6, 0, 0, 0),
+      avatar: Icon(Icons.done, color: Colors.green, size: 18),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: LAColorTheme.inactive,
+        ),
+      ),
+      // backgroundColor: Colors.white,
+      elevation: 2.0,
+      // shadowColor: Colors.grey[60],
+      padding: EdgeInsets.all(8.0),
+    );
   }
 
   _onAlertWithCustomContentPressed(context) {

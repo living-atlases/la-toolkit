@@ -45,7 +45,7 @@ class GenericTextFormField extends StatefulWidget {
 }
 
 class _GenericTextFormFieldState extends State<GenericTextFormField> {
-  final debouncer = Debouncer(milliseconds: 100);
+  final debouncer = Debouncer(milliseconds: 1000);
   var formKey;
   String delayedValue;
 
