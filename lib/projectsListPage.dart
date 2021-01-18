@@ -82,10 +82,11 @@ class ProjectCard extends StatelessWidget {
                 onTap: () => onOpen(),
                 child: Card(
                   child: Container(
-                    height: 250.0,
-                    margin: EdgeInsets.fromLTRB(30, 30, 20, 30),
+                    height: 220.0,
+                    margin: EdgeInsets.fromLTRB(30, 12, 20, 30),
                     child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        // crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ListTile(
