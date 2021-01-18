@@ -9,10 +9,18 @@ LoggingMiddleware customLogPrinter<State>({
   Level level = Level.INFO,
   MessageFormatter<State> formatter = LoggingMiddleware.singleLineFormatter,
 }) {
+  String onlyLogActionFormatter<State>(
+    State state,
+    dynamic action,
+    DateTime timestamp,
+  ) {
+    return "{----- Action: $action -----}";
+  }
+
   final middleware = new LoggingMiddleware<State>(
     logger: logger,
     level: level,
-    formatter: formatter,
+    formatter: onlyLogActionFormatter,
   );
 
   middleware.logger.onRecord
