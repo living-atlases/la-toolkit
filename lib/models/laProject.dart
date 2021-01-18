@@ -145,11 +145,15 @@ class LAProject {
 
   @override
   String toString() {
+    var sToS = serverServices.entries
+        .map((entry) => '${entry.key} has ${entry.value}')
+        .toList()
+        .join(', ');
     return '''longName: $longName ($shortName), domain: $domain, 
     isCreated: $isCreated,  validCreated: ${validateCreation()}, status: ${status.title}, ala-install: $alaInstallRelease
     map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
     servers (${servers.length}): $servers 
-      
+    servers-services: $sToS  
     services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
     services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].
     ''';
