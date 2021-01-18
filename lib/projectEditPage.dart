@@ -116,9 +116,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
             store.dispatch(AddProject(_project));
           if (store.state.status == LAProjectViewStatus.edit) {
             store.dispatch(UpdateProject(_project));
-            // Clear view lists to force recalculation
+            store.dispatch(OpenProjectTools(_project));
           }
-          store.dispatch(OpenProjectTools(_project));
         },
         onCancel: () {
           store.dispatch(OpenProjectTools(_project));
