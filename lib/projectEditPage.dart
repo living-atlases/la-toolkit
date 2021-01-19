@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/mapAreaSelector.dart';
+import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -480,13 +480,13 @@ If you are unsure type something like "server1, server2, server3".
                       child: Text('NEXT'),
                       textColor: Colors.white,
                       onPressed: () => onStepContinue(vm)),
-              FlatButton(
-                child: Tooltip(
+              Tooltip(
+                message: "Close without saving the changes",
+                child: FlatButton(
                     child: Icon(Icons.close, color: Colors.white),
-                    message: "Close without saving the changes"),
-                onPressed: () {
-                  vm.onFinish();
-                },
+                    onPressed: () {
+                      vm.onFinish();
+                    }),
               ),
               IconButton(
                 icon: Tooltip(
