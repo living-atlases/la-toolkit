@@ -12,7 +12,6 @@ import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
 import 'package:la_toolkit/routes.dart';
-import 'package:la_toolkit/sandboxPage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -99,29 +98,8 @@ class MyApp extends StatelessWidget {
               ],
               background: Container(color: Color(0xFFF5F5F5))),
           initialRoute: HomePage.routeName,
-          onGenerateRoute: (RouteSettings settings) {
-            return Routes.fadeThrough(settings, (context) {
-              switch (settings.name) {
-                case HomePage.routeName:
-                  return HomePage(title: appName);
-                  break;
-                case LAProjectEditPage.routeName:
-                  return LAProjectEditPage();
-                  break;
-                case LAProjectViewPage.routeName:
-                  return LAProjectViewPage();
-                  break;
-                case SandboxPage.routeName:
-                  return SandboxPage();
-                case LAProjectTunePage.routeName:
-                  return LAProjectTunePage();
-                  break;
-                default:
-                  return HomePage(title: appName);
-                  break;
-              }
-            });
-          },
+          onGenerateRoute: (RouteSettings settings) =>
+              Routes.onGenerateRoute(settings),
           title: appName,
           theme: LAColorTheme.laThemeData,
           debugShowCheckedModeBanner: false,
@@ -165,39 +143,42 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _HomePageViewModel>(converter: (store) {
-      return _HomePageViewModel(
-        state: store.state,
-        onAddProject: () {
-          store.dispatch(CreateProject());
-          // Navigator.pushNamed(context, LAProjectPage.routeName);
+    return StoreConnector<AppState, _HomePageViewModel>(
+        distinct: true,
+        converter: (store) {
+          return _HomePageViewModel(
+            state: store.state,
+            onAddProject: () {
+              store.dispatch(CreateProject());
+              // Navigator.pushNamed(context, LAProjectPage.routeName);
+            },
+          );
         },
-      );
-    }, builder: (BuildContext context, _HomePageViewModel vm) {
-      return !vm.state.firstUsage
-          ? Scaffold(
-              key: _scaffoldKey,
-              drawer: MainDrawer(
-                  currentRoute: HomePage.routeName,
-                  appName: appName,
-                  packageInfo: _packageInfo),
-              // Maybe:
-              // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
-              // App bar with floating: true, pinned: true, snap: false:
-              appBar:
-                  LAAppBar(context: context, title: appName, showLaIcon: true),
-              body: LAProjectsListPage(),
-              floatingActionButton: vm.state.projects.length > 0
-                  ? FloatingActionButton.extended(
-                      onPressed: () {
-                        vm.onAddProject();
-                      },
-                      label: Text('Create a new LA Project'),
-                      icon: Icon(Icons.add_circle_outline),
-                    )
-                  : null)
-          : Intro();
-    });
+        builder: (BuildContext context, _HomePageViewModel vm) {
+          return !vm.state.firstUsage
+              ? Scaffold(
+                  key: _scaffoldKey,
+                  drawer: MainDrawer(
+                      currentRoute: HomePage.routeName,
+                      appName: appName,
+                      packageInfo: _packageInfo),
+                  // Maybe:
+                  // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
+                  // App bar with floating: true, pinned: true, snap: false:
+                  appBar: LAAppBar(
+                      context: context, title: appName, showLaIcon: true),
+                  body: LAProjectsListPage(),
+                  floatingActionButton: vm.state.projects.length > 0
+                      ? FloatingActionButton.extended(
+                          onPressed: () {
+                            vm.onAddProject();
+                          },
+                          label: Text('Create a new LA Project'),
+                          icon: Icon(Icons.add_circle_outline),
+                        )
+                      : null)
+              : Intro();
+        });
   }
 }
 
@@ -206,6 +187,28 @@ class _HomePageViewModel {
   final void Function() onAddProject;
 
   _HomePageViewModel({this.state, this.onAddProject});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AppState &&
+          runtimeType == other.runtimeType &&
+          state.firstUsage == other.firstUsage &&
+          //  state.currentProject == other.currentProject &&
+          // status == other.status &&
+          // currentStep == other.currentStep &&
+          state.projects == other.projects;
+  // alaInstallReleases == other.alaInstallReleases;
+
+  @override
+  int get hashCode =>
+      state.firstUsage.hashCode ^
+      // state.currentProject.hashCode ^
+      // status.hashCode ^
+      // currentStep.hashCode ^
+      state.projects.hashCode;
+  // alaInstallReleases.hashCode;
+
 }
 
 class NavigationMiddleware implements MiddlewareClass<AppState> {

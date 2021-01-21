@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
@@ -14,13 +12,18 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'models/laServiceDesc.dart';
 
+const _textFieldBorder = true;
+const _textFieldFilled = false;
+
 class LAProjectTunePage extends StatelessWidget {
   static const routeName = "tune";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectTuneViewModel>(
+      distinct: true,
       converter: (store) {
         return _ProjectTuneViewModel(
           state: store.state,
@@ -97,7 +100,32 @@ class LAProjectTunePage extends StatelessWidget {
                                 subtitle: item.buildSubtitle(context),
                               );
                             },
-                          )
+                          ),
+                          SizedBox(height: 20),
+                          HeadingItem("Other variables").buildTitle(context),
+                          SizedBox(height: 30),
+                          ListTile(
+                              title: GenericTextFormField(
+                                  label:
+                                      "Write here other extra ansible variables that are not configurable in the previous forms",
+                                  hint: "",
+                                  initialValue:
+                                      "\n# ----- Other variables common to all services -----\n[all:vars]\n\n" +
+                                          currentProject
+                                              .getServicesNameListInUse()
+                                              .map((s) =>
+                                                  "# ----- ${StringUtils.capitalize(LAServiceDesc.map[s].desc)} extra variables -----\n[$s:vars]\n")
+                                              .join("\n\n"),
+                                  maxLines: 50,
+                                  filled: _textFieldFilled,
+                                  enabledBorder: _textFieldBorder,
+                                  allowEmpty: true,
+                                  monoSpaceFont: true,
+                                  error: "",
+                                  onChanged: (value) {}),
+                              trailing: HelpIcon(
+                                  wikipage:
+                                      "Version-control-of-your-configurations#about-maintaining-dataconfig"))
                         ]))));
       },
     );
@@ -139,6 +167,8 @@ class MessageItem implements ListItem {
               hint: variable.hint,
               initialValue: null,
               allowEmpty: true,
+              filled: _textFieldFilled,
+              enabledBorder: false,
               regexp: variable.regExp,
               error: variable.error,
               onChanged: (value) {}),
@@ -157,4 +187,13 @@ class _ProjectTuneViewModel {
   final void Function(LAProject) onCancel;
 
   _ProjectTuneViewModel({this.state, this.onUpdateProject, this.onCancel});
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _ProjectTuneViewModel &&
+          runtimeType == other.runtimeType &&
+          state.currentProject == other.state.currentProject;
+
+  @override
+  int get hashCode => state.currentProject.hashCode;
 }

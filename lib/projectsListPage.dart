@@ -15,53 +15,57 @@ import 'laTheme.dart';
 class LAProjectsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ProjectsPageViewModel>(converter: (store) {
-      return _ProjectsPageViewModel(
-        state: store.state,
-        onCreateProject: () => store.dispatch(CreateProject()),
-        onOpenProjectTools: (project) =>
-            store.dispatch(OpenProjectTools(project)),
-      );
-    }, builder: (BuildContext context, _ProjectsPageViewModel vm) {
-      var num = vm.state.projects.length;
-      return num > 0
-          ? new ScrollPanel(
-              child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 80, vertical: 20),
-                  child: Column(children: <Widget>[
-                    ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: num,
-                        // itemCount: appStateProv.appState.projects.length,
-                        itemBuilder: (BuildContext context, int index) =>
-                            ProjectCard(
-                                vm.state.projects[index],
-                                () => vm.onOpenProjectTools(
-                                    vm.state.projects[index])))
-                  ])))
-          : Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                  ButtonTheme(
-                      // minWidth: 200.0,
-                      height: 60.0,
-                      child: RaisedButton.icon(
-                          onPressed: () => vm.onCreateProject(),
-                          textColor: Colors.white,
-                          color: LAColorTheme.laPalette,
-                          // padding: const EdgeInsets.all(8.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            // side: BorderSide(color: Colors.red)),
-                          ),
-                          icon: Icon(Icons.add_circle_outline, size: 30),
-                          label: new Text("Create a New LA Project",
-                              style: TextStyle(fontSize: 18))))
-                ]));
-    });
+    return StoreConnector<AppState, _ProjectsPageViewModel>(
+        distinct: true,
+        converter: (store) {
+          return _ProjectsPageViewModel(
+            state: store.state,
+            onCreateProject: () => store.dispatch(CreateProject()),
+            onOpenProjectTools: (project) =>
+                store.dispatch(OpenProjectTools(project)),
+          );
+        },
+        builder: (BuildContext context, _ProjectsPageViewModel vm) {
+          var num = vm.state.projects.length;
+          return num > 0
+              ? new ScrollPanel(
+                  child: Container(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                      child: Column(children: <Widget>[
+                        ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: num,
+                            // itemCount: appStateProv.appState.projects.length,
+                            itemBuilder: (BuildContext context, int index) =>
+                                ProjectCard(
+                                    vm.state.projects[index],
+                                    () => vm.onOpenProjectTools(
+                                        vm.state.projects[index])))
+                      ])))
+              : Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                      ButtonTheme(
+                          // minWidth: 200.0,
+                          height: 60.0,
+                          child: RaisedButton.icon(
+                              onPressed: () => vm.onCreateProject(),
+                              textColor: Colors.white,
+                              color: LAColorTheme.laPalette,
+                              // padding: const EdgeInsets.all(8.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                                // side: BorderSide(color: Colors.red)),
+                              ),
+                              icon: Icon(Icons.add_circle_outline, size: 30),
+                              label: new Text("Create a New LA Project",
+                                  style: TextStyle(fontSize: 18))))
+                    ]));
+        });
   }
 }
 
@@ -172,4 +176,14 @@ class _ProjectsPageViewModel {
 
   _ProjectsPageViewModel(
       {this.state, this.onOpenProjectTools, this.onCreateProject});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _ProjectsPageViewModel &&
+          runtimeType == other.runtimeType &&
+          state.projects == other.state.projects;
+
+  @override
+  int get hashCode => state.projects.hashCode;
 }

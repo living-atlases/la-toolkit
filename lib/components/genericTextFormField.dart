@@ -21,6 +21,8 @@ class GenericTextFormField extends StatefulWidget {
   final int maxLines;
   final TextInputType keyboardType;
   final bool filled;
+  final bool enabledBorder;
+  final bool monoSpaceFont;
 
   GenericTextFormField(
       {this.label,
@@ -28,7 +30,7 @@ class GenericTextFormField extends StatefulWidget {
       @required this.initialValue,
       this.prefixText,
       this.wikipage,
-      @required this.regexp,
+      this.regexp,
       @required this.error,
       @required this.onChanged,
       this.isDense = false,
@@ -38,6 +40,8 @@ class GenericTextFormField extends StatefulWidget {
       this.maxLines = 1,
       this.filled = false,
       this.allowEmpty = false,
+      this.enabledBorder = false,
+      this.monoSpaceFont = false,
       this.keyboardType});
 
   @override
@@ -78,6 +82,11 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                             padding: EdgeInsets.only(
                                 top: 5), // add padding to adjust icon
                             child: HelpIcon(wikipage: widget.wikipage)),
+                    enabledBorder: widget.enabledBorder
+                        ? OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey[400]))
+                        : null // , width: 1.0),
+                    ,
                   ),
                   // onChanged: ,
                   onChanged: (String value) => debouncer.run(() {
@@ -88,14 +97,17 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                           }
                         });
                       }),
-                  style: LAProjectEditPage.projectTextStyle,
+                  style: !widget.monoSpaceFont
+                      ? LAProjectEditPage.projectTextStyle
+                      : LAProjectEditPage.projectFixedTextStyle,
                   focusNode: widget.focusNode,
                   minLines: widget.minLines,
                   maxLines: widget.maxLines,
                   keyboardType: widget.keyboardType,
                   initialValue: widget.initialValue,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (_) => delayedValue != null &&
+                  validator: (_) => widget.regexp != null &&
+                          delayedValue != null &&
                           !widget.regexp.hasMatch(delayedValue) &&
                           !(widget.allowEmpty && delayedValue.isEmpty)
                       ? widget.error

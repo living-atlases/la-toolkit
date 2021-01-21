@@ -8,6 +8,17 @@ class BasicService {
     if (this.version != other.version) return false;
     return true;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BasicService &&
+          runtimeType == other.runtimeType &&
+          version == other.version &&
+          name == other.name;
+
+  @override
+  int get hashCode => version.hashCode ^ name.hashCode;
 }
 
 class Java extends BasicService {

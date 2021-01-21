@@ -28,7 +28,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
             initialValue: formValue,
             onSaved: (List<String> val) {
               setState(() {
-                print('$val');
+                // print('$val');
                 formValue = val;
               });
             },

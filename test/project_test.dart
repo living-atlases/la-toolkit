@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
@@ -69,31 +70,92 @@ void main() {
   });
 
   test('Servers equals', () {
-    LAServer vm1 = LAServer(name: 'vm1');
-    LAServer vm1bis = LAServer(name: 'vm1', aliases: ['collections']);
+    LAServer vm1 = LAServer(name: 'vm2', ipv4: '10.0.0.1');
+    LAServer vm1bis = LAServer(name: 'vm2', ipv4: '10.0.0.1');
     expect(vm1 == vm1bis, equals(true));
   });
 
   test('Servers not equals', () {
     LAServer vm1 = LAServer(name: 'vm1');
     LAServer vm1bis = LAServer(name: 'vm2');
-    expect(vm1 != vm1bis, equals(true));
+    expect(vm1 == vm1bis, equals(false));
+    vm1 = LAServer(name: 'vm1');
+    vm1bis = LAServer(name: 'vm1', aliases: ['collections']);
+    expect(vm1 == vm1bis, equals(false));
   });
 
-  test('Test step 1 of creation, valid servers-service assignment', () {
+  test('Test step 1 of creation, valid servers-service assignment and equality',
+      () {
     LAProject testProject = LAProject(
+        uuid: "0",
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
         domain: "l-a.site");
+    LAProject testProjectOther = LAProject(
+        uuid: "0",
+        longName: "Living Atlas of Wakanda",
+        shortName: "LAW",
+        domain: "l-a.site");
+
+    expect(
+        MapEquality().equals(testProject.services, testProjectOther.services),
+        equals(true));
+    expect(
+        MapEquality().equals(
+            testProject.serverServices, testProjectOther.serverServices),
+        equals(true));
+    expect(testProject.mapBounds2ndPoint == testProjectOther.mapBounds1stPoint,
+        equals(true));
+    expect(ListEquality().equals(testProject.servers, testProjectOther.servers),
+        equals(true));
+    expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
+    expect(testProject == testProjectOther, equals(true));
     LAServer vm1 = LAServer(name: "vm1", ipv4: "10.0.0.1");
     LAServer vm2 = LAServer(name: "vm2", ipv4: "10.0.0.2");
     LAServer vm3 = LAServer(name: "vm3", ipv4: "10.0.0.3");
     LAServer vm4 = LAServer(name: "vm4", ipv4: "10.0.0.4");
+    LAProject testProjectCopy =
+        testProject.copyWith(servers: [], serverServices: {});
     testProject.upsert(vm1);
+    testProjectCopy.upsert(vm1);
+    expect(testProject.serverServices.length, equals(1));
+    expect(testProject.servers.length, equals(1));
+    expect(testProjectCopy.serverServices.length, equals(1));
+    expect(testProjectCopy.servers.length, equals(1));
+    expect(MapEquality().equals(testProject.services, testProjectCopy.services),
+        equals(true));
+    expect(
+        DeepCollectionEquality.unordered()
+            .equals(testProject.serverServices, testProjectCopy.serverServices),
+        equals(true));
+    expect(testProject == testProjectCopy, equals(true));
+    expect(testProject.servers, equals(testProjectCopy.servers));
+
     testProject.upsert(vm2);
+    expect(testProjectCopy.servers.length, equals(1));
+
+    expect(testProject.serverServices.length, equals(2));
+    expect(testProject.servers == testProjectCopy.servers, equals(false));
+    expect(testProjectCopy.serverServices.length, equals(1));
+    expect(
+        MapEquality()
+            .equals(testProject.serverServices, testProjectCopy.serverServices),
+        equals(false));
+    expect(testProject.mapBounds2ndPoint == testProjectCopy.mapBounds1stPoint,
+        equals(true));
+    expect(ListEquality().equals(testProject.servers, testProjectCopy.servers),
+        equals(false));
+    expect(testProject.hashCode == testProjectCopy.hashCode, equals(false));
+
+    expect(testProject == testProjectCopy, equals(false));
+    testProjectCopy.upsert(vm2);
+    expect(testProject == testProjectCopy, equals(true));
+    expect(testProject.servers, equals(testProjectCopy.servers));
     testProject.upsert(vm3);
     testProject.upsert(vm4);
+    expect(testProject == testProjectCopy, equals(false));
     testProject.assign(vm1, [LAServiceName.collectory.toS()]);
+    expect(testProject == testProjectCopy, equals(false));
 
     expect(
         testProject

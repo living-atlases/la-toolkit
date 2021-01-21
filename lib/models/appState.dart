@@ -1,5 +1,6 @@
 // import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -62,16 +63,37 @@ class AppState {
   Map<String, dynamic> toJson() => _$AppStateToJson(this);
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AppState &&
+          runtimeType == other.runtimeType &&
+          firstUsage == other.firstUsage &&
+          currentProject == other.currentProject &&
+          status == other.status &&
+          currentStep == other.currentStep &&
+          listEquals(projects, other.projects) &&
+          listEquals(alaInstallReleases, other.alaInstallReleases);
+
+  @override
+  int get hashCode =>
+      firstUsage.hashCode ^
+      currentProject.hashCode ^
+      status.hashCode ^
+      currentStep.hashCode ^
+      ListEquality().hash(projects) ^
+      ListEquality().hash(alaInstallReleases);
+
+  @override
   String toString() {
     return '''
 
 === AppState ===
 LA projects: ${projects.length} 
-$projects
-currentProject of ${projects.length} -----
-$currentProject
 view status: $status, currentStep: $currentStep
 ala-install releases: $alaInstallReleases
 ''';
+//    $projects
+//    currentProject of ${projects.length} -----
+//    $currentProject
   }
 }

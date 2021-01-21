@@ -31,8 +31,48 @@ class LAVariableDesc {
       this.internal = false,
       this.enabled = true});
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LAVariableDesc &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          service == other.service &&
+          type == other.type &&
+          hint == other.hint &&
+          error == other.error &&
+          regExp == other.regExp &&
+          help == other.help &&
+          ansibleEquiv == other.ansibleEquiv &&
+          confName == other.confName &&
+          internal == other.internal &&
+          enabled == other.enabled;
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      service.hashCode ^
+      type.hashCode ^
+      hint.hashCode ^
+      error.hashCode ^
+      regExp.hashCode ^
+      help.hashCode ^
+      ansibleEquiv.hashCode ^
+      confName.hashCode ^
+      internal.hashCode ^
+      enabled.hashCode;
   static final Map<String, List<LAVariableDesc>> map = {
     LAServiceName.all.toS(): [
+      LAVariableDesc(
+          name: "Default user in your servers",
+          ansibleEquiv: [
+            "ansible_user",
+          ],
+          regExp: LARegExp.username,
+          error: "Invalid username",
+          help: "Before-Start-Your-LA-Installation#default-user-ubuntu",
+          hint:
+              "The user name that we'll use to access to your servers with sudo passwordless permission. By default 'ubuntu'"),
       LAVariableDesc(
           name: "Support email",
           ansibleEquiv: [

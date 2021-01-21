@@ -22,7 +22,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
   List<LatLng> area = []..length = 5;
   List<LatLng> projectArea = []..length = 5;
   bool firstPoint = true;
-  MapController mapController = MapController();
+  final MapController mapController = MapController();
   LAProject _project;
   static const _minZoom = 1.0;
   static const _maxZoom = 20.0;
@@ -30,106 +30,109 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _MapAreaSelectorViewModel>(
+        distinct: true,
         converter: (store) {
-      return _MapAreaSelectorViewModel(
-          state: store.state,
-          onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
-    }, builder: (BuildContext context, _MapAreaSelectorViewModel vm) {
-      _project = vm.state.currentProject;
-      if (_project.mapBounds1stPoint != null &&
-          _project.mapBounds2ndPoint != null) {
-        var fstPoint = LatLng(
-            _project.mapBounds1stPoint[0], _project.mapBounds1stPoint[1]);
-        var sndPoint = LatLng(
-            _project.mapBounds2ndPoint[0], _project.mapBounds2ndPoint[1]);
-        projectArea = [fstPoint, null, sndPoint, null, fstPoint];
-        _calSquare(projectArea);
-      } else {}
-      var markers = area.where((latLng) => latLng != null).map((latLng) {
-        return Marker(
-          width: 80.0,
-          height: 80.0,
-          point: latLng,
-          builder: (ctx) => Container(
-            child: new Icon(Icons.circle, size: 16, color: Colors.blueGrey),
-          ),
-        );
-      }).toList();
-      return Container(
-          height: 470, // size of collectory
-          width: MediaQuery.of(context).size.width * 0.8,
-          child: FlutterMap(
-            mapController: mapController,
-            options: new MapOptions(
-                center: vm.state.currentProject.getCenter(),
-                zoom: vm.state.currentProject.mapZoom ?? 1.0,
-                /* center: LatLng(-28.2, 134),
+          return _MapAreaSelectorViewModel(
+              currentProject: store.state.currentProject,
+              onUpdateProject: (project) =>
+                  store.dispatch(UpdateProject(project)));
+        },
+        builder: (BuildContext context, _MapAreaSelectorViewModel vm) {
+          _project = vm.currentProject;
+          if (_project.mapBounds1stPoint != null &&
+              _project.mapBounds2ndPoint != null) {
+            var fstPoint = LatLng(
+                _project.mapBounds1stPoint[0], _project.mapBounds1stPoint[1]);
+            var sndPoint = LatLng(
+                _project.mapBounds2ndPoint[0], _project.mapBounds2ndPoint[1]);
+            projectArea = [fstPoint, null, sndPoint, null, fstPoint];
+            _calSquare(projectArea);
+          } else {}
+          var markers = area.where((latLng) => latLng != null).map((latLng) {
+            return Marker(
+              width: 80.0,
+              height: 80.0,
+              point: latLng,
+              builder: (ctx) => Container(
+                child: new Icon(Icons.circle, size: 16, color: Colors.blueGrey),
+              ),
+            );
+          }).toList();
+          return Container(
+              height: 470, // size of collectory
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: FlutterMap(
+                mapController: mapController,
+                options: new MapOptions(
+                    center: vm.currentProject.getCenter(),
+                    zoom: vm.currentProject.mapZoom ?? 1.0,
+                    /* center: LatLng(-28.2, 134),
                     zoom: 3.0, */
-                /* boundsOptions:
+                    /* boundsOptions:
                         FitBoundsOptions(padding: EdgeInsets.all(20)), */
-                plugins: [
-                  ZoomButtonsPlugin(),
-                  ScaleLayerPlugin(),
-                  DragMarkerPlugin(),
+                    plugins: [
+                      ZoomButtonsPlugin(),
+                      ScaleLayerPlugin(),
+                      DragMarkerPlugin(),
+                    ],
+                    onTap: (latLng) {
+                      if (firstPoint) {
+                        area = [latLng, null, null, null, latLng];
+                      } else {
+                        area[2] = latLng;
+                      }
+                      firstPoint = !firstPoint;
+                      print("area: $firstPoint $area");
+                      _updateArea(vm);
+                    },
+                    maxZoom: _maxZoom,
+                    minZoom: _minZoom),
+                layers: [
+                  TileLayerOptions(
+                      urlTemplate:
+                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      subdomains: ['a', 'b', 'c']),
+                  if (area.where((point) => point != null).length != 5)
+                    MarkerLayerOptions(markers: markers),
+                  PolylineLayerOptions(
+                    polylines: [
+                      if (projectArea[0] != null && projectArea[2] != null)
+                        Polyline(
+                            points: projectArea,
+                            strokeWidth: 4.0,
+                            isDotted: false,
+                            color: LAColorTheme.laPalette),
+                    ],
+                  ),
+                  PolylineLayerOptions(polylines: [
+                    if (area[0] != null && area[2] != null)
+                      Polyline(
+                          points: area,
+                          strokeWidth: 4.0,
+                          isDotted: true,
+                          color: LAColorTheme.laPalette)
+                  ]),
+                  ZoomButtonsPluginOption(
+                      minZoom: _minZoom.toInt(),
+                      maxZoom: _maxZoom.toInt(),
+                      mini: true,
+                      padding: 10,
+                      alignment: Alignment.bottomRight),
+                  ScaleLayerPluginOption(
+                    lineColor: Colors.blue,
+                    lineWidth: 2,
+                    textStyle: TextStyle(color: Colors.blue, fontSize: 12),
+                    padding: EdgeInsets.all(10),
+                  ),
+                  DragMarkerPluginOptions(markers: [
+                    if (projectArea[0] != null && projectArea[2] != null)
+                      _createDragMarker(projectArea[0], vm),
+                    if (projectArea[0] != null && projectArea[2] != null)
+                      _createDragMarker(projectArea[2], vm)
+                  ])
                 ],
-                onTap: (latLng) {
-                  if (firstPoint) {
-                    area = [latLng, null, null, null, latLng];
-                  } else {
-                    area[2] = latLng;
-                  }
-                  firstPoint = !firstPoint;
-                  print("area: $firstPoint $area");
-                  _updateArea(vm);
-                },
-                maxZoom: _maxZoom,
-                minZoom: _minZoom),
-            layers: [
-              TileLayerOptions(
-                  urlTemplate:
-                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  subdomains: ['a', 'b', 'c']),
-              if (area.where((point) => point != null).length != 5)
-                MarkerLayerOptions(markers: markers),
-              PolylineLayerOptions(
-                polylines: [
-                  if (projectArea[0] != null && projectArea[2] != null)
-                    Polyline(
-                        points: projectArea,
-                        strokeWidth: 4.0,
-                        isDotted: false,
-                        color: LAColorTheme.laPalette),
-                ],
-              ),
-              PolylineLayerOptions(polylines: [
-                if (area[0] != null && area[2] != null)
-                  Polyline(
-                      points: area,
-                      strokeWidth: 4.0,
-                      isDotted: true,
-                      color: LAColorTheme.laPalette)
-              ]),
-              ZoomButtonsPluginOption(
-                  minZoom: _minZoom.toInt(),
-                  maxZoom: _maxZoom.toInt(),
-                  mini: true,
-                  padding: 10,
-                  alignment: Alignment.bottomRight),
-              ScaleLayerPluginOption(
-                lineColor: Colors.blue,
-                lineWidth: 2,
-                textStyle: TextStyle(color: Colors.blue, fontSize: 12),
-                padding: EdgeInsets.all(10),
-              ),
-              DragMarkerPluginOptions(markers: [
-                if (projectArea[0] != null && projectArea[2] != null)
-                  _createDragMarker(projectArea[0], vm),
-                if (projectArea[0] != null && projectArea[2] != null)
-                  _createDragMarker(projectArea[2], vm)
-              ])
-            ],
-          ));
-    });
+              ));
+        });
   }
 
   void _updateArea(_MapAreaSelectorViewModel vm) {
@@ -150,7 +153,8 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
       width: 80.0,
       height: 80.0,
       offset: Offset(0.0, 0.0),
-      builder: (ctx) => Container(child: Icon(Icons.close, size: 30)),
+      builder: (ctx) => Container(
+          child: Icon(Icons.circle, size: 20, color: LAColorTheme.laPalette)),
       onDragStart: (details, point) => print("Start point $point"),
       onDragEnd: (details, endPoint) {
         print("End point $endPoint");
@@ -176,7 +180,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
           Container(child: Icon(Icons.close, size: 45, color: Colors.orange)),
       feedbackOffset: Offset(0.0, 0.0),
       updateMapNearEdge: false,
-      nearEdgeRatio: 2.0,
+      nearEdgeRatio: 1.0,
       nearEdgeSpeed: 1.0,
     );
   }
@@ -207,8 +211,18 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
 }
 
 class _MapAreaSelectorViewModel {
-  final AppState state;
+  final LAProject currentProject;
   final void Function(LAProject project) onUpdateProject;
 
-  _MapAreaSelectorViewModel({this.state, this.onUpdateProject});
+  _MapAreaSelectorViewModel({this.currentProject, this.onUpdateProject});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _MapAreaSelectorViewModel &&
+          runtimeType == other.runtimeType &&
+          currentProject == other.currentProject;
+
+  @override
+  int get hashCode => currentProject.hashCode;
 }

@@ -1,4 +1,6 @@
+import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'laServer.g.dart';
@@ -46,10 +48,31 @@ class LAServer {
       identical(this, other) ||
       other is LAServer &&
           runtimeType == other.runtimeType &&
-          name == other.name;
+          name == other.name &&
+          ipv4 == other.ipv4 &&
+          sshPort == other.sshPort &&
+          listEquals(aliases, other.aliases) &&
+          sshPrivateKey == other.sshPrivateKey &&
+          proxyJump == other.proxyJump &&
+          proxyJumpPort == other.proxyJumpPort &&
+          proxyJumpUser == other.proxyJumpUser &&
+          reachable == other.reachable &&
+          sshReachable == other.sshReachable &&
+          sudoEnabled == other.sudoEnabled;
 
   @override
-  int get hashCode => name.hashCode;
+  int get hashCode =>
+      name.hashCode ^
+      ipv4.hashCode ^
+      sshPort.hashCode ^
+      DeepCollectionEquality.unordered().hash(aliases) ^
+      sshPrivateKey.hashCode ^
+      proxyJump.hashCode ^
+      proxyJumpPort.hashCode ^
+      proxyJumpUser.hashCode ^
+      reachable.hashCode ^
+      sshReachable.hashCode ^
+      sudoEnabled.hashCode;
 
   @override
   String toString() {
@@ -57,9 +80,9 @@ class LAServer {
   }
 
   static List<LAServer> upsert(List<LAServer> servers, LAServer laServer) {
-    if (servers.contains(laServer)) {
+    if (servers.map((s) => s.name).toList().contains(laServer.name)) {
       servers = servers
-          .map((current) => current == laServer ? laServer : current)
+          .map((current) => current.name == laServer.name ? laServer : current)
           .toList();
     } else {
       servers.add(laServer);

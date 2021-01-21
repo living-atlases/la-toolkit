@@ -46,4 +46,23 @@ class LAService {
     else
       return "not used";
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LAService &&
+          runtimeType == other.runtimeType &&
+          nameInt == other.nameInt &&
+          iniPath == other.iniPath &&
+          use == other.use &&
+          usesSubdomain == other.usesSubdomain &&
+          suburl == other.suburl;
+
+  @override
+  int get hashCode =>
+      nameInt.hashCode ^
+      iniPath.hashCode ^
+      use.hashCode ^
+      usesSubdomain.hashCode ^
+      suburl.hashCode;
 }

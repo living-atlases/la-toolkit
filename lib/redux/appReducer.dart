@@ -107,7 +107,8 @@ AppState _generateInvProject(AppState state, GenerateInvProject action) {
 
 AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
   return state.copyWith(
-      currentProject: action.project, currentStep: action.currentStep);
+      currentProject: action.project,
+      currentStep: action.currentStep ?? state.currentStep);
 }
 
 AppState _addProject(AppState state, AddProject action) {

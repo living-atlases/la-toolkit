@@ -84,5 +84,5 @@ class SaveCurrentProject extends AppActions {
   LAProject project;
   int currentStep;
 
-  SaveCurrentProject(this.project, this.currentStep);
+  SaveCurrentProject([this.project, this.currentStep]);
 }

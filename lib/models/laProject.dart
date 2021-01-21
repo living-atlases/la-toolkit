@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
@@ -155,8 +156,7 @@ class LAProject {
     servers (${servers.length}): $servers 
     servers-services: $sToS  
     services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
-    services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].
-    ''';
+    services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
     /* services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().map((s) => services[s].nameInt + "(" + (getHostname(s).length > 0 ? getHostname(s)[0] : "") + ")").toList().join(', ')}]. */
     /* services not selected (${getServicesNameListNotSelected().length}): [${getServicesNameListNotSelected().join(', ')}] */
   }
@@ -188,7 +188,10 @@ class LAProject {
   void upsert(LAServer laServer) {
     servers = LAServer.upsert(servers, laServer);
     // NEW
-    serverServices[laServer.name] = [];
+    if (!serverServices.containsKey(laServer.name)) {
+      // NEW
+      serverServices[laServer.name] = [];
+    }
   }
 
   void setProjectStatus(LAProjectStatus status) {
@@ -244,4 +247,42 @@ class LAProject {
     mapBounds2ndPoint = [sndPoint.latitude, sndPoint.longitude];
     mapZoom = zoom;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LAProject &&
+          runtimeType == other.runtimeType &&
+          uuid == other.uuid &&
+          longName == other.longName &&
+          shortName == other.shortName &&
+          domain == other.domain &&
+          useSSL == other.useSSL &&
+          DeepCollectionEquality.unordered().equals(servers, other.servers) &&
+          DeepCollectionEquality.unordered().equals(services, other.services) &&
+          DeepCollectionEquality.unordered()
+              .equals(serverServices, other.serverServices) &&
+          isCreated == other.isCreated &&
+          status == other.status &&
+          alaInstallRelease == other.alaInstallRelease &&
+          ListEquality().equals(mapBounds1stPoint, other.mapBounds1stPoint) &&
+          ListEquality().equals(mapBounds2ndPoint, other.mapBounds2ndPoint) &&
+          mapZoom == other.mapZoom;
+
+  @override
+  int get hashCode =>
+      uuid.hashCode ^
+      longName.hashCode ^
+      shortName.hashCode ^
+      domain.hashCode ^
+      useSSL.hashCode ^
+      DeepCollectionEquality.unordered().hash(servers) ^
+      DeepCollectionEquality.unordered().hash(services) ^
+      DeepCollectionEquality.unordered().hash(serverServices) ^
+      isCreated.hashCode ^
+      status.hashCode ^
+      alaInstallRelease.hashCode ^
+      ListEquality().hash(mapBounds1stPoint) ^
+      ListEquality().hash(mapBounds2ndPoint) ^
+      mapZoom.hashCode;
 }
