@@ -13,7 +13,8 @@ enum LAVariableStatus { deployed, undeployed }
 class LAVariable {
   String nameInt;
   LAServiceName service;
-  String value;
+  Object value;
+
   LAVariableStatus status;
 
   LAVariable({this.nameInt, this.service, this.value});

@@ -196,7 +196,7 @@ class LAProject {
         LAVariable.fromDesc(LAVariableDesc.get(nameInt));
   }
 
-  void setVariable(LAVariableDesc variable, String value) {
+  void setVariable(LAVariableDesc variable, Object value) {
     var cur = getVariable(variable.nameInt);
     cur.value = value;
     variables[variable.nameInt] = cur;
@@ -282,6 +282,8 @@ class LAProject {
           DeepCollectionEquality.unordered().equals(servers, other.servers) &&
           DeepCollectionEquality.unordered().equals(services, other.services) &&
           DeepCollectionEquality.unordered()
+              .equals(services, other.variables) &&
+          DeepCollectionEquality.unordered()
               .equals(serverServices, other.serverServices) &&
           isCreated == other.isCreated &&
           status == other.status &&
@@ -299,6 +301,7 @@ class LAProject {
       useSSL.hashCode ^
       DeepCollectionEquality.unordered().hash(servers) ^
       DeepCollectionEquality.unordered().hash(services) ^
+      DeepCollectionEquality.unordered().hash(variables) ^
       DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
       status.hashCode ^

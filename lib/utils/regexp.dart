@@ -18,4 +18,6 @@ class LARegExp {
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
   // https://stackoverflow.com/questions/1221985/how-to-validate-a-user-name-with-regex
   static final username = RegExp(r'^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$');
+  static final int = RegExp(r'^[-+]?\d+$');
+  static final double = RegExp(r'^[-+]?[0-9]*\.?[0-9]+$');
 }

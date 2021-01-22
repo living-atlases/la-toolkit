@@ -10,7 +10,7 @@ extension LAVariableCopyWith on LAVariable {
   LAVariable copyWith({
     String nameInt,
     LAServiceName service,
-    String value,
+    Object value,
   }) {
     return LAVariable(
       nameInt: nameInt ?? this.nameInt,
@@ -28,7 +28,7 @@ LAVariable _$LAVariableFromJson(Map<String, dynamic> json) {
   return LAVariable(
     nameInt: json['nameInt'] as String,
     service: _$enumDecodeNullable(_$LAServiceNameEnumMap, json['service']),
-    value: json['value'] as String,
+    value: json['value'],
   )..status = _$enumDecodeNullable(_$LAVariableStatusEnumMap, json['status']);
 }
 

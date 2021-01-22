@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
 import 'package:la_toolkit/components/helpIcon.dart';
+import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
+import 'package:la_toolkit/utils/regexp.dart';
 
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
@@ -22,7 +24,7 @@ class LAProjectTunePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectTuneViewModel>(
-      distinct: true,
+      // Fails the switch distinct: true,
       converter: (store) {
         return _ProjectTuneViewModel(
           state: store.state,
@@ -87,8 +89,8 @@ class LAProjectTunePage extends StatelessWidget {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                              "Note: This part is under development. Right now just testing validations,..."),
+                          /* Text(
+                              "Note: This part is under development. Right now just testing validations,..."), */
                           ListView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
@@ -194,27 +196,41 @@ class HeadingItem implements ListItem {
 class MessageItem implements ListItem {
   LAVariableDesc variable;
   LAProject project;
-  ValueChanged<String> onChanged;
+  ValueChanged<Object> onChanged;
   MessageItem(this.project, this.variable, this.onChanged);
 
   Widget buildTitle(BuildContext context) {
-    if (variable.type == LAVariableType.String) {
-      return ListTile(
-          title: GenericTextFormField(
-              label: variable.name,
-              hint: variable.hint,
-              initialValue: project.getVariable(variable.nameInt).value,
-              allowEmpty: true,
-              enabledBorder: false,
-              regexp: variable.regExp,
-              error: variable.error,
-              onChanged: (value) {
-                onChanged(value);
-              }),
-          trailing:
-              variable.help != null ? HelpIcon(wikipage: variable.help) : null);
-    } else
-      return Text("Type ${variable.type} not yet ready");
+    final initialValue = project.getVariable(variable.nameInt).value;
+    var defValue;
+    if (variable.defValue != null) defValue = variable.defValue(project);
+    return ListTile(
+        title: (variable.type == LAVariableType.bool)
+            ? SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                value: initialValue ?? defValue ?? false,
+                title: Text(variable.name,
+                    style:
+                        TextStyle(color: LAColorTheme.laThemeData.hintColor)),
+                onChanged: (bool newValue) {
+                  onChanged(newValue);
+                })
+            : GenericTextFormField(
+                label: variable.name,
+                hint: variable.hint,
+                initialValue: initialValue ?? defValue,
+                allowEmpty: true,
+                enabledBorder: false,
+                regexp: variable.type == LAVariableType.int
+                    ? LARegExp.int
+                    : variable.type == LAVariableType.double
+                        ? LARegExp.double
+                        : variable.regExp,
+                error: variable.error,
+                onChanged: (newValue) {
+                  onChanged(newValue);
+                }),
+        trailing:
+            variable.help != null ? HelpIcon(wikipage: variable.help) : null);
   }
 
   Widget buildSubtitle(BuildContext context) => null; // Text("");

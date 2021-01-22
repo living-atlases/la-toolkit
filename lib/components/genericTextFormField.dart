@@ -92,7 +92,6 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                         : null // , width: 1.0),
                     ,
                   ),
-                  // onChanged: ,
                   onChanged: (String value) => debouncer.run(() {
                         setState(() {
                           delayedValue = value;
