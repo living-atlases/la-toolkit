@@ -2,12 +2,34 @@ import 'package:flutter/foundation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 
+import 'laProject.dart';
+
 enum LAVariableType { String, int, double, bool }
+
+enum LAVariableSubcategory { cache, downloads, apikeys, ssl }
+
+extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
+  String get title {
+    switch (this) {
+      case LAVariableSubcategory.cache:
+        return 'Cache';
+      case LAVariableSubcategory.downloads:
+        return 'Downloads';
+      case LAVariableSubcategory.ssl:
+        return 'SSL';
+      case LAVariableSubcategory.apikeys:
+        return 'API Keys';
+      default:
+        return null;
+    }
+  }
+}
 
 class LAVariableDesc {
   String name;
   String nameInt;
   LAServiceName service;
+  LAVariableSubcategory subcategory;
   LAVariableType type;
   String hint;
   String error;
@@ -24,6 +46,7 @@ class LAVariableDesc {
       {@required this.name,
       @required this.nameInt,
       this.service = LAServiceName.all,
+      this.subcategory,
       this.type = LAVariableType.String,
       List<String> ansibleEquiv,
       this.hint,
@@ -94,7 +117,7 @@ class LAVariableDesc {
         nameInt: "orgEmail",
         regExp: LARegExp.email,
         error: "Invalid email",
-        defValue: (project) => 'info@${project.domain}',
+        defValue: (LAProject project) => 'info@${project.domain}',
         hint: "Something like info@l-a.site"),
     "email_sender": LAVariableDesc(
         name: "Email sender",
@@ -110,6 +133,9 @@ class LAVariableDesc {
       regExp: LARegExp.url,
       error: "Invalid url",
       help: "Styling-the-web-app",
+      defValue: (LAProject project) => (project
+          .getServiceE(LAServiceName.branding)
+          .fullUrl(project.useSSL, project.domain)),
       hint: "Like: https://www.ala.org.au/commonui-bs3",
     ),
     "downloads_terms_of_use": LAVariableDesc(
@@ -119,31 +145,44 @@ class LAVariableDesc {
       error: "Invalid url",
       hint: "Like: https://www.ala.org.au/about-the-atlas/terms-of-use/",
     ),
+    "privacy_policy_url": LAVariableDesc(
+      name: "Privacy Policy URL",
+      nameInt: "privacy_policy_url",
+      regExp: LARegExp.url,
+      error: "Invalid url",
+      hint: "Like: https://www.ala.org.au/about/terms-of-use/privacy-policy/",
+    ),
     "favicon_url": LAVariableDesc(
       name: "Favicon",
       nameInt: "favicon_url",
+      ansibleEquiv: ["favicon_url", "skin_favicon"],
       regExp: LARegExp.url,
       error: "Invalid url",
+      defValue: (_) => 'https://www.gbif.org/favicon.ico',
       hint: "Like: https://www.gbif.org/favicon.ico",
     ),
     "google_api_key": LAVariableDesc(
         name: "Google Maps API Key",
         nameInt: "google_api_key",
+        subcategory: LAVariableSubcategory.apikeys,
         ansibleEquiv: ["google_api_key", "google_apikey"],
         hint: "Like: AIzaBcDeFgHiJkLmNoPqRsTuVwXyZ"),
     "caches_auth_enabled": LAVariableDesc(
         name: "Enable Authentication Cache",
         nameInt: "caches_auth_enabled",
+        subcategory: LAVariableSubcategory.cache,
         defValue: (_) => false,
         type: LAVariableType.bool),
     "caches_logs_enabled": LAVariableDesc(
         name: "Enable Logs Cache",
         nameInt: "caches_logs_enabled",
+        subcategory: LAVariableSubcategory.cache,
         defValue: (_) => false,
         type: LAVariableType.bool),
     "caches_collections_enabled": LAVariableDesc(
         name: "Enable Collections Cache",
         nameInt: "caches_collections_enabled",
+        subcategory: LAVariableSubcategory.cache,
         defValue: (_) => false,
         hint:
             "By default caches are disabled (the collections cache is problematic when collectory + biocache on same server)",
@@ -153,16 +192,19 @@ class LAVariableDesc {
         name: "Enable Layers Cache",
         defValue: (_) => false,
         nameInt: "caches_layers_enabled",
+        subcategory: LAVariableSubcategory.cache,
         type: LAVariableType.bool),
     "maxmind_account_id": LAVariableDesc(
         name: "MaxMind Account ID",
         nameInt: "maxmind_account_id",
+        subcategory: LAVariableSubcategory.apikeys,
         service: LAServiceName.ala_hub,
         help: "API-Keys#non-ala-keys",
         hint: "Something like: 978657"),
     "maxmind_account_key": LAVariableDesc(
         name: "MaxMind Account Key",
         nameInt: "maxmind_account_key",
+        subcategory: LAVariableSubcategory.apikeys,
         service: LAServiceName.ala_hub,
         hint: "Something like: UKDDas3bGKJ9VuuL")
   };

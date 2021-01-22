@@ -97,6 +97,8 @@ class LAProjectViewPage extends StatelessWidget {
             // - Data generation
             // - Inventories download
           ];
+          final projectIconUrl =
+              _currentProject.getVariable("favicon_url").value;
           return Scaffold(
               key: _scaffoldKey,
               backgroundColor: Colors.white,
@@ -109,7 +111,9 @@ class LAProjectViewPage extends StatelessWidget {
                     onPressed: () => _scaffoldKey.currentState.openDrawer(),
                   ),
                   context: context,
-                  showLaIcon: true,
+                  showLaIcon: false,
+                  showBack: true,
+                  projectIcon: projectIconUrl,
                   title: "Toolkit of ${_currentProject.shortName} Portal"),
               body: new ScrollPanel(
                   child: Container(

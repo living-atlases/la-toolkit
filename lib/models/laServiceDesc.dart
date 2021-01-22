@@ -341,10 +341,10 @@ class LAServiceDesc {
         group: "ala-demo",
         desc: "Web branding used by all services",
         icon: Mdi.formatWrapSquare,
-        withoutUrl: true,
+        withoutUrl: false,
         optional: false,
         basicDepends: [Nginx.def],
-        path: ""),
+        path: "branding-${DateTime.now().year}"),
     LAServiceName.biocache_cli.toS(): LAServiceDesc(
         name: "biocache-cli",
         nameInt: "biocache_cli",

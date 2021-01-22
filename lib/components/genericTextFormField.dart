@@ -63,6 +63,42 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
 
   @override
   Widget build(BuildContext context) {
+    final decoration = InputDecoration(
+        fillColor: widget.fillColor,
+        labelText: widget.label,
+        hintText: widget.hint,
+        isCollapsed: widget.isCollapsed,
+        isDense: widget.isDense,
+        labelStyle: widget.hintStyle ?? null,
+        prefixText: widget.prefixText,
+        filled: widget.fillColor != null,
+        suffixIcon: widget.wikipage == null
+            ? null
+            : Padding(
+                padding: EdgeInsets.only(top: 5), // add padding to adjust icon
+                child: HelpIcon(wikipage: widget.wikipage)),
+        enabledBorder: widget.enabledBorder
+            ? OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey[500]))
+            : null // , width: 1.0),
+        );
+    final onChange = (String value) => debouncer.run(() {
+          setState(() {
+            delayedValue = value;
+            if (formKey.currentState.validate()) {
+              widget.onChanged(value);
+            }
+          });
+        });
+    final validator = (_) => widget.regexp != null &&
+            delayedValue != null &&
+            !widget.regexp.hasMatch(delayedValue) &&
+            !(widget.allowEmpty && delayedValue.isEmpty)
+        ? widget.error
+        : null;
+    final style = !widget.monoSpaceFont
+        ? LAProjectEditPage.projectTextStyle
+        : LAProjectEditPage.projectFixedTextStyle;
     return Form(
         key: formKey,
         child: Column(
@@ -71,50 +107,16 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               TextFormField(
-                  decoration: InputDecoration(
-                    fillColor: widget.fillColor,
-                    labelText: widget.label,
-                    hintText: widget.hint,
-                    isCollapsed: widget.isCollapsed,
-                    isDense: widget.isDense,
-                    labelStyle: widget.hintStyle ?? null,
-                    prefixText: widget.prefixText,
-                    filled: widget.fillColor != null,
-                    suffixIcon: widget.wikipage == null
-                        ? null
-                        : Padding(
-                            padding: EdgeInsets.only(
-                                top: 5), // add padding to adjust icon
-                            child: HelpIcon(wikipage: widget.wikipage)),
-                    enabledBorder: widget.enabledBorder
-                        ? OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey[500]))
-                        : null // , width: 1.0),
-                    ,
-                  ),
-                  onChanged: (String value) => debouncer.run(() {
-                        setState(() {
-                          delayedValue = value;
-                          if (formKey.currentState.validate()) {
-                            widget.onChanged(value);
-                          }
-                        });
-                      }),
-                  style: !widget.monoSpaceFont
-                      ? LAProjectEditPage.projectTextStyle
-                      : LAProjectEditPage.projectFixedTextStyle,
+                  decoration: decoration,
+                  onChanged: onChange,
+                  style: style,
                   focusNode: widget.focusNode,
                   minLines: widget.minLines,
                   maxLines: widget.maxLines,
                   keyboardType: widget.keyboardType,
                   initialValue: widget.initialValue,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (_) => widget.regexp != null &&
-                          delayedValue != null &&
-                          !widget.regexp.hasMatch(delayedValue) &&
-                          !(widget.allowEmpty && delayedValue.isEmpty)
-                      ? widget.error
-                      : null)
+                  validator: validator)
             ]));
   }
 }

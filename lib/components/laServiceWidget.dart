@@ -138,33 +138,39 @@ class LaServiceWidget extends StatelessWidget {
                                   : null,
                             ),
                             if (!optional || service.use)
-                              Row(children: [
-                                Tooltip(
-                                  message: canUseSubdomain
-                                      ? "Use a subdomain for this service?"
-                                      : "This service requires a subdomain",
-                                  child: Container(
-                                      padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                                      child: AdvancedSwitch(
-                                          value:
-                                              !service.usesSubdomain, // Boolean
-                                          height: 16.0,
-                                          width: 60.0,
-                                          activeColor: LAColorTheme.inactive,
-                                          inactiveColor: LAColorTheme.laPalette,
-                                          // activeColor: Color(0xFF009688),
-                                          inactiveChild: Text('SUBD'),
-                                          activeChild: Text('PATH'),
-                                          borderRadius: BorderRadius.all(
-                                              const Radius.circular(4)),
-                                          onChanged: canUseSubdomain
-                                              ? (bool newValue) {
-                                                  service.usesSubdomain =
-                                                      !newValue;
-                                                  vm.onEditService(service);
-                                                }
-                                              : null)),
-                                  /* Switch(
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Tooltip(
+                                      message: canUseSubdomain
+                                          ? "Use a subdomain for this service?"
+                                          : "This service requires a subdomain",
+                                      child: Container(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 3, 20, 0),
+                                          child: AdvancedSwitch(
+                                              value: !service
+                                                  .usesSubdomain, // Boolean
+                                              height: 16.0,
+                                              width: 60.0,
+                                              activeColor:
+                                                  LAColorTheme.inactive,
+                                              inactiveColor:
+                                                  LAColorTheme.laPalette,
+                                              // activeColor: Color(0xFF009688),
+                                              inactiveChild: Text('SUBD'),
+                                              activeChild: Text('PATH'),
+                                              borderRadius: BorderRadius.all(
+                                                  const Radius.circular(4)),
+                                              onChanged: canUseSubdomain
+                                                  ? (bool newValue) {
+                                                      service.usesSubdomain =
+                                                          !newValue;
+                                                      vm.onEditService(service);
+                                                    }
+                                                  : null)),
+                                      /* Switch(
                                 value: service.usesSubdomain,
                                 activeColor: Color(0xFF009688),
                                 onChanged: (bool newValue) {
@@ -172,27 +178,36 @@ class LaServiceWidget extends StatelessWidget {
                                   vm.onEditService(service);
                                 },
                               ) */
-                                ),
-                                if (!serviceDesc.withoutUrl)
-                                  Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0, 0, usesSubdomain ? 0 : 0, 0),
-                                      child: Text(
-                                          "http${vm.currentProject.useSSL ? 's' : ''}://",
-                                          style: domainTextStyle)),
-                                if (!serviceDesc.withoutUrl && usesSubdomain)
-                                  _createSubUrlField(service, serviceDesc, vm,
-                                      'Invalid subdomain.'),
-                                if (!serviceDesc.withoutUrl && usesSubdomain)
-                                  Text('.$domain', style: domainTextStyle),
-                                if (!serviceDesc.withoutUrl && !usesSubdomain)
-                                  Text('$domain/', style: domainTextStyle),
-                                if (!serviceDesc.withoutUrl && !usesSubdomain)
-                                  _createSubUrlField(service, serviceDesc, vm,
-                                      'Invalid path.'),
-                                if (!serviceDesc.withoutUrl && !usesSubdomain)
-                                  Text("/", style: domainTextStyle),
-                                /* SearchChoices.single(
+                                    ),
+                                    if (!serviceDesc.withoutUrl)
+                                      Container(
+                                          padding: EdgeInsets.fromLTRB(
+                                              0, 0, usesSubdomain ? 0 : 0, 0),
+                                          child: Text(
+                                              "http${vm.currentProject.useSSL ? 's' : ''}://",
+                                              style: domainTextStyle)),
+                                    if (!serviceDesc.withoutUrl &&
+                                        usesSubdomain)
+                                      _createSubUrlField(service, serviceDesc,
+                                          vm, 'Invalid subdomain.'),
+                                    if (!serviceDesc.withoutUrl &&
+                                        usesSubdomain)
+                                      Text('.$domain/', style: domainTextStyle),
+                                    if (!serviceDesc.withoutUrl &&
+                                        usesSubdomain)
+                                      _createPathField(service, serviceDesc, vm,
+                                          'Invalid path.'),
+                                    if (!serviceDesc.withoutUrl &&
+                                        !usesSubdomain)
+                                      Text('$domain/', style: domainTextStyle),
+                                    if (!serviceDesc.withoutUrl &&
+                                        !usesSubdomain)
+                                      _createSubUrlField(service, serviceDesc,
+                                          vm, 'Invalid path.'),
+                                    if (!serviceDesc.withoutUrl &&
+                                        !usesSubdomain)
+                                      Text("/", style: domainTextStyle),
+                                    /* SearchChoices.single(
                               items: searchServerList,
                               // vm.state.currentProject.servers.toList(),
                               // value: service.servers[0] ??
@@ -209,28 +224,62 @@ class LaServiceWidget extends StatelessWidget {
                                   BoxConstraints.tight(Size.fromHeight(350)), */
                               isExpanded: false,
                             ) */
-                              ]),
+                                  ]),
                             SizedBox(height: 10)
                           ])))
               : Container();
         });
   }
 
+  Widget _wrapField({Widget child}) {
+    return IntrinsicWidth(
+        child: Column(
+            // mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+          ConstrainedBox(
+              constraints: new BoxConstraints(
+                minWidth: 60.0,
+              ),
+              child: child)
+        ]));
+  }
+
   Widget _createSubUrlField(LAService service, LAServiceDesc serviceDesc,
       _LAServiceViewModel vm, String error) {
-    return Container(
-        width: 150,
+    return _wrapField(
         child: GenericTextFormField(
             initialValue: service.suburl,
             focusNode: service.nameInt == LAServiceName.collectory.toS()
                 ? collectoryFocusNode
                 : null,
-            hint: serviceDesc.hint,
+            // This
+            // hint: serviceDesc.hint,
+            isDense: false,
             isCollapsed: true,
             regexp: LARegExp.subdomain,
-            error: "Invalid subdomain.",
+            error: error,
             onChanged: (value) {
               service.suburl = value;
+              vm.onEditService(service);
+            }));
+  }
+
+  Widget _createPathField(LAService service, LAServiceDesc serviceDesc,
+      _LAServiceViewModel vm, String error) {
+    return _wrapField(
+        child: GenericTextFormField(
+            initialValue: service.iniPath,
+            focusNode: service.nameInt == LAServiceName.collectory.toS() &&
+                    !service.usesSubdomain
+                ? collectoryFocusNode
+                : null,
+            isDense: false,
+            isCollapsed: true,
+            regexp: LARegExp.subdomain,
+            allowEmpty: true,
+            error: error,
+            onChanged: (value) {
+              service.iniPath = value;
               vm.onEditService(service);
             }));
   }

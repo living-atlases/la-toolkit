@@ -45,14 +45,19 @@ class LAProjectTunePage extends StatelessWidget {
         var varCatName = currentProject.getServicesNameListInUse();
         varCatName.add(LAServiceName.all.toS());
         List<ListItem> items = [];
-        var lastTitle;
+        var lastCategory;
+        var lastSubcategory;
         LAVariableDesc.map.entries.forEach((entry) {
-          if (entry.value.service != lastTitle) {
+          if (entry.value.service != lastCategory) {
             items.add(HeadingItem(entry.value.service == LAServiceName.all
                 ? "Variables common to all services"
                 : "${StringUtils.capitalize(LAServiceDesc.getE(entry.value.service).name)} variables"));
 
-            lastTitle = entry.value.service;
+            lastCategory = entry.value.service;
+          }
+          if (entry.value.subcategory != lastSubcategory) {
+            items.add(HeadingItem(entry.value.subcategory.title, true));
+            lastSubcategory = entry.value.subcategory;
           }
           items.add(MessageItem(currentProject, entry.value, (value) {
             currentProject.setVariable(entry.value, value);
@@ -63,8 +68,9 @@ class LAProjectTunePage extends StatelessWidget {
             key: _scaffoldKey,
             appBar: LAAppBar(
                 context: context,
+                titleIcon: Icons.edit,
                 title: vm.state.status.title,
-                showLaIcon: true,
+                showLaIcon: false,
                 actions: [
                   FlatButton(
                       // icon: Icon(Icons.cancel),
@@ -182,11 +188,16 @@ abstract class ListItem {
 /// A ListItem that contains data to display a heading.
 class HeadingItem implements ListItem {
   final String heading;
+  final bool subheading;
 
-  HeadingItem(this.heading);
+  HeadingItem(this.heading, [this.subheading = false]);
 
   Widget buildTitle(BuildContext context) {
-    return Text(heading, style: Theme.of(context).textTheme.headline5);
+    return Text(heading,
+        style: !subheading
+            ? Theme.of(context).textTheme.headline5
+            : Theme.of(context).textTheme.headline6.copyWith(
+                fontSize: 18, color: LAColorTheme.laThemeData.hintColor));
   }
 
   Widget buildSubtitle(BuildContext context) => null;

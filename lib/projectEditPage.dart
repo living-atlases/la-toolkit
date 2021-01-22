@@ -451,8 +451,9 @@ If you are unsure type something like "server1, server2, server3".
             key: _scaffoldKey,
             appBar: LAAppBar(
                 context: context,
+                titleIcon: Icons.edit,
                 title: vm.state.status.title,
-                showLaIcon: true,
+                showLaIcon: false,
                 actions: ListUtils.listWithoutNulls([
                   Tooltip(
                       message: "Project configuration progress",
@@ -478,7 +479,7 @@ If you are unsure type something like "server1, server2, server3".
                           textColor: Colors.white,
                           onPressed: () => onStepContinue(vm, _project)),
                   Tooltip(
-                    message: "Close without saving the changes",
+                    message: "Close without saving your changes",
                     child: FlatButton(
                         child: const Icon(Icons.close, color: Colors.white),
                         onPressed: () {

@@ -11,9 +11,12 @@ class LAAppBar extends AppBar {
   LAAppBar(
       {@required BuildContext context,
       @required String title,
+      String projectIcon,
       bool showLaIcon: false,
+      bool showBack: false,
       List<Widget> actions,
-      Widget leading})
+      Widget leading,
+      IconData titleIcon})
       : super(
             /*
             // This breaks the Navigation
@@ -37,11 +40,21 @@ class LAAppBar extends AppBar {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: ListUtils.listWithoutNulls(<Widget>[
+                    showBack
+                        ? IconButton(
+                            tooltip: "Homepage",
+                            icon: Icon(Icons.arrow_back,
+                                size: 28, color: Colors.black),
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushNamed(HomePage.routeName);
+                            })
+                        : null,
                     showLaIcon
                         ? IconButton(
                             tooltip: "Homepage",
                             icon:
-                                Icon(LAIcon.la, size: 32, color: Colors.white),
+                                Icon(LAIcon.la, size: 34, color: Colors.white),
                             onPressed: () {
                               Navigator.of(context)
                                   .pushNamed(HomePage.routeName);
@@ -49,12 +62,22 @@ class LAAppBar extends AppBar {
                         : null,
                     Container(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(title,
-                            style: GoogleFonts.signika(
-                                textStyle: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.w400))))
+                        child: Row(children: [
+                          if (projectIcon != null) SizedBox(width: 8),
+                          if (projectIcon != null)
+                            ImageIcon(NetworkImage(projectIcon),
+                                color: Colors.white, size: 26),
+                          if (projectIcon != null) SizedBox(width: 8),
+                          if (titleIcon != null)
+                            Icon(titleIcon, size: 26, color: Colors.white),
+                          if (titleIcon != null) SizedBox(width: 8),
+                          Text(title,
+                              style: GoogleFonts.signika(
+                                  textStyle: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w400)))
+                        ]))
                   ]),
                 ))) {
     super.actions.addAll(defActions);
