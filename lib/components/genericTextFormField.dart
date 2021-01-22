@@ -7,6 +7,7 @@ import 'helpIcon.dart';
 class GenericTextFormField extends StatefulWidget {
   final String label;
   final String hint;
+  final TextStyle hintStyle;
   final String initialValue;
   final String prefixText;
   final String wikipage;
@@ -20,13 +21,14 @@ class GenericTextFormField extends StatefulWidget {
   final int minLines;
   final int maxLines;
   final TextInputType keyboardType;
-  final bool filled;
+  final Color fillColor;
   final bool enabledBorder;
   final bool monoSpaceFont;
 
   GenericTextFormField(
       {this.label,
       this.hint,
+      this.hintStyle,
       @required this.initialValue,
       this.prefixText,
       this.wikipage,
@@ -38,7 +40,7 @@ class GenericTextFormField extends StatefulWidget {
       this.focusNode,
       this.minLines,
       this.maxLines = 1,
-      this.filled = false,
+      this.fillColor,
       this.allowEmpty = false,
       this.enabledBorder = false,
       this.monoSpaceFont = false,
@@ -70,12 +72,14 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
             children: <Widget>[
               TextFormField(
                   decoration: InputDecoration(
+                    fillColor: widget.fillColor,
                     labelText: widget.label,
                     hintText: widget.hint,
                     isCollapsed: widget.isCollapsed,
                     isDense: widget.isDense,
+                    labelStyle: widget.hintStyle ?? null,
                     prefixText: widget.prefixText,
-                    filled: widget.filled,
+                    filled: widget.fillColor != null,
                     suffixIcon: widget.wikipage == null
                         ? null
                         : Padding(
@@ -84,7 +88,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                             child: HelpIcon(wikipage: widget.wikipage)),
                     enabledBorder: widget.enabledBorder
                         ? OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey[400]))
+                            borderSide: BorderSide(color: Colors.grey[500]))
                         : null // , width: 1.0),
                     ,
                   ),

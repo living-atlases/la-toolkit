@@ -22,6 +22,7 @@ extension LAProjectCopyWith on LAProject {
     LAProjectStatus status,
     bool useSSL,
     dynamic uuid,
+    Map<String, LAVariable> variables,
   }) {
     return LAProject(
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
@@ -38,6 +39,7 @@ extension LAProjectCopyWith on LAProject {
       status: status ?? this.status,
       useSSL: useSSL ?? this.useSSL,
       uuid: uuid ?? this.uuid,
+      variables: variables ?? this.variables,
     );
   }
 }
@@ -60,6 +62,10 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     services: (json['services'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(
           k, e == null ? null : LAService.fromJson(e as Map<String, dynamic>)),
+    ),
+    variables: (json['variables'] as Map<String, dynamic>)?.map(
+      (k, e) => MapEntry(
+          k, e == null ? null : LAVariable.fromJson(e as Map<String, dynamic>)),
     ),
     serverServices: (json['serverServices'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(k, (e as List)?.map((e) => e as String)?.toList()),
@@ -84,6 +90,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'useSSL': instance.useSSL,
       'servers': instance.servers?.map((e) => e?.toJson())?.toList(),
       'services': instance.services?.map((k, e) => MapEntry(k, e?.toJson())),
+      'variables': instance.variables?.map((k, e) => MapEntry(k, e?.toJson())),
       'serverServices': instance.serverServices,
       'status': _$LAProjectStatusEnumMap[instance.status],
       'alaInstallRelease': instance.alaInstallRelease,

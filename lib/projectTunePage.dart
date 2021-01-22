@@ -13,7 +13,6 @@ import 'components/scrollPanel.dart';
 import 'models/laServiceDesc.dart';
 
 const _textFieldBorder = true;
-const _textFieldFilled = false;
 
 class LAProjectTunePage extends StatelessWidget {
   static const routeName = "tune";
@@ -27,6 +26,9 @@ class LAProjectTunePage extends StatelessWidget {
       converter: (store) {
         return _ProjectTuneViewModel(
           state: store.state,
+          onSaveProject: (project) {
+            store.dispatch(SaveCurrentProject(project));
+          },
           onUpdateProject: (project) {
             store.dispatch(UpdateProject(project));
             store.dispatch(OpenProjectTools(project));
@@ -41,17 +43,19 @@ class LAProjectTunePage extends StatelessWidget {
         var varCatName = currentProject.getServicesNameListInUse();
         varCatName.add(LAServiceName.all.toS());
         List<ListItem> items = [];
-        var current = "";
+        var lastTitle;
         LAVariableDesc.map.entries.forEach((entry) {
-          if (entry.key != current) {
-            items.add(HeadingItem(entry.key == "all"
+          if (entry.value.service != lastTitle) {
+            items.add(HeadingItem(entry.value.service == LAServiceName.all
                 ? "Variables common to all services"
-                : "${StringUtils.capitalize(LAServiceDesc.map[entry.key].name)} variables"));
-            current = entry.key;
+                : "${StringUtils.capitalize(LAServiceDesc.getE(entry.value.service).name)} variables"));
+
+            lastTitle = entry.value.service;
           }
-          entry.value.forEach((serviceVar) {
-            items.add(MessageItem(serviceVar));
-          });
+          items.add(MessageItem(currentProject, entry.value, (value) {
+            currentProject.setVariable(entry.value, value);
+            vm.onSaveProject(currentProject);
+          }));
         });
         return Scaffold(
             key: _scaffoldKey,
@@ -70,7 +74,7 @@ class LAProjectTunePage extends StatelessWidget {
                   IconButton(
                     icon: Tooltip(
                         child: Icon(Icons.save, color: Colors.white),
-                        message: "Save the current LA project"),
+                        message: "Save the current LA project variables"),
                     onPressed: () {
                       vm.onUpdateProject(currentProject);
                     },
@@ -104,21 +108,24 @@ class LAProjectTunePage extends StatelessWidget {
                           SizedBox(height: 20),
                           HeadingItem("Other variables").buildTitle(context),
                           SizedBox(height: 30),
+                          Text(
+                            "Write here other extra ansible variables that are not configurable in the previous forms:",
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.black54),
+                          ),
+                          SizedBox(height: 20),
                           ListTile(
                               title: GenericTextFormField(
-                                  label:
-                                      "Write here other extra ansible variables that are not configurable in the previous forms",
+                                  //label:
+                                  //  ,
                                   hint: "",
-                                  initialValue:
-                                      "\n# ----- Other variables common to all services -----\n[all:vars]\n\n" +
-                                          currentProject
-                                              .getServicesNameListInUse()
-                                              .map((s) =>
-                                                  "# ----- ${StringUtils.capitalize(LAServiceDesc.map[s].desc)} extra variables -----\n[$s:vars]\n")
-                                              .join("\n\n"),
-                                  maxLines: 50,
-                                  filled: _textFieldFilled,
-                                  enabledBorder: _textFieldBorder,
+                                  initialValue: _initialExtraAnsibleVariables(
+                                      currentProject),
+                                  maxLines: 100,
+                                  fillColor: Colors.grey[100],
+                                  //hintStyle: TextStyle(
+                                  //    fontSize: 20, color: Colors.black54),
+                                  enabledBorder: true,
                                   allowEmpty: true,
                                   monoSpaceFont: true,
                                   error: "",
@@ -130,6 +137,35 @@ class LAProjectTunePage extends StatelessWidget {
       },
     );
   }
+
+  String _initialExtraAnsibleVariables(LAProject currentProject) {
+    return '''
+${_doTitle(" Other variables common to all services ")}
+[all:vars]
+
+# End of common variables
+${_doLine()}
+                                        
+                                                                                                                                                                      
+''' +
+        currentProject.getServicesNameListInUse().map((s) {
+          final String title =
+              " ${LAServiceDesc.map[s].name} ${LAServiceDesc.map[s].name != LAServiceDesc.map[s].nameInt ? '(' + LAServiceDesc.map[s].nameInt + ') ' : ''}extra variables ";
+          return '''
+
+${_doTitle(title)} 
+[${LAServiceDesc.map[s].group}:vars]
+
+# End of ${StringUtils.capitalize(LAServiceDesc.map[s].name)} variables
+${_doLine()}
+''';
+        }).join("\n\n");
+  }
+
+  String _doTitle(String title) =>
+      ('#' * 70).replaceRange(5, title.length - 5, title);
+
+  String _doLine() => '#' * 80;
 }
 
 /// The base class for the different types of items the list can contain.
@@ -157,7 +193,9 @@ class HeadingItem implements ListItem {
 /// A ListItem that contains data to display a message.
 class MessageItem implements ListItem {
   LAVariableDesc variable;
-  MessageItem(this.variable);
+  LAProject project;
+  ValueChanged<String> onChanged;
+  MessageItem(this.project, this.variable, this.onChanged);
 
   Widget buildTitle(BuildContext context) {
     if (variable.type == LAVariableType.String) {
@@ -165,13 +203,14 @@ class MessageItem implements ListItem {
           title: GenericTextFormField(
               label: variable.name,
               hint: variable.hint,
-              initialValue: null,
+              initialValue: project.getVariable(variable.nameInt).value,
               allowEmpty: true,
-              filled: _textFieldFilled,
               enabledBorder: false,
               regexp: variable.regExp,
               error: variable.error,
-              onChanged: (value) {}),
+              onChanged: (value) {
+                onChanged(value);
+              }),
           trailing:
               variable.help != null ? HelpIcon(wikipage: variable.help) : null);
     } else
@@ -184,9 +223,11 @@ class MessageItem implements ListItem {
 class _ProjectTuneViewModel {
   final AppState state;
   final void Function(LAProject) onUpdateProject;
+  final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
 
-  _ProjectTuneViewModel({this.state, this.onUpdateProject, this.onCancel});
+  _ProjectTuneViewModel(
+      {this.state, this.onUpdateProject, this.onSaveProject, this.onCancel});
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

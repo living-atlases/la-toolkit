@@ -11,6 +11,8 @@ import 'package:uuid/uuid.dart';
 
 import 'laServer.dart';
 import 'laService.dart';
+import 'laVariable.dart';
+import 'laVariableDesc.dart';
 
 part 'laProject.g.dart';
 
@@ -32,6 +34,8 @@ class LAProject {
   @JsonSerializable(nullable: false)
   Map<String, LAService> services;
   @JsonSerializable(nullable: false)
+  Map<String, LAVariable> variables;
+  @JsonSerializable(nullable: false)
   Map<String, List<String>> serverServices;
   @JsonKey(ignore: true)
   bool isCreated;
@@ -51,6 +55,7 @@ class LAProject {
       this.isCreated = false,
       List<LAServer> servers,
       Map<String, LAService> services,
+      Map<String, LAVariable> variables,
       Map<String, List<String>> serverServices,
       this.status,
       this.alaInstallRelease,
@@ -61,6 +66,7 @@ class LAProject {
         servers = servers ?? [],
         // _serversNameList = _serversNameList ?? [],
         services = services ?? initialServices,
+        variables = variables ?? {},
         serverServices = serverServices ?? {} {
     validateCreation();
   }
@@ -178,7 +184,22 @@ class LAProject {
   LAService getService(String nameInt) {
     // getDepends can be null so the getService returns also null. Find a better way to do this
     if (nameInt == null) return null;
-    return services[nameInt] ?? LAService.fromDesc(LAServiceDesc.get(nameInt));
+    var curService = services[nameInt];
+    if (curService == null)
+      services[nameInt] =
+          curService = LAService.fromDesc(LAServiceDesc.get(nameInt));
+    return curService;
+  }
+
+  LAVariable getVariable(String nameInt) {
+    return variables[nameInt] ??
+        LAVariable.fromDesc(LAVariableDesc.get(nameInt));
+  }
+
+  void setVariable(LAVariableDesc variable, String value) {
+    var cur = getVariable(variable.nameInt);
+    cur.value = value;
+    variables[variable.nameInt] = cur;
   }
 
   List<String> getServicesNameListInServer(String serverName) {

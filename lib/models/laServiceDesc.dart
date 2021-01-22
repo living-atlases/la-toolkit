@@ -49,6 +49,7 @@ extension EnumParser on String {
 class LAServiceDesc {
   String name;
   String nameInt;
+  String group;
   String desc;
   IconData icon;
   bool optional;
@@ -70,6 +71,8 @@ class LAServiceDesc {
       @required this.nameInt,
       @required this.desc,
       @required this.optional,
+      // The host group in ansible
+      @required this.group,
       this.withoutUrl = false,
       this.forceSubdomain = false,
       // Optional Some backend services don't have sample urls
@@ -91,6 +94,7 @@ class LAServiceDesc {
     LAServiceName.collectory.toS(): LAServiceDesc(
         name: "collections",
         nameInt: "collectory",
+        group: "collectory",
         desc: "biodiversity collections",
         optional: false,
         sample: "https://collections.ala.org.au",
@@ -102,6 +106,7 @@ class LAServiceDesc {
     LAServiceName.ala_hub.toS(): LAServiceDesc(
         name: "records",
         nameInt: "ala_hub",
+        group: "biocache-hub",
         desc: "occurrences search frontend",
         optional: false,
         hint: "Typically 'records' or similar",
@@ -114,6 +119,7 @@ class LAServiceDesc {
     LAServiceName.biocache_service.toS(): LAServiceDesc(
         name: "records-ws",
         nameInt: "biocache_service",
+        group: "biocache-service-clusterdb",
         desc: "occurrences web service",
         optional: false,
         icon: Mdi.databaseSearchOutline,
@@ -123,6 +129,7 @@ class LAServiceDesc {
     LAServiceName.ala_bie.toS(): LAServiceDesc(
         name: "species",
         nameInt: "ala_bie",
+        group: "bie-hub",
         desc: "species search frontend",
         optional: true,
         initUse: true,
@@ -135,6 +142,7 @@ class LAServiceDesc {
     LAServiceName.bie_index.toS(): LAServiceDesc(
         name: "species-ws",
         nameInt: "bie_index",
+        group: "bie-index",
         desc: "species web service",
         depends: "ala_bie",
         icon: Mdi.familyTree,
@@ -147,6 +155,7 @@ class LAServiceDesc {
     LAServiceName.images.toS(): LAServiceDesc(
         name: "images",
         nameInt: "images",
+        group: "image-service",
         desc: "images service",
         optional: true,
         initUse: true,
@@ -164,6 +173,7 @@ class LAServiceDesc {
     LAServiceName.species_lists.toS(): LAServiceDesc(
         name: "lists",
         nameInt: "species_lists",
+        group: "species-list",
         desc: "user provided species lists",
         depends: "ala_bie",
         optional: true,
@@ -176,6 +186,7 @@ class LAServiceDesc {
     LAServiceName.regions.toS(): LAServiceDesc(
         name: "regions",
         nameInt: "regions",
+        group: "regions",
         desc: "regional data frontend",
         depends: "spatial",
         optional: true,
@@ -189,6 +200,7 @@ class LAServiceDesc {
     LAServiceName.logger.toS(): LAServiceDesc(
         name: "logger",
         nameInt: "logger",
+        group: "logger-service",
         desc: "event logging (downloads stats, etc)",
         optional: false,
         icon: Mdi.mathLog,
@@ -199,6 +211,7 @@ class LAServiceDesc {
     LAServiceName.solr.toS(): LAServiceDesc(
         name: "index",
         nameInt: "solr",
+        group: "solr7-server",
         desc: "indexing (Solr)",
         optional: false,
         icon: Mdi.weatherSunny,
@@ -209,6 +222,7 @@ class LAServiceDesc {
     LAServiceName.cas.toS(): LAServiceDesc(
         name: "auth",
         nameInt: "cas",
+        group: "cas-servers",
         desc: "CAS authentication system",
         optional: true,
         initUse: true,
@@ -242,6 +256,7 @@ class LAServiceDesc {
     LAServiceName.spatial.toS(): LAServiceDesc(
         name: "spatial",
         nameInt: "spatial",
+        group: "spatial",
         desc: "spatial front-end",
         optional: true,
         initUse: true,
@@ -259,6 +274,7 @@ class LAServiceDesc {
     LAServiceName.webapi.toS(): LAServiceDesc(
         name: "webapi",
         nameInt: "webapi",
+        group: "webapi_standalone",
         desc: "API documentation service",
         optional: true,
         initUse: false,
@@ -270,6 +286,7 @@ class LAServiceDesc {
     LAServiceName.dashboard.toS(): LAServiceDesc(
         name: "dashboard",
         nameInt: "dashboard",
+        group: "dashboard",
         desc: "Dashboard with portal stats",
         optional: true,
         initUse: false,
@@ -281,6 +298,7 @@ class LAServiceDesc {
     LAServiceName.alerts.toS(): LAServiceDesc(
         name: "alerts",
         nameInt: "alerts",
+        group: "alerts-service",
         desc:
             "users can subscribe to notifications about new species occurrences they are interested, regions, etc",
         optional: true,
@@ -293,6 +311,7 @@ class LAServiceDesc {
     LAServiceName.doi.toS(): LAServiceDesc(
         name: "doi",
         nameInt: "doi",
+        group: "doi-service",
         desc: "mainly used for generating DOIs of user downloads",
         optional: true,
         initUse: false,
@@ -309,6 +328,7 @@ class LAServiceDesc {
     LAServiceName.biocache_backend.toS(): LAServiceDesc(
         name: "biocache-backend",
         nameInt: "biocache_backend",
+        group: "biocache-db",
         desc: "cassandra and biocache-store backend",
         withoutUrl: true,
         optional: false,
@@ -318,6 +338,7 @@ class LAServiceDesc {
     LAServiceName.branding.toS(): LAServiceDesc(
         name: "branding",
         nameInt: "branding",
+        group: "ala-demo",
         desc: "Web branding used by all services",
         icon: Mdi.formatWrapSquare,
         withoutUrl: true,
@@ -327,6 +348,7 @@ class LAServiceDesc {
     LAServiceName.biocache_cli.toS(): LAServiceDesc(
         name: "biocache-cli",
         nameInt: "biocache_cli",
+        group: "biocache-cli",
         desc:
             "manages the loading, sampling, processing and indexing of occurrence records",
         optional: false,
@@ -337,6 +359,7 @@ class LAServiceDesc {
     LAServiceName.nameindexer.toS(): LAServiceDesc(
         name: "nameindexer",
         nameInt: "nameindexer",
+        group: "nameindexer",
         desc: "nameindexer",
         optional: false,
         withoutUrl: true,

@@ -120,7 +120,7 @@ class _SandboxPageState extends State<SandboxPage> {
                 regexp: LARegExp.sshPubKey,
                 error: "This is not a valid ssh public key",
                 keyboardType: TextInputType.multiline,
-                filled: true,
+                // filled: true,
                 minLines:
                     3, // any number you need (It works as the rows for the textarea)
                 maxLines: null,

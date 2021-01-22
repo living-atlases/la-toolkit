@@ -155,9 +155,12 @@ class ProjectCard extends StatelessWidget {
               child: Align(
                 child: CircleAvatar(
                   radius: 25.0,
-                  child: Text(project.shortName.length > 3
-                      ? project.shortName.substring(0, 1)
-                      : project.shortName),
+                  child: project.getVariable("favicon_url").value != null
+                      ? Image.network(project.getVariable("favicon_url").value,
+                          height: 30, width: 30)
+                      : Text(project.shortName.length > 3
+                          ? project.shortName.substring(0, 1)
+                          : project.shortName),
                 ),
                 alignment: FractionalOffset(0.5, 0.0),
               ),

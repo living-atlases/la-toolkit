@@ -6,6 +6,7 @@ enum LAVariableType { String, int, double }
 
 class LAVariableDesc {
   String name;
+  String nameInt;
   LAServiceName service;
   LAVariableType type;
   String hint;
@@ -20,6 +21,7 @@ class LAVariableDesc {
 
   LAVariableDesc(
       {@required this.name,
+      @required this.nameInt,
       this.service = LAServiceName.all,
       this.type = LAVariableType.String,
       this.ansibleEquiv,
@@ -61,74 +63,99 @@ class LAVariableDesc {
       confName.hashCode ^
       internal.hashCode ^
       enabled.hashCode;
-  static final Map<String, List<LAVariableDesc>> map = {
-    LAServiceName.all.toS(): [
-      LAVariableDesc(
-          name: "Default user in your servers",
-          ansibleEquiv: [
-            "ansible_user",
-          ],
-          regExp: LARegExp.username,
-          error: "Invalid username",
-          help: "Before-Start-Your-LA-Installation#default-user-ubuntu",
-          hint:
-              "The user name that we'll use to access to your servers with sudo passwordless permission. By default 'ubuntu'"),
-      LAVariableDesc(
-          name: "Support email",
-          ansibleEquiv: [
-            "technical_contact",
-            "orgSupportEmail",
-            "support_email"
-                "download_support_email"
-          ],
-          regExp: LARegExp.email,
-          error: "Invalid email",
-          hint: "Something like support@l-a.site"),
-      LAVariableDesc(
-          name: "Contact email",
-          ansibleEquiv: [],
-          regExp: LARegExp.email,
-          error: "Invalid email",
-          hint: "Something like info@l-a.site"),
-      LAVariableDesc(
-          name: "Email sender",
-          ansibleEquiv: ['email_sender'],
-          regExp: LARegExp.email,
-          error: "Invalid email",
-          hint:
-              "Used by some notifications. Should be something like noreply@l-a.site"),
-      LAVariableDesc(
-        name: "Headers and Footer Base URL",
-        ansibleEquiv: ["header_and_footer_baseurl"],
-        regExp: LARegExp.url,
-        error: "Invalid url",
-        hint: "Like: https://www.ala.org.au/commonui-bs3",
-      ),
-      LAVariableDesc(
-        name: "Terms of Use URL",
-        ansibleEquiv: ["downloads_terms_of_use"],
-        regExp: LARegExp.url,
-        error: "Invalid url",
-        hint: "Like: https://www.ala.org.au/about-the-atlas/terms-of-use/",
-      ),
-      LAVariableDesc(
-        name: "Favicon",
-        ansibleEquiv: ["favicon_url"],
-        regExp: LARegExp.url,
-        error: "Invalid url",
-        hint: "Like: https://www.gbif.org/favicon.ico",
-      ),
-    ],
-    LAServiceName.ala_hub.toS(): [
-      LAVariableDesc(
-          name: "MaxMind Account ID",
-          ansibleEquiv: ["maxmind_account_id"],
-          help: "API-Keys#non-ala-keys",
-          hint: "Something like: 978657"),
-      LAVariableDesc(
-          name: "MaxMind Account Key",
-          ansibleEquiv: ["maxmind_account_key"],
-          hint: "Something like: UKDDas3bGKJ9VuuL")
-    ]
+
+  static final Map<String, LAVariableDesc> map = {
+    "ansible_user": LAVariableDesc(
+        name: "Default user in your servers",
+        nameInt: "ansible_user",
+        ansibleEquiv: [
+          "ansible_user",
+        ],
+        service: LAServiceName.all,
+        regExp: LARegExp.username,
+        error: "Invalid username",
+        help: "Before-Start-Your-LA-Installation#default-user-ubuntu",
+        hint:
+            "The user name that we'll use to access to your servers with sudo passwordless permission. By default 'ubuntu'"),
+    "support_email": LAVariableDesc(
+        name: "Support email",
+        nameInt: "support_email",
+        ansibleEquiv: [
+          "technical_contact",
+          "orgSupportEmail",
+          "support_email"
+              "download_support_email"
+        ],
+        service: LAServiceName.all,
+        regExp: LARegExp.email,
+        error: "Invalid email",
+        hint: "Something like support@l-a.site"),
+    "orgEmail": LAVariableDesc(
+        name: "Contact email",
+        nameInt: "orgEmail",
+        ansibleEquiv: [],
+        service: LAServiceName.all,
+        regExp: LARegExp.email,
+        error: "Invalid email",
+        hint: "Something like info@l-a.site"),
+    "email_sender": LAVariableDesc(
+        name: "Email sender",
+        nameInt: "email_sender",
+        ansibleEquiv: ['email_sender'],
+        service: LAServiceName.all,
+        regExp: LARegExp.email,
+        error: "Invalid email",
+        hint:
+            "Used by some notifications. Should be something like noreply@l-a.site"),
+    "header_and_footer_baseurl": LAVariableDesc(
+      name: "Headers and Footer Base URL",
+      nameInt: "header_and_footer_baseurl",
+      ansibleEquiv: ["header_and_footer_baseurl"],
+      service: LAServiceName.all,
+      regExp: LARegExp.url,
+      error: "Invalid url",
+      help: "Styling-the-web-app",
+      hint: "Like: https://www.ala.org.au/commonui-bs3",
+    ),
+    "downloads_terms_of_use": LAVariableDesc(
+      name: "Terms of Use URL",
+      nameInt: "downloads_terms_of_use",
+      ansibleEquiv: ["downloads_terms_of_use"],
+      service: LAServiceName.all,
+      regExp: LARegExp.url,
+      error: "Invalid url",
+      hint: "Like: https://www.ala.org.au/about-the-atlas/terms-of-use/",
+    ),
+    "favicon_url": LAVariableDesc(
+      name: "Favicon",
+      nameInt: "favicon_url",
+      ansibleEquiv: ["favicon_url"],
+      service: LAServiceName.all,
+      regExp: LARegExp.url,
+      error: "Invalid url",
+      hint: "Like: https://www.gbif.org/favicon.ico",
+    ),
+    "google_api_key": LAVariableDesc(
+        name: "Google Maps API Key",
+        nameInt: "google_api_key",
+        ansibleEquiv: ["google_api_key", "google_apikey"],
+        service: LAServiceName.all,
+        hint: "Like: AIzaBcDeFgHiJkLmNoPqRsTuVwXyZ"),
+    "maxmind_account_id": LAVariableDesc(
+        name: "MaxMind Account ID",
+        nameInt: "maxmind_account_id",
+        ansibleEquiv: ["maxmind_account_id"],
+        service: LAServiceName.ala_hub,
+        help: "API-Keys#non-ala-keys",
+        hint: "Something like: 978657"),
+    "maxmind_account_key": LAVariableDesc(
+        name: "MaxMind Account Key",
+        nameInt: "maxmind_account_key",
+        ansibleEquiv: ["maxmind_account_key"],
+        service: LAServiceName.ala_hub,
+        hint: "Something like: UKDDas3bGKJ9VuuL")
   };
+  static LAVariableDesc get(String nameInt) {
+    return map[nameInt];
+  }
 }
