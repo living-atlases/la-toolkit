@@ -343,7 +343,6 @@ class LAServiceDesc {
   }
 
   static List<LAServiceDesc> list = map.values.toList();
-  static List<String> keyNames = map.keys.map((entry) => entry).toList();
 
   bool isCompatibleWith(String alaInstallVersion, LAServiceDesc otherService) {
     var compatible = true;

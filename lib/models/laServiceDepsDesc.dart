@@ -110,14 +110,4 @@ class LAServiceDepsDesc {
     "v2.0.4": v2_0_4,
     "latest": v2_0_4,
   };
-/*
-  static LAServiceDepsDesc get(String alaInstallVersion, String nameInt) {
-    return map[alaInstallVersion][nameInt];
-  }
-
-  static LAServiceDepsDesc getE(
-      String alaInstallVersion, LAServiceName nameInt) {
-    return map[alaInstallVersion][nameInt.toS()];
-  }
-*/
 }
