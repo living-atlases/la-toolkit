@@ -14,7 +14,6 @@ class LAVariable {
   String nameInt;
   LAServiceName service;
   Object value;
-
   LAVariableStatus status;
 
   LAVariable({this.nameInt, this.service, this.value});

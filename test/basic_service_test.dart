@@ -3,6 +3,7 @@ import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:test/test.dart';
 
 void main() {
+  String alaInstallVersion = "v2.0.4";
   test('Compare equals versions', () {
     expect(MySql.v5_7, equals(MySql.v5_7));
   });
@@ -26,33 +27,38 @@ void main() {
   test('LAServicesDesc spatial and images are incompatible', () {
     expect(
         LAServiceDesc.getE(LAServiceName.images)
-            .isCompatibleWith(LAServiceDesc.get("spatial")),
+            .isCompatibleWith(alaInstallVersion, LAServiceDesc.get("spatial")),
         equals(false));
   });
 
   test('LAServicesDesc spatial and images are incompatible', () {
     expect(
-        LAServiceDesc.getE(LAServiceName.spatial)
-            .isCompatibleWith(LAServiceDesc.getE(LAServiceName.images)),
+        LAServiceDesc.getE(LAServiceName.spatial).isCompatibleWith(
+            alaInstallVersion, LAServiceDesc.getE(LAServiceName.images)),
         equals(false));
   });
 
   test('LAServicesDesc spatial and doi are incompatible', () {
     expect(
-        LAServiceDesc.get("images").isCompatibleWith(LAServiceDesc.get("doi")),
+        LAServiceDesc.get("images")
+            .isCompatibleWith(alaInstallVersion, LAServiceDesc.get("doi")),
         equals(false));
   });
 
+  // Test with a new release, should get v2.0.4 by default
+  alaInstallVersion = "v2.0.5";
+
   test('LAServicesDesc images and doi are incompatible', () {
     expect(
-        LAServiceDesc.get("images").isCompatibleWith(LAServiceDesc.get("doi")),
+        LAServiceDesc.get("images")
+            .isCompatibleWith(alaInstallVersion, LAServiceDesc.get("doi")),
         equals(false));
   });
 
   test('LAServicesDesc collectory and species-lists are incompatible', () {
     expect(
-        LAServiceDesc.get("collectory")
-            .isCompatibleWith(LAServiceDesc.getE(LAServiceName.species_lists)),
+        LAServiceDesc.get("collectory").isCompatibleWith(
+            alaInstallVersion, LAServiceDesc.getE(LAServiceName.species_lists)),
         equals(true));
   });
 }

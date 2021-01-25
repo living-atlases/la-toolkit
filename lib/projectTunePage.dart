@@ -14,8 +14,6 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'models/laServiceDesc.dart';
 
-const _textFieldBorder = true;
-
 class LAProjectTunePage extends StatelessWidget {
   static const routeName = "tune";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -127,8 +125,12 @@ class LAProjectTunePage extends StatelessWidget {
                                   //label:
                                   //  ,
                                   hint: "",
-                                  initialValue: _initialExtraAnsibleVariables(
-                                      currentProject),
+                                  initialValue: currentProject
+                                              .additionalVariables.length >
+                                          0
+                                      ? currentProject.additionalVariables
+                                      : _initialExtraAnsibleVariables(
+                                          currentProject),
                                   maxLines: 100,
                                   fillColor: Colors.grey[100],
                                   //hintStyle: TextStyle(
@@ -137,7 +139,10 @@ class LAProjectTunePage extends StatelessWidget {
                                   allowEmpty: true,
                                   monoSpaceFont: true,
                                   error: "",
-                                  onChanged: (value) {}),
+                                  onChanged: (value) {
+                                    currentProject.additionalVariables = value;
+                                    vm.onSaveProject(currentProject);
+                                  }),
                               trailing: HelpIcon(
                                   wikipage:
                                       "Version-control-of-your-configurations#about-maintaining-dataconfig"))
@@ -156,15 +161,16 @@ ${_doLine()}
                                         
                                                                                                                                                                       
 ''' +
-        currentProject.getServicesNameListInUse().map((s) {
+        currentProject.services.values.map((service) {
+          var name = service.nameInt;
           final String title =
-              " ${LAServiceDesc.map[s].name} ${LAServiceDesc.map[s].name != LAServiceDesc.map[s].nameInt ? '(' + LAServiceDesc.map[s].nameInt + ') ' : ''}extra variables ";
+              " ${LAServiceDesc.map[name].name} ${LAServiceDesc.map[name].name != LAServiceDesc.map[name].nameInt ? '(' + LAServiceDesc.map[name].nameInt + ') ' : ''}extra variables ";
           return '''
 
 ${_doTitle(title)} 
-[${LAServiceDesc.map[s].group}:vars]
+${service.use ? '' : '# '}[${LAServiceDesc.map[name].group}:vars]${service.use ? '' : ' #uncomment this line if you enable this service to tune it'} 
 
-# End of ${StringUtils.capitalize(LAServiceDesc.map[s].name)} variables
+# End of ${StringUtils.capitalize(LAServiceDesc.map[name].name)} variables
 ${_doLine()}
 ''';
         }).join("\n\n");

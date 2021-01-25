@@ -84,6 +84,10 @@ void main() {
     expect(vm1 == vm1bis, equals(false));
   });
 
+  final lists = LAServiceName.species_lists.toS();
+  final collectory = LAServiceName.collectory.toS();
+  final bie = LAServiceName.ala_bie.toS();
+
   test('Test step 1 of creation, valid servers-service assignment and equality',
       () {
     LAProject testProject = LAProject(
@@ -107,6 +111,9 @@ void main() {
     expect(testProject.mapBounds2ndPoint == testProjectOther.mapBounds1stPoint,
         equals(true));
     expect(ListEquality().equals(testProject.servers, testProjectOther.servers),
+        equals(true));
+    expect(
+        MapEquality().equals(testProject.variables, testProjectOther.variables),
         equals(true));
     expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
     expect(testProject == testProjectOther, equals(true));
@@ -165,10 +172,10 @@ void main() {
     expect(
         testProject.getHostname(LAServiceName.collectory.toS())[0] == vm1.name,
         equals(true));
-    print(testProject);
+    /* print(testProject);
     print(testProject.servers);
     print(testProject.services);
-    print(testProject.getServiceE(LAServiceName.collectory));
+    print(testProject.getServiceE(LAServiceName.collectory)); */
 
     expect(testProject.getHostname(LAServiceName.regions.toS()).length == 0,
         equals(true));
@@ -176,7 +183,7 @@ void main() {
     testProject.assign(vm1, [
       LAServiceName.ala_hub.toS(),
       LAServiceName.regions.toS(),
-      LAServiceName.ala_bie.toS(),
+      bie,
       LAServiceName.branding.toS()
     ]);
 
@@ -186,11 +193,8 @@ void main() {
       LAServiceName.biocache_service.toS()
     ]);
 
-    testProject.assign(vm3, [
-      LAServiceName.solr.toS(),
-      LAServiceName.logger.toS(),
-      LAServiceName.species_lists.toS()
-    ]);
+    testProject.assign(
+        vm3, [LAServiceName.solr.toS(), LAServiceName.logger.toS(), lists]);
 
     testProject.assign(vm4, [
       LAServiceName.spatial.toS(),
@@ -221,7 +225,7 @@ void main() {
             .first
             .ipv4,
         equals("10.0.0.2"));
-    print(testProject);
+/*    print(testProject); */
     expect(testProject.status, equals(LAProjectStatus.advancedDefined));
     // testProject.delete(vm1);
   });
@@ -234,5 +238,39 @@ void main() {
     p.setMap(LatLng(20, 20), LatLng(40, 40), 10);
     expect(p.getCenter(), equals(LatLng(30, 30)));
     expect(p.mapZoom, equals(10));
+  });
+
+  test('Test default services', () {
+    var p = LAProject();
+
+    expect(p.getServiceE(LAServiceName.collectory).use, equals(true));
+    expect(p.getServiceE(LAServiceName.ala_hub).use, equals(true));
+    expect(p.getServiceE(LAServiceName.biocache_service).use, equals(true));
+    expect(p.getServiceE(LAServiceName.biocache_backend).use, equals(true));
+    expect(p.getServiceE(LAServiceName.solr).use, equals(true));
+    expect(p.getServiceE(LAServiceName.logger).use, equals(true));
+  });
+
+  test('Test disable of services', () {
+    var p = LAProject();
+    p.serviceInUse(bie, true);
+    p.serviceInUse(lists, true);
+    expect(p.getService(bie).use, equals(true));
+    expect(p.getService(lists).use, equals(true));
+    var pBis = p.copyWith();
+
+    expect(p == pBis, equals(true));
+    LAServer vm1 = LAServer(name: "vm1");
+    p.upsert(vm1);
+    p.assign(vm1, [collectory, bie, lists]);
+    expect(p.serverServices["vm1"].contains(collectory), equals(true));
+    expect(p.serverServices["vm1"].contains(bie), equals(true));
+    expect(p.serverServices["vm1"].contains(lists), equals(true));
+    p.serviceInUse(bie, false);
+    expect(p.getService(bie).use, equals(false));
+    expect(p.getService(lists).use, equals(false));
+    expect(p.serverServices["vm1"].contains(collectory), equals(true));
+    expect(p.serverServices["vm1"].contains(bie), equals(false));
+    expect(p.serverServices["vm1"].contains(lists), equals(false));
   });
 }

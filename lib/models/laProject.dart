@@ -35,6 +35,7 @@ class LAProject {
   Map<String, LAService> services;
   @JsonSerializable(nullable: false)
   Map<String, LAVariable> variables;
+  String additionalVariables;
   @JsonSerializable(nullable: false)
   Map<String, List<String>> serverServices;
   @JsonKey(ignore: true)
@@ -56,6 +57,7 @@ class LAProject {
       List<LAServer> servers,
       Map<String, LAService> services,
       Map<String, LAVariable> variables,
+      this.additionalVariables = "",
       Map<String, List<String>> serverServices,
       this.status,
       this.alaInstallRelease,
@@ -282,9 +284,10 @@ class LAProject {
           DeepCollectionEquality.unordered().equals(servers, other.servers) &&
           DeepCollectionEquality.unordered().equals(services, other.services) &&
           DeepCollectionEquality.unordered()
-              .equals(services, other.variables) &&
+              .equals(variables, other.variables) &&
           DeepCollectionEquality.unordered()
               .equals(serverServices, other.serverServices) &&
+          additionalVariables == other.additionalVariables &&
           isCreated == other.isCreated &&
           status == other.status &&
           alaInstallRelease == other.alaInstallRelease &&
@@ -304,9 +307,24 @@ class LAProject {
       DeepCollectionEquality.unordered().hash(variables) ^
       DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
+      additionalVariables.hashCode ^
       status.hashCode ^
       alaInstallRelease.hashCode ^
       ListEquality().hash(mapBounds1stPoint) ^
       ListEquality().hash(mapBounds2ndPoint) ^
       mapZoom.hashCode;
+
+  void serviceInUse(String serviceNameInt, bool use) {
+    services[serviceNameInt].use = use;
+    if (!use) {
+      // Remove
+      serverServices.forEach((server, services) {
+        services.remove(serviceNameInt);
+      });
+      // Disable dependents
+      LAServiceDesc.map.values
+          .where((curSer) => curSer.depends == serviceNameInt)
+          .forEach((serviceDesc) => serviceInUse(serviceDesc.nameInt, use));
+    }
+  }
 }

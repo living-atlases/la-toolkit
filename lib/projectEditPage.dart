@@ -128,6 +128,10 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           // print('build project page');
           LAProject _project = vm.state.currentProject;
+          // Set default version of the project
+          _project.alaInstallRelease =
+              _project.alaInstallRelease ?? vm.state.alaInstallReleases[0];
+
           _currentStep = vm.state.currentStep ?? 0;
           print('Project edit currentStep: $_currentStep');
           _steps = [
@@ -309,14 +313,9 @@ If you are unsure type something like "server1, server2, server3".
                             // itemCount: appStateProv.appState.projects.length,
                             itemBuilder: (BuildContext context, int index) =>
                                 LaServiceWidget(
-                                    service: _project.getService(LAServiceDesc
-                                        .list
+                                    serviceName: LAServiceDesc.list
                                         .elementAt(index)
-                                        .nameInt),
-                                    dependsOn: _project.getService(LAServiceDesc
-                                        .list
-                                        .elementAt(index)
-                                        .depends),
+                                        .nameInt,
                                     collectoryFocusNode:
                                         _focusNodes[_servicesStep]))
                       ],

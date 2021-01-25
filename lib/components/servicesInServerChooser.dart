@@ -91,8 +91,9 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
                 // print("${otherNameInt} compatible with ${nameInt}");
                 selection.forEach((second) {
                   if (first != second &&
-                      !LAServiceDesc.get(first)
-                          .isCompatibleWith(LAServiceDesc.get(second))) {
+                      !LAServiceDesc.get(first).isCompatibleWith(
+                          _project.alaInstallRelease,
+                          LAServiceDesc.get(second))) {
                     incompatible.addAll({first, second});
                   }
                 });
