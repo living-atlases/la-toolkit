@@ -49,12 +49,22 @@ class _ProjectDrawerState extends State<ProjectDrawer> {
                   child: DrawerHeader(
                     child: Column(
                       children: <Widget>[
-                        Image.asset(
-                          'assets/images/la-icon.png',
-                          fit: BoxFit.scaleDown,
-                          height: 80.0,
-                        ),
-                        const SizedBox(height: 20.0),
+                        vm.state.currentProject
+                                    .getVariable("favicon_url")
+                                    .value !=
+                                null
+                            ? ImageIcon(
+                                NetworkImage(vm.state.currentProject
+                                    .getVariable("favicon_url")
+                                    .value),
+                                color: LAColorTheme.laPalette,
+                                size: 80)
+                            : Image.asset(
+                                'assets/images/la-icon.png',
+                                fit: BoxFit.scaleDown,
+                                height: 80.0,
+                              ),
+                        const SizedBox(height: 10.0),
                         // FIXME
                         Text(vm.state.currentProject.shortName,
                             style: TextStyle(
