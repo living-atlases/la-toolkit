@@ -136,7 +136,24 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
             // modalType: S2ModalType.popupDialog,
             choiceType: S2ChoiceType.chips,
             // The current confirm icon is not very clear
-            // modalConfirm: true,
+            modalConfirm: true,
+
+            modalConfirmBuilder: (context, state) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                  child: FlatButton(
+                      child: const Text('CONFIRM'),
+                      disabledColor: Colors.grey,
+                      textColor: LAColorTheme.laPalette,
+                      color: Colors.white,
+                      onPressed: !state.changes.valid
+                          ? null
+                          : () => state.closeModal(confirmed: true)),
+                ),
+              );
+            },
+
             modalHeader: true,
             // This is for enable search:
             // modalFilter: true,
