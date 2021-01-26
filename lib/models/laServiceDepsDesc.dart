@@ -107,6 +107,7 @@ class LAServiceDepsDesc {
   };
 
   static final Map<String, Map<String, LAServiceDepsDesc>> map = {
+    "v2.0.5": v2_0_4,
     "v2.0.4": v2_0_4,
     "latest": v2_0_4,
   };
