@@ -574,9 +574,9 @@ class _ProjectPageViewModel {
         other is _ProjectPageViewModel &&
             runtimeType == other.runtimeType &&
             state.currentProject == other.state.currentProject;
-    if (other is _ProjectPageViewModel)
+    /* if (other is _ProjectPageViewModel)
       print(
-          '${state.currentProject.servers.length} and ${other.state.currentProject.servers.length}');
+          '${state.currentProject.servers.length} and ${other.state.currentProject.servers.length}'); */
     return equals;
   }
 
