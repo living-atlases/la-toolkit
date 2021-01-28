@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/utils/debounce.dart';
 
-import '../projectEditPage.dart';
 import 'helpIcon.dart';
 
 class GenericTextFormField extends StatefulWidget {
@@ -24,27 +24,30 @@ class GenericTextFormField extends StatefulWidget {
   final Color fillColor;
   final bool enabledBorder;
   final bool monoSpaceFont;
+  final bool deployed;
 
-  GenericTextFormField(
-      {this.label,
-      this.hint,
-      this.hintStyle,
-      @required this.initialValue,
-      this.prefixText,
-      this.wikipage,
-      this.regexp,
-      @required this.error,
-      @required this.onChanged,
-      this.isDense = false,
-      this.isCollapsed = false,
-      this.focusNode,
-      this.minLines,
-      this.maxLines = 1,
-      this.fillColor,
-      this.allowEmpty = false,
-      this.enabledBorder = false,
-      this.monoSpaceFont = false,
-      this.keyboardType});
+  GenericTextFormField({
+    this.label,
+    this.hint,
+    this.hintStyle,
+    @required this.initialValue,
+    this.prefixText,
+    this.wikipage,
+    this.regexp,
+    @required this.error,
+    @required this.onChanged,
+    this.isDense = false,
+    this.isCollapsed = false,
+    this.focusNode,
+    this.minLines,
+    this.maxLines = 1,
+    this.fillColor,
+    this.allowEmpty = false,
+    this.enabledBorder = false,
+    this.monoSpaceFont = false,
+    this.keyboardType,
+    this.deployed = false,
+  });
 
   @override
   _GenericTextFormFieldState createState() => _GenericTextFormFieldState();
@@ -96,9 +99,13 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
             !(widget.allowEmpty && delayedValue.isEmpty)
         ? widget.error
         : null;
-    final style = !widget.monoSpaceFont
-        ? LAProjectEditPage.projectTextStyle
-        : LAProjectEditPage.projectFixedTextStyle;
+    final style = widget.deployed
+        ? !widget.monoSpaceFont
+            ? LAColorTheme.deployedTextStyle
+            : LAColorTheme.fixedDeployedTextStyle
+        : !widget.monoSpaceFont
+            ? LAColorTheme.unDeployedTextStyle
+            : LAColorTheme.fixedUnDeployedTextStyle;
     return Form(
         key: formKey,
         child: Column(

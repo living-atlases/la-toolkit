@@ -13,6 +13,7 @@ import 'package:la_toolkit/utils/regexp.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'models/laServiceDesc.dart';
+import 'models/laVariable.dart';
 
 class LAProjectTunePage extends StatelessWidget {
   static const routeName = "tune";
@@ -93,8 +94,6 @@ class LAProjectTunePage extends StatelessWidget {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          /* Text(
-                              "Note: This part is under development. Right now just testing validations,..."), */
                           ListView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
@@ -148,7 +147,18 @@ class LAProjectTunePage extends StatelessWidget {
                                   }),
                               trailing: HelpIcon(
                                   wikipage:
-                                      "Version-control-of-your-configurations#about-maintaining-dataconfig"))
+                                      "Version-control-of-your-configurations#about-maintaining-dataconfig")),
+                          SizedBox(height: 20),
+                          Row(children: [
+                            Text(
+                                "Note: the colors of the variables values indicate if these values are "),
+                            Text("already deployed",
+                                style: LAColorTheme.deployedTextStyle),
+                            Text(" in your servers or "),
+                            Text("they are not deployed yet",
+                                style: LAColorTheme.unDeployedTextStyle),
+                            Text("."),
+                          ]),
                         ]))));
       },
     );
@@ -221,6 +231,8 @@ class MessageItem implements ListItem {
 
   Widget buildTitle(BuildContext context) {
     final initialValue = project.getVariable(variable.nameInt).value;
+    final deployed = project.getVariable(variable.nameInt).status ==
+        LAVariableStatus.deployed;
     var defValue;
     if (variable.defValue != null) defValue = variable.defValue(project);
     return ListTile(
@@ -240,6 +252,7 @@ class MessageItem implements ListItem {
                 initialValue: initialValue ?? defValue,
                 allowEmpty: true,
                 enabledBorder: false,
+                deployed: deployed,
                 regexp: variable.type == LAVariableType.int
                     ? LARegExp.int
                     : variable.type == LAVariableType.double

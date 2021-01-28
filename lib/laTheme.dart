@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LAColorTheme {
   static const MaterialColor laPalette = MaterialColor(primary, <int, Color>{
@@ -38,4 +39,15 @@ class LAColorTheme {
       ));
 
   static const Color inactive = Colors.blueGrey;
+
+  static final unDeployedColor = LAColorTheme.laPalette.shade800;
+  static final deployedColor = Colors.brown;
+  static final unDeployedTextStyle = TextStyle(color: unDeployedColor);
+  static final deployedTextStyle = TextStyle(color: deployedColor);
+  static final fixedUnDeployedTextStyle = GoogleFonts.ibmPlexMono(
+    textStyle: TextStyle(color: unDeployedColor),
+  );
+  static final fixedDeployedTextStyle = GoogleFonts.ibmPlexMono(
+    textStyle: TextStyle(color: deployedColor),
+  );
 }

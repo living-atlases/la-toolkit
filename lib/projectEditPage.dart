@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/components/serverCardList.dart';
 import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/redux/appActions.dart';
@@ -27,11 +26,6 @@ import 'utils/utils.dart';
 
 class LAProjectEditPage extends StatefulWidget {
   static const routeName = "project";
-  static final projectTextStyle =
-      TextStyle(color: LAColorTheme.laPalette.shade700);
-  static final projectFixedTextStyle = GoogleFonts.ibmPlexMono(
-    textStyle: TextStyle(color: LAColorTheme.laPalette.shade800),
-  );
 
   @override
   _LAProjectEditPageState createState() => _LAProjectEditPageState();
@@ -244,7 +238,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                         controller: _serverAddController,
                         showCursor: true,
                         cursorColor: Colors.orange,
-                        style: LAProjectEditPage.projectTextStyle,
+                        // TODO: When deployed change this
+                        style: LAColorTheme.unDeployedTextStyle,
                         onFieldSubmitted: (value) => _addServer(
                             value, _project, vm.onSaveCurrentProject),
                         focusNode: _focusNodes[_serversStep],
