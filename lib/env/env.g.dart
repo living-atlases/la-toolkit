@@ -8,5 +8,5 @@ part of 'env.dart';
 
 class _Env {
   static const String sentryDsn = 'dev';
-  static const bool demo = false;
+  static const bool demo = true;
 }

@@ -125,12 +125,15 @@ class LAProjectTunePage extends StatelessWidget {
                                   //label:
                                   //  ,
                                   hint: "",
-                                  initialValue: currentProject
-                                              .additionalVariables.length >
-                                          0
-                                      ? currentProject.additionalVariables
-                                      : _initialExtraAnsibleVariables(
-                                          currentProject),
+                                  initialValue:
+                                      currentProject.additionalVariables !=
+                                                  null &&
+                                              currentProject.additionalVariables
+                                                      .length >
+                                                  0
+                                          ? currentProject.additionalVariables
+                                          : _initialExtraAnsibleVariables(
+                                              currentProject),
                                   maxLines: 100,
                                   fillColor: Colors.grey[100],
                                   //hintStyle: TextStyle(

@@ -8,6 +8,7 @@ part of 'laProject.dart';
 
 extension LAProjectCopyWith on LAProject {
   LAProject copyWith({
+    String additionalVariables,
     String alaInstallRelease,
     String domain,
     bool isCreated,
@@ -25,6 +26,7 @@ extension LAProjectCopyWith on LAProject {
     Map<String, LAVariable> variables,
   }) {
     return LAProject(
+      additionalVariables: additionalVariables ?? this.additionalVariables,
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
       domain: domain ?? this.domain,
       isCreated: isCreated ?? this.isCreated,
@@ -67,6 +69,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
       (k, e) => MapEntry(
           k, e == null ? null : LAVariable.fromJson(e as Map<String, dynamic>)),
     ),
+    additionalVariables: json['additionalVariables'] as String,
     serverServices: (json['serverServices'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(k, (e as List)?.map((e) => e as String)?.toList()),
     ),
@@ -91,6 +94,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'servers': instance.servers?.map((e) => e?.toJson())?.toList(),
       'services': instance.services?.map((k, e) => MapEntry(k, e?.toJson())),
       'variables': instance.variables?.map((k, e) => MapEntry(k, e?.toJson())),
+      'additionalVariables': instance.additionalVariables,
       'serverServices': instance.serverServices,
       'status': _$LAProjectStatusEnumMap[instance.status],
       'alaInstallRelease': instance.alaInstallRelease,

@@ -128,6 +128,10 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           // print('build project page');
           LAProject _project = vm.state.currentProject;
+          if (_project.getVariable("pac4j_cookie_signing_key").value == null) {
+            // Auto-generate CAS keys
+            _project.init();
+          }
           // Set default version of the project
           _project.alaInstallRelease =
               _project.alaInstallRelease ?? vm.state.alaInstallReleases[0];

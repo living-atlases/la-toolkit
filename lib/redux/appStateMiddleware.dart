@@ -59,6 +59,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
       // }
     }
+
     next(action);
   }
 

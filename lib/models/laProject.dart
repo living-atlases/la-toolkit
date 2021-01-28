@@ -5,6 +5,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/utils/casUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:latlong/latlong.dart';
 import 'package:uuid/uuid.dart';
@@ -71,6 +72,19 @@ class LAProject {
         variables = variables ?? {},
         serverServices = serverServices ?? {} {
     validateCreation();
+  }
+
+  init() async {
+    // Try to generate default CAS keys
+    var pac4jSignKey = await CASUtils.gen512CasKey();
+    var pac4jEncKey = await CASUtils.gen256CasKey();
+    var webflowSignKey = await CASUtils.gen512CasKey();
+    var webflowEncKey = await CASUtils.gen128CasKey();
+    setVariable(LAVariableDesc.get("pac4j_cookie_signing_key"), pac4jSignKey);
+    setVariable(LAVariableDesc.get("pac4j_cookie_encryption_key"), pac4jEncKey);
+    setVariable(LAVariableDesc.get("cas_webflow_signing_key"), webflowSignKey);
+    setVariable(
+        LAVariableDesc.get("cas_webflow_encryption_key"), webflowEncKey);
   }
 
   int numServers() => servers.length;
