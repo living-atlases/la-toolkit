@@ -16,6 +16,7 @@ import 'package:xterm/theme/terminal_themes.dart';
 import 'package:xterm/xterm.dart';
 
 import 'components/defDivider.dart';
+import 'components/themeSelector.dart';
 import 'models/appState.dart';
 import 'models/laServiceDesc.dart';
 
@@ -93,6 +94,7 @@ class _SandboxPageState extends State<SandboxPage> {
                   DefDivider(),
                   // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
                   const SizedBox(height: 7),
+                  Container(child: ThemeSelector()),
                   RaisedButton.icon(
                     icon: Icon(Mdi.key),
                     label: Text('SSH keys'),

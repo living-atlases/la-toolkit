@@ -43,6 +43,7 @@ class LAProject {
   bool isCreated;
   @JsonSerializable(nullable: false)
   LAProjectStatus status;
+  String theme;
   String alaInstallRelease;
   List<double> mapBounds1stPoint = []..length = 2;
   List<double> mapBounds2ndPoint = []..length = 2;
@@ -64,6 +65,7 @@ class LAProject {
       this.alaInstallRelease,
       this.mapBounds1stPoint,
       this.mapBounds2ndPoint,
+      this.theme = "clean",
       this.mapZoom})
       : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],

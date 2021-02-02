@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/serverCardList.dart';
+import 'package:la_toolkit/components/themeSelector.dart';
 import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
@@ -204,6 +205,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                             _project.domain = value;
                             vm.onSaveCurrentProject(_project);
                           }),
+                      SizedBox(height: 20),
+                      ThemeSelector()
                     ],
                   ),
                 )),
