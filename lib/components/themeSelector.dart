@@ -22,7 +22,7 @@ List<Map<String, String>> themes = [
   {'value': 'material', 'desc': 'Material-Bootstrap experimental theme'},
   {'value': 'paper', 'desc': 'Material inspired theme'},
   {'value': 'sandstone', 'desc': ''},
-  {'value': 'simplex', 'desc': 'Minimalist theme'},
+  {'value': 'simplex', 'desc': 'Minimalist theme that works great'},
   {'value': 'slate', 'desc': ''},
   {'value': 'superhero', 'desc': ''},
   {'value': 'yeti', 'desc': ''},
