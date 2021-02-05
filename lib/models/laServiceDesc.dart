@@ -309,7 +309,7 @@ class LAServiceDesc {
         nameInt: "branding",
         group: "ala-demo",
         desc: "Web branding used by all services",
-        icon: Mdi.formatWrapSquare,
+        icon: Icons.format_paint,
         withoutUrl: false,
         optional: false,
         path: "branding-${DateTime.now().year}"),
