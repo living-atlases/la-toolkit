@@ -21,6 +21,7 @@ extension LAProjectCopyWith on LAProject {
     Map<String, LAService> services,
     String shortName,
     LAProjectStatus status,
+    String theme,
     bool useSSL,
     dynamic uuid,
     Map<String, LAVariable> variables,
@@ -39,6 +40,7 @@ extension LAProjectCopyWith on LAProject {
       services: services ?? this.services,
       shortName: shortName ?? this.shortName,
       status: status ?? this.status,
+      theme: theme ?? this.theme,
       useSSL: useSSL ?? this.useSSL,
       uuid: uuid ?? this.uuid,
       variables: variables ?? this.variables,
@@ -81,6 +83,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     mapBounds2ndPoint: (json['mapBounds2ndPoint'] as List)
         ?.map((e) => (e as num)?.toDouble())
         ?.toList(),
+    theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num)?.toDouble(),
   );
 }
@@ -97,6 +100,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'additionalVariables': instance.additionalVariables,
       'serverServices': instance.serverServices,
       'status': _$LAProjectStatusEnumMap[instance.status],
+      'theme': instance.theme,
       'alaInstallRelease': instance.alaInstallRelease,
       'mapBounds1stPoint': instance.mapBounds1stPoint,
       'mapBounds2ndPoint': instance.mapBounds2ndPoint,
