@@ -30,22 +30,22 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.1
-  google_fonts: ^1.1.1
+  google_fonts: ^1.1.2
 
   # ui
   introduction_screen: ^1.0.9
   flutter_linkify: ^4.0.2
   url_launcher: ^5.7.5
-  flutter_markdown: ^0.5.1
+  flutter_markdown: ^0.5.2
   timelines: ^0.0.2+1
   responsive_grid: ^1.2.1+1
   feedback: ^0.3.0
-  flutter_advanced_switch: ^0.0.9+3
+  flutter_advanced_switch: ^0.0.9+4
   # Used for service selection (for instance in service deploy)
   chips_choice: ^2.0.1
   # Used by server service selection
   smart_select: ^4.3.2
-  percent_indicator: ^2.1.9
+  percent_indicator: ^2.1.9+1
   rflutter_alert: ^1.1.0
   xterm: ^1.1.1+1
 
@@ -76,13 +76,13 @@ dependencies:
   dbcrypt: ^1.0.0
 
   # map
-  flutter_map: ^0.10.1+1
+  flutter_map: ^0.11.0
 
 dev_dependencies:
-  build_runner: ^1.0.0
+  build_runner: ^1.11.1
   json_serializable: ^3.5.1
   copy_with_extension_gen: ^1.4.0
-  test: ^1.15.7
+  test: ^1.16.0-nullsafety.9
   envify_generator:
 
   flutter_test:
