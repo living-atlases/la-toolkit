@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/serverCardList.dart';
+import 'package:la_toolkit/components/serverDetailsCardList.dart';
 import 'package:la_toolkit/components/themeSelector.dart';
 import 'package:la_toolkit/maps/mapAreaSelector.dart';
+import 'package:la_toolkit/models/laVariableDesc.dart';
+import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/utils/cardContants.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -53,7 +57,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   ];
   var _steps;
 
-  static const _markdownColor = LAColorTheme.inactive;
+  static const _markdownColor = Colors.black54;
   static const _markdownStyle = const TextStyle(color: _markdownColor);
   static const _serverHint =
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
@@ -268,27 +272,10 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                             labelText:
                                 'Type the name of one of your servers (Press \'enter\' to add it)'),
                       ),
-                      Card(
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(3)),
-                        margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                        child: Markdown(
-                            shrinkWrap: true,
-                            styleSheet: MarkdownStyleSheet(
-                              h2: _markdownStyle,
-                              p: _markdownStyle,
-                              a: const TextStyle(
-                                  color: _markdownColor,
-                                  decoration: TextDecoration.underline),
-                            ),
-                            onTapLink: (text, href, title) async =>
-                                await launch(href),
-                            data: """## Tips
+                      _tipsCard("""## Tips
 See the [infrastructure requirements page](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Infrastructure-Requirements) and other portals infrastructure in [our documentation wiki](https://github.com/AtlasOfLivingAustralia/documentation/wiki/) to dimension your LA portal. For a test portal a big server can host the main basic LA services.
 If you are unsure type something like "server1, server2, server3".
 """),
-                      ),
                     ],
                   ),
                 )),
@@ -339,114 +326,32 @@ If you are unsure type something like "server1, server2, server3".
                                     'You need to add some server before to this step...'))
                           ])),
             Step(
-              isActive: _setIsActive(_serversAdditional),
-              state: _setSetStatus(_serversAdditional),
-              title: const Text('Define better your servers'),
-              subtitle: const Text(
-                  "Information to know how to reach and access to your servers, like IP Addressing, names aliases, SSH keys"),
-              content: Form(
-                  key: _formKeys[5],
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 1, // 10%
-                        child: Container(),
-                      ),
-                      Expanded(
-                          flex: 8, // 80%,
-                          child: DataTable(
-                            dataRowHeight: 65,
-                            // sortAscending: sort,
-                            // sortColumnIndex: 0,
-                            showCheckboxColumn: false,
-                            columns: [
-                              const DataColumn(
-                                label: const Text("NAME"),
-                                numeric: false,
-                                tooltip: "This is the server hostname",
-                              ),
-                              const DataColumn(
-                                label: const Text("IP ADDRESS"),
-                                numeric: false,
-                                tooltip: "This is IPv4 address",
-                              ),
-                              const DataColumn(
-                                label: const Text("NAME ALIASES"),
-                                numeric: false,
-                                tooltip:
-                                    "Alternative hostnames space separated",
-                              ),
-                            ],
-                            rows: _project.servers
-                                .map(
-                                  (server) => DataRow(cells: [
-                                    DataCell(Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 10),
-                                      child: Text(server.name,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16)),
-                                    )),
-                                    DataCell(
-                                      GenericTextFormField(
-                                          // IPv4
-                                          hint:
-                                              "ex: '10.0.0.1' or '84.120.10.4'",
-                                          error: 'Wrong IP address.',
-                                          initialValue: server.ipv4,
-                                          isDense: true,
-                                          /* isCollapsed: true, */
-                                          regexp: LARegExp.ipv4,
-                                          allowEmpty: true,
-                                          focusNode: server ==
-                                                  _project.servers[0]
-                                              ? _focusNodes[_serversAdditional]
-                                              : null,
-                                          onChanged: (value) {
-                                            _project.servers.map((current) {
-                                              if (server.name == current.name) {
-                                                current.ipv4 = value;
-                                                _project.upsert(current);
-                                              }
-                                              return current;
-                                            }).toList();
-                                            vm.onSaveCurrentProject(_project);
-                                          }),
-                                      // placeholder: true,
-                                    ),
-                                    DataCell(GenericTextFormField(
-                                        // ALIASES
-                                        hint:
-                                            'e.g. \'${_project.getService('collectory')?.url(_project.domain)} ${_project.getService('ala_hub')?.url(_project.domain)} ${_project.getService('ala_bie')?.suburl}\' ',
-                                        error: 'Wrong aliases.',
-                                        initialValue: server.aliases.join(' '),
-                                        isDense: true,
-                                        /* isCollapsed: true, */
-                                        regexp: LARegExp.aliasesRegexp,
-                                        onChanged: (value) {
-                                          _project.servers.map((current) {
-                                            if (server.name == current.name) {
-                                              current.aliases =
-                                                  value.split(' ');
-                                              _project.upsert(current);
-                                            }
-                                            return current;
-                                          });
+                isActive: _setIsActive(_serversAdditional),
+                state: _setSetStatus(_serversAdditional),
+                title: const Text('Define better your servers'),
+                subtitle: const Text(
+                    "Information to know how to reach and access to your servers, like IP Addressing, names aliases, secure access information"),
+                content: Form(
+                    key: _formKeys[5],
+                    child: Column(children: [
+                      _tipsCard('''
+Here we'll define how to connect to your server (thanks to the [IP address](https://en.wikipedia.org/wiki/IP_address)) and how to do it securely (thanks to [SSH](https://en.wikipedia.org/wiki/SSH_(Secure_Shell))).
 
-                                          vm.onSaveCurrentProject(_project);
-                                        })),
-                                  ]),
-                                )
-                                .toList(),
-                          )),
-                      Expanded(
-                        flex: 1, // 10%
-                        child: Container(),
-                      )
-                    ],
-                  )),
-            ),
+This is the most difficult part of all this project definition. If we configure correctly this, we'll deploy correctly later our portal.
+
+We'll use SSH to access to your server. For read more about SSH, read our wiki page [SSH for Beginners](https://github.com/AtlasOfLivingAustralia/documentation/wiki/SSH-for-Beginners).
+
+If you have doubts or need to ask for some information, save this project and continue later filling this. Don't hesitate to ask us in our #slack channel.    
+                         ''', EdgeInsets.fromLTRB(0, 0, 0, 10)),
+                      MessageItem(_project, LAVariableDesc.get("ansible_user"),
+                          (value) {
+                        _project.setVariable(
+                            LAVariableDesc.get("ansible_user"), value);
+                        vm.onSaveCurrentProject(_project);
+                      }).buildTitle(context),
+                      SizedBox(height: 20),
+                      ServersDetailsCardList(_focusNodes[_serversAdditional]),
+                    ])))
           ];
           return Scaffold(
             key: _scaffoldKey,
@@ -559,6 +464,34 @@ If you are unsure type something like "server1, server2, server3".
   Widget _stepIntro({String text, String helpPage}) {
     return ListTile(title: Text(text), trailing: HelpIcon(wikipage: helpPage));
   }
+
+  Widget _tipsCard(String text, [EdgeInsets margin]) {
+    return Card(
+        elevation: CardConstants.defaultElevation,
+        shape: CardConstants.defaultShape,
+        margin: margin ?? EdgeInsets.fromLTRB(0, 30, 0, 0),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                  padding: EdgeInsets.fromLTRB(20, 20, 0, 20),
+                  child: Icon(Icons.info, color: Colors.grey)),
+              Expanded(
+                  child: Markdown(
+                      shrinkWrap: true,
+                      styleSheet: MarkdownStyleSheet(
+                        h2: _markdownStyle,
+                        p: _markdownStyle,
+                        a: const TextStyle(
+                            color: _markdownColor,
+                            decoration: TextDecoration.underline),
+                      ),
+                      onTapLink: (text, href, title) async =>
+                          await launch(href),
+                      data: text))
+            ]));
+  }
 }
 
 class _ProjectPageViewModel {
@@ -585,5 +518,22 @@ class _ProjectPageViewModel {
   @override
   int get hashCode {
     return state.currentProject.hashCode ^ state.currentStep;
+  }
+}
+
+class HostHeader extends StatelessWidget {
+  final String title;
+  final String help;
+
+  HostHeader({this.title, this.help});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(this.title),
+        if (this.help != null) HelpIcon(wikipage: this.help)
+      ],
+    );
   }
 }

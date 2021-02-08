@@ -88,6 +88,67 @@ void main() {
     });
   });
 
+  test('private addresses', () {
+    List<String> ipAddresses = [
+      '127.0.0.1',
+      '10.0.0.1',
+      '172.16.20.1',
+      'fd12:3456:789a:1::1',
+      '192.168.0.1'
+    ];
+    ipAddresses.forEach((privateIp) {
+      expect(LARegExp.privateIp.hasMatch(privateIp), equals(true));
+    });
+  });
+
+  test('private addresses', () {
+    List<String> ipAddresses = [
+      '1.1.1.1',
+      '192.1.1.1',
+      'fe80::1ff:fe23:4567:890a',
+    ];
+    ipAddresses.forEach((privateIp) {
+      expect(LARegExp.privateIp.hasMatch(privateIp), equals(false));
+    });
+  });
+
+  test('ipv6', () {
+    List<String> ipAddresses = [
+      '::1',
+      '2620:119:35::35',
+      'fe80::1ff:fe23:4567:890a'
+    ];
+    ipAddresses.forEach((ipv6) {
+      expect(LARegExp.ipv6.hasMatch(ipv6), equals(true));
+    });
+  });
+  test('ipv6 failed', () {
+    List<String> ipAddresses = [
+      'vm1',
+      '260.0.0.1',
+      '1.1.1.1.1',
+      '111',
+      '255.255.255.256',
+    ];
+    ipAddresses.forEach((ipv6) {
+      expect(LARegExp.ipv6.hasMatch(ipv6), equals(false));
+    });
+  });
+
+  test('ip v4 or v6', () {
+    List<String> ipAddresses = [
+      '127.0.0.1',
+      '10.0.0.1',
+      '1.1.1.1',
+      '::1',
+      '2620:119:35::35',
+      'fe80::1ff:fe23:4567:890a'
+    ];
+    ipAddresses.forEach((ip) {
+      expect(LARegExp.ip.hasMatch(ip), equals(true));
+    });
+  });
+
   test('domain regexp should allow valid domains', () {
     List<String> domains = [
       'l-a.site',
@@ -153,6 +214,25 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
     });
     wrongEmails.forEach((email) {
       expect(LARegExp.email.hasMatch(email), equals(false));
+    });
+  });
+
+  test('test valid and invalid port numbers', () {
+    List<String> valid = [
+      '1',
+      '22',
+      '8080',
+      '60000',
+    ];
+    List<String> invalid = [
+      '70000',
+      'abc',
+    ];
+    valid.forEach((current) {
+      expect(LARegExp.portNumber.hasMatch(current), equals(true));
+    });
+    invalid.forEach((current) {
+      expect(LARegExp.portNumber.hasMatch(current), equals(false));
     });
   });
 }

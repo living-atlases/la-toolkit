@@ -11,33 +11,33 @@ enum ServiceStatus { unknown, success, failed }
 @CopyWith()
 class LAServer {
   String name;
-  String ipv4;
+  String ip;
   @JsonSerializable(nullable: false)
   int sshPort;
+  String sshUser;
   @JsonSerializable(nullable: false)
   List<String> aliases;
   String sshPrivateKey;
-  String proxyJump;
-  int proxyJumpPort;
-  String proxyJumpUser;
+  @JsonSerializable(nullable: false)
+  List<String> gateways;
   ServiceStatus reachable;
   ServiceStatus sshReachable;
   ServiceStatus sudoEnabled;
 
   LAServer(
       {this.name,
-      ipv4,
+      ip,
       this.sshPort: 22,
+      this.sshUser,
       List<String> aliases,
+      List<String> gateways,
       this.sshPrivateKey,
-      this.proxyJump,
-      this.proxyJumpPort,
-      this.proxyJumpUser,
       this.reachable: ServiceStatus.unknown,
       this.sshReachable: ServiceStatus.unknown,
       this.sudoEnabled: ServiceStatus.unknown})
       : this.aliases = aliases ?? [],
-        this.ipv4 = ipv4 ?? "";
+        this.gateways = gateways ?? [],
+        this.ip = ip ?? "";
 
   factory LAServer.fromJson(Map<String, dynamic> json) =>
       _$LAServerFromJson(json);
@@ -49,13 +49,12 @@ class LAServer {
       other is LAServer &&
           runtimeType == other.runtimeType &&
           name == other.name &&
-          ipv4 == other.ipv4 &&
+          ip == other.ip &&
           sshPort == other.sshPort &&
-          listEquals(aliases, other.aliases) &&
+          sshUser == other.sshUser &&
           sshPrivateKey == other.sshPrivateKey &&
-          proxyJump == other.proxyJump &&
-          proxyJumpPort == other.proxyJumpPort &&
-          proxyJumpUser == other.proxyJumpUser &&
+          listEquals(aliases, other.aliases) &&
+          listEquals(gateways, other.gateways) &&
           reachable == other.reachable &&
           sshReachable == other.sshReachable &&
           sudoEnabled == other.sudoEnabled;
@@ -63,20 +62,19 @@ class LAServer {
   @override
   int get hashCode =>
       name.hashCode ^
-      ipv4.hashCode ^
+      ip.hashCode ^
       sshPort.hashCode ^
-      DeepCollectionEquality.unordered().hash(aliases) ^
+      sshUser.hashCode ^
       sshPrivateKey.hashCode ^
-      proxyJump.hashCode ^
-      proxyJumpPort.hashCode ^
-      proxyJumpUser.hashCode ^
+      DeepCollectionEquality.unordered().hash(aliases) ^
+      DeepCollectionEquality.unordered().hash(gateways) ^
       reachable.hashCode ^
       sshReachable.hashCode ^
       sudoEnabled.hashCode;
 
   @override
   String toString() {
-    return "$name${ipv4.length > 0 ? ', ' + ipv4 : ' '} ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
+    return "$name${ip.length > 0 ? ', ' + ip : ' '} ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
   }
 
   static List<LAServer> upsert(List<LAServer> servers, LAServer laServer) {

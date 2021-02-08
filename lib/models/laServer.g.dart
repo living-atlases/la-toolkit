@@ -9,28 +9,26 @@ part of 'laServer.dart';
 extension LAServerCopyWith on LAServer {
   LAServer copyWith({
     List<String> aliases,
-    dynamic ipv4,
+    List<String> gateways,
+    dynamic ip,
     String name,
-    String proxyJump,
-    int proxyJumpPort,
-    String proxyJumpUser,
     ServiceStatus reachable,
     int sshPort,
     String sshPrivateKey,
     ServiceStatus sshReachable,
+    String sshUser,
     ServiceStatus sudoEnabled,
   }) {
     return LAServer(
       aliases: aliases ?? this.aliases,
-      ipv4: ipv4 ?? this.ipv4,
+      gateways: gateways ?? this.gateways,
+      ip: ip ?? this.ip,
       name: name ?? this.name,
-      proxyJump: proxyJump ?? this.proxyJump,
-      proxyJumpPort: proxyJumpPort ?? this.proxyJumpPort,
-      proxyJumpUser: proxyJumpUser ?? this.proxyJumpUser,
       reachable: reachable ?? this.reachable,
       sshPort: sshPort ?? this.sshPort,
       sshPrivateKey: sshPrivateKey ?? this.sshPrivateKey,
       sshReachable: sshReachable ?? this.sshReachable,
+      sshUser: sshUser ?? this.sshUser,
       sudoEnabled: sudoEnabled ?? this.sudoEnabled,
     );
   }
@@ -43,13 +41,12 @@ extension LAServerCopyWith on LAServer {
 LAServer _$LAServerFromJson(Map<String, dynamic> json) {
   return LAServer(
     name: json['name'] as String,
-    ipv4: json['ipv4'],
+    ip: json['ip'],
     sshPort: json['sshPort'] as int,
+    sshUser: json['sshUser'] as String,
     aliases: (json['aliases'] as List)?.map((e) => e as String)?.toList(),
+    gateways: (json['gateways'] as List)?.map((e) => e as String)?.toList(),
     sshPrivateKey: json['sshPrivateKey'] as String,
-    proxyJump: json['proxyJump'] as String,
-    proxyJumpPort: json['proxyJumpPort'] as int,
-    proxyJumpUser: json['proxyJumpUser'] as String,
     reachable: _$enumDecodeNullable(_$ServiceStatusEnumMap, json['reachable']),
     sshReachable:
         _$enumDecodeNullable(_$ServiceStatusEnumMap, json['sshReachable']),
@@ -60,13 +57,12 @@ LAServer _$LAServerFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
       'name': instance.name,
-      'ipv4': instance.ipv4,
+      'ip': instance.ip,
       'sshPort': instance.sshPort,
+      'sshUser': instance.sshUser,
       'aliases': instance.aliases,
       'sshPrivateKey': instance.sshPrivateKey,
-      'proxyJump': instance.proxyJump,
-      'proxyJumpPort': instance.proxyJumpPort,
-      'proxyJumpUser': instance.proxyJumpUser,
+      'gateways': instance.gateways,
       'reachable': _$ServiceStatusEnumMap[instance.reachable],
       'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable],
       'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled],

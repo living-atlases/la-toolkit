@@ -30,6 +30,8 @@ List<Map<String, String>> themes = [
 ];
 
 class _ThemeSelectorState extends State<ThemeSelector> {
+  GlobalKey<S2MultiState<String>> _selectKey =
+      GlobalKey<S2MultiState<String>>();
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ThemeSelectorViewModel>(
@@ -43,6 +45,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
         builder: (BuildContext context, _ThemeSelectorViewModel vm) {
           LAProject currentProject = vm.project;
           return SmartSelect<String>.single(
+              key: _selectKey,
               value: currentProject.theme,
               title: "Select your branding theme",
               choiceItems: S2Choice.listFrom<String, Map<String, String>>(

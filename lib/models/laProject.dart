@@ -130,7 +130,7 @@ class LAProject {
 
     if (valid)
       servers.forEach((s) {
-        valid = valid && LARegExp.ipv4.hasMatch(s.ipv4);
+        valid = valid && LARegExp.ipv4.hasMatch(s.ip);
       });
     if (debug) print("Step 4 valid: ${valid ? 'yes' : 'no'}");
 
@@ -141,7 +141,7 @@ class LAProject {
   }
 
   List<String> getServersNameList() {
-    return serverServices.keys;
+    return serverServices.keys.toList();
   }
 
   List<String> getServicesNameListInUse() {

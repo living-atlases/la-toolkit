@@ -55,23 +55,20 @@ void main() {
         shortName: "LAW",
         domain: "l-a.site");
     testProject.upsert(LAServer(name: "vm1"));
-    testProject.upsert(LAServer(name: "vm2", ipv4: "10.0.0.1"));
-    testProject.upsert(LAServer(name: "vm2", ipv4: "10.0.0.2"));
+    testProject.upsert(LAServer(name: "vm2", ip: "10.0.0.1"));
+    testProject.upsert(LAServer(name: "vm2", ip: "10.0.0.2"));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(2));
     expect(testProject.validateCreation(), equals(false));
     expect(
-        testProject.servers
-            .where((element) => element.name == "vm2")
-            .first
-            .ipv4,
+        testProject.servers.where((element) => element.name == "vm2").first.ip,
         equals("10.0.0.2"));
     expect(testProject.status, equals(LAProjectStatus.basicDefined));
   });
 
   test('Servers equals', () {
-    LAServer vm1 = LAServer(name: 'vm2', ipv4: '10.0.0.1');
-    LAServer vm1bis = LAServer(name: 'vm2', ipv4: '10.0.0.1');
+    LAServer vm1 = LAServer(name: 'vm2', ip: '10.0.0.1');
+    LAServer vm1bis = LAServer(name: 'vm2', ip: '10.0.0.1');
     expect(vm1 == vm1bis, equals(true));
   });
 
@@ -117,10 +114,10 @@ void main() {
         equals(true));
     expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
     expect(testProject == testProjectOther, equals(true));
-    LAServer vm1 = LAServer(name: "vm1", ipv4: "10.0.0.1");
-    LAServer vm2 = LAServer(name: "vm2", ipv4: "10.0.0.2");
-    LAServer vm3 = LAServer(name: "vm3", ipv4: "10.0.0.3");
-    LAServer vm4 = LAServer(name: "vm4", ipv4: "10.0.0.4");
+    LAServer vm1 = LAServer(name: "vm1", ip: "10.0.0.1");
+    LAServer vm2 = LAServer(name: "vm2", ip: "10.0.0.2");
+    LAServer vm3 = LAServer(name: "vm3", ip: "10.0.0.3");
+    LAServer vm4 = LAServer(name: "vm4", ip: "10.0.0.4");
     LAProject testProjectCopy =
         testProject.copyWith(servers: [], serverServices: {});
     testProject.upsert(vm1);
@@ -220,12 +217,10 @@ void main() {
     expect(testProject.numServers(), equals(4));
     expect(testProject.validateCreation(), equals(true));
     expect(
-        testProject.servers
-            .where((element) => element.name == "vm2")
-            .first
-            .ipv4,
+        testProject.servers.where((element) => element.name == "vm2").first.ip,
         equals("10.0.0.2"));
 /*    print(testProject); */
+    expect(testProject.getServersNameList().length, equals(4));
     expect(testProject.status, equals(LAProjectStatus.advancedDefined));
     // testProject.delete(vm1);
   });

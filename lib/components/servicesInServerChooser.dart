@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/choiceEmptyPanel.dart';
+import 'package:la_toolkit/components/selectUtils.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -22,7 +24,8 @@ class ServicesInServerChooser extends StatefulWidget {
 
 class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
   LAProject _project;
-
+  GlobalKey<S2MultiState<String>> _selectKey =
+      GlobalKey<S2MultiState<String>>();
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServicesInServerChooserViewModel>(
@@ -52,39 +55,17 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
               //
               // https://github.com/davigmacode/flutter_smart_select/tree/master/example
               child: SmartSelect<String>.multiple(
+            key: _selectKey,
             title: "Services to run in ${widget.server.name}:",
             placeholder: 'Server empty, select one or more services',
             value: servicesInServer,
             // choiceItems: LAServiceDesc.names,
-            choiceEmptyBuilder: (a, b) => Container(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Icon(
-                      Icons.search,
-                      color: Colors.grey,
-                      size: 120.0,
-                    ),
-                    const SizedBox(height: 25),
-                    const Text(
-                      'This server is empty',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 7),
-                    const Text(
-                      "There aren't service available (also right now the multiple deploy of services is not supported)",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 7),
-                    const Text(
-                      "Maybe you should distribute your services between your servers better",
-                      style: TextStyle(color: Colors.grey),
-                    )
-                  ],
-                ),
-              ),
-            ),
+            choiceEmptyBuilder: (a, b) => ChoiceEmptyPanel(
+                title: 'This server is empty',
+                body:
+                    "There aren't service available (also right now the multiple deploy of services is not supported)",
+                footer:
+                    "Maybe you should distribute your services between your servers better"),
             modalValidation: (List<String> selection) {
               Set<String> incompatible = {};
               selection.forEach((first) {
@@ -137,23 +118,8 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
             choiceType: S2ChoiceType.chips,
             // The current confirm icon is not very clear
             modalConfirm: true,
-
-            modalConfirmBuilder: (context, state) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                  child: FlatButton(
-                      child: const Text('CONFIRM'),
-                      disabledColor: Colors.grey,
-                      textColor: LAColorTheme.laPalette,
-                      color: Colors.white,
-                      onPressed: !state.changes.valid
-                          ? null
-                          : () => state.closeModal(confirmed: true)),
-                ),
-              );
-            },
-
+            modalConfirmBuilder: (context, state) =>
+                SelectUtils.modalConfirmBuild(state),
             modalHeader: true,
             // This is for enable search:
             // modalFilter: true,
