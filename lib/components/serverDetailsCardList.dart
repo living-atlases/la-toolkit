@@ -112,29 +112,29 @@ class ServersDetailsCardList extends StatelessWidget {
                                                         'Only if this is different than 22',
                                                     error: 'Invalid port',
                                                     initialValue: _project
-                                                                .servers[index]
-                                                                .sshPort !=
-                                                            22
+                                                                    .servers[
+                                                                        index]
+                                                                    .sshPort !=
+                                                                22 &&
+                                                            _project
+                                                                    .servers[
+                                                                        index]
+                                                                    .sshPort !=
+                                                                null
                                                         ? _project
                                                             .servers[index]
                                                             .sshPort
-                                                        : '',
+                                                            .toString()
+                                                        : null,
+                                                    allowEmpty: true,
                                                     isDense: true,
                                                     regexp: LARegExp.portNumber,
                                                     onChanged: (value) {
-                                                      _project.servers
-                                                          .map((current) {
-                                                        if (_project
-                                                                .servers[index]
-                                                                .name ==
-                                                            current.name) {
-                                                          current.sshPort =
-                                                              int.parse(value);
-                                                          _project
-                                                              .upsert(current);
-                                                        }
-                                                        return current;
-                                                      });
+                                                      _project.servers[index]
+                                                              .sshPort =
+                                                          value.length > 0
+                                                              ? int.parse(value)
+                                                              : 22;
                                                       vm.onSaveCurrentProject(
                                                           _project);
                                                     }),
@@ -154,20 +154,10 @@ class ServersDetailsCardList extends StatelessWidget {
                                                         '',
                                                     isDense: true,
                                                     regexp: LARegExp.username,
+                                                    allowEmpty: true,
                                                     onChanged: (value) {
-                                                      _project.servers
-                                                          .map((current) {
-                                                        if (_project
-                                                                .servers[index]
-                                                                .name ==
-                                                            current.name) {
-                                                          current.sshUser =
-                                                              value;
-                                                          _project
-                                                              .upsert(current);
-                                                        }
-                                                        return current;
-                                                      });
+                                                      _project.servers[index]
+                                                          .sshUser = value;
                                                       vm.onSaveCurrentProject(
                                                           _project);
                                                     }),
@@ -183,7 +173,7 @@ class ServersDetailsCardList extends StatelessWidget {
                                               child: GenericTextFormField(
                                                   // ALIASES
                                                   label:
-                                                      "Aliases (other names you give to this server)",
+                                                      "Aliases (other names you give to this server separated by spaces)",
                                                   /* hint:
                                                       'e.g. \'${_project.getService('collectory')?.url(_project.domain)} ${_project.getService('ala_hub')?.url(_project.domain)} ${_project.getService('ala_bie')?.suburl}\' ', */
                                                   error: 'Wrong aliases.',
@@ -195,20 +185,9 @@ class ServersDetailsCardList extends StatelessWidget {
                                                   regexp:
                                                       LARegExp.aliasesRegexp,
                                                   onChanged: (value) {
-                                                    _project.servers
-                                                        .map((current) {
-                                                      if (_project
-                                                              .servers[index]
-                                                              .name ==
-                                                          current.name) {
-                                                        current.aliases =
-                                                            value.split(' ');
-                                                        _project
-                                                            .upsert(current);
-                                                      }
-                                                      return current;
-                                                    });
-
+                                                    _project.servers[index]
+                                                            .aliases =
+                                                        value.split(' ');
                                                     vm.onSaveCurrentProject(
                                                         _project);
                                                   }),

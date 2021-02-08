@@ -78,7 +78,9 @@ void main() {
     expect(vm1 == vm1bis, equals(false));
     vm1 = LAServer(name: 'vm1');
     vm1bis = LAServer(name: 'vm1', aliases: ['collections']);
+    var vm1bisBis = LAServer(name: 'vm1', sshPort: 22001);
     expect(vm1 == vm1bis, equals(false));
+    expect(vm1 == vm1bisBis, equals(false));
   });
 
   final lists = LAServiceName.species_lists.toS();
@@ -258,9 +260,15 @@ void main() {
     LAServer vm1 = LAServer(name: "vm1");
     p.upsert(vm1);
     p.assign(vm1, [collectory, bie, lists]);
+    LAServer vm1Bis = LAServer(name: "vm1", sshUser: "john", sshPort: 22001);
+    p.upsert(vm1Bis);
     expect(p.serverServices["vm1"].contains(collectory), equals(true));
     expect(p.serverServices["vm1"].contains(bie), equals(true));
     expect(p.serverServices["vm1"].contains(lists), equals(true));
+    var vm1Updated =
+        p.servers.where((element) => element.name == "vm1").toList()[0];
+    expect(vm1Updated.sshUser == "john" && vm1Updated.sshPort == 22001,
+        equals(true));
     p.serviceInUse(bie, false);
     expect(p.getService(bie).use, equals(false));
     expect(p.getService(lists).use, equals(false));
