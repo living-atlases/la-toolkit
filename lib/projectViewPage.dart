@@ -31,6 +31,8 @@ class LAProjectViewPage extends StatelessWidget {
             onDelProject: (project) => store.dispatch(DelProject(project)),
             onGenInvProject: (project) =>
                 store.dispatch(GenerateInvProject(project)),
+            onTestConnProject: (project) =>
+                store.dispatch(TestConnectivityProject(project)),
           );
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
@@ -67,11 +69,12 @@ class LAProjectViewPage extends StatelessWidget {
                 tooltip: "Test if your servers are reachable from here",
                 title: "Test Connectivity",
                 enabled: basicDefined,
-                action: () =>
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("In Development: come back soon!"),
-                    ))),
-
+                action: () {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("In Development: come back soon!"),
+                  ));
+                  vm.onTestConnProject(_currentProject);
+                }),
             Tool(icon: const Icon(Icons.foundation), title: "Pre-Deploy Tasks"),
             Tool(
                 icon: const Icon(Mdi.rocketLaunch),
@@ -158,6 +161,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onEditProject;
   final void Function(LAProject project) onDelProject;
   final void Function(LAProject project) onGenInvProject;
+  final void Function(LAProject project) onTestConnProject;
 
   _ProjectPageViewModel(
       {this.state,
@@ -165,7 +169,9 @@ class _ProjectPageViewModel {
       this.onTuneProject,
       this.onDelProject,
       this.onEditProject,
-      this.onGenInvProject});
+      this.onGenInvProject,
+      this.onTestConnProject});
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

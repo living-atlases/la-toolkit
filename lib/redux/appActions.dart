@@ -86,3 +86,9 @@ class SaveCurrentProject extends AppActions {
 
   SaveCurrentProject([this.project, this.currentStep]);
 }
+
+class TestConnectivityProject extends AppActions {
+  LAProject project;
+
+  TestConnectivityProject(this.project);
+}

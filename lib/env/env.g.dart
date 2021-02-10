@@ -9,4 +9,5 @@ part of 'env.dart';
 class _Env {
   static const String sentryDsn = 'dev';
   static const bool demo = true;
+  static const String backend = 'http://localhost:1337/';
 }

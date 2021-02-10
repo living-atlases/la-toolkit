@@ -75,7 +75,9 @@ class ServersDetailsCardList extends StatelessWidget {
                                     }),
                               )
                             ]),
-                            trailing: HelpIcon(wikipage: "SSH-for-Beginners"),
+                            trailing: HelpIcon(
+                                wikipage:
+                                    "SSH-for-Beginners#public-and-private-ip-addresses"),
                           ),
                           Padding(
                               padding: EdgeInsets.all(16.0),
@@ -139,6 +141,9 @@ class ServersDetailsCardList extends StatelessWidget {
                                                           _project);
                                                     }),
                                               ),
+                                              HelpIcon(
+                                                  wikipage:
+                                                      "SSH-For-Beginners#ssh-ports"),
                                               SizedBox(width: 20),
                                               Flexible(
                                                 child: GenericTextFormField(

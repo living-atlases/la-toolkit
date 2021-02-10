@@ -46,7 +46,10 @@ class LAProjectTunePage extends StatelessWidget {
         List<ListItem> items = [];
         var lastCategory;
         var lastSubcategory;
-        LAVariableDesc.map.entries.forEach((entry) {
+        LAVariableDesc.map.entries
+            // We moved "ansible_user" to the servers definition
+            .where((element) => element.key != "ansible_user")
+            .forEach((entry) {
           if (entry.value.service != lastCategory) {
             items.add(HeadingItem(entry.value.service == LAServiceName.all
                 ? "Variables common to all services"

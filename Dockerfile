@@ -74,8 +74,9 @@ RUN echo 'export PATH="$PATH:$NPM_PACKAGES/bin:/usr/local/go/bin"' >> /home/ubun
 # RUN echo 'export MANPATH="${MANPATH-$(manpath)}:$NPM_PACKAGES/share/man"' >> /home/ubuntu/.bashrc
 
 # Authorize generated ssh key to ubuntu user
-RUN mkdir -p /home/ubuntu/.ssh && \
+RUN mkdir -p /home/ubuntu/.ssh/assh.d && \
     chmod 0700 /home/ubuntu/.ssh && \
+    chmod 0700 /home/ubuntu/.ssh/assh.d && \
     cp /root/.ssh/id_rsa.pub /home/ubuntu/.ssh/authorized_keys && \
     chown ubuntu:ubuntu -R /home/ubuntu/.ssh
 

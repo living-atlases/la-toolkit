@@ -26,6 +26,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
   new TypedReducer<AppState, DelProject>(_delProject),
   new TypedReducer<AppState, UpdateProject>(_updateProject),
+  new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
 ]);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
@@ -141,4 +142,9 @@ AppState _editService(AppState state, EditService action) {
   LAProject currentProject = state.currentProject;
   currentProject.services[action.service.nameInt] = action.service;
   return state.copyWith(currentProject: currentProject);
+}
+
+AppState _testConnectivityProject(
+    AppState state, TestConnectivityProject action) {
+  return state;
 }
