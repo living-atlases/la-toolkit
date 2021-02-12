@@ -13,6 +13,7 @@ extension AppStateCopyWith on AppState {
     int currentStep,
     bool firstUsage,
     List<LAProject> projects,
+    List<SshKey> sshKeys,
     LAProjectViewStatus status,
   }) {
     return AppState(
@@ -21,6 +22,7 @@ extension AppStateCopyWith on AppState {
       currentStep: currentStep ?? this.currentStep,
       firstUsage: firstUsage ?? this.firstUsage,
       projects: projects ?? this.projects,
+      sshKeys: sshKeys ?? this.sshKeys,
       status: status ?? this.status,
     );
   }
@@ -44,6 +46,10 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
     status: _$enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
     alaInstallReleases:
         (json['alaInstallReleases'] as List)?.map((e) => e as String)?.toList(),
+    sshKeys: (json['sshKeys'] as List)
+        ?.map((e) =>
+            e == null ? null : SshKey.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
   );
 }
 
@@ -54,6 +60,7 @@ Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'currentStep': instance.currentStep,
       'projects': instance.projects?.map((e) => e?.toJson())?.toList(),
       'alaInstallReleases': instance.alaInstallReleases,
+      'sshKeys': instance.sshKeys?.map((e) => e?.toJson())?.toList(),
     };
 
 T _$enumDecode<T>(

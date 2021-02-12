@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/cardContants.dart';
 import 'package:la_toolkit/utils/regexp.dart';
@@ -21,13 +22,13 @@ class ServersDetailsCardList extends StatelessWidget {
         distinct: false,
         converter: (store) {
           return _ServersCardListViewModel(
-              currentProject: store.state.currentProject,
+              state: store.state,
               onSaveCurrentProject: (project) {
                 store.dispatch(SaveCurrentProject(project));
               });
         },
         builder: (BuildContext context, _ServersCardListViewModel vm) {
-          final _project = vm.currentProject;
+          final _project = vm.state.currentProject;
           return ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
@@ -50,6 +51,53 @@ class ServersDetailsCardList extends StatelessWidget {
                                       fontWeight: FontWeight.w500,
                                       fontSize: 16)),
                               SizedBox(width: 20),
+                              DropdownButton(
+                                hint: Row(
+                                  children: [
+                                    Container(
+                                      child: Text('key'),
+                                    ),
+                                    Container(
+                                      child: Icon(Icons.arrow_drop_down),
+                                    ),
+                                  ],
+                                ),
+                                items: vm.state.sshKeys
+                                    // For now we only support keys with no passphrase
+                                    .where((k) => k.encrypted != true)
+                                    .toList()
+                                    .map((SshKey sshKey) {
+                                  return DropdownMenuItem(
+                                    value: sshKey,
+                                    child: Row(
+                                      children: [
+                                        Icon(Mdi.key),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          sshKey.name,
+                                          // style: TextStyle(color: Colors.red),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          sshKey.desc,
+                                          // style: TextStyle(color: Colors.red),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  _project.servers[index].sshKey = value;
+                                  vm.onSaveCurrentProject(_project);
+                                  /* setState(() {
+                                    value;
+                                  }); */
+                                },
+                              ),
                               Flexible(
                                 child: GenericTextFormField(
                                     // IP
@@ -217,8 +265,8 @@ class ServersDetailsCardList extends StatelessWidget {
 }
 
 class _ServersCardListViewModel {
-  final LAProject currentProject;
+  final AppState state;
   final void Function(LAProject project) onSaveCurrentProject;
 
-  _ServersCardListViewModel({this.currentProject, this.onSaveCurrentProject});
+  _ServersCardListViewModel({this.state, this.onSaveCurrentProject});
 }

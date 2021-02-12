@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/sshKey.dart';
 
 part 'laServer.g.dart';
 
@@ -17,7 +18,7 @@ class LAServer {
   String sshUser;
   @JsonSerializable(nullable: false)
   List<String> aliases;
-  String sshPrivateKey;
+  SshKey sshKey;
   @JsonSerializable(nullable: false)
   List<String> gateways;
   ServiceStatus reachable;
@@ -31,7 +32,7 @@ class LAServer {
       this.sshUser,
       List<String> aliases,
       List<String> gateways,
-      this.sshPrivateKey,
+      this.sshKey,
       this.reachable: ServiceStatus.unknown,
       this.sshReachable: ServiceStatus.unknown,
       this.sudoEnabled: ServiceStatus.unknown})
@@ -52,7 +53,7 @@ class LAServer {
           ip == other.ip &&
           sshPort == other.sshPort &&
           sshUser == other.sshUser &&
-          sshPrivateKey == other.sshPrivateKey &&
+          sshKey == other.sshKey &&
           listEquals(aliases, other.aliases) &&
           listEquals(gateways, other.gateways) &&
           reachable == other.reachable &&
@@ -65,7 +66,7 @@ class LAServer {
       ip.hashCode ^
       sshPort.hashCode ^
       sshUser.hashCode ^
-      sshPrivateKey.hashCode ^
+      sshKey.hashCode ^
       DeepCollectionEquality.unordered().hash(aliases) ^
       DeepCollectionEquality.unordered().hash(gateways) ^
       reachable.hashCode ^

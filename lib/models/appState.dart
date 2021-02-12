@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/sshKey.dart';
 
 part 'appState.g.dart';
 
@@ -48,6 +49,8 @@ class AppState {
   // from server api call
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
+  @JsonSerializable(nullable: false)
+  final List<SshKey> sshKeys;
 
   AppState(
       {this.projects,
@@ -55,7 +58,11 @@ class AppState {
       this.currentProject,
       this.currentStep,
       this.status,
-      this.alaInstallReleases});
+      this.alaInstallReleases,
+      this.sshKeys});
+  /*
+      sshKeys})
+      : sshKeys = sshKeys ?? []; */
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
       _$AppStateFromJson(json);
@@ -72,7 +79,8 @@ class AppState {
           status == other.status &&
           currentStep == other.currentStep &&
           listEquals(projects, other.projects) &&
-          listEquals(alaInstallReleases, other.alaInstallReleases);
+          listEquals(alaInstallReleases, other.alaInstallReleases) &&
+          listEquals(sshKeys, other.sshKeys);
 
   @override
   int get hashCode =>
@@ -81,7 +89,8 @@ class AppState {
       status.hashCode ^
       currentStep.hashCode ^
       ListEquality().hash(projects) ^
-      ListEquality().hash(alaInstallReleases);
+      ListEquality().hash(alaInstallReleases) ^
+      ListEquality().hash(sshKeys);
 
   @override
   String toString() {
@@ -91,6 +100,7 @@ class AppState {
 LA projects: ${projects.length} 
 view status: $status, currentStep: $currentStep
 ala-install releases: $alaInstallReleases
+keys: ${sshKeys == null ? 0 : sshKeys.length}
 ''';
 //    $projects
 //    currentProject of ${projects.length} -----

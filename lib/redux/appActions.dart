@@ -1,6 +1,7 @@
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/sshKey.dart';
 
 abstract class AppActions {}
 
@@ -91,4 +92,10 @@ class TestConnectivityProject extends AppActions {
   LAProject project;
 
   TestConnectivityProject(this.project);
+}
+
+class OnSshKeysScanned extends AppActions {
+  List<SshKey> keys;
+
+  OnSshKeysScanned(this.keys);
 }

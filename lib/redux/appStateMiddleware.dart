@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +24,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     var asS = _pref.getString(key);
     if (asS == null) {
       print("Load prefs empty");
-      appState = AppState(projects: List<LAProject>.empty());
+      appState = AppState(
+          projects: List<LAProject>.empty(), sshKeys: List<SshKey>.empty());
     } else {
       var asJ = json.decode(asS);
       // print("Load prefs: $asJ.toString()");
@@ -55,6 +57,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             alaInstallReleases.length - 6, alaInstallReleases.length);
         alaInstallReleases.add('upstream');
         store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
+        Api.sshKeysScan()
+            .then((keys) => store.dispatch(OnSshKeysScanned(keys)));
       } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
       }

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:la_toolkit/env/env.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
+import 'package:la_toolkit/models/sshKey.dart';
 
 class Api {
   static Future<String> genCasKey(int size) async {
@@ -34,5 +35,27 @@ class Api {
       // var jsonResponse = jsonDecode(response.body);
     }
     return;
+  }
+
+  static Future<List<SshKey>> sshKeysScan() async {
+    var url = "${Env.backend}api/v1/ssh-key-scan";
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      //print(response.body);
+      Iterable l = json.decode(response.body)['keys'];
+      List<SshKey> keys = List<SshKey>.from(l.map((k) {
+        var kj = SshKey.fromJson(k);
+        print(kj);
+        return kj;
+      }));
+      return keys;
+    } else {
+      return List<SshKey>.empty();
+    }
+  }
+
+  static Future<String> genSshKey(String name) async {
+    var url = "${Env.backend}api/v1/ssh-key-gen/$name";
+    http.get(url).then((response) => {}).catchError((error) => {print(error)});
   }
 }

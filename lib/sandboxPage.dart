@@ -5,6 +5,7 @@ import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/components/servicesChipPanel.dart';
 import 'package:la_toolkit/components/textWithHelp.dart';
 import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:latlong/latlong.dart';
 import 'package:mdi/mdi.dart';
@@ -142,11 +143,17 @@ class _SandboxPageState extends State<SandboxPage> {
         context: context,
         closeIcon: Icon(Icons.close),
         image: Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
-        title: "Your SSH Public Keys",
+        title: "Your SSH Keys",
         style: AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
           children: <Widget>[
+            FlatButton(
+                onPressed: () => Api.genSshKey("test"),
+                child: Text("Gen a SSH key")),
+            FlatButton(
+                onPressed: () => Api.sshKeysScan(),
+                child: Text("Scan SSH keys")),
             DefDivider(),
             TextWithHelp(text: "Add a new ssh public key:", helpPage: "Ssh"),
             GenericTextFormField(
