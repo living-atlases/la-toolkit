@@ -98,7 +98,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(
-        distinct: true,
+        // with true fails ssl y ssh advanced
+        distinct: false,
         converter: (store) {
           return _ProjectPageViewModel(
             state: store.state,
@@ -350,6 +351,18 @@ If you have doubts or need to ask for some information, save this project and co
                             LAVariableDesc.get("ansible_user"), value);
                         vm.onSaveCurrentProject(_project);
                       }).buildTitle(context),
+                      SizedBox(height: 20),
+                      ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text(
+                            'Advanced SSH options',
+                          ),
+                          trailing: Switch(
+                              value: _project.advancedEdit,
+                              onChanged: (value) {
+                                _project.advancedEdit = value;
+                                vm.onSaveCurrentProject(_project);
+                              })),
                       SizedBox(height: 20),
                       ServersDetailsCardList(_focusNodes[_serversAdditional]),
                     ])))

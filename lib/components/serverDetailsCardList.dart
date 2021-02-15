@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -29,6 +30,7 @@ class ServersDetailsCardList extends StatelessWidget {
         },
         builder: (BuildContext context, _ServersCardListViewModel vm) {
           final _project = vm.state.currentProject;
+
           return ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
@@ -45,84 +47,107 @@ class ServersDetailsCardList extends StatelessWidget {
                           ListTile(
                             leading: Icon(Mdi.server),
                             // tileColor: Colors.black12,
-                            title: Row(children: [
-                              Text(_project.servers[index].name,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16)),
-                              SizedBox(width: 20),
-                              DropdownButton(
-                                hint: Row(
-                                  children: [
-                                    Container(
-                                      child: Text('key'),
-                                    ),
-                                    Container(
-                                      child: Icon(Icons.arrow_drop_down),
-                                    ),
-                                  ],
-                                ),
-                                items: vm.state.sshKeys
-                                    // For now we only support keys with no passphrase
-                                    .where((k) => k.encrypted != true)
-                                    .toList()
-                                    .map((SshKey sshKey) {
-                                  return DropdownMenuItem(
-                                    value: sshKey,
-                                    child: Row(
+                            title: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(_project.servers[index].name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16)),
+                                  SizedBox(width: 40),
+                                  DropdownButton(
+                                    isDense: false,
+                                    // isExpanded: true,
+                                    underline: Container(),
+
+                                    disabledHint: Text("No ssh keys available"),
+                                    hint: Row(
                                       children: [
-                                        Icon(Mdi.key),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          sshKey.name,
-                                          // style: TextStyle(color: Colors.red),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          sshKey.desc,
-                                          // style: TextStyle(color: Colors.red),
+                                        if (_project.servers[index].sshKey !=
+                                            null)
+                                          Container(
+                                              child: Icon(Mdi.key,
+                                                  color:
+                                                      LAColorTheme.laPalette)),
+                                        if (_project.servers[index].sshKey !=
+                                            null)
+                                          SizedBox(width: 5),
+                                        Container(
+                                          child: Text(
+                                              _project.servers[index].sshKey !=
+                                                      null
+                                                  ? _project.servers[index]
+                                                      .sshKey.name
+                                                  : "No SSH key selected"),
                                         ),
                                       ],
                                     ),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  _project.servers[index].sshKey = value;
-                                  vm.onSaveCurrentProject(_project);
-                                  /* setState(() {
+                                    items: vm.state.sshKeys
+                                        // For now we only support keys with no passphrase
+                                        .where((k) => k.encrypted != true)
+                                        .toList()
+                                        .map((SshKey sshKey) {
+                                      return DropdownMenuItem(
+                                        value: sshKey,
+                                        child: Row(
+                                          children: [
+                                            Icon(Mdi.key),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text(
+                                              sshKey.name,
+                                              // style: TextStyle(color: Colors.red),
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text(
+                                              sshKey.desc,
+                                              // style: TextStyle(color: Colors.red),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      _project.servers[index].sshKey = value;
+                                      vm.onSaveCurrentProject(_project);
+                                      /* setState(() {
                                     value;
                                   }); */
-                                },
-                              ),
-                              Flexible(
-                                child: GenericTextFormField(
-                                    // IP
-                                    label: "IP Address",
-                                    hint: "ex: '10.0.0.1' or '84.120.10.4'",
-                                    error: 'Wrong IP address.',
-                                    initialValue: _project.servers[index].ip,
-                                    isDense: true,
-                                    /* isCollapsed: true, */
-                                    regexp: LARegExp.ip,
-                                    allowEmpty: true,
-                                    focusNode: null,
-                                    onChanged: (value) {
-                                      _project.servers.map((current) {
-                                        if (_project.servers[index].name ==
-                                            current.name) {
-                                          current.ip = value;
-                                          _project.upsert(current);
-                                        }
-                                        return current;
-                                      }).toList();
-                                      vm.onSaveCurrentProject(_project);
-                                    }),
-                              )
-                            ]),
+                                    },
+                                  ),
+                                  SizedBox(width: 10),
+                                  HelpIcon(
+                                      wikipage: "SSH-for-Beginners#ssh-keys"),
+                                  Flexible(
+                                    child: GenericTextFormField(
+                                        // IP
+                                        label: "IP Address",
+                                        hint: "ex: '10.0.0.1' or '84.120.10.4'",
+                                        error: 'Wrong IP address.',
+                                        initialValue:
+                                            _project.servers[index].ip,
+                                        isDense: true,
+                                        /* isCollapsed: true, */
+                                        regexp: LARegExp.ip,
+                                        allowEmpty: true,
+                                        focusNode: null,
+                                        onChanged: (value) {
+                                          _project.servers.map((current) {
+                                            if (_project.servers[index].name ==
+                                                current.name) {
+                                              current.ip = value;
+                                              _project.upsert(current);
+                                            }
+                                            return current;
+                                          }).toList();
+                                          vm.onSaveCurrentProject(_project);
+                                        }),
+                                  )
+                                ]),
                             trailing: HelpIcon(
                                 wikipage:
                                     "SSH-for-Beginners#public-and-private-ip-addresses"),
@@ -130,124 +155,128 @@ class ServersDetailsCardList extends StatelessWidget {
                           Padding(
                               padding: EdgeInsets.all(16.0),
                               child: Container(
-                                height: 200,
+                                height: _project.advancedEdit ? 180 : 0,
                                 child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(height: 10),
+                                      /* SizedBox(height: 10),
                                       Text("Advanced optional settings:",
-                                          style: TextStyle(fontSize: 16)),
+                                          style: TextStyle(fontSize: 16)),*/
                                       SizedBox(height: 10),
-                                      Flexible(
-                                        child: Row(
+                                      if (_project.advancedEdit)
+                                        Flexible(
+                                          child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Flexible(
+                                                  child: HostSelector(
+                                                      server: _project
+                                                          .servers[index]),
+                                                ),
+                                                HelpIcon(
+                                                    wikipage:
+                                                        "SSH-For-Beginners#Gateways"),
+                                                SizedBox(width: 20),
+                                                Flexible(
+                                                  child: GenericTextFormField(
+                                                      // SSH Port
+                                                      label:
+                                                          "SSH alternative Port",
+                                                      hint:
+                                                          'Only if this is different than 22',
+                                                      error: 'Invalid port',
+                                                      initialValue: _project
+                                                                      .servers[
+                                                                          index]
+                                                                      .sshPort !=
+                                                                  22 &&
+                                                              _project
+                                                                      .servers[
+                                                                          index]
+                                                                      .sshPort !=
+                                                                  null
+                                                          ? _project
+                                                              .servers[index]
+                                                              .sshPort
+                                                              .toString()
+                                                          : null,
+                                                      allowEmpty: true,
+                                                      isDense: true,
+                                                      regexp:
+                                                          LARegExp.portNumber,
+                                                      onChanged: (value) {
+                                                        _project.servers[index]
+                                                            .sshPort = value
+                                                                    .length >
+                                                                0
+                                                            ? int.parse(value)
+                                                            : 22;
+                                                        vm.onSaveCurrentProject(
+                                                            _project);
+                                                      }),
+                                                ),
+                                                HelpIcon(
+                                                    wikipage:
+                                                        "SSH-For-Beginners#ssh-ports"),
+                                                SizedBox(width: 20),
+                                                Flexible(
+                                                  child: GenericTextFormField(
+                                                      // SSH User
+                                                      label:
+                                                          "SSH alternative username",
+                                                      hint:
+                                                          'Only if it\'s different than \'${_project.getVariable("ansible_user").value}\' in this server',
+                                                      error: 'Invalid username',
+                                                      initialValue: _project
+                                                              .servers[index]
+                                                              .sshUser ??
+                                                          '',
+                                                      isDense: true,
+                                                      regexp: LARegExp.username,
+                                                      allowEmpty: true,
+                                                      onChanged: (value) {
+                                                        _project.servers[index]
+                                                            .sshUser = value;
+                                                        vm.onSaveCurrentProject(
+                                                            _project);
+                                                      }),
+                                                )
+                                              ]),
+                                        ),
+                                      if (_project.advancedEdit)
+                                        Flexible(
+                                          child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
                                               Flexible(
-                                                child: HostSelector(
-                                                    server: _project
-                                                        .servers[index]),
-                                              ),
-                                              HelpIcon(
-                                                  wikipage:
-                                                      "SSH-For-Beginners#Gateways"),
-                                              SizedBox(width: 20),
-                                              Flexible(
                                                 child: GenericTextFormField(
-                                                    // SSH Port
+                                                    // ALIASES
                                                     label:
-                                                        "SSH alternative Port",
-                                                    hint:
-                                                        'Only if this is different than 22',
-                                                    error: 'Invalid port',
-                                                    initialValue: _project
-                                                                    .servers[
-                                                                        index]
-                                                                    .sshPort !=
-                                                                22 &&
-                                                            _project
-                                                                    .servers[
-                                                                        index]
-                                                                    .sshPort !=
-                                                                null
-                                                        ? _project
-                                                            .servers[index]
-                                                            .sshPort
-                                                            .toString()
-                                                        : null,
-                                                    allowEmpty: true,
-                                                    isDense: true,
-                                                    regexp: LARegExp.portNumber,
-                                                    onChanged: (value) {
-                                                      _project.servers[index]
-                                                              .sshPort =
-                                                          value.length > 0
-                                                              ? int.parse(value)
-                                                              : 22;
-                                                      vm.onSaveCurrentProject(
-                                                          _project);
-                                                    }),
-                                              ),
-                                              HelpIcon(
-                                                  wikipage:
-                                                      "SSH-For-Beginners#ssh-ports"),
-                                              SizedBox(width: 20),
-                                              Flexible(
-                                                child: GenericTextFormField(
-                                                    // SSH User
-                                                    label:
-                                                        "SSH alternative username",
-                                                    hint:
-                                                        'Only if it\'s different than \'${_project.getVariable("ansible_user").value}\' in this server',
-                                                    error: 'Invalid username',
-                                                    initialValue: _project
-                                                            .servers[index]
-                                                            .sshUser ??
-                                                        '',
-                                                    isDense: true,
-                                                    regexp: LARegExp.username,
-                                                    allowEmpty: true,
-                                                    onChanged: (value) {
-                                                      _project.servers[index]
-                                                          .sshUser = value;
-                                                      vm.onSaveCurrentProject(
-                                                          _project);
-                                                    }),
-                                              )
-                                            ]),
-                                      ),
-                                      Flexible(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Flexible(
-                                              child: GenericTextFormField(
-                                                  // ALIASES
-                                                  label:
-                                                      "Aliases (other names you give to this server separated by spaces)",
-                                                  /* hint:
+                                                        "Aliases (other names you give to this server separated by spaces)",
+                                                    /* hint:
                                                       'e.g. \'${_project.getService('collectory')?.url(_project.domain)} ${_project.getService('ala_hub')?.url(_project.domain)} ${_project.getService('ala_bie')?.suburl}\' ', */
-                                                  error: 'Wrong aliases.',
-                                                  initialValue: _project
-                                                      .servers[index].aliases
-                                                      .join(' '),
-                                                  isDense: true,
-                                                  /* isCollapsed: true, */
-                                                  regexp:
-                                                      LARegExp.aliasesRegexp,
-                                                  onChanged: (value) {
-                                                    _project.servers[index]
-                                                            .aliases =
-                                                        value.split(' ');
-                                                    vm.onSaveCurrentProject(
-                                                        _project);
-                                                  }),
-                                            ),
-                                          ],
+                                                    error: 'Wrong aliases.',
+                                                    initialValue: _project
+                                                        .servers[index].aliases
+                                                        .join(' '),
+                                                    isDense: true,
+                                                    /* isCollapsed: true, */
+                                                    regexp:
+                                                        LARegExp.aliasesRegexp,
+                                                    onChanged: (value) {
+                                                      _project.servers[index]
+                                                              .aliases =
+                                                          value.split(' ');
+                                                      vm.onSaveCurrentProject(
+                                                          _project);
+                                                    }),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
                                     ]),
                               ))
                         ]));

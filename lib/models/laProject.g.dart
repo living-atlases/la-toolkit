@@ -9,6 +9,8 @@ part of 'laProject.dart';
 extension LAProjectCopyWith on LAProject {
   LAProject copyWith({
     String additionalVariables,
+    dynamic advancedEdit,
+    dynamic advancedTune,
     String alaInstallRelease,
     String domain,
     bool isCreated,
@@ -28,6 +30,8 @@ extension LAProjectCopyWith on LAProject {
   }) {
     return LAProject(
       additionalVariables: additionalVariables ?? this.additionalVariables,
+      advancedEdit: advancedEdit ?? this.advancedEdit,
+      advancedTune: advancedTune ?? this.advancedTune,
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
       domain: domain ?? this.domain,
       isCreated: isCreated ?? this.isCreated,
@@ -85,6 +89,8 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
         ?.toList(),
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num)?.toDouble(),
+    advancedEdit: json['advancedEdit'],
+    advancedTune: json['advancedTune'],
   );
 }
 
@@ -99,6 +105,8 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'variables': instance.variables?.map((k, e) => MapEntry(k, e?.toJson())),
       'additionalVariables': instance.additionalVariables,
       'serverServices': instance.serverServices,
+      'advancedEdit': instance.advancedEdit,
+      'advancedTune': instance.advancedTune,
       'status': _$LAProjectStatusEnumMap[instance.status],
       'theme': instance.theme,
       'alaInstallRelease': instance.alaInstallRelease,

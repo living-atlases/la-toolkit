@@ -48,7 +48,10 @@ class LAProjectTunePage extends StatelessWidget {
         var lastSubcategory;
         LAVariableDesc.map.entries
             // We moved "ansible_user" to the servers definition
-            .where((element) => element.key != "ansible_user")
+            .where((element) =>
+                element.key != "ansible_user" &&
+                ((!currentProject.advancedTune && !element.value.advanced) ||
+                    currentProject.advancedTune))
             .forEach((entry) {
           if (entry.value.service != lastCategory) {
             items.add(HeadingItem(entry.value.service == LAServiceName.all
@@ -97,6 +100,18 @@ class LAProjectTunePage extends StatelessWidget {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
+                          ListTile(
+                              // contentPadding: EdgeInsets.zero,
+                              title: const Text(
+                                'Advanced options',
+                              ),
+                              trailing: Switch(
+                                  value: currentProject.advancedTune,
+                                  onChanged: (value) {
+                                    currentProject.advancedTune = value;
+                                    vm.onSaveProject(currentProject);
+                                  })),
+                          SizedBox(height: 20),
                           ListView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
@@ -113,44 +128,49 @@ class LAProjectTunePage extends StatelessWidget {
                               );
                             },
                           ),
-                          SizedBox(height: 20),
-                          HeadingItem("Other variables").buildTitle(context),
-                          SizedBox(height: 30),
-                          Text(
-                            "Write here other extra ansible variables that are not configurable in the previous forms:",
-                            style:
-                                TextStyle(fontSize: 18, color: Colors.black54),
-                          ),
-                          SizedBox(height: 20),
-                          ListTile(
-                              title: GenericTextFormField(
-                                  //label:
-                                  //  ,
-                                  hint: "",
-                                  initialValue:
-                                      currentProject.additionalVariables !=
-                                                  null &&
-                                              currentProject.additionalVariables
-                                                      .length >
-                                                  0
-                                          ? currentProject.additionalVariables
-                                          : _initialExtraAnsibleVariables(
-                                              currentProject),
-                                  maxLines: 100,
-                                  fillColor: Colors.grey[100],
-                                  //hintStyle: TextStyle(
-                                  //    fontSize: 20, color: Colors.black54),
-                                  enabledBorder: true,
-                                  allowEmpty: true,
-                                  monoSpaceFont: true,
-                                  error: "",
-                                  onChanged: (value) {
-                                    currentProject.additionalVariables = value;
-                                    vm.onSaveProject(currentProject);
-                                  }),
-                              trailing: HelpIcon(
-                                  wikipage:
-                                      "Version-control-of-your-configurations#about-maintaining-dataconfig")),
+                          if (currentProject.advancedTune) SizedBox(height: 20),
+                          if (currentProject.advancedTune)
+                            HeadingItem("Other variables").buildTitle(context),
+                          if (currentProject.advancedTune) SizedBox(height: 30),
+                          if (currentProject.advancedTune)
+                            Text(
+                              "Write here other extra ansible variables that are not configurable in the previous forms:",
+                              style: TextStyle(
+                                  fontSize: 18, color: Colors.black54),
+                            ),
+                          if (currentProject.advancedTune) SizedBox(height: 20),
+                          if (currentProject.advancedTune)
+                            ListTile(
+                                title: GenericTextFormField(
+                                    //label:
+                                    //  ,
+                                    hint: "",
+                                    initialValue:
+                                        currentProject.additionalVariables !=
+                                                    null &&
+                                                currentProject
+                                                        .additionalVariables
+                                                        .length >
+                                                    0
+                                            ? currentProject.additionalVariables
+                                            : _initialExtraAnsibleVariables(
+                                                currentProject),
+                                    maxLines: 100,
+                                    fillColor: Colors.grey[100],
+                                    //hintStyle: TextStyle(
+                                    //    fontSize: 20, color: Colors.black54),
+                                    enabledBorder: true,
+                                    allowEmpty: true,
+                                    monoSpaceFont: true,
+                                    error: "",
+                                    onChanged: (value) {
+                                      currentProject.additionalVariables =
+                                          value;
+                                      vm.onSaveProject(currentProject);
+                                    }),
+                                trailing: HelpIcon(
+                                    wikipage:
+                                        "Version-control-of-your-configurations#about-maintaining-dataconfig")),
                           SizedBox(height: 20),
                           Row(children: [
                             Text(
@@ -225,7 +245,7 @@ class HeadingItem implements ListItem {
   Widget buildSubtitle(BuildContext context) => null;
 }
 
-/// A ListItem that contains data to display a message.
+// A ListItem that contains data to display a message.
 class MessageItem implements ListItem {
   LAVariableDesc variable;
   LAProject project;

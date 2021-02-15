@@ -41,6 +41,8 @@ class LAProject {
   Map<String, List<String>> serverServices;
   @JsonKey(ignore: true)
   bool isCreated;
+  bool advancedEdit;
+  bool advancedTune;
   @JsonSerializable(nullable: false)
   LAProjectStatus status;
   String theme;
@@ -66,13 +68,17 @@ class LAProject {
       this.mapBounds1stPoint,
       this.mapBounds2ndPoint,
       this.theme = "clean",
-      this.mapZoom})
+      this.mapZoom,
+      advancedEdit,
+      advancedTune})
       : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],
         // _serversNameList = _serversNameList ?? [],
         services = services ?? initialServices,
         variables = variables ?? {},
-        serverServices = serverServices ?? {} {
+        serverServices = serverServices ?? {},
+        advancedEdit = advancedEdit ?? false,
+        advancedTune = advancedTune ?? false {
     validateCreation();
   }
 
@@ -305,6 +311,8 @@ class LAProject {
               .equals(serverServices, other.serverServices) &&
           additionalVariables == other.additionalVariables &&
           isCreated == other.isCreated &&
+          advancedEdit == other.advancedEdit &&
+          advancedTune == other.advancedTune &&
           status == other.status &&
           alaInstallRelease == other.alaInstallRelease &&
           ListEquality().equals(mapBounds1stPoint, other.mapBounds1stPoint) &&
@@ -323,6 +331,8 @@ class LAProject {
       DeepCollectionEquality.unordered().hash(variables) ^
       DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
+      advancedEdit.hashCode ^
+      advancedTune.hashCode ^
       additionalVariables.hashCode ^
       status.hashCode ^
       alaInstallRelease.hashCode ^

@@ -42,6 +42,7 @@ class LAVariableDesc {
   String confName;
   bool
       internal; // used by non ALA code to, for instance, generate inventories,...
+  bool advanced;
   bool enabled;
 
   LAVariableDesc(
@@ -57,6 +58,7 @@ class LAVariableDesc {
       this.help,
       this.confName,
       this.defValue,
+      this.advanced = false,
       this.internal = false,
       this.enabled = true})
       : ansibleEquiv = ansibleEquiv ?? [nameInt];
@@ -76,6 +78,7 @@ class LAVariableDesc {
           ansibleEquiv == other.ansibleEquiv &&
           confName == other.confName &&
           internal == other.internal &&
+          advanced == other.advanced &&
           enabled == other.enabled;
 
   @override
@@ -90,6 +93,7 @@ class LAVariableDesc {
       ansibleEquiv.hashCode ^
       confName.hashCode ^
       internal.hashCode ^
+      advanced.hashCode ^
       enabled.hashCode;
 
   static final Map<String, LAVariableDesc> map = {
@@ -174,18 +178,21 @@ class LAVariableDesc {
         nameInt: "caches_auth_enabled",
         subcategory: LAVariableSubcategory.cache,
         defValue: (_) => false,
+        advanced: true,
         type: LAVariableType.bool),
     "caches_logs_enabled": LAVariableDesc(
         name: "Enable Logs Cache",
         nameInt: "caches_logs_enabled",
         subcategory: LAVariableSubcategory.cache,
         defValue: (_) => false,
+        advanced: true,
         type: LAVariableType.bool),
     "caches_collections_enabled": LAVariableDesc(
         name: "Enable Collections Cache",
         nameInt: "caches_collections_enabled",
         subcategory: LAVariableSubcategory.cache,
         defValue: (_) => false,
+        advanced: true,
         hint:
             "By default caches are disabled (the collections cache is problematic when collectory + biocache on same server)",
         help: "FAQ#collectory-cache-issues",
@@ -193,6 +200,7 @@ class LAVariableDesc {
     "caches_layers_enabled": LAVariableDesc(
         name: "Enable Layers Cache",
         defValue: (_) => false,
+        advanced: true,
         nameInt: "caches_layers_enabled",
         subcategory: LAVariableSubcategory.cache,
         type: LAVariableType.bool),
@@ -214,21 +222,25 @@ class LAVariableDesc {
         nameInt: "pac4j_cookie_signing_key",
         subcategory: LAVariableSubcategory.otherkeys,
         help: "CAS-postinstall-steps#cas-keys",
+        advanced: true,
         service: LAServiceName.cas),
     "pac4j_cookie_encryption_key": LAVariableDesc(
         name: "CAS PAC4J Encryption key",
         nameInt: "pac4j_cookie_encryption_key",
         subcategory: LAVariableSubcategory.otherkeys,
+        advanced: true,
         service: LAServiceName.cas),
     "cas_webflow_signing_key": LAVariableDesc(
         name: "CAS Webflow Signing key",
         nameInt: "cas_webflow_signing_key",
         subcategory: LAVariableSubcategory.otherkeys,
+        advanced: true,
         service: LAServiceName.cas),
     "cas_webflow_encryption_key": LAVariableDesc(
         name: "CAS Webflow Encryption key",
         nameInt: "cas_webflow_encryption_key",
         subcategory: LAVariableSubcategory.otherkeys,
+        advanced: true,
         service: LAServiceName.cas)
   };
   static LAVariableDesc get(String nameInt) {
