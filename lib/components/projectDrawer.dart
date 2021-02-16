@@ -9,9 +9,11 @@ import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:mdi/mdi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../main.dart';
+import '../sshKeysPage.dart';
 
 class ProjectDrawer extends StatefulWidget {
   ProjectDrawer();
@@ -83,6 +85,13 @@ class _ProjectDrawerState extends State<ProjectDrawer> {
                   title: Text('Home'),
                   onTap: () {
                     Navigator.popAndPushNamed(context, HomePage.routeName);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Mdi.key),
+                  title: Text('SSH Keys'),
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, SshKeyPage.routeName);
                   },
                 ),
                 Column(children: _createProjectLinks(vm.state.currentProject)),

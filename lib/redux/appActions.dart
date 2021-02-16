@@ -94,8 +94,26 @@ class TestConnectivityProject extends AppActions {
   TestConnectivityProject(this.project);
 }
 
+class OnSshKeysScan extends AppActions {
+  OnSshKeysScan();
+}
+
 class OnSshKeysScanned extends AppActions {
   List<SshKey> keys;
 
   OnSshKeysScanned(this.keys);
+}
+
+class OnAddSshKey extends AppActions {
+  String name;
+
+  OnAddSshKey(this.name);
+}
+
+class OnImportSshKey extends AppActions {
+  String name;
+  String publicKey;
+  String privateKey;
+
+  OnImportSshKey(this.name, this.publicKey, this.privateKey);
 }

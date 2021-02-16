@@ -58,4 +58,20 @@ class Api {
     var url = "${Env.backend}api/v1/ssh-key-gen/$name";
     http.get(url).then((response) => {}).catchError((error) => {print(error)});
   }
+
+  static Future<String> importSshKey(
+      String name, String publicKey, String privateKey) async {
+    var url = "${Env.backend}api/v1/ssh-key-import";
+
+    var response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({
+          'name': name,
+          'publicKey': publicKey,
+          'privateKey': privateKey,
+        })));
+    if (response.statusCode == 200) {
+      // var jsonResponse = jsonDecode(response.body);
+    }
+  }
 }

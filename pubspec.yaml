@@ -48,6 +48,7 @@ dependencies:
   percent_indicator: ^2.1.9+1
   rflutter_alert: ^1.1.0
   xterm: ^1.1.1+1
+  clipboard: ^0.1.2+8
 
   # icon
   mdi: ^5.0.0-nullsafety.0

@@ -57,8 +57,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             alaInstallReleases.length - 6, alaInstallReleases.length);
         alaInstallReleases.add('upstream');
         store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
-        Api.sshKeysScan()
-            .then((keys) => store.dispatch(OnSshKeysScanned(keys)));
+        scanSshKeys(store);
       } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
       }
@@ -73,8 +72,21 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is TestConnectivityProject) {
       getSshConf(action.project);
     }
-
+    if (action is OnSshKeysScan) {
+      scanSshKeys(store);
+    }
+    if (action is OnAddSshKey) {
+      Api.genSshKey(action.name).then((value) => scanSshKeys(store));
+    }
+    if (action is OnImportSshKey) {
+      Api.importSshKey(action.name, action.publicKey, action.privateKey)
+          .then((value) => scanSshKeys(store));
+    }
     next(action);
+  }
+
+  void scanSshKeys(store) {
+    Api.sshKeysScan().then((keys) => store.dispatch(OnSshKeysScanned(keys)));
   }
 
   getSshConf(LAProject project) {

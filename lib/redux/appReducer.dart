@@ -27,7 +27,10 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, DelProject>(_delProject),
   new TypedReducer<AppState, UpdateProject>(_updateProject),
   new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
+  new TypedReducer<AppState, OnSshKeysScan>(_onSshKeysScan),
   new TypedReducer<AppState, OnSshKeysScanned>(_onSshKeysScanned),
+  new TypedReducer<AppState, OnAddSshKey>(_onAddSshKey),
+  new TypedReducer<AppState, OnImportSshKey>(_onImportSshKey),
 ]);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
@@ -150,6 +153,18 @@ AppState _testConnectivityProject(
   return state;
 }
 
+AppState _onSshKeysScan(AppState state, OnSshKeysScan action) {
+  return state;
+}
+
 AppState _onSshKeysScanned(AppState state, OnSshKeysScanned action) {
   return state.copyWith(sshKeys: action.keys);
+}
+
+AppState _onAddSshKey(AppState state, OnAddSshKey action) {
+  return state;
+}
+
+AppState _onImportSshKey(AppState state, OnImportSshKey action) {
+  return state;
 }

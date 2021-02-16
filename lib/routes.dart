@@ -4,6 +4,7 @@ import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/sandboxPage.dart';
+import 'package:la_toolkit/sshKeysPage.dart';
 
 import 'main.dart';
 
@@ -36,6 +37,9 @@ class Routes {
           return SandboxPage();
         case LAProjectTunePage.routeName:
           return LAProjectTunePage();
+          break;
+        case SshKeyPage.routeName:
+          return SshKeyPage();
           break;
         default:
           return HomePage(title: appName);

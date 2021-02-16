@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/sshKeysPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:mdi/mdi.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../sandboxPage.dart';
@@ -60,6 +62,13 @@ class _MainDrawerState extends State<MainDrawer> {
                     color: LAColorTheme.laPalette.shade300,
                   ),
                 ),
+              ),
+              ListTile(
+                leading: const Icon(Mdi.key),
+                title: Text('SSH Keys'),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, SshKeyPage.routeName);
+                },
               ),
               if (AppUtils.isDev())
                 ListTile(
