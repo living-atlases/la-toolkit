@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:la_toolkit/env/env.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 
@@ -56,7 +57,26 @@ class Api {
 
   static Future<String> genSshKey(String name) async {
     var url = "${Env.backend}api/v1/ssh-key-gen/$name";
-    http.get(url).then((response) => {}).catchError((error) => {print(error)});
+    http
+        .get(url)
+        .then((response) => jsonDecode(response.body))
+        .catchError((error) => {print(error)});
+  }
+
+  static Future<Map<String, dynamic>> testConnectivity(
+      List<LAServer> servers) async {
+    var url = "${Env.backend}api/v1/test-connectivity";
+    var response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({
+          'servers': servers,
+        })));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> l = json.decode(response.body);
+      return l;
+    } else {
+      return {};
+    }
   }
 
   static Future<String> importSshKey(
@@ -71,7 +91,7 @@ class Api {
           'privateKey': privateKey,
         })));
     if (response.statusCode == 200) {
-      // var jsonResponse = jsonDecode(response.body);
+      return jsonDecode(response.body);
     }
   }
 }

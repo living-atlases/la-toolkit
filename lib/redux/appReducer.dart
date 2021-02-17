@@ -3,6 +3,7 @@ import 'dart:html' as html;
 
 import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laServer.dart';
 import 'package:redux/redux.dart';
 
 import '../models/appState.dart';
@@ -27,6 +28,8 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, DelProject>(_delProject),
   new TypedReducer<AppState, UpdateProject>(_updateProject),
   new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
+  new TypedReducer<AppState, OnTestConnectivityResults>(
+      _onTestConnectivityResults),
   new TypedReducer<AppState, OnSshKeysScan>(_onSshKeysScan),
   new TypedReducer<AppState, OnSshKeysScanned>(_onSshKeysScanned),
   new TypedReducer<AppState, OnAddSshKey>(_onAddSshKey),
@@ -151,6 +154,29 @@ AppState _editService(AppState state, EditService action) {
 AppState _testConnectivityProject(
     AppState state, TestConnectivityProject action) {
   return state;
+}
+
+AppState _onTestConnectivityResults(
+    AppState state, OnTestConnectivityResults action) {
+  var currentProject = state.currentProject;
+  for (var serverName in action.results.keys) {
+    var server =
+        currentProject.servers.where((e) => e.name == serverName).toList()[0];
+    server.reachable = serviceStatus(action.results[serverName]['ping']);
+    server.sshReachable = serviceStatus(action.results[serverName]['ssh']);
+    server.sudoEnabled = serviceStatus(action.results[serverName]['sudo']);
+    currentProject.upsert(server);
+  }
+  return state.copyWith(
+      currentProject: currentProject,
+      projects: state.projects
+          .map((project) =>
+              project.uuid == currentProject.uuid ? currentProject : project)
+          .toList());
+}
+
+ServiceStatus serviceStatus(result) {
+  return (result == true) ? ServiceStatus.success : ServiceStatus.failed;
 }
 
 AppState _onSshKeysScan(AppState state, OnSshKeysScan action) {

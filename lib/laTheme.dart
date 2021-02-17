@@ -42,6 +42,9 @@ class LAColorTheme {
 
   static final unDeployedColor = LAColorTheme.laPalette.shade800;
   static final deployedColor = Colors.brown;
+
+  static final up = Colors.green.shade400;
+  static final down = Colors.red.shade300;
   static final unDeployedTextStyle = TextStyle(color: unDeployedColor);
   static final deployedTextStyle = TextStyle(color: deployedColor);
   static final fixedUnDeployedTextStyle = GoogleFonts.ibmPlexMono(

@@ -3,13 +3,17 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:responsive_grid/responsive_grid.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
 import 'components/scrollPanel.dart';
+import 'components/serverDiagram.dart';
+import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
@@ -25,20 +29,26 @@ class LAProjectViewPage extends StatelessWidget {
         distinct: true,
         converter: (store) {
           return _ProjectPageViewModel(
-            state: store.state,
-            onOpenProject: (project) => store.dispatch(OpenProject(project)),
-            onTuneProject: (project) => store.dispatch(TuneProject(project)),
-            onDelProject: (project) => store.dispatch(DelProject(project)),
-            onGenInvProject: (project) =>
-                store.dispatch(GenerateInvProject(project)),
-            onTestConnProject: (project) =>
-                store.dispatch(TestConnectivityProject(project)),
-          );
+              state: store.state,
+              onOpenProject: (project) => store.dispatch(OpenProject(project)),
+              onTuneProject: (project) => store.dispatch(TuneProject(project)),
+              onDelProject: (project) => store.dispatch(DelProject(project)),
+              onGenInvProject: (project) =>
+                  store.dispatch(GenerateInvProject(project)),
+              onTestConnProject: (project) {
+                context.showLoaderOverlay();
+                store.dispatch(TestConnectivityProject(
+                    project,
+                    () => _showServersStatus(
+                        context, store.state.currentProject)));
+              });
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           final LAProject _currentProject = vm.state.currentProject;
-          final bool basicDefined =
+          final bool advancedDefined =
               _currentProject.status.value > LAProjectStatus.basicDefined.value;
+
+          LAProjectStatus.advancedDefined.value;
           List<Tool> tools = [
             Tool(
                 icon: const Icon(Icons.edit),
@@ -59,7 +69,7 @@ class LAProjectViewPage extends StatelessWidget {
                 tooltip:
                     "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories.",
                 title: "Generate inventories",
-                enabled: basicDefined,
+                enabled: advancedDefined,
                 action: () => vm.onGenInvProject(_currentProject)),
             /*     action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("In Development: come back soon!"),
@@ -68,10 +78,11 @@ class LAProjectViewPage extends StatelessWidget {
                 icon: const Icon(Icons.settings_ethernet),
                 tooltip: "Test if your servers are reachable from here",
                 title: "Test Connectivity",
-                enabled: basicDefined,
+                enabled: advancedDefined,
                 action: () {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("In Development: come back soon!"),
+                    content: Text(
+                        "Ok! Testing the connectivity with your servers..."),
                   ));
                   vm.onTestConnProject(_currentProject);
                 }),
@@ -151,6 +162,50 @@ class LAProjectViewPage extends StatelessWidget {
                         }).toList())
                       ]))));
         });
+  }
+
+  void _showServersStatus(BuildContext context, LAProject currentProject) {
+    List<Widget> serversWidgets = currentProject
+        .serversWithServices()
+        .map((server) => ServerDiagram(server))
+        .toList();
+    bool allReady = currentProject.allServersReady();
+    context.hideLoaderOverlay();
+    Alert(
+        context: context,
+        closeIcon: Icon(Icons.close),
+        image: Icon(
+            allReady ? Mdi.checkboxMarkedCircleOutline : Icons.remove_done,
+            size: 60,
+            color: allReady ? LAColorTheme.up : LAColorTheme.down),
+        title: "Servers Status",
+        style: AlertStyle(
+            constraints: BoxConstraints.expand(height: 600, width: 600)),
+        content: Column(
+            children: new List.from([
+          SizedBox(height: 20),
+          Text(
+              allReady
+                  ? "Congrats! All the servers are ready"
+                  : "Uuppps! It seems that some servers are not yet ready",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+          SizedBox(height: 20),
+          Wrap(children: serversWidgets)
+        ])
+            //..addAll(),
+            ),
+        buttons: [
+          DialogButton(
+            width: 500,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              "OK",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ]).show();
   }
 }
 

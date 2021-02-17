@@ -88,10 +88,20 @@ class SaveCurrentProject extends AppActions {
   SaveCurrentProject([this.project, this.currentStep]);
 }
 
+typedef void VoidCallback();
+typedef void ErrorCallback(error);
+
 class TestConnectivityProject extends AppActions {
   LAProject project;
+  VoidCallback onServersStatusReady;
 
-  TestConnectivityProject(this.project);
+  TestConnectivityProject(this.project, this.onServersStatusReady);
+}
+
+class OnTestConnectivityResults extends AppActions {
+  Map<String, dynamic> results;
+
+  OnTestConnectivityResults(this.results);
 }
 
 class OnSshKeysScan extends AppActions {

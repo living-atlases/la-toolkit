@@ -78,11 +78,11 @@ extension LAProjectStatusPercentExtension on LAProjectStatus {
   int get percent {
     switch (this) {
       case LAProjectStatus.created:
-        return 0;
-      case LAProjectStatus.basicDefined:
         return 33;
-      case LAProjectStatus.advancedDefined:
+      case LAProjectStatus.basicDefined:
         return 66;
+      case LAProjectStatus.advancedDefined:
+        return 100;
       case LAProjectStatus.reachable:
         return 100;
       case LAProjectStatus.firstDeploy:

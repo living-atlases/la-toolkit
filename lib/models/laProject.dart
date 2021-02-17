@@ -137,6 +137,7 @@ class LAProject {
     if (valid)
       servers.forEach((s) {
         valid = valid && LARegExp.ipv4.hasMatch(s.ip);
+        valid = valid && s.sshKey != null;
       });
     if (debug) print("Step 4 valid: ${valid ? 'yes' : 'no'}");
 
@@ -144,6 +145,18 @@ class LAProject {
     if (isCreated) status = LAProjectStatus.advancedDefined;
     setProjectStatus(status);
     return valid;
+  }
+
+  List<LAServer> serversWithServices() {
+    return servers.where((s) => serverServices[s.name].length > 0).toList();
+  }
+
+  bool allServersReady() {
+    bool allReady = true;
+    serversWithServices().forEach((s) {
+      allReady = allReady && s.isReady();
+    });
+    return allReady;
   }
 
   List<String> getServersNameList() {

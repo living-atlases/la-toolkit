@@ -12,6 +12,7 @@ import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
 import 'package:la_toolkit/routes.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -82,28 +83,32 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
         store: store,
-        child: MaterialApp(
-          navigatorKey: _navigatorKey,
-          builder: (context, widget) => ResponsiveWrapper.builder(
-              BouncingScrollWrapper.builder(context, widget),
-              maxWidth: 1200,
-              minWidth: 450,
-              defaultScale: true,
-              breakpoints: [
-                ResponsiveBreakpoint.resize(450, name: MOBILE),
-                ResponsiveBreakpoint.autoScale(800, name: TABLET),
-                ResponsiveBreakpoint.autoScale(1000, name: TABLET),
-                ResponsiveBreakpoint.resize(1200, name: DESKTOP),
-                ResponsiveBreakpoint.autoScale(2460, name: "4K"),
-              ],
-              background: Container(color: Color(0xFFF5F5F5))),
-          initialRoute: HomePage.routeName,
-          onGenerateRoute: (RouteSettings settings) =>
-              Routes.onGenerateRoute(settings),
-          title: appName,
-          theme: LAColorTheme.laThemeData,
-          debugShowCheckedModeBanner: false,
-        ));
+        child: GlobalLoaderOverlay(
+            useDefaultLoading: true,
+            overlayOpacity: 0.5,
+            overlayColor: Colors.black,
+            child: MaterialApp(
+              navigatorKey: _navigatorKey,
+              builder: (context, widget) => ResponsiveWrapper.builder(
+                  BouncingScrollWrapper.builder(context, widget),
+                  maxWidth: 1200,
+                  minWidth: 450,
+                  defaultScale: true,
+                  breakpoints: [
+                    ResponsiveBreakpoint.resize(450, name: MOBILE),
+                    ResponsiveBreakpoint.autoScale(800, name: TABLET),
+                    ResponsiveBreakpoint.autoScale(1000, name: TABLET),
+                    ResponsiveBreakpoint.resize(1200, name: DESKTOP),
+                    ResponsiveBreakpoint.autoScale(2460, name: "4K"),
+                  ],
+                  background: Container(color: Color(0xFFF5F5F5))),
+              initialRoute: HomePage.routeName,
+              onGenerateRoute: (RouteSettings settings) =>
+                  Routes.onGenerateRoute(settings),
+              title: appName,
+              theme: LAColorTheme.laThemeData,
+              debugShowCheckedModeBanner: false,
+            )));
   }
 }
 

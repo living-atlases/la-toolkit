@@ -64,13 +64,18 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       // }
     }
     if (action is AddProject) {
-      getSshConf(action.project);
+      genSshConf(action.project);
     }
     if (action is UpdateProject) {
-      getSshConf(action.project);
+      genSshConf(action.project);
     }
     if (action is TestConnectivityProject) {
-      getSshConf(action.project);
+      var project = action.project;
+      genSshConf(project);
+      Api.testConnectivity(project.serversWithServices()).then((results) {
+        store.dispatch(OnTestConnectivityResults(results));
+        action.onServersStatusReady();
+      });
     }
     if (action is OnSshKeysScan) {
       scanSshKeys(store);
@@ -89,7 +94,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     Api.sshKeysScan().then((keys) => store.dispatch(OnSshKeysScanned(keys)));
   }
 
-  getSshConf(LAProject project) {
+  genSshConf(LAProject project) {
     if (project.isCreated) {
       Api.genSshConf(project);
     }

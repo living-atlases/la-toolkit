@@ -16,7 +16,6 @@ import 'laTheme.dart';
 class SshKeyPage extends StatelessWidget {
   static const routeName = "ssh-keys";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +81,7 @@ class SshKeyPage extends StatelessWidget {
                                 tooltip: "",
                               ),
                               const DataColumn(
-                                label: const Text("PROTECTED"),
+                                label: const Text("PROTECTED?"),
                                 numeric: false,
                                 tooltip:
                                     "If the key is passphrase protected (for now we only support passwordless keys)",
@@ -109,11 +108,12 @@ class SshKeyPage extends StatelessWidget {
                                               ? Tooltip(
                                                   message:
                                                       "SSH Key password encrypted, no supported right now",
-                                                  child: Icon(Icons.lock))
+                                                  child: Icon(Mdi.lockOutline))
                                               : Tooltip(
                                                   message:
                                                       "SSH Key without password",
-                                                  child: Icon(Icons.lock_open,
+                                                  child: Icon(
+                                                      Mdi.lockOpenVariantOutline,
                                                       color: Colors.grey)))),
                                       DataCell(Padding(
                                           padding:

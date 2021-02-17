@@ -73,6 +73,12 @@ class LAServer {
       sshReachable.hashCode ^
       sudoEnabled.hashCode;
 
+  bool isReady() {
+    return this.reachable == ServiceStatus.success &&
+        this.sshReachable == ServiceStatus.success &&
+        this.sudoEnabled == ServiceStatus.success;
+  }
+
   @override
   String toString() {
     return "$name${ip.length > 0 ? ', ' + ip : ' '} ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
