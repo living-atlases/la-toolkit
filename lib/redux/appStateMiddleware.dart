@@ -57,7 +57,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             alaInstallReleases.length - 6, alaInstallReleases.length);
         alaInstallReleases.add('upstream');
         store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
-        scanSshKeys(store);
+        scanSshKeys(store, () => {});
       } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
       }
@@ -78,20 +78,23 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       });
     }
     if (action is OnSshKeysScan) {
-      scanSshKeys(store);
+      scanSshKeys(store, action.onKeysScanned);
     }
     if (action is OnAddSshKey) {
-      Api.genSshKey(action.name).then((value) => scanSshKeys(store));
+      Api.genSshKey(action.name).then((value) => scanSshKeys(store, () => {}));
     }
     if (action is OnImportSshKey) {
       Api.importSshKey(action.name, action.publicKey, action.privateKey)
-          .then((value) => scanSshKeys(store));
+          .then((value) => scanSshKeys(store, () => {}));
     }
     next(action);
   }
 
-  void scanSshKeys(store) {
-    Api.sshKeysScan().then((keys) => store.dispatch(OnSshKeysScanned(keys)));
+  void scanSshKeys(store, VoidCallback onKeysScanned) {
+    Api.sshKeysScan().then((keys) {
+      store.dispatch(OnSshKeysScanned(keys));
+      onKeysScanned();
+    });
   }
 
   genSshConf(LAProject project) {

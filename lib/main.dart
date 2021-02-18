@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -22,7 +24,7 @@ import 'intro.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 
-void main() {
+Future<void> main() async {
   var appStateMiddleware = AppStateMiddleware();
   var store = Store<AppState>(
     appReducer,
@@ -40,13 +42,16 @@ void main() {
   });
   store.dispatch(FetchProjects());
 
+  await DotEnv.load(
+      fileName: "${kReleaseMode ? 'env.production.txt' : '.env.development'}");
   if (kReleaseMode) {
     // is Release Mode ??
     print('Running in release mode');
+    print("Backend: ${env['BACKEND']}");
   } else {
     print('Running in debug mode');
+    print("Backend: ${env['BACKEND']}");
   }
-  // print("Environment: ${Env.sentryDsn}");
 
   runApp(MyApp(store: store));
 

@@ -105,7 +105,9 @@ class OnTestConnectivityResults extends AppActions {
 }
 
 class OnSshKeysScan extends AppActions {
-  OnSshKeysScan();
+  VoidCallback onKeysScanned;
+
+  OnSshKeysScan(this.onKeysScanned);
 }
 
 class OnSshKeysScanned extends AppActions {

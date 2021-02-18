@@ -96,7 +96,11 @@ RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 COPY docker/launch.sh /usr/local/bin/la-toolkit-launch
 RUN chmod +x /usr/local/bin/la-toolkit-launch
+
+RUN echo "2021021805 (change this date to rebuild & repeat this and the following steps)"
 COPY build/web/ /home/ubuntu/la-toolkit/assets/
+COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
+RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
 
 # The year of ALA Portal launch ;-)
 EXPOSE 2010

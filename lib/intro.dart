@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:la_toolkit/env/env.dart';
 import 'package:la_toolkit/redux/actions.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'laTheme.dart';
@@ -79,7 +80,7 @@ Living Atlases portals''',
             image: _buildImage('la-toolkit-intro-images-3.png', 150),
             decoration: pageDecoration,
           ),
-          Env.demo
+          env['DEMO'].parseBool()
               ? PageViewModel(
                   titleWidget: _buildTitle("Just a demo"),
                   body:

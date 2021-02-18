@@ -69,7 +69,7 @@ class LAProjectViewPage extends StatelessWidget {
                 tooltip:
                     "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories.",
                 title: "Generate inventories",
-                enabled: advancedDefined,
+                enabled: _currentProject.isCreated,
                 action: () => vm.onGenInvProject(_currentProject)),
             /*     action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("In Development: come back soon!"),
@@ -78,7 +78,7 @@ class LAProjectViewPage extends StatelessWidget {
                 icon: const Icon(Icons.settings_ethernet),
                 tooltip: "Test if your servers are reachable from here",
                 title: "Test Connectivity",
-                enabled: advancedDefined,
+                enabled: _currentProject.isCreated,
                 action: () {
                   /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(

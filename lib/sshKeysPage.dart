@@ -4,6 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -27,7 +28,8 @@ class SshKeyPage extends StatelessWidget {
             onAddKey: (name) => store.dispatch(OnAddSshKey(name)),
             onImportKey: (name, publicKey, privateKey) =>
                 store.dispatch(OnImportSshKey(name, publicKey, privateKey)),
-            onScanKeys: () => store.dispatch(OnSshKeysScan()));
+            onScanKeys: () => store
+                .dispatch(OnSshKeysScan(() => context.hideLoaderOverlay())));
       },
       builder: (BuildContext context, _SshKeyViewModel vm) {
         return Scaffold(
@@ -51,7 +53,10 @@ class SshKeyPage extends StatelessWidget {
                   FlatButton.icon(
                       icon: Icon(Mdi.refresh),
                       textColor: Colors.white,
-                      onPressed: () => vm.onScanKeys(),
+                      onPressed: () {
+                        context.showLoaderOverlay();
+                        vm.onScanKeys();
+                      },
                       label: Text("SCAN YOUR KEYS")),
                 ]),
             body: ScrollPanel(
