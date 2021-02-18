@@ -3,6 +3,7 @@ import 'dart:html' as html;
 
 import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:redux/redux.dart';
 
@@ -167,6 +168,12 @@ AppState _onTestConnectivityResults(
     server.sudoEnabled = serviceStatus(action.results[serverName]['sudo']);
     currentProject.upsert(server);
   }
+  if (currentProject.allServersReady() &&
+      currentProject.status.value < LAProjectStatus.reachable.value) {
+    currentProject.setProjectStatus(LAProjectStatus.reachable);
+  } else
+    currentProject.setProjectStatus(LAProjectStatus.advancedDefined);
+
   return state.copyWith(
       currentProject: currentProject,
       projects: state.projects

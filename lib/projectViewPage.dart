@@ -80,10 +80,10 @@ class LAProjectViewPage extends StatelessWidget {
                 title: "Test Connectivity",
                 enabled: advancedDefined,
                 action: () {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
                         "Ok! Testing the connectivity with your servers..."),
-                  ));
+                  )); */
                   vm.onTestConnProject(_currentProject);
                 }),
             Tool(icon: const Icon(Icons.foundation), title: "Pre-Deploy Tasks"),
@@ -136,7 +136,8 @@ class LAProjectViewPage extends StatelessWidget {
                       child: Column(children: [
                         Container(
                             padding: EdgeInsets.only(top: 80, bottom: 50),
-                            child: LAProjectTimeline(project: _currentProject)),
+                            child:
+                                LAProjectTimeline(uuid: _currentProject.uuid)),
                         // Disabled for now
                         // ServicesChipPanel(),
                         Row(

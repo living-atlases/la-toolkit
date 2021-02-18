@@ -101,6 +101,8 @@ LA projects: ${projects.length}
 view status: $status, currentStep: $currentStep
 ala-install releases: $alaInstallReleases
 keys: ${sshKeys == null ? 0 : sshKeys.length}
+currentProject of ${projects.length} -----
+$currentProject
 ''';
 //    $projects
 //    currentProject of ${projects.length} -----

@@ -143,7 +143,8 @@ class LAProject {
 
     isCreated = valid;
     if (isCreated) status = LAProjectStatus.advancedDefined;
-    setProjectStatus(status);
+    // Only update status if is better
+    if (this.status.value < status.value) setProjectStatus(status);
     return valid;
   }
 
