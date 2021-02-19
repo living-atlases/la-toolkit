@@ -14,7 +14,7 @@ class ServerDiagram extends StatelessWidget {
     return IntrinsicWidth(
         child: Card(
             elevation: CardConstants.defaultElevation,
-            color: Colors.black12,
+            // color: Colors.black12,
             margin: EdgeInsets.all(10),
             child: Padding(
                 padding: EdgeInsets.all(5),
