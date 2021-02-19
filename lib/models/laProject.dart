@@ -109,7 +109,7 @@ class LAProject {
 
   bool validateCreation() {
     bool valid = true;
-    bool debug = false;
+    bool debug = true;
     LAProjectStatus status = LAProjectStatus.created;
 
     valid = valid &&
@@ -144,7 +144,8 @@ class LAProject {
     isCreated = valid;
     if (isCreated) status = LAProjectStatus.advancedDefined;
     // Only update status if is better
-    if (this.status.value < status.value) setProjectStatus(status);
+    if (this.status == null || this.status.value < status.value)
+      setProjectStatus(status);
     return valid;
   }
 
