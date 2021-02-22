@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/genericTextFormField.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/components/servicesChipPanel.dart';
-import 'package:la_toolkit/components/textWithHelp.dart';
 import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/utils/api.dart';
-import 'package:la_toolkit/utils/regexp.dart';
 import 'package:latlong/latlong.dart';
 import 'package:mdi/mdi.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:xterm/flutter.dart';
-import 'package:xterm/frontend/terminal_view.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:web_browser/web_browser.dart';
 import 'package:xterm/theme/terminal_themes.dart';
 import 'package:xterm/xterm.dart';
 
 import 'components/defDivider.dart';
-import 'components/themeSelector.dart';
 import 'models/appState.dart';
-import 'models/laServiceDesc.dart';
 
 class SandboxPage extends StatefulWidget {
   static const routeName = "sandbox";
@@ -72,14 +64,14 @@ class _SandboxPageState extends State<SandboxPage> {
             context: context,
             title: 'Sandbox',
             actions: [
-              new CircularPercentIndicator(
+              /* new CircularPercentIndicator(
                 radius: 45.0,
                 lineWidth: 6.0,
                 percent: 0.9,
                 center: new Text("90%",
                     style: TextStyle(color: Colors.white, fontSize: 12)),
                 progressColor: Colors.white,
-              )
+              ) */
             ],
           ),
           body: Column(
@@ -95,13 +87,76 @@ class _SandboxPageState extends State<SandboxPage> {
                   DefDivider(),
                   // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
                   const SizedBox(height: 7),
-                  Container(child: ThemeSelector()),
-                  RaisedButton.icon(
-                    icon: Icon(Mdi.key),
-                    label: Text('SSH keys'),
-                    onPressed: () => _onAlertWithCustomContentPressed(context),
-                  ),
-                  Wrap(
+
+                  ElevatedButton.icon(
+                      icon: Icon(Mdi.console),
+                      label: Text('CONSOLE'),
+                      onPressed: () => showFloatingModalBottomSheet(
+                          // showBarModalBottomSheet(
+                          //)showCupertinoModalBottomSheet(
+                          //expand: false,
+                          context: context,
+
+                          //isDismissible: true,
+                          //useRootNavigator: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => Material(
+                                child: Scaffold(
+                                  appBar: AppBar(
+                                    leading: Icon(
+                                      Mdi.console,
+                                      color: Colors.white,
+                                    ),
+                                    title: Text(
+                                      'CONSOLE',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    actions: [
+                                      Tooltip(
+                                        message: "Close the console",
+                                        child: TextButton(
+                                            child: const Icon(Icons.close,
+                                                color: Colors.white),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            }),
+                                      ),
+                                    ],
+                                  ),
+                                  body: SafeArea(
+                                      bottom: false,
+                                      child: Container(
+                                          color: LAColorTheme.laPalette,
+                                          padding:
+                                              EdgeInsets.fromLTRB(3, 0, 8, 0),
+                                          child: WebBrowser(
+                                            initialUrl:
+                                                'http://localhost:8081/',
+                                            interactionSettings:
+                                                WebBrowserInteractionSettings(
+                                                    topBar: null,
+                                                    bottomBar: null),
+                                            javascriptEnabled: true,
+                                          ))),
+                                ),
+                              )
+
+                          /*
+                                SafeArea(
+                                child: Column(children: [
+                              Container(
+                                  color: LAColorTheme.laPalette, height: 40),
+                              WebBrowser(
+                                initialUrl: 'http://localhost:8081/',
+                                interactionSettings:
+                                    WebBrowserInteractionSettings(
+                                        topBar: null, bottomBar: null),
+                                javascriptEnabled: true,
+                              )
+                            ])), */
+                          )),
+
+                  /* Wrap(
                       spacing: 6,
                       children: vm.state.currentProject
                           .getServicesNameListInUse()
@@ -112,7 +167,7 @@ class _SandboxPageState extends State<SandboxPage> {
                       height: 400,
                       child: SafeArea(
                         child: TerminalView(terminal: terminal),
-                      )),
+                      )), */
                 ],
               ),
             ],
@@ -120,6 +175,23 @@ class _SandboxPageState extends State<SandboxPage> {
     });
   }
 
+  Future<T> showFloatingModalBottomSheet<T>({
+    @required BuildContext context,
+    @required WidgetBuilder builder,
+    Color backgroundColor,
+  }) async {
+    final result = await showCustomModalBottomSheet(
+        context: context,
+        builder: builder,
+        containerWidget: (_, animation, child) => FloatingModal(
+              child: child,
+            ),
+        expand: false);
+
+    return result;
+  }
+
+  /*
   Widget _buildChip(String label) {
     return Chip(
       // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -136,69 +208,29 @@ class _SandboxPageState extends State<SandboxPage> {
       // shadowColor: Colors.grey[60],
       padding: EdgeInsets.all(8.0),
     );
-  }
+  } */
+}
 
-  _onAlertWithCustomContentPressed(context) {
-    Alert(
-        context: context,
-        closeIcon: Icon(Icons.close),
-        image: Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
-        title: "Your SSH Keys",
-        style: AlertStyle(
-            constraints: BoxConstraints.expand(height: 600, width: 600)),
-        content: Column(
-          children: <Widget>[
-            FlatButton(
-                onPressed: () => Api.genSshKey("test"),
-                child: Text("Gen a SSH key")),
-            FlatButton(
-                onPressed: () => Api.sshKeysScan(),
-                child: Text("Scan SSH keys")),
-            DefDivider(),
-            TextWithHelp(text: "Add a new ssh public key:", helpPage: "Ssh"),
-            GenericTextFormField(
-                initialValue: "",
-                regexp: LARegExp.sshPubKey,
-                error: "This is not a valid ssh public key",
-                keyboardType: TextInputType.multiline,
-                // filled: true,
-                minLines:
-                    3, // any number you need (It works as the rows for the textarea)
-                maxLines: null,
-                hint:
-                    "Something like: ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTGK9(...)",
-                onChanged: (value) {
-                  print(value);
-                }),
-            SizedBox(
-              height: 20,
-            ),
-            Text("Your keys:"),
-            /* TextField(
-              decoration: InputDecoration(
-                icon: Icon(Icons.account_circle),
-                labelText: 'Username',
-              ),
-            ),
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                icon: Icon(Icons.lock),
-                labelText: 'Password',
-              ),
-            ), */
-          ],
+class FloatingModal extends StatelessWidget {
+  final Widget child;
+  final Color backgroundColor;
+
+  const FloatingModal({Key key, @required this.child, this.backgroundColor})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(100, 100, 100, 0),
+        child: Material(
+          color: backgroundColor,
+          clipBehavior: Clip.antiAlias,
+          borderRadius: BorderRadius.circular(12),
+          child: child,
         ),
-        buttons: [
-          DialogButton(
-            width: 500,
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "FINISH",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )
-        ]).show();
+      ),
+    );
   }
 }
 
@@ -207,3 +239,22 @@ class _SandboxViewModel {
 
   _SandboxViewModel({this.state});
 }
+/*
+class ModalWithPageView extends StatelessWidget {
+  const ModalWithPageView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Scaffold(
+        appBar:
+            AppBar(leading: Container(), title: Text('TERM')),
+        body: SafeArea(
+          bottom: false,
+          child: Container()
+        ),
+      ),
+    );
+  }
+}
+*/
