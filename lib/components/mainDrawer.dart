@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/sshKeysPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -68,6 +69,13 @@ class _MainDrawerState extends State<MainDrawer> {
                 title: Text('SSH Keys'),
                 onTap: () {
                   Navigator.popAndPushNamed(context, SshKeyPage.routeName);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Mdi.console),
+                title: Text('Console'),
+                onTap: () {
+                  TermDialog.show(context);
                 },
               ),
               if (AppUtils.isDev())

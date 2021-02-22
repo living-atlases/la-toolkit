@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laIcon.dart';
 import 'package:la_toolkit/components/listTileLink.dart';
+import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -92,6 +93,13 @@ class _ProjectDrawerState extends State<ProjectDrawer> {
                   title: Text('SSH Keys'),
                   onTap: () {
                     Navigator.popAndPushNamed(context, SshKeyPage.routeName);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Mdi.console),
+                  title: Text('Console'),
+                  onTap: () {
+                    TermDialog.show(context);
                   },
                 ),
                 Column(children: _createProjectLinks(vm.state.currentProject)),
