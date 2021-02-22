@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 
 class ListUtils {
   static bool notNull(Object o) => o != null;
@@ -14,5 +16,9 @@ class ListUtils {
 class AppUtils {
   static bool isDev() {
     return !kReleaseMode;
+  }
+
+  static bool isDemo() {
+    return env['DEMO'].parseBool();
   }
 }

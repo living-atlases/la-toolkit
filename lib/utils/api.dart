@@ -6,11 +6,11 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/models/sshKey.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
 class Api {
   static Future<String> genCasKey(int size) async {
-    if (env['DEMO'].parseBool()) return "";
+    if (AppUtils.isDemo()) return "";
     var url = "${env['BACKEND']}api/v1/cas-gen/$size";
     var response = await http.get(url);
     if (response.statusCode == 200) {
@@ -22,7 +22,7 @@ class Api {
   }
 
   static void genSshConf(LAProject project) async {
-    if (env['DEMO'].parseBool()) return;
+    if (AppUtils.isDemo()) return;
     var url = "${env['BACKEND']}api/v1/gen-ssh-conf";
     var servers = project.toJson()['servers'];
     var user =
@@ -42,7 +42,7 @@ class Api {
   }
 
   static Future<List<SshKey>> sshKeysScan() async {
-    if (env['DEMO'].parseBool()) return [];
+    if (AppUtils.isDemo()) return [];
     var url = "${env['BACKEND']}api/v1/ssh-key-scan";
     var response = await http.get(url);
     if (response.statusCode == 200) {
@@ -60,7 +60,7 @@ class Api {
   }
 
   static Future<String> genSshKey(String name) async {
-    if (env['DEMO'].parseBool()) return "";
+    if (AppUtils.isDemo()) return "";
     var url = "${env['BACKEND']}api/v1/ssh-key-gen/$name";
     http
         .get(url)
@@ -70,7 +70,7 @@ class Api {
 
   static Future<Map<String, dynamic>> testConnectivity(
       List<LAServer> servers) async {
-    if (env['DEMO'].parseBool()) return {};
+    if (AppUtils.isDemo()) return {};
     var url = "${env['BACKEND']}api/v1/test-connectivity";
     var response = await http.post(url,
         headers: {'Content-type': 'application/json'},
@@ -90,7 +90,7 @@ class Api {
 
   static Future<String> importSshKey(
       String name, String publicKey, String privateKey) async {
-    if (env['DEMO'].parseBool()) return "";
+    if (AppUtils.isDemo()) return "";
     var url = "${env['BACKEND']}api/v1/ssh-key-import";
     var response = await http.post(url,
         headers: {'Content-type': 'application/json'},
