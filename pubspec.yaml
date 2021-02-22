@@ -51,6 +51,9 @@ dependencies:
   clipboard: ^0.1.2+8
   # loading spinner
   loader_overlay: ^1.1.1
+  # used for terms
+  modal_bottom_sheet: ^1.0.0+1
+  web_browser: ^0.4.0
 
   # icon
   mdi: ^5.0.0-nullsafety.0
