@@ -8,6 +8,7 @@ import 'package:la_toolkit/redux/actions.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
 
+import '../laTheme.dart';
 import 'choiceEmptyPanel.dart';
 
 class HostSelector extends StatefulWidget {
@@ -54,6 +55,9 @@ class _HostSelectorState extends State<HostSelector> {
               modalConfirm: true,
               modalConfirmBuilder: (context, state) =>
                   SelectUtils.modalConfirmBuild(state),
+              modalHeaderStyle: S2ModalHeaderStyle(
+                  backgroundColor: LAColorTheme.laPalette,
+                  textStyle: TextStyle(color: Colors.white)),
               tileBuilder: (context, state) {
                 return S2Tile.fromState(state,
                     // padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
