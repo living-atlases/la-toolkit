@@ -77,9 +77,9 @@ class LAProjectTunePage extends StatelessWidget {
                 title: vm.state.status.title,
                 showLaIcon: false,
                 actions: [
-                  FlatButton(
+                  TextButton(
                       // icon: Icon(Icons.cancel),
-                      textColor: Colors.white,
+                      style: TextButton.styleFrom(primary: Colors.white),
                       child: Text(
                         "CANCEL",
                       ),

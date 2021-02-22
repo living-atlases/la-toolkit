@@ -40,19 +40,19 @@ class SshKeyPage extends StatelessWidget {
                 title: "SSH KEYS",
                 showLaIcon: false,
                 actions: [
-                  FlatButton.icon(
+                  TextButton.icon(
                       icon: Icon(Icons.add_circle_outline),
-                      textColor: Colors.white,
+                      style: TextButton.styleFrom(primary: Colors.white),
                       onPressed: () => _generateKeyDialog(context, vm),
                       label: Text("GENERATE A NEW KEY")),
-                  FlatButton.icon(
+                  TextButton.icon(
                       icon: Icon(Icons.upload_rounded),
-                      textColor: Colors.white,
+                      style: TextButton.styleFrom(primary: Colors.white),
                       onPressed: () => _importKeysDialog(context, vm),
                       label: Text("UPLOAD KEYS")),
-                  FlatButton.icon(
+                  TextButton.icon(
                       icon: Icon(Mdi.refresh),
-                      textColor: Colors.white,
+                      style: TextButton.styleFrom(primary: Colors.white),
                       onPressed: () {
                         context.showLoaderOverlay();
                         vm.onScanKeys();

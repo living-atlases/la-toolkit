@@ -378,7 +378,7 @@ If you have doubts or need to ask for some information, save this project and co
                   Tooltip(
                       message: "Project configuration progress",
                       child: CircularPercentIndicator(
-                        radius: 45.0,
+                        radius: 50.0,
                         lineWidth: 6.0,
                         percent: _project.status.percent / 100,
                         center: new Text("${_project.status.percent}%",
@@ -386,21 +386,22 @@ If you have doubts or need to ask for some information, save this project and co
                                 TextStyle(color: Colors.white, fontSize: 12)),
                         progressColor: Colors.white,
                       )),
+                  SizedBox(width: 20),
                   _currentStep == 0
                       ? null
-                      : FlatButton(
+                      : TextButton(
                           child: const Text('PREVIOUS'),
-                          textColor: Colors.white,
+                          style: TextButton.styleFrom(primary: Colors.white),
                           onPressed: () => onStepCancel(vm, _project)),
                   _currentStep == _steps.length - 1
                       ? null
-                      : FlatButton(
+                      : TextButton(
                           child: const Text('NEXT'),
-                          textColor: Colors.white,
+                          style: TextButton.styleFrom(primary: Colors.white),
                           onPressed: () => onStepContinue(vm, _project)),
                   Tooltip(
                     message: "Close without saving your changes",
-                    child: FlatButton(
+                    child: TextButton(
                         child: const Icon(Icons.close, color: Colors.white),
                         onPressed: () {
                           vm.onFinish(_project);

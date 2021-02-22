@@ -12,11 +12,14 @@ class ToolShortcut extends StatelessWidget {
   Widget build(BuildContext context) {
     // https://api.flutter.dev/flutter/material/Colors/grey-constant.html
     Color color = tool.enabled ? LAColorTheme.laPalette : Colors.grey[500];
-    Widget result = RaisedButton(
-      elevation: 3,
-      color: Colors.white,
-      disabledColor: Colors.grey[200],
-      disabledElevation: 0.2,
+    Widget result = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        elevation: 3,
+        primary: Colors.white,
+        padding: EdgeInsets.all(8.0),
+      ),
+      // disabledColor: Colors.grey[200],
+      // disabledElevation: 0.2,
       // disabledTextColor: Colors.grey[100],
       onPressed: !tool.enabled
           ? null
@@ -26,7 +29,7 @@ class ToolShortcut extends StatelessWidget {
               else
                 tool.action();
             },
-      padding: EdgeInsets.all(8.0),
+
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -57,6 +60,7 @@ class ToolShortcut extends StatelessWidget {
     );
     if (tool.tooltip != null) {
       result = Tooltip(
+        waitDuration: Duration(seconds: 1, milliseconds: 500),
         message: tool.tooltip,
         child: result,
       );
@@ -66,13 +70,13 @@ class ToolShortcut extends StatelessWidget {
 
   showAlertDialog(BuildContext context, VoidCallback onConfirm) {
     // set up the buttons
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text("CANCEL"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
         child: Text("CONFIRM"),
         onPressed: () {
           Navigator.of(context, rootNavigator: true).pop();
