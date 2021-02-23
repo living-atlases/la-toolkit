@@ -59,8 +59,8 @@ class Api {
     }
   }
 
-  static Future<String> genSshKey(String name) async {
-    if (AppUtils.isDemo()) return "";
+  static Future<void> genSshKey(String name) async {
+    if (AppUtils.isDemo()) return;
     var url = "${env['BACKEND']}api/v1/ssh-key-gen/$name";
     http
         .get(url)
@@ -88,9 +88,9 @@ class Api {
     }
   }
 
-  static Future<String> importSshKey(
+  static Future<void> importSshKey(
       String name, String publicKey, String privateKey) async {
-    if (AppUtils.isDemo()) return "";
+    if (AppUtils.isDemo()) return;
     var url = "${env['BACKEND']}api/v1/ssh-key-import";
     var response = await http.post(url,
         headers: {'Content-type': 'application/json'},
@@ -99,8 +99,8 @@ class Api {
           'publicKey': publicKey,
           'privateKey': privateKey,
         })));
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+    if (response.statusCode != 200) {
+      return;
     }
   }
 }

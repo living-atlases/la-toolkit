@@ -81,11 +81,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       scanSshKeys(store, action.onKeysScanned);
     }
     if (action is OnAddSshKey) {
-      Api.genSshKey(action.name).then((value) => scanSshKeys(store, () => {}));
+      Api.genSshKey(action.name).then((_) => scanSshKeys(store, () => {}));
     }
     if (action is OnImportSshKey) {
       Api.importSshKey(action.name, action.publicKey, action.privateKey)
-          .then((value) => scanSshKeys(store, () => {}));
+          .then((_) => scanSshKeys(store, () => {}));
     }
     next(action);
   }
