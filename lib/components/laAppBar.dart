@@ -63,11 +63,15 @@ class LAAppBar extends AppBar {
                     Container(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(children: [
-                          if (projectIcon != null) SizedBox(width: 8),
-                          if (projectIcon != null)
-                            ImageIcon(NetworkImage(projectIcon),
-                                color: Colors.white, size: 26),
-                          if (projectIcon != null) SizedBox(width: 8),
+                          if (projectIcon != null && !AppUtils.isDemo())
+                            SizedBox(width: 8),
+                          if (projectIcon != null && !AppUtils.isDemo())
+                            ImageIcon(
+                                NetworkImage(AppUtils.proxyImg(projectIcon)),
+                                color: Colors.white,
+                                size: 26),
+                          if (projectIcon != null && !AppUtils.isDemo())
+                            SizedBox(width: 8),
                           if (titleIcon != null)
                             Icon(titleIcon, size: 26, color: Colors.white),
                           if (titleIcon != null) SizedBox(width: 8),

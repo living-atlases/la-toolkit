@@ -53,13 +53,15 @@ class _ProjectDrawerState extends State<ProjectDrawer> {
                     child: Column(
                       children: <Widget>[
                         vm.state.currentProject
-                                    .getVariable("favicon_url")
-                                    .value !=
-                                null
+                                        .getVariable("favicon_url")
+                                        .value !=
+                                    null &&
+                                !AppUtils.isDemo()
                             ? ImageIcon(
-                                NetworkImage(vm.state.currentProject
+                                NetworkImage(AppUtils.proxyImg(vm
+                                    .state.currentProject
                                     .getVariable("favicon_url")
-                                    .value),
+                                    .value)),
                                 color: LAColorTheme.laPalette,
                                 size: 80)
                             : Image.asset(

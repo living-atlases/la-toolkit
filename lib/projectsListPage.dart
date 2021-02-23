@@ -6,6 +6,7 @@ import 'package:la_toolkit/components/laProjectTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/formattedTitle.dart';
@@ -156,10 +157,11 @@ class ProjectCard extends StatelessWidget {
               child: Align(
                 child: CircleAvatar(
                   radius: 25.0,
-                  child: project.getVariable("favicon_url").value != null
+                  child: project.getVariable("favicon_url").value != null &&
+                          !AppUtils.isDemo()
                       ? ImageIcon(
-                          NetworkImage(
-                              project.getVariable("favicon_url").value),
+                          NetworkImage(AppUtils.proxyImg(
+                              project.getVariable("favicon_url").value)),
                           color: LAColorTheme.laPalette,
                           size: 35)
                       : Text(project.shortName.length > 3

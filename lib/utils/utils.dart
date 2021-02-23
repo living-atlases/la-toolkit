@@ -21,4 +21,8 @@ class AppUtils {
   static bool isDemo() {
     return env['DEMO'].parseBool();
   }
+
+  static String proxyImg(imgUrl) {
+    return "${env['BACKEND']}api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
+  }
 }
