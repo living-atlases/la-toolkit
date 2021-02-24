@@ -108,5 +108,6 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     var toJ = state.toJson();
     // print("Saved prefs: $toJ.toString()");
     _pref.setString(key, json.encode(toJ));
+    Api.saveProjects(state.projects);
   }
 }

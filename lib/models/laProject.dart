@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -109,7 +107,7 @@ class LAProject {
 
   bool validateCreation() {
     bool valid = true;
-    bool debug = true;
+    bool debug = false;
     LAProjectStatus status = LAProjectStatus.created;
 
     valid = valid &&
@@ -269,10 +267,6 @@ class LAProject {
   }
 
   Map<String, dynamic> toGeneratorJson() {
-    Map<String, dynamic> obj = {
-      //   "uuid": uuid.toString(),
-    };
-
     Map<String, dynamic> conf = {
       "LA_project_name": longName,
       "LA_project_shortname": shortName,
@@ -284,12 +278,18 @@ class LAProject {
     services.forEach((key, service) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
-      conf["LA_${service.nameInt}_hostname"] = getHostname(service.nameInt)[0];
+      conf["LA_${service.nameInt}_hostname"] =
+          getHostname(service.nameInt) != null &&
+                  getHostname(service.nameInt).length > 0
+              ? getHostname(service.nameInt)[0]
+              : "";
       conf["LA_${service.nameInt}_url"] = service.url(domain);
       conf["LA_${service.nameInt}_path"] = service.path;
     });
-    obj["conf"] = jsonEncode(conf);
-    return obj;
+    variables.forEach((key, variable) {
+      conf["LA_variable_${variable.nameInt}"] = variable.value;
+    });
+    return conf;
   }
 
   List<String> getHostname(String service) {

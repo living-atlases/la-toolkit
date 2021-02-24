@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:responsive_grid/responsive_grid.dart';
@@ -45,9 +46,8 @@ class LAProjectViewPage extends StatelessWidget {
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           final LAProject _currentProject = vm.state.currentProject;
-          final bool advancedDefined =
-              _currentProject.status.value > LAProjectStatus.basicDefined.value;
-
+          /*final bool advancedDefined =
+              _currentProject.status.value > LAProjectStatus.basicDefined.value;*/
           LAProjectStatus.advancedDefined.value;
           List<Tool> tools = [
             Tool(
@@ -66,8 +66,9 @@ class LAProjectViewPage extends StatelessWidget {
                 action: () => vm.onTuneProject(_currentProject)),
             Tool(
                 icon: const Icon(Icons.file_download),
-                tooltip:
-                    "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories.",
+                tooltip: AppUtils.isDemo()
+                    ? "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories."
+                    : "Generate & download your inventories (to share it)",
                 title: "Generate inventories",
                 enabled: _currentProject.isCreated,
                 action: () => vm.onGenInvProject(_currentProject)),

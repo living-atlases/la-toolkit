@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'dart:html' as html;
 
-import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 
 import '../models/appState.dart';
@@ -88,26 +88,10 @@ AppState _openProjectTools(AppState state, OpenProjectTools action) {
       currentStep: 0);
 }
 
-AppState _generateInvProjectSave(AppState state, GenerateInvProject action) {
-  var body = jsonEncode(action.project.toGeneratorJson());
-  print(body);
-  http
-      .post('https://generator.l-a.site/v1/ses',
-          headers: <String, String>{
-            //  'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: body)
-      .then((response) => print(response.body))
-      .catchError((error) {
-    print(error);
-  });
-
-  return state;
-}
-
 AppState _generateInvProject(AppState state, GenerateInvProject action) {
-  const uuid = "edd2c7f7-6e8d-4cfe-b594-4741e2be1091";
-  const url = 'https://generator.l-a.site/gen/$uuid';
+  if (AppUtils.isDemo()) return state;
+  var uuid = action.project.uuid;
+  var url = "${env['BACKEND']}api/v1/gen/$uuid/true";
   html.AnchorElement anchorElement = new html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();

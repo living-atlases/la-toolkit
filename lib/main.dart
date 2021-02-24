@@ -26,6 +26,18 @@ import 'models/appState.dart';
 
 Future<void> main() async {
   var appStateMiddleware = AppStateMiddleware();
+
+  await DotEnv.load(
+      fileName: "${kReleaseMode ? 'env.production.txt' : '.env.development'}");
+  if (kReleaseMode) {
+    // is Release Mode ??
+    print('Running in release mode');
+    print("Backend: ${env['BACKEND']}");
+  } else {
+    print('Running in debug mode');
+    print("Backend: ${env['BACKEND']}");
+  }
+
   var store = Store<AppState>(
     appReducer,
     initialState:
@@ -41,17 +53,6 @@ Future<void> main() async {
     appStateMiddleware.saveAppState(state);
   });
   store.dispatch(FetchProjects());
-
-  await DotEnv.load(
-      fileName: "${kReleaseMode ? 'env.production.txt' : '.env.development'}");
-  if (kReleaseMode) {
-    // is Release Mode ??
-    print('Running in release mode');
-    print("Backend: ${env['BACKEND']}");
-  } else {
-    print('Running in debug mode');
-    print("Backend: ${env['BACKEND']}");
-  }
 
   runApp(MyApp(store: store));
 

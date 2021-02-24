@@ -60,7 +60,7 @@ class ToolShortcut extends StatelessWidget {
     );
     if (tool.tooltip != null) {
       result = Tooltip(
-        waitDuration: Duration(seconds: 1, milliseconds: 500),
+        waitDuration: Duration(seconds: 1, milliseconds: 0),
         message: tool.tooltip,
         child: result,
       );

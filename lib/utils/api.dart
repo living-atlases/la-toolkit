@@ -103,4 +103,16 @@ class Api {
       return;
     }
   }
+
+  static Future<void> saveProjects(List<LAProject> projects) async {
+    Map map = {for (var item in projects) item.uuid: item.toGeneratorJson()};
+    if (AppUtils.isDemo()) return;
+    var url = "${env['BACKEND']}api/v1/save-conf";
+    await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({
+          'projects': map,
+        })));
+    return;
+  }
 }
