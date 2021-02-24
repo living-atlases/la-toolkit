@@ -79,7 +79,7 @@ Intro continuation:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s3.png)
 
-List of projects:
+List of created projects:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s4.png)
 
