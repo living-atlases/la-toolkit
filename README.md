@@ -67,31 +67,59 @@ docker stop la-toolkit
 
 ### Screenshots
 
+Loading:
+
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s1.png)
+
+Intro page:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s2.png)
 
+Intro continuation:
+
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s3.png)
+
+List of projects:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s4.png)
 
+Project Tools:
+
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s5.png)
+
+Editing the project:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s6.png)
 
+Service definition:
+
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s7.png)
+
+Services in servers:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s8.png)
 
+Servers connectivity:
+
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s9.png)
+
+Project tunning:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s10.png)
 
+Project drawer with links to each service and admin interfaces:
+
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s11.png)
+
+SSH keys administration:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s12.png)
 
+Testing connectivity with the project servers:
+
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s13.png)
+
+Console for the intrepids:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s14.png)
 
