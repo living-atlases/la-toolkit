@@ -92,6 +92,12 @@ RUN echo "2021021804 (change this date to rebuild & repeat this and the followin
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
+# base-branding
+RUN mkdir -p /home/ubuntu/base-branding
+RUN chown -R ubuntu:ubuntu /home/ubuntu/base-branding
+RUN echo "2021022401 (change this date to rebuild & repeat this and the following steps)"
+RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/base-branding.git /home/ubuntu/base-branding'
+
 # COPY build/web /home/ubuntu/la-toolkit/whatever
 
 COPY docker/launch.sh /usr/local/bin/la-toolkit-launch
