@@ -26,7 +26,6 @@
     <!-- Favicon -->
     <link href="./favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
-
     <title>Living Atlases Toolkit</title>
     <link rel="stylesheet" type="text/css" href="styles.css" />
     <link rel="manifest" href="manifest.json" />
@@ -39,7 +38,7 @@
     <div class="hero">
       <img src="img/la-toolkit-logo.png" class="splash-image center" />
       <div class="back-footer">
-        ©
+        Photo: ©
         <a href="https://www.gbif.org/occurrence/2634416873">Martin Reith</a> CC
         BY-NC 4.0
       </div>
@@ -47,12 +46,12 @@
     <!—- Other Body Properties —->
 
     <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("flutter-first-frame", function () {
-          navigator.serviceWorker.register("flutter_service_worker.js");
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('flutter-first-frame', function () {
+          navigator.serviceWorker.register('flutter_service_worker.js');
         });
       }
     </script>
-    <script src="main.dart.js?version=3" type="application/javascript"></script>
+    <script src="main.dart.js?version=4" type="application/javascript"></script>
   </body>
 </html>
