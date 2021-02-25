@@ -37,7 +37,7 @@ class LAProjectEditPage extends StatefulWidget {
 }
 
 class _LAProjectEditPageState extends State<LAProjectEditPage> {
-  int _currentStep;
+  int _step;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
@@ -71,13 +71,13 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
 
   next() {
     // print('next: $_currentStep');
-    if (_currentStep + 1 != _steps.length) goTo(_currentStep + 1);
+    if (_step + 1 != _steps.length) goTo(_step + 1);
   }
 
   cancel() {
     // print('cancel: $_currentStep');
-    if (_currentStep > 0) {
-      goTo(_currentStep - 1);
+    if (_step > 0) {
+      goTo(_step - 1);
     }
   }
 
@@ -85,7 +85,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
     // print('goto $step');
     FocusScope.of(context).requestFocus(_focusNodes[step]);
     setState(() {
-      _currentStep = step;
+      _step = step;
     });
   }
 
@@ -121,7 +121,7 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
             onSaveCurrentProject: (project) {
               print('On Save Current Project');
               project.validateCreation();
-              store.dispatch(SaveCurrentProject(project, _currentStep));
+              store.dispatch(SaveCurrentProject(project, _step));
             },
           );
         },
@@ -136,9 +136,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
           // Set default version of the project
           _project.alaInstallRelease =
               _project.alaInstallRelease ?? vm.state.alaInstallReleases[0];
-
-          _currentStep = vm.state.currentStep ?? 0;
-          print('Project edit currentStep: $_currentStep');
+          _step = vm.state.currentStep ?? 0;
+          print('Project edit currentStep: $_step');
           _steps = [
             Step(
                 title: const Text('Basic information'),
@@ -387,13 +386,13 @@ If you have doubts or need to ask for some information, save this project and co
                         progressColor: Colors.white,
                       )),
                   SizedBox(width: 20),
-                  _currentStep == 0
+                  _step == 0
                       ? null
                       : TextButton(
                           child: const Text('PREVIOUS'),
                           style: TextButton.styleFrom(primary: Colors.white),
                           onPressed: () => onStepCancel(vm, _project)),
-                  _currentStep == _steps.length - 1
+                  _step == _steps.length - 1
                       ? null
                       : TextButton(
                           child: const Text('NEXT'),
@@ -419,7 +418,7 @@ If you have doubts or need to ask for some information, save this project and co
             body: ScrollPanel(
               child: Stepper(
                   steps: _steps,
-                  currentStep: _currentStep,
+                  currentStep: _step,
                   type: stepperType,
                   onStepContinue: () {
                     // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
@@ -469,11 +468,11 @@ If you have doubts or need to ask for some information, save this project and co
   }
 
   bool _setIsActive(step) {
-    return _currentStep == step;
+    return _step == step;
   }
 
   StepState _setSetStatus(step) {
-    return _currentStep == step ? StepState.editing : StepState.complete;
+    return _step == step ? StepState.editing : StepState.complete;
   }
 
   Widget _stepIntro({String text, String helpPage}) {
