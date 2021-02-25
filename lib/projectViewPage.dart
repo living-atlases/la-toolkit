@@ -9,6 +9,7 @@ import 'package:mdi/mdi.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import 'components/alertCard.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
@@ -45,9 +46,9 @@ class LAProjectViewPage extends StatelessWidget {
               });
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
-          final LAProject _currentProject = vm.state.currentProject;
-          /*final bool advancedDefined =
-              _currentProject.status.value > LAProjectStatus.basicDefined.value;*/
+          final LAProject _project = vm.state.currentProject;
+          final bool basicDefined =
+              _project.status.value >= LAProjectStatus.basicDefined.value;
           LAProjectStatus.advancedDefined.value;
           List<Tool> tools = [
             Tool(
@@ -55,23 +56,23 @@ class LAProjectViewPage extends StatelessWidget {
                 title: "Edit",
                 tooltip: "Edit the basic configuration",
                 enabled: true,
-                action: () => vm.onOpenProject(_currentProject)),
+                action: () => vm.onOpenProject(_project)),
             Tool(
                 icon: const Icon(Icons.tune),
                 title: "Tune Configuration",
                 tooltip:
                     "Fine tune the portal configuration with other options different than the basic ones.",
-                enabled: _currentProject.status.value >=
-                    LAProjectStatus.basicDefined.value,
-                action: () => vm.onTuneProject(_currentProject)),
+                enabled:
+                    _project.status.value >= LAProjectStatus.basicDefined.value,
+                action: () => vm.onTuneProject(_project)),
             Tool(
                 icon: const Icon(Icons.file_download),
                 tooltip: AppUtils.isDemo()
                     ? "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories."
                     : "Generate & download your inventories (to share it)",
                 title: "Generate inventories",
-                enabled: _currentProject.isCreated,
-                action: () => vm.onGenInvProject(_currentProject)),
+                enabled: _project.isCreated,
+                action: () => vm.onGenInvProject(_project)),
             /*     action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("In Development: come back soon!"),
                 ))), */
@@ -79,13 +80,13 @@ class LAProjectViewPage extends StatelessWidget {
                 icon: const Icon(Icons.settings_ethernet),
                 tooltip: "Test if your servers are reachable from here",
                 title: "Test Connectivity",
-                enabled: _currentProject.isCreated,
+                enabled: _project.isCreated,
                 action: () {
                   /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
                         "Ok! Testing the connectivity with your servers..."),
                   )); */
-                  vm.onTestConnProject(_currentProject);
+                  vm.onTestConnProject(_project);
                 }),
             Tool(icon: const Icon(Icons.foundation), title: "Pre-Deploy Tasks"),
             Tool(
@@ -107,13 +108,12 @@ class LAProjectViewPage extends StatelessWidget {
                 tooltip: "Delete this LA project",
                 enabled: true,
                 askConfirmation: true,
-                action: () => vm.onDelProject(_currentProject)),
+                action: () => vm.onDelProject(_project)),
             // To think about:
             // - Data generation
             // - Inventories download
           ];
-          final projectIconUrl =
-              _currentProject.getVariable("favicon_url").value;
+          final projectIconUrl = _project.getVariable("favicon_url").value;
           return Scaffold(
               key: _scaffoldKey,
               backgroundColor: Colors.white,
@@ -122,14 +122,14 @@ class LAProjectViewPage extends StatelessWidget {
                   leading: IconButton(
                     color: Colors.white,
                     icon: const Icon(Mdi.vectorLink),
-                    tooltip: "${_currentProject.shortName} links drawer",
+                    tooltip: "${_project.shortName} links drawer",
                     onPressed: () => _scaffoldKey.currentState.openDrawer(),
                   ),
                   context: context,
                   showLaIcon: false,
                   showBack: true,
                   projectIcon: projectIconUrl,
-                  title: "Toolkit of ${_currentProject.shortName} Portal"),
+                  title: "Toolkit of ${_project.shortName} Portal"),
               body: new ScrollPanel(
                   child: Container(
                       margin:
@@ -137,8 +137,7 @@ class LAProjectViewPage extends StatelessWidget {
                       child: Column(children: [
                         Container(
                             padding: EdgeInsets.only(top: 80, bottom: 50),
-                            child:
-                                LAProjectTimeline(uuid: _currentProject.uuid)),
+                            child: LAProjectTimeline(uuid: _project.uuid)),
                         // Disabled for now
                         // ServicesChipPanel(),
                         Row(
@@ -161,7 +160,20 @@ class LAProjectViewPage extends StatelessWidget {
                                 // color: LAColorTheme.laPalette.shade50,
                                 child: ToolShortcut(tool: tool),
                               ));
-                        }).toList())
+                        }).toList()),
+                        if (basicDefined &&
+                            !_project.allServicesAssignedToServers())
+                          AlertCard(
+                              message:
+                                  "Some service is not assigned to a server"),
+                        if (basicDefined && !_project.allServersWithIPs())
+                          AlertCard(
+                              message:
+                                  "All servers should have configured their IP address"),
+                        if (basicDefined && !_project.allServersWithSshKeys())
+                          AlertCard(
+                              message:
+                                  "All servers should have configured their SSH keys")
                       ]))));
         });
   }

@@ -41,17 +41,23 @@ class TermDialog {
                 body: SafeArea(
                     bottom: false,
                     child: Container(
-                        color: LAColorTheme.laPalette,
-                        padding: EdgeInsets.fromLTRB(3, 0, 8, 0),
-                        child: !AppUtils.isDemo()
-                            ? WebBrowser(
-                                initialUrl: 'http://localhost:8081/',
-                                interactionSettings:
-                                    WebBrowserInteractionSettings(
-                                        topBar: null, bottomBar: null),
-                                javascriptEnabled: true,
-                              )
-                            : Text("This does not work in the demo"))),
+                      color: LAColorTheme.laPalette,
+                      padding: EdgeInsets.fromLTRB(3, 0, 8, 0),
+                      child: !AppUtils.isDemo()
+                          ? WebBrowser(
+                              initialUrl: 'http://localhost:8081/',
+                              interactionSettings:
+                                  WebBrowserInteractionSettings(
+                                      topBar: null, bottomBar: null),
+                              javascriptEnabled: true,
+                            )
+                          : Center(
+                              child: Text(
+                                "This does not work in the demo",
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                    )),
               ),
             ));
   }

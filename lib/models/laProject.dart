@@ -126,15 +126,12 @@ class LAProject {
     if (debug) print("Step 2 valid: ${valid ? 'yes' : 'no'}");
     // If the previous steps are correct, this is also correct
 
-    valid = valid &&
-        (getServicesNameListInUse().length > 0 &&
-            getServicesNameListInUse().length ==
-                getServicesNameListSelected().length);
+    valid = valid && allServicesAssignedToServers();
     if (debug) print("Step 3 valid: ${valid ? 'yes' : 'no'}");
 
     if (valid)
       servers.forEach((s) {
-        valid = valid && LARegExp.ipv4.hasMatch(s.ip);
+        valid = valid && LARegExp.ip.hasMatch(s.ip);
         valid = valid && s.sshKey != null;
       });
     if (debug) print("Step 4 valid: ${valid ? 'yes' : 'no'}");
@@ -147,8 +144,30 @@ class LAProject {
     return valid;
   }
 
+  bool allServicesAssignedToServers() {
+    return getServicesNameListInUse().length > 0 &&
+        getServicesNameListInUse().length ==
+            getServicesNameListSelected().length;
+  }
+
   List<LAServer> serversWithServices() {
     return servers.where((s) => serverServices[s.name].length > 0).toList();
+  }
+
+  bool allServersWithIPs() {
+    bool allReady = true;
+    servers.forEach((s) {
+      allReady = allReady && LARegExp.ip.hasMatch(s.ip);
+    });
+    return allReady;
+  }
+
+  bool allServersWithSshKeys() {
+    bool allReady = true;
+    servers.forEach((s) {
+      allReady = allReady && s.sshKey != null;
+    });
+    return allReady;
   }
 
   bool allServersReady() {
