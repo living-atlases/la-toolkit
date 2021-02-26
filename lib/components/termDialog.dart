@@ -45,7 +45,7 @@ class TermDialog {
                       padding: EdgeInsets.fromLTRB(3, 0, 8, 0),
                       child: !AppUtils.isDemo()
                           ? WebBrowser(
-                              initialUrl: 'http://localhost:8081/',
+                              initialUrl: 'http://localhost:2011/',
                               interactionSettings:
                                   WebBrowserInteractionSettings(
                                       topBar: null, bottomBar: null),
