@@ -97,7 +97,7 @@ Service definition:
 
 Theme selection:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s14.png)
+![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s15.png)
 
 Services in servers:
 
