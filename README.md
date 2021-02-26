@@ -95,6 +95,10 @@ Service definition:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s7.png)
 
+Theme selection:
+
+![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s14.png)
+
 Services in servers:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s8.png)
@@ -122,4 +126,3 @@ Testing connectivity with the project servers:
 Console for the intrepids:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s14.png)
-
