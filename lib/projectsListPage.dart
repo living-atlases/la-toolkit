@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laProjectTimeline.dart';
@@ -84,57 +85,61 @@ class ProjectCard extends StatelessWidget {
       child: Container(
         child: new Stack(
           children: <Widget>[
-            GestureDetector(
-                onTap: () => onOpen(),
-                child: Card(
-                  child: Container(
-                    height: 220.0,
-                    margin: EdgeInsets.fromLTRB(30, 12, 20, 30),
-                    child: Column(
-                        // crossAxisAlignment: CrossAxisAlignment.stretch,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              // LONG NAME
-                              title: FormattedTitle(
-                                  title: project.longName,
-                                  fontSize: 22,
-                                  color: LAColorTheme.inactive),
-                              trailing: IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: BoxConstraints(),
-                                icon: Icon(
-                                  Icons.settings,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () => onOpen(),
-                              )),
-                          Text(
-                            // SHORT NAME
-                            project.shortName,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          SelectableLinkify(
-                              linkStyle:
-                                  TextStyle(color: LAColorTheme.laPalette),
-                              options: LinkifyOptions(humanize: false),
-                              text:
-                                  "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
-                              onOpen: (link) async => await launch(link.url)),
-                          ButtonBar(
-                              alignment: MainAxisAlignment.center,
-                              buttonPadding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-                              children: <Widget>[
-                                Wrap(
-                                    direction: Axis.horizontal,
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.start,
-                                    children: [
-                                      LAProjectTimeline(uuid: project.uuid),
-                                      // Text('Configured: '),
-                                      /* LinearPercentIndicator(
+            MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                    onTap: () => onOpen(),
+                    child: Card(
+                      child: Container(
+                        height: 220.0,
+                        margin: EdgeInsets.fromLTRB(30, 12, 20, 30),
+                        child: Column(
+                            // crossAxisAlignment: CrossAxisAlignment.stretch,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  // LONG NAME
+                                  title: FormattedTitle(
+                                      title: project.longName,
+                                      fontSize: 22,
+                                      color: LAColorTheme.inactive),
+                                  trailing: IconButton(
+                                    padding: EdgeInsets.zero,
+                                    constraints: BoxConstraints(),
+                                    icon: Icon(
+                                      Icons.settings,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () => onOpen(),
+                                  )),
+                              Text(
+                                // SHORT NAME
+                                project.shortName,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SelectableLinkify(
+                                  linkStyle:
+                                      TextStyle(color: LAColorTheme.laPalette),
+                                  options: LinkifyOptions(humanize: false),
+                                  text:
+                                      "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
+                                  onOpen: (link) async =>
+                                      await launch(link.url)),
+                              ButtonBar(
+                                  alignment: MainAxisAlignment.center,
+                                  buttonPadding:
+                                      EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                  children: <Widget>[
+                                    Wrap(
+                                        direction: Axis.horizontal,
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.start,
+                                        children: [
+                                          LAProjectTimeline(uuid: project.uuid),
+                                          // Text('Configured: '),
+                                          /* LinearPercentIndicator(
                                           width: 300,
                                           // MediaQuery.of(context).size.width - 50,
                                           animation: true,
@@ -147,11 +152,11 @@ class ProjectCard extends StatelessWidget {
                                               LinearStrokeCap.roundAll,
                                           progressColor: LAColorTheme
                                               .laThemeData.primaryColorLight), */
-                                    ]),
-                              ]),
-                        ]),
-                  ),
-                )),
+                                        ]),
+                                  ]),
+                            ]),
+                      ),
+                    ))),
             FractionalTranslation(
               translation: Offset(0.0, -0.4),
               child: Align(
