@@ -108,6 +108,12 @@ COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
 
+RUN curl -o /usr/local/bin/ttyd --location --remote-header-name --remote-name https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64
+RUN chmod +x /usr/local/bin/ttyd
+
+RUN echo 'export ANSIBLE_LOG_PATH=/home/ubuntu/ansible.log' >> /home/ubuntu/.bashrc
+RUN echo 'export ANSIBLE_LOG_PATH=/home/ubuntu/ansible.log' >> /home/ubuntu/.profile
+
 # The year of ALA Portal launch ;-)
 EXPOSE 2010
 
