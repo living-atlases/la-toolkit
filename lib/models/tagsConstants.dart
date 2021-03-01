@@ -1,5 +1,5 @@
 class TagsConstants {
-  static final List<String> all = [
+  static final List<String> v2_0_5 = [
     "alerts",
     "always",
     "apikey",
@@ -99,4 +99,10 @@ class TagsConstants {
     "webserver",
     "xpack"
   ];
+
+  static final Map<String, List<String>> map = {
+    "v2.0.5": v2_0_5,
+    "v2.0.4": v2_0_5,
+    "latest": v2_0_5,
+  };
 }

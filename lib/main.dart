@@ -20,6 +20,7 @@ import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'components/mainDrawer.dart';
+import 'deployPage.dart';
 import 'intro.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
@@ -230,6 +231,9 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is TuneProject) {
       MyApp._navigatorKey.currentState.pushNamed(LAProjectTunePage.routeName);
+    }
+    if (action is PrepareDeployProject) {
+      MyApp._navigatorKey.currentState.pushNamed(DeployPage.routeName);
     }
     if (action is OpenProjectTools) {
       MyApp._navigatorKey.currentState.pushNamed(LAProjectViewPage.routeName);

@@ -57,6 +57,28 @@ class TuneProject extends AppActions {
   TuneProject(this.project);
 }
 
+class PrepareDeployProject extends AppActions {
+  LAProject project;
+
+  PrepareDeployProject(this.project);
+}
+
+class DeployProject extends AppActions {
+  LAProject project;
+  List<String> deployServices;
+  List<String> limitToServers;
+  List<String> skipTags;
+  List<String> tags;
+  bool onlyProperties;
+
+  DeployProject(
+      {this.project,
+      this.deployServices,
+      this.limitToServers,
+      this.tags,
+      this.skipTags});
+}
+
 class OpenProjectTools extends AppActions {
   LAProject project;
 

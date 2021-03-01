@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/tags.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/tagsConstants.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
@@ -31,6 +31,7 @@ class _DeployPageState extends State<DeployPage> {
   List<String> _limitToServers = [];
   List<String> _skipTags = [];
   List<String> _tags = [];
+  bool _onlyProperties = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +39,13 @@ class _DeployPageState extends State<DeployPage> {
       converter: (store) {
         return _DeployViewModel(
             state: store.state,
-            onCancel: (project) {
-              store.dispatch(OpenProjectTools(project));
-            });
+            onDeployProject: (project) => store.dispatch(DeployProject(
+                project: project,
+                deployServices: _deployServices,
+                limitToServers: _limitToServers,
+                tags: _tags,
+                skipTags: _skipTags)),
+            onCancel: (project) => store.dispatch(OpenProjectTools(project)));
       },
       builder: (BuildContext context, _DeployViewModel vm) {
         return Scaffold(
@@ -89,7 +94,8 @@ class _DeployPageState extends State<DeployPage> {
                                       () => _limitToServers = limitToServers)),
                               _tagsSelector(
                                   key: _selectTagsKey,
-                                  tags: TagsConstants.all,
+                                  tags: TagsConstants.map[vm
+                                      .state.currentProject.alaInstallRelease],
                                   icon: Mdi.tagPlusOutline,
                                   title: "Tags:",
                                   placeHolder: "All",
@@ -99,7 +105,8 @@ class _DeployPageState extends State<DeployPage> {
                                       setState(() => _tags = tags)),
                               _tagsSelector(
                                   key: _skipTagsKey,
-                                  tags: TagsConstants.all,
+                                  tags: TagsConstants.map[vm
+                                      .state.currentProject.alaInstallRelease],
                                   icon: Mdi.tagOffOutline,
                                   title: "Skip tags:",
                                   placeHolder: "None",
@@ -107,6 +114,15 @@ class _DeployPageState extends State<DeployPage> {
                                       "Select the tags you want to skip",
                                   onChange: (skipTags) =>
                                       setState(() => _skipTags = skipTags)),
+                              ListTile(
+                                  // contentPadding: EdgeInsets.zero,
+                                  title: const Text(
+                                    'Only deploy properties (service configs)',
+                                  ),
+                                  trailing: Switch(
+                                      value: _onlyProperties,
+                                      onChanged: (value) => setState(
+                                          () => _onlyProperties = value))),
                               TipsCard(
                                   text:
                                       '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
@@ -200,8 +216,9 @@ Widget _tagsSelector(
 class _DeployViewModel {
   final AppState state;
   final Function(LAProject) onCancel;
+  final Function(LAProject) onDeployProject;
 
-  _DeployViewModel({this.state, this.onCancel});
+  _DeployViewModel({this.state, this.onCancel, this.onDeployProject});
 
   @override
   bool operator ==(Object other) =>

@@ -34,6 +34,8 @@ class LAProjectViewPage extends StatelessWidget {
               state: store.state,
               onOpenProject: (project) => store.dispatch(OpenProject(project)),
               onTuneProject: (project) => store.dispatch(TuneProject(project)),
+              onDeployProject: (project) =>
+                  store.dispatch(PrepareDeployProject(project)),
               onDelProject: (project) => store.dispatch(DelProject(project)),
               onGenInvProject: (project) =>
                   store.dispatch(GenerateInvProject(project)),
@@ -93,7 +95,9 @@ class LAProjectViewPage extends StatelessWidget {
                 icon: const Icon(Mdi.rocketLaunch),
                 title: "Deploy",
                 tooltip: "Install/update your LA Portal or some services",
-                grid: 12),
+                grid: 12,
+                enabled: _project.allServersReady(),
+                action: () => vm.onDeployProject(_project)),
             Tool(
                 icon: const Icon(Icons.house_siding),
                 title: "Post-Deploy Tasks"),
@@ -228,6 +232,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onOpenProject;
   final void Function(LAProject project) onTuneProject;
   final void Function(LAProject project) onEditProject;
+  final void Function(LAProject project) onDeployProject;
   final void Function(LAProject project) onDelProject;
   final void Function(LAProject project) onGenInvProject;
   final void Function(LAProject project) onTestConnProject;
@@ -238,6 +243,7 @@ class _ProjectPageViewModel {
       this.onTuneProject,
       this.onDelProject,
       this.onEditProject,
+      this.onDeployProject,
       this.onGenInvProject,
       this.onTestConnProject});
 

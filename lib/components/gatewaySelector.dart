@@ -6,7 +6,6 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:mdi/mdi.dart';
-import 'package:smart_select/smart_select.dart';
 
 import 'choiceEmptyPanel.dart';
 
@@ -19,9 +18,6 @@ class GatewaySelector extends StatefulWidget {
 }
 
 class _GatewaySelectorState extends State<GatewaySelector> {
-  GlobalKey<S2MultiState<String>> _selectKey =
-      GlobalKey<S2MultiState<String>>();
-
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _GatewaySelectorViewModel>(
