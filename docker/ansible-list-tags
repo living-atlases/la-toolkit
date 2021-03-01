@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Adapted from:
+#   http://blog.leifmadsen.com/blog/2017/01/04/finding-available-ansible-tags-in-playbooks-and-roles/
+#
+
+for i in ala-demo-basic.yml collectory-standalone.yml biocache-hub-standalone.yml biocache-service-clusterdb.yml bie-hub.yml bie-index.yml image-service.yml species-list-standalone.yml regions-standalone.yml logger-standalone.yml solr7-standalone.yml cas5-standalone.yml biocache-db.yml biocache-cli.yml spatial.yml webapi_standalone.yml   dashboard.yml alerts-standalone.yml doi-service-standalone.yml nameindexer-standalone.yml
+do
+  ansible-playbook --list-tags /home/ubuntu/ansible/ala-install/ansible/$i 2>&1
+done |
+grep "TASK TAGS" |
+grep -v "apache" |
+cut -d":" -f2 |
+awk '{sub(/\[/, "")sub(/\]/, "")}1' |
+sed -e 's/,//g' |
+xargs -n 1 |
+sort -u

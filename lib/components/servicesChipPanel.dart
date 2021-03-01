@@ -1,21 +1,42 @@
 import 'package:chips_choice/chips_choice.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
 class ServicesChipPanel extends StatefulWidget {
-  ServicesChipPanel({Key key}) : super(key: key);
+  final Function(List<String>) onChange;
+
+  ServicesChipPanel({Key key, this.onChange}) : super(key: key);
 
   @override
   _ServicesChipPanelState createState() => _ServicesChipPanelState();
 }
 
 class _ServicesChipPanelState extends State<ServicesChipPanel> {
-  static const padding = EdgeInsets.fromLTRB(2, -5, 2, -5);
+  static const padding = EdgeInsets.fromLTRB(5, -2, 5, -2);
   static const margin = EdgeInsets.fromLTRB(0, 0, 0, 0);
   final _formKey = GlobalKey<FormState>();
+  final allStyle = C2ChoiceStyle(
+    labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    // color: Colors.red,
+    // margin: EdgeInsets.fromLTRB(0, 40, 40, 20),
 
-  List<String> formValue; // LAServiceDesc.list[3].name];
+    borderRadius: const BorderRadius.all(Radius.circular(15)),
+    padding: EdgeInsets.fromLTRB(10, 0, 10, 2),
+    showCheckmark: true,
+  );
+  List<String> formValue = []; // LAServiceDesc.list[3].name];
+  List<String> _selectAllOrElements(List<String> values) {
+    List<String> newVal = values != null && values.length > 0
+        ? values.last == 'all'
+            ? ['all']
+            : values.where((item) => item != 'all').toList()
+        : [];
+    // print(newVal);
+    return newVal;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,103 +45,164 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
         child: Column(children: [
           FormField<List<String>>(
             autovalidateMode: AutovalidateMode.always,
-            //autovalidate: true,
             initialValue: formValue,
             onSaved: (List<String> val) {
               setState(() {
-                // print('$val');
+                print('$val');
                 formValue = val;
               });
             },
             validator: (List<String> value) {
-              /* if (value?.isEmpty ?? value == null) {
-                return 'Please select some categories';
-              }
-              if (value.length > 5) {
-                return "Can't select more than 5 categories";
-              } */
               return null;
             },
             builder: (state) {
-              return Column(
+              return Row(
                 children: <Widget>[
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: ChipsChoice<String>.multiple(
-                      value: state.value,
-                      onChanged: (val) => state.didChange(val),
-                      runSpacing: -15,
+                  Expanded(
+                    child:
+                        // alignment: Alignment.centerLeft,
+                        ChipsChoice<String>.multiple(
+                      value:
+                          formValue, // state.value, // _selectAllOrElements(state.value),
+                      onChanged: (values) {
+                        setState(() {
+                          formValue = _selectAllOrElements(values);
+                          widget.onChange(formValue);
+                        });
+                        // print("onChanged: $values");
+                        // return state.didChange(values);
+                      },
+                      runSpacing: -10,
                       choiceItems: C2Choice.listFrom<String, LAServiceDesc>(
                           source: LAServiceDesc.list,
                           value: (i, v) => v.name,
                           label: (i, v) => v.name,
                           tooltip: (i, v) => StringUtils.capitalize(v.desc),
-                          disabled: (i, v) => false),
+                          /* style: (i, v) {
+                            if (i == 0) {
+                            return null;
+                          }, */
+                          disabled: (i, v) => false)
+                        ..add(C2Choice<String>(
+                            value: 'all',
+                            label: 'all',
+                            activeStyle: allStyle,
+                            style: allStyle)),
+                      choiceBuilder: (item) {
+                        if (item.value == 'all')
+                          return CustomChip(
+                              label: item.label,
+                              width: double.infinity,
+                              height: 40,
+                              // color: Colors.redAccent,
+                              margin: const EdgeInsets.fromLTRB(0, 15, 30, 5),
+                              selected: item.selected,
+                              onSelect: item.select);
+                        else
+                          return null;
+                      },
                       choiceStyle: const C2ChoiceStyle(
                           // color: Colors.indigo,
                           // disabledColor: Colors.grey,
                           margin: margin,
                           labelPadding: padding,
-                          showCheckmark: false,
+                          showCheckmark: true,
                           labelStyle: const TextStyle(fontSize: 12),
                           borderOpacity: .3),
                       choiceActiveStyle: const C2ChoiceStyle(
                         // color: Colors.indigo,
                         margin: margin,
-                        showCheckmark: false,
+                        showCheckmark: true,
                         labelPadding: padding,
                         labelStyle: const TextStyle(fontSize: 12),
                         brightness: Brightness.dark,
                       ),
                       wrapped: true,
+                      // mainAxisSize: MainAxisSize.max,
                     ),
                   ),
-/*                  Container(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        state.errorText ??
-                            state.value.length.toString() + '/5 selected',
-                        style: TextStyle(
-                            color: state.hasError
-                                ? Colors.redAccent
-                                : Colors.green),
-                      )),
-                  DefDivider(), */
-                  /* Padding(
-                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                const Text('Selected Value:'),
-                                SizedBox(height: 5),
-                                Text('${formValue.toString()}')
-                              ]),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        RaisedButton(
-                            child: const Text('Submit'),
-                            color: Colors.blueAccent,
-                            textColor: Colors.white,
-                            onPressed: () {
-                              // Validate returns true if the form is valid, or false otherwise.
-                              if (_formKey.currentState.validate()) {
-                                // If the form is valid, save the value.
-                                _formKey.currentState.save();
-                              }
-                            }),
-                      ],
-                    ),
-                  ) */
                 ],
               );
             },
           )
         ]));
+  }
+}
+
+class CustomChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final double width;
+  final double height;
+  final EdgeInsetsGeometry margin;
+  final bool selected;
+  final Function(bool selected) onSelect;
+
+  CustomChip({
+    Key key,
+    this.label,
+    this.color,
+    this.width,
+    this.height,
+    this.margin,
+    this.selected,
+    this.onSelect,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      width: this.width,
+      height: this.height,
+      margin: margin ??
+          const EdgeInsets.symmetric(
+            vertical: 15,
+            horizontal: 5,
+          ),
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        color:
+            selected ? (color ?? LAColorTheme.laPalette) : Colors.transparent,
+        borderRadius: BorderRadius.all(Radius.circular(selected ? 20 : 20)),
+        border: Border.all(
+          color: selected ? (color ?? LAColorTheme.laPalette) : Colors.grey,
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: () => onSelect(!selected),
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Visibility(
+                visible: selected,
+                child: const Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 24,
+                )),
+            Positioned(
+              left: 0,
+              top: 9,
+              right: -46,
+              bottom: 7,
+              child: Container(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: selected ? Colors.white : Colors.black45,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

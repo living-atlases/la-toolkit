@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/hostSelector.dart';
+import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/redux/actions.dart';
+import 'package:mdi/mdi.dart';
+import 'package:smart_select/smart_select.dart';
+
+import 'choiceEmptyPanel.dart';
+
+class GatewaySelector extends StatefulWidget {
+  final LAServer exclude;
+  GatewaySelector({Key key, this.exclude}) : super(key: key);
+
+  @override
+  _GatewaySelectorState createState() => _GatewaySelectorState();
+}
+
+class _GatewaySelectorState extends State<GatewaySelector> {
+  GlobalKey<S2MultiState<String>> _selectKey =
+      GlobalKey<S2MultiState<String>>();
+
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, _GatewaySelectorViewModel>(
+        distinct: true,
+        converter: (store) {
+          return _GatewaySelectorViewModel(
+              project: store.state.currentProject,
+              onSaveProject: (project) =>
+                  store.dispatch(SaveCurrentProject(project)));
+        },
+        builder: (BuildContext context, _GatewaySelectorViewModel vm) {
+          return HostSelector(
+            exclude: widget.exclude,
+            initialValue: widget.exclude.gateways,
+            serverList: vm.project.getServersNameList(),
+            title: "SSH Gateway",
+            icon: Mdi.doorClosedLock,
+            modalTitle:
+                "Select the server (or servers) that is used as gateway to access to this server:",
+            emptyPlaceholder: "Direct connection",
+            choiceEmptyPanel: ChoiceEmptyPanel(
+                title: "This server doesn't have a ssh gateway associated",
+                body:
+                    "If you access to this server using another server as a ssh gateway, you should add the gateway also as a server and select later here.",
+                footer: "For more info see our ssh documentation in our wiki"),
+            onChange: (gateways) {
+              widget.exclude.gateways = gateways;
+              vm.project.upsert(widget.exclude);
+              vm.onSaveProject(vm.project);
+            },
+          );
+        });
+  }
+}
+
+class _GatewaySelectorViewModel {
+  final LAProject project;
+  final void Function(LAProject project) onSaveProject;
+
+  _GatewaySelectorViewModel({this.project, this.onSaveProject});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _GatewaySelectorViewModel &&
+          runtimeType == other.runtimeType &&
+          project == other.project;
+
+  @override
+  int get hashCode => project.hashCode;
+}

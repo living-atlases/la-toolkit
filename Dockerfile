@@ -114,6 +114,9 @@ RUN chmod +x /usr/local/bin/ttyd
 RUN echo 'export ANSIBLE_LOG_PATH=/home/ubuntu/ansible.log' >> /home/ubuntu/.bashrc
 RUN echo 'export ANSIBLE_LOG_PATH=/home/ubuntu/ansible.log' >> /home/ubuntu/.profile
 
+COPY docker/ansible-list-tags /usr/local/bin/ansible-list-tags
+RUN chmod +x /usr/local/bin/ansible-list-tags
+
 # The year of ALA Portal launch ;-)
 EXPOSE 2010
 

@@ -10,9 +10,9 @@ import 'package:la_toolkit/utils/cardContants.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:mdi/mdi.dart';
 
+import 'gatewaySelector.dart';
 import 'genericTextFormField.dart';
 import 'helpIcon.dart';
-import 'hostSelector.dart';
 
 class ServersDetailsCardList extends StatelessWidget {
   final FocusNode focusNode;
@@ -171,8 +171,8 @@ class ServersDetailsCardList extends StatelessWidget {
                                                   MainAxisAlignment.spaceEvenly,
                                               children: [
                                                 Flexible(
-                                                  child: HostSelector(
-                                                      server: _project
+                                                  child: GatewaySelector(
+                                                      exclude: _project
                                                           .servers[index]),
                                                 ),
                                                 HelpIcon(

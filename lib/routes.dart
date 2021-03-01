@@ -6,6 +6,7 @@ import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/sshKeysPage.dart';
 
+import 'deployPage.dart';
 import 'main.dart';
 
 class Routes {
@@ -40,6 +41,9 @@ class Routes {
           break;
         case SshKeyPage.routeName:
           return SshKeyPage();
+          break;
+        case DeployPage.routeName:
+          return DeployPage();
           break;
         default:
           return HomePage(title: appName);
