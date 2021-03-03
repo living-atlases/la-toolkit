@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -76,6 +77,16 @@ class TermDialog {
         expand: false);
 
     return result;
+  }
+
+  static ListTile drawerItem(context) {
+    return ListTile(
+      leading: const Icon(Mdi.console),
+      title: Text('Console'),
+      onTap: () {
+        Api.term(onStart: () => TermDialog.show(context), onError: (error) {});
+      },
+    );
   }
 }
 

@@ -11,6 +11,7 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/selectUtils.dart';
 import 'components/servicesChipPanel.dart';
+import 'components/termDialog.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/laProject.dart';
@@ -53,7 +54,18 @@ class _DeployPageState extends State<DeployPage> {
                 onlyProperties: _onlyProperties,
                 continueEvenIfFails: _continueEvenIfFails,
                 debug: _debug,
-                dryRun: _dryRun)),
+                dryRun: _dryRun,
+                onStart: () => TermDialog.show(context),
+                onError: (error) => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        action: SnackBarAction(
+                          label: 'OK',
+                          onPressed: () {
+                            // Some code to undo the change.
+                          },
+                        ),
+                        content: Text(
+                            'Oooopss, some problem have arisen trying to start the deploy: $error'))))),
             onCancel: (project) => store.dispatch(OpenProjectTools(project)));
       },
       builder: (BuildContext context, _DeployViewModel vm) {
@@ -86,6 +98,7 @@ class _DeployPageState extends State<DeployPage> {
                             children: [
                               SizedBox(height: 20),
                               Text("Select which services you want to deploy:"),
+                              // TODO: limit to real selected services
                               ServicesChipPanel(
                                   onChange: (s) =>
                                       setState(() => _deployServices = s)),
@@ -184,9 +197,8 @@ class _DeployPageState extends State<DeployPage> {
                                         child: ElevatedButton.icon(
                                             onPressed: _deployServices.isEmpty
                                                 ? null
-                                                : () => {
-                                                      // vm.onCreateProject()},
-                                                    },
+                                                : () => vm.onDeployProject(
+                                                    vm.state.currentProject),
                                             style: TextButton.styleFrom(
                                                 primary: Colors.white,
                                                 minimumSize: Size(140, 50),

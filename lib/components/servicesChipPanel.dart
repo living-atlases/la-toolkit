@@ -75,7 +75,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                       runSpacing: -10,
                       choiceItems: C2Choice.listFrom<String, LAServiceDesc>(
                           source: LAServiceDesc.list,
-                          value: (i, v) => v.name,
+                          value: (i, v) => v.nameInt,
                           label: (i, v) => v.name,
                           tooltip: (i, v) => StringUtils.capitalize(v.desc),
                           /* style: (i, v) {

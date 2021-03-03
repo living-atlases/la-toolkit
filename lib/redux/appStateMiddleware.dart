@@ -91,6 +91,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       Api.alaInstallSelect(action.project.alaInstallRelease)
           .then((_) => scanSshKeys(store, () => {}));
     }
+    if (action is DeployProject) {
+      Api.ansiblew(action);
+    }
     next(action);
   }
 

@@ -71,13 +71,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   Navigator.popAndPushNamed(context, SshKeyPage.routeName);
                 },
               ),
-              ListTile(
-                leading: const Icon(Mdi.console),
-                title: Text('Console'),
-                onTap: () {
-                  TermDialog.show(context);
-                },
-              ),
+              TermDialog.drawerItem(context),
               if (AppUtils.isDev())
                 ListTile(
                   leading: const Icon(Icons.build),

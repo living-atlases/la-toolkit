@@ -6,6 +6,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/models/sshKey.dart';
+import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
 class Api {
@@ -123,5 +124,44 @@ class Api {
         .get(url)
         .then((response) => jsonDecode(response.body))
         .catchError((error) => {print(error)});
+  }
+
+  static Future<void> term(
+      {VoidCallback onStart, ErrorCallback onError}) async {
+    if (AppUtils.isDemo()) return;
+    var url = "${env['BACKEND']}api/v1/term";
+    http.get(url).then((response) {
+      if (response.statusCode == 200)
+        onStart();
+      else
+        onError(response.statusCode);
+    }).catchError((error) => {print(error)});
+  }
+
+  static Future<void> ansiblew(DeployProject action) async {
+    if (AppUtils.isDemo()) return;
+    var url = "${env['BACKEND']}api/v1/ansiblew";
+    var cmd = {
+      'uuid': action.project.uuid,
+      'shortName': action.project.shortName,
+      'deployServices': action.deployServices,
+      'limitToServers': action.limitToServers,
+      'tags': action.tags,
+      'skipTags': action.skipTags,
+      'onlyProperties': action.onlyProperties,
+      'continueEvenIfFails': action.continueEvenIfFails,
+      'debug': action.debug,
+      'dryRun': action.dryRun
+    };
+    http
+        .post(url,
+            headers: {'Content-type': 'application/json'},
+            body: utf8.encode(json.encode({'cmd': cmd})))
+        .then((response) {
+      if (response.statusCode == 200)
+        action.onStart();
+      else
+        action.onError(response.statusCode);
+    }).catchError((error) => {action.onError(error)});
   }
 }

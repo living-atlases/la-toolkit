@@ -97,13 +97,7 @@ class _ProjectDrawerState extends State<ProjectDrawer> {
                     Navigator.popAndPushNamed(context, SshKeyPage.routeName);
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Mdi.console),
-                  title: Text('Console'),
-                  onTap: () {
-                    TermDialog.show(context);
-                  },
-                ),
+                TermDialog.drawerItem(context),
                 Column(children: _createProjectLinks(vm.state.currentProject)),
                 AppUtils.isDev()
                     ? ListTile(

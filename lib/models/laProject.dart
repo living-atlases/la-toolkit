@@ -287,6 +287,7 @@ class LAProject {
 
   Map<String, dynamic> toGeneratorJson() {
     Map<String, dynamic> conf = {
+      "LA_uuid": uuid,
       "LA_project_name": longName,
       "LA_project_shortname": shortName,
       "LA_domain": domain,

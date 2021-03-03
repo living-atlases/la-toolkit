@@ -73,6 +73,9 @@ class DeployProject extends AppActions {
   bool continueEvenIfFails;
   bool debug;
   bool dryRun;
+  VoidCallback onStart;
+  ErrorCallback onError;
+
   DeployProject(
       {this.project,
       this.deployServices,
@@ -82,7 +85,9 @@ class DeployProject extends AppActions {
       this.onlyProperties,
       this.continueEvenIfFails,
       this.debug,
-      this.dryRun});
+      this.dryRun,
+      this.onStart,
+      this.onError});
 }
 
 class OpenProjectTools extends AppActions {
