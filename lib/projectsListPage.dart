@@ -52,13 +52,11 @@ class LAProjectsListPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                       ButtonTheme(
-                          // minWidth: 200.0,
-                          height: 60.0,
                           child: ElevatedButton.icon(
                               onPressed: () => vm.onCreateProject(),
-                              style: ElevatedButton.styleFrom(
-                                  onPrimary: Colors.white,
-                                  primary: LAColorTheme.laPalette,
+                              style: TextButton.styleFrom(
+                                  minimumSize: Size(100, 50),
+                                  primary: Colors.white,
                                   // padding: const EdgeInsets.all(8.0),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30.0),
