@@ -43,9 +43,10 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN mkdir /home/ubuntu/ansible
 COPY docker/ansible.cfg /home/ubuntu/.ansible.cfg
-RUN chown ubuntu:ubuntu /home/ubuntu/.ansible.cfg
 RUN mkdir /home/ubuntu/ansible/la-inventories && \
         mkdir /home/ubuntu/ansible/ala-install
+RUN chown ubuntu:ubuntu /home/ubuntu/.ansible.cfg
+RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible/
 WORKDIR /home/ubuntu/ansible
 
 # NPM global configuration for ubuntu
@@ -74,7 +75,7 @@ RUN su - ubuntu -c 'npm install -g sails'
 RUN echo "2020112401 (change this date to rebuild & repeat this and the following steps)"
 
 # ala-install
-RUN git clone --depth 1 --branch v2.0.5 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install
+RUN  su - ubuntu -c 'git clone --depth 1 --branch v2.0.5 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
 # assh install
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/moul/assh.git'
