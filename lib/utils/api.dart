@@ -115,4 +115,13 @@ class Api {
         })));
     return;
   }
+
+  static Future<void> alaInstallSelect(String version) async {
+    if (AppUtils.isDemo()) return;
+    var url = "${env['BACKEND']}api/v1/ala-install-select/$version";
+    http
+        .get(url)
+        .then((response) => jsonDecode(response.body))
+        .catchError((error) => {print(error)});
+  }
 }

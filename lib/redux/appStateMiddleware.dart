@@ -87,6 +87,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       Api.importSshKey(action.name, action.publicKey, action.privateKey)
           .then((_) => scanSshKeys(store, () => {}));
     }
+    if (action is PrepareDeployProject) {
+      Api.alaInstallSelect(action.project.alaInstallRelease)
+          .then((_) => scanSshKeys(store, () => {}));
+    }
     next(action);
   }
 

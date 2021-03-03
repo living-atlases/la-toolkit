@@ -70,13 +70,19 @@ class DeployProject extends AppActions {
   List<String> skipTags;
   List<String> tags;
   bool onlyProperties;
-
+  bool continueEvenIfFails;
+  bool debug;
+  bool dryRun;
   DeployProject(
       {this.project,
       this.deployServices,
       this.limitToServers,
       this.tags,
-      this.skipTags});
+      this.skipTags,
+      this.onlyProperties,
+      this.continueEvenIfFails,
+      this.debug,
+      this.dryRun});
 }
 
 class OpenProjectTools extends AppActions {

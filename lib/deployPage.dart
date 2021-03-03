@@ -31,7 +31,12 @@ class _DeployPageState extends State<DeployPage> {
   List<String> _limitToServers = [];
   List<String> _skipTags = [];
   List<String> _tags = [];
+  bool _advanced = false;
   bool _onlyProperties = false;
+  bool _continueEvenIfFails = false;
+  bool _debug = false;
+  bool _dryRun = false;
+  // TODO do something with --skip-tags nameindex
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +49,11 @@ class _DeployPageState extends State<DeployPage> {
                 deployServices: _deployServices,
                 limitToServers: _limitToServers,
                 tags: _tags,
-                skipTags: _skipTags)),
+                skipTags: _skipTags,
+                onlyProperties: _onlyProperties,
+                continueEvenIfFails: _continueEvenIfFails,
+                debug: _debug,
+                dryRun: _dryRun)),
             onCancel: (project) => store.dispatch(OpenProjectTools(project)));
       },
       builder: (BuildContext context, _DeployViewModel vm) {
@@ -114,19 +123,53 @@ class _DeployPageState extends State<DeployPage> {
                                       "Select the tags you want to skip",
                                   onChange: (skipTags) =>
                                       setState(() => _skipTags = skipTags)),
+                              TipsCard(
+                                  text:
+                                      '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
+                                  margin: EdgeInsets.zero),
                               ListTile(
-                                  // contentPadding: EdgeInsets.zero,
                                   title: const Text(
-                                    'Only deploy properties (service configs)',
+                                    'Only deploy properties (service configurations)',
                                   ),
                                   trailing: Switch(
                                       value: _onlyProperties,
                                       onChanged: (value) => setState(
                                           () => _onlyProperties = value))),
-                              TipsCard(
-                                  text:
-                                      '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
-                                  margin: EdgeInsets.zero),
+                              ListTile(
+                                  title: const Text(
+                                    'Advanced options',
+                                  ),
+                                  trailing: Switch(
+                                      value: _advanced,
+                                      onChanged: (value) =>
+                                          setState(() => _advanced = value))),
+                              if (_advanced)
+                                ListTile(
+                                    title: const Text(
+                                      'Show extra debug info',
+                                    ),
+                                    trailing: Switch(
+                                        value: _debug,
+                                        onChanged: (value) =>
+                                            setState(() => _debug = value))),
+                              if (_advanced)
+                                ListTile(
+                                    title: const Text(
+                                      'Continue even if some service deployment fails',
+                                    ),
+                                    trailing: Switch(
+                                        value: _continueEvenIfFails,
+                                        onChanged: (value) => setState(() =>
+                                            _continueEvenIfFails = value))),
+                              if (_advanced)
+                                ListTile(
+                                    title: const Text(
+                                      'Dry run (only show the ansible command)',
+                                    ),
+                                    trailing: Switch(
+                                        value: _dryRun,
+                                        onChanged: (value) =>
+                                            setState(() => _dryRun = value))),
                               SizedBox(height: 40),
                               Center(
                                   child: Column(
