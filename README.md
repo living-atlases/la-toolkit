@@ -44,9 +44,10 @@ Run the image exposing the port `2010` that is were the la-toolkit web interface
 ```
 docker run --rm \
    -v YOU_SSH_KEYS_DIRECTORY:/home/ubuntu/.ssh/ \
-   -v YOU_CONFIG_DIRECTORY:/home/ubuntu/ansible/ \
-   -t -d --name la-toolkit -h la-toolkit -p 2010:2010 la-toolkit:latest
+   -v YOU_CONFIG_DIRECTORY:/home/ubuntu/ansible/la-inventories \
+   -t -d --name la-toolkit -h la-toolkit -p 2010:2010 -p 2011:2011 la-toolkit:latest
 ```
+
 During development some test directory like `/var/tmp/la-toolkit/.ssh/`.
 
 Optionally you can mount a different `ala-install` repository (for instance a modified one):
