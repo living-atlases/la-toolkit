@@ -4,12 +4,13 @@ import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:web_browser/web_browser.dart';
 
 import '../laTheme.dart';
 
 class TermDialog {
-  static show(context) {
+  static show(context, {title: 'Console'}) {
     showFloatingModalBottomSheet(
         // This can be addedd to the custom modal
         // expand: false,
@@ -25,7 +26,7 @@ class TermDialog {
                     color: Colors.white,
                   ),
                   title: Text(
-                    'Console',
+                    title,
                     style: TextStyle(color: Colors.white),
                   ),
                   actions: [
@@ -84,7 +85,39 @@ class TermDialog {
       leading: const Icon(Mdi.console),
       title: Text('Console'),
       onTap: () {
-        Api.term(onStart: () => TermDialog.show(context), onError: (error) {});
+        Api.term(onStart: () {
+          TermDialog.show(context);
+        }, onError: (error) {
+          Alert(
+              context: context,
+              closeIcon: Icon(Icons.close),
+              image: Icon(Icons.error_outline,
+                  size: 60, color: LAColorTheme.inactive),
+              title: "ERROR",
+              style: AlertStyle(
+                  constraints: BoxConstraints.expand(height: 600, width: 600)),
+              content: Column(children: <Widget>[
+                Text(
+                  "We had some problem",
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                // Text(error),
+              ]),
+              buttons: [
+                DialogButton(
+                  width: 500,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                )
+              ]).show();
+        });
       },
     );
   }

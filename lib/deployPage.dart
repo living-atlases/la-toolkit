@@ -55,7 +55,8 @@ class _DeployPageState extends State<DeployPage> {
                 continueEvenIfFails: _continueEvenIfFails,
                 debug: _debug,
                 dryRun: _dryRun,
-                onStart: () => TermDialog.show(context),
+                onStart: () =>
+                    TermDialog.show(context, title: "Ansible console"),
                 onError: (error) => ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         action: SnackBarAction(
