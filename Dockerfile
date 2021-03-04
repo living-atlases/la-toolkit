@@ -59,13 +59,6 @@ RUN mkdir -p /home/ubuntu/.ssh/assh.d && \
     chmod 0700 /home/ubuntu/.ssh/assh.d && \
     chown ubuntu:ubuntu -R /home/ubuntu/.ssh
 
-# yeoman, LA generator, sails and related
-RUN su - ubuntu -c 'mkdir -p "/home/ubuntu/.npm-packages/lib"'
-RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
-RUN su - ubuntu -c 'npm install -g yo'
-RUN su - ubuntu -c 'npm install -g generator-living-atlas'
-RUN su - ubuntu -c 'npm install -g sails'
-
 # assh install
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/moul/assh.git'
 # For non interactive shell cmds
@@ -96,6 +89,14 @@ RUN chown -R ubuntu:ubuntu /home/ubuntu/base-branding
 RUN echo "2021022401 (change this date to rebuild & repeat this and the following steps)"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/base-branding.git /home/ubuntu/base-branding'
 
+# yeoman, LA generator, sails and related
+RUN su - ubuntu -c 'mkdir -p "/home/ubuntu/.npm-packages/lib"'
+RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
+RUN su - ubuntu -c 'npm install -g yo'
+RUN su - ubuntu -c 'npm install -g sails'
+RUN echo "2021030401"
+RUN su - ubuntu -c 'npm install -g generator-living-atlas'
+
 # ala-install
 RUN echo "2020112401 (change this date to rebuild & repeat this and the following steps)"
 RUN  su - ubuntu -c 'git clone --depth 1 --branch v2.0.5 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
@@ -103,12 +104,12 @@ RUN  su - ubuntu -c 'git clone --depth 1 --branch v2.0.5 https://github.com/Atla
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-RUN echo "2021021804 (change this date to rebuild & repeat this and the following steps)"
+RUN echo "2021030302"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 # la-toolkit frontend
-RUN echo "2021021805 (change this date to rebuild & repeat this and the following steps)"
+RUN echo "2021030401"
 COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
