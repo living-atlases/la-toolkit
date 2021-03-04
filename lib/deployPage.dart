@@ -98,7 +98,8 @@ class _DeployPageState extends State<DeployPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 20),
-                              Text("Select which services you want to deploy:"),
+                              Text("Select which services you want to deploy:",
+                                  style: TextStyle(fontSize: 16)),
                               // TODO: limit to real selected services
                               ServicesChipPanel(
                                   onChange: (s) =>
