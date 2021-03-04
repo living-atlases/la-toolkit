@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
+import 'package:la_toolkit/sshKeysPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
@@ -165,6 +166,12 @@ class LAProjectViewPage extends StatelessWidget {
                                 child: ToolShortcut(tool: tool),
                               ));
                         }).toList()),
+                        if (vm.state.sshKeys.isEmpty)
+                          AlertCard(
+                              message: "You don't have any SSH key",
+                              actionText: "SOLVE",
+                              action: () => Navigator.popAndPushNamed(
+                                  context, SshKeyPage.routeName)),
                         if (basicDefined &&
                             !_project.allServicesAssignedToServers())
                           AlertCard(

@@ -3,8 +3,10 @@ import 'package:flutter/widgets.dart';
 
 class AlertCard extends StatelessWidget {
   final String message;
+  final String actionText;
+  final VoidCallback action;
 
-  AlertCard({this.message});
+  AlertCard({this.message, this.actionText, this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +21,12 @@ class AlertCard extends StatelessWidget {
                   contentPadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                   leading: Icon(Icons.warning_amber_outlined,
                       color: Colors.orangeAccent),
+                  trailing: actionText != null
+                      ? TextButton(
+                          child: Text(actionText),
+                          onPressed: () => action(),
+                        )
+                      : null,
                   title: Text(message),
                 ))));
   }
