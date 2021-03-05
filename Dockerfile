@@ -39,9 +39,15 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN mkdir /home/ubuntu/ansible
 COPY docker/ansible.cfg /home/ubuntu/.ansible.cfg
 RUN mkdir /home/ubuntu/ansible/la-inventories && \
-        mkdir /home/ubuntu/ansible/ala-install
+        mkdir /home/ubuntu/ansible/ala-install && \
+        mkdir /home/ubuntu/ansible-callbacks && \
+        mkdir /home/ubuntu/ansible/logs
+
+COPY docker/json-ansible-callback.py /home/ubuntu/ansible-callbacks/json-ansible-callback.py
 RUN chown ubuntu:ubuntu /home/ubuntu/.ansible.cfg
 RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible/
+RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible-callbacks
+RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible/logs
 WORKDIR /home/ubuntu/ansible
 
 # NPM global configuration for ubuntu
@@ -74,6 +80,9 @@ RUN chmod +x /usr/local/bin/ttyd
 
 # byobu
 RUN echo '_byobu_sourced=1 . /usr/bin/byobu-launch 2>/dev/null || true' >> /home/ubuntu/.bashrc
+RUN mkdir /home/ubuntu/.byobu
+RUN echo 'set -g prefix F12\nunbind-key -n C-a\n' > /home/ubuntu/.byobu/keybindings.tmux
+RUN chown ubuntu:ubuntu -R /home/ubuntu/.byobu
 
 # ansible-list-tags (not used by the api right now)
 COPY docker/ansible-list-tags /usr/local/bin/ansible-list-tags
