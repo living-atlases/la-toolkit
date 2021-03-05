@@ -7,8 +7,9 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 
 class ServicesChipPanel extends StatefulWidget {
   final Function(List<String>) onChange;
+  final List<String> services;
 
-  ServicesChipPanel({Key key, this.onChange}) : super(key: key);
+  ServicesChipPanel({Key key, this.onChange, this.services}) : super(key: key);
 
   @override
   _ServicesChipPanelState createState() => _ServicesChipPanelState();
@@ -74,7 +75,9 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                       },
                       runSpacing: -10,
                       choiceItems: C2Choice.listFrom<String, LAServiceDesc>(
-                          source: LAServiceDesc.list,
+                          source: LAServiceDesc.list
+                              .where((s) => widget.services.contains(s.nameInt))
+                              .toList(),
                           value: (i, v) => v.nameInt,
                           label: (i, v) => v.name,
                           tooltip: (i, v) => StringUtils.capitalize(v.desc),

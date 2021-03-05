@@ -73,7 +73,7 @@ class DeployProject extends AppActions {
   bool continueEvenIfFails;
   bool debug;
   bool dryRun;
-  VoidCallback onStart;
+  Function(String) onStart;
   ErrorCallback onError;
 
   DeployProject(

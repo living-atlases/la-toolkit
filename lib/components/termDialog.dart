@@ -10,7 +10,7 @@ import 'package:web_browser/web_browser.dart';
 import '../laTheme.dart';
 
 class TermDialog {
-  static show(context, {title: 'Console'}) {
+  static show(context, {title: 'Console', VoidCallback onClose}) {
     showFloatingModalBottomSheet(
         // This can be addedd to the custom modal
         // expand: false,
@@ -61,7 +61,7 @@ class TermDialog {
                             ),
                     )),
               ),
-            ));
+            )).then((_) => onClose());
   }
 
   static Future<T> showFloatingModalBottomSheet<T>({

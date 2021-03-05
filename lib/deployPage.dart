@@ -37,6 +37,7 @@ class _DeployPageState extends State<DeployPage> {
   bool _continueEvenIfFails = false;
   bool _debug = false;
   bool _dryRun = false;
+  String logsSuffix;
   // TODO do something with --skip-tags nameindex
 
   @override
@@ -55,8 +56,15 @@ class _DeployPageState extends State<DeployPage> {
                 continueEvenIfFails: _continueEvenIfFails,
                 debug: _debug,
                 dryRun: _dryRun,
-                onStart: () =>
-                    TermDialog.show(context, title: "Ansible console"),
+                onStart: (l) {
+                  print("Logs suffix: $l");
+                  logsSuffix = l;
+                  TermDialog.show(context,
+                      title: "Ansible console",
+                      onClose: () => {
+                            // Show the results
+                          });
+                },
                 onError: (error) => ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         action: SnackBarAction(
@@ -102,6 +110,8 @@ class _DeployPageState extends State<DeployPage> {
                                   style: TextStyle(fontSize: 16)),
                               // TODO: limit to real selected services
                               ServicesChipPanel(
+                                  services: vm.state.currentProject
+                                      .getServicesNameListSelected(),
                                   onChange: (s) =>
                                       setState(() => _deployServices = s)),
                               HostSelector(

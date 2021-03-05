@@ -158,9 +158,10 @@ class Api {
             headers: {'Content-type': 'application/json'},
             body: utf8.encode(json.encode({'cmd': cmd})))
         .then((response) {
-      if (response.statusCode == 200)
-        action.onStart();
-      else
+      if (response.statusCode == 200) {
+        Map<String, dynamic> l = json.decode(response.body);
+        action.onStart(l['logsSuffix']);
+      } else
         action.onError(response.statusCode);
     }).catchError((error) => {action.onError(error)});
   }
