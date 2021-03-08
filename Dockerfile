@@ -35,21 +35,6 @@ RUN echo 'Defaults:ubuntu !requiretty' >> /etc/sudoers
 # Configure sudo without password
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# Ansible working directory
-RUN mkdir /home/ubuntu/ansible
-COPY docker/ansible.cfg /home/ubuntu/.ansible.cfg
-RUN mkdir /home/ubuntu/ansible/la-inventories && \
-        mkdir /home/ubuntu/ansible/ala-install && \
-        mkdir /home/ubuntu/ansible-callbacks && \
-        mkdir /home/ubuntu/ansible/logs
-
-COPY docker/json-ansible-callback.py /home/ubuntu/ansible-callbacks/json-ansible-callback.py
-RUN chown ubuntu:ubuntu /home/ubuntu/.ansible.cfg
-RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible/
-RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible-callbacks
-RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible/logs
-WORKDIR /home/ubuntu/ansible
-
 # NPM global configuration for ubuntu
 # https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md
 RUN echo 'NPM_PACKAGES="/home/ubuntu/.npm-packages"' >> /home/ubuntu/.bashrc
@@ -91,6 +76,20 @@ RUN chmod +x /usr/local/bin/ansible-list-tags
 # server launch script
 COPY docker/launch.sh /usr/local/bin/la-toolkit-launch
 RUN chmod +x /usr/local/bin/la-toolkit-launch
+
+# Ansible working directory
+RUN mkdir /home/ubuntu/ansible
+COPY docker/ansible.cfg /home/ubuntu/.ansible.cfg
+RUN mkdir /home/ubuntu/ansible/la-inventories && \
+        mkdir /home/ubuntu/ansible/ala-install && \
+        mkdir /home/ubuntu/ansible-callbacks && \
+        mkdir /home/ubuntu/ansible/logs
+COPY docker/json-ansible-callback.py /home/ubuntu/ansible-callbacks/json-ansible-callback.py
+RUN chown ubuntu:ubuntu /home/ubuntu/.ansible.cfg
+RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible/
+RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible-callbacks
+RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible/logs
+WORKDIR /home/ubuntu/ansible
 
 # base-branding
 RUN mkdir -p /home/ubuntu/base-branding
