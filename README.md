@@ -16,8 +16,14 @@ A few resources to get you started if your are new to Flutter:
 - [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 - [Flutter Web support](https://flutter.dev/web)
 
-### Environments
+### Autogeneration of code
 
+There are some code (like the json serialization) that should be generated when some model changes. This is done with:
+```
+flutter pub run build_runner watch --delete-conflicting-outputs
+``` 
+
+### Environments
 
 ## Build and Run
 
@@ -43,8 +49,9 @@ Run the image exposing the port `2010` that is were the la-toolkit web interface
 
 ```
 docker run --rm \
-   -v YOU_SSH_KEYS_DIRECTORY:/home/ubuntu/.ssh/ \
-   -v YOU_CONFIG_DIRECTORY:/home/ubuntu/ansible/la-inventories \
+   -v YOUR_SSH_KEYS_DIRECTORY:/home/ubuntu/.ssh/ \
+   -v YOUR_CONFIG_DIRECTORY:/home/ubuntu/ansible/la-inventories \
+   -v YOUR_LOGS_DIRECTORY:/home/ubuntu/ansible/logs \
    -t -d --name la-toolkit -h la-toolkit -p 2010:2010 -p 2011:2011 la-toolkit:latest
 ```
 
