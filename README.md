@@ -131,6 +131,17 @@ Testing connectivity with the project servers:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s13.png)
 
+Deployment:
+
+![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s16.png)
+
+Deployment Ansible terminal:
+
+![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s17.png)
+
+Deployment results:
+![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s18.png)
+
 Console for the intrepids:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s14.png)
