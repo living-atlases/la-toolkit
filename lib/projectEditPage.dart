@@ -223,7 +223,14 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                           "Tap in two points to select the default map area of your LA portal. Drag them to modify the area. This area is used in services like collections, regions and spatial in their main page.",
                       helpPage: "Glossary#Services-default-map-area"),
                   SizedBox(height: 20),
-                  MapAreaSelector()
+                  MapAreaSelector(),
+                  // MAP AREA NAME
+                  MessageItem(_project, LAVariableDesc.get("map_zone_name"),
+                      (value) {
+                    _project.setVariable(
+                        LAVariableDesc.get("map_zone_name"), value);
+                    vm.onSaveCurrentProject(_project);
+                  }).buildTitle(context),
                 ])),
             Step(
                 isActive: _setIsActive(_serversStep),

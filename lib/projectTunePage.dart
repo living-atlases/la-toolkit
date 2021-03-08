@@ -47,9 +47,8 @@ class LAProjectTunePage extends StatelessWidget {
         var lastCategory;
         var lastSubcategory;
         LAVariableDesc.map.entries
-            // We moved "ansible_user" to the servers definition
             .where((element) =>
-                element.key != "ansible_user" &&
+                element.value.inTunePage &&
                 ((!currentProject.advancedTune && !element.value.advanced) ||
                     currentProject.advancedTune))
             .forEach((entry) {

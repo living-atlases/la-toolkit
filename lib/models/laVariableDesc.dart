@@ -44,6 +44,7 @@ class LAVariableDesc {
       internal; // used by non ALA code to, for instance, generate inventories,...
   bool advanced;
   bool enabled;
+  bool inTunePage;
 
   LAVariableDesc(
       {@required this.name,
@@ -58,6 +59,7 @@ class LAVariableDesc {
       this.help,
       this.confName,
       this.defValue,
+      this.inTunePage = true,
       this.advanced = false,
       this.internal = false,
       this.enabled = true})
@@ -79,6 +81,7 @@ class LAVariableDesc {
           confName == other.confName &&
           internal == other.internal &&
           advanced == other.advanced &&
+          inTunePage == other.inTunePage &&
           enabled == other.enabled;
 
   @override
@@ -94,6 +97,7 @@ class LAVariableDesc {
       confName.hashCode ^
       internal.hashCode ^
       advanced.hashCode ^
+      inTunePage.hashCode ^
       enabled.hashCode;
 
   static final Map<String, LAVariableDesc> map = {
@@ -103,8 +107,18 @@ class LAVariableDesc {
         regExp: LARegExp.username,
         error: "Invalid username",
         help: "Before-Start-Your-LA-Installation#default-user-ubuntu",
+        // We moved "ansible_user" to the servers definition
+        inTunePage: false,
         hint:
             "The user name that we'll use to access to your servers with sudo passwordless permission. By default 'ubuntu'"),
+    "map_zone_name": LAVariableDesc(
+        name: 'Name of the map area',
+        nameInt: "map_zone_name",
+        regExp: LARegExp.projectNameRegexp,
+        help: "Glossary#Name-map-area",
+        error: 'Name of the map area invalid.',
+        hint: "For e.g.: 'Australia', 'Vermont', 'UK', ...",
+        inTunePage: false),
     "support_email": LAVariableDesc(
         name: "Support email",
         nameInt: "support_email",
