@@ -27,12 +27,12 @@ DOCUMENTATION = '''
         ini:
           - section: defaults
             key: log_folder
-      log_file:
+      json_file:
         version_added: '2.9'
         default: results.json
         description: The folder where log files will be created.
         env:
-          - name: ANSIBLE_LOG_FILE
+          - name: ANSIBLE_JSON_FILE
         ini:
           - section: defaults
             key: log_file
@@ -93,7 +93,7 @@ class CallbackModule(CallbackBase):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
         self.log_folder = self.get_option("log_folder")
-        self.log_file = self.get_option("log_file")
+        self.log_file = self.get_option("json_file")
 
         if not os.path.exists(self.log_folder):
             makedirs_safe(self.log_folder)

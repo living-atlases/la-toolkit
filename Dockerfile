@@ -85,6 +85,7 @@ RUN mkdir /home/ubuntu/ansible/la-inventories && \
         mkdir /home/ubuntu/ansible-callbacks && \
         mkdir /home/ubuntu/ansible/logs
 COPY docker/json-ansible-callback.py /home/ubuntu/ansible-callbacks/json-ansible-callback.py
+COPY docker/logs-colorized-ansible-callback.py /home/ubuntu/ansible-callbacks/logs-colorized-ansible-callback.py
 RUN chown ubuntu:ubuntu /home/ubuntu/.ansible.cfg
 RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible/
 RUN chown -R ubuntu:ubuntu /home/ubuntu/ansible-callbacks
