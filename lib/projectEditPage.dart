@@ -251,14 +251,19 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                         cursorColor: Colors.orange,
                         // TODO: When deployed change this
                         style: LAColorTheme.unDeployedTextStyle,
-                        onFieldSubmitted: (value) => _addServer(
-                            value, _project, vm.onSaveCurrentProject),
+                        initialValue: null,
+                        onFieldSubmitted: (value) =>
+                            serversNameSplit(value).forEach((server) {
+                          _addServer(
+                              server.trim(), _project, vm.onSaveCurrentProject);
+                        }),
                         focusNode: _focusNodes[_serversStep],
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (String value) {
-                          return !LARegExp.hostnameRegexp.hasMatch(value) //
-                              ? 'Invalid server name.'
-                              : null;
+                          return LARegExp.hostnameRegexp.hasMatch(value) ||
+                                  LARegExp.multiHostnameRegexp.hasMatch(value)
+                              ? null
+                              : 'Invalid server name.';
                         },
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
@@ -267,14 +272,18 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
                                   if (_formKeys[_serversStep]
                                       .currentState
                                       .validate()) {
-                                    _addServer(_serverAddController.text,
-                                        _project, vm.onSaveCurrentProject);
+                                    serversNameSplit(
+                                      _serverAddController.text,
+                                    ).forEach((server) {
+                                      _addServer(server, _project,
+                                          vm.onSaveCurrentProject);
+                                    });
                                   }
                                 },
                                 color: LAColorTheme.inactive),
                             hintText: _serverHint,
                             labelText:
-                                'Type the name of one of your servers (Press \'enter\' to add it)'),
+                                'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
                       ),
                       TipsCard(text: """## Tips
 See the [infrastructure requirements page](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Infrastructure-Requirements) and other portals infrastructure in [our documentation wiki](https://github.com/AtlasOfLivingAustralia/documentation/wiki/) to dimension your LA portal. For a test portal a big server can host the main basic LA services.
@@ -450,6 +459,9 @@ If you have doubts or need to ask for some information, save this project and co
           );
         });
   }
+
+  List<String> serversNameSplit(String value) =>
+      value.split(new RegExp(r"[, ]+"));
 
   void onStepCancel(_ProjectPageViewModel vm, LAProject project) {
     cancel();

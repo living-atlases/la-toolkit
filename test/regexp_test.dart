@@ -40,6 +40,12 @@ void main() {
     var string = 'vm org';
     expect(LARegExp.hostnameRegexp.hasMatch(string), equals(false));
   });
+  test('muilt hostname regexp should not allow non letters', () {
+    List<String> names = ['vm org', 'vm1, vm2', 'vm1,vm2'];
+    names.forEach((name) {
+      expect(LARegExp.multiHostnameRegexp.hasMatch(name), equals(true));
+    });
+  });
   test('hostname regexp should allow basic names', () {
     var string = 'vm1';
     expect(LARegExp.hostnameRegexp.hasMatch(string), equals(true));
