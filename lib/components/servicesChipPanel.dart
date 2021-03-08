@@ -9,7 +9,8 @@ class ServicesChipPanel extends StatefulWidget {
   final Function(List<String>) onChange;
   final List<String> services;
 
-  ServicesChipPanel({Key key, this.onChange, this.services}) : super(key: key);
+  ServicesChipPanel({Key key, @required this.onChange, @required this.services})
+      : super(key: key);
 
   @override
   _ServicesChipPanelState createState() => _ServicesChipPanelState();

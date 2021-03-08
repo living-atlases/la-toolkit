@@ -163,6 +163,23 @@ class Api {
         action.onStart(l['logsSuffix']);
       } else
         action.onError(response.statusCode);
-    }).catchError((error) => {action.onError(error)});
+    }).catchError((error) {
+      print(error);
+      action.onError(error);
+    });
+  }
+
+  static Future<List<dynamic>> getAnsiblewResults(String logsSuffix) async {
+    if (AppUtils.isDemo()) return [];
+    var url = "${env['BACKEND']}api/v1/ansiblew-results";
+    var response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({'logsSuffix': logsSuffix})));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> l = json.decode(response.body);
+      return l['results'];
+    } else {
+      throw Exception('Failed to load results');
+    }
   }
 }

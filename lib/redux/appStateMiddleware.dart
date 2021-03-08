@@ -94,6 +94,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is DeployProject) {
       Api.ansiblew(action);
     }
+    if (action is GetDeployProjectResults) {
+      Api.getAnsiblewResults(action.logsSuffix).then((results) {
+        store.dispatch(ShowDeployProjectResults(results));
+      });
+    }
     next(action);
   }
 

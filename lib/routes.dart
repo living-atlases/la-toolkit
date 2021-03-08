@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/widgets.dart';
+import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/projectViewPage.dart';
@@ -45,6 +46,8 @@ class Routes {
         case DeployPage.routeName:
           return DeployPage();
           break;
+        case DeployResultsPage.routeName:
+          return DeployResultsPage();
         default:
           return HomePage(title: appName);
           break;

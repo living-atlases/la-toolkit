@@ -14,6 +14,7 @@ extension LAProjectCopyWith on LAProject {
     String alaInstallRelease,
     String domain,
     bool isCreated,
+    dynamic lastDeploymentResults,
     String longName,
     List<double> mapBounds1stPoint,
     List<double> mapBounds2ndPoint,
@@ -35,6 +36,8 @@ extension LAProjectCopyWith on LAProject {
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
       domain: domain ?? this.domain,
       isCreated: isCreated ?? this.isCreated,
+      lastDeploymentResults:
+          lastDeploymentResults ?? this.lastDeploymentResults,
       longName: longName ?? this.longName,
       mapBounds1stPoint: mapBounds1stPoint ?? this.mapBounds1stPoint,
       mapBounds2ndPoint: mapBounds2ndPoint ?? this.mapBounds2ndPoint,
@@ -89,6 +92,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
         ?.toList(),
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num)?.toDouble(),
+    lastDeploymentResults: json['lastDeploymentResults'],
     advancedEdit: json['advancedEdit'],
     advancedTune: json['advancedTune'],
   );
@@ -113,6 +117,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'mapBounds1stPoint': instance.mapBounds1stPoint,
       'mapBounds2ndPoint': instance.mapBounds2ndPoint,
       'mapZoom': instance.mapZoom,
+      'lastDeploymentResults': instance.lastDeploymentResults,
     };
 
 T _$enumDecode<T>(

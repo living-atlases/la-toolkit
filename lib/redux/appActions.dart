@@ -90,6 +90,18 @@ class DeployProject extends AppActions {
       this.onError});
 }
 
+class GetDeployProjectResults extends AppActions {
+  String logsSuffix;
+
+  GetDeployProjectResults(this.logsSuffix);
+}
+
+class ShowDeployProjectResults extends AppActions {
+  List<dynamic> results;
+
+  ShowDeployProjectResults(this.results);
+}
+
 class OpenProjectTools extends AppActions {
   LAProject project;
 

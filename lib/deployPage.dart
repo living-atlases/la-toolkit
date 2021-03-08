@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/tagsConstants.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
 
@@ -46,35 +47,40 @@ class _DeployPageState extends State<DeployPage> {
       converter: (store) {
         return _DeployViewModel(
             state: store.state,
-            onDeployProject: (project) => store.dispatch(DeployProject(
-                project: project,
-                deployServices: _deployServices,
-                limitToServers: _limitToServers,
-                tags: _tags,
-                skipTags: _skipTags,
-                onlyProperties: _onlyProperties,
-                continueEvenIfFails: _continueEvenIfFails,
-                debug: _debug,
-                dryRun: _dryRun,
-                onStart: (l) {
-                  print("Logs suffix: $l");
-                  logsSuffix = l;
-                  TermDialog.show(context,
-                      title: "Ansible console",
-                      onClose: () => {
-                            // Show the results
-                          });
-                },
-                onError: (error) => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        action: SnackBarAction(
-                          label: 'OK',
-                          onPressed: () {
-                            // Some code to undo the change.
-                          },
-                        ),
-                        content: Text(
-                            'Oooopss, some problem have arisen trying to start the deploy: $error'))))),
+            onDeployProject: (project) {
+              context.showLoaderOverlay();
+              store.dispatch(DeployProject(
+                  project: project,
+                  deployServices: _deployServices,
+                  limitToServers: _limitToServers,
+                  tags: _tags,
+                  skipTags: _skipTags,
+                  onlyProperties: _onlyProperties,
+                  continueEvenIfFails: _continueEvenIfFails,
+                  debug: _debug,
+                  dryRun: _dryRun,
+                  onStart: (l) {
+                    // print("Logs suffix: $l");
+                    logsSuffix = l;
+
+                    context.hideLoaderOverlay();
+                    TermDialog.show(context, title: "Ansible console",
+                        onClose: () async {
+                      // Show the results
+                      store.dispatch(GetDeployProjectResults(logsSuffix));
+                    });
+                  },
+                  onError: (error) => ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(
+                          action: SnackBarAction(
+                            label: 'OK',
+                            onPressed: () {
+                              // Some code to undo the change.
+                            },
+                          ),
+                          content: Text(
+                              'Oooopss, some problem have arisen trying to start the deploy: $error')))));
+            },
             onCancel: (project) => store.dispatch(OpenProjectTools(project)));
       },
       builder: (BuildContext context, _DeployViewModel vm) {

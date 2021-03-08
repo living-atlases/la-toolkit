@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
-import 'package:la_toolkit/components/servicesChipPanel.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:latlong/latlong.dart';
 import 'package:mdi/mdi.dart';
@@ -11,6 +10,7 @@ import 'package:xterm/theme/terminal_themes.dart';
 import 'package:xterm/xterm.dart';
 
 import 'components/defDivider.dart';
+import 'components/resultsChart.dart';
 import 'models/appState.dart';
 
 class SandboxPage extends StatefulWidget {
@@ -78,7 +78,17 @@ class _SandboxPageState extends State<SandboxPage> {
             children: [
               Container(
                 child: Column(
-                  children: [ServicesChipPanel()],
+                  children: [
+                    ResultsChart({
+                      "changed": 0,
+                      "failures": 1,
+                      "ignored": 0,
+                      "ok": 12,
+                      "rescued": 0,
+                      "skipped": 9,
+                      "unreachable": 0
+                    }),
+                  ],
                 ),
               ),
               Column(
@@ -87,7 +97,7 @@ class _SandboxPageState extends State<SandboxPage> {
                   DefDivider(),
                   // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
                   const SizedBox(height: 7),
-
+                  //
                   ElevatedButton.icon(
                       icon: Icon(Mdi.console),
                       label: Text('CONSOLE'),

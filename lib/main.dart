@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
+import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -248,6 +249,9 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
     if (action is UpdateProject) {
       // We open Tools instead of:
       // MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
+    }
+    if (action is ShowDeployProjectResults) {
+      MyApp._navigatorKey.currentState.pushNamed(DeployResultsPage.routeName);
     }
     next(action);
   }

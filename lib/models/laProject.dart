@@ -48,6 +48,7 @@ class LAProject {
   List<double> mapBounds1stPoint = []..length = 2;
   List<double> mapBounds2ndPoint = []..length = 2;
   double mapZoom;
+  List<dynamic> lastDeploymentResults;
 
   LAProject(
       {uuid,
@@ -67,6 +68,7 @@ class LAProject {
       this.mapBounds2ndPoint,
       this.theme = "clean",
       this.mapZoom,
+      lastDeploymentResults,
       advancedEdit,
       advancedTune})
       : uuid = uuid ?? Uuid().v4(),
@@ -75,6 +77,7 @@ class LAProject {
         services = services ?? initialServices,
         variables = variables ?? {},
         serverServices = serverServices ?? {},
+        lastDeploymentResults = lastDeploymentResults ?? [],
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false {
     validateCreation();
@@ -352,6 +355,8 @@ class LAProject {
           alaInstallRelease == other.alaInstallRelease &&
           ListEquality().equals(mapBounds1stPoint, other.mapBounds1stPoint) &&
           ListEquality().equals(mapBounds2ndPoint, other.mapBounds2ndPoint) &&
+          ListEquality()
+              .equals(lastDeploymentResults, other.lastDeploymentResults) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -373,6 +378,7 @@ class LAProject {
       alaInstallRelease.hashCode ^
       ListEquality().hash(mapBounds1stPoint) ^
       ListEquality().hash(mapBounds2ndPoint) ^
+      lastDeploymentResults.hashCode ^
       mapZoom.hashCode;
 
   void serviceInUse(String serviceNameInt, bool use) {
