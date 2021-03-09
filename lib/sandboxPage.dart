@@ -10,7 +10,6 @@ import 'package:xterm/theme/terminal_themes.dart';
 import 'package:xterm/xterm.dart';
 
 import 'components/defDivider.dart';
-import 'components/resultsChart.dart';
 import 'models/appState.dart';
 
 class SandboxPage extends StatefulWidget {
@@ -78,17 +77,7 @@ class _SandboxPageState extends State<SandboxPage> {
             children: [
               Container(
                 child: Column(
-                  children: [
-                    ResultsChart({
-                      "changed": 0,
-                      "failures": 1,
-                      "ignored": 0,
-                      "ok": 12,
-                      "rescued": 0,
-                      "skipped": 9,
-                      "unreachable": 0
-                    }),
-                  ],
+                  children: [],
                 ),
               ),
               Column(
