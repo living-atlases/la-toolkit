@@ -112,7 +112,7 @@ class LAVariableDesc {
         hint:
             "The user name that we'll use to access to your servers with sudo passwordless permission. By default 'ubuntu'"),
     "map_zone_name": LAVariableDesc(
-        name: 'Name of the map area',
+        name: 'Short name of that map area',
         nameInt: "map_zone_name",
         regExp: LARegExp.projectNameRegexp,
         help: "Glossary#Name-map-area",

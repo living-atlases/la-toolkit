@@ -13,6 +13,7 @@ extension LAProjectCopyWith on LAProject {
     dynamic advancedTune,
     String alaInstallRelease,
     String domain,
+    String generatorRelease,
     bool isCreated,
     dynamic lastDeploymentResults,
     String longName,
@@ -35,6 +36,7 @@ extension LAProjectCopyWith on LAProject {
       advancedTune: advancedTune ?? this.advancedTune,
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
       domain: domain ?? this.domain,
+      generatorRelease: generatorRelease ?? this.generatorRelease,
       isCreated: isCreated ?? this.isCreated,
       lastDeploymentResults:
           lastDeploymentResults ?? this.lastDeploymentResults,
@@ -84,6 +86,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     ),
     status: _$enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']),
     alaInstallRelease: json['alaInstallRelease'] as String,
+    generatorRelease: json['generatorRelease'] as String,
     mapBounds1stPoint: (json['mapBounds1stPoint'] as List)
         ?.map((e) => (e as num)?.toDouble())
         ?.toList(),
@@ -114,6 +117,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'status': _$LAProjectStatusEnumMap[instance.status],
       'theme': instance.theme,
       'alaInstallRelease': instance.alaInstallRelease,
+      'generatorRelease': instance.generatorRelease,
       'mapBounds1stPoint': instance.mapBounds1stPoint,
       'mapBounds2ndPoint': instance.mapBounds2ndPoint,
       'mapZoom': instance.mapZoom,

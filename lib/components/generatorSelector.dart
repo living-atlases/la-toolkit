@@ -5,40 +5,40 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/actions.dart';
 
-class ALAInstallSelector extends StatefulWidget {
-  ALAInstallSelector({Key key}) : super(key: key);
+class GeneratorSelector extends StatefulWidget {
+  GeneratorSelector({Key key}) : super(key: key);
 
   @override
-  _ALAInstallSelectorState createState() => _ALAInstallSelectorState();
+  _GeneratorSelectorState createState() => _GeneratorSelectorState();
 }
 
-class _ALAInstallSelectorState extends State<ALAInstallSelector> {
+class _GeneratorSelectorState extends State<GeneratorSelector> {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ALAInstallSelectorViewModel>(
+    return StoreConnector<AppState, _GeneratorSelectorViewModel>(
         converter: (store) {
-      return _ALAInstallSelectorViewModel(
+      return _GeneratorSelectorViewModel(
           state: store.state,
           onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
-    }, builder: (BuildContext context, _ALAInstallSelectorViewModel vm) {
+    }, builder: (BuildContext context, _GeneratorSelectorViewModel vm) {
       var currentProject = vm.state.currentProject;
       return SoftwareSelector(
-          label: "Using ala-install release:",
+          label: "Using generator-la release:",
           tooltip: "Choose the latest release to update your portal",
-          initialValue: currentProject.alaInstallRelease ??
-              vm.state.alaInstallReleases[0],
-          versions: vm.state.alaInstallReleases,
+          initialValue:
+              currentProject.generatorRelease ?? vm.state.generatorReleases[0],
+          versions: vm.state.generatorReleases,
           onChange: (value) {
-            currentProject.alaInstallRelease = value;
+            currentProject.generatorRelease = value;
             vm.onUpdateProject(currentProject);
           });
     });
   }
 }
 
-class _ALAInstallSelectorViewModel {
+class _GeneratorSelectorViewModel {
   final AppState state;
   final void Function(LAProject project) onUpdateProject;
 
-  _ALAInstallSelectorViewModel({this.state, this.onUpdateProject});
+  _GeneratorSelectorViewModel({this.state, this.onUpdateProject});
 }

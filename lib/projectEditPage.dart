@@ -132,6 +132,8 @@ class _LAProjectEditPageState extends State<LAProjectEditPage> {
           // Set default version of the project
           _project.alaInstallRelease =
               _project.alaInstallRelease ?? vm.state.alaInstallReleases[0];
+          _project.generatorRelease =
+              _project.generatorRelease ?? vm.state.generatorReleases[0];
           _step = vm.state.currentStep ?? 0;
           print('Project edit currentStep: $_step');
           _steps = [

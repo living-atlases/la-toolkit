@@ -29,6 +29,14 @@ class OnFetchAlaInstallReleases extends AppActions {
 
 class OnFetchAlaInstallReleasesFailed extends AppActions {}
 
+class OnFetchGeneratorReleases extends AppActions {
+  List<String> releases;
+
+  OnFetchGeneratorReleases(this.releases);
+}
+
+class OnFetchGeneratorReleasesFailed extends AppActions {}
+
 class CreateProject extends AppActions {
   CreateProject();
 }
@@ -59,8 +67,8 @@ class TuneProject extends AppActions {
 
 class PrepareDeployProject extends AppActions {
   LAProject project;
-
-  PrepareDeployProject(this.project);
+  VoidCallback onReady;
+  PrepareDeployProject(this.project, this.onReady);
 }
 
 class DeployProject extends AppActions {

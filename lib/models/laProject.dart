@@ -45,6 +45,7 @@ class LAProject {
   LAProjectStatus status;
   String theme;
   String alaInstallRelease;
+  String generatorRelease;
   List<double> mapBounds1stPoint = []..length = 2;
   List<double> mapBounds2ndPoint = []..length = 2;
   double mapZoom;
@@ -64,6 +65,7 @@ class LAProject {
       Map<String, List<String>> serverServices,
       this.status,
       this.alaInstallRelease,
+      this.generatorRelease,
       this.mapBounds1stPoint,
       this.mapBounds2ndPoint,
       this.theme = "clean",
@@ -216,7 +218,7 @@ class LAProject {
         .toList()
         .join(', ');
     return '''longName: $longName ($shortName), domain: $domain, 
-    isCreated: $isCreated,  validCreated: ${validateCreation()}, status: ${status.title}, ala-install: $alaInstallRelease
+    isCreated: $isCreated,  validCreated: ${validateCreation()}, status: ${status.title}, ala-install: $alaInstallRelease, generator: $generatorRelease 
     map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
     servers (${servers.length}): $servers 
     servers-services: $sToS  
@@ -353,6 +355,7 @@ class LAProject {
           advancedTune == other.advancedTune &&
           status == other.status &&
           alaInstallRelease == other.alaInstallRelease &&
+          generatorRelease == other.generatorRelease &&
           ListEquality().equals(mapBounds1stPoint, other.mapBounds1stPoint) &&
           ListEquality().equals(mapBounds2ndPoint, other.mapBounds2ndPoint) &&
           ListEquality()
@@ -376,6 +379,7 @@ class LAProject {
       additionalVariables.hashCode ^
       status.hashCode ^
       alaInstallRelease.hashCode ^
+      generatorRelease.hashCode ^
       ListEquality().hash(mapBounds1stPoint) ^
       ListEquality().hash(mapBounds2ndPoint) ^
       lastDeploymentResults.hashCode ^

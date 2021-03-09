@@ -18,6 +18,10 @@ final appReducer = combineReducers<AppState>([
       _onFetchAlaInstallReleases),
   new TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(
       _onFetchAlaInstallReleasesFailed),
+  new TypedReducer<AppState, OnFetchGeneratorReleases>(
+      _onFetchGeneratorReleases),
+  new TypedReducer<AppState, OnFetchGeneratorReleasesFailed>(
+      _onFetchGeneratorReleasesFailed),
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
@@ -58,6 +62,16 @@ AppState _onFetchAlaInstallReleases(
 
 AppState _onFetchAlaInstallReleasesFailed(
     AppState state, OnFetchAlaInstallReleasesFailed action) {
+  return state;
+}
+
+AppState _onFetchGeneratorReleases(
+    AppState state, OnFetchGeneratorReleases action) {
+  return state.copyWith(generatorReleases: action.releases);
+}
+
+AppState _onFetchGeneratorReleasesFailed(
+    AppState state, OnFetchGeneratorReleasesFailed action) {
   return state;
 }
 

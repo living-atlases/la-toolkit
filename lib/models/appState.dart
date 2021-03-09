@@ -49,6 +49,7 @@ class AppState {
   // from server api call
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
+  final List<String> generatorReleases;
   @JsonSerializable(nullable: false)
   final List<SshKey> sshKeys;
 
@@ -59,6 +60,7 @@ class AppState {
       this.currentStep,
       this.status,
       this.alaInstallReleases,
+      this.generatorReleases,
       this.sshKeys});
   /*
       sshKeys})
@@ -80,6 +82,7 @@ class AppState {
           currentStep == other.currentStep &&
           listEquals(projects, other.projects) &&
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
+          listEquals(generatorReleases, other.generatorReleases) &&
           listEquals(sshKeys, other.sshKeys);
 
   @override
@@ -90,6 +93,7 @@ class AppState {
       currentStep.hashCode ^
       ListEquality().hash(projects) ^
       ListEquality().hash(alaInstallReleases) ^
+      ListEquality().hash(generatorReleases) ^
       ListEquality().hash(sshKeys);
 
   @override
@@ -100,6 +104,7 @@ class AppState {
 LA projects: ${projects.length} 
 view status: $status, currentStep: $currentStep
 ala-install releases: $alaInstallReleases
+generator releases: $generatorReleases
 keys: ${sshKeys == null ? 0 : sshKeys.length}
 currentProject of ${projects.length} -----
 $currentProject

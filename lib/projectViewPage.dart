@@ -11,6 +11,7 @@ import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'components/alertCard.dart';
+import 'components/generatorSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
@@ -35,8 +36,11 @@ class LAProjectViewPage extends StatelessWidget {
               state: store.state,
               onOpenProject: (project) => store.dispatch(OpenProject(project)),
               onTuneProject: (project) => store.dispatch(TuneProject(project)),
-              onDeployProject: (project) =>
-                  store.dispatch(PrepareDeployProject(project)),
+              onDeployProject: (project) {
+                context.showLoaderOverlay();
+                store.dispatch(PrepareDeployProject(
+                    project, () => context.hideLoaderOverlay()));
+              },
               onDelProject: (project) => store.dispatch(DelProject(project)),
               onGenInvProject: (project) =>
                   store.dispatch(GenerateInvProject(project)),
@@ -148,7 +152,8 @@ class LAProjectViewPage extends StatelessWidget {
                         Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              SizedBox(width: 250, child: ALAInstallSelector())
+                              SizedBox(width: 250, child: ALAInstallSelector()),
+                              SizedBox(width: 250, child: GeneratorSelector())
                             ]),
                         SizedBox(height: 20),
                         ResponsiveGridRow(

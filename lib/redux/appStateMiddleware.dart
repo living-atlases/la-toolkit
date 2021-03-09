@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/utils/api.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,23 +47,45 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       /* if (!AppUtils.isDev() ||
           store.state.alaInstallReleases == null ||
           store.state.alaInstallReleases.length == 0) { */
-      var url =
+      var alaInstallReleasesApiUrl =
           'https://api.github.com/repos/AtlasOfLivingAustralia/ala-install/releases';
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        var l = jsonDecode(response.body) as List;
+      var alaInstallReleasesResponse = await http.get(alaInstallReleasesApiUrl);
+      if (alaInstallReleasesResponse.statusCode == 200) {
+        var l = jsonDecode(alaInstallReleasesResponse.body) as List;
         List<String> alaInstallReleases = [];
         l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
         // Remove the old ones
-        alaInstallReleases.removeRange(
-            alaInstallReleases.length - 6, alaInstallReleases.length);
+        num limitResults = 6;
+        alaInstallReleases.removeRange(alaInstallReleases.length - limitResults,
+            alaInstallReleases.length);
         alaInstallReleases.add('upstream');
         store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
         scanSshKeys(store, () => {});
       } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
       }
-      // }
+      if (AppUtils.isDemo()) {
+        store.dispatch(OnFetchGeneratorReleases(['1.1.31', '1.1.30']));
+      } else {
+        var generatorReleasesApiUrl =
+            "https://registry.npmjs.org/generator-living-atlas";
+        // As this does not have CORS enabled we use a proxy
+        generatorReleasesApiUrl =
+            "${env['BACKEND']}api/v1/get-generator-versions";
+        var generatorReleasesResponse = await http.get(
+          generatorReleasesApiUrl,
+          //  headers: {'Accept': 'application/vnd.npm.install-v1+json'},
+        );
+        if (generatorReleasesResponse.statusCode == 200) {
+          Map<String, dynamic> l = json.decode(generatorReleasesResponse.body);
+          Map<String, dynamic> versions = l['versions'];
+          List<String> generatorReleases = [];
+          versions.keys.forEach((key) => generatorReleases.insert(0, key));
+          store.dispatch(OnFetchGeneratorReleases(generatorReleases));
+        } else {
+          store.dispatch(OnFetchGeneratorReleasesFailed());
+        }
+      }
     }
     if (action is AddProject) {
       genSshConf(action.project);
@@ -90,6 +114,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is PrepareDeployProject) {
       Api.alaInstallSelect(action.project.alaInstallRelease)
           .then((_) => scanSshKeys(store, () => {}));
+      Api.generatorSelect(action.project.generatorRelease)
+          .then((_) => action.onReady());
     }
     if (action is DeployProject) {
       Api.ansiblew(action);

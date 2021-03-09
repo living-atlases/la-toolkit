@@ -12,6 +12,7 @@ extension AppStateCopyWith on AppState {
     LAProject currentProject,
     int currentStep,
     bool firstUsage,
+    List<String> generatorReleases,
     List<LAProject> projects,
     List<SshKey> sshKeys,
     LAProjectViewStatus status,
@@ -21,6 +22,7 @@ extension AppStateCopyWith on AppState {
       currentProject: currentProject ?? this.currentProject,
       currentStep: currentStep ?? this.currentStep,
       firstUsage: firstUsage ?? this.firstUsage,
+      generatorReleases: generatorReleases ?? this.generatorReleases,
       projects: projects ?? this.projects,
       sshKeys: sshKeys ?? this.sshKeys,
       status: status ?? this.status,
@@ -46,6 +48,8 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
     status: _$enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
     alaInstallReleases:
         (json['alaInstallReleases'] as List)?.map((e) => e as String)?.toList(),
+    generatorReleases:
+        (json['generatorReleases'] as List)?.map((e) => e as String)?.toList(),
     sshKeys: (json['sshKeys'] as List)
         ?.map((e) =>
             e == null ? null : SshKey.fromJson(e as Map<String, dynamic>))
@@ -60,6 +64,7 @@ Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'currentStep': instance.currentStep,
       'projects': instance.projects?.map((e) => e?.toJson())?.toList(),
       'alaInstallReleases': instance.alaInstallReleases,
+      'generatorReleases': instance.generatorReleases,
       'sshKeys': instance.sshKeys?.map((e) => e?.toJson())?.toList(),
     };
 

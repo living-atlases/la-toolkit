@@ -120,7 +120,16 @@ class Api {
   static Future<void> alaInstallSelect(String version) async {
     if (AppUtils.isDemo()) return;
     var url = "${env['BACKEND']}api/v1/ala-install-select/$version";
-    http
+    await http
+        .get(url)
+        .then((response) => jsonDecode(response.body))
+        .catchError((error) => {print(error)});
+  }
+
+  static Future<void> generatorSelect(String version) async {
+    if (AppUtils.isDemo()) return;
+    var url = "${env['BACKEND']}api/v1/generator-select/$version";
+    await http
         .get(url)
         .then((response) => jsonDecode(response.body))
         .catchError((error) => {print(error)});
