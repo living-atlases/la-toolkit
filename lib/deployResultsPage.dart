@@ -13,6 +13,9 @@ import 'laTheme.dart';
 
 class DeployResultsPage extends StatelessWidget {
   static const routeName = "deploy-results";
+
+  // final Terminal terminal = Terminal(theme: TerminalThemes.defaultTheme);
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static const resultTypes = [
     "changed",
@@ -47,7 +50,6 @@ class DeployResultsPage extends StatelessWidget {
 
         int failures = resultsTotals['failures'];
         bool noFailures = failures == 0;
-
         return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
