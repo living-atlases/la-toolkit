@@ -5,6 +5,7 @@ import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:latlong/latlong.dart';
 import 'package:uuid/uuid.dart';
 
@@ -298,8 +299,10 @@ class LAProject {
       "LA_domain": domain,
       "LA_enable_ssl": useSSL,
       "LA_use_git": true,
+      "LA_theme": theme,
       "LA_generate_branding": true
     };
+    conf.addAll(MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint));
     services.forEach((key, service) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
