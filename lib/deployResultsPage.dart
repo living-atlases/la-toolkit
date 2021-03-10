@@ -101,8 +101,13 @@ class DeployResultsPage extends StatelessWidget {
                             SizedBox(height: 20),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [Column(children: resultsDetails)]),
-                            SizedBox(height: 40),
+                                children: [
+                                  Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: resultsDetails)
+                                ]),
+                            SizedBox(height: 20),
                             ResultsChart(resultsTotals)
                           ],
                         )),

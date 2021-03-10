@@ -14,17 +14,20 @@ class DeploySubResultWidget extends StatelessWidget {
         child: Row(
           children: [
             Text("$name: ", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("changed (${results['changed']})",
-                style: TextStyle(color: ResultsColors.changed)),
-            Text(", "),
-            Text("failures (${results['failures']})",
-                style: TextStyle(color: ResultsColors.failure)),
-            Text(", "),
+            if (results['changed'] > 0)
+              Text("changed (${results['changed']})",
+                  style: TextStyle(color: ResultsColors.changed)),
+            if (results['changed'] > 0) Text(", "),
+            if (results['failures'] > 0)
+              Text("failures (${results['failures']})",
+                  style: TextStyle(color: ResultsColors.failure)),
+            if (results['failures'] > 0) Text(", "),
             Text("ok (${results['ok']})",
                 style: TextStyle(color: ResultsColors.ok)),
-            Text(", "),
-            Text("ignored (${results['ignored']})",
-                style: TextStyle(color: ResultsColors.ignored)),
+            if (results['ignored'] > 0) Text(", "),
+            if (results['ignored'] > 0)
+              Text("ignored (${results['ignored']})",
+                  style: TextStyle(color: ResultsColors.ignored)),
             if (results['rescued'] > 0 || results['skipped'] > 0) Text(", "),
             if (results['rescued'] > 0)
               Text("rescued (${results['rescued']})",
