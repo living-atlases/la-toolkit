@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 # Install some dependencies via APT
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-        apt-get install -y software-properties-common python-docopt sudo curl byobu && \
+        apt-get install -y software-properties-common python-docopt sudo curl byobu jq && \
         apt-get install -y python-dev git python-pip python3-minimal 'python2.*-minimal' && \
         apt-get install -y python-docopt nagios-plugins iputils-ping openjdk-8-jre && \
         apt-get install -y gnupg2 python3-pip sshpass openssh-client openssh-server vim && \
@@ -103,12 +103,13 @@ RUN su - ubuntu -c 'mkdir -p "/home/ubuntu/.npm-packages/lib"'
 RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
 RUN su - ubuntu -c 'npm install -g yo'
 RUN su - ubuntu -c 'npm install -g sails'
+RUN su - ubuntu -c 'npm install -g forever'
 RUN echo "2021030401"
 RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 
 # ala-install
 RUN echo "2020112401 (change this date to rebuild & repeat this and the following steps)"
-RUN  su - ubuntu -c 'git clone --depth 1 --branch v2.0.5 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
+RUN su - ubuntu -c 'git clone --depth 1 --branch v2.0.5 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
@@ -122,10 +123,6 @@ RUN echo "2021030401"
 COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
-
-# We'll use env variables instead
-# RUN echo 'export ANSIBLE_LOG_PATH=/home/ubuntu/ansible.log' >> /home/ubuntu/.bashrc
-# RUN echo 'export ANSIBLE_LOG_PATH=/home/ubuntu/ansible.log' >> /home/ubuntu/.profile
 
 # The year of ALA Portal launch ;-)
 EXPOSE 2010
