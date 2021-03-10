@@ -68,7 +68,8 @@ class TuneProject extends AppActions {
 class PrepareDeployProject extends AppActions {
   LAProject project;
   VoidCallback onReady;
-  PrepareDeployProject(this.project, this.onReady);
+  Function(String) onError;
+  PrepareDeployProject({this.project, this.onReady, this.onError});
 }
 
 class DeployProject extends AppActions {
