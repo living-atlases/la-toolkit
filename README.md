@@ -139,7 +139,10 @@ Deployment Ansible terminal:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s17.png)
 
-Deployment results:
+Deployment results (success):
+![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s19.png)
+
+Deployment results (failed):
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s18.png)
 
 Console for the intrepids:
