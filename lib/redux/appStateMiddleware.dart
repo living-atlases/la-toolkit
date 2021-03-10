@@ -112,9 +112,12 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           .then((_) => scanSshKeys(store, () => {}));
     }
     if (action is PrepareDeployProject) {
-      Api.alaInstallSelect(action.project.alaInstallRelease)
+      await Api.alaInstallSelect(
+              action.project.alaInstallRelease, action.onError)
           .then((_) => scanSshKeys(store, () => {}));
-      Api.generatorSelect(action.project.generatorRelease)
+      await Api.regenerateInv(
+          uuid: action.project.uuid, onError: action.onError);
+      await Api.generatorSelect(action.project.generatorRelease, action.onError)
           .then((_) => action.onReady());
     }
     if (action is DeployProject) {

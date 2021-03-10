@@ -117,34 +117,61 @@ class Api {
     return;
   }
 
-  static Future<void> alaInstallSelect(String version) async {
+  static Future<void> alaInstallSelect(
+      String version, Function(String) onError) async {
+    const userError = 'Error selecting that ala-install version';
     if (AppUtils.isDemo()) return;
     var url = "${env['BACKEND']}api/v1/ala-install-select/$version";
     await http
         .get(url)
-        .then((response) => jsonDecode(response.body))
-        .catchError((error) => {print(error)});
+        .then(
+            (response) => response.statusCode != 200 ? onError(userError) : {})
+        .catchError((error) {
+      print(error);
+      onError(userError);
+    });
   }
 
-  static Future<void> generatorSelect(String version) async {
+  static Future<void> generatorSelect(
+      String version, Function(String) onError) async {
     if (AppUtils.isDemo()) return;
+    const userError = 'Error installing that generator version';
     var url = "${env['BACKEND']}api/v1/generator-select/$version";
     await http
         .get(url)
-        .then((response) => jsonDecode(response.body))
-        .catchError((error) => {print(error)});
+        .then(
+            (response) => response.statusCode != 200 ? onError(userError) : {})
+        .catchError((error) {
+      print(error);
+      onError(userError);
+    });
+  }
+
+  static Future<void> regenerateInv(
+      {String uuid, Function(String) onError}) async {
+    if (AppUtils.isDemo()) return;
+    const userError = 'Error generating your inventories';
+    var url = "${env['BACKEND']}api/v1/gen/$uuid/false";
+    http
+        .get(url)
+        .then(
+            (response) => response.statusCode != 200 ? onError(userError) : {})
+        .catchError((error) {
+      print(error);
+      onError(userError);
+    });
   }
 
   static Future<void> term(
       {VoidCallback onStart, ErrorCallback onError}) async {
     if (AppUtils.isDemo()) return;
     var url = "${env['BACKEND']}api/v1/term";
-    http.get(url).then((response) {
-      if (response.statusCode == 200)
-        onStart();
-      else
-        onError(response.statusCode);
-    }).catchError((error) => {print(error)});
+    http
+        .get(url)
+        .then((response) => response.statusCode == 200
+            ? onStart()
+            : onError(response.statusCode))
+        .catchError((error) => {print(error)});
   }
 
   static Future<void> ansiblew(DeployProject action) async {
