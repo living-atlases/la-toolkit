@@ -45,6 +45,7 @@ class LAProjectViewPage extends StatelessWidget {
                       context.hideLoaderOverlay();
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text(e),
+                        duration: Duration(days: 365),
                         action: SnackBarAction(
                           label: 'OK',
                           onPressed: () {},
