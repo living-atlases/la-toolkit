@@ -12,10 +12,15 @@ class ToolShortcut extends StatelessWidget {
   Widget build(BuildContext context) {
     // https://api.flutter.dev/flutter/material/Colors/grey-constant.html
     Color color = tool.enabled ? LAColorTheme.laPalette : Colors.grey[500];
-    Widget result = ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        elevation: 3,
-        primary: Colors.white,
+    Color backgroundColor = tool.enabled ? Colors.white : Colors.grey[200];
+    double elevation = tool.enabled ? 4 : 0;
+    Widget btn = ElevatedButton(
+      style: TextButton.styleFrom(
+// ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        elevation: elevation,
+        shadowColor: LAColorTheme.laPalette,
+        // primary: Colors.white,
         padding: EdgeInsets.all(8.0),
       ),
       // disabledColor: Colors.grey[200],
@@ -59,14 +64,14 @@ class ToolShortcut extends StatelessWidget {
       ),
     );
     if (tool.tooltip != null) {
-      result = Tooltip(
+      return Tooltip(
         waitDuration: Duration(seconds: 1, milliseconds: 0),
         padding: EdgeInsets.all(10),
         message: tool.tooltip,
-        child: result,
+        child: btn,
       );
     }
-    return result;
+    return btn;
   }
 
   showAlertDialog(BuildContext context, VoidCallback onConfirm) {
