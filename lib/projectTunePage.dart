@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
@@ -139,37 +141,36 @@ class LAProjectTunePage extends StatelessWidget {
                             ),
                           if (currentProject.advancedTune) SizedBox(height: 20),
                           if (currentProject.advancedTune)
-                            ListTile(
-                                title: GenericTextFormField(
-                                    //label:
-                                    //  ,
-                                    hint: "",
-                                    initialValue:
-                                        currentProject.additionalVariables !=
-                                                    null &&
-                                                currentProject
-                                                        .additionalVariables
-                                                        .length >
-                                                    0
-                                            ? currentProject.additionalVariables
-                                            : _initialExtraAnsibleVariables(
-                                                currentProject),
-                                    maxLines: 100,
-                                    fillColor: Colors.grey[100],
-                                    //hintStyle: TextStyle(
-                                    //    fontSize: 20, color: Colors.black54),
-                                    enabledBorder: true,
-                                    allowEmpty: true,
-                                    monoSpaceFont: true,
-                                    error: "",
-                                    onChanged: (value) {
-                                      currentProject.additionalVariables =
-                                          value;
-                                      vm.onSaveProject(currentProject);
-                                    }),
-                                trailing: HelpIcon(
+                            // This breaks the newline enter key:
+                            //ListTile(
+                            //                        title:
+                            GenericTextFormField(
+                                initialValue:
+                                    currentProject.additionalVariables !=
+                                                null &&
+                                            currentProject.additionalVariables
+                                                    .length >
+                                                0
+                                        ? utf8.decode(base64.decode(
+                                            currentProject.additionalVariables))
+                                        : _initialExtraAnsibleVariables(
+                                            currentProject),
+                                minLines: 100,
+                                maxLines: null,
+                                fillColor: Colors.grey[100],
+                                enabledBorder: true,
+                                allowEmpty: true,
+                                keyboardType: TextInputType.multiline,
+                                monoSpaceFont: true,
+                                error: "",
+                                onChanged: (value) {
+                                  currentProject.additionalVariables =
+                                      base64.encode(utf8.encode(value));
+                                  vm.onSaveProject(currentProject);
+                                }),
+                          /* trailing: HelpIcon(
                                     wikipage:
-                                        "Version-control-of-your-configurations#about-maintaining-dataconfig")),
+                                        "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
                           SizedBox(height: 20),
                           Row(children: [
                             Text(
