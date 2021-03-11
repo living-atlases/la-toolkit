@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -291,6 +293,12 @@ class LAProject {
     servers.remove(serverToDelete);
   }
 
+  String additionalVariablesDecoded() {
+    return additionalVariables != null && additionalVariables.length > 0
+        ? utf8.decode(base64.decode(additionalVariables))
+        : "";
+  }
+
   Map<String, dynamic> toGeneratorJson() {
     Map<String, dynamic> conf = {
       "LA_uuid": uuid,
@@ -308,6 +316,9 @@ class LAProject {
     serversWithServices().forEach((server) => ips.add(server.ip));
     conf["LA_server_ips"] = ips.join(',');
 
+    if (additionalVariables != null && additionalVariables != "") {
+      conf["LA_additionalVariables"] = additionalVariables;
+    }
     services.forEach((key, service) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
