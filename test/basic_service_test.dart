@@ -1,5 +1,6 @@
 import 'package:la_toolkit/models/basicService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -60,5 +61,17 @@ void main() {
         LAServiceDesc.get("collectory").isCompatibleWith(
             alaInstallVersion, LAServiceDesc.getE(LAServiceName.species_lists)),
         equals(true));
+  });
+
+  test('List variables', () {
+    String list = '';
+    List<String> laVariablesList =
+        LAVariableDesc.map.values.map((v) => v.nameInt).toList();
+    laVariablesList.sort();
+    laVariablesList.forEach((e) {
+      list = list + "LA_variable_$e: 'LA_variable_$e',\n";
+    });
+    print(list);
+    expect(list.length, greaterThan(0));
   });
 }
