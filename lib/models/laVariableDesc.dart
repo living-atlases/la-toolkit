@@ -6,11 +6,13 @@ import 'laProject.dart';
 
 enum LAVariableType { String, int, double, bool }
 
-enum LAVariableSubcategory { cache, downloads, apikeys, otherkeys, ssl }
+enum LAVariableSubcategory { org, cache, downloads, apikeys, otherkeys, ssl }
 
 extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
   String get title {
     switch (this) {
+      case LAVariableSubcategory.org:
+        return 'Organization';
       case LAVariableSubcategory.cache:
         return 'Cache';
       case LAVariableSubcategory.downloads:
@@ -37,11 +39,9 @@ class LAVariableDesc {
   String error;
   RegExp regExp;
   String help;
-  List<String> ansibleEquiv;
+
   Function defValue;
   String confName;
-  bool
-      internal; // used by non ALA code to, for instance, generate inventories,...
   bool advanced;
   bool enabled;
   bool inTunePage;
@@ -52,7 +52,6 @@ class LAVariableDesc {
       this.service = LAServiceName.all,
       this.subcategory,
       this.type = LAVariableType.String,
-      @Deprecated("This is not necessary") List<String> ansibleEquiv,
       this.hint,
       this.error,
       this.regExp,
@@ -61,9 +60,7 @@ class LAVariableDesc {
       this.defValue,
       this.inTunePage = true,
       this.advanced = false,
-      this.internal = false,
-      this.enabled = true})
-      : ansibleEquiv = ansibleEquiv ?? [nameInt];
+      this.enabled = true});
 
   @override
   bool operator ==(Object other) =>
@@ -77,9 +74,7 @@ class LAVariableDesc {
           error == other.error &&
           regExp == other.regExp &&
           help == other.help &&
-          ansibleEquiv == other.ansibleEquiv &&
           confName == other.confName &&
-          internal == other.internal &&
           advanced == other.advanced &&
           inTunePage == other.inTunePage &&
           enabled == other.enabled;
@@ -93,9 +88,7 @@ class LAVariableDesc {
       error.hashCode ^
       regExp.hashCode ^
       help.hashCode ^
-      ansibleEquiv.hashCode ^
       confName.hashCode ^
-      internal.hashCode ^
       advanced.hashCode ^
       inTunePage.hashCode ^
       enabled.hashCode;
@@ -122,12 +115,6 @@ class LAVariableDesc {
     "support_email": LAVariableDesc(
         name: "Support email",
         nameInt: "support_email",
-        ansibleEquiv: [
-          "technical_contact",
-          "orgSupportEmail",
-          "support_email"
-              "download_support_email"
-        ],
         regExp: LARegExp.email,
         error: "Invalid email",
         defValue: (project) => 'support@${project.domain}',
@@ -175,17 +162,45 @@ class LAVariableDesc {
     "favicon_url": LAVariableDesc(
       name: "Favicon",
       nameInt: "favicon_url",
-      ansibleEquiv: ["favicon_url", "skin_favicon"],
       regExp: LARegExp.url,
       error: "Invalid url",
       defValue: (_) => 'https://www.gbif.org/favicon.ico',
       hint: "Like: https://www.gbif.org/favicon.ico",
     ),
+    "orgAddress": LAVariableDesc(
+        name: "Organization address",
+        regExp: LARegExp.anyThing,
+        nameInt: "orgAddress",
+        hint: "like: Clunies Ross Street, ...",
+        help: "Glossary#organization-address",
+        subcategory: LAVariableSubcategory.org),
+    "orgCity": LAVariableDesc(
+        name: "City",
+        nameInt: "orgCity",
+        hint: 'like: Camberra, Madrid, Lisboa, ...',
+        regExp: LARegExp.anyThing,
+        subcategory: LAVariableSubcategory.org),
+    "orgStateProvince": LAVariableDesc(
+        name: "State/Province",
+        nameInt: "orgStateProvince",
+        regExp: LARegExp.anyThing,
+        subcategory: LAVariableSubcategory.org),
+    "orgPostcode": LAVariableDesc(
+        name: "Postcode",
+        nameInt: "orgPostcode",
+        regExp: LARegExp.anyThing,
+        subcategory: LAVariableSubcategory.org),
+    "orgCountry": LAVariableDesc(
+        name: "Country",
+        nameInt: "orgCountry",
+        regExp: LARegExp.anyThing,
+        defValue: (LAProject project) =>
+            project.getVariable('map_zone_name').value,
+        subcategory: LAVariableSubcategory.org),
     "google_api_key": LAVariableDesc(
         name: "Google Maps API Key",
         nameInt: "google_api_key",
         subcategory: LAVariableSubcategory.apikeys,
-        ansibleEquiv: ["google_api_key", "google_apikey"],
         hint: "Like: AIzaBcDeFgHiJkLmNoPqRsTuVwXyZ"),
     "caches_auth_enabled": LAVariableDesc(
         name: "Enable Authentication Cache",

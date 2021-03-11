@@ -303,6 +303,11 @@ class LAProject {
       "LA_generate_branding": true
     };
     conf.addAll(MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint));
+
+    List<String> ips = List.empty(growable: true);
+    serversWithServices().forEach((server) => ips.add(server.ip));
+    conf["LA_server_ips"] = ips.join(',');
+
     services.forEach((key, service) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
@@ -314,6 +319,7 @@ class LAProject {
       conf["LA_${service.nameInt}_url"] = service.url(domain);
       conf["LA_${service.nameInt}_path"] = service.path;
     });
+
     variables.forEach((key, variable) {
       conf["LA_variable_${variable.nameInt}"] = variable.value;
     });
