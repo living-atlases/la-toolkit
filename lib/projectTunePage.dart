@@ -21,7 +21,7 @@ class LAProjectTunePage extends StatelessWidget {
   static const routeName = "tune";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  final bool _endNoteEnabled = false;
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectTuneViewModel>(
@@ -172,16 +172,17 @@ class LAProjectTunePage extends StatelessWidget {
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
                           SizedBox(height: 20),
-                          Row(children: [
-                            Text(
-                                "Note: the colors of the variables values indicate if these values are "),
-                            Text("already deployed",
-                                style: LAColorTheme.deployedTextStyle),
-                            Text(" in your servers or "),
-                            Text("they are not deployed yet",
-                                style: LAColorTheme.unDeployedTextStyle),
-                            Text("."),
-                          ]),
+                          if (_endNoteEnabled)
+                            Row(children: [
+                              Text(
+                                  "Note: the colors of the variables values indicate if these values are "),
+                              Text("already deployed",
+                                  style: LAColorTheme.deployedTextStyle),
+                              Text(" in your servers or "),
+                              Text("they are not deployed yet",
+                                  style: LAColorTheme.unDeployedTextStyle),
+                              Text("."),
+                            ]),
                         ]))));
       },
     );
