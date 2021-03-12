@@ -39,7 +39,7 @@ class LAVariableDesc {
   String error;
   RegExp regExp;
   String help;
-
+  LAServiceName depends;
   Function defValue;
   String confName;
   bool advanced;
@@ -58,6 +58,7 @@ class LAVariableDesc {
       this.help,
       this.confName,
       this.defValue,
+      this.depends,
       this.inTunePage = true,
       this.advanced = false,
       this.enabled = true});
@@ -217,6 +218,7 @@ class LAVariableDesc {
         nameInt: "caches_auth_enabled",
         subcategory: LAVariableSubcategory.cache,
         defValue: (_) => true,
+        depends: LAServiceName.cas,
         advanced: true,
         type: LAVariableType.bool),
     "caches_logs_enabled": LAVariableDesc(
@@ -230,6 +232,7 @@ class LAVariableDesc {
         name: "Enable Layers Cache",
         defValue: (_) => true,
         advanced: true,
+        depends: LAServiceName.spatial,
         nameInt: "caches_layers_enabled",
         subcategory: LAVariableSubcategory.cache,
         type: LAVariableType.bool),
@@ -251,24 +254,28 @@ class LAVariableDesc {
         nameInt: "pac4j_cookie_signing_key",
         subcategory: LAVariableSubcategory.otherkeys,
         help: "CAS-postinstall-steps#cas-keys",
+        depends: LAServiceName.cas,
         advanced: true,
         service: LAServiceName.cas),
     "pac4j_cookie_encryption_key": LAVariableDesc(
         name: "CAS PAC4J Encryption key",
         nameInt: "pac4j_cookie_encryption_key",
         subcategory: LAVariableSubcategory.otherkeys,
+        depends: LAServiceName.cas,
         advanced: true,
         service: LAServiceName.cas),
     "cas_webflow_signing_key": LAVariableDesc(
         name: "CAS Webflow Signing key",
         nameInt: "cas_webflow_signing_key",
         subcategory: LAVariableSubcategory.otherkeys,
+        depends: LAServiceName.cas,
         advanced: true,
         service: LAServiceName.cas),
     "cas_webflow_encryption_key": LAVariableDesc(
         name: "CAS Webflow Encryption key",
         nameInt: "cas_webflow_encryption_key",
         subcategory: LAVariableSubcategory.otherkeys,
+        depends: LAServiceName.cas,
         advanced: true,
         service: LAServiceName.cas)
   };

@@ -49,9 +49,15 @@ class LAProjectTunePage extends StatelessWidget {
         var lastCategory;
         var lastSubcategory;
         LAVariableDesc.map.entries
-            .where((element) =>
-                element.value.inTunePage &&
-                ((!currentProject.advancedTune && !element.value.advanced) ||
+            .where((laVar) =>
+                laVar.value.inTunePage &&
+                // Show var where depend service is in use
+                (laVar.value.depends == null ||
+                    (laVar.value.depends != null &&
+                        currentProject
+                            .getService(laVar.value.depends.toS())
+                            .use)) &&
+                ((!currentProject.advancedTune && !laVar.value.advanced) ||
                     currentProject.advancedTune))
             .forEach((entry) {
           if (entry.value.service != lastCategory) {
