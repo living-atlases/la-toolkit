@@ -3,6 +3,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/sshKey.dart';
 import 'package:latlong/latlong.dart';
 import 'package:test/test.dart';
 
@@ -217,6 +218,12 @@ void main() {
         equals(false));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(4));
+    // no ssh keys
+    expect(testProject.validateCreation(), equals(false));
+    vm1.sshKey = SshKey();
+    vm2.sshKey = SshKey();
+    vm3.sshKey = SshKey();
+    vm4.sshKey = SshKey();
     expect(testProject.validateCreation(), equals(true));
     expect(
         testProject.servers.where((element) => element.name == "vm2").first.ip,

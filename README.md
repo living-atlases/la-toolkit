@@ -30,7 +30,7 @@ flutter pub run build_runner watch --delete-conflicting-outputs
 We need to have the frontend build prior to build the docker image:
 
 ```
-flutter build web
+flutter test && flutter build web
 ```
 
 ### Docker 

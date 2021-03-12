@@ -36,7 +36,7 @@ class LaServiceWidget extends StatelessWidget {
       LAProject currentProject = vm.currentProject;
       LAService service = vm.currentProject.getService(serviceName);
       var serviceDesc = LAServiceDesc.get(serviceName);
-      LAService dependsOn = vm.currentProject.getService(serviceDesc.depends);
+      LAService dependsOn = vm.currentProject.getServiceE(serviceDesc.depends);
 
       bool visible = (serviceDesc.depends == null || dependsOn.use) &&
           !serviceDesc.withoutUrl;

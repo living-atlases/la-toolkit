@@ -412,7 +412,7 @@ class LAProject {
       generatorRelease.hashCode ^
       ListEquality().hash(mapBounds1stPoint) ^
       ListEquality().hash(mapBounds2ndPoint) ^
-      lastDeploymentResults.hashCode ^
+      ListEquality().hash(lastDeploymentResults) ^
       mapZoom.hashCode;
 
   void serviceInUse(String serviceNameInt, bool use) {
@@ -424,7 +424,7 @@ class LAProject {
       });
       // Disable dependents
       LAServiceDesc.map.values
-          .where((curSer) => curSer.depends == serviceNameInt)
+          .where((curSer) => curSer.depends.toS() == serviceNameInt)
           .forEach((serviceDesc) => serviceInUse(serviceDesc.nameInt, use));
     }
   }

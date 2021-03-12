@@ -53,7 +53,7 @@ class LAServiceDesc {
   IconData icon;
   bool optional;
   bool withoutUrl;
-  String depends;
+  LAServiceName depends;
   bool forceSubdomain;
   String sample;
   String hint;
@@ -137,7 +137,7 @@ class LAServiceDesc {
         nameInt: "bie_index",
         group: "bie-index",
         desc: "species web service",
-        depends: "ala_bie",
+        depends: LAServiceName.ala_bie,
         icon: Mdi.familyTree,
         optional: false,
         sample: "https://bie.ala.org.au/ws",
@@ -160,7 +160,7 @@ class LAServiceDesc {
         nameInt: "species_lists",
         group: "species-list",
         desc: "user provided species lists",
-        depends: "ala_bie",
+        depends: LAServiceName.ala_bie,
         optional: true,
         initUse: true,
         icon: Icons.playlist_add_outlined,
@@ -172,7 +172,7 @@ class LAServiceDesc {
         nameInt: "regions",
         group: "regions",
         desc: "regional data frontend",
-        depends: "spatial",
+        depends: LAServiceName.spatial,
         optional: true,
         initUse: true,
         // icon: Mdi.mapSearchOutline,

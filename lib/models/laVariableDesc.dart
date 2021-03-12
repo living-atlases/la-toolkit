@@ -12,7 +12,7 @@ extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
   String get title {
     switch (this) {
       case LAVariableSubcategory.org:
-        return 'Organization';
+        return 'Organization details';
       case LAVariableSubcategory.cache:
         return 'Cache';
       case LAVariableSubcategory.downloads:
@@ -202,6 +202,16 @@ class LAVariableDesc {
         nameInt: "google_api_key",
         subcategory: LAVariableSubcategory.apikeys,
         hint: "Like: AIzaBcDeFgHiJkLmNoPqRsTuVwXyZ"),
+    "caches_collections_enabled": LAVariableDesc(
+        name: "Enable Collections Cache",
+        nameInt: "caches_collections_enabled",
+        subcategory: LAVariableSubcategory.cache,
+        defValue: (_) => true,
+        advanced: true,
+        hint:
+            "By default caches are disabled: the collections cache is problematic when collectory + occurrences-front-end (biocache-hub) are on same server)",
+        help: "FAQ#collectory-cache-issues",
+        type: LAVariableType.bool),
     "caches_auth_enabled": LAVariableDesc(
         name: "Enable Authentication Cache",
         nameInt: "caches_auth_enabled",
@@ -215,16 +225,6 @@ class LAVariableDesc {
         subcategory: LAVariableSubcategory.cache,
         defValue: (_) => true,
         advanced: true,
-        type: LAVariableType.bool),
-    "caches_collections_enabled": LAVariableDesc(
-        name: "Enable Collections Cache",
-        nameInt: "caches_collections_enabled",
-        subcategory: LAVariableSubcategory.cache,
-        defValue: (_) => true,
-        advanced: true,
-        hint:
-            "By default caches are disabled: the collections cache is problematic when collectory + occurrences-front-end (biocache-hub) are on same server)",
-        help: "FAQ#collectory-cache-issues",
         type: LAVariableType.bool),
     "caches_layers_enabled": LAVariableDesc(
         name: "Enable Layers Cache",
