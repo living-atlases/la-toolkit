@@ -347,6 +347,16 @@ class LAProject {
     return hostnames;
   }
 
+  bool collectoryAndBiocacheDifferentServers() {
+    List<String> colHosts = getHostname(LAServiceName.collectory.toS());
+    print(colHosts);
+    List<String> biocacheHubHosts = getHostname(LAServiceName.ala_hub.toS());
+    print(biocacheHubHosts);
+    List<String> common = List.from(colHosts);
+    common.removeWhere((item) => biocacheHubHosts.contains(item));
+    return ListEquality().equals(common, colHosts);
+  }
+
   void setMap(LatLng firstPoint, LatLng sndPoint, double zoom) {
     mapBounds1stPoint = [firstPoint.latitude, firstPoint.longitude];
     mapBounds2ndPoint = [sndPoint.latitude, sndPoint.longitude];

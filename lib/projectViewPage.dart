@@ -201,7 +201,11 @@ class LAProjectViewPage extends StatelessWidget {
                         if (basicDefined && !_project.allServersWithSshKeys())
                           AlertCard(
                               message:
-                                  "All servers should have configured their SSH keys")
+                                  "All servers should have configured their SSH keys"),
+                        if (!_project.collectoryAndBiocacheDifferentServers())
+                          AlertCard(
+                              message:
+                                  "The collections and the occurrences front-end (bioache-hub) services are in the same server. This can cause start-up problems when caches are enabled")
                       ]))));
         });
   }
