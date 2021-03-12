@@ -59,6 +59,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         alaInstallReleases.removeRange(alaInstallReleases.length - limitResults,
             alaInstallReleases.length);
         alaInstallReleases.add('upstream');
+        alaInstallReleases.add('custom');
         store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
         scanSshKeys(store, () => {});
       } else {

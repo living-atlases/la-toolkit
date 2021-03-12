@@ -134,8 +134,8 @@ class _DeployPageState extends State<DeployPage> {
                                       () => _limitToServers = limitToServers)),
                               _tagsSelector(
                                   key: _selectTagsKey,
-                                  tags: TagsConstants.map[vm
-                                      .state.currentProject.alaInstallRelease],
+                                  tags: TagsConstants.getTagsFor(vm
+                                      .state.currentProject.alaInstallRelease),
                                   icon: Mdi.tagPlusOutline,
                                   title: "Tags:",
                                   placeHolder: "All",
@@ -145,8 +145,8 @@ class _DeployPageState extends State<DeployPage> {
                                       setState(() => _tags = tags)),
                               _tagsSelector(
                                   key: _skipTagsKey,
-                                  tags: TagsConstants.map[vm
-                                      .state.currentProject.alaInstallRelease],
+                                  tags: TagsConstants.getTagsFor(vm
+                                      .state.currentProject.alaInstallRelease),
                                   icon: Mdi.tagOffOutline,
                                   title: "Skip tags:",
                                   placeHolder: "None",

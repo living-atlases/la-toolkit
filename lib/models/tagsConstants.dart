@@ -100,9 +100,17 @@ class TagsConstants {
     "xpack"
   ];
 
-  static final Map<String, List<String>> map = {
+  static final Map<String, List<String>> _map = {
     "v2.0.5": v2_0_5,
     "v2.0.4": v2_0_5,
-    "latest": v2_0_5,
+    "upstream": v2_0_5,
+    "custom": v2_0_5,
   };
+
+  static List<String> getTagsFor(String alaInstallVersion) {
+    if (_map.containsKey(alaInstallVersion))
+      return v2_0_5;
+    else
+      return _map[alaInstallVersion];
+  }
 }
