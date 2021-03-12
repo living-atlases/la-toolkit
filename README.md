@@ -64,6 +64,7 @@ Optionally you can mount a different `ala-install` repository (for instance a mo
    -v /home/youruser/dev/my-ala-install/:/home/ubuntu/ansible/ala-install/ \
    (...)
 ```
+In this case, use `custom` in the ala-install releases version dropdown.
 
 To start using the LA Toolkit visit:
 http://localhost:2010/
