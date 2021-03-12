@@ -243,9 +243,9 @@ class LAVariableDesc {
         service: LAServiceName.ala_hub,
         help: "API-Keys#non-ala-keys",
         hint: "Something like: 978657"),
-    "maxmind_account_key": LAVariableDesc(
-        name: "MaxMind Account Key",
-        nameInt: "maxmind_account_key",
+    "maxmind_license_key": LAVariableDesc(
+        name: "MaxMind License Key",
+        nameInt: "maxmind_license_key",
         subcategory: LAVariableSubcategory.apikeys,
         service: LAServiceName.ala_hub,
         hint: "Something like: UKDDas3bGKJ9VuuL"),
