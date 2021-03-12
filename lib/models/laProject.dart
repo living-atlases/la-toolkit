@@ -220,7 +220,7 @@ class LAProject {
         .map((entry) => '${entry.key} has ${entry.value}')
         .toList()
         .join(', ');
-    return '''longName: $longName ($shortName), domain: $domain, 
+    return '''longName: $longName ($shortName), domain: $domain, ssl: $useSSL 
     isCreated: $isCreated,  validCreated: ${validateCreation()}, status: ${status.title}, ala-install: $alaInstallRelease, generator: $generatorRelease 
     map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
     servers (${servers.length}): $servers 
@@ -349,9 +349,7 @@ class LAProject {
 
   bool collectoryAndBiocacheDifferentServers() {
     List<String> colHosts = getHostname(LAServiceName.collectory.toS());
-    print(colHosts);
     List<String> biocacheHubHosts = getHostname(LAServiceName.ala_hub.toS());
-    print(biocacheHubHosts);
     List<String> common = List.from(colHosts);
     common.removeWhere((item) => biocacheHubHosts.contains(item));
     return ListEquality().equals(common, colHosts);

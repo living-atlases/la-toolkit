@@ -59,6 +59,20 @@ class OpenProject extends AppActions {
   OpenProject(this.project);
 }
 
+class NextStepEditProject extends AppActions {
+  NextStepEditProject();
+}
+
+class PreviousStepEditProject extends AppActions {
+  PreviousStepEditProject();
+}
+
+class GotoStepEditProject extends AppActions {
+  int step;
+
+  GotoStepEditProject(this.step);
+}
+
 class TuneProject extends AppActions {
   LAProject project;
 
@@ -137,9 +151,8 @@ class EditService extends AppActions {
 
 class SaveCurrentProject extends AppActions {
   LAProject project;
-  int currentStep;
 
-  SaveCurrentProject([this.project, this.currentStep]);
+  SaveCurrentProject([this.project]);
 }
 
 typedef void VoidCallback();

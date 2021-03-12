@@ -65,6 +65,7 @@ class LAProjectViewPage extends StatelessWidget {
               });
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
+          print("Building ProjectViewPage");
           final LAProject _project = vm.state.currentProject;
           final bool basicDefined =
               _project.status.value >= LAProjectStatus.basicDefined.value;

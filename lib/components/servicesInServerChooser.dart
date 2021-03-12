@@ -12,43 +12,33 @@ import 'package:la_toolkit/redux/actions.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
 
-class ServicesInServerChooser extends StatefulWidget {
+class ServicesInServerChooser extends StatelessWidget {
   final LAServer server;
 
   ServicesInServerChooser({Key key, this.server}) : super(key: key);
 
-  @override
-  _ServicesInServerChooserState createState() =>
-      _ServicesInServerChooserState();
-}
-
-class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
-  LAProject _project;
-  GlobalKey<S2MultiState<String>> _selectKey =
+  final GlobalKey<S2MultiState<String>> _selectKey =
       GlobalKey<S2MultiState<String>>();
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServicesInServerChooserViewModel>(
-        distinct: true,
+        // Does not work well with true
+        distinct: false,
         converter: (store) {
           return _ServicesInServerChooserViewModel(
               currentProject: store.state.currentProject,
-              onAddServicesToServer: (server, assignedServices) {
+              onAddServicesToServer: (project, server, assignedServices) {
                 print('On Add Services to Server');
-                _project.assign(server, assignedServices);
-                _project.validateCreation();
+                project.assign(server, assignedServices);
+                project.validateCreation();
                 // store.dispatch(UpdateProject(_project));
-                store.dispatch(
-                    SaveCurrentProject(_project, store.state.currentStep));
+                store.dispatch(SaveCurrentProject(project));
               });
         },
         builder: (BuildContext context, _ServicesInServerChooserViewModel vm) {
-          _project = vm.currentProject;
-          var serverName = widget.server.name;
+          LAProject _project = vm.currentProject;
+          var serverName = server.name;
           var servicesInServer = _project.serverServices[serverName];
-          if (servicesInServer == null) {
-            dispose();
-          }
           return Container(
               // If we want to limit the size:
               // width: 500.0,
@@ -56,7 +46,7 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
               // https://github.com/davigmacode/flutter_smart_select/tree/master/example
               child: SmartSelect<String>.multiple(
             key: _selectKey,
-            title: "Services to run in ${widget.server.name}:",
+            title: "Services to run in ${server.name}:",
             placeholder: 'Server empty, select one or more services',
             value: servicesInServer,
             // choiceItems: LAServiceDesc.names,
@@ -113,7 +103,7 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
         },*/
             ),
             onChange: (state) =>
-                vm.onAddServicesToServer(widget.server, state.value),
+                vm.onAddServicesToServer(_project, server, state.value),
             // modalType: S2ModalType.popupDialog,
             choiceType: S2ChoiceType.chips,
             // The current confirm icon is not very clear
@@ -153,7 +143,7 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
 
 class _ServicesInServerChooserViewModel {
   final LAProject currentProject;
-  final Function(LAServer, List<String>) onAddServicesToServer;
+  final Function(LAProject, LAServer, List<String>) onAddServicesToServer;
 
   _ServicesInServerChooserViewModel(
       {this.currentProject, this.onAddServicesToServer});

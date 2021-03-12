@@ -16,22 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
 import '../sshKeysPage.dart';
 
-class ProjectDrawer extends StatefulWidget {
-  ProjectDrawer();
-
-  @override
-  _ProjectDrawerState createState() => _ProjectDrawerState();
-}
-
-class _ProjectDrawerViewModel {
-  final AppState state;
-
-  _ProjectDrawerViewModel({this.state});
-}
-
-class _ProjectDrawerState extends State<ProjectDrawer> {
-  _ProjectDrawerState();
-
+class ProjectDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectDrawerViewModel>(
@@ -175,4 +160,10 @@ class _ProjectDrawerState extends State<ProjectDrawer> {
           : null,
     );
   }
+}
+
+class _ProjectDrawerViewModel {
+  final AppState state;
+
+  _ProjectDrawerViewModel({this.state});
 }

@@ -53,7 +53,8 @@ class GenericTextFormField extends StatefulWidget {
   _GenericTextFormFieldState createState() => _GenericTextFormFieldState();
 }
 
-class _GenericTextFormFieldState extends State<GenericTextFormField> {
+class _GenericTextFormFieldState extends State<GenericTextFormField>
+    with AutomaticKeepAliveClientMixin {
   final debouncer = Debouncer(milliseconds: 1000);
   var formKey;
   String delayedValue;
@@ -66,6 +67,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final decoration = InputDecoration(
         fillColor: widget.fillColor,
         labelText: widget.label,
@@ -126,4 +128,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField> {
                   validator: validator)
             ]));
   }
+
+  @override
+  bool get wantKeepAlive => false;
 }

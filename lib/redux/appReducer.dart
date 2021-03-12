@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 
@@ -25,6 +26,9 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
+  new TypedReducer<AppState, GotoStepEditProject>(_gotoStepEditProject),
+  new TypedReducer<AppState, NextStepEditProject>(_nextStepEditProject),
+  new TypedReducer<AppState, PreviousStepEditProject>(_previousStepEditProject),
   new TypedReducer<AppState, TuneProject>(_tuneProject),
   new TypedReducer<AppState, GenerateInvProject>(_generateInvProject),
   new TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
@@ -89,6 +93,24 @@ AppState _openProject(AppState state, OpenProject action) {
       currentStep: 0);
 }
 
+AppState _gotoStepEditProject(AppState state, GotoStepEditProject action) {
+  return state.copyWith(currentStep: action.step);
+}
+
+AppState _nextStepEditProject(AppState state, NextStepEditProject action) {
+  return state.copyWith(
+      currentStep: (state.currentStep + 1 != LAProjectEditPage.totalSteps)
+          ? state.currentStep + 1
+          : state.currentStep);
+}
+
+AppState _previousStepEditProject(
+    AppState state, PreviousStepEditProject action) {
+  return state.copyWith(
+      currentStep:
+          (state.currentStep > 0) ? state.currentStep - 1 : state.currentStep);
+}
+
 AppState _tuneProject(AppState state, TuneProject action) {
   return state.copyWith(
       currentProject: action.project,
@@ -115,9 +137,7 @@ AppState _generateInvProject(AppState state, GenerateInvProject action) {
 }
 
 AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
-  return state.copyWith(
-      currentProject: action.project,
-      currentStep: action.currentStep ?? state.currentStep);
+  return state.copyWith(currentProject: action.project);
 }
 
 AppState _addProject(AppState state, AddProject action) {
