@@ -12,13 +12,20 @@ import 'package:la_toolkit/redux/actions.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
 
-class ServicesInServerChooser extends StatelessWidget {
+class ServicesInServerChooser extends StatefulWidget {
   final LAServer server;
 
   ServicesInServerChooser({Key key, this.server}) : super(key: key);
 
-  final GlobalKey<S2MultiState<String>> _selectKey =
+  @override
+  _ServicesInServerChooserState createState() =>
+      _ServicesInServerChooserState();
+}
+
+class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
+  GlobalKey<S2MultiState<String>> _selectKey =
       GlobalKey<S2MultiState<String>>();
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServicesInServerChooserViewModel>(
@@ -37,7 +44,7 @@ class ServicesInServerChooser extends StatelessWidget {
         },
         builder: (BuildContext context, _ServicesInServerChooserViewModel vm) {
           LAProject _project = vm.currentProject;
-          var serverName = server.name;
+          var serverName = widget.server.name;
           var servicesInServer = _project.serverServices[serverName];
           return Container(
               // If we want to limit the size:
@@ -46,7 +53,7 @@ class ServicesInServerChooser extends StatelessWidget {
               // https://github.com/davigmacode/flutter_smart_select/tree/master/example
               child: SmartSelect<String>.multiple(
             key: _selectKey,
-            title: "Services to run in ${server.name}:",
+            title: "Services to run in ${widget.server.name}:",
             placeholder: 'Server empty, select one or more services',
             value: servicesInServer,
             // choiceItems: LAServiceDesc.names,
@@ -103,7 +110,7 @@ class ServicesInServerChooser extends StatelessWidget {
         },*/
             ),
             onChange: (state) =>
-                vm.onAddServicesToServer(_project, server, state.value),
+                vm.onAddServicesToServer(_project, widget.server, state.value),
             // modalType: S2ModalType.popupDialog,
             choiceType: S2ChoiceType.chips,
             // The current confirm icon is not very clear
