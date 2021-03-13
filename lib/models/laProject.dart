@@ -110,6 +110,7 @@ class LAProject {
         // Australia as default
         : LatLng(-28.2, 134);
   }
+
   // List<LAServer> get servers => _servers;
   //  set servers(servers) => _servers = servers;
 
@@ -145,17 +146,25 @@ class LAProject {
     if (debug) print("Step 4 valid: ${valid ? 'yes' : 'no'}");
 
     isCreated = valid;
-    if (isCreated) status = LAProjectStatus.advancedDefined;
+    if (isCreated && !allServersWithServicesReady())
+      setProjectStatus(LAProjectStatus.advancedDefined);
+    if (isCreated &&
+        allServersWithServicesReady() &&
+        this.status.value < status.value) setProjectStatus(status);
     // Only update status if is better
-    if (this.status == null || this.status.value < status.value)
+    if (this.status == null || status.value > this.status.value)
       setProjectStatus(status);
     return valid;
   }
 
   bool allServicesAssignedToServers() {
-    return getServicesNameListInUse().length > 0 &&
+    bool ok = getServicesNameListInUse().length > 0 &&
         getServicesNameListInUse().length ==
             getServicesNameListSelected().length;
+    getServicesNameListInUse().forEach((service) {
+      ok && getHostname(service).isNotEmpty;
+    });
+    return ok;
   }
 
   List<LAServer> serversWithServices() {
@@ -178,10 +187,19 @@ class LAProject {
     return allReady;
   }
 
-  bool allServersReady() {
+  bool allServersWithServicesReady() {
     bool allReady = true;
     serversWithServices().forEach((s) {
       allReady = allReady && s.isReady();
+    });
+    return allReady;
+  }
+
+  bool allServersWithOs(name, version) {
+    bool allReady = true;
+    serversWithServices().forEach((s) {
+      allReady = allReady && s.osName == name;
+      allReady = allReady && s.osVersion == version;
     });
     return allReady;
   }
@@ -212,6 +230,7 @@ class LAProject {
 
   factory LAProject.fromJson(Map<String, dynamic> json) =>
       _$LAProjectFromJson(json);
+
   Map<String, dynamic> toJson() => _$LAProjectToJson(this);
 
   @override
@@ -220,8 +239,8 @@ class LAProject {
         .map((entry) => '${entry.key} has ${entry.value}')
         .toList()
         .join(', ');
-    return '''longName: $longName ($shortName), domain: $domain, ssl: $useSSL 
-    isCreated: $isCreated,  validCreated: ${validateCreation()}, status: ${status.title}, ala-install: $alaInstallRelease, generator: $generatorRelease 
+    return '''longName: $longName ($shortName), domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
+    isCreated: $isCreated,  validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
     map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
     servers (${servers.length}): $servers 
     servers-services: $sToS  
@@ -414,16 +433,23 @@ class LAProject {
       mapZoom.hashCode;
 
   void serviceInUse(String serviceNameInt, bool use) {
-    services[serviceNameInt].use = use;
+    var service = services[serviceNameInt];
+    service.use = use;
+    var depends = LAServiceDesc.map.values
+        .where((curSer) => curSer.depends.toS() == serviceNameInt);
     if (!use) {
       // Remove
       serverServices.forEach((server, services) {
         services.remove(serviceNameInt);
       });
       // Disable dependents
-      LAServiceDesc.map.values
-          .where((curSer) => curSer.depends.toS() == serviceNameInt)
-          .forEach((serviceDesc) => serviceInUse(serviceDesc.nameInt, use));
+      depends.forEach((serviceDesc) => serviceInUse(serviceDesc.nameInt, use));
+    } else {
+      depends.forEach((serviceDesc) {
+        if (!serviceDesc.optional) {
+          serviceInUse(serviceDesc.nameInt, use);
+        }
+      });
     }
   }
 }

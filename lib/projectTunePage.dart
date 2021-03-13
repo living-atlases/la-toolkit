@@ -28,7 +28,7 @@ class LAProjectTunePage extends StatelessWidget {
       // Fails the switch distinct: true,
       converter: (store) {
         return _ProjectTuneViewModel(
-          state: store.state,
+          project: store.state.currentProject,
           onSaveProject: (project) {
             store.dispatch(SaveCurrentProject(project));
           },
@@ -42,8 +42,8 @@ class LAProjectTunePage extends StatelessWidget {
         );
       },
       builder: (BuildContext context, _ProjectTuneViewModel vm) {
-        var currentProject = vm.state.currentProject;
-        var varCatName = currentProject.getServicesNameListInUse();
+        var project = vm.project;
+        var varCatName = project.getServicesNameListInUse();
         varCatName.add(LAServiceName.all.toS());
         List<ListItem> items = [];
         var lastCategory;
@@ -54,11 +54,9 @@ class LAProjectTunePage extends StatelessWidget {
                 // Show var where depend service is in use
                 (laVar.value.depends == null ||
                     (laVar.value.depends != null &&
-                        currentProject
-                            .getService(laVar.value.depends.toS())
-                            .use)) &&
-                ((!currentProject.advancedTune && !laVar.value.advanced) ||
-                    currentProject.advancedTune))
+                        project.getService(laVar.value.depends.toS()).use)) &&
+                ((!project.advancedTune && !laVar.value.advanced) ||
+                    project.advancedTune))
             .forEach((entry) {
           if (entry.value.service != lastCategory) {
             items.add(HeadingItem(entry.value.service == LAServiceName.all
@@ -71,9 +69,9 @@ class LAProjectTunePage extends StatelessWidget {
             items.add(HeadingItem(entry.value.subcategory.title, true));
             lastSubcategory = entry.value.subcategory;
           }
-          items.add(MessageItem(currentProject, entry.value, (value) {
-            currentProject.setVariable(entry.value, value);
-            vm.onSaveProject(currentProject);
+          items.add(MessageItem(project, entry.value, (value) {
+            project.setVariable(entry.value, value);
+            vm.onSaveProject(project);
           }));
         });
         return Scaffold(
@@ -81,7 +79,7 @@ class LAProjectTunePage extends StatelessWidget {
             appBar: LAAppBar(
                 context: context,
                 titleIcon: Icons.edit,
-                title: vm.state.status.title,
+                title: LAProjectViewStatus.tune.title,
                 showLaIcon: false,
                 actions: [
                   TextButton(
@@ -90,13 +88,13 @@ class LAProjectTunePage extends StatelessWidget {
                       child: Text(
                         "CANCEL",
                       ),
-                      onPressed: () => vm.onCancel(vm.state.currentProject)),
+                      onPressed: () => vm.onCancel(project)),
                   IconButton(
                     icon: Tooltip(
                         child: Icon(Icons.save, color: Colors.white),
                         message: "Save the current LA project variables"),
                     onPressed: () {
-                      vm.onUpdateProject(currentProject);
+                      vm.onUpdateProject(project);
                     },
                   )
                 ]),
@@ -113,10 +111,10 @@ class LAProjectTunePage extends StatelessWidget {
                                 'Advanced options',
                               ),
                               trailing: Switch(
-                                  value: currentProject.advancedTune,
+                                  value: project.advancedTune,
                                   onChanged: (value) {
-                                    currentProject.advancedTune = value;
-                                    vm.onSaveProject(currentProject);
+                                    project.advancedTune = value;
+                                    vm.onSaveProject(project);
                                   })),
                           SizedBox(height: 20),
                           ListView.builder(
@@ -135,32 +133,28 @@ class LAProjectTunePage extends StatelessWidget {
                               );
                             },
                           ),
-                          if (currentProject.advancedTune) SizedBox(height: 20),
-                          if (currentProject.advancedTune)
+                          if (project.advancedTune) SizedBox(height: 20),
+                          if (project.advancedTune)
                             HeadingItem("Other variables").buildTitle(context),
-                          if (currentProject.advancedTune) SizedBox(height: 30),
-                          if (currentProject.advancedTune)
+                          if (project.advancedTune) SizedBox(height: 30),
+                          if (project.advancedTune)
                             Text(
                               "Write here other extra ansible variables that are not configurable in the previous forms:",
                               style: TextStyle(
                                   fontSize: 18, color: Colors.black54),
                             ),
-                          if (currentProject.advancedTune) SizedBox(height: 20),
-                          if (currentProject.advancedTune)
+                          if (project.advancedTune) SizedBox(height: 20),
+                          if (project.advancedTune)
                             // This breaks the newline enter key:
                             //ListTile(
                             //                        title:
                             GenericTextFormField(
-                                initialValue:
-                                    currentProject.additionalVariables !=
-                                                null &&
-                                            currentProject.additionalVariables
-                                                    .length >
-                                                0
-                                        ? utf8.decode(base64.decode(
-                                            currentProject.additionalVariables))
-                                        : _initialExtraAnsibleVariables(
-                                            currentProject),
+                                initialValue: project.additionalVariables !=
+                                            null &&
+                                        project.additionalVariables.length > 0
+                                    ? utf8.decode(base64
+                                        .decode(project.additionalVariables))
+                                    : _initialExtraAnsibleVariables(project),
                                 minLines: 100,
                                 maxLines: null,
                                 fillColor: Colors.grey[100],
@@ -170,9 +164,9 @@ class LAProjectTunePage extends StatelessWidget {
                                 monoSpaceFont: true,
                                 error: "",
                                 onChanged: (value) {
-                                  currentProject.additionalVariables =
+                                  project.additionalVariables =
                                       base64.encode(utf8.encode(value));
-                                  vm.onSaveProject(currentProject);
+                                  vm.onSaveProject(project);
                                 }),
                           /* trailing: HelpIcon(
                                     wikipage:
@@ -300,20 +294,20 @@ class MessageItem implements ListItem {
 }
 
 class _ProjectTuneViewModel {
-  final AppState state;
+  final LAProject project;
   final void Function(LAProject) onUpdateProject;
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
 
   _ProjectTuneViewModel(
-      {this.state, this.onUpdateProject, this.onSaveProject, this.onCancel});
+      {this.project, this.onUpdateProject, this.onSaveProject, this.onCancel});
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is _ProjectTuneViewModel &&
           runtimeType == other.runtimeType &&
-          state.currentProject == other.state.currentProject;
+          project == other.project;
 
   @override
-  int get hashCode => state.currentProject.hashCode;
+  int get hashCode => project.hashCode;
 }

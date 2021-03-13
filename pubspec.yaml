@@ -82,6 +82,7 @@ dependencies:
   flutter_dotenv: ^3.1.0
   package_info_plus: ^0.6.3
   dbcrypt: ^1.0.0
+  cron: ^0.3.0
 
   # map
   flutter_map: ^0.11.0

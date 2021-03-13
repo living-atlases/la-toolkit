@@ -14,7 +14,7 @@ LoggingMiddleware customLogPrinter<State>({
     dynamic action,
     DateTime timestamp,
   ) {
-    return "{----- Action: $action -----}";
+    return " Action: >>>> $action <<<< }";
   }
 
   final middleware = new LoggingMiddleware<State>(
@@ -26,7 +26,7 @@ LoggingMiddleware customLogPrinter<State>({
   middleware.logger.onRecord
       .where((record) => record.loggerName == middleware.logger.name)
       .listen((Object object) {
-    debugPrint("$object");
+    debugPrint("##################### $object");
   });
 
   return middleware;

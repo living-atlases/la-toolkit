@@ -12,6 +12,8 @@ extension LAServerCopyWith on LAServer {
     List<String> gateways,
     dynamic ip,
     String name,
+    String osName,
+    String osVersion,
     ServiceStatus reachable,
     SshKey sshKey,
     int sshPort,
@@ -24,6 +26,8 @@ extension LAServerCopyWith on LAServer {
       gateways: gateways ?? this.gateways,
       ip: ip ?? this.ip,
       name: name ?? this.name,
+      osName: osName ?? this.osName,
+      osVersion: osVersion ?? this.osVersion,
       reachable: reachable ?? this.reachable,
       sshKey: sshKey ?? this.sshKey,
       sshPort: sshPort ?? this.sshPort,
@@ -54,6 +58,8 @@ LAServer _$LAServerFromJson(Map<String, dynamic> json) {
         _$enumDecodeNullable(_$ServiceStatusEnumMap, json['sshReachable']),
     sudoEnabled:
         _$enumDecodeNullable(_$ServiceStatusEnumMap, json['sudoEnabled']),
+    osName: json['osName'] as String,
+    osVersion: json['osVersion'] as String,
   );
 }
 
@@ -68,6 +74,8 @@ Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
       'reachable': _$ServiceStatusEnumMap[instance.reachable],
       'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable],
       'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled],
+      'osName': instance.osName,
+      'osVersion': instance.osVersion,
     };
 
 T _$enumDecode<T>(

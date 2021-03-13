@@ -186,9 +186,11 @@ AppState _onTestConnectivityResults(
     server.reachable = serviceStatus(action.results[serverName]['ping']);
     server.sshReachable = serviceStatus(action.results[serverName]['ssh']);
     server.sudoEnabled = serviceStatus(action.results[serverName]['sudo']);
+    server.osName = action.results[serverName]['os']['name'];
+    server.osVersion = action.results[serverName]['os']['version'];
     currentProject.upsert(server);
   }
-  if (currentProject.allServersReady() &&
+  if (currentProject.allServersWithServicesReady() &&
       currentProject.status.value < LAProjectStatus.reachable.value) {
     currentProject.setProjectStatus(LAProjectStatus.reachable);
   } else

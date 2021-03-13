@@ -102,10 +102,8 @@ class AppState {
 
 === AppState ===
 LA projects: ${projects.length} 
-view status: $status, currentStep: $currentStep
-ala-install releases: $alaInstallReleases
-generator releases: $generatorReleases
-keys: ${sshKeys == null ? 0 : sshKeys.length}
+view status: $status , currentStep: $currentStep
+ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshkeys: ${sshKeys == null ? 0 : sshKeys.length}
 currentProject of ${projects.length} -----
 $currentProject
 ''';

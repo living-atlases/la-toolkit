@@ -87,7 +87,13 @@ void main() {
   final lists = LAServiceName.species_lists.toS();
   final collectory = LAServiceName.collectory.toS();
   final bie = LAServiceName.ala_bie.toS();
-
+  final bieIndex = LAServiceName.bie_index.toS();
+  /*final speciesList = LAServiceName.species_lists.toS();
+  final webapi = LAServiceName.webapi.toS();
+  final dashboard = LAServiceName.dashboard.toS();
+  final alerts = LAServiceName.alerts.toS();
+  final doi = LAServiceName.doi.toS();
+*/
   test('Test step 1 of creation, valid servers-service assignment and equality',
       () {
     LAProject testProject = LAProject(
@@ -266,7 +272,7 @@ void main() {
     expect(p == pBis, equals(true));
     LAServer vm1 = LAServer(name: "vm1");
     p.upsert(vm1);
-    p.assign(vm1, [collectory, bie, lists]);
+    p.assign(vm1, [collectory, bie, bieIndex, lists]);
     LAServer vm1Bis = LAServer(name: "vm1", sshUser: "john", sshPort: 22001);
     p.upsert(vm1Bis);
     expect(p.serverServices["vm1"].contains(collectory), equals(true));
@@ -278,9 +284,26 @@ void main() {
         equals(true));
     p.serviceInUse(bie, false);
     expect(p.getService(bie).use, equals(false));
+    expect(p.getService(bieIndex).use, equals(false));
     expect(p.getService(lists).use, equals(false));
     expect(p.serverServices["vm1"].contains(collectory), equals(true));
     expect(p.serverServices["vm1"].contains(bie), equals(false));
+    expect(p.serverServices["vm1"].contains(bieIndex), equals(false));
     expect(p.serverServices["vm1"].contains(lists), equals(false));
+    p.serviceInUse(bie, true);
+    expect(p.getService(bie).use, equals(true));
+    expect(p.getService(bieIndex).use, equals(true));
+    expect(p.allServicesAssignedToServers(), equals(false));
+    p.assign(vm1, [bie]);
+    expect(p.allServicesAssignedToServers(), equals(false));
+    p.getServicesNameListInUse().contains(bie);
+    p.getServicesNameListInUse().contains(bieIndex);
+    expect(p.getServicesNameListSelected().contains(bie), equals(true));
+    expect(p.getServicesNameListSelected().contains(bieIndex), equals(false));
+    p.assign(vm1, [bie, bieIndex]);
+    expect(p.getServicesNameListSelected().contains(bie), equals(true));
+    expect(p.getServicesNameListSelected().contains(bieIndex), equals(true));
+    expect(p.getHostname(bieIndex), equals(['vm1']));
+    expect(p.getHostname(bie), equals(['vm1']));
   });
 }

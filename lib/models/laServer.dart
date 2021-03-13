@@ -24,6 +24,8 @@ class LAServer {
   ServiceStatus reachable;
   ServiceStatus sshReachable;
   ServiceStatus sudoEnabled;
+  String osName;
+  String osVersion;
 
   LAServer(
       {this.name,
@@ -35,7 +37,9 @@ class LAServer {
       this.sshKey,
       this.reachable: ServiceStatus.unknown,
       this.sshReachable: ServiceStatus.unknown,
-      this.sudoEnabled: ServiceStatus.unknown})
+      this.sudoEnabled: ServiceStatus.unknown,
+      this.osName = "",
+      this.osVersion = ""})
       : this.aliases = aliases ?? [],
         this.gateways = gateways ?? [],
         this.ip = ip ?? "";
@@ -56,6 +60,8 @@ class LAServer {
           sshKey == other.sshKey &&
           listEquals(aliases, other.aliases) &&
           listEquals(gateways, other.gateways) &&
+          osName == other.osName &&
+          osVersion == other.osVersion &&
           reachable == other.reachable &&
           sshReachable == other.sshReachable &&
           sudoEnabled == other.sudoEnabled;
@@ -69,6 +75,8 @@ class LAServer {
       sshKey.hashCode ^
       DeepCollectionEquality.unordered().hash(aliases) ^
       DeepCollectionEquality.unordered().hash(gateways) ^
+      osName.hashCode ^
+      osVersion.hashCode ^
       reachable.hashCode ^
       sshReachable.hashCode ^
       sudoEnabled.hashCode;
@@ -81,7 +89,7 @@ class LAServer {
 
   @override
   String toString() {
-    return "$name${ip.length > 0 ? ', ' + ip : ' '}, isReady: ${isReady()} ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
+    return "$name${ip.length > 0 ? ', ' + ip : ' '}, isReady: ${isReady()}, osName: $osName, osVersion: $osVersion, ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
   }
 
   static List<LAServer> upsert(List<LAServer> servers, LAServer laServer) {
