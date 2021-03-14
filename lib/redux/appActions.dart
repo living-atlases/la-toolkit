@@ -1,18 +1,15 @@
-import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 
 abstract class AppActions {}
 
-class FetchProjects extends AppActions {}
+class FetchState extends AppActions {}
 
 class OnIntroEnd extends AppActions {}
 
 class OnFetchState extends AppActions {
-  AppState state;
-
-  OnFetchState(this.state);
+  OnFetchState();
 }
 
 class OnFetchStateFailed extends AppActions {

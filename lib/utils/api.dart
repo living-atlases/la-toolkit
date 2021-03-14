@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
@@ -51,7 +52,6 @@ class Api {
       Iterable l = json.decode(response.body)['keys'];
       List<SshKey> keys = List<SshKey>.from(l.map((k) {
         var kj = SshKey.fromJson(k);
-        print(kj);
         return kj;
       }));
       return keys;
@@ -105,16 +105,30 @@ class Api {
     }
   }
 
-  static Future<void> saveProjects(List<LAProject> projects) async {
-    Map map = {for (var item in projects) item.uuid: item.toGeneratorJson()};
+  static Future<void> saveConf(AppState state) async {
+    Map map = {
+      for (var item in state.projects) item.uuid: item.toGeneratorJson()
+    };
     if (AppUtils.isDemo()) return;
     var url = "${env['BACKEND']}api/v1/save-conf";
+    Map<String, dynamic> stateJ = state.toJson();
+    stateJ['projectsMap'] = map;
     await http.post(url,
         headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({
-          'projects': map,
-        })));
+        body: utf8.encode(json.encode(stateJ)));
     return;
+  }
+
+  static Future<String> getConf() async {
+    if (AppUtils.isDemo()) return "";
+    var url = "${env['BACKEND']}api/v1/get-conf";
+    var response = await http.get(url).catchError((error) {
+      print(error);
+    });
+    if (response.statusCode == 200) {
+      return response.body;
+    } else
+      return "";
   }
 
   static Future<void> alaInstallSelect(

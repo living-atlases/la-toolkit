@@ -5,7 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
-import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/projectViewPage.dart';
@@ -40,10 +39,12 @@ Future<void> main() async {
     print("Backend: ${env['BACKEND']}");
   }
 
+  var initialState = await appStateMiddleware.getState();
+  // print("Loaded prefs: $state");
+
   var store = Store<AppState>(
     appReducer,
-    initialState:
-        AppState(projects: List<LAProject>.empty(), firstUsage: false),
+    initialState: initialState,
     middleware: [
       customLogPrinter(),
       appStateMiddleware,
@@ -54,7 +55,7 @@ Future<void> main() async {
     print("On store change: $state");
     appStateMiddleware.saveAppState(state);
   });
-  store.dispatch(FetchProjects());
+  store.dispatch(OnFetchState());
 
   runApp(MyApp(store: store));
 

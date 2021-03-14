@@ -52,7 +52,7 @@ AppState _onIntroEnd(AppState state, OnIntroEnd action) {
 }
 
 AppState _onFetchState(AppState state, OnFetchState action) {
-  return action.state;
+  return state;
 }
 
 AppState _onFetchStateFailed(AppState state, OnFetchStateFailed action) {
@@ -147,12 +147,13 @@ AppState _addProject(AppState state, AddProject action) {
     return state;
   });
   return state.copyWith(
-      currentProject: action.project,
+      currentProject: null,
       projects: new List<LAProject>.from(state.projects)..add(action.project));
 }
 
 AppState _delProject(AppState state, DelProject action) {
   return state.copyWith(
+      currentProject: null,
       projects: new List<LAProject>.from(state.projects)
         ..removeWhere((item) => item.uuid == state.currentProject.uuid));
 }

@@ -20,30 +20,44 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (_pref == null) _pref = await SharedPreferences.getInstance();
   }
 
-  Future<AppState> _load() async {
+  Future<AppState> getState() async {
     AppState appState;
-    await _initPrefs();
-    var asS = _pref.getString(key);
-    if (asS == null) {
-      print("Load prefs empty");
-      appState = AppState(
-          projects: List<LAProject>.empty(), sshKeys: List<SshKey>.empty());
+
+    String asS;
+    if (AppUtils.isDemo()) {
+      await _initPrefs();
+      asS = _pref.getString(key);
     } else {
-      var asJ = json.decode(asS);
-      // print("Load prefs: $asJ.toString()");
-      appState = AppState.fromJson(asJ);
+      asS = await Api.getConf();
     }
-    // print("Load prefs: $appState");
+    if (asS == null || asS.isEmpty || asS == "{}") {
+      appState = initialEmptyAppState();
+    } else {
+      try {
+        Map<String, dynamic> asJ = json.decode(asS);
+        // print("Load prefs: $asJ.toString()");
+        // appState = AppState.fromJson(asJ);
+        appState = AppState.fromJson(asJ);
+      } catch (e) {
+        print(e);
+        appState = initialEmptyAppState();
+      }
+    }
+
     return appState;
+  }
+
+  AppState initialEmptyAppState() {
+    print("Load prefs empty");
+    return AppState(
+        projects: List<LAProject>.empty(),
+        sshKeys: List<SshKey>.empty(),
+        currentStep: 0);
   }
 
   @override
   call(Store<AppState> store, action, next) async {
-    if (action is FetchProjects) {
-      var state = await _load();
-      // print("Loaded prefs: $state");
-      store.dispatch(OnFetchState(state));
-
+    if (action is OnFetchState) {
       /* if (!AppUtils.isDev() ||
           store.state.alaInstallReleases == null ||
           store.state.alaInstallReleases.length == 0) { */
@@ -146,10 +160,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   }
 
   saveAppState(AppState state) async {
-    await _initPrefs();
-    var toJ = state.toJson();
-    // print("Saved prefs: $toJ.toString()");
-    _pref.setString(key, json.encode(toJ));
-    Api.saveProjects(state.projects);
+    if (AppUtils.isDemo()) {
+      await _initPrefs();
+      var toJ = state.toJson();
+      // print("Saved prefs: $toJ.toString()");
+      _pref.setString(key, json.encode(toJ));
+    } else {
+      Api.saveConf(state);
+    }
   }
 }
