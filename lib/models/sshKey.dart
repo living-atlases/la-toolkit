@@ -7,6 +7,7 @@ part 'sshKey.g.dart';
 @CopyWith()
 class SshKey {
   String name;
+  @JsonKey(ignore: true)
   String privateKey;
   String publicKey;
   String type;
