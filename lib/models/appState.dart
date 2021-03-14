@@ -10,11 +10,12 @@ import 'package:la_toolkit/models/sshKey.dart';
 
 part 'appState.g.dart';
 
-enum LAProjectViewStatus {
-  view,
-  edit,
-  tune,
-  create,
+enum LAProjectViewStatus { view, edit, tune, create }
+
+extension ParseToString on LAProjectViewStatus {
+  String toS() {
+    return this.toString().split('.').last;
+  }
 }
 
 extension LAProjectStatusExtension on LAProjectViewStatus {
@@ -58,10 +59,12 @@ class AppState {
       this.firstUsage = true,
       this.currentProject,
       this.currentStep,
-      this.status,
+      status,
       this.alaInstallReleases,
       this.generatorReleases,
-      this.sshKeys});
+      sshKeys})
+      : this.status = status ?? LAProjectViewStatus.view,
+        this.sshKeys = sshKeys ?? [];
   /*
       sshKeys})
       : sshKeys = sshKeys ?? []; */
@@ -96,6 +99,21 @@ class AppState {
       ListEquality().hash(generatorReleases) ^
       ListEquality().hash(sshKeys);
 
+  static LAProjectViewStatus statusFromString(String s) {
+    switch (s) {
+      case 'edit':
+        return LAProjectViewStatus.edit;
+      case 'create':
+        return LAProjectViewStatus.create;
+      case 'tune':
+        return LAProjectViewStatus.tune;
+      case 'view':
+        return LAProjectViewStatus.view;
+      default:
+        return LAProjectViewStatus.view;
+    }
+  }
+
   @override
   String toString() {
     return '''
@@ -103,12 +121,9 @@ class AppState {
 === AppState ===
 LA projects: ${projects.length} 
 view status: $status , currentStep: $currentStep
-ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshkeys: ${sshKeys == null ? 0 : sshKeys.length}
+ala-install releases: ${alaInstallReleases?.length}, generator releases: ${generatorReleases?.length}, sshKeys: ${sshKeys?.length}
 currentProject of ${projects.length} -----
-$currentProject
+${currentProject != null ? currentProject : ''}
 ''';
-//    $projects
-//    currentProject of ${projects.length} -----
-//    $currentProject
   }
 }
