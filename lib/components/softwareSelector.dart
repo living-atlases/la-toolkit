@@ -6,6 +6,8 @@ class SoftwareSelector extends StatelessWidget {
   final Function(String) onChange;
   final String label;
   final String tooltip;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   SoftwareSelector(
       {Key key,
       this.label,
@@ -17,17 +19,19 @@ class SoftwareSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<DropdownMenuItem<String>> releases = [];
-    versions.forEach((element) =>
-        releases.add(DropdownMenuItem(child: Text(element), value: element)));
+    Map<String, DropdownMenuItem<String>> releases = {};
+    versions.forEach((element) {
+      // remove dups
+      releases[element] =
+          DropdownMenuItem(child: Text(element), value: element);
+    });
+    List<DropdownMenuItem<String>> items = releases.values.toList();
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        /* decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10)), */
         child: Tooltip(
             message: tooltip,
             child: DropdownButtonFormField(
+                key: _formKey,
                 icon: Icon(Icons.arrow_drop_down),
                 iconSize: 32,
                 // hint: Text("Recommended a recent version"),
@@ -38,10 +42,13 @@ class SoftwareSelector extends StatelessWidget {
                   labelText: label,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  // border: new CustomBorderTextFieldSkin().getSkin(),
                 ),
-                value: initialValue,
-                items: releases,
+                value: initialValue != null && initialValue.isNotEmpty
+                    ? initialValue
+                    : items.length > 0
+                        ? items[0].value
+                        : "",
+                items: items,
                 onChanged: (value) {
                   onChange(value);
                 })));
