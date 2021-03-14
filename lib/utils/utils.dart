@@ -49,6 +49,7 @@ class MapUtils {
   }
 
   static Map<String, dynamic> toInvVariables(List<double> p1, List<double> p2) {
+    if (p1 == null || p2 == null) return {};
     var center = MapUtils.center(p1, p2);
     var bbox = [p1[0], p1[1], p2[0], p2[1]];
     var square = MapUtils.toSquare(p1, p2);
