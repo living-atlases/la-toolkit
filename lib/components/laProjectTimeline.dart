@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:timelines/timelines.dart';
 
@@ -26,11 +27,13 @@ class LAProjectTimeline extends StatelessWidget {
     return StoreConnector<AppState, _LAProjectTimelineViewModel>(
         distinct: true,
         converter: (store) {
+          List<LAProject> ourProjects = store.state.projects
+              .where((element) => element.uuid == uuid)
+              .toList();
           return _LAProjectTimelineViewModel(
-            status: store.state.projects
-                .where((element) => element.uuid == uuid)
-                .toList()[0]
-                .status,
+            status: ourProjects.length > 0
+                ? ourProjects[0].status
+                : LAProjectStatus.created,
           );
         },
         builder: (BuildContext context, _LAProjectTimelineViewModel vm) {
