@@ -188,7 +188,7 @@ class LAProject {
   }
 
   bool allServersWithServicesReady() {
-    bool allReady = true;
+    bool allReady = true && serversWithServices().length > 0;
     serversWithServices().forEach((s) {
       allReady = allReady && s.isReady();
     });
