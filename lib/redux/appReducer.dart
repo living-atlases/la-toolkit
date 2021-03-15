@@ -181,6 +181,14 @@ AppState _testConnectivityProject(
 AppState _onTestConnectivityResults(
     AppState state, OnTestConnectivityResults action) {
   var currentProject = state.currentProject;
+  currentProject.servers.forEach((server) {
+    server.reachable = ServiceStatus.unknown;
+    server.sshReachable = ServiceStatus.unknown;
+    server.sudoEnabled = ServiceStatus.unknown;
+    server.osName = "";
+    server.osVersion = "";
+    currentProject.upsert(server);
+  });
   for (var serverName in action.results.keys) {
     var server =
         currentProject.servers.where((e) => e.name == serverName).toList()[0];
