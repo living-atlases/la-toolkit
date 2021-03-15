@@ -62,7 +62,7 @@ class TermDialog {
                     )),
               ),
             ));
-    onClose();
+    if (onClose != null) onClose();
   }
 
   static Future<T> showFloatingModalBottomSheet<T>({
