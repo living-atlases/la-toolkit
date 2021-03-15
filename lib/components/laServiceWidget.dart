@@ -45,6 +45,14 @@ class LaServiceWidget extends StatelessWidget {
 
       var domain = vm.currentProject.domain;
       var usesSubdomain = !serviceDesc.withoutUrl && service.usesSubdomain;
+      var domainSwitchController = AdvancedSwitchController();
+      domainSwitchController.value = !service.usesSubdomain;
+      domainSwitchController.addListener(() {
+        if (canUseSubdomain) {
+          service.usesSubdomain = !domainSwitchController.value;
+          vm.onEditService(service);
+        }
+      });
       return visible
           ? Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
@@ -122,37 +130,32 @@ class LaServiceWidget extends StatelessWidget {
                                       "See a similar service in production")
                               : null,
                         ),
+
                         if (!optional || service.use)
                           Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Tooltip(
-                                  message: canUseSubdomain
-                                      ? "Use a subdomain for this service?"
-                                      : "This service requires a subdomain",
-                                  child: Container(
+                                    message: canUseSubdomain
+                                        ? "Use a subdomain for this service?"
+                                        : "This service requires a subdomain",
+                                    child: Container(
                                       padding: EdgeInsets.fromLTRB(0, 3, 20, 0),
                                       child: AdvancedSwitch(
-                                          value:
-                                              !service.usesSubdomain, // Boolean
-                                          height: 16.0,
-                                          width: 60.0,
-                                          activeColor: LAColorTheme.inactive,
-                                          inactiveColor: LAColorTheme.laPalette,
-                                          // activeColor: Color(0xFF009688),
-                                          inactiveChild: Text('SUBD'),
-                                          activeChild: Text('PATH'),
-                                          borderRadius: BorderRadius.all(
-                                              const Radius.circular(4)),
-                                          onChanged: canUseSubdomain
-                                              ? (bool newValue) {
-                                                  service.usesSubdomain =
-                                                      !newValue;
-                                                  vm.onEditService(service);
-                                                }
-                                              : null)),
-                                  /* Switch(
+                                        controller: domainSwitchController,
+                                        height: 16.0,
+                                        width: 60.0,
+                                        activeColor: LAColorTheme.inactive,
+                                        inactiveColor: LAColorTheme.laPalette,
+                                        // activeColor: Color(0xFF009688),
+                                        inactiveChild: Text('SUBD'),
+                                        activeChild: Text('PATH'),
+                                        borderRadius: BorderRadius.all(
+                                            const Radius.circular(4)),
+                                      ),
+                                    )),
+                                /* Switch(
                                 value: service.usesSubdomain,
                                 activeColor: Color(0xFF009688),
                                 onChanged: (bool newValue) {
@@ -160,7 +163,6 @@ class LaServiceWidget extends StatelessWidget {
                                   vm.onEditService(service);
                                 },
                               ) */
-                                ),
                                 if (!serviceDesc.withoutUrl)
                                   Container(
                                       padding: EdgeInsets.fromLTRB(
