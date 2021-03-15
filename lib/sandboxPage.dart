@@ -59,6 +59,7 @@ class _SandboxPageState extends State<SandboxPage> {
       return Scaffold(
           key: _scaffoldKey,
           // backgroundColor: Colors.white,
+
           appBar: LAAppBar(
             context: context,
             title: 'Sandbox',

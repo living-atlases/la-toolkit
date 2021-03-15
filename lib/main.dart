@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/projectEditPage.dart';
@@ -181,18 +182,97 @@ class _HomePageState extends State<HomePage> {
                   // App bar with floating: true, pinned: true, snap: false:
                   appBar: LAAppBar(
                       context: context, title: appName, showLaIcon: true),
-                  body: LAProjectsListPage(),
-                  floatingActionButton: vm.state.projects.length > 0
-                      ? FloatingActionButton.extended(
-                          onPressed: () {
-                            vm.onAddProject();
-                          },
-                          label: Text('Create a new LA Project'),
-                          icon: Icon(Icons.add_circle_outline),
-                        )
-                      : null)
+                  body: LAProjectsList(),
+                  floatingActionButton:
+                      /*
+                          FloatingActionButton.extended(
+                            onPressed: () {
+                              vm.onAddProject();
+                            },
+                            label: Text('Create a new LA Project'),
+                            icon: Icon(Icons.add_circle_outline),
+                          ) */
+                      _moreBtn(vm))
               : Intro();
         });
+  }
+
+  Widget _moreBtn(_HomePageViewModel vm) {
+    return SpeedDial(
+
+        /// both default to 16
+        marginEnd: 18,
+        marginBottom: 20,
+        // animatedIcon: AnimatedIcons.menu_close,
+        // animatedIconTheme: IconThemeData(size: 22.0),
+        /// This is ignored if animatedIcon is non null
+        icon: Icons.add,
+        activeIcon: Icons.close,
+
+        // iconTheme: IconThemeData(color: Colors.grey[50], size: 30),
+        /// The label of the main button.
+        // label: Text("Open Speed Dial"),
+        /// The active label of the main button, Defaults to label if not specified.
+        // activeLabel: Text("Close Speed Dial"),
+        /// Transition Builder between label and activeLabel, defaults to FadeTransition.
+        // labelTransitionBuilder: (widget, animation) => ScaleTransition(scale: animation,child: widget),
+        /// The below button size defaults to 56 itself, its the FAB size + It also affects relative padding and other elements
+        buttonSize: 56.0,
+        visible: true,
+
+        /// If true user is forced to close dial manually
+        /// by tapping main button and overlay is not rendered.
+        closeManually: false,
+
+        /// If true overlay will render no matter what.
+        renderOverlay: false,
+        curve: Curves.bounceIn,
+        overlayColor: Colors.black,
+        overlayOpacity: 0.5,
+        // onOpen: () => print('OPENING DIAL'),
+        // onClose: () => print('DIAL CLOSED'),
+        tooltip: 'More options',
+        heroTag: 'speed-dial-more-tag',
+        backgroundColor: vm.state.projects.length > 0
+            ? LAColorTheme.laPalette
+            : Colors.white,
+        foregroundColor:
+            vm.state.projects.length > 0 ? Colors.white : Colors.black,
+        elevation: 8.0,
+        shape: CircleBorder(),
+        // orientation: SpeedDialOrientation.Up,
+        // childMarginBottom: 2,
+        // childMarginTop: 2,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.copy_outlined),
+            backgroundColor: LAColorTheme.laPalette,
+            foregroundColor: Colors.white,
+            label: 'Add some sample LA projects',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () => print('FIRST CHILD'),
+            // onLongPress: () => print('FIRST CHILD LONG PRESS'),
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.upload_rounded),
+            backgroundColor: LAColorTheme.laPalette,
+            foregroundColor: Colors.white,
+            label: 'Import previous generated inventories',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () => print('SECOND CHILD'),
+            // onLongPress: () => print('SECOND CHILD LONG PRESS'),
+          ),
+          if (vm.state.projects.length > 0)
+            SpeedDialChild(
+              child: Icon(Icons.add),
+              backgroundColor: LAColorTheme.laPalette,
+              foregroundColor: Colors.white,
+              label: 'Create a new LA Project',
+              labelStyle: TextStyle(fontSize: 18.0),
+              onTap: () => vm.onAddProject(),
+              // onLongPress: () => print('SECOND CHILD LONG PRESS'),
+            ),
+        ]);
   }
 }
 

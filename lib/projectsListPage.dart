@@ -14,7 +14,7 @@ import 'components/formattedTitle.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 
-class LAProjectsListPage extends StatelessWidget {
+class LAProjectsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectsPageViewModel>(

@@ -148,7 +148,8 @@ AppState _addProject(AppState state, AddProject action) {
   });
   return state.copyWith(
       currentProject: null,
-      projects: new List<LAProject>.from(state.projects)..add(action.project));
+      projects: new List<LAProject>.from(state.projects)
+        ..insert(0, action.project));
 }
 
 AppState _delProject(AppState state, DelProject action) {
