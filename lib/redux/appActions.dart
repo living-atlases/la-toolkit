@@ -38,6 +38,11 @@ class CreateProject extends AppActions {
   CreateProject();
 }
 
+class ImportProject extends AppActions {
+  String yoRcJson;
+  ImportProject({this.yoRcJson});
+}
+
 class AddProject extends AppActions {
   LAProject project;
 

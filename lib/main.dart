@@ -15,6 +15,7 @@ import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
 import 'package:la_toolkit/routes.dart';
+import 'package:la_toolkit/utils/fileUtils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:redux/redux.dart';
@@ -163,6 +164,8 @@ class _HomePageState extends State<HomePage> {
         converter: (store) {
           return _HomePageViewModel(
             state: store.state,
+            onImportProject: (yoRc) =>
+                store.dispatch(ImportProject(yoRcJson: yoRc)),
             onAddProject: () {
               store.dispatch(CreateProject());
               // Navigator.pushNamed(context, LAProjectPage.routeName);
@@ -259,7 +262,17 @@ class _HomePageState extends State<HomePage> {
             foregroundColor: Colors.white,
             label: 'Import previous generated inventories',
             labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => print('SECOND CHILD'),
+            onTap: () async {
+              try {
+                var yoRcJson = await FileUtils.getYoRcJson();
+                vm.onImportProject(yoRcJson);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      'Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),
+                ));
+              }
+            },
             // onLongPress: () => print('SECOND CHILD LONG PRESS'),
           ),
           if (vm.state.projects.length > 0)
@@ -279,8 +292,9 @@ class _HomePageState extends State<HomePage> {
 class _HomePageViewModel {
   final AppState state;
   final void Function() onAddProject;
+  final void Function(String) onImportProject;
 
-  _HomePageViewModel({this.state, this.onAddProject});
+  _HomePageViewModel({this.state, this.onAddProject, this.onImportProject});
 
   @override
   bool operator ==(Object other) =>

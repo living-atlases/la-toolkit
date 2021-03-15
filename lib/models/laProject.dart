@@ -452,4 +452,17 @@ class LAProject {
       });
     }
   }
+
+  factory LAProject.import({String yoRcJson}) {
+    Map<String, dynamic> yoRc =
+        json.decode(yoRcJson)["generator-living-atlas"]["promptValues"];
+    var a = (tag) => yoRc["LA_project_$tag"];
+
+    LAProject p = LAProject(
+        longName: yoRc['LA_project_name'],
+        shortName: yoRc['LA_project_shortname'],
+        domain: yoRc["LA_domain"],
+        useSSL: yoRc["LA_enable_ssl"]);
+    return p;
+  }
 }

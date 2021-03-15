@@ -24,6 +24,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, OnFetchGeneratorReleasesFailed>(
       _onFetchGeneratorReleasesFailed),
   new TypedReducer<AppState, CreateProject>(_createProject),
+  new TypedReducer<AppState, ImportProject>(_importProject),
   new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
   new TypedReducer<AppState, GotoStepEditProject>(_gotoStepEditProject),
@@ -83,6 +84,14 @@ AppState _createProject(AppState state, CreateProject action) {
   return state.copyWith(
       currentProject: new LAProject(),
       status: LAProjectViewStatus.create,
+      currentStep: 0);
+}
+
+AppState _importProject(AppState state, ImportProject action) {
+  return state.copyWith(
+      currentProject: null,
+      projects: new List<LAProject>.from(state.projects)
+        ..insert(0, LAProject.import(yoRcJson: action.yoRcJson)),
       currentStep: 0);
 }
 
