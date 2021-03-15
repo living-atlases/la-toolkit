@@ -315,7 +315,7 @@ class _ProjectPageViewModel {
             ListEquality()
                 .equals(alaInstallReleases, other.alaInstallReleases) &&
             ListEquality().equals(sshKeys, other.sshKeys);
-    print("############################ Is different project $result");
+    print("Is different project view $result");
     return result;
   }
 

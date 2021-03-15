@@ -35,4 +35,27 @@ class SshKey {
   String toString() {
     return 'SshKey {name: $name}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SshKey &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          publicKey == other.publicKey &&
+          type == other.type &&
+          size == other.size &&
+          desc == other.desc &&
+          fingerprint == other.fingerprint &&
+          encrypted == other.encrypted;
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      publicKey.hashCode ^
+      type.hashCode ^
+      size.hashCode ^
+      desc.hashCode ^
+      fingerprint.hashCode ^
+      encrypted.hashCode;
 }

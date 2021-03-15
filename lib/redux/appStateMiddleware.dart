@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/appState.dart';
@@ -74,7 +75,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             alaInstallReleases.length);
         alaInstallReleases.add('upstream');
         alaInstallReleases.add('custom');
-        store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
+        if (!ListEquality()
+            .equals(alaInstallReleases, store.state.alaInstallReleases))
+          store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
         scanSshKeys(store, () => {});
       } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
@@ -96,7 +99,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           Map<String, dynamic> versions = l['versions'];
           List<String> generatorReleases = [];
           versions.keys.forEach((key) => generatorReleases.insert(0, key));
-          store.dispatch(OnFetchGeneratorReleases(generatorReleases));
+          if (!ListEquality()
+              .equals(generatorReleases, store.state.generatorReleases))
+            store.dispatch(OnFetchGeneratorReleases(generatorReleases));
         } else {
           store.dispatch(OnFetchGeneratorReleasesFailed());
         }
@@ -148,7 +153,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
   void scanSshKeys(store, VoidCallback onKeysScanned) {
     Api.sshKeysScan().then((keys) {
-      store.dispatch(OnSshKeysScanned(keys));
+      if (!ListEquality().equals(keys, store.state.sshKeys))
+        store.dispatch(OnSshKeysScanned(keys));
       onKeysScanned();
     });
   }
