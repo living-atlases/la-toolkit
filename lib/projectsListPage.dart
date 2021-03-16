@@ -46,8 +46,7 @@ class LAProjectsList extends StatelessWidget {
                                         int index) =>
                                     AnimationConfiguration.staggeredList(
                                         position: index,
-                                        delay:
-                                            const Duration(milliseconds: 500),
+                                        delay: const Duration(milliseconds: 0),
                                         duration:
                                             const Duration(milliseconds: 1000),
                                         child: SlideAnimation(

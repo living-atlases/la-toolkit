@@ -32,8 +32,25 @@ void main() {
   });
 
   test('project long name regexp should allow valid unicode names', () {
-    var string = 'αν ένας ανώνυμος';
-    expect(LARegExp.projectNameRegexp.hasMatch(string), equals(true));
+    List<String> correctNames = [
+      'αν ένας ανώνυμος',
+      'Biodiversitäts-Atlas Österreich',
+    ];
+    correctNames.forEach((name) {
+      expect(LARegExp.projectNameRegexp.hasMatch(name), equals(true));
+    });
+  });
+
+  test('project shortname name regexp should allow valid unicode names', () {
+    List<String> correctNames = [
+      'αν ένας ανώνυμος',
+      'GBIF.ES',
+      'ALA',
+      'Biodiversitäts-Atlas Österreich',
+    ];
+    correctNames.forEach((name) {
+      expect(LARegExp.shortNameRegexp.hasMatch(name), equals(true));
+    });
   });
 
   test('hostname regexp should not allow non letters', () {

@@ -164,8 +164,10 @@ class _HomePageState extends State<HomePage> {
         converter: (store) {
           return _HomePageViewModel(
             state: store.state,
-            onImportProject: (yoRc) =>
-                store.dispatch(ImportProject(yoRcJson: yoRc)),
+            onImportProject: (yoRc) {
+              store.dispatch(ImportProject(yoRcJson: yoRc));
+              context.hideLoaderOverlay();
+            },
             onAddProject: () {
               store.dispatch(CreateProject());
               // Navigator.pushNamed(context, LAProjectPage.routeName);
@@ -264,9 +266,11 @@ class _HomePageState extends State<HomePage> {
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () async {
               try {
+                context.showLoaderOverlay();
                 var yoRcJson = await FileUtils.getYoRcJson();
                 vm.onImportProject(yoRcJson);
               } catch (e) {
+                context.hideLoaderOverlay();
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(
                       'Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),

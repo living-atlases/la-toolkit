@@ -8,6 +8,21 @@ import 'package:latlong/latlong.dart';
 import 'package:test/test.dart';
 
 void main() {
+  final lists = LAServiceName.species_lists.toS();
+  final collectory = LAServiceName.collectory.toS();
+  final bie = LAServiceName.ala_bie.toS();
+  final bieIndex = LAServiceName.bie_index.toS();
+  final alaHub = LAServiceName.ala_hub.toS();
+  final biocacheService = LAServiceName.biocache_service.toS();
+  final alerts = LAServiceName.alerts.toS();
+  final images = LAServiceName.images.toS();
+  final webapi = LAServiceName.webapi.toS();
+  final regions = LAServiceName.regions.toS();
+  final spatial = LAServiceName.spatial.toS();
+  final cas = LAServiceName.cas.toS();
+  // final dashboard = LAServiceName.dashboard.toS();
+  final doi = LAServiceName.doi.toS();
+
   test('Test step 0 of creation, longname', () {
     LAProject testProject = LAProject(longName: "");
     expect(testProject.isCreated, equals(false));
@@ -84,16 +99,6 @@ void main() {
     expect(vm1 == vm1bisBis, equals(false));
   });
 
-  final lists = LAServiceName.species_lists.toS();
-  final collectory = LAServiceName.collectory.toS();
-  final bie = LAServiceName.ala_bie.toS();
-  final bieIndex = LAServiceName.bie_index.toS();
-  /*final speciesList = LAServiceName.species_lists.toS();
-  final webapi = LAServiceName.webapi.toS();
-  final dashboard = LAServiceName.dashboard.toS();
-  final alerts = LAServiceName.alerts.toS();
-  final doi = LAServiceName.doi.toS();
-*/
   test('Test step 1 of creation, valid servers-service assignment and equality',
       () {
     LAProject testProject = LAProject(
@@ -388,7 +393,7 @@ void main() {
   }
 }
 ''';
-    var rcJsonCa = '''
+    var yoRcJsonCa = '''
 {
   "generator-living-atlas": {
     "promptValues": {
@@ -486,15 +491,46 @@ void main() {
       expect(p.getService(service.nameInt).use, equals(true));
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));
-        expect(p.getService(service.nameInt).iniPath, equals('/'));
-        //
+        expect(p.getService(service.nameInt).iniPath, equals(''));
+        expect(p.getService(service.nameInt).suburl.contains('gbif.es'),
+            equals(false));
       }
     });
-    expect(p.getService(LAServiceName.collectory.toS()).suburl,
-        equals('colecciones'));
-    expect(
-        p.getService(LAServiceName.ala_bie.toS()).suburl, equals('especies'));
-    expect(
-        p.getService(LAServiceName.spatial.toS()).suburl, equals('espacial'));
+    expect(p.getService(collectory).suburl, equals('colecciones'));
+    expect(p.getService(bie).suburl, equals('especies'));
+    expect(p.getService(spatial).suburl, equals('espacial'));
+    expect(p.getService(cas).suburl, equals('auth'));
+    expect(p.getService(lists).suburl, equals('listas'));
+
+    p = new LAProject.import(yoRcJson: yoRcJsonCa);
+    expect(p.longName, equals('Canadensys'));
+    expect(p.shortName, equals('Canadensys'));
+    expect(p.domain, equals('canadensys.net'));
+    expect(p.useSSL, equals(true));
+    LAServiceDesc.list.forEach((service) {
+      // print("${service.nameInt}");
+      if (![lists, webapi, doi, bie, regions].contains(service.nameInt))
+        expect(p.getService(service.nameInt).use, equals(true));
+      if (!service.withoutUrl) {
+        expect(p.getService(service.nameInt).usesSubdomain, equals(true));
+        if (![collectory, alaHub, biocacheService, alerts, images]
+            .contains(service.nameInt))
+          expect(p.getService(service.nameInt).iniPath, equals(''));
+      }
+    });
+
+    expect(p.getService(collectory).iniPath, equals('collections'));
+    expect(p.getService(alaHub).iniPath, equals('explorer'));
+    expect(p.getService(biocacheService).iniPath, equals('explorer-ws'));
+    expect(p.getService(images).iniPath, equals('images'));
+
+    expect(p.getService(collectory).suburl, equals('data'));
+    expect(p.getService(alaHub).suburl, equals('data'));
+    expect(p.getService(biocacheService).suburl, equals('data'));
+    expect(p.getService(images).suburl, equals('data'));
+    expect(p.getService(spatial).suburl, equals('spatial'));
+    expect(p.getService(cas).suburl, equals('auth'));
+
+    // Missing branding url etc
   });
 }

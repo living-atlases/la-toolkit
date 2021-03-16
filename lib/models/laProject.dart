@@ -116,7 +116,7 @@ class LAProject {
 
   bool validateCreation() {
     bool valid = true;
-    bool debug = false;
+    bool debug = true;
     LAProjectStatus status = LAProjectStatus.created;
 
     valid = valid &&
@@ -205,7 +205,7 @@ class LAProject {
   }
 
   List<String> getServersNameList() {
-    return serverServices.keys.toList();
+    return servers.map((s) => s.name).toList();
   }
 
   List<String> getServicesNameListInUse() {
@@ -318,44 +318,6 @@ class LAProject {
         : "";
   }
 
-  Map<String, dynamic> toGeneratorJson() {
-    Map<String, dynamic> conf = {
-      "LA_uuid": uuid,
-      "LA_project_name": longName,
-      "LA_project_shortname": shortName,
-      "LA_domain": domain,
-      "LA_enable_ssl": useSSL,
-      "LA_use_git": true,
-      "LA_theme": theme,
-      "LA_generate_branding": true
-    };
-    conf.addAll(MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint));
-
-    List<String> ips = List.empty(growable: true);
-    serversWithServices().forEach((server) => ips.add(server.ip));
-    conf["LA_server_ips"] = ips.join(',');
-
-    if (additionalVariables != null && additionalVariables != "") {
-      conf["LA_additionalVariables"] = additionalVariables;
-    }
-    services.forEach((key, service) {
-      conf["LA_use_${service.nameInt}"] = service.use;
-      conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
-      conf["LA_${service.nameInt}_hostname"] =
-          getHostname(service.nameInt) != null &&
-                  getHostname(service.nameInt).length > 0
-              ? getHostname(service.nameInt)[0]
-              : "";
-      conf["LA_${service.nameInt}_url"] = service.url(domain);
-      conf["LA_${service.nameInt}_path"] = service.path;
-    });
-
-    variables.forEach((key, variable) {
-      conf["LA_variable_${variable.nameInt}"] = variable.value;
-    });
-    return conf;
-  }
-
   List<String> getHostname(String service) {
     List<String> hostnames = [];
     serverServices.forEach((serverName, services) {
@@ -453,7 +415,46 @@ class LAProject {
     }
   }
 
+  Map<String, dynamic> toGeneratorJson() {
+    Map<String, dynamic> conf = {
+      "LA_uuid": uuid,
+      "LA_project_name": longName,
+      "LA_project_shortname": shortName,
+      "LA_domain": domain,
+      "LA_enable_ssl": useSSL,
+      "LA_use_git": true,
+      "LA_theme": theme,
+      "LA_generate_branding": true
+    };
+    conf.addAll(MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint));
+
+    List<String> ips = List.empty(growable: true);
+    serversWithServices().forEach((server) => ips.add(server.ip));
+    conf["LA_server_ips"] = ips.join(',');
+
+    if (additionalVariables != null && additionalVariables != "") {
+      conf["LA_additionalVariables"] = additionalVariables;
+    }
+    services.forEach((key, service) {
+      conf["LA_use_${service.nameInt}"] = service.use;
+      conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
+      conf["LA_${service.nameInt}_hostname"] =
+          getHostname(service.nameInt) != null &&
+                  getHostname(service.nameInt).length > 0
+              ? getHostname(service.nameInt)[0]
+              : "";
+      conf["LA_${service.nameInt}_url"] = service.url(domain);
+      conf["LA_${service.nameInt}_path"] = service.path;
+    });
+
+    variables.forEach((key, variable) {
+      conf["LA_variable_${variable.nameInt}"] = variable.value;
+    });
+    return conf;
+  }
+
   factory LAProject.import({String yoRcJson}) {
+    bool debug = true;
     Map<String, dynamic> yoRc =
         json.decode(yoRcJson)["generator-living-atlas"]["promptValues"];
     var a = (tag) => yoRc["LA_$tag"];
@@ -479,14 +480,33 @@ class LAProject {
       bool useSub =
           service.forceSubdomain ? true : a("${n}_uses_subdomain") ?? true;
       projectService.usesSubdomain = useSub;
-      /* print(
-          "$n (LA_use_$n): $useIt subdomain (LA_${n}_uses_subdomain): $useSub"); */
-      projectService.iniPath = a("${n}_path") ?? '/';
+
+      /* From LAService:
+      path = usesSubdomain
+      ? iniPath.startsWith("/")
+          ? ""
+          : "/" + iniPath
+      : suburl.startsWith("/")
+          ? ""
+          : "/" + suburl;
+       */
+
+      if (debug)
+        print(
+            "$n (LA_use_$n): $useIt subdomain (LA_${n}_uses_subdomain): $useSub");
+      String invPath = a("${n}_path") ?? '';
+
+      projectService.iniPath =
+          invPath.startsWith("/") ? invPath.substring(1) : invPath;
       String url = a("${n}_url") ?? a("${n}_hostname") ?? '';
 
       projectService.suburl = useSub
           ? url.replaceFirst('.$domain', '')
           : url.replaceFirst('$domain/', '');
+
+      if (debug)
+        print(
+            "$n: url: $url path: '$invPath' initPath: '${projectService.iniPath}' suburl: ${projectService.suburl} ");
 
       String hostname = a("${n}_hostname") ?? '';
 
