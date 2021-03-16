@@ -43,6 +43,11 @@ class ImportProject extends AppActions {
   ImportProject({this.yoRcJson});
 }
 
+class AddTemplateProjects extends AppActions {
+  Map<String, dynamic> templates;
+  AddTemplateProjects({this.templates});
+}
+
 class AddProject extends AppActions {
   LAProject project;
 

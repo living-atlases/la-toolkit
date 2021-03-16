@@ -25,6 +25,7 @@ final appReducer = combineReducers<AppState>([
       _onFetchGeneratorReleasesFailed),
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, ImportProject>(_importProject),
+  new TypedReducer<AppState, AddTemplateProjects>(_addTemplateProjects),
   new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
   new TypedReducer<AppState, GotoStepEditProject>(_gotoStepEditProject),
@@ -92,6 +93,21 @@ AppState _importProject(AppState state, ImportProject action) {
       currentProject: LAProject.import(yoRcJson: action.yoRcJson),
       status: LAProjectViewStatus.create,
       currentStep: 0);
+}
+
+AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
+  Map<String, dynamic> json = action.templates;
+  List<dynamic> projects = json['projects'];
+  List<LAProject> newProjects = List<LAProject>.empty(growable: true);
+  projects.forEach((pJson) {
+    pJson['uuid'] = null;
+    print(pJson);
+    LAProject newProject = LAProject.fromJson(pJson);
+    newProjects.add(newProject);
+  });
+  return state.copyWith(
+      projects: new List<LAProject>.from(state.projects)
+        ..insertAll(0, newProjects));
 }
 
 AppState _openProject(AppState state, OpenProject action) {

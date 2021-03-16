@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
@@ -163,16 +165,17 @@ class _HomePageState extends State<HomePage> {
         distinct: true,
         converter: (store) {
           return _HomePageViewModel(
-            state: store.state,
-            onImportProject: (yoRc) {
-              store.dispatch(ImportProject(yoRcJson: yoRc));
-              context.hideLoaderOverlay();
-            },
-            onAddProject: () {
-              store.dispatch(CreateProject());
-              // Navigator.pushNamed(context, LAProjectPage.routeName);
-            },
-          );
+              state: store.state,
+              onImportProject: (yoRc) {
+                store.dispatch(ImportProject(yoRcJson: yoRc));
+                context.hideLoaderOverlay();
+              },
+              onAddProject: () {
+                store.dispatch(CreateProject());
+              },
+              onAddTemplates: (templates) {
+                store.dispatch(AddTemplateProjects(templates: templates));
+              });
         },
         builder: (BuildContext context, _HomePageViewModel vm) {
           return !vm.state.firstUsage
@@ -255,7 +258,12 @@ class _HomePageState extends State<HomePage> {
             foregroundColor: Colors.white,
             label: 'Add some sample LA projects',
             labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => print('FIRST CHILD'),
+            onTap: () async {
+              String templatesS = await DefaultAssetBundle.of(context)
+                  .loadString("la-toolkit-templates.json");
+              Map<String, dynamic> templates = jsonDecode(templatesS);
+              vm.onAddTemplates(templates);
+            },
             // onLongPress: () => print('FIRST CHILD LONG PRESS'),
           ),
           SpeedDialChild(
@@ -297,8 +305,13 @@ class _HomePageViewModel {
   final AppState state;
   final void Function() onAddProject;
   final void Function(String) onImportProject;
+  final void Function(Map<String, dynamic>) onAddTemplates;
 
-  _HomePageViewModel({this.state, this.onAddProject, this.onImportProject});
+  _HomePageViewModel(
+      {this.state,
+      this.onAddProject,
+      this.onImportProject,
+      this.onAddTemplates});
 
   @override
   bool operator ==(Object other) =>

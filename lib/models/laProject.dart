@@ -454,11 +454,14 @@ class LAProject {
   }
 
   factory LAProject.import({String yoRcJson}) {
-    bool debug = true;
     Map<String, dynamic> yoRc =
         json.decode(yoRcJson)["generator-living-atlas"]["promptValues"];
-    var a = (tag) => yoRc["LA_$tag"];
+    return LAProject.fromObject(yoRc);
+  }
 
+  factory LAProject.fromObject(Map<String, dynamic> yoRc) {
+    bool debug = false;
+    var a = (tag) => yoRc["LA_$tag"];
     LAProject p = LAProject(
         longName: yoRc['LA_project_name'],
         shortName: yoRc['LA_project_shortname'],
