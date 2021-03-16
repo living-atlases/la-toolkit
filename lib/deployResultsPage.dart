@@ -5,6 +5,7 @@ import 'package:la_toolkit/components/resultsChart.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 
 import 'components/laAppBar.dart';
@@ -50,6 +51,7 @@ class DeployResultsPage extends StatelessWidget {
 
         int failures = resultsTotals['failures'];
         bool noFailures = failures == 0;
+        context.hideLoaderOverlay();
         return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(

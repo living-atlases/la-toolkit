@@ -35,7 +35,7 @@ class LAProjectViewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(
         distinct: true,
-        // rebuildOnChange: false,
+        rebuildOnChange: false,
         converter: (store) {
           return _ProjectPageViewModel(
               project: store.state.currentProject,

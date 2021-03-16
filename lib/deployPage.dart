@@ -67,7 +67,9 @@ class _DeployPageState extends State<DeployPage> {
                     TermDialog.show(context, title: "Ansible console",
                         onClose: () async {
                       // Show the results
+                      context.showLoaderOverlay();
                       store.dispatch(GetDeployProjectResults(logsSuffix));
+                      // context.hideLoaderOverlay();
                     });
                   },
                   onError: (error) => ScaffoldMessenger.of(context)

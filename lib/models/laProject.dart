@@ -116,7 +116,7 @@ class LAProject {
 
   bool validateCreation() {
     bool valid = true;
-    bool debug = true;
+    bool debug = false;
     LAProjectStatus status = LAProjectStatus.created;
 
     valid = valid &&
