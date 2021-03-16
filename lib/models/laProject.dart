@@ -456,13 +456,52 @@ class LAProject {
   factory LAProject.import({String yoRcJson}) {
     Map<String, dynamic> yoRc =
         json.decode(yoRcJson)["generator-living-atlas"]["promptValues"];
-    var a = (tag) => yoRc["LA_project_$tag"];
+    var a = (tag) => yoRc["LA_$tag"];
 
     LAProject p = LAProject(
         longName: yoRc['LA_project_name'],
         shortName: yoRc['LA_project_shortname'],
         domain: yoRc["LA_domain"],
         useSSL: yoRc["LA_enable_ssl"]);
+    var domain = p.domain;
+    Map<String, List<String>> serverServices = {};
+    LAServiceDesc.list.forEach((service) {
+      String n = service.nameInt == "cas" ? "CAS" : service.nameInt;
+      // ala_bie and images was not optional in the past
+      bool useIt = !service.optional
+          ? true
+          : a("use_$n") ?? n == 'ala_bie' || n == 'images'
+              ? true
+              : false;
+      LAService projectService = p.getService(service.nameInt);
+      p.serviceInUse(service.nameInt, useIt);
+      n = service.nameInt == "species_lists" ? "lists" : service.nameInt;
+      bool useSub =
+          service.forceSubdomain ? true : a("${n}_uses_subdomain") ?? true;
+      projectService.usesSubdomain = useSub;
+      /* print(
+          "$n (LA_use_$n): $useIt subdomain (LA_${n}_uses_subdomain): $useSub"); */
+      projectService.iniPath = a("${n}_path") ?? '/';
+      String url = a("${n}_url") ?? a("${n}_hostname") ?? '';
+
+      projectService.suburl = useSub
+          ? url.replaceFirst('.$domain', '')
+          : url.replaceFirst('$domain/', '');
+
+      String hostname = a("${n}_hostname") ?? '';
+
+      if (hostname.length > 0) {
+        if (!p.getServersNameList().contains(hostname)) {
+          LAServer newS = LAServer(name: hostname);
+          p.servers.add(newS);
+        }
+        LAServer s = p.servers.where((s) => s.name == hostname).toList()[0];
+        if (!serverServices.containsKey(hostname))
+          serverServices[hostname] = List<String>.empty(growable: true);
+        serverServices[hostname].add(service.nameInt);
+      }
+    });
+    p.servers.forEach((s) => p.assign(s, serverServices[s.name]));
     return p;
   }
 }

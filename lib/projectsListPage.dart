@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:la_toolkit/components/laProjectTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -35,16 +36,30 @@ class LAProjectsList extends StatelessWidget {
                       margin:
                           EdgeInsets.symmetric(horizontal: 80, vertical: 20),
                       child: Column(children: <Widget>[
-                        ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: num,
-                            // itemCount: appStateProv.appState.projects.length,
-                            itemBuilder: (BuildContext context, int index) =>
-                                ProjectCard(
-                                    vm.state.projects[index],
-                                    () => vm.onOpenProjectTools(
-                                        vm.state.projects[index])))
+                        AnimationLimiter(
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: num,
+                                // itemCount: appStateProv.appState.projects.length,
+                                itemBuilder: (BuildContext context,
+                                        int index) =>
+                                    AnimationConfiguration.staggeredList(
+                                        position: index,
+                                        delay:
+                                            const Duration(milliseconds: 500),
+                                        duration:
+                                            const Duration(milliseconds: 1000),
+                                        child: SlideAnimation(
+                                            verticalOffset: 50.0,
+                                            child: ScaleAnimation(
+                                                duration: const Duration(
+                                                    milliseconds: 750),
+                                                child: ProjectCard(
+                                                    vm.state.projects[index],
+                                                    () => vm.onOpenProjectTools(
+                                                        vm.state.projects[
+                                                            index])))))))
                       ])))
               : Center(
                   child: Column(

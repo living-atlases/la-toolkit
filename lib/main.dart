@@ -322,7 +322,9 @@ class _HomePageViewModel {
 class NavigationMiddleware implements MiddlewareClass<AppState> {
   @override
   call(Store<AppState> store, action, next) {
-    if (action is CreateProject || action is OpenProject) {
+    if (action is CreateProject ||
+        action is OpenProject ||
+        action is ImportProject) {
       MyApp._navigatorKey.currentState.pushNamed(LAProjectEditPage.routeName);
     }
     if (action is TuneProject) {

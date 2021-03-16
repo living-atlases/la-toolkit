@@ -89,9 +89,8 @@ AppState _createProject(AppState state, CreateProject action) {
 
 AppState _importProject(AppState state, ImportProject action) {
   return state.copyWith(
-      currentProject: null,
-      projects: new List<LAProject>.from(state.projects)
-        ..insert(0, LAProject.import(yoRcJson: action.yoRcJson)),
+      currentProject: LAProject.import(yoRcJson: action.yoRcJson),
+      status: LAProjectViewStatus.create,
       currentStep: 0);
 }
 

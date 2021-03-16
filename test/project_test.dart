@@ -306,4 +306,195 @@ void main() {
     expect(p.getHostname(bieIndex), equals(['vm1']));
     expect(p.getHostname(bie), equals(['vm1']));
   });
+
+  test('Import yo-rc.json', () {
+    var yoRcJson = '''
+{
+  "generator-living-atlas": {
+    "promptValues": {
+      "LA_project_name": "Portal de Datos de GBIF.ES",
+      "LA_project_shortname": "GBIF.ES",
+      "LA_pkg_name": "gbif-es",
+      "LA_domain": "gbif.es",
+      "LA_use_spatial": true,
+      "LA_use_regions": true,
+      "LA_use_species_lists": true,
+      "LA_use_CAS": true,
+      "LA_enable_ssl": true,
+      "LA_cas_hostname": "auth.gbif.es",
+      "LA_spatial_hostname": "espacial.gbif.es",
+      "LA_collectory_uses_subdomain": true,
+      "LA_collectory_hostname": "colecciones.gbif.es",
+      "LA_collectory_url": "colecciones.gbif.es",
+      "LA_collectory_path": "/",
+      "LA_ala_hub_uses_subdomain": true,
+      "LA_ala_hub_hostname": "registros.gbif.es",
+      "LA_ala_hub_url": "registros.gbif.es",
+      "LA_ala_hub_path": "/",
+      "LA_biocache_service_uses_subdomain": true,
+      "LA_biocache_service_hostname": "registros-ws.gbif.es",
+      "LA_biocache_service_url": "registros-ws.gbif.es",
+      "LA_biocache_service_path": "/",
+      "LA_ala_bie_uses_subdomain": true,
+      "LA_ala_bie_hostname": "especies.gbif.es",
+      "LA_ala_bie_url": "especies.gbif.es",
+      "LA_ala_bie_path": "/",
+      "LA_bie_index_uses_subdomain": true,
+      "LA_bie_index_hostname": "especies-ws.gbif.es",
+      "LA_bie_index_url": "especies-ws.gbif.es",
+      "LA_bie_index_path": "/",
+      "LA_images_uses_subdomain": true,
+      "LA_images_hostname": "imagenes.gbif.es",
+      "LA_images_url": "imagenes.gbif.es",
+      "LA_images_path": "/",
+      "LA_lists_uses_subdomain": true,
+      "LA_lists_hostname": "listas.gbif.es",
+      "LA_lists_url": "listas.gbif.es",
+      "LA_lists_path": "/",
+      "LA_regions_uses_subdomain": true,
+      "LA_regions_hostname": "regiones.gbif.es",
+      "LA_regions_url": "regiones.gbif.es",
+      "LA_regions_path": "/",
+      "LA_logger_uses_subdomain": true,
+      "LA_logger_hostname": "logger.gbif.es",
+      "LA_logger_url": "logger.gbif.es",
+      "LA_logger_path": "/",
+      "LA_solr_uses_subdomain": true,
+      "LA_solr_hostname": "index.gbif.es",
+      "LA_solr_url": "index.gbif.es",
+      "LA_solr_path": "/",
+      "LA_biocache_backend_hostname": "biocache-store-0.gbif.es",
+      "LA_use_git": true,
+      "check-ssl": "",
+      "LA_use_webapi": true,
+      "LA_webapi_uses_subdomain": true,
+      "LA_webapi_hostname": "api.gbif.es",
+      "LA_webapi_url": "api.gbif.es",
+      "LA_webapi_path": "/",
+      "LA_use_dashboard": true,
+      "LA_dashboard_uses_subdomain": true,
+      "LA_dashboard_hostname": "dashboard.gbif.es",
+      "LA_dashboard_path": "/",
+      "LA_use_alerts": true,
+      "LA_use_doi": true,
+      "LA_alerts_uses_subdomain": true,
+      "LA_alerts_hostname": "alertas.gbif.es",
+      "LA_alerts_path": "/",
+      "LA_doi_uses_subdomain": true,
+      "LA_doi_hostname": "doi.gbif.es",
+      "LA_doi_path": "/"
+    },
+    "firstRun": false
+  }
+}
+''';
+    var rcJsonCa = '''
+{
+  "generator-living-atlas": {
+    "promptValues": {
+      "LA_project_name": "Canadensys",
+      "LA_project_shortname": "Canadensys",
+      "LA_pkg_name": "canadensys",
+      "LA_domain": "canadensys.net",
+      "LA_use_species": false,
+      "LA_use_spatial": true,
+      "LA_use_regions": false,
+      "LA_use_species_lists": false,
+      "LA_use_CAS": true,
+      "LA_use_images": true,
+      "LA_use_alerts": true,
+      "LA_use_doi": false,
+      "LA_use_webapi": false,
+      "LA_use_dashboard": true,
+      "LA_enable_ssl": true,
+      "LA_use_git": true,
+      "LA_generate_branding": true,
+      "LA_cas_hostname": "vm-029",
+      "LA_cas_url": "auth.canadensys.net",
+      "LA_spatial_hostname": "vm-022",
+      "LA_spatial_url": "spatial.canadensys.net",
+      "LA_collectory_uses_subdomain": true,
+      "LA_collectory_hostname": "vm-027",
+      "LA_collectory_url": "data.canadensys.net",
+      "LA_collectory_path": "/collections",
+      "LA_ala_hub_uses_subdomain": true,
+      "LA_ala_hub_hostname": "vm-014",
+      "LA_ala_hub_url": "data.canadensys.net",
+      "LA_ala_hub_path": "/explorer",
+      "LA_biocache_service_uses_subdomain": true,
+      "LA_biocache_service_hostname": "vm-023",
+      "LA_biocache_service_url": "data.canadensys.net",
+      "LA_biocache_service_path": "/explorer-ws",
+      "LA_ala_bie_uses_subdomain": true,
+      "LA_ala_bie_hostname": "vm-000",
+      "LA_ala_bie_url": "species.canadensys.net",
+      "LA_ala_bie_path": "/",
+      "LA_bie_index_uses_subdomain": true,
+      "LA_bie_index_hostname": "vm-000",
+      "LA_bie_index_url": "species-ws.canadensys.net",
+      "LA_bie_index_path": "/",
+      "LA_images_uses_subdomain": true,
+      "LA_images_hostname": "vm-013",
+      "LA_images_url": "data.canadensys.net",
+      "LA_images_path": "/images",
+      "LA_lists_uses_subdomain": true,
+      "LA_lists_hostname": "vm-000",
+      "LA_lists_url": "lists.canadensys.net",
+      "LA_lists_path": "/",
+      "LA_regions_uses_subdomain": true,
+      "LA_regions_hostname": "vm-000",
+      "LA_regions_url": "regions.canadensys.net",
+      "LA_regions_path": "/",
+      "LA_logger_uses_subdomain": true,
+      "LA_logger_hostname": "vm-007",
+      "LA_logger_url": "logger.canadensys.net",
+      "LA_logger_path": "/",
+      "LA_solr_uses_subdomain": true,
+      "LA_solr_hostname": "vm-021",
+      "LA_solr_url": "index.canadensys.net",
+      "LA_solr_path": "/",
+      "LA_biocache_backend_hostname": "vm-018",
+      "LA_main_hostname": "vm-004",
+      "LA_webapi_uses_subdomain": true,
+      "LA_webapi_hostname": "",
+      "LA_webapi_url": "",
+      "LA_webapi_path": "",
+      "LA_dashboard_uses_subdomain": true,
+      "LA_dashboard_hostname": "vm-025",
+      "LA_dashboard_path": "/",
+      "LA_dashboard_url": "dashboard.canadensys.net",
+      "LA_alerts_uses_subdomain": true,
+      "LA_alerts_hostname": "vm-006",
+      "LA_alerts_path": "/alerts",
+      "LA_alerts_url": "data.canadensys.net",
+      "LA_doi_uses_subdomain": true,
+      "LA_doi_hostname": "vm-000",
+      "LA_doi_path": "/",
+      "LA_doi_url": "doi.canadensys.net"
+    },
+    "firstRun": false
+  }
+}
+''';
+    var p = new LAProject.import(yoRcJson: yoRcJson);
+    expect(p.longName, equals('Portal de Datos de GBIF.ES'));
+    expect(p.shortName, equals('GBIF.ES'));
+    expect(p.domain, equals('gbif.es'));
+    expect(p.useSSL, equals(true));
+    LAServiceDesc.list.forEach((service) {
+      // print("${service.nameInt}");
+      expect(p.getService(service.nameInt).use, equals(true));
+      if (!service.withoutUrl) {
+        expect(p.getService(service.nameInt).usesSubdomain, equals(true));
+        expect(p.getService(service.nameInt).iniPath, equals('/'));
+        //
+      }
+    });
+    expect(p.getService(LAServiceName.collectory.toS()).suburl,
+        equals('colecciones'));
+    expect(
+        p.getService(LAServiceName.ala_bie.toS()).suburl, equals('especies'));
+    expect(
+        p.getService(LAServiceName.spatial.toS()).suburl, equals('espacial'));
+  });
 }
