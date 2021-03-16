@@ -124,6 +124,7 @@ flutter:
   assets:
     - .env.development
     - .env.production
+    - assets/la-toolkit-templates.json
     - assets/images/la-icon.png
     - assets/images/ala-icon.png
     - assets/images/la-toolkit-intro-images-2.png

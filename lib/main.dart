@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -18,6 +19,7 @@ import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/fileUtils.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:redux/redux.dart';
@@ -259,8 +261,10 @@ class _HomePageState extends State<HomePage> {
             label: 'Add some sample LA projects',
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () async {
-              String templatesS = await DefaultAssetBundle.of(context)
-                  .loadString("la-toolkit-templates.json");
+              // https://flutter.dev/docs/development/ui/assets-and-images#loading-text-assets
+              // https://github.com/flutter/flutter/issues/67655
+              String templatesS = await rootBundle.loadString(
+                  '${!AppUtils.isDev() ? 'assets/' : ''}la-toolkit-templates.json');
               Map<String, dynamic> templates = jsonDecode(templatesS);
               vm.onAddTemplates(templates);
             },

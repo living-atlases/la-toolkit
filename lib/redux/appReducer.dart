@@ -101,7 +101,6 @@ AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
   List<LAProject> newProjects = List<LAProject>.empty(growable: true);
   projects.forEach((pJson) {
     pJson['uuid'] = null;
-    print(pJson);
     LAProject newProject = LAProject.fromJson(pJson);
     newProjects.add(newProject);
   });
