@@ -270,9 +270,9 @@ class _HomePageState extends State<HomePage> {
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () async {
               // https://flutter.dev/docs/development/ui/assets-and-images#loading-text-assets
-              // https://github.com/flutter/flutter/issues/67655
+
               String templatesS = await rootBundle.loadString(
-                  '${!AppUtils.isDev() ? 'assets/' : ''}la-toolkit-templates.json');
+                  AssetsUtils.pathWorkaround('la-toolkit-templates.json'));
               Map<String, dynamic> templates = jsonDecode(templatesS);
               vm.onAddTemplates(templates);
             },

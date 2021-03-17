@@ -75,3 +75,10 @@ class MapUtils {
     return area(geojson) / 1000000;
   }
 }
+
+class AssetsUtils {
+  // https://github.com/flutter/flutter/issues/67655
+  static String pathWorkaround(String asset) {
+    return '${!AppUtils.isDev() ? 'assets/' : ''}$asset';
+  }
+}
