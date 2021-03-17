@@ -99,7 +99,7 @@ class TermDialog {
                   constraints: BoxConstraints.expand(height: 600, width: 600)),
               content: Column(children: <Widget>[
                 Text(
-                  "We had some problem",
+                  "We had some problem ($error)",
                 ),
                 SizedBox(
                   height: 20,
