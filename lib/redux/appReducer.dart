@@ -1,5 +1,3 @@
-import 'dart:html' as html;
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
@@ -7,6 +5,7 @@ import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
+import 'package:universal_html/html.dart' as html;
 
 import '../models/appState.dart';
 import 'actions.dart';
@@ -104,6 +103,7 @@ AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
     LAProject newProject = LAProject.fromJson(pJson);
     newProjects.add(newProject);
   });
+  action.onAdded(projects.length);
   return state.copyWith(
       projects: new List<LAProject>.from(state.projects)
         ..insertAll(0, newProjects));
@@ -179,7 +179,7 @@ AppState _delProject(AppState state, DelProject action) {
   return state.copyWith(
       currentProject: null,
       projects: new List<LAProject>.from(state.projects)
-        ..removeWhere((item) => item.uuid == state.currentProject.uuid));
+        ..removeWhere((item) => item.uuid == action.project.uuid));
 }
 
 AppState _updateProject(AppState state, UpdateProject action) {

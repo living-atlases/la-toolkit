@@ -24,6 +24,7 @@ class LAProjectsList extends StatelessWidget {
           return _ProjectsPageViewModel(
             state: store.state,
             onCreateProject: () => store.dispatch(CreateProject()),
+            onDeleteProject: (project) => store.dispatch(DelProject(project)),
             onOpenProjectTools: (project) =>
                 store.dispatch(OpenProjectTools(project)),
           );
@@ -42,8 +43,7 @@ class LAProjectsList extends StatelessWidget {
                                 shrinkWrap: true,
                                 itemCount: num,
                                 // itemCount: appStateProv.appState.projects.length,
-                                itemBuilder: (BuildContext context,
-                                        int index) =>
+                                itemBuilder: (BuildContext context, int index) =>
                                     AnimationConfiguration.staggeredList(
                                         position: index,
                                         delay: const Duration(milliseconds: 0),
@@ -57,8 +57,11 @@ class LAProjectsList extends StatelessWidget {
                                                 child: ProjectCard(
                                                     vm.state.projects[index],
                                                     () => vm.onOpenProjectTools(
-                                                        vm.state.projects[
-                                                            index])))))))
+                                                        vm.state
+                                                            .projects[index]),
+                                                    () => vm.onDeleteProject(vm
+                                                        .state
+                                                        .projects[index])))))))
                       ])))
               : Center(
                   child: Column(
@@ -87,8 +90,8 @@ class LAProjectsList extends StatelessWidget {
 class ProjectCard extends StatelessWidget {
   final LAProject project;
   final void Function() onOpen;
-
-  ProjectCard(this.project, this.onOpen);
+  final void Function() onDelete;
+  ProjectCard(this.project, this.onOpen, this.onDelete);
 
   @override
   Widget build(BuildContext context) {
@@ -117,15 +120,31 @@ class ProjectCard extends StatelessWidget {
                                       title: project.longName,
                                       fontSize: 22,
                                       color: LAColorTheme.inactive),
-                                  trailing: IconButton(
-                                    padding: EdgeInsets.zero,
-                                    constraints: BoxConstraints(),
-                                    icon: Icon(
-                                      Icons.settings,
-                                      color: Colors.grey,
-                                    ),
-                                    onPressed: () => onOpen(),
-                                  )),
+                                  trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (AppUtils.isDev())
+                                          IconButton(
+                                            padding: EdgeInsets.zero,
+                                            constraints: BoxConstraints(),
+                                            icon: Icon(
+                                              Icons.delete,
+                                              color: Colors.grey,
+                                            ),
+                                            onPressed: () => onDelete(),
+                                          ),
+                                        if (AppUtils.isDev())
+                                          SizedBox(width: 10),
+                                        IconButton(
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints(),
+                                          icon: Icon(
+                                            Icons.settings,
+                                            color: Colors.grey,
+                                          ),
+                                          onPressed: () => onOpen(),
+                                        )
+                                      ])),
                               Text(
                                 // SHORT NAME
                                 project.shortName,
@@ -198,10 +217,14 @@ class ProjectCard extends StatelessWidget {
 class _ProjectsPageViewModel {
   final AppState state;
   final void Function(LAProject project) onOpenProjectTools;
+  final void Function(LAProject project) onDeleteProject;
   final void Function() onCreateProject;
 
   _ProjectsPageViewModel(
-      {this.state, this.onOpenProjectTools, this.onCreateProject});
+      {this.state,
+      this.onOpenProjectTools,
+      this.onCreateProject,
+      this.onDeleteProject});
 
   @override
   bool operator ==(Object other) =>

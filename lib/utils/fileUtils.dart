@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:file_picker_web/file_picker_web.dart';
+import 'package:universal_html/html.dart';
 
 class FileUtils {
   static Future<String> getYoRcJson() async {

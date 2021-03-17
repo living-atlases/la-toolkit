@@ -21,30 +21,20 @@ part 'laProject.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAProject {
-  @JsonSerializable(nullable: false)
   String uuid;
-  @JsonSerializable(nullable: false)
   String longName;
-  @JsonSerializable(nullable: false)
   String shortName;
-  @JsonSerializable(nullable: false)
   String domain;
-  @JsonSerializable(nullable: false)
   bool useSSL;
-  @JsonSerializable(nullable: false)
   List<LAServer> servers;
-  @JsonSerializable(nullable: false)
   Map<String, LAService> services;
-  @JsonSerializable(nullable: false)
   Map<String, LAVariable> variables;
   String additionalVariables;
-  @JsonSerializable(nullable: false)
   Map<String, List<String>> serverServices;
   @JsonKey(ignore: true)
   bool isCreated;
   bool advancedEdit;
   bool advancedTune;
-  @JsonSerializable(nullable: false)
   LAProjectStatus status;
   String theme;
   String alaInstallRelease;
@@ -516,9 +506,8 @@ class LAProject {
       if (hostname.length > 0) {
         if (!p.getServersNameList().contains(hostname)) {
           LAServer newS = LAServer(name: hostname);
-          p.servers.add(newS);
+          p.upsert(newS);
         }
-        LAServer s = p.servers.where((s) => s.name == hostname).toList()[0];
         if (!serverServices.containsKey(hostname))
           serverServices[hostname] = List<String>.empty(growable: true);
         serverServices[hostname].add(service.nameInt);

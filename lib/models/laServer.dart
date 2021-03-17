@@ -13,13 +13,10 @@ enum ServiceStatus { unknown, success, failed }
 class LAServer {
   String name;
   String ip;
-  @JsonSerializable(nullable: false)
   int sshPort;
   String sshUser;
-  @JsonSerializable(nullable: false)
   List<String> aliases;
   SshKey sshKey;
-  @JsonSerializable(nullable: false)
   List<String> gateways;
   ServiceStatus reachable;
   ServiceStatus sshReachable;

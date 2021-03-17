@@ -41,17 +41,13 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
 class AppState {
   // from SharedPreferences
   final bool firstUsage;
-  @JsonKey(nullable: true)
   final LAProject currentProject;
-  @JsonKey(nullable: true)
   final LAProjectViewStatus status;
-  @JsonKey(nullable: true)
   final int currentStep;
-  // from server api call
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
-  @JsonSerializable(nullable: false)
+
   final List<SshKey> sshKeys;
 
   AppState(

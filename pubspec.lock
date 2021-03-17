@@ -1052,7 +1052,7 @@ packages:
     source: hosted
     version: "0.2.4"
   universal_html:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: universal_html
       url: "https://pub.dartlang.org"

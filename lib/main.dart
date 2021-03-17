@@ -176,7 +176,15 @@ class _HomePageState extends State<HomePage> {
                 store.dispatch(CreateProject());
               },
               onAddTemplates: (templates) {
-                store.dispatch(AddTemplateProjects(templates: templates));
+                context.showLoaderOverlay();
+                store.dispatch(AddTemplateProjects(
+                    templates: templates,
+                    onAdded: (num) {
+                      context.hideLoaderOverlay();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Added $num sample LA Projects'),
+                      ));
+                    }));
               });
         },
         builder: (BuildContext context, _HomePageViewModel vm) {
@@ -276,19 +284,7 @@ class _HomePageState extends State<HomePage> {
             foregroundColor: Colors.white,
             label: 'Import previous generated inventories',
             labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () async {
-              try {
-                context.showLoaderOverlay();
-                var yoRcJson = await FileUtils.getYoRcJson();
-                vm.onImportProject(yoRcJson);
-              } catch (e) {
-                context.hideLoaderOverlay();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      'Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),
-                ));
-              }
-            },
+            onTap: () => showAlertDialog(context, vm),
             // onLongPress: () => print('SECOND CHILD LONG PRESS'),
           ),
           if (vm.state.projects.length > 0)
@@ -302,6 +298,52 @@ class _HomePageState extends State<HomePage> {
               // onLongPress: () => print('SECOND CHILD LONG PRESS'),
             ),
         ]);
+  }
+
+  showAlertDialog(BuildContext context, _HomePageViewModel vm) {
+    AlertDialog alert = AlertDialog(
+      title: Text('Import of Inventories'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            Text(
+                'Please select a \'.yo-rc.json\' file of some previous generated inventories to import it. This file is located in the parent directory of your inventories.'),
+            SizedBox(height: 20),
+            Text('You will have later to:'),
+            SizedBox(height: 10),
+            Text(
+                '  - tune your imported project with your local ansible variables,'),
+            Text(
+                '  - substitute the generated local-passwords.ini file with yours.'),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('OK'),
+          onPressed: () async {
+            try {
+              context.showLoaderOverlay();
+              var yoRcJson = await FileUtils.getYoRcJson();
+              vm.onImportProject(yoRcJson);
+            } catch (e) {
+              context.hideLoaderOverlay();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    'Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),
+              ));
+            }
+          },
+        ),
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
 
@@ -346,30 +388,35 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
     if (action is CreateProject ||
         action is OpenProject ||
         action is ImportProject) {
-      MyApp._navigatorKey.currentState.pushNamed(LAProjectEditPage.routeName);
+      MyApp._navigatorKey.currentState
+          .pushReplacementNamed(LAProjectEditPage.routeName);
     }
     if (action is TuneProject) {
-      MyApp._navigatorKey.currentState.pushNamed(LAProjectTunePage.routeName);
+      MyApp._navigatorKey.currentState
+          .pushReplacementNamed(LAProjectTunePage.routeName);
     }
     if (action is PrepareDeployProject) {
-      MyApp._navigatorKey.currentState.pushNamed(DeployPage.routeName);
+      MyApp._navigatorKey.currentState
+          .pushReplacementNamed(DeployPage.routeName);
     }
     if (action is OpenProjectTools) {
-      MyApp._navigatorKey.currentState.pushNamed(LAProjectViewPage.routeName);
+      MyApp._navigatorKey.currentState
+          .pushReplacementNamed(LAProjectViewPage.routeName);
     }
     if (action is DelProject) {
-      MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
+      MyApp._navigatorKey.currentState.pushReplacementNamed(HomePage.routeName);
     }
     if (action is AddProject) {
       // We open Tools instead of:
-      MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
+      MyApp._navigatorKey.currentState.pushReplacementNamed(HomePage.routeName);
     }
     if (action is UpdateProject) {
       // We open Tools instead of:
-      // MyApp._navigatorKey.currentState.pushNamed(HomePage.routeName);
+      // MyApp._navigatorKey.currentState.pushReplacementNamed(HomePage.routeName);
     }
     if (action is ShowDeployProjectResults) {
-      MyApp._navigatorKey.currentState.pushNamed(DeployResultsPage.routeName);
+      MyApp._navigatorKey.currentState
+          .pushReplacementNamed(DeployResultsPage.routeName);
     }
     next(action);
   }
