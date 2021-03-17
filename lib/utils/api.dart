@@ -178,7 +178,10 @@ class Api {
 
   static Future<void> term(
       {VoidCallback onStart, ErrorCallback onError}) async {
-    if (AppUtils.isDemo()) return;
+    if (AppUtils.isDemo()) {
+      onStart();
+      return;
+    }
     var url = "${env['BACKEND']}api/v1/term";
     http
         .get(url)
