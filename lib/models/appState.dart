@@ -40,26 +40,32 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
 @CopyWith()
 class AppState {
   // from SharedPreferences
+  final bool failedLoad;
   final bool firstUsage;
+  @JsonKey(nullable: false)
   final LAProject currentProject;
+  @JsonKey(nullable: false)
   final LAProjectViewStatus status;
+  @JsonKey(nullable: false)
   final int currentStep;
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
-
+  @JsonSerializable(nullable: false)
   final List<SshKey> sshKeys;
 
   AppState(
       {this.projects,
+      bool failedLoad,
       this.firstUsage = true,
       this.currentProject,
       this.currentStep,
-      status,
+      LAProjectViewStatus status,
       this.alaInstallReleases,
       this.generatorReleases,
-      sshKeys})
+      List<SshKey> sshKeys})
       : this.status = status ?? LAProjectViewStatus.view,
+        this.failedLoad = failedLoad ?? false,
         this.sshKeys = sshKeys ?? [];
   /*
       sshKeys})
@@ -76,6 +82,7 @@ class AppState {
       other is AppState &&
           runtimeType == other.runtimeType &&
           firstUsage == other.firstUsage &&
+          failedLoad == other.failedLoad &&
           currentProject == other.currentProject &&
           status == other.status &&
           currentStep == other.currentStep &&
@@ -87,6 +94,7 @@ class AppState {
   @override
   int get hashCode =>
       firstUsage.hashCode ^
+      failedLoad.hashCode ^
       currentProject.hashCode ^
       status.hashCode ^
       currentStep.hashCode ^

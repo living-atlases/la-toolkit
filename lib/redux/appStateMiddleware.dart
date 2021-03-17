@@ -41,16 +41,17 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         appState = AppState.fromJson(asJ);
       } catch (e) {
         print(e);
-        appState = initialEmptyAppState();
+        appState = initialEmptyAppState(failedLoad: true);
       }
     }
 
     return appState;
   }
 
-  AppState initialEmptyAppState() {
+  AppState initialEmptyAppState({bool failedLoad: false}) {
     print("Load prefs empty");
     return AppState(
+        failedLoad: failedLoad,
         projects: List<LAProject>.empty(),
         sshKeys: List<SshKey>.empty(),
         currentStep: 0);
@@ -172,7 +173,12 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       // print("Saved prefs: $toJ.toString()");
       _pref.setString(key, json.encode(toJ));
     } else {
-      Api.saveConf(state);
+      if (state.failedLoad) {
+        print(
+            'Not saving configuration because the load of the saved configuration failed');
+      } else {
+        Api.saveConf(state);
+      }
     }
   }
 }

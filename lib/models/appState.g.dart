@@ -11,6 +11,7 @@ extension AppStateCopyWith on AppState {
     List<String> alaInstallReleases,
     LAProject currentProject,
     int currentStep,
+    bool failedLoad,
     bool firstUsage,
     List<String> generatorReleases,
     List<LAProject> projects,
@@ -21,6 +22,7 @@ extension AppStateCopyWith on AppState {
       alaInstallReleases: alaInstallReleases ?? this.alaInstallReleases,
       currentProject: currentProject ?? this.currentProject,
       currentStep: currentStep ?? this.currentStep,
+      failedLoad: failedLoad ?? this.failedLoad,
       firstUsage: firstUsage ?? this.firstUsage,
       generatorReleases: generatorReleases ?? this.generatorReleases,
       projects: projects ?? this.projects,
@@ -40,12 +42,12 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
         ?.map((e) =>
             e == null ? null : LAProject.fromJson(e as Map<String, dynamic>))
         ?.toList(),
+    failedLoad: json['failedLoad'] as bool,
     firstUsage: json['firstUsage'] as bool,
-    currentProject: json['currentProject'] == null
-        ? null
-        : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
+    currentProject:
+        LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
     currentStep: json['currentStep'] as int,
-    status: _$enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
+    status: _$enumDecode(_$LAProjectViewStatusEnumMap, json['status']),
     alaInstallReleases:
         (json['alaInstallReleases'] as List)?.map((e) => e as String)?.toList(),
     generatorReleases:
@@ -58,8 +60,9 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
+      'failedLoad': instance.failedLoad,
       'firstUsage': instance.firstUsage,
-      'currentProject': instance.currentProject?.toJson(),
+      'currentProject': instance.currentProject.toJson(),
       'status': _$LAProjectViewStatusEnumMap[instance.status],
       'currentStep': instance.currentStep,
       'projects': instance.projects?.map((e) => e?.toJson())?.toList(),
@@ -87,17 +90,6 @@ T _$enumDecode<T>(
         '${enumValues.values.join(', ')}');
   }
   return value ?? unknownValue;
-}
-
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$LAProjectViewStatusEnumMap = {

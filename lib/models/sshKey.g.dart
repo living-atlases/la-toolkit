@@ -39,7 +39,6 @@ extension SshKeyCopyWith on SshKey {
 SshKey _$SshKeyFromJson(Map<String, dynamic> json) {
   return SshKey(
     name: json['name'] as String,
-    privateKey: json['privateKey'] as String,
     publicKey: json['publicKey'] as String,
     type: json['type'] as String,
     size: json['size'] as int,
@@ -52,7 +51,6 @@ SshKey _$SshKeyFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$SshKeyToJson(SshKey instance) => <String, dynamic>{
       'name': instance.name,
-      'privateKey': instance.privateKey,
       'publicKey': instance.publicKey,
       'type': instance.type,
       'size': instance.size,

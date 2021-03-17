@@ -3,6 +3,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/sshKey.dart';
+import 'package:uuid/uuid.dart';
 
 part 'laServer.g.dart';
 
@@ -11,12 +12,16 @@ enum ServiceStatus { unknown, success, failed }
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServer {
+  String uuid;
   String name;
   String ip;
+  @JsonSerializable(nullable: false)
   int sshPort;
   String sshUser;
+  @JsonSerializable(nullable: false)
   List<String> aliases;
   SshKey sshKey;
+  @JsonSerializable(nullable: false)
   List<String> gateways;
   ServiceStatus reachable;
   ServiceStatus sshReachable;
@@ -25,8 +30,9 @@ class LAServer {
   String osVersion;
 
   LAServer(
-      {this.name,
-      ip,
+      {String uuid,
+      this.name,
+      String ip,
       this.sshPort: 22,
       this.sshUser,
       List<String> aliases,
@@ -37,7 +43,8 @@ class LAServer {
       this.sudoEnabled: ServiceStatus.unknown,
       this.osName = "",
       this.osVersion = ""})
-      : this.aliases = aliases ?? [],
+      : uuid = uuid ?? Uuid().v4(),
+        this.aliases = aliases ?? [],
         this.gateways = gateways ?? [],
         this.ip = ip ?? "";
 
@@ -51,6 +58,7 @@ class LAServer {
       other is LAServer &&
           runtimeType == other.runtimeType &&
           name == other.name &&
+          uuid == other.uuid &&
           ip == other.ip &&
           sshPort == other.sshPort &&
           sshUser == other.sshUser &&
@@ -66,6 +74,7 @@ class LAServer {
   @override
   int get hashCode =>
       name.hashCode ^
+      uuid.hashCode ^
       ip.hashCode ^
       sshPort.hashCode ^
       sshUser.hashCode ^
@@ -86,13 +95,15 @@ class LAServer {
 
   @override
   String toString() {
-    return "$name${ip.length > 0 ? ', ' + ip : ' '}, isReady: ${isReady()}, osName: $osName, osVersion: $osVersion, ${aliases.length > 0 ? ', ' + aliases.join(', ') : ''}";
+    return '''
+$name ($uuid)${ip.length > 0 ? ', ' + ip : ' '}, isReady: ${isReady()} osName: $osName osVersion: $osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}
+''';
   }
 
   static List<LAServer> upsert(List<LAServer> servers, LAServer laServer) {
-    if (servers.map((s) => s.name).toList().contains(laServer.name)) {
+    if (servers.map((s) => s.uuid).toList().contains(laServer.uuid)) {
       servers = servers
-          .map((current) => current.name == laServer.name ? laServer : current)
+          .map((current) => current.uuid == laServer.uuid ? laServer : current)
           .toList();
     } else {
       servers.add(laServer);

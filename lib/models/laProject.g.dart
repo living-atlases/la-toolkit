@@ -9,13 +9,13 @@ part of 'laProject.dart';
 extension LAProjectCopyWith on LAProject {
   LAProject copyWith({
     String additionalVariables,
-    dynamic advancedEdit,
-    dynamic advancedTune,
+    bool advancedEdit,
+    bool advancedTune,
     String alaInstallRelease,
     String domain,
     String generatorRelease,
     bool isCreated,
-    dynamic lastDeploymentResults,
+    List<dynamic> lastDeploymentResults,
     String longName,
     List<double> mapBounds1stPoint,
     List<double> mapBounds2ndPoint,
@@ -27,7 +27,7 @@ extension LAProjectCopyWith on LAProject {
     LAProjectStatus status,
     String theme,
     bool useSSL,
-    dynamic uuid,
+    String uuid,
     Map<String, LAVariable> variables,
   }) {
     return LAProject(
@@ -63,7 +63,7 @@ extension LAProjectCopyWith on LAProject {
 
 LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
   return LAProject(
-    uuid: json['uuid'],
+    uuid: json['uuid'] as String,
     longName: json['longName'] as String,
     shortName: json['shortName'] as String,
     domain: json['domain'] as String,
@@ -95,9 +95,9 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
         ?.toList(),
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num)?.toDouble(),
-    lastDeploymentResults: json['lastDeploymentResults'],
-    advancedEdit: json['advancedEdit'],
-    advancedTune: json['advancedTune'],
+    lastDeploymentResults: json['lastDeploymentResults'] as List,
+    advancedEdit: json['advancedEdit'] as bool,
+    advancedTune: json['advancedTune'] as bool,
   );
 }
 

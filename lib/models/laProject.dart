@@ -21,13 +21,21 @@ part 'laProject.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAProject {
+  @JsonSerializable(nullable: false)
   String uuid;
+  @JsonSerializable(nullable: false)
   String longName;
+  @JsonSerializable(nullable: false)
   String shortName;
+  @JsonSerializable(nullable: false)
   String domain;
+  @JsonSerializable(nullable: false)
   bool useSSL;
+  @JsonSerializable(nullable: false)
   List<LAServer> servers;
+  @JsonSerializable(nullable: false)
   Map<String, LAService> services;
+  @JsonSerializable(nullable: false)
   Map<String, LAVariable> variables;
   String additionalVariables;
   Map<String, List<String>> serverServices;
@@ -35,6 +43,7 @@ class LAProject {
   bool isCreated;
   bool advancedEdit;
   bool advancedTune;
+  @JsonSerializable(nullable: false)
   LAProjectStatus status;
   String theme;
   String alaInstallRelease;
@@ -45,7 +54,7 @@ class LAProject {
   List<dynamic> lastDeploymentResults;
 
   LAProject(
-      {uuid,
+      {String uuid,
       this.longName = "",
       this.shortName = "",
       this.domain = "",
@@ -63,9 +72,9 @@ class LAProject {
       this.mapBounds2ndPoint,
       this.theme = "clean",
       this.mapZoom,
-      lastDeploymentResults,
-      advancedEdit,
-      advancedTune})
+      List<dynamic> lastDeploymentResults,
+      bool advancedEdit,
+      bool advancedTune})
       : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],
         // _serversNameList = _serversNameList ?? [],
