@@ -516,7 +516,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       bool useSub =
           service.forceSubdomain ? true : a("${n}_uses_subdomain") ?? true;
       projectService.usesSubdomain = useSub;
-
+      if (debug) print("domain: $domain");
       if (debug)
         print(
             "$n (LA_use_$n): $useIt subdomain (LA_${n}_uses_subdomain): $useSub");
@@ -534,7 +534,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
       if (debug)
         print(
-            "$n: url: $url path: '$invPath' initPath: '${projectService.iniPath}' suburl: ${projectService.suburl} hostname: $hostname");
+            "$n: url: $url path: '$invPath' initPath: '${projectService.iniPath}' useSub: $useSub suburl: ${projectService.suburl} hostname: $hostname");
 
       if (useIt && hostname.length > 0) {
         LAServer s;
