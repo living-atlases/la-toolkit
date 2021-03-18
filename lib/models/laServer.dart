@@ -95,16 +95,31 @@ class LAServer {
 
   @override
   String toString() {
-    return '''
-$name ($uuid)${ip.length > 0 ? ', ' + ip : ' '}, isReady: ${isReady()} osName: $osName osVersion: $osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}
-''';
+    return '''$name (${uuid.substring(0, 8)}...)${ip.length > 0 ? ', ' + ip : ' '}isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}''';
   }
 
-  static List<LAServer> upsert(List<LAServer> servers, LAServer laServer) {
+  static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {
     if (servers.map((s) => s.uuid).toList().contains(laServer.uuid)) {
       servers = servers
           .map((current) => current.uuid == laServer.uuid ? laServer : current)
           .toList();
+    } else {
+      servers.add(laServer);
+    }
+    return servers;
+  }
+
+  static List<LAServer> upsertByName(
+      List<LAServer> servers, LAServer laServer) {
+    if (servers.map((s) => s.name).toList().contains(laServer.name)) {
+      servers = servers.map((current) {
+        if (current.name == laServer.name) {
+          // set the same previous uuid;
+          laServer.uuid = current.uuid;
+          return laServer;
+        } else
+          return current;
+      }).toList();
     } else {
       servers.add(laServer);
     }

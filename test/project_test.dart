@@ -58,7 +58,7 @@ void main() {
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
         domain: "l-a.site");
-    testProject.upsert(LAServer(name: "vm1"));
+    testProject.upsertByName(LAServer(name: "vm1"));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(1));
     expect(testProject.validateCreation(), equals(false));
@@ -70,9 +70,9 @@ void main() {
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
         domain: "l-a.site");
-    testProject.upsert(LAServer(name: "vm1"));
-    testProject.upsert(LAServer(name: "vm2", ip: "10.0.0.1"));
-    testProject.upsert(LAServer(name: "vm2", ip: "10.0.0.2"));
+    testProject.upsertByName(LAServer(name: "vm1"));
+    testProject.upsertByName(LAServer(name: "vm2", ip: "10.0.0.1"));
+    testProject.upsertByName(LAServer(name: "vm2", ip: "10.0.0.2"));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(2));
     expect(testProject.validateCreation(), equals(false));
@@ -84,7 +84,7 @@ void main() {
 
   test('Servers equals', () {
     LAServer vm1 = LAServer(name: 'vm2', ip: '10.0.0.1');
-    LAServer vm1bis = LAServer(name: 'vm2', ip: '10.0.0.1');
+    LAServer vm1bis = vm1.copyWith(ip: '10.0.0.1');
     expect(vm1 == vm1bis, equals(true));
   });
 
@@ -134,8 +134,8 @@ void main() {
     LAServer vm4 = LAServer(name: "vm4", ip: "10.0.0.4");
     LAProject testProjectCopy =
         testProject.copyWith(servers: [], serverServices: {});
-    testProject.upsert(vm1);
-    testProjectCopy.upsert(vm1);
+    testProject.upsertByName(vm1);
+    testProjectCopy.upsertByName(vm1);
     expect(testProject.serverServices.length, equals(1));
     expect(testProject.servers.length, equals(1));
     expect(testProjectCopy.serverServices.length, equals(1));
@@ -149,7 +149,7 @@ void main() {
     expect(testProject == testProjectCopy, equals(true));
     expect(testProject.servers, equals(testProjectCopy.servers));
 
-    testProject.upsert(vm2);
+    testProject.upsertByName(vm2);
     expect(testProjectCopy.servers.length, equals(1));
 
     expect(testProject.serverServices.length, equals(2));
@@ -166,11 +166,11 @@ void main() {
     expect(testProject.hashCode == testProjectCopy.hashCode, equals(false));
 
     expect(testProject == testProjectCopy, equals(false));
-    testProjectCopy.upsert(vm2);
+    testProjectCopy.upsertByName(vm2);
     expect(testProject == testProjectCopy, equals(true));
     expect(testProject.servers, equals(testProjectCopy.servers));
-    testProject.upsert(vm3);
-    testProject.upsert(vm4);
+    testProject.upsertByName(vm3);
+    testProject.upsertByName(vm4);
     expect(testProject == testProjectCopy, equals(false));
     testProject.assign(vm1, [LAServiceName.collectory.toS()]);
     expect(testProject == testProjectCopy, equals(false));
@@ -276,25 +276,28 @@ void main() {
 
     expect(p == pBis, equals(true));
     LAServer vm1 = LAServer(name: "vm1");
-    p.upsert(vm1);
+    p.upsertByName(vm1);
     p.assign(vm1, [collectory, bie, bieIndex, lists]);
-    LAServer vm1Bis = LAServer(name: "vm1", sshUser: "john", sshPort: 22001);
-    p.upsert(vm1Bis);
-    expect(p.serverServices["vm1"].contains(collectory), equals(true));
-    expect(p.serverServices["vm1"].contains(bie), equals(true));
-    expect(p.serverServices["vm1"].contains(lists), equals(true));
+    LAServer vm1Bis =
+        LAServer(name: "vm1", ip: "10.0.0.1", sshUser: "john", sshPort: 22001);
+    expect(p.serverServices[vm1.uuid].contains(collectory), equals(true));
+    p.upsertByName(vm1Bis);
+
+    expect(p.serverServices[vm1.uuid].contains(collectory), equals(true));
+    expect(p.serverServices[vm1.uuid].contains(bie), equals(true));
+    expect(p.serverServices[vm1.uuid].contains(lists), equals(true));
     var vm1Updated =
-        p.servers.where((element) => element.name == "vm1").toList()[0];
+        p.servers.where((element) => element.uuid == vm1.uuid).toList()[0];
     expect(vm1Updated.sshUser == "john" && vm1Updated.sshPort == 22001,
         equals(true));
     p.serviceInUse(bie, false);
     expect(p.getService(bie).use, equals(false));
     expect(p.getService(bieIndex).use, equals(false));
     expect(p.getService(lists).use, equals(false));
-    expect(p.serverServices["vm1"].contains(collectory), equals(true));
-    expect(p.serverServices["vm1"].contains(bie), equals(false));
-    expect(p.serverServices["vm1"].contains(bieIndex), equals(false));
-    expect(p.serverServices["vm1"].contains(lists), equals(false));
+    expect(p.serverServices[vm1.uuid].contains(collectory), equals(true));
+    expect(p.serverServices[vm1.uuid].contains(bie), equals(false));
+    expect(p.serverServices[vm1.uuid].contains(bieIndex), equals(false));
+    expect(p.serverServices[vm1.uuid].contains(lists), equals(false));
     p.serviceInUse(bie, true);
     expect(p.getService(bie).use, equals(true));
     expect(p.getService(bieIndex).use, equals(true));
@@ -531,6 +534,9 @@ void main() {
     expect(p.getService(spatial).suburl, equals('spatial'));
     expect(p.getService(cas).suburl, equals('auth'));
 
+    expect(p.serverServices.keys.contains("vm-013"), equals(false));
+    expect(p.getHostname(images), equals(["vm-013"]));
+    expect(p.getHostname(regions), equals(["vm-000"]));
     // Missing branding url etc
   });
 }

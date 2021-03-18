@@ -459,7 +459,7 @@ If you have doubts or need to ask for some information, save this project and co
 
   void _addServer(String value, LAProject project,
       void Function(LAProject) onSaveCurrentProject) {
-    project.upsert(LAServer(name: value));
+    project.upsertByName(LAServer(name: value));
     _serverAddController.clear();
     _formKeys[_serversStep].currentState.reset();
     _focusNodes[_serversStep].requestFocus();

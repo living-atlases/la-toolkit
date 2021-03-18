@@ -1,13 +1,14 @@
 {
   "projects": [
     {
-      "uuid": "064efe6a-75bb-43d1-b2cc-151c61fe59cb",
+      "uuid": "e75565b3-04e7-40a7-acc7-8d2ca6dd86aa",
       "longName": "Atlas of Living Australia",
       "shortName": "ALA",
       "domain": "ala.org.au",
       "useSSL": true,
       "servers": [
         {
+          "uuid": "30f8b469-7ece-4f36-ae86-ad041cff174f",
           "name": "cloud-vm-01",
           "ip": "",
           "sshPort": 22,
@@ -22,6 +23,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "367da048-a9b8-4768-a9e6-ad4e4f6a6961",
           "name": "cloud-vm-02",
           "ip": "",
           "sshPort": 22,
@@ -36,6 +38,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "57712919-9e40-4b6c-88c2-7b69cb4b67ba",
           "name": "cloud-vm-03",
           "ip": "",
           "sshPort": 22,
@@ -50,6 +53,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "e1466cde-5465-49a3-9e72-458c46ba176c",
           "name": "cloud-vm-04",
           "ip": "",
           "sshPort": 22,
@@ -64,6 +68,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "99ed4e75-09b6-4595-9328-8fe935f3a941",
           "name": "cloud-vm-05",
           "ip": "",
           "sshPort": 22,
@@ -78,6 +83,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "e9e1890b-948c-4507-ac6a-ae4c7d78a4ba",
           "name": "cloud-vm-06",
           "ip": "",
           "sshPort": 22,
@@ -92,6 +98,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "e7dba175-9e48-49d7-9761-a01c4962e17f",
           "name": "cloud-vm-07",
           "ip": "",
           "sshPort": 22,
@@ -106,6 +113,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "8753c243-6ec1-4369-95b4-97490de64fc4",
           "name": "cloud-vm-08",
           "ip": "",
           "sshPort": 22,
@@ -120,6 +128,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "6b6243b7-7a0f-4cf4-82c7-e27ad965ec9a",
           "name": "cloud-vm-09",
           "ip": "",
           "sshPort": 22,
@@ -134,6 +143,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "b643f549-80a0-44a2-82ca-e3dfba7606f3",
           "name": "cloud-vm-10",
           "ip": "",
           "sshPort": 22,
@@ -148,6 +158,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "575d6616-c7fd-4592-9591-1c68b620608a",
           "name": "cloud-vm-11",
           "ip": "",
           "sshPort": 22,
@@ -162,6 +173,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "1a378c04-cd39-4126-9111-7b982eb2d722",
           "name": "cloud-vm-12",
           "ip": "",
           "sshPort": 22,
@@ -176,6 +188,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "ee30d145-7db1-42ff-ab13-af982d0db28d",
           "name": "cloud-vm-15",
           "ip": "",
           "sshPort": 22,
@@ -190,6 +203,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "05d9d91e-9432-4e93-a370-e7ab90f13b64",
           "name": "cloud-vm-13",
           "ip": "",
           "sshPort": 22,
@@ -204,6 +218,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "75028e48-cf9c-4d2f-9ff7-8417dc66897f",
           "name": "cloud-vm-14",
           "ip": "",
           "sshPort": 22,
@@ -218,6 +233,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "eaa4fcef-61ef-4c4a-ace5-e0750cd8722d",
           "name": "cloud-vm-17",
           "ip": "",
           "sshPort": 22,
@@ -232,6 +248,248 @@
           "osVersion": ""
         }
       ],
+      "serversMap": {
+        "30f8b469-7ece-4f36-ae86-ad041cff174f": {
+          "uuid": "30f8b469-7ece-4f36-ae86-ad041cff174f",
+          "name": "cloud-vm-01",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "367da048-a9b8-4768-a9e6-ad4e4f6a6961": {
+          "uuid": "367da048-a9b8-4768-a9e6-ad4e4f6a6961",
+          "name": "cloud-vm-02",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "57712919-9e40-4b6c-88c2-7b69cb4b67ba": {
+          "uuid": "57712919-9e40-4b6c-88c2-7b69cb4b67ba",
+          "name": "cloud-vm-03",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "e1466cde-5465-49a3-9e72-458c46ba176c": {
+          "uuid": "e1466cde-5465-49a3-9e72-458c46ba176c",
+          "name": "cloud-vm-04",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "99ed4e75-09b6-4595-9328-8fe935f3a941": {
+          "uuid": "99ed4e75-09b6-4595-9328-8fe935f3a941",
+          "name": "cloud-vm-05",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "e9e1890b-948c-4507-ac6a-ae4c7d78a4ba": {
+          "uuid": "e9e1890b-948c-4507-ac6a-ae4c7d78a4ba",
+          "name": "cloud-vm-06",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "e7dba175-9e48-49d7-9761-a01c4962e17f": {
+          "uuid": "e7dba175-9e48-49d7-9761-a01c4962e17f",
+          "name": "cloud-vm-07",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "8753c243-6ec1-4369-95b4-97490de64fc4": {
+          "uuid": "8753c243-6ec1-4369-95b4-97490de64fc4",
+          "name": "cloud-vm-08",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "6b6243b7-7a0f-4cf4-82c7-e27ad965ec9a": {
+          "uuid": "6b6243b7-7a0f-4cf4-82c7-e27ad965ec9a",
+          "name": "cloud-vm-09",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "b643f549-80a0-44a2-82ca-e3dfba7606f3": {
+          "uuid": "b643f549-80a0-44a2-82ca-e3dfba7606f3",
+          "name": "cloud-vm-10",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "575d6616-c7fd-4592-9591-1c68b620608a": {
+          "uuid": "575d6616-c7fd-4592-9591-1c68b620608a",
+          "name": "cloud-vm-11",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "1a378c04-cd39-4126-9111-7b982eb2d722": {
+          "uuid": "1a378c04-cd39-4126-9111-7b982eb2d722",
+          "name": "cloud-vm-12",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "ee30d145-7db1-42ff-ab13-af982d0db28d": {
+          "uuid": "ee30d145-7db1-42ff-ab13-af982d0db28d",
+          "name": "cloud-vm-15",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "05d9d91e-9432-4e93-a370-e7ab90f13b64": {
+          "uuid": "05d9d91e-9432-4e93-a370-e7ab90f13b64",
+          "name": "cloud-vm-13",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "75028e48-cf9c-4d2f-9ff7-8417dc66897f": {
+          "uuid": "75028e48-cf9c-4d2f-9ff7-8417dc66897f",
+          "name": "cloud-vm-14",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "eaa4fcef-61ef-4c4a-ace5-e0750cd8722d": {
+          "uuid": "eaa4fcef-61ef-4c4a-ace5-e0750cd8722d",
+          "name": "cloud-vm-17",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        }
+      },
       "services": {
         "collectory": {
           "nameInt": "collectory",
@@ -249,7 +507,7 @@
         },
         "biocache_service": {
           "nameInt": "biocache_service",
-          "iniPath": "",
+          "iniPath": "ws",
           "use": true,
           "usesSubdomain": true,
           "suburl": "biocache-ws"
@@ -263,7 +521,7 @@
         },
         "bie_index": {
           "nameInt": "bie_index",
-          "iniPath": "",
+          "iniPath": "ws",
           "use": true,
           "usesSubdomain": true,
           "suburl": "bie-ws"
@@ -301,7 +559,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "solr"
+          "suburl": "index"
         },
         "cas": {
           "nameInt": "cas",
@@ -327,21 +585,21 @@
         "dashboard": {
           "nameInt": "dashboard",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
           "suburl": "dashboard"
         },
         "alerts": {
           "nameInt": "alerts",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
           "suburl": "alerts"
         },
         "doi": {
           "nameInt": "doi",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
           "suburl": "doi"
         },
@@ -350,7 +608,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "core"
+          "suburl": "cloud-vm-17"
         },
         "branding": {
           "nameInt": "branding",
@@ -378,19 +636,19 @@
         "pac4j_cookie_signing_key": {
           "nameInt": "pac4j_cookie_signing_key",
           "service": "cas",
-          "value": "MXJhyb-PhXNrHG5kfeZiGlHN__c2itG1Bw8knomlFHPfx5k77BV2DyyqtEi4NVH9qHHXL-uNKr94qiy9mV6ujA",
+          "value": "jgpZws1P1VZYo66xyrfM4A86uKi7Wm4F2uKEUKwxpwxVxAAvBaYDavbWyDbeKA6uXllRpRxW0xZies-qO1my3g",
           "status": "undeployed"
         },
         "pac4j_cookie_encryption_key": {
           "nameInt": "pac4j_cookie_encryption_key",
           "service": "cas",
-          "value": "YhnsU9mzJYdi5zE9cnC-zi41ck0sDKJww-4K36akNN8",
+          "value": "Z2Daj89eooVheij8SGcHDBJhr1tWKyw3EVhxK7in7Ac",
           "status": "undeployed"
         },
         "cas_webflow_signing_key": {
           "nameInt": "cas_webflow_signing_key",
           "service": "cas",
-          "value": "sYmy0vOuUZC4CcbLCIQmayrgNFIR53iGOnyd_MDZ0oVR2Fz4Xuj8uQv6yIe4IBYLWGMM2YutDD3KM9Rey-Xn_w",
+          "value": "l7b-LZ2cJbLZTJZC7Ikrs_MleDf0wydvXPHj3R_tWfqvoyBJBrBdk1ilHoDaBglDsgcgp8D0ASUcv-DTH7Ke3A",
           "status": "undeployed"
         },
         "cas_webflow_encryption_key": {
@@ -414,52 +672,52 @@
       },
       "additionalVariables": "",
       "serverServices": {
-        "cloud-vm-01": [
+        "30f8b469-7ece-4f36-ae86-ad041cff174f": [
           "collectory"
         ],
-        "cloud-vm-02": [
+        "367da048-a9b8-4768-a9e6-ad4e4f6a6961": [
           "ala_hub"
         ],
-        "cloud-vm-03": [
+        "57712919-9e40-4b6c-88c2-7b69cb4b67ba": [
           "biocache_service"
         ],
-        "cloud-vm-04": [
+        "e1466cde-5465-49a3-9e72-458c46ba176c": [
           "ala_bie"
         ],
-        "cloud-vm-05": [
+        "99ed4e75-09b6-4595-9328-8fe935f3a941": [
           "bie_index"
         ],
-        "cloud-vm-06": [
+        "e9e1890b-948c-4507-ac6a-ae4c7d78a4ba": [
           "images"
         ],
-        "cloud-vm-07": [
+        "e7dba175-9e48-49d7-9761-a01c4962e17f": [
           "species_lists"
         ],
-        "cloud-vm-08": [
+        "8753c243-6ec1-4369-95b4-97490de64fc4": [
           "regions"
         ],
-        "cloud-vm-09": [
+        "6b6243b7-7a0f-4cf4-82c7-e27ad965ec9a": [
           "logger"
         ],
-        "cloud-vm-10": [
+        "b643f549-80a0-44a2-82ca-e3dfba7606f3": [
           "solr"
         ],
-        "cloud-vm-11": [
+        "575d6616-c7fd-4592-9591-1c68b620608a": [
           "cas"
         ],
-        "cloud-vm-12": [
+        "1a378c04-cd39-4126-9111-7b982eb2d722": [
           "spatial"
         ],
-        "cloud-vm-15": [
+        "ee30d145-7db1-42ff-ab13-af982d0db28d": [
           "dashboard"
         ],
-        "cloud-vm-13": [
+        "05d9d91e-9432-4e93-a370-e7ab90f13b64": [
           "alerts"
         ],
-        "cloud-vm-14": [
+        "75028e48-cf9c-4d2f-9ff7-8417dc66897f": [
           "doi"
         ],
-        "cloud-vm-17": [
+        "eaa4fcef-61ef-4c4a-ace5-e0750cd8722d": [
           "biocache_backend"
         ]
       },
@@ -481,13 +739,14 @@
       "lastDeploymentResults": []
     },
     {
-      "uuid": "3c5de32f-19db-4224-8ed7-d82be9ddda3b",
+      "uuid": "e8331b4e-f446-4e03-8f8a-4e9047cc86c0",
       "longName": "Biodiversitäts-Atlas Österreich",
       "shortName": "Biodiversitäts-Atlas Österreich",
       "domain": "biodiversityatlas.at",
       "useSSL": true,
       "servers": [
         {
+          "uuid": "4b53a051-90bd-4ade-bf9f-fd458662064b",
           "name": "core.biodiversityatlas.at",
           "ip": "",
           "sshPort": 22,
@@ -502,6 +761,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "84aeae35-f690-4af8-be2b-0a33606d1f09",
           "name": "spatial.biodiversityatlas.at",
           "ip": "",
           "sshPort": 22,
@@ -516,13 +776,45 @@
           "osVersion": ""
         }
       ],
+      "serversMap": {
+        "4b53a051-90bd-4ade-bf9f-fd458662064b": {
+          "uuid": "4b53a051-90bd-4ade-bf9f-fd458662064b",
+          "name": "core.biodiversityatlas.at",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "84aeae35-f690-4af8-be2b-0a33606d1f09": {
+          "uuid": "84aeae35-f690-4af8-be2b-0a33606d1f09",
+          "name": "spatial.biodiversityatlas.at",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        }
+      },
       "services": {
         "collectory": {
           "nameInt": "collectory",
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "collectory"
+          "suburl": "collections"
         },
         "ala_hub": {
           "nameInt": "ala_hub",
@@ -533,7 +825,7 @@
         },
         "biocache_service": {
           "nameInt": "biocache_service",
-          "iniPath": "",
+          "iniPath": "ws",
           "use": true,
           "usesSubdomain": true,
           "suburl": "biocache-ws"
@@ -547,7 +839,7 @@
         },
         "bie_index": {
           "nameInt": "bie_index",
-          "iniPath": "",
+          "iniPath": "ws",
           "use": true,
           "usesSubdomain": true,
           "suburl": "bie-ws"
@@ -585,7 +877,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "solr"
+          "suburl": "index"
         },
         "cas": {
           "nameInt": "cas",
@@ -611,21 +903,21 @@
         "dashboard": {
           "nameInt": "dashboard",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
           "suburl": "dashboard"
         },
         "alerts": {
           "nameInt": "alerts",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
           "suburl": "alerts"
         },
         "doi": {
           "nameInt": "doi",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
           "suburl": "doi"
         },
@@ -634,7 +926,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "core"
+          "suburl": "cloud-vm-17"
         },
         "branding": {
           "nameInt": "branding",
@@ -662,19 +954,19 @@
         "pac4j_cookie_signing_key": {
           "nameInt": "pac4j_cookie_signing_key",
           "service": "cas",
-          "value": "wgGMCYz2iCbmZ_fJ4QuUHdDNgFQDowizHKdE8rBzBAkZ06NEBLhb6LOL54_4hfjjbh88FmIlMp4ntYQWHukcaA",
+          "value": "OaCOS5jh2M-wSjWImxw0U6dV6jnRgW1-cc01UpNB40uPxRm8IShBnLZEs8LBtxo_jAhgdSiPeOPNggLvmEh4Vg",
           "status": "undeployed"
         },
         "pac4j_cookie_encryption_key": {
           "nameInt": "pac4j_cookie_encryption_key",
           "service": "cas",
-          "value": "UVZTVltd8MsQSyK5ORgRpGPmw-5V-ssGnkfY1gJOiNU",
+          "value": "DhX8KP4nG8aURPjX_nkPUJta63F4A6bAMJwJ_Gvje6g",
           "status": "undeployed"
         },
         "cas_webflow_signing_key": {
           "nameInt": "cas_webflow_signing_key",
           "service": "cas",
-          "value": "VRfsvcAmhjsA7lKIwEhkW38VpEPKp1QPO6rrI5g8MVEDeAD1r8Px7N9_BV6FMDYzSpWpAqig8zeGkaIl5SafQg",
+          "value": "e2jPKpAfLlC30CrQwH16ABseazAowN91wy7jz7jwgfCp5dfRqx-dFvMHyExJMcx1pnncuedQsmIox2elxDe8Cg",
           "status": "undeployed"
         },
         "cas_webflow_encryption_key": {
@@ -698,7 +990,7 @@
       },
       "additionalVariables": "",
       "serverServices": {
-        "core.biodiversityatlas.at": [
+        "4b53a051-90bd-4ade-bf9f-fd458662064b": [
           "collectory",
           "ala_hub",
           "biocache_service",
@@ -714,7 +1006,7 @@
           "doi",
           "biocache_backend"
         ],
-        "spatial.biodiversityatlas.at": [
+        "84aeae35-f690-4af8-be2b-0a33606d1f09": [
           "cas",
           "spatial"
         ]
@@ -737,13 +1029,14 @@
       "lastDeploymentResults": []
     },
     {
-      "uuid": "b373ceab-da30-4516-837f-9ac9e5c9280f",
+      "uuid": "f6031669-09c7-4614-8ad0-7e54de5042d3",
       "longName": "Canadensys",
       "shortName": "Canadensys",
       "domain": "canadensys.net",
       "useSSL": true,
       "servers": [
         {
+          "uuid": "5613af8e-9f0d-4fa2-b559-f2628db06fbd",
           "name": "vm-027",
           "ip": "",
           "sshPort": 22,
@@ -758,6 +1051,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "75596d17-8e59-47ad-a314-5932ac842419",
           "name": "vm-014",
           "ip": "",
           "sshPort": 22,
@@ -772,6 +1066,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "76705845-b80d-40b9-9cc8-ebb30c0a528c",
           "name": "vm-023",
           "ip": "",
           "sshPort": 22,
@@ -786,6 +1081,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "d448ae8e-47ec-4239-b442-72a08dd8e066",
           "name": "vm-000",
           "ip": "",
           "sshPort": 22,
@@ -800,20 +1096,7 @@
           "osVersion": ""
         },
         {
-          "name": "vm-000",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
+          "uuid": "733aa410-a9f6-4813-939d-917702eecb37",
           "name": "vm-013",
           "ip": "",
           "sshPort": 22,
@@ -828,34 +1111,7 @@
           "osVersion": ""
         },
         {
-          "name": "vm-000",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "name": "vm-000",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
+          "uuid": "47d10d51-b05a-4a89-af39-d5c5a044ecce",
           "name": "vm-007",
           "ip": "",
           "sshPort": 22,
@@ -870,6 +1126,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "9ebd5182-cf67-446a-ac85-434f3a7d5480",
           "name": "vm-021",
           "ip": "",
           "sshPort": 22,
@@ -884,6 +1141,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "5318f70f-a22f-4f53-98de-29f63266d5cb",
           "name": "vm-029",
           "ip": "",
           "sshPort": 22,
@@ -898,6 +1156,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "3c047c1a-2094-4fc9-9b8a-256b389769db",
           "name": "vm-022",
           "ip": "",
           "sshPort": 22,
@@ -912,6 +1171,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "f68eda5a-7c41-4866-a3cd-222bd766241b",
           "name": "vm-025",
           "ip": "",
           "sshPort": 22,
@@ -926,6 +1186,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "b84cd689-cacd-4f0f-a8b7-3c17bef31288",
           "name": "vm-006",
           "ip": "",
           "sshPort": 22,
@@ -940,20 +1201,7 @@
           "osVersion": ""
         },
         {
-          "name": "vm-000",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
+          "uuid": "a62ab7a3-ca5f-41ec-98ed-ca03a89aca3e",
           "name": "vm-018",
           "ip": "",
           "sshPort": 22,
@@ -968,6 +1216,188 @@
           "osVersion": ""
         }
       ],
+      "serversMap": {
+        "5613af8e-9f0d-4fa2-b559-f2628db06fbd": {
+          "uuid": "5613af8e-9f0d-4fa2-b559-f2628db06fbd",
+          "name": "vm-027",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "75596d17-8e59-47ad-a314-5932ac842419": {
+          "uuid": "75596d17-8e59-47ad-a314-5932ac842419",
+          "name": "vm-014",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "76705845-b80d-40b9-9cc8-ebb30c0a528c": {
+          "uuid": "76705845-b80d-40b9-9cc8-ebb30c0a528c",
+          "name": "vm-023",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "d448ae8e-47ec-4239-b442-72a08dd8e066": {
+          "uuid": "d448ae8e-47ec-4239-b442-72a08dd8e066",
+          "name": "vm-000",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "733aa410-a9f6-4813-939d-917702eecb37": {
+          "uuid": "733aa410-a9f6-4813-939d-917702eecb37",
+          "name": "vm-013",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "47d10d51-b05a-4a89-af39-d5c5a044ecce": {
+          "uuid": "47d10d51-b05a-4a89-af39-d5c5a044ecce",
+          "name": "vm-007",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "9ebd5182-cf67-446a-ac85-434f3a7d5480": {
+          "uuid": "9ebd5182-cf67-446a-ac85-434f3a7d5480",
+          "name": "vm-021",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "5318f70f-a22f-4f53-98de-29f63266d5cb": {
+          "uuid": "5318f70f-a22f-4f53-98de-29f63266d5cb",
+          "name": "vm-029",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "3c047c1a-2094-4fc9-9b8a-256b389769db": {
+          "uuid": "3c047c1a-2094-4fc9-9b8a-256b389769db",
+          "name": "vm-022",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "f68eda5a-7c41-4866-a3cd-222bd766241b": {
+          "uuid": "f68eda5a-7c41-4866-a3cd-222bd766241b",
+          "name": "vm-025",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "b84cd689-cacd-4f0f-a8b7-3c17bef31288": {
+          "uuid": "b84cd689-cacd-4f0f-a8b7-3c17bef31288",
+          "name": "vm-006",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "a62ab7a3-ca5f-41ec-98ed-ca03a89aca3e": {
+          "uuid": "a62ab7a3-ca5f-41ec-98ed-ca03a89aca3e",
+          "name": "vm-018",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        }
+      },
       "services": {
         "collectory": {
           "nameInt": "collectory",
@@ -1114,80 +1544,68 @@
         "pac4j_cookie_signing_key": {
           "nameInt": "pac4j_cookie_signing_key",
           "service": "cas",
-          "value": "dYCj6M9ywhxy2lgrvgIL3azo9-BN1iow37kFmqXENhHbWVolvok240tCktNVgU8L9x4PrM54MUvU2RqrBd72Bw",
+          "value": "bypUs5Hbuew-cM4WovY8INRHm9b8g3DH2F2pRGm5xMY-I3Dk7hZZ8yQMn9piuCHWApwchFjpE7pHdC4HMo-gQg",
           "status": "undeployed"
         },
         "pac4j_cookie_encryption_key": {
           "nameInt": "pac4j_cookie_encryption_key",
           "service": "cas",
-          "value": "E3mgxFhsuvkYxpxO6ibyUoxWVExBM_4Y5aIVm2Ccwng",
+          "value": "Gi9GmxjaVHBU4PbXOq5_XJhlW63EEvIsKFvGnYCT_yk",
           "status": "undeployed"
         },
         "cas_webflow_signing_key": {
           "nameInt": "cas_webflow_signing_key",
           "service": "cas",
-          "value": "N6NStJRjXIKhCkLIzrQ3Y759rhynLdnNZ_5CN3j8bn-sl-BkuiG2-O6cmct6ywlzvt8j47DMPm3MW_wXPFIQzQ",
+          "value": "E3vwjJN4Z_PQ0lWR4tkqGJPEZ9-itAmjpWUcGpGGk8sk9dg_x_0NFQ561-sKtxqI_WgCvaRJpm-nErWQWMpJGw",
           "status": "undeployed"
         },
         "cas_webflow_encryption_key": {
           "nameInt": "cas_webflow_encryption_key",
           "service": "cas",
-          "value": "dxpFu_x6Yh9DK9WLgYWljw",
-          "status": "undeployed"
-        },
-        "favicon_url": {
-          "nameInt": "favicon_url",
-          "service": "all",
-          "value": "https://layout.canadensys.net/common/images/favicon.ico",
-          "status": "undeployed"
-        },
-        "map_zone_name": {
-          "nameInt": "map_zone_name",
-          "service": "all",
-          "value": "Canada",
+          "value": "1NMcKsne6CiorQSyO70Hyg",
           "status": "undeployed"
         }
       },
       "additionalVariables": "",
       "serverServices": {
-        "vm-027": [
+        "5613af8e-9f0d-4fa2-b559-f2628db06fbd": [
           "collectory"
         ],
-        "vm-014": [
+        "75596d17-8e59-47ad-a314-5932ac842419": [
           "ala_hub"
         ],
-        "vm-023": [
+        "76705845-b80d-40b9-9cc8-ebb30c0a528c": [
           "biocache_service"
         ],
-        "vm-000": [
+        "d448ae8e-47ec-4239-b442-72a08dd8e066": [
           "ala_bie",
           "bie_index",
           "species_lists",
           "regions",
           "doi"
         ],
-        "vm-013": [
+        "733aa410-a9f6-4813-939d-917702eecb37": [
           "images"
         ],
-        "vm-007": [
+        "47d10d51-b05a-4a89-af39-d5c5a044ecce": [
           "logger"
         ],
-        "vm-021": [
+        "9ebd5182-cf67-446a-ac85-434f3a7d5480": [
           "solr"
         ],
-        "vm-029": [
+        "5318f70f-a22f-4f53-98de-29f63266d5cb": [
           "cas"
         ],
-        "vm-022": [
+        "3c047c1a-2094-4fc9-9b8a-256b389769db": [
           "spatial"
         ],
-        "vm-025": [
+        "f68eda5a-7c41-4866-a3cd-222bd766241b": [
           "dashboard"
         ],
-        "vm-006": [
+        "b84cd689-cacd-4f0f-a8b7-3c17bef31288": [
           "alerts"
         ],
-        "vm-018": [
+        "a62ab7a3-ca5f-41ec-98ed-ca03a89aca3e": [
           "biocache_backend"
         ]
       },
@@ -1209,13 +1627,14 @@
       "lastDeploymentResults": []
     },
     {
-      "uuid": "5ac1171c-9642-4180-9606-2ab0915b9748",
+      "uuid": "d829d683-7b9e-4a1a-9ec5-c5d9466fbcc5",
       "longName": "Portal de Datos de GBIF.ES",
       "shortName": "GBIF.ES",
       "domain": "gbif.es",
       "useSSL": true,
       "servers": [
         {
+          "uuid": "bfcee197-eaab-4c9e-b1a1-a2f01c35754b",
           "name": "colecciones.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1230,6 +1649,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "c32c6691-e4a2-4963-8757-f8477ece4775",
           "name": "registros.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1244,6 +1664,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "56ffeb5c-dd15-4be1-a123-e9fc53e32e93",
           "name": "registros-ws.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1258,6 +1679,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "6585a650-f651-4041-b0cd-00fb930afab7",
           "name": "especies.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1272,6 +1694,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "51b76a1f-746e-435f-b225-184446670670",
           "name": "especies-ws.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1286,6 +1709,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "9527e742-0176-425d-8a9c-61c93a70477c",
           "name": "imagenes.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1300,6 +1724,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "e4bd27de-e685-40cf-b399-559eecf2c1f7",
           "name": "listas.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1314,6 +1739,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "bd2ed859-0639-4c0c-a5f1-7b685b239204",
           "name": "regiones.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1328,6 +1754,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "9ea8f32c-41c0-4a29-aac7-51712c8bc294",
           "name": "logger.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1342,6 +1769,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "73a9e59f-4483-4d37-a12a-cde99fe15e74",
           "name": "index.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1356,6 +1784,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "74bba66f-361b-47ec-bc0d-ae08de97b0fb",
           "name": "auth.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1370,6 +1799,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "ca1ee755-2cf7-4c02-b3ac-2de9d2a2ffe5",
           "name": "espacial.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1384,6 +1814,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "016a22b6-367a-4edb-a895-c0629acf9f48",
           "name": "api.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1398,6 +1829,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "1ce3639b-2833-4c72-8185-cda95956f7d1",
           "name": "dashboard.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1412,6 +1844,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "19a122ba-0776-4fd6-a96a-d28824581219",
           "name": "alertas.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1426,6 +1859,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "4efde61b-2f4e-4b6d-a7b5-c4de6ef7e2eb",
           "name": "doi.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1440,6 +1874,7 @@
           "osVersion": ""
         },
         {
+          "uuid": "ff8667fd-cf4c-4346-bb05-3bcbbfd8a41f",
           "name": "biocache-store-0.gbif.es",
           "ip": "",
           "sshPort": 22,
@@ -1454,6 +1889,263 @@
           "osVersion": ""
         }
       ],
+      "serversMap": {
+        "bfcee197-eaab-4c9e-b1a1-a2f01c35754b": {
+          "uuid": "bfcee197-eaab-4c9e-b1a1-a2f01c35754b",
+          "name": "colecciones.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "c32c6691-e4a2-4963-8757-f8477ece4775": {
+          "uuid": "c32c6691-e4a2-4963-8757-f8477ece4775",
+          "name": "registros.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "56ffeb5c-dd15-4be1-a123-e9fc53e32e93": {
+          "uuid": "56ffeb5c-dd15-4be1-a123-e9fc53e32e93",
+          "name": "registros-ws.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "6585a650-f651-4041-b0cd-00fb930afab7": {
+          "uuid": "6585a650-f651-4041-b0cd-00fb930afab7",
+          "name": "especies.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "51b76a1f-746e-435f-b225-184446670670": {
+          "uuid": "51b76a1f-746e-435f-b225-184446670670",
+          "name": "especies-ws.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "9527e742-0176-425d-8a9c-61c93a70477c": {
+          "uuid": "9527e742-0176-425d-8a9c-61c93a70477c",
+          "name": "imagenes.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "e4bd27de-e685-40cf-b399-559eecf2c1f7": {
+          "uuid": "e4bd27de-e685-40cf-b399-559eecf2c1f7",
+          "name": "listas.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "bd2ed859-0639-4c0c-a5f1-7b685b239204": {
+          "uuid": "bd2ed859-0639-4c0c-a5f1-7b685b239204",
+          "name": "regiones.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "9ea8f32c-41c0-4a29-aac7-51712c8bc294": {
+          "uuid": "9ea8f32c-41c0-4a29-aac7-51712c8bc294",
+          "name": "logger.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "73a9e59f-4483-4d37-a12a-cde99fe15e74": {
+          "uuid": "73a9e59f-4483-4d37-a12a-cde99fe15e74",
+          "name": "index.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "74bba66f-361b-47ec-bc0d-ae08de97b0fb": {
+          "uuid": "74bba66f-361b-47ec-bc0d-ae08de97b0fb",
+          "name": "auth.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "ca1ee755-2cf7-4c02-b3ac-2de9d2a2ffe5": {
+          "uuid": "ca1ee755-2cf7-4c02-b3ac-2de9d2a2ffe5",
+          "name": "espacial.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "016a22b6-367a-4edb-a895-c0629acf9f48": {
+          "uuid": "016a22b6-367a-4edb-a895-c0629acf9f48",
+          "name": "api.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "1ce3639b-2833-4c72-8185-cda95956f7d1": {
+          "uuid": "1ce3639b-2833-4c72-8185-cda95956f7d1",
+          "name": "dashboard.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "19a122ba-0776-4fd6-a96a-d28824581219": {
+          "uuid": "19a122ba-0776-4fd6-a96a-d28824581219",
+          "name": "alertas.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "4efde61b-2f4e-4b6d-a7b5-c4de6ef7e2eb": {
+          "uuid": "4efde61b-2f4e-4b6d-a7b5-c4de6ef7e2eb",
+          "name": "doi.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "ff8667fd-cf4c-4346-bb05-3bcbbfd8a41f": {
+          "uuid": "ff8667fd-cf4c-4346-bb05-3bcbbfd8a41f",
+          "name": "biocache-store-0.gbif.es",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        }
+      },
       "services": {
         "collectory": {
           "nameInt": "collectory",
@@ -1600,19 +2292,19 @@
         "pac4j_cookie_signing_key": {
           "nameInt": "pac4j_cookie_signing_key",
           "service": "cas",
-          "value": "Xy7wppi6f5dDfavmZpq9DQjWXj3lWG97mcSaGYjcBH6Aw-qttE-Mgnn4gL9cqcg505ZTT2GVd2cfn-hBZCrDkw",
+          "value": "ZSL9fTLvGSd7PoX0EZAbiOyX5_XJUrjU0CxBU45wMhqojPR5QdZRH4K_ON5keCMYxmyD7ZgWbyaYsTcXBIcalg",
           "status": "undeployed"
         },
         "pac4j_cookie_encryption_key": {
           "nameInt": "pac4j_cookie_encryption_key",
           "service": "cas",
-          "value": "H15uvLR_oxtTukUWKJIdxzJ1VSnAH-awweRFSsxekRU",
+          "value": "ZER_icg9oXBpKTFrVKl2wFfaeLg17R-a-mvYGr68yNs",
           "status": "undeployed"
         },
         "cas_webflow_signing_key": {
           "nameInt": "cas_webflow_signing_key",
           "service": "cas",
-          "value": "OzB-E54DjtnxqJxxFybxEHG6wXeNL_mXpPEYBYJanLcs4QYRlYNFAfdTXpVGHfjyJuMPeSNCbnxyn8Fd_XbMJQ",
+          "value": "vZMZoa-YBe5sdBOZTkW9fsL1b_YGKqedhSyY1aDg49eaw9Zdwed8OuynoMjF3csQFI_6i9xXWypfRgf79foXAA",
           "status": "undeployed"
         },
         "cas_webflow_encryption_key": {
@@ -1636,55 +2328,55 @@
       },
       "additionalVariables": "",
       "serverServices": {
-        "colecciones.gbif.es": [
+        "bfcee197-eaab-4c9e-b1a1-a2f01c35754b": [
           "collectory"
         ],
-        "registros.gbif.es": [
+        "c32c6691-e4a2-4963-8757-f8477ece4775": [
           "ala_hub"
         ],
-        "registros-ws.gbif.es": [
+        "56ffeb5c-dd15-4be1-a123-e9fc53e32e93": [
           "biocache_service"
         ],
-        "especies.gbif.es": [
+        "6585a650-f651-4041-b0cd-00fb930afab7": [
           "ala_bie"
         ],
-        "especies-ws.gbif.es": [
+        "51b76a1f-746e-435f-b225-184446670670": [
           "bie_index"
         ],
-        "imagenes.gbif.es": [
+        "9527e742-0176-425d-8a9c-61c93a70477c": [
           "images"
         ],
-        "listas.gbif.es": [
+        "e4bd27de-e685-40cf-b399-559eecf2c1f7": [
           "species_lists"
         ],
-        "regiones.gbif.es": [
+        "bd2ed859-0639-4c0c-a5f1-7b685b239204": [
           "regions"
         ],
-        "logger.gbif.es": [
+        "9ea8f32c-41c0-4a29-aac7-51712c8bc294": [
           "logger"
         ],
-        "index.gbif.es": [
+        "73a9e59f-4483-4d37-a12a-cde99fe15e74": [
           "solr"
         ],
-        "auth.gbif.es": [
+        "74bba66f-361b-47ec-bc0d-ae08de97b0fb": [
           "cas"
         ],
-        "espacial.gbif.es": [
+        "ca1ee755-2cf7-4c02-b3ac-2de9d2a2ffe5": [
           "spatial"
         ],
-        "api.gbif.es": [
+        "016a22b6-367a-4edb-a895-c0629acf9f48": [
           "webapi"
         ],
-        "dashboard.gbif.es": [
+        "1ce3639b-2833-4c72-8185-cda95956f7d1": [
           "dashboard"
         ],
-        "alertas.gbif.es": [
+        "19a122ba-0776-4fd6-a96a-d28824581219": [
           "alerts"
         ],
-        "doi.gbif.es": [
+        "4efde61b-2f4e-4b6d-a7b5-c4de6ef7e2eb": [
           "doi"
         ],
-        "biocache-store-0.gbif.es": [
+        "ff8667fd-cf4c-4346-bb05-3bcbbfd8a41f": [
           "biocache_backend"
         ]
       },
@@ -1706,14 +2398,15 @@
       "lastDeploymentResults": []
     },
     {
-      "uuid": "beaba09e-63cf-4c40-921b-552dd0ba5e44",
+      "uuid": "32713c29-5a38-4b06-94df-6e64969e7857",
       "longName": "Vermont Atlas of Life",
       "shortName": "VT Atlas of Life",
       "domain": "vtatlasoflife.org",
       "useSSL": true,
       "servers": [
         {
-          "name": "somevm1.compute.amazonaws.com",
+          "uuid": "7c2970a2-18cb-4721-b588-b6b02ff18fea",
+          "name": "server1.compute.amazonaws.com",
           "ip": "",
           "sshPort": 22,
           "sshUser": null,
@@ -1727,7 +2420,8 @@
           "osVersion": ""
         },
         {
-          "name": "somevm2.compute.amazonaws.com",
+          "uuid": "6797c166-0fbf-46d1-958a-e31f227a28af",
+          "name": "server2.compute.amazonaws.com.",
           "ip": "",
           "sshPort": 22,
           "sshUser": null,
@@ -1741,6 +2435,38 @@
           "osVersion": ""
         }
       ],
+      "serversMap": {
+        "7c2970a2-18cb-4721-b588-b6b02ff18fea": {
+          "uuid": "7c2970a2-18cb-4721-b588-b6b02ff18fea",
+          "name": "server1.compute.amazonaws.com",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        },
+        "6797c166-0fbf-46d1-958a-e31f227a28af": {
+          "uuid": "6797c166-0fbf-46d1-958a-e31f227a28af",
+          "name": "server2.compute.amazonaws.com.",
+          "ip": "",
+          "sshPort": 22,
+          "sshUser": null,
+          "aliases": [],
+          "sshKey": null,
+          "gateways": [],
+          "reachable": "unknown",
+          "sshReachable": "unknown",
+          "sudoEnabled": "unknown",
+          "osName": "",
+          "osVersion": ""
+        }
+      },
       "services": {
         "collectory": {
           "nameInt": "collectory",
@@ -1887,19 +2613,19 @@
         "pac4j_cookie_signing_key": {
           "nameInt": "pac4j_cookie_signing_key",
           "service": "cas",
-          "value": "xnRucjTaNRJi_7iS9DLa_AMbIaenRY9Ro4s7cu2_bZ1_vjnWdM0tqSDeGgBSRvMScFP1crYlMHGHwIMswH3qSg",
+          "value": "DJjUF-ocQqq9qs22daHmEcq8Osihz3fmIuv2nG_VI1MOtTLjowtO9sRw5Ic-iEZGNwNrAMNxTo7wxqGxUMjm_A",
           "status": "undeployed"
         },
         "pac4j_cookie_encryption_key": {
           "nameInt": "pac4j_cookie_encryption_key",
           "service": "cas",
-          "value": "ZKpo_PDxm08mXqPA5dd-shYBlpdHTiVSRz_oDlwn_Ck",
+          "value": "cIhz3FzcBfLTJBOKRRTpt-CJDYxZ09WDexFk8EEiehQ",
           "status": "undeployed"
         },
         "cas_webflow_signing_key": {
           "nameInt": "cas_webflow_signing_key",
           "service": "cas",
-          "value": "3KJ1piwHIUcTMNcvzrJhzGZ8lbw-XLrrYaYCfuSSutVMAazLhxBB_iuLZnNsngfYV6mGZqCJL7jXJu4HSO7ShA",
+          "value": "avZJUod02BjzTYIjsClnKRpzQiU4-JHjvrk1JaYvOJFZnRrGVb5AzmMSEqsN4H0rp4uRl5owwtXQeTSUMYK3sA",
           "status": "undeployed"
         },
         "cas_webflow_encryption_key": {
@@ -1923,7 +2649,7 @@
       },
       "additionalVariables": "",
       "serverServices": {
-        "somevm1.compute.amazonaws.com": [
+        "7c2970a2-18cb-4721-b588-b6b02ff18fea": [
           "collectory",
           "ala_hub",
           "biocache_service",
@@ -1939,7 +2665,7 @@
           "doi",
           "biocache_backend"
         ],
-        "somevm2.compute.amazonaws.com": [
+        "6797c166-0fbf-46d1-958a-e31f227a28af": [
           "cas",
           "spatial"
         ]

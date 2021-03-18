@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'appActions.dart';
 
 class AppStateMiddleware implements MiddlewareClass<AppState> {
-  final String key = "laTool20210116";
+  final String key = "laTool20210418";
   SharedPreferences _pref;
 
   _initPrefs() async {
@@ -23,16 +23,20 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
   Future<AppState> getState() async {
     AppState appState;
+    bool failedLoad = false;
 
     String asS;
     if (AppUtils.isDemo()) {
       await _initPrefs();
       asS = _pref.getString(key);
     } else {
-      asS = await Api.getConf();
+      asS = await Api.getConf().onError((error, stackTrace) {
+        failedLoad = true;
+        return "";
+      });
     }
     if (asS == null || asS.isEmpty || asS == "{}") {
-      appState = initialEmptyAppState();
+      appState = initialEmptyAppState(failedLoad: failedLoad);
     } else {
       try {
         Map<String, dynamic> asJ = json.decode(asS);
@@ -41,17 +45,18 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         appState = AppState.fromJson(asJ);
       } catch (e) {
         print(e);
-        appState = initialEmptyAppState(failedLoad: true);
+        appState = initialEmptyAppState(failedLoad: failedLoad);
       }
     }
-
     return appState;
   }
 
   AppState initialEmptyAppState({bool failedLoad: false}) {
-    print("Load prefs empty");
+    print("Load prefs empty (and failed $failedLoad)");
     return AppState(
         failedLoad: failedLoad,
+        firstUsage: !failedLoad,
+        currentProject: LAProject(),
         projects: List<LAProject>.empty(),
         sshKeys: List<SshKey>.empty(),
         currentStep: 0);
@@ -177,6 +182,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         print(
             'Not saving configuration because the load of the saved configuration failed');
       } else {
+        print("Saving conf in server side");
+        print(state);
         Api.saveConf(state);
       }
     }

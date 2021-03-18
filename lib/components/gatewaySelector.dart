@@ -45,7 +45,7 @@ class _GatewaySelectorState extends State<GatewaySelector> {
                 footer: "For more info see our ssh documentation in our wiki"),
             onChange: (gateways) {
               widget.exclude.gateways = gateways;
-              vm.project.upsert(widget.exclude);
+              vm.project.upsertByName(widget.exclude);
               vm.onSaveProject(vm.project);
             },
           );

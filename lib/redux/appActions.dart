@@ -1,3 +1,4 @@
+import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -204,3 +205,10 @@ class OnImportSshKey extends AppActions {
 
   OnImportSshKey(this.name, this.publicKey, this.privateKey);
 }
+
+class ShowSnackBar extends AppActions {
+  AppSnackBarMessage message;
+  ShowSnackBar(this.message);
+}
+
+class OnShowedSnackBar extends AppActions {}

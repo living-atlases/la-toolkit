@@ -59,7 +59,7 @@ void main() {
     expect(invVariables["LA_spatial_map_areaSqKm"], equals(2390918.8297587633));
     expect(invVariables["LA_spatial_map_bbox"],
         equals('[40.0, 20.0, 20.0, 10.0]'));
-    print(invVariables);
+    // print(invVariables);
   });
   test('Area calculation', () {
     const world = {

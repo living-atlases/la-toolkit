@@ -22,6 +22,7 @@ extension LAProjectCopyWith on LAProject {
     double mapZoom,
     Map<String, List<String>> serverServices,
     List<LAServer> servers,
+    Map<String, LAServer> serversMap,
     Map<String, LAService> services,
     String shortName,
     LAProjectStatus status,
@@ -46,6 +47,7 @@ extension LAProjectCopyWith on LAProject {
       mapZoom: mapZoom ?? this.mapZoom,
       serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
+      serversMap: serversMap ?? this.serversMap,
       services: services ?? this.services,
       shortName: shortName ?? this.shortName,
       status: status ?? this.status,
@@ -75,6 +77,10 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     services: (json['services'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(
           k, e == null ? null : LAService.fromJson(e as Map<String, dynamic>)),
+    ),
+    serversMap: (json['serversMap'] as Map<String, dynamic>)?.map(
+      (k, e) => MapEntry(
+          k, e == null ? null : LAServer.fromJson(e as Map<String, dynamic>)),
     ),
     variables: (json['variables'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(
@@ -108,6 +114,8 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'domain': instance.domain,
       'useSSL': instance.useSSL,
       'servers': instance.servers?.map((e) => e?.toJson())?.toList(),
+      'serversMap':
+          instance.serversMap?.map((k, e) => MapEntry(k, e?.toJson())),
       'services': instance.services?.map((k, e) => MapEntry(k, e?.toJson())),
       'variables': instance.variables?.map((k, e) => MapEntry(k, e?.toJson())),
       'additionalVariables': instance.additionalVariables,

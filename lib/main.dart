@@ -25,6 +25,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import 'components/appSnackBar.dart';
+import 'components/appSnackBarMessage.dart';
 import 'components/mainDrawer.dart';
 import 'deployPage.dart';
 import 'intro.dart';
@@ -59,12 +61,17 @@ Future<void> main() async {
   );
   store.onChange.listen((state) {
     print("On store change: $state");
+
     appStateMiddleware.saveAppState(state);
   });
   store.dispatch(OnFetchState());
-
   runApp(MyApp(store: store));
 
+  if (initialState.failedLoad) {
+    store.dispatch(OnFetchStateFailed());
+    store.dispatch(ShowSnackBar(
+        AppSnackBarMessage(message: "Failed to retrieve your configuration")));
+  }
   /*
   Does not work because creates an additional new MaterialApp and this breaks the navigation
   runApp(BetterFeedback(
@@ -200,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                   // App bar with floating: true, pinned: true, snap: false:
                   appBar: LAAppBar(
                       context: context, title: appName, showLaIcon: true),
-                  body: LAProjectsList(),
+                  body: AppSnackBar(LAProjectsList()),
                   floatingActionButton:
                       /*
                           FloatingActionButton.extended(

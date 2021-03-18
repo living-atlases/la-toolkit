@@ -5,6 +5,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 
@@ -53,6 +54,8 @@ class AppState {
   final List<String> generatorReleases;
   @JsonSerializable(nullable: false)
   final List<SshKey> sshKeys;
+  @JsonKey(ignore: true, nullable: true)
+  final AppSnackBarMessage appSnackBarMessage;
 
   AppState(
       {this.projects,
@@ -63,10 +66,12 @@ class AppState {
       LAProjectViewStatus status,
       this.alaInstallReleases,
       this.generatorReleases,
+      this.appSnackBarMessage,
       List<SshKey> sshKeys})
       : this.status = status ?? LAProjectViewStatus.view,
         this.failedLoad = failedLoad ?? false,
         this.sshKeys = sshKeys ?? [];
+
   /*
       sshKeys})
       : sshKeys = sshKeys ?? []; */
@@ -126,6 +131,7 @@ class AppState {
 LA projects: ${projects.length} 
 view status: $status , currentStep: $currentStep
 ala-install releases: ${alaInstallReleases?.length}, generator releases: ${generatorReleases?.length}, sshKeys: ${sshKeys?.length}
+snackMessage: ${appSnackBarMessage?.message ?? ''}
 currentProject of ${projects.length} -----
 ${currentProject != null ? currentProject : ''}
 ''';

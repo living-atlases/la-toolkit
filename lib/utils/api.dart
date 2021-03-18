@@ -122,13 +122,13 @@ class Api {
   static Future<String> getConf() async {
     if (AppUtils.isDemo()) return "";
     var url = "${env['BACKEND']}api/v1/get-conf";
-    var response = await http.get(url).catchError((error) {
-      print(error);
-    });
+
+    var response = await http.get(url);
     if (response.statusCode == 200) {
       return response.body;
-    } else
-      return "";
+    } else {
+      throw "Failed to load configuration";
+    }
   }
 
   static Future<void> alaInstallSelect(

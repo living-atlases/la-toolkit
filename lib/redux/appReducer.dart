@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
@@ -46,6 +47,8 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, OnImportSshKey>(_onImportSshKey),
   new TypedReducer<AppState, ShowDeployProjectResults>(
       _showDeployProjectResults),
+  new TypedReducer<AppState, ShowSnackBar>(_showSnackBar),
+  new TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
 ]);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
@@ -211,7 +214,7 @@ AppState _onTestConnectivityResults(
     server.sudoEnabled = ServiceStatus.unknown;
     server.osName = "";
     server.osVersion = "";
-    currentProject.upsert(server);
+    currentProject.upsertByName(server);
   });
   for (var serverName in action.results.keys) {
     var server =
@@ -221,7 +224,7 @@ AppState _onTestConnectivityResults(
     server.sudoEnabled = serviceStatus(action.results[serverName]['sudo']);
     server.osName = action.results[serverName]['os']['name'];
     server.osVersion = action.results[serverName]['os']['version'];
-    currentProject.upsert(server);
+    currentProject.upsertByName(server);
   }
   if (currentProject.allServersWithServicesReady() &&
       currentProject.status.value < LAProjectStatus.reachable.value) {
@@ -262,4 +265,12 @@ AppState _showDeployProjectResults(
   LAProject currentProject = state.currentProject;
   currentProject.lastDeploymentResults = action.results;
   return state.copyWith(currentProject: currentProject);
+}
+
+AppState _showSnackBar(AppState state, ShowSnackBar action) {
+  return state.copyWith(appSnackBarMessage: action.message);
+}
+
+AppState _onShowedSnackBar(AppState state, OnShowedSnackBar action) {
+  return state.copyWith(appSnackBarMessage: AppSnackBarMessage.empty);
 }

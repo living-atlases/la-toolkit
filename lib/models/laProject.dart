@@ -34,6 +34,8 @@ class LAProject {
   @JsonSerializable(nullable: false)
   List<LAServer> servers;
   @JsonSerializable(nullable: false)
+  Map<String, LAServer> serversMap;
+  @JsonSerializable(nullable: false)
   Map<String, LAService> services;
   @JsonSerializable(nullable: false)
   Map<String, LAVariable> variables;
@@ -62,6 +64,7 @@ class LAProject {
       this.isCreated = false,
       List<LAServer> servers,
       Map<String, LAService> services,
+      Map<String, LAServer> serversMap,
       Map<String, LAVariable> variables,
       this.additionalVariables = "",
       Map<String, List<String>> serverServices,
@@ -77,6 +80,7 @@ class LAProject {
       bool advancedTune})
       : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],
+        serversMap = serversMap ?? {},
         // _serversNameList = _serversNameList ?? [],
         services = services ?? initialServices,
         variables = variables ?? {},
@@ -84,6 +88,11 @@ class LAProject {
         lastDeploymentResults = lastDeploymentResults ?? [],
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false {
+    if (this.serversMap.entries.length != this.servers.length) {
+      // serversMap is new
+      this.serversMap =
+          Map.fromIterable(this.servers, key: (e) => e.uuid, value: (e) => e);
+    }
     validateCreation();
   }
 
@@ -117,6 +126,9 @@ class LAProject {
     bool valid = true;
     bool debug = false;
     LAProjectStatus status = LAProjectStatus.created;
+    if (serverServices.length != serversMap.entries.length ||
+        servers.length != serverServices.length)
+      throw ('Servers in $longName ($uuid) are inconsistent (serverServices: ${serverServices.length} serversMap: ${serversMap.entries.length} servers: ${servers.length})');
 
     valid = valid &&
         LARegExp.projectNameRegexp.hasMatch(longName) &&
@@ -167,7 +179,7 @@ class LAProject {
   }
 
   List<LAServer> serversWithServices() {
-    return servers.where((s) => serverServices[s.name].length > 0).toList();
+    return servers.where((s) => serverServices[s.uuid].length > 0).toList();
   }
 
   bool allServersWithIPs() {
@@ -223,7 +235,7 @@ class LAProject {
 
   List<String> getServicesNameListSelected() {
     List<String> selected = [];
-    serverServices.forEach((key, value) => selected.addAll(value));
+    serverServices.forEach((uuid, service) => selected.addAll(service));
     return selected;
   }
 
@@ -235,18 +247,16 @@ class LAProject {
   @override
   String toString() {
     var sToS = serverServices.entries
-        .map((entry) => '${entry.key} has ${entry.value}')
+        .map((entry) => '${serversMap[entry.key].name} has ${entry.value}')
         .toList()
         .join(', ');
-    return '''longName: $longName ($shortName), domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
-    isCreated: $isCreated,  validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
-    map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
-    servers (${servers.length}): $servers 
-    servers-services: $sToS  
-    services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
-    services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
-    /* services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().map((s) => services[s].nameInt + "(" + (getHostname(s).length > 0 ? getHostname(s)[0] : "") + ")").toList().join(', ')}]. */
-    /* services not selected (${getServicesNameListNotSelected().length}): [${getServicesNameListNotSelected().join(', ')}] */
+    return '''PROJECT: longName: $longName ($shortName), domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
+isCreated: $isCreated,  validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
+map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
+servers (${servers.length}): ${servers.join('| ')}
+servers-services: $sToS  
+services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
+services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
   }
 
   static Map<String, LAService> initialServices = getInitialServices();
@@ -288,12 +298,25 @@ class LAProject {
     return serverServices[serverName];
   }
 
-  void upsert(LAServer laServer) {
-    servers = LAServer.upsert(servers, laServer);
-    // NEW
-    if (!serverServices.containsKey(laServer.name)) {
-      // NEW
-      serverServices[laServer.name] = [];
+  void upsertByName(LAServer laServer) {
+    servers = LAServer.upsertByName(servers, laServer);
+    LAServer upsertServer =
+        servers.firstWhereOrNull((s) => s.name == laServer.name);
+
+    assert(upsertServer.uuid != null);
+    serversMap[upsertServer.uuid] = upsertServer;
+    _cleanServerServices(upsertServer);
+  }
+
+  void upsertById(LAServer laServer) {
+    servers = LAServer.upsertById(servers, laServer);
+    serversMap[laServer.uuid] = laServer;
+    _cleanServerServices(laServer);
+  }
+
+  void _cleanServerServices(LAServer laServer) {
+    if (!serverServices.containsKey(laServer.uuid)) {
+      serverServices[laServer.uuid] = [];
     }
   }
 
@@ -302,13 +325,13 @@ class LAProject {
   }
 
   void assign(LAServer server, List<String> assignedServices) {
-    // NEW
-    serverServices[server.name] = assignedServices;
+    serverServices[server.uuid] = assignedServices;
   }
 
   void delete(LAServer serverToDelete) {
-    serverServices.removeWhere((key, value) => key == serverToDelete.name);
+    serverServices.removeWhere((key, value) => key == serverToDelete.uuid);
     servers.remove(serverToDelete);
+    serversMap.remove(serverToDelete.uuid);
   }
 
   String additionalVariablesDecoded() {
@@ -319,9 +342,14 @@ class LAProject {
 
   List<String> getHostname(String service) {
     List<String> hostnames = [];
-    serverServices.forEach((serverName, services) {
+
+    serverServices.forEach((uuid, services) {
       services.forEach((currentService) {
-        if (service == currentService) hostnames.add(serverName);
+        if (service == currentService) {
+          // print(uuid);
+          // print("servers map: ${serversMap[uuid]}");
+          if (serversMap[uuid] != null) hostnames.add(serversMap[uuid].name);
+        }
       });
     });
     return hostnames;
@@ -400,7 +428,7 @@ class LAProject {
         .where((curSer) => curSer.depends.toS() == serviceNameInt);
     if (!use) {
       // Remove
-      serverServices.forEach((server, services) {
+      serverServices.forEach((uuid, services) {
         services.remove(serviceNameInt);
       });
       // Disable dependents
@@ -468,6 +496,7 @@ class LAProject {
         useSSL: yoRc["LA_enable_ssl"]);
     var domain = p.domain;
     Map<String, List<String>> serverServices = {};
+
     LAServiceDesc.list.forEach((service) {
       String n = service.nameInt == "cas" ? "CAS" : service.nameInt;
       // ala_bie and images was not optional in the past
@@ -482,16 +511,6 @@ class LAProject {
       bool useSub =
           service.forceSubdomain ? true : a("${n}_uses_subdomain") ?? true;
       projectService.usesSubdomain = useSub;
-
-      /* From LAService:
-      path = usesSubdomain
-      ? iniPath.startsWith("/")
-          ? ""
-          : "/" + iniPath
-      : suburl.startsWith("/")
-          ? ""
-          : "/" + suburl;
-       */
 
       if (debug)
         print(
@@ -513,16 +532,22 @@ class LAProject {
       String hostname = a("${n}_hostname") ?? '';
 
       if (hostname.length > 0) {
+        LAServer s;
         if (!p.getServersNameList().contains(hostname)) {
-          LAServer newS = LAServer(name: hostname);
-          p.upsert(newS);
+          // uuid is empty when is new
+          s = LAServer(uuid: Uuid().v4(), name: hostname);
+          p.upsertByName(s);
+        } else {
+          s = p.servers.where((c) => c.name == hostname).toList()[0];
         }
-        if (!serverServices.containsKey(hostname))
-          serverServices[hostname] = List<String>.empty(growable: true);
-        serverServices[hostname].add(service.nameInt);
+        assert(s.uuid != null);
+        if (!serverServices.containsKey(s.uuid))
+          serverServices[s.uuid] = List<String>.empty(growable: true);
+        serverServices[s.uuid].add(service.nameInt);
       }
     });
-    p.servers.forEach((s) => p.assign(s, serverServices[s.name]));
+    p.servers
+        .forEach((server) => p.assign(server, serverServices[server.uuid]));
     return p;
   }
 }

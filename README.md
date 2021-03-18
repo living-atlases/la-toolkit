@@ -16,6 +16,14 @@ A few resources to get you started if your are new to Flutter:
 - [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 - [Flutter Web support](https://flutter.dev/web)
 
+### Using flutter web
+
+https://flutter.dev/docs/get-started/web
+```
+$ flutter channel stable
+$ flutter upgrade
+```
+
 ### Autogeneration of code
 
 There are some code (like the json serialization) that should be generated when some model changes. This is done with:
@@ -30,6 +38,7 @@ flutter pub run build_runner watch --delete-conflicting-outputs
 We need to have the frontend build prior to build the docker image:
 
 ```
+
 flutter test && flutter build web
 ```
 
