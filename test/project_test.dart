@@ -643,5 +643,6 @@ void main() {
         p.serverServices.length == p.serversMap.entries.length &&
             p.servers.length == p.serverServices.length,
         equals(true));
+    expect(p.getService(collectory).suburl, equals('collectory'));
   });
 }

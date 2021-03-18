@@ -814,7 +814,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "collections"
+          "suburl": "collectory"
         },
         "ala_hub": {
           "nameInt": "ala_hub",
@@ -825,7 +825,7 @@
         },
         "biocache_service": {
           "nameInt": "biocache_service",
-          "iniPath": "ws",
+          "iniPath": "",
           "use": true,
           "usesSubdomain": true,
           "suburl": "biocache-ws"
@@ -839,7 +839,7 @@
         },
         "bie_index": {
           "nameInt": "bie_index",
-          "iniPath": "ws",
+          "iniPath": "",
           "use": true,
           "usesSubdomain": true,
           "suburl": "bie-ws"
@@ -877,7 +877,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "index"
+          "suburl": "solr"
         },
         "cas": {
           "nameInt": "cas",
@@ -903,21 +903,21 @@
         "dashboard": {
           "nameInt": "dashboard",
           "iniPath": "",
-          "use": true,
+          "use": false,
           "usesSubdomain": true,
           "suburl": "dashboard"
         },
         "alerts": {
           "nameInt": "alerts",
           "iniPath": "",
-          "use": true,
+          "use": false,
           "usesSubdomain": true,
           "suburl": "alerts"
         },
         "doi": {
           "nameInt": "doi",
           "iniPath": "",
-          "use": true,
+          "use": false,
           "usesSubdomain": true,
           "suburl": "doi"
         },
@@ -926,7 +926,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "cloud-vm-17"
+          "suburl": "core"
         },
         "branding": {
           "nameInt": "branding",
@@ -1002,8 +1002,6 @@
           "logger",
           "solr",
           "dashboard",
-          "alerts",
-          "doi",
           "biocache_backend"
         ],
         "84aeae35-f690-4af8-be2b-0a33606d1f09": [
@@ -1579,10 +1577,7 @@
         ],
         "d448ae8e-47ec-4239-b442-72a08dd8e066": [
           "ala_bie",
-          "bie_index",
-          "species_lists",
-          "regions",
-          "doi"
+          "bie_index"
         ],
         "733aa410-a9f6-4813-939d-917702eecb37": [
           "images"
@@ -2421,7 +2416,7 @@
         },
         {
           "uuid": "6797c166-0fbf-46d1-958a-e31f227a28af",
-          "name": "server2.compute.amazonaws.com.",
+          "name": "server2.compute.amazonaws.com",
           "ip": "",
           "sshPort": 22,
           "sshUser": null,
@@ -2453,7 +2448,7 @@
         },
         "6797c166-0fbf-46d1-958a-e31f227a28af": {
           "uuid": "6797c166-0fbf-46d1-958a-e31f227a28af",
-          "name": "server2.compute.amazonaws.com.",
+          "name": "server2.compute.amazonaws.com",
           "ip": "",
           "sshPort": 22,
           "sshUser": null,
@@ -2536,7 +2531,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "solr"
+          "suburl": "index"
         },
         "cas": {
           "nameInt": "cas",
@@ -2660,9 +2655,6 @@
           "regions",
           "logger",
           "solr",
-          "dashboard",
-          "alerts",
-          "doi",
           "biocache_backend"
         ],
         "6797c166-0fbf-46d1-958a-e31f227a28af": [
