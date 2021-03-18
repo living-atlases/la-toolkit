@@ -422,7 +422,11 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       mapZoom.hashCode;
 
   void serviceInUse(String serviceNameInt, bool use) {
+    if (!services.keys.contains(serviceNameInt))
+      services[serviceNameInt] ??=
+          LAService.fromDesc(LAServiceDesc.map[serviceNameInt]);
     var service = services[serviceNameInt];
+
     service.use = use;
     var depends = LAServiceDesc.map.values
         .where((curSer) => curSer.depends.toS() == serviceNameInt);
@@ -493,7 +497,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
         longName: yoRc['LA_project_name'],
         shortName: yoRc['LA_project_shortname'],
         domain: yoRc["LA_domain"],
-        useSSL: yoRc["LA_enable_ssl"]);
+        useSSL: yoRc["LA_enable_ssl"],
+        services: {});
     var domain = p.domain;
     Map<String, List<String>> serverServices = {};
 
@@ -525,13 +530,13 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           ? url.replaceFirst('.$domain', '')
           : url.replaceFirst('$domain/', '');
 
-      if (debug)
-        print(
-            "$n: url: $url path: '$invPath' initPath: '${projectService.iniPath}' suburl: ${projectService.suburl} ");
-
       String hostname = a("${n}_hostname") ?? '';
 
-      if (hostname.length > 0) {
+      if (debug)
+        print(
+            "$n: url: $url path: '$invPath' initPath: '${projectService.iniPath}' suburl: ${projectService.suburl} hostname: $hostname");
+
+      if (useIt && hostname.length > 0) {
         LAServer s;
         if (!p.getServersNameList().contains(hostname)) {
           // uuid is empty when is new
