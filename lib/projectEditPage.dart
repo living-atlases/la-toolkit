@@ -12,6 +12,7 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import 'components/appSnackBar.dart';
 import 'components/genericTextFormField.dart';
 import 'components/helpIcon.dart';
 import 'components/laAppBar.dart';
@@ -411,7 +412,7 @@ If you have doubts or need to ask for some information, save this project and co
                     },
                   )
                 ])),
-            body: ScrollPanel(
+            body: AppSnackBar(ScrollPanel(
               child: Stepper(
                   steps: _steps,
                   currentStep: _step,
@@ -438,7 +439,7 @@ If you have doubts or need to ask for some information, save this project and co
                       ],
                     );
                   }),
-            ),
+            )),
             //     ])
           );
         });

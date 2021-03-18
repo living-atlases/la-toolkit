@@ -12,6 +12,7 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 
+import 'components/appSnackBar.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'models/laServiceDesc.dart';
@@ -98,7 +99,7 @@ class LAProjectTunePage extends StatelessWidget {
                     },
                   )
                 ]),
-            body: ScrollPanel(
+            body: AppSnackBar(ScrollPanel(
                 withPadding: true,
                 child: Form(
                     key: _formKey,
@@ -183,7 +184,7 @@ class LAProjectTunePage extends StatelessWidget {
                                   style: LAColorTheme.unDeployedTextStyle),
                               Text("."),
                             ]),
-                        ]))));
+                        ])))));
       },
     );
   }

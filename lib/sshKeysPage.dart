@@ -8,6 +8,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import 'components/appSnackBar.dart';
 import 'components/genericTextFormField.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
@@ -59,7 +60,7 @@ class SshKeyPage extends StatelessWidget {
                       },
                       label: Text("SCAN YOUR KEYS")),
                 ]),
-            body: ScrollPanel(
+            body: AppSnackBar(ScrollPanel(
                 withPadding: true,
                 child: Row(
                   children: <Widget>[
@@ -143,7 +144,7 @@ class SshKeyPage extends StatelessWidget {
                       child: Container(),
                     )
                   ],
-                )));
+                ))));
       },
     );
   }
