@@ -484,6 +484,94 @@ void main() {
   }
 }
 ''';
+    var yoRcJsonAt = '''
+{
+  "generator-living-atlas": {
+    "promptValues": {
+      "LA_project_name": "Biodiversitäts-Atlas Österreich",
+      "LA_project_shortname": "Biodiversitäts-Atlas Österreich",
+      "LA_pkg_name": "biodiversitts-atlassterreich",
+      "LA_domain": "biodiversityatlas.at",
+      "LA_use_species": true,
+      "LA_use_spatial": true,
+      "LA_use_regions": true,
+      "LA_use_species_lists": true,
+      "LA_use_CAS": true,
+      "LA_use_images": true,
+      "LA_use_alerts": false,
+      "LA_use_doi": false,
+      "LA_use_webapi": false,
+      "LA_use_dashboard": false,
+      "LA_enable_ssl": true,
+      "LA_use_git": true,
+      "LA_generate_branding": true,
+      "LA_cas_hostname": "spatial.biodiversityatlas.at",
+      "LA_cas_url": "auth.biodiversityatlas.at",
+      "LA_spatial_hostname": "spatial.biodiversityatlas.at",
+      "LA_spatial_url": "spatial.biodiversityatlas.at",
+      "LA_collectory_uses_subdomain": true,
+      "LA_collectory_hostname": "core.biodiversityatlas.at",
+      "LA_collectory_url": "collectory.biodiversityatlas.at",
+      "LA_collectory_path": "/",
+      "LA_ala_hub_uses_subdomain": true,
+      "LA_ala_hub_hostname": "core.biodiversityatlas.at",
+      "LA_ala_hub_url": "biocache.biodiversityatlas.at",
+      "LA_ala_hub_path": "/",
+      "LA_biocache_service_uses_subdomain": true,
+      "LA_biocache_service_hostname": "core.biodiversityatlas.at",
+      "LA_biocache_service_url": "biocache-ws.biodiversityatlas.at",
+      "LA_biocache_service_path": "/",
+      "LA_ala_bie_uses_subdomain": true,
+      "LA_ala_bie_hostname": "core.biodiversityatlas.at",
+      "LA_ala_bie_url": "bie.biodiversityatlas.at",
+      "LA_ala_bie_path": "/",
+      "LA_bie_index_uses_subdomain": true,
+      "LA_bie_index_hostname": "core.biodiversityatlas.at",
+      "LA_bie_index_url": "bie-ws.biodiversityatlas.at",
+      "LA_bie_index_path": "/",
+      "LA_images_uses_subdomain": true,
+      "LA_images_hostname": "core.biodiversityatlas.at",
+      "LA_images_url": "images.biodiversityatlas.at",
+      "LA_images_path": "/",
+      "LA_lists_uses_subdomain": true,
+      "LA_lists_hostname": "core.biodiversityatlas.at",
+      "LA_lists_url": "lists.biodiversityatlas.at",
+      "LA_lists_path": "/",
+      "LA_regions_uses_subdomain": true,
+      "LA_regions_hostname": "core.biodiversityatlas.at",
+      "LA_regions_url": "regions.biodiversityatlas.at",
+      "LA_regions_path": "/",
+      "LA_logger_uses_subdomain": true,
+      "LA_logger_hostname": "core.biodiversityatlas.at",
+      "LA_logger_url": "logger.biodiversityatlas.at",
+      "LA_logger_path": "/",
+      "LA_solr_uses_subdomain": true,
+      "LA_solr_hostname": "core.biodiversityatlas.at",
+      "LA_solr_url": "solr.biodiversityatlas.at",
+      "LA_solr_path": "/",
+      "LA_biocache_backend_hostname": "core.biodiversityatlas.at",
+      "LA_main_hostname": "core.biodiversityatlas.at",
+      "LA_webapi_uses_subdomain": true,
+      "LA_webapi_hostname": "",
+      "LA_webapi_url": "",
+      "LA_webapi_path": "",
+      "LA_dashboard_uses_subdomain": true,
+      "LA_dashboard_hostname": "core.biodiversityatlas.at",
+      "LA_dashboard_path": "/",
+      "LA_dashboard_url": "dashboard.biodiversityatlas.at",
+      "LA_alerts_uses_subdomain": true,
+      "LA_alerts_hostname": "core.biodiversityatlas.at",
+      "LA_alerts_path": "/",
+      "LA_alerts_url": "alerts.biodiversityatlas.at",
+      "LA_doi_uses_subdomain": true,
+      "LA_doi_hostname": "core.biodiversityatlas.at",
+      "LA_doi_path": "/",
+      "LA_doi_url": "doi.biodiversityatlas.at"
+    },
+    "firstRun": false
+  }
+}    
+''';
     var p = new LAProject.import(yoRcJson: yoRcJson);
     expect(p.longName, equals('Portal de Datos de GBIF.ES'));
     expect(p.shortName, equals('GBIF.ES'));
@@ -522,6 +610,7 @@ void main() {
       }
     });
 
+    expect(p.getService(doi).use, equals(false));
     expect(p.getService(collectory).iniPath, equals('collections'));
     expect(p.getService(alaHub).iniPath, equals('explorer'));
     expect(p.getService(biocacheService).iniPath, equals('explorer-ws'));
@@ -536,7 +625,23 @@ void main() {
 
     expect(p.serverServices.keys.contains("vm-013"), equals(false));
     expect(p.getHostname(images), equals(["vm-013"]));
-    expect(p.getHostname(regions), equals(["vm-000"]));
+    expect(p.getHostname(regions), equals([]));
     // Missing branding url etc
+
+    p = new LAProject.import(yoRcJson: yoRcJsonAt);
+    expect(p.getService(doi).use, equals(false));
+    expect(p.getService(alerts).use, equals(false));
+    expect(p.getServicesNameListNotInUse().contains(doi), equals(true));
+    expect(p.getServicesNameListInUse().contains(doi), equals(false));
+    expect(p.getServicesNameListNotInUse().contains(alerts), equals(true));
+    expect(p.getServicesNameListInUse().contains(alerts), equals(false));
+    p.servers.forEach((server) {
+      expect(p.serverServices[server.uuid].contains(doi), equals(false));
+      expect(p.serverServices[server.uuid].contains(alerts), equals(false));
+    });
+    expect(
+        p.serverServices.length == p.serversMap.entries.length &&
+            p.servers.length == p.serverServices.length,
+        equals(true));
   });
 }
