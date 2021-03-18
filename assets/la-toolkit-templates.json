@@ -2152,56 +2152,56 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "collectory"
+          "suburl": "colecciones"
         },
         "ala_hub": {
           "nameInt": "ala_hub",
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "biocache"
+          "suburl": "registros"
         },
         "biocache_service": {
           "nameInt": "biocache_service",
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "biocache-ws"
+          "suburl": "registros-ws"
         },
         "ala_bie": {
           "nameInt": "ala_bie",
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "bie"
+          "suburl": "especies"
         },
         "bie_index": {
           "nameInt": "bie_index",
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "bie-ws"
+          "suburl": "especies-ws"
         },
         "images": {
           "nameInt": "images",
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "images"
+          "suburl": "imagenes"
         },
         "species_lists": {
           "nameInt": "species_lists",
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "lists"
+          "suburl": "listas"
         },
         "regions": {
           "nameInt": "regions",
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "regions"
+          "suburl": "regiones"
         },
         "logger": {
           "nameInt": "logger",
@@ -2215,7 +2215,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "solr"
+          "suburl": "index"
         },
         "cas": {
           "nameInt": "cas",
@@ -2229,33 +2229,33 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "spatial"
+          "suburl": "espacial"
         },
         "webapi": {
           "nameInt": "webapi",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
-          "suburl": ""
+          "suburl": "api"
         },
         "dashboard": {
           "nameInt": "dashboard",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
           "suburl": "dashboard"
         },
         "alerts": {
           "nameInt": "alerts",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
-          "suburl": "alerts"
+          "suburl": "alertas"
         },
         "doi": {
           "nameInt": "doi",
           "iniPath": "",
-          "use": false,
+          "use": true,
           "usesSubdomain": true,
           "suburl": "doi"
         },
@@ -2264,7 +2264,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "core"
+          "suburl": "biocache-store-0"
         },
         "branding": {
           "nameInt": "branding",
