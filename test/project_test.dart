@@ -117,8 +117,8 @@ void main() {
         MapEquality().equals(testProject.services, testProjectOther.services),
         equals(true));
     expect(
-        MapEquality().equals(
-            testProject.serverServices, testProjectOther.serverServices),
+        MapEquality().equals(testProject.getServerServicesForTest(),
+            testProjectOther.getServerServicesForTest()),
         equals(true));
     expect(testProject.mapBounds2ndPoint == testProjectOther.mapBounds1stPoint,
         equals(true));
@@ -137,15 +137,16 @@ void main() {
         testProject.copyWith(servers: [], serverServices: {});
     testProject.upsertByName(vm1);
     testProjectCopy.upsertByName(vm1);
-    expect(testProject.serverServices.length, equals(1));
+    expect(testProject.getServerServicesForTest().length, equals(1));
     expect(testProject.servers.length, equals(1));
-    expect(testProjectCopy.serverServices.length, equals(1));
+    expect(testProjectCopy.getServerServicesForTest().length, equals(1));
     expect(testProjectCopy.servers.length, equals(1));
     expect(MapEquality().equals(testProject.services, testProjectCopy.services),
         equals(true));
     expect(
-        DeepCollectionEquality.unordered()
-            .equals(testProject.serverServices, testProjectCopy.serverServices),
+        DeepCollectionEquality.unordered().equals(
+            testProject.getServerServicesForTest(),
+            testProjectCopy.getServerServicesForTest()),
         equals(true));
     expect(testProject == testProjectCopy, equals(true));
     expect(testProject.servers, equals(testProjectCopy.servers));
@@ -153,12 +154,12 @@ void main() {
     testProject.upsertByName(vm2);
     expect(testProjectCopy.servers.length, equals(1));
 
-    expect(testProject.serverServices.length, equals(2));
+    expect(testProject.getServerServicesForTest().length, equals(2));
     expect(testProject.servers == testProjectCopy.servers, equals(false));
-    expect(testProjectCopy.serverServices.length, equals(1));
+    expect(testProjectCopy.getServerServicesForTest().length, equals(1));
     expect(
-        MapEquality()
-            .equals(testProject.serverServices, testProjectCopy.serverServices),
+        MapEquality().equals(testProject.getServerServicesForTest(),
+            testProjectCopy.getServerServicesForTest()),
         equals(false));
     expect(testProject.mapBounds2ndPoint == testProjectCopy.mapBounds1stPoint,
         equals(true));
@@ -281,12 +282,16 @@ void main() {
     p.assign(vm1, [collectory, bie, bieIndex, lists]);
     LAServer vm1Bis =
         LAServer(name: "vm1", ip: "10.0.0.1", sshUser: "john", sshPort: 22001);
-    expect(p.serverServices[vm1.uuid].contains(collectory), equals(true));
+    expect(p.getServerServices(serverUuid: vm1.uuid).contains(collectory),
+        equals(true));
     p.upsertByName(vm1Bis);
 
-    expect(p.serverServices[vm1.uuid].contains(collectory), equals(true));
-    expect(p.serverServices[vm1.uuid].contains(bie), equals(true));
-    expect(p.serverServices[vm1.uuid].contains(lists), equals(true));
+    expect(p.getServerServices(serverUuid: vm1.uuid).contains(collectory),
+        equals(true));
+    expect(
+        p.getServerServices(serverUuid: vm1.uuid).contains(bie), equals(true));
+    expect(p.getServerServices(serverUuid: vm1.uuid).contains(lists),
+        equals(true));
     var vm1Updated =
         p.servers.where((element) => element.uuid == vm1.uuid).toList()[0];
     expect(vm1Updated.sshUser == "john" && vm1Updated.sshPort == 22001,
@@ -295,10 +300,14 @@ void main() {
     expect(p.getService(bie).use, equals(false));
     expect(p.getService(bieIndex).use, equals(false));
     expect(p.getService(lists).use, equals(false));
-    expect(p.serverServices[vm1.uuid].contains(collectory), equals(true));
-    expect(p.serverServices[vm1.uuid].contains(bie), equals(false));
-    expect(p.serverServices[vm1.uuid].contains(bieIndex), equals(false));
-    expect(p.serverServices[vm1.uuid].contains(lists), equals(false));
+    expect(p.getServerServices(serverUuid: vm1.uuid).contains(collectory),
+        equals(true));
+    expect(
+        p.getServerServices(serverUuid: vm1.uuid).contains(bie), equals(false));
+    expect(p.getServerServices(serverUuid: vm1.uuid).contains(bieIndex),
+        equals(false));
+    expect(p.getServerServices(serverUuid: vm1.uuid).contains(lists),
+        equals(false));
     p.serviceInUse(bie, true);
     expect(p.getService(bie).use, equals(true));
     expect(p.getService(bieIndex).use, equals(true));
@@ -624,7 +633,7 @@ void main() {
     expect(p.getService(spatial).suburl, equals('spatial'));
     expect(p.getService(cas).suburl, equals('auth'));
 
-    expect(p.serverServices.keys.contains("vm-013"), equals(false));
+    expect(p.getServerServicesForTest().keys.contains("vm-013"), equals(false));
     expect(p.getHostname(images), equals(["vm-013"]));
     expect(p.getHostname(regions), equals([]));
     // Missing branding url etc
@@ -637,12 +646,14 @@ void main() {
     expect(p.getServicesNameListNotInUse().contains(alerts), equals(true));
     expect(p.getServicesNameListInUse().contains(alerts), equals(false));
     p.servers.forEach((server) {
-      expect(p.serverServices[server.uuid].contains(doi), equals(false));
-      expect(p.serverServices[server.uuid].contains(alerts), equals(false));
+      expect(p.getServerServicesForTest()[server.uuid].contains(doi),
+          equals(false));
+      expect(p.getServerServicesForTest()[server.uuid].contains(alerts),
+          equals(false));
     });
     expect(
-        p.serverServices.length == p.serversMap.entries.length &&
-            p.servers.length == p.serverServices.length,
+        p.getServerServicesForTest().length == p.serversMap.entries.length &&
+            p.servers.length == p.getServerServicesForTest().length,
         equals(true));
     expect(p.getService(collectory).suburl, equals('collectory'));
   });

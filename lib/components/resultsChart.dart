@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/utils/constants.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -20,14 +19,19 @@ class ResultsChart extends StatelessWidget {
                 explode: true,
                 explodeIndex: 0,
                 dataSource: <_PieData>[
-                  _PieData(values['changed'], ResultsColors.changed, 'Changed'),
-                  _PieData(values['failures'], ResultsColors.failure, 'Failed'),
-                  _PieData(values['ignored'], ResultsColors.ignored, 'Ignored'),
-                  _PieData(values['ok'], ResultsColors.ok, 'Success'),
-                  _PieData(values['rescued'], ResultsColors.rescued, 'Rescued'),
-                  _PieData(values['skipped'], ResultsColors.skipped, 'Skipped'),
                   _PieData(
-                      values['unreachable'], Colors.deepOrange, 'Unreachable')
+                      values['changed'] ?? 0, ResultsColors.changed, 'Changed'),
+                  _PieData(
+                      values['failures'] ?? 0, ResultsColors.failure, 'Failed'),
+                  _PieData(
+                      values['ignored'] ?? 0, ResultsColors.ignored, 'Ignored'),
+                  _PieData(values['ok'] ?? 0, ResultsColors.ok, 'Success'),
+                  _PieData(
+                      values['rescued'] ?? 0, ResultsColors.rescued, 'Rescued'),
+                  _PieData(
+                      values['skipped'] ?? 0, ResultsColors.skipped, 'Skipped'),
+                  _PieData(values['unreachable'] ?? 0, Colors.deepOrange,
+                      'Unreachable')
                 ],
                 xValueMapper: (_PieData data, _) => data.xData,
                 yValueMapper: (_PieData data, _) => data.yData,
@@ -45,5 +49,5 @@ class _PieData {
   final num yData;
   final Color color;
   final String text;
-  _PieData(this.yData, this.color, [this.text]) : this.xData = "$text ($yData)";
+  _PieData(this.yData, this.color, this.text) : this.xData = "$text ($yData)";
 }

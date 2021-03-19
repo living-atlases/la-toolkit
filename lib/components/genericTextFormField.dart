@@ -12,7 +12,7 @@ class GenericTextFormField extends StatefulWidget {
   final String? prefixText;
   final String? wikipage;
   final RegExp? regexp;
-  final String error;
+  final String? error;
   final bool isDense;
   final bool isCollapsed;
   final ValueChanged<String> onChanged;

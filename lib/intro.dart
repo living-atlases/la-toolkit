@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -12,7 +11,7 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 
 class Intro extends StatefulWidget {
-  Intro({Key key}) : super(key: key);
+  Intro({Key? key}) : super(key: key);
 
   @override
   _IntroState createState() => _IntroState();
@@ -51,7 +50,7 @@ class _IntroState extends State<Intro> {
     }, builder: (BuildContext context, _IntroViewModel vm) {
       return IntroductionScreen(
         key: introKey,
-        pages: ([
+        pages: [
           PageViewModel(
             titleWidget: _buildTitle("Welcome to the\nLiving Atlases Toolkit"),
             body: '''This tool facilitates the installation,
@@ -80,15 +79,14 @@ Living Atlases portals''',
             image: _buildImage('la-toolkit-intro-images-3.png', 150),
             decoration: pageDecoration,
           ),
-          AppUtils.isDemo()
-              ? PageViewModel(
-                  titleWidget: _buildTitle("Just a demo"),
-                  body:
-                      "Right now this website is only a demo\nof our toolkit for demonstration purposes",
-                  image: _buildImage('la-toolkit-intro-images-4.png', 150),
-                  decoration: pageDecoration,
-                )
-              : null,
+          if (AppUtils.isDemo())
+            PageViewModel(
+              titleWidget: _buildTitle("Just a demo"),
+              body:
+                  "Right now this website is only a demo\nof our toolkit for demonstration purposes",
+              image: _buildImage('la-toolkit-intro-images-4.png', 150),
+              decoration: pageDecoration,
+            ),
           PageViewModel(
             title: "Ready to start?",
             bodyWidget: Row(
@@ -110,7 +108,7 @@ Living Atlases portals''',
               },
             ),
           ),
-        ]).where((element) => element != null).toList(),
+        ],
         onDone: () => vm.onIntroEnd(),
         onSkip: () => vm.onIntroEnd(),
         showSkipButton: true,
@@ -131,7 +129,7 @@ Living Atlases portals''',
     });
   }
 
-  Widget _introText({String text, bool markdown: false}) {
+  Widget _introText({required String text, bool markdown: false}) {
     return Container(
         width: MediaQuery.of(context).size.width * 0.5,
         child: markdown
@@ -145,7 +143,7 @@ Living Atlases portals''',
                       color: _markdownColor,
                       decoration: TextDecoration.underline),
                 ),
-                onTapLink: (text, href, title) async => await launch(href),
+                onTapLink: (text, href, title) async => await launch(href!),
                 data: text)
             : Text(text,
                 textAlign: TextAlign.left,
@@ -153,7 +151,7 @@ Living Atlases portals''',
                     TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal)));
   }
 
-  Widget _buildImage([String assetName, double width]) {
+  Widget _buildImage([String? assetName, double? width]) {
     return Align(
       child: assetName == null
           ? Image.asset('assets/images/la-icon.png', width: 150.0)
@@ -169,5 +167,8 @@ class _IntroViewModel {
   final void Function() onIntroEnd;
   final void Function() onAddProject;
 
-  _IntroViewModel({this.state, this.onIntroEnd, this.onAddProject});
+  _IntroViewModel(
+      {required this.state,
+      required this.onIntroEnd,
+      required this.onAddProject});
 }

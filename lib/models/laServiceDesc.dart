@@ -342,7 +342,7 @@ class LAServiceDesc {
 
   static List<LAServiceDesc> list = map.values.toList();
 
-  bool isCompatibleWith(String alaInstallVersion, LAServiceDesc otherService) {
+  bool isCompatibleWith(String? alaInstallVersion, LAServiceDesc otherService) {
     bool compatible = true;
     if (otherService == this) return true;
 

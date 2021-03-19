@@ -1,5 +1,3 @@
-// @dart=2.9
-import 'package:flutter/foundation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 
@@ -7,7 +5,7 @@ import 'laProject.dart';
 
 enum LAVariableType { String, int, double, bool }
 
-enum LAVariableSubcategory { org, cache, downloads, apikeys, otherkeys, ssl }
+enum LAVariableSubcategory { org, cache, downloads, apikeys, otherKeys, ssl }
 
 extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
   String get title {
@@ -22,10 +20,8 @@ extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
         return 'SSL';
       case LAVariableSubcategory.apikeys:
         return 'API Keys';
-      case LAVariableSubcategory.otherkeys:
+      case LAVariableSubcategory.otherKeys:
         return 'Other keys';
-      default:
-        return null;
     }
   }
 }
@@ -34,22 +30,22 @@ class LAVariableDesc {
   String name;
   String nameInt;
   LAServiceName service;
-  LAVariableSubcategory subcategory;
+  LAVariableSubcategory? subcategory;
   LAVariableType type;
-  String hint;
-  String error;
-  RegExp regExp;
-  String help;
-  LAServiceName depends;
-  Function defValue;
-  String confName;
+  String? hint;
+  String? error;
+  RegExp? regExp;
+  String? help;
+  LAServiceName? depends;
+  Function? defValue;
+  String? confName;
   bool advanced;
   bool enabled;
   bool inTunePage;
 
   LAVariableDesc(
-      {@required this.name,
-      @required this.nameInt,
+      {required this.name,
+      required this.nameInt,
       this.service = LAServiceName.all,
       this.subcategory,
       this.type = LAVariableType.String,
@@ -253,7 +249,7 @@ class LAVariableDesc {
     "pac4j_cookie_signing_key": LAVariableDesc(
         name: "CAS PAC4J Signing key",
         nameInt: "pac4j_cookie_signing_key",
-        subcategory: LAVariableSubcategory.otherkeys,
+        subcategory: LAVariableSubcategory.otherKeys,
         help: "CAS-postinstall-steps#cas-keys",
         depends: LAServiceName.cas,
         advanced: true,
@@ -261,26 +257,26 @@ class LAVariableDesc {
     "pac4j_cookie_encryption_key": LAVariableDesc(
         name: "CAS PAC4J Encryption key",
         nameInt: "pac4j_cookie_encryption_key",
-        subcategory: LAVariableSubcategory.otherkeys,
+        subcategory: LAVariableSubcategory.otherKeys,
         depends: LAServiceName.cas,
         advanced: true,
         service: LAServiceName.cas),
     "cas_webflow_signing_key": LAVariableDesc(
         name: "CAS Webflow Signing key",
         nameInt: "cas_webflow_signing_key",
-        subcategory: LAVariableSubcategory.otherkeys,
+        subcategory: LAVariableSubcategory.otherKeys,
         depends: LAServiceName.cas,
         advanced: true,
         service: LAServiceName.cas),
     "cas_webflow_encryption_key": LAVariableDesc(
         name: "CAS Webflow Encryption key",
         nameInt: "cas_webflow_encryption_key",
-        subcategory: LAVariableSubcategory.otherkeys,
+        subcategory: LAVariableSubcategory.otherKeys,
         depends: LAServiceName.cas,
         advanced: true,
         service: LAServiceName.cas)
   };
   static LAVariableDesc get(String nameInt) {
-    return map[nameInt];
+    return map[nameInt]!;
   }
 }

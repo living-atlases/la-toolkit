@@ -55,7 +55,7 @@ class LAProjectTunePage extends StatelessWidget {
                 // Show var where depend service is in use
                 (laVar.value.depends == null ||
                     (laVar.value.depends != null &&
-                        project.getService(laVar.value.depends.toS()).use)) &&
+                        project.getService(laVar.value.depends!.toS()).use)) &&
                 ((!project.advancedTune && !laVar.value.advanced) ||
                     project.advancedTune))
             .forEach((entry) {
@@ -66,8 +66,9 @@ class LAProjectTunePage extends StatelessWidget {
 
             lastCategory = entry.value.service;
           }
-          if (entry.value.subcategory != lastSubcategory) {
-            items.add(HeadingItem(entry.value.subcategory.title, true));
+          if (entry.value.subcategory != lastSubcategory &&
+              entry.value.subcategory != null) {
+            items.add(HeadingItem(entry.value.subcategory!.title, true));
             lastSubcategory = entry.value.subcategory;
           }
           items.add(MessageItem(project, entry.value, (value) {
@@ -260,7 +261,7 @@ class MessageItem implements ListItem {
     final deployed = project.getVariable(variable.nameInt).status ==
         LAVariableStatus.deployed;
     var defValue;
-    if (variable.defValue != null) defValue = variable.defValue(project);
+    if (variable.defValue != null) defValue = variable.defValue!(project);
     return ListTile(
         title: (variable.type == LAVariableType.bool)
             ? SwitchListTile(
@@ -289,7 +290,7 @@ class MessageItem implements ListItem {
                   onChanged(newValue);
                 }),
         trailing:
-            variable.help != null ? HelpIcon(wikipage: variable.help) : null);
+            variable.help != null ? HelpIcon(wikipage: variable.help!) : null);
   }
 
   Widget buildSubtitle(BuildContext context) => Text("");

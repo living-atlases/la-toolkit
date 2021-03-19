@@ -46,7 +46,8 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
           LAProject _project = vm.currentProject;
           String uuid = widget.server.uuid;
 
-          List<String> servicesInServer = _project.serverServices[uuid];
+          List<String> servicesInServer =
+              _project.getServerServices(serverUuid: uuid);
           return Container(
               // If we want to limit the size:
               // width: 500.0,
