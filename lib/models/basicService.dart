@@ -1,7 +1,7 @@
 class BasicService {
   String version;
   String name;
-  BasicService({this.name, this.version});
+  BasicService({required this.name, required this.version});
 
   bool isCompatible(BasicService other) {
     if (this.name != other.name) return true;

@@ -15,7 +15,7 @@ import 'package:smart_select/smart_select.dart';
 class ServicesInServerChooser extends StatefulWidget {
   final LAServer server;
 
-  ServicesInServerChooser({Key key, this.server}) : super(key: key);
+  ServicesInServerChooser({Key? key, required this.server}) : super(key: key);
 
   @override
   _ServicesInServerChooserState createState() =>
@@ -153,7 +153,7 @@ class _ServicesInServerChooserViewModel {
   final Function(LAProject, LAServer, List<String>) onAddServicesToServer;
 
   _ServicesInServerChooserViewModel(
-      {this.currentProject, this.onAddServicesToServer});
+      {required this.currentProject, required this.onAddServicesToServer});
 
   @override
   bool operator ==(Object other) =>

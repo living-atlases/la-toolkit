@@ -11,26 +11,26 @@ import '../laTheme.dart';
 import 'choiceEmptyPanel.dart';
 
 class HostSelector extends StatefulWidget {
-  final LAServer exclude;
-  final List<String> initialValue;
+  final LAServer? exclude;
+  final List<String>? initialValue;
   final List<String> serverList;
   final String title;
   final IconData icon;
   final String modalTitle;
   final String emptyPlaceholder;
-  final ChoiceEmptyPanel choiceEmptyPanel;
+  final ChoiceEmptyPanel? choiceEmptyPanel;
   final Function(List<String>) onChange;
   HostSelector(
-      {Key key,
+      {Key? key,
       this.exclude,
       this.initialValue,
-      this.serverList,
-      this.icon,
-      this.title,
-      this.modalTitle,
-      this.emptyPlaceholder,
+      required this.serverList,
+      required this.icon,
+      required this.title,
+      required this.modalTitle,
+      required this.emptyPlaceholder,
       this.choiceEmptyPanel,
-      this.onChange})
+      required this.onChange})
       : super(key: key);
 
   @override
@@ -53,7 +53,7 @@ class _HostSelectorState extends State<HostSelector> {
         },
         builder: (BuildContext context, _HostSelectorViewModel vm) {
           List<String> serverList = widget.serverList;
-          if (widget.exclude != null) serverList.remove(widget.exclude.name);
+          if (widget.exclude != null) serverList.remove(widget.exclude!.name);
           return SmartSelect<String>.multiple(
               key: _selectKey,
               value: widget.initialValue,
@@ -96,7 +96,7 @@ class _HostSelectorViewModel {
   final LAProject project;
   final void Function(LAProject project) onSaveProject;
 
-  _HostSelectorViewModel({this.project, this.onSaveProject});
+  _HostSelectorViewModel({required this.project, required this.onSaveProject});
 
   @override
   bool operator ==(Object other) =>

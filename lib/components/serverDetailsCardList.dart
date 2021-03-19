@@ -18,7 +18,7 @@ import 'helpIcon.dart';
 
 class ServersDetailsCardList extends StatelessWidget {
   final FocusNode focusNode;
-  ServersDetailsCardList(this.focusNode, {Key key}) : super(key: key);
+  ServersDetailsCardList(this.focusNode, {Key? key}) : super(key: key);
 
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersCardListViewModel>(
@@ -91,7 +91,7 @@ class ServersDetailsCardList extends StatelessWidget {
                                               _project.servers[index].sshKey !=
                                                       null
                                                   ? _project.servers[index]
-                                                      .sshKey.name
+                                                      .sshKey!.name
                                                   : "No SSH key selected"),
                                         ),
                                       ],
@@ -124,9 +124,11 @@ class ServersDetailsCardList extends StatelessWidget {
                                         ),
                                       );
                                     }).toList(),
-                                    onChanged: (value) {
-                                      _project.servers[index].sshKey = value;
-                                      vm.onSaveCurrentProject(_project);
+                                    onChanged: (SshKey? value) {
+                                      if (value != null) {
+                                        _project.servers[index].sshKey = value;
+                                        vm.onSaveCurrentProject(_project);
+                                      }
                                       /* setState(() {
                                     value;
                                   }); */
@@ -201,15 +203,10 @@ class ServersDetailsCardList extends StatelessWidget {
                                                           'Only if this is different than 22',
                                                       error: 'Invalid port',
                                                       initialValue: _project
-                                                                      .servers[
-                                                                          index]
-                                                                      .sshPort !=
-                                                                  22 &&
-                                                              _project
-                                                                      .servers[
-                                                                          index]
-                                                                      .sshPort !=
-                                                                  null
+                                                                  .servers[
+                                                                      index]
+                                                                  .sshPort !=
+                                                              22
                                                           ? _project
                                                               .servers[index]
                                                               .sshPort
@@ -306,10 +303,10 @@ class ServersDetailsCardList extends StatelessWidget {
   }
 
   _generateRenameDialog(
-      {BuildContext context,
-      _ServersCardListViewModel vm,
-      LAServer server,
-      LAProject project}) {
+      {required BuildContext context,
+      required _ServersCardListViewModel vm,
+      required LAServer server,
+      required LAProject project}) {
     var name;
     Alert(
         context: context,
@@ -360,5 +357,6 @@ class _ServersCardListViewModel {
   final AppState state;
   final void Function(LAProject project) onSaveCurrentProject;
 
-  _ServersCardListViewModel({this.state, this.onSaveCurrentProject});
+  _ServersCardListViewModel(
+      {required this.state, required this.onSaveCurrentProject});
 }

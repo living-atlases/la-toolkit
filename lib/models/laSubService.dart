@@ -9,10 +9,10 @@ class LASubServiceDesc {
   bool alaAdmin;
 
   LASubServiceDesc(
-      {@required this.name,
+      {required this.name,
       this.desc = "",
-      @required this.path,
-      this.icon,
+      required this.path,
+      required this.icon,
       this.admin: false,
       this.alaAdmin: false});
 }

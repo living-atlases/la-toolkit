@@ -38,7 +38,7 @@ class _DeployPageState extends State<DeployPage> {
   bool _continueEvenIfFails = false;
   bool _debug = false;
   bool _dryRun = false;
-  String logsSuffix;
+  late String logsSuffix;
   // TODO do something with --skip-tags nameindex
 
   @override
@@ -134,7 +134,7 @@ class _DeployPageState extends State<DeployPage> {
                                   icon: Mdi.server,
                                   onChange: (limitToServers) => setState(
                                       () => _limitToServers = limitToServers)),
-                              _tagsSelector(
+                              TagsSelector(
                                   key: _selectTagsKey,
                                   tags: TagsConstants.getTagsFor(vm
                                       .state.currentProject.alaInstallRelease),
@@ -145,7 +145,7 @@ class _DeployPageState extends State<DeployPage> {
                                       "Select the tags you want to limit to",
                                   onChange: (tags) =>
                                       setState(() => _tags = tags)),
-                              _tagsSelector(
+                              TagsSelector(
                                   key: _skipTagsKey,
                                   tags: TagsConstants.getTagsFor(vm
                                       .state.currentProject.alaInstallRelease),
@@ -248,44 +248,57 @@ class _DeployPageState extends State<DeployPage> {
   }
 }
 
-Widget _tagsSelector(
-    {GlobalKey<S2MultiState<String>> key,
-    List<String> tags,
-    IconData icon,
-    String title,
-    String placeHolder,
-    String modalTitle,
-    final Function(List<String>) onChange}) {
-  return SmartSelect<String>.multiple(
-      key: key,
-      value: [],
-      title: title,
-      choiceItems: S2Choice.listFrom<String, String>(
-          source: tags, value: (index, e) => e, title: (index, e) => e),
-      placeholder: placeHolder,
-      modalHeader: true,
-      modalTitle: modalTitle,
-      modalType: S2ModalType.popupDialog,
-      choiceType: S2ChoiceType.chips,
-      modalConfirm: true,
-      modalConfirmBuilder: (context, state) =>
-          SelectUtils.modalConfirmBuild(state),
-      modalHeaderStyle: S2ModalHeaderStyle(
-          backgroundColor: LAColorTheme.laPalette,
-          textStyle: TextStyle(color: Colors.white)),
-      tileBuilder: (context, state) {
-        return S2Tile.fromState(state,
-            // padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-            leading: Icon(icon),
-            dense: false,
-            isTwoLine: true,
-            trailing: const Icon(Icons.keyboard_arrow_down)
-            // isTwoLine: true,
-            );
-      },
-      onChange: (state) {
-        onChange(state.value);
-      });
+class TagsSelector extends StatelessWidget {
+  final GlobalKey<S2MultiState<String>> key;
+  final List<String> tags;
+  final IconData icon;
+  final String title;
+  final String placeHolder;
+  final String modalTitle;
+  final Function(List<String>) onChange;
+
+  TagsSelector(
+      {required this.key,
+      required this.tags,
+      required this.icon,
+      required this.title,
+      required this.placeHolder,
+      required this.modalTitle,
+      required this.onChange});
+
+  @override
+  Widget build(BuildContext context) {
+    return SmartSelect<String>.multiple(
+        key: key,
+        value: [],
+        title: title,
+        choiceItems: S2Choice.listFrom<String, String>(
+            source: tags, value: (index, e) => e, title: (index, e) => e),
+        placeholder: placeHolder,
+        modalHeader: true,
+        modalTitle: modalTitle,
+        modalType: S2ModalType.popupDialog,
+        choiceType: S2ChoiceType.chips,
+        modalConfirm: true,
+        modalConfirmBuilder: (context, state) =>
+            SelectUtils.modalConfirmBuild(state),
+        modalHeaderStyle: S2ModalHeaderStyle(
+            backgroundColor: LAColorTheme.laPalette,
+            textStyle: TextStyle(color: Colors.white)),
+        tileBuilder: (context, state) {
+          return S2Tile.fromState(state,
+              // padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              leading: Icon(icon),
+              dense: false,
+              isTwoLine: true,
+              trailing: const Icon(Icons.keyboard_arrow_down)
+              // isTwoLine: true,
+              );
+        },
+        onChange: (state) {
+          onChange(state.value);
+        });
+  }
 }
 
 class _DeployViewModel {
@@ -293,7 +306,10 @@ class _DeployViewModel {
   final Function(LAProject) onCancel;
   final Function(LAProject) onDeployProject;
 
-  _DeployViewModel({this.state, this.onCancel, this.onDeployProject});
+  _DeployViewModel(
+      {required this.state,
+      required this.onCancel,
+      required this.onDeployProject});
 
   @override
   bool operator ==(Object other) =>

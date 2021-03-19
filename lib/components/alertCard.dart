@@ -3,10 +3,10 @@ import 'package:flutter/widgets.dart';
 
 class AlertCard extends StatelessWidget {
   final String message;
-  final String actionText;
-  final VoidCallback action;
+  final String? actionText;
+  final VoidCallback? action;
 
-  AlertCard({this.message, this.actionText, this.action});
+  AlertCard({required this.message, this.actionText, this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +23,10 @@ class AlertCard extends StatelessWidget {
                       color: Colors.orangeAccent),
                   trailing: actionText != null
                       ? TextButton(
-                          child: Text(actionText),
-                          onPressed: () => action(),
+                          child: Text(actionText!),
+                          onPressed: () {
+                            if (action != null) action!();
+                          },
                         )
                       : null,
                   title: Text(message),

@@ -26,7 +26,6 @@ import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
 import 'models/laServer.dart';
 import 'models/laServiceDesc.dart';
-import 'utils/utils.dart';
 
 class LAProjectEditPage extends StatelessWidget {
   static const routeName = "project";
@@ -42,7 +41,7 @@ class LAProjectEditPage extends StatelessWidget {
     GlobalKey<FormState>(),
     GlobalKey<FormState>()
   ];
-  final List<FocusNode> _focusNodes = [
+  final List<FocusNode?> _focusNodes = [
     FocusNode(),
     null,
     FocusNode(),
@@ -112,15 +111,13 @@ class LAProjectEditPage extends StatelessWidget {
             _project.init();
           }
           // Set default version of the project
-          if (_project.alaInstallRelease == null ||
-              _project.alaInstallRelease.isEmpty ||
+          if (_project.alaInstallRelease.isEmpty ||
               vm.state.alaInstallReleases.length > 0)
             _project.alaInstallRelease = vm.state.alaInstallReleases[0];
-          if (_project.generatorRelease == null ||
-              _project.generatorRelease.isEmpty ||
+          if (_project.generatorRelease.isEmpty ||
               vm.state.generatorReleases.length > 0)
             _project.generatorRelease = vm.state.generatorReleases[0];
-          int _step = vm.state.currentStep ?? 0;
+          int _step = vm.state.currentStep;
           print('Building project edit currentStep: $_step key: $_scaffoldKey');
           _steps[0] = Step(
               title: const Text('Basic information'),
@@ -245,9 +242,10 @@ class LAProjectEditPage extends StatelessWidget {
                       }),
                       focusNode: _focusNodes[_serversStep],
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String value) {
-                        return LARegExp.hostnameRegexp.hasMatch(value) ||
-                                LARegExp.multiHostnameRegexp.hasMatch(value)
+                      validator: (String? value) {
+                        return value != null &&
+                                    LARegExp.hostnameRegexp.hasMatch(value) ||
+                                LARegExp.multiHostnameRegexp.hasMatch(value!)
                             ? null
                             : 'Invalid server name.';
                       },
@@ -255,9 +253,11 @@ class LAProjectEditPage extends StatelessWidget {
                           suffixIcon: IconButton(
                               icon: const Icon(Icons.add_circle),
                               onPressed: () {
-                                if (_formKeys[_serversStep]
-                                    .currentState
-                                    .validate()) {
+                                if (_formKeys[_serversStep].currentState !=
+                                        null &&
+                                    _formKeys[_serversStep]
+                                        .currentState!
+                                        .validate()) {
                                   serversNameSplit(
                                     _serverAddController.text,
                                   ).forEach((server) {
@@ -361,7 +361,7 @@ If you have doubts or need to ask for some information, save this project and co
                               vm.onSaveCurrentProject(_project);
                             })),
                     SizedBox(height: 20),
-                    ServersDetailsCardList(_focusNodes[_serversAdditional]),
+                    ServersDetailsCardList(_focusNodes[_serversAdditional]!),
                   ])));
           return Scaffold(
             key: _scaffoldKey,
@@ -370,7 +370,7 @@ If you have doubts or need to ask for some information, save this project and co
                 titleIcon: Icons.edit,
                 title: vm.state.status.title,
                 showLaIcon: false,
-                actions: ListUtils.listWithoutNulls([
+                actions: <Widget>[
                   Tooltip(
                       message: "Project configuration progress",
                       child: CircularPercentIndicator(
@@ -383,18 +383,16 @@ If you have doubts or need to ask for some information, save this project and co
                         progressColor: Colors.white,
                       )),
                   SizedBox(width: 20),
-                  _step == 0
-                      ? null
-                      : TextButton(
-                          child: const Text('PREVIOUS'),
-                          style: TextButton.styleFrom(primary: Colors.white),
-                          onPressed: () => onStepCancel(vm, _project)),
-                  _step == _steps.length - 1
-                      ? null
-                      : TextButton(
-                          child: const Text('NEXT'),
-                          style: TextButton.styleFrom(primary: Colors.white),
-                          onPressed: () => onStepContinue(vm, _project)),
+                  if (_step != 0)
+                    TextButton(
+                        child: const Text('PREVIOUS'),
+                        style: TextButton.styleFrom(primary: Colors.white),
+                        onPressed: () => onStepCancel(vm, _project)),
+                  if (_step != _steps.length - 1)
+                    TextButton(
+                        child: const Text('NEXT'),
+                        style: TextButton.styleFrom(primary: Colors.white),
+                        onPressed: () => onStepContinue(vm, _project)),
                   Tooltip(
                     message: "Close without saving your changes",
                     child: TextButton(
@@ -411,7 +409,7 @@ If you have doubts or need to ask for some information, save this project and co
                       vm.onFinish(_project);
                     },
                   )
-                ])),
+                ]),
             body: AppSnackBar(ScrollPanel(
               child: Stepper(
                   steps: _steps,
@@ -430,8 +428,8 @@ If you have doubts or need to ask for some information, save this project and co
                   },
                   // https://github.com/flutter/flutter/issues/11133
                   controlsBuilder: (BuildContext context,
-                      {VoidCallback onStepContinue,
-                      VoidCallback onStepCancel}) {
+                      {VoidCallback? onStepContinue,
+                      VoidCallback? onStepCancel}) {
                     return ButtonBar(
                       alignment: MainAxisAlignment.start,
                       children: <Widget>[
@@ -462,8 +460,8 @@ If you have doubts or need to ask for some information, save this project and co
       void Function(LAProject) onSaveCurrentProject) {
     project.upsertByName(LAServer(name: value));
     _serverAddController.clear();
-    _formKeys[_serversStep].currentState.reset();
-    _focusNodes[_serversStep].requestFocus();
+    _formKeys[_serversStep].currentState!.reset();
+    _focusNodes[_serversStep]!.requestFocus();
     onSaveCurrentProject(project);
   }
 
@@ -475,7 +473,7 @@ If you have doubts or need to ask for some information, save this project and co
     return currentStep == step ? StepState.editing : StepState.complete;
   }
 
-  Widget _stepIntro({String text, String helpPage}) {
+  Widget _stepIntro({required String text, required String helpPage}) {
     return ListTile(title: Text(text), trailing: HelpIcon(wikipage: helpPage));
   }
 }
@@ -491,15 +489,15 @@ class _ProjectPageViewModel {
   final Function() onPrevious;
   final Function(int) onGoto;
   _ProjectPageViewModel(
-      {this.state,
-      this.onSaveCurrentProject,
-      this.onFinish,
-      this.onCancel,
-      this.ssl,
-      this.advancedEdit,
-      this.onNext,
-      this.onPrevious,
-      this.onGoto});
+      {required this.state,
+      required this.onSaveCurrentProject,
+      required this.onFinish,
+      required this.onCancel,
+      required this.ssl,
+      required this.advancedEdit,
+      required this.onNext,
+      required this.onPrevious,
+      required this.onGoto});
 
   @override
   bool operator ==(Object other) {
@@ -527,16 +525,16 @@ class _ProjectPageViewModel {
 
 class HostHeader extends StatelessWidget {
   final String title;
-  final String help;
+  final String? help;
 
-  HostHeader({this.title, this.help});
+  HostHeader({required this.title, this.help});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Text(this.title),
-        if (this.help != null) HelpIcon(wikipage: this.help)
+        if (this.help != null) HelpIcon(wikipage: this.help!)
       ],
     );
   }

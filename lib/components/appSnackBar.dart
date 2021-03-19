@@ -42,7 +42,8 @@ class _AppSnackBarViewModel {
   Function onSnackBarShowed;
   final AppSnackBarMessage messageToShow;
 
-  _AppSnackBarViewModel({this.onSnackBarShowed, this.messageToShow});
+  _AppSnackBarViewModel(
+      {required this.onSnackBarShowed, required this.messageToShow});
 
   @override
   int get hashCode => messageToShow.hashCode;

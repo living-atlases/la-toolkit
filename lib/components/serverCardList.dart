@@ -5,7 +5,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/actions.dart';
 
 class ServersCardList extends StatelessWidget {
-  ServersCardList({Key key}) : super(key: key);
+  ServersCardList({Key? key}) : super(key: key);
 
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersCardListViewModel>(
@@ -49,5 +49,6 @@ class _ServersCardListViewModel {
   final LAProject currentProject;
   final void Function(LAProject project) onSaveCurrentProject;
 
-  _ServersCardListViewModel({this.currentProject, this.onSaveCurrentProject});
+  _ServersCardListViewModel(
+      {required this.currentProject, required this.onSaveCurrentProject});
 }

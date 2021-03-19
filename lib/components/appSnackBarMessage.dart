@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppSnackBarMessage {
   final String message;
-  final Duration duration;
+  final Duration? duration;
+  final SnackBarAction? action;
 
-  final SnackBarAction action;
-
-  AppSnackBarMessage({this.message, this.duration, this.action});
+  AppSnackBarMessage({required this.message, this.duration, this.action});
 
   static final AppSnackBarMessage empty = AppSnackBarMessage(message: "");
 

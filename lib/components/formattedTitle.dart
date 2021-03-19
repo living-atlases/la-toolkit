@@ -6,11 +6,12 @@ import '../laTheme.dart';
 
 class FormattedTitle extends StatelessWidget {
   final String title;
-  final Widget subtitle;
-  final int fontSize;
-  final Color color;
+  final Widget? subtitle;
+  final double? fontSize;
+  final Color? color;
 
-  FormattedTitle({this.title, this.fontSize, this.color, this.subtitle});
+  FormattedTitle(
+      {required this.title, this.fontSize, this.color, this.subtitle});
 
   @override
   Widget build(BuildContext context) {

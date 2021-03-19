@@ -41,6 +41,8 @@ class LAProjectViewPage extends StatelessWidget {
               project: store.state.currentProject,
               sshKeys: store.state.sshKeys,
               status: store.state.currentProject.status,
+              alaInstallReleases: store.state.alaInstallReleases,
+              generatorReleases: store.state.generatorReleases,
               onOpenProject: (project) => store.dispatch(OpenProject(project)),
               onTuneProject: (project) => store.dispatch(TuneProject(project)),
               onDeployProject: (project) {
@@ -112,9 +114,14 @@ class LAProjectViewPage extends StatelessWidget {
                   )); */
                   vm.onTestConnProject(project, false);
                 }),
-            Tool(icon: const Icon(Icons.foundation), title: "Pre-Deploy Tasks"),
             Tool(
-                icon: const Icon(Icons.format_paint), title: "Branding Deploy"),
+                icon: const Icon(Icons.foundation),
+                title: "Pre-Deploy Tasks",
+                action: () => {}),
+            Tool(
+                icon: const Icon(Icons.format_paint),
+                title: "Branding Deploy",
+                action: () => {}),
             Tool(
                 icon: const Icon(Mdi.rocketLaunch),
                 title: "Deploy",
@@ -124,10 +131,16 @@ class LAProjectViewPage extends StatelessWidget {
                 action: () => vm.onDeployProject(project)),
             Tool(
                 icon: const Icon(Icons.house_siding),
-                title: "Post-Deploy Tasks"),
-
-            Tool(icon: const Icon(Icons.fact_check), title: "Test Services"),
-            Tool(icon: const Icon(Icons.pie_chart), title: "Stats"),
+                title: "Post-Deploy Tasks",
+                action: () => {}),
+            Tool(
+                icon: const Icon(Icons.fact_check),
+                title: "Test Services",
+                action: () => {}),
+            Tool(
+                icon: const Icon(Icons.pie_chart),
+                title: "Stats",
+                action: () => {}),
             Tool(
                 icon: const Icon(Icons.file_download),
                 tooltip: AppUtils.isDemo()
@@ -150,7 +163,8 @@ class LAProjectViewPage extends StatelessWidget {
             // - Data generation
             // - Inventories download
           ];
-          final projectIconUrl = project.getVariable("favicon_url").value;
+          String projectIconUrl =
+              project.getVariable("favicon_url").value.toString();
           return Scaffold(
               key: _scaffoldKey,
               backgroundColor: Colors.white,
@@ -160,7 +174,7 @@ class LAProjectViewPage extends StatelessWidget {
                     color: Colors.white,
                     icon: const Icon(Mdi.vectorLink),
                     tooltip: "${project.shortName} links drawer",
-                    onPressed: () => _scaffoldKey.currentState.openDrawer(),
+                    onPressed: () => _scaffoldKey.currentState?.openDrawer(),
                   ),
                   context: context,
                   showLaIcon: false,
@@ -283,7 +297,7 @@ class _ProjectPageViewModel {
   List<SshKey> sshKeys;
   final void Function(LAProject project) onOpenProject;
   final void Function(LAProject project) onTuneProject;
-  final void Function(LAProject project) onEditProject;
+
   final void Function(LAProject project) onDeployProject;
   final void Function(LAProject project) onDelProject;
   final void Function(LAProject project) onGenInvProject;
@@ -291,18 +305,17 @@ class _ProjectPageViewModel {
   final LAProjectStatus status;
 
   _ProjectPageViewModel(
-      {this.project,
-      this.alaInstallReleases,
-      this.generatorReleases,
-      this.sshKeys,
-      this.status,
-      this.onOpenProject,
-      this.onTuneProject,
-      this.onDelProject,
-      this.onEditProject,
-      this.onDeployProject,
-      this.onGenInvProject,
-      this.onTestConnProject});
+      {required this.project,
+      required this.alaInstallReleases,
+      required this.generatorReleases,
+      required this.sshKeys,
+      required this.status,
+      required this.onOpenProject,
+      required this.onTuneProject,
+      required this.onDelProject,
+      required this.onDeployProject,
+      required this.onGenInvProject,
+      required this.onTestConnProject});
 
   @override
   bool operator ==(Object other) {

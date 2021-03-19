@@ -11,7 +11,7 @@ import 'choiceEmptyPanel.dart';
 
 class GatewaySelector extends StatefulWidget {
   final LAServer exclude;
-  GatewaySelector({Key key, this.exclude}) : super(key: key);
+  GatewaySelector({Key? key, required this.exclude}) : super(key: key);
 
   @override
   _GatewaySelectorState createState() => _GatewaySelectorState();
@@ -57,7 +57,8 @@ class _GatewaySelectorViewModel {
   final LAProject project;
   final void Function(LAProject project) onSaveProject;
 
-  _GatewaySelectorViewModel({this.project, this.onSaveProject});
+  _GatewaySelectorViewModel(
+      {required this.project, required this.onSaveProject});
 
   @override
   bool operator ==(Object other) =>

@@ -6,17 +6,15 @@ import 'package:la_toolkit/utils/utils.dart';
 import 'laIcon.dart';
 
 class LAAppBar extends AppBar {
-  final List<Widget> defActions = [];
-
   LAAppBar(
-      {@required BuildContext context,
-      @required String title,
-      String projectIcon,
+      {required BuildContext context,
+      required String title,
+      String? projectIcon,
       bool showLaIcon: false,
       bool showBack: false,
-      List<Widget> actions,
-      Widget leading,
-      IconData titleIcon})
+      List<Widget>? actions,
+      Widget? leading,
+      IconData? titleIcon})
       : super(
             /*
             // This breaks the Navigation
@@ -36,54 +34,43 @@ class LAAppBar extends AppBar {
             actions: actions ?? List<Widget>.empty(growable: true),
             leading: leading,
             title: SizedBox(
-                height: kToolbarHeight * 1.2,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: ListUtils.listWithoutNulls(<Widget>[
-                    showBack
-                        ? IconButton(
-                            tooltip: "Homepage",
-                            icon: Icon(Icons.arrow_back,
-                                size: 28, color: Colors.black),
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(HomePage.routeName);
-                            })
-                        : null,
-                    showLaIcon
-                        ? IconButton(
-                            tooltip: "Homepage",
-                            icon:
-                                Icon(LAIcon.la, size: 34, color: Colors.white),
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(HomePage.routeName);
-                            })
-                        : null,
-                    Container(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(children: [
-                          if (projectIcon != null && !AppUtils.isDemo())
-                            SizedBox(width: 8),
-                          if (projectIcon != null && !AppUtils.isDemo())
-                            ImageIcon(
-                                NetworkImage(AppUtils.proxyImg(projectIcon)),
-                                color: Colors.white,
-                                size: 26),
-                          if (projectIcon != null && !AppUtils.isDemo())
-                            SizedBox(width: 8),
-                          if (titleIcon != null)
-                            Icon(titleIcon, size: 26, color: Colors.white),
-                          if (titleIcon != null) SizedBox(width: 8),
-                          Text(title,
-                              style: GoogleFonts.signika(
-                                  textStyle: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.w400)))
-                        ]))
-                  ]),
-                ))) {
-    super.actions.addAll(defActions);
-  }
+              height: kToolbarHeight * 1.2,
+              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                if (showBack)
+                  IconButton(
+                      tooltip: "Homepage",
+                      icon:
+                          Icon(Icons.arrow_back, size: 28, color: Colors.black),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(HomePage.routeName);
+                      }),
+                if (showLaIcon)
+                  IconButton(
+                      tooltip: "Homepage",
+                      icon: Icon(LAIcon.la, size: 34, color: Colors.white),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(HomePage.routeName);
+                      }),
+                Container(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(children: [
+                      if (projectIcon != null && !AppUtils.isDemo())
+                        SizedBox(width: 8),
+                      if (projectIcon != null && !AppUtils.isDemo())
+                        ImageIcon(NetworkImage(AppUtils.proxyImg(projectIcon)),
+                            color: Colors.white, size: 26),
+                      if (projectIcon != null && !AppUtils.isDemo())
+                        SizedBox(width: 8),
+                      if (titleIcon != null)
+                        Icon(titleIcon, size: 26, color: Colors.white),
+                      if (titleIcon != null) SizedBox(width: 8),
+                      Text(title,
+                          style: GoogleFonts.signika(
+                              textStyle: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w400)))
+                    ]))
+              ]),
+            ));
 }

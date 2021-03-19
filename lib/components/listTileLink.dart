@@ -6,18 +6,18 @@ import 'defDivider.dart';
 import 'laIcon.dart';
 
 class ListTileLink extends StatelessWidget {
-  final Widget icon;
+  final Widget? icon;
   final String title;
-  final String tooltip;
+  final String? tooltip;
   final String url;
-  final Widget trailingIcon;
-  final Widget additionalTrailingIcon;
+  final Widget? trailingIcon;
+  final Widget? additionalTrailingIcon;
 
   ListTileLink(
       {this.icon,
-      this.title,
+      required this.title,
       this.tooltip,
-      this.url,
+      required this.url,
       this.trailingIcon,
       this.additionalTrailingIcon});
 
@@ -26,17 +26,17 @@ class ListTileLink extends StatelessWidget {
     return ListTile(
       leading: icon,
       title: tooltip != null
-          ? Tooltip(message: tooltip, child: Text(title))
+          ? Tooltip(message: tooltip!, child: Text(title))
           : Text(title),
       onTap: () async {
-        print(url);
+        // print(url);
         await launch(url);
       },
       trailing: Wrap(
         spacing: 0, // space between two icons
         children: <Widget>[
-          if (additionalTrailingIcon != null) additionalTrailingIcon,
-          if (trailingIcon != null) trailingIcon
+          if (additionalTrailingIcon != null) additionalTrailingIcon!,
+          if (trailingIcon != null) trailingIcon!
         ],
       ),
     );

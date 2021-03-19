@@ -1,8 +1,4 @@
-@Skip('This was from the counter flutter sample')
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/main.dart';
-
+/*
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
@@ -21,3 +17,4 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 }
+*/

@@ -30,8 +30,6 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
         return 'Tune your LA Project';
       case LAProjectViewStatus.view:
         return 'Project details';
-      default:
-        return null;
     }
   }
 }
@@ -43,34 +41,38 @@ class AppState {
   // from SharedPreferences
   final bool failedLoad;
   final bool firstUsage;
-  @JsonKey(nullable: false)
+  // @JsonKey(nullable: false)
   final LAProject currentProject;
-  @JsonKey(nullable: false)
+  // @JsonKey(nullable: false)
   final LAProjectViewStatus status;
-  @JsonKey(nullable: false)
+  // @JsonKey(nullable: false)
   final int currentStep;
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   final List<SshKey> sshKeys;
-  @JsonKey(ignore: true, nullable: true)
+  @JsonKey(ignore: true) //, nullable: true)
   final AppSnackBarMessage appSnackBarMessage;
 
   AppState(
-      {this.projects,
-      bool failedLoad,
+      {List<LAProject>? projects,
+      this.failedLoad = false,
       this.firstUsage = true,
-      this.currentProject,
-      this.currentStep,
-      LAProjectViewStatus status,
-      this.alaInstallReleases,
-      this.generatorReleases,
-      this.appSnackBarMessage,
-      List<SshKey> sshKeys})
-      : this.status = status ?? LAProjectViewStatus.view,
-        this.failedLoad = failedLoad ?? false,
-        this.sshKeys = sshKeys ?? [];
+      currentProject,
+      this.currentStep = 0,
+      this.status = LAProjectViewStatus.view,
+      List<String>? alaInstallReleases,
+      List<String>? generatorReleases,
+      appSnackBarMessage,
+      List<SshKey>? sshKeys})
+      : this.projects = projects ?? [],
+        this.sshKeys = sshKeys ?? [],
+        this.currentProject = currentProject ?? LAProject(),
+        this.alaInstallReleases = alaInstallReleases ?? [],
+        this.generatorReleases = generatorReleases ?? [],
+        this.appSnackBarMessage =
+            appSnackBarMessage ?? AppSnackBarMessage.empty;
 
   /*
       sshKeys})
@@ -130,8 +132,8 @@ class AppState {
 === AppState ===
 LA projects: ${projects.length} 
 view status: $status , currentStep: $currentStep
-ala-install releases: ${alaInstallReleases?.length}, generator releases: ${generatorReleases?.length}, sshKeys: ${sshKeys?.length}
-snackMessage: ${appSnackBarMessage?.message ?? ''}
+ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}
+snackMessage: ${appSnackBarMessage.message ?? ''}
 currentProject of ${projects.length} -----
 ${currentProject != null ? currentProject : ''}
 ''';

@@ -8,9 +8,9 @@ part of 'laVariable.dart';
 
 extension LAVariableCopyWith on LAVariable {
   LAVariable copyWith({
-    String nameInt,
-    LAServiceName service,
-    Object value,
+    String? nameInt,
+    LAServiceName? service,
+    Object? value,
   }) {
     return LAVariable(
       nameInt: nameInt ?? this.nameInt,
@@ -27,9 +27,9 @@ extension LAVariableCopyWith on LAVariable {
 LAVariable _$LAVariableFromJson(Map<String, dynamic> json) {
   return LAVariable(
     nameInt: json['nameInt'] as String,
-    service: _$enumDecodeNullable(_$LAServiceNameEnumMap, json['service']),
+    service: _$enumDecode(_$LAServiceNameEnumMap, json['service']),
     value: json['value'],
-  )..status = _$enumDecodeNullable(_$LAVariableStatusEnumMap, json['status']);
+  )..status = _$enumDecode(_$LAVariableStatusEnumMap, json['status']);
 }
 
 Map<String, dynamic> _$LAVariableToJson(LAVariable instance) =>
@@ -40,36 +40,30 @@ Map<String, dynamic> _$LAVariableToJson(LAVariable instance) =>
       'status': _$LAVariableStatusEnumMap[instance.status],
     };
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
   }
 
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
-}
-
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
 }
 
 const _$LAServiceNameEnumMap = {

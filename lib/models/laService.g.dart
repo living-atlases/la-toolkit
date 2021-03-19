@@ -8,11 +8,11 @@ part of 'laService.dart';
 
 extension LAServiceCopyWith on LAService {
   LAService copyWith({
-    String iniPath,
-    String nameInt,
-    String suburl,
-    bool use,
-    bool usesSubdomain,
+    String? iniPath,
+    String? nameInt,
+    String? suburl,
+    bool? use,
+    bool? usesSubdomain,
   }) {
     return LAService(
       iniPath: iniPath ?? this.iniPath,

@@ -16,7 +16,11 @@ class LAService {
   String suburl;
 
   LAService(
-      {this.nameInt, this.iniPath, this.use, this.usesSubdomain, this.suburl});
+      {required this.nameInt,
+      required this.iniPath,
+      required this.use,
+      required this.usesSubdomain,
+      required this.suburl});
 
   LAService.fromDesc(LAServiceDesc desc)
       : nameInt = desc.nameInt,

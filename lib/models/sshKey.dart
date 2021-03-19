@@ -10,22 +10,22 @@ class SshKey {
   @JsonKey(ignore: true)
   String privateKey;
   String publicKey;
-  String type;
-  int size;
+  String? type;
+  int? size;
   String desc;
-  String fingerprint;
+  String? fingerprint;
   bool encrypted;
   bool missing;
 
   SshKey(
-      {this.name,
+      {required this.name,
       this.privateKey = "",
       this.publicKey = "",
       this.type,
       this.size,
-      this.desc,
+      required this.desc,
       this.fingerprint,
-      this.encrypted,
+      required this.encrypted,
       this.missing: false});
 
   factory SshKey.fromJson(Map<String, dynamic> json) => _$SshKeyFromJson(json);

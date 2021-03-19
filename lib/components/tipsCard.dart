@@ -5,8 +5,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class TipsCard extends StatelessWidget {
   final String text;
-  final EdgeInsets margin;
-  TipsCard({this.text, this.margin: const EdgeInsets.fromLTRB(0, 30, 0, 0)});
+  final EdgeInsets? margin;
+  TipsCard(
+      {required this.text,
+      this.margin: const EdgeInsets.fromLTRB(0, 30, 0, 0)});
   static const _markdownColor = Colors.black54;
   static const _markdownStyle = const TextStyle(color: _markdownColor);
 
@@ -33,8 +35,9 @@ class TipsCard extends StatelessWidget {
                             color: _markdownColor,
                             decoration: TextDecoration.underline),
                       ),
-                      onTapLink: (text, href, title) async =>
-                          await launch(href),
+                      onTapLink: (text, href, title) async {
+                        if (href != null) await launch(href);
+                      },
                       data: text))
             ]));
   }

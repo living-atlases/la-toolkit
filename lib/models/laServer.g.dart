@@ -8,19 +8,19 @@ part of 'laServer.dart';
 
 extension LAServerCopyWith on LAServer {
   LAServer copyWith({
-    List<String> aliases,
-    List<String> gateways,
-    String ip,
-    String name,
-    String osName,
-    String osVersion,
-    ServiceStatus reachable,
-    SshKey sshKey,
-    int sshPort,
-    ServiceStatus sshReachable,
-    String sshUser,
-    ServiceStatus sudoEnabled,
-    String uuid,
+    List<String>? aliases,
+    List<String>? gateways,
+    String? ip,
+    String? name,
+    String? osName,
+    String? osVersion,
+    ServiceStatus? reachable,
+    SshKey? sshKey,
+    int? sshPort,
+    ServiceStatus? sshReachable,
+    String? sshUser,
+    ServiceStatus? sudoEnabled,
+    String? uuid,
   }) {
     return LAServer(
       aliases: aliases ?? this.aliases,
@@ -46,21 +46,21 @@ extension LAServerCopyWith on LAServer {
 
 LAServer _$LAServerFromJson(Map<String, dynamic> json) {
   return LAServer(
-    uuid: json['uuid'] as String,
+    uuid: json['uuid'] as String?,
     name: json['name'] as String,
-    ip: json['ip'] as String,
+    ip: json['ip'] as String?,
     sshPort: json['sshPort'] as int,
-    sshUser: json['sshUser'] as String,
-    aliases: (json['aliases'] as List)?.map((e) => e as String)?.toList(),
-    gateways: (json['gateways'] as List)?.map((e) => e as String)?.toList(),
+    sshUser: json['sshUser'] as String?,
+    aliases:
+        (json['aliases'] as List<dynamic>?)?.map((e) => e as String).toList(),
+    gateways:
+        (json['gateways'] as List<dynamic>?)?.map((e) => e as String).toList(),
     sshKey: json['sshKey'] == null
         ? null
         : SshKey.fromJson(json['sshKey'] as Map<String, dynamic>),
-    reachable: _$enumDecodeNullable(_$ServiceStatusEnumMap, json['reachable']),
-    sshReachable:
-        _$enumDecodeNullable(_$ServiceStatusEnumMap, json['sshReachable']),
-    sudoEnabled:
-        _$enumDecodeNullable(_$ServiceStatusEnumMap, json['sudoEnabled']),
+    reachable: _$enumDecode(_$ServiceStatusEnumMap, json['reachable']),
+    sshReachable: _$enumDecode(_$ServiceStatusEnumMap, json['sshReachable']),
+    sudoEnabled: _$enumDecode(_$ServiceStatusEnumMap, json['sudoEnabled']),
     osName: json['osName'] as String,
     osVersion: json['osVersion'] as String,
   );
@@ -82,36 +82,30 @@ Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
       'osVersion': instance.osVersion,
     };
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
   }
 
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
-}
-
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
 }
 
 const _$ServiceStatusEnumMap = {

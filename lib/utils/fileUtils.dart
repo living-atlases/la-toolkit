@@ -30,7 +30,7 @@ class FileUtils {
       file = data;
     }).onData((data) {
       var r = reader.result.toString().split(",").last;
-      file = Base64Decoder().convert(r);
+      var file = Base64Decoder().convert(r);
       return file;
     });
     while (file == null) {

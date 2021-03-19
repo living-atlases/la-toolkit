@@ -99,7 +99,7 @@ class MyApp extends StatelessWidget {
   static final GlobalKey<NavigatorState> _navigatorKey =
       new GlobalKey<NavigatorState>();
 
-  const MyApp({Key key, this.store}) : super(key: key);
+  const MyApp({Key? key, required this.store}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,7 @@ class MyApp extends StatelessWidget {
             child: MaterialApp(
               navigatorKey: _navigatorKey,
               builder: (context, widget) => ResponsiveWrapper.builder(
-                  BouncingScrollWrapper.builder(context, widget),
+                  BouncingScrollWrapper.builder(context, widget!),
                   maxWidth: 1200,
                   minWidth: 450,
                   defaultScale: true,
@@ -137,7 +137,7 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatefulWidget {
   static const routeName = "/";
 
-  HomePage({Key key, this.title}) : super(key: key);
+  HomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -361,10 +361,10 @@ class _HomePageViewModel {
   final void Function(Map<String, dynamic>) onAddTemplates;
 
   _HomePageViewModel(
-      {this.state,
-      this.onAddProject,
-      this.onImportProject,
-      this.onAddTemplates});
+      {required this.state,
+      required this.onAddProject,
+      required this.onImportProject,
+      required this.onAddTemplates});
 
   @override
   bool operator ==(Object other) =>
@@ -396,26 +396,28 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
         action is OpenProject ||
         action is ImportProject) {
       MyApp._navigatorKey.currentState
-          .pushReplacementNamed(LAProjectEditPage.routeName);
+          ?.pushReplacementNamed(LAProjectEditPage.routeName);
     }
     if (action is TuneProject) {
       MyApp._navigatorKey.currentState
-          .pushReplacementNamed(LAProjectTunePage.routeName);
+          ?.pushReplacementNamed(LAProjectTunePage.routeName);
     }
     if (action is PrepareDeployProject) {
       MyApp._navigatorKey.currentState
-          .pushReplacementNamed(DeployPage.routeName);
+          ?.pushReplacementNamed(DeployPage.routeName);
     }
     if (action is OpenProjectTools) {
       MyApp._navigatorKey.currentState
-          .pushReplacementNamed(LAProjectViewPage.routeName);
+          ?.pushReplacementNamed(LAProjectViewPage.routeName);
     }
     if (action is DelProject) {
-      MyApp._navigatorKey.currentState.pushReplacementNamed(HomePage.routeName);
+      MyApp._navigatorKey.currentState
+          ?.pushReplacementNamed(HomePage.routeName);
     }
     if (action is AddProject) {
       // We open Tools instead of:
-      MyApp._navigatorKey.currentState.pushReplacementNamed(HomePage.routeName);
+      MyApp._navigatorKey.currentState
+          ?.pushReplacementNamed(HomePage.routeName);
     }
     if (action is UpdateProject) {
       // We open Tools instead of:
@@ -423,7 +425,7 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is ShowDeployProjectResults) {
       MyApp._navigatorKey.currentState
-          .pushReplacementNamed(DeployResultsPage.routeName);
+          ?.pushReplacementNamed(DeployResultsPage.routeName);
     }
     next(action);
   }

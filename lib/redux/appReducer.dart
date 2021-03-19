@@ -170,17 +170,17 @@ AppState _addProject(AppState state, AddProject action) {
   state.projects.forEach((project) {
     if (project.uuid == action.project.uuid)
       throw ("Trying to add an existing project.");
-    return state;
+    return;
   });
   return state.copyWith(
-      currentProject: null,
+      currentProject: action.project,
       projects: new List<LAProject>.from(state.projects)
         ..insert(0, action.project));
 }
 
 AppState _delProject(AppState state, DelProject action) {
   return state.copyWith(
-      currentProject: null,
+      currentProject: LAProject(),
       projects: new List<LAProject>.from(state.projects)
         ..removeWhere((item) => item.uuid == action.project.uuid));
 }

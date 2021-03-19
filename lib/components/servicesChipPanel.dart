@@ -9,7 +9,7 @@ class ServicesChipPanel extends StatefulWidget {
   final Function(List<String>) onChange;
   final List<String> services;
 
-  ServicesChipPanel({Key key, @required this.onChange, @required this.services})
+  ServicesChipPanel({Key? key, required this.onChange, required this.services})
       : super(key: key);
 
   @override
@@ -31,7 +31,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
   );
   List<String> formValue = []; // LAServiceDesc.list[3].name];
   List<String> _selectAllOrElements(List<String> values) {
-    List<String> newVal = values != null && values.length > 0
+    List<String> newVal = values.length > 0
         ? values.last == 'all'
             ? ['all']
             : values.where((item) => item != 'all').toList()
@@ -48,13 +48,15 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
           FormField<List<String>>(
             autovalidateMode: AutovalidateMode.always,
             initialValue: formValue,
-            onSaved: (List<String> val) {
+            onSaved: (List<String>? val) {
               setState(() {
-                print('$val');
-                formValue = val;
+                if (val != null) {
+                  print('$val');
+                  formValue = val;
+                }
               });
             },
-            validator: (List<String> value) {
+            validator: (List<String>? value) {
               return null;
             },
             builder: (state) {
@@ -135,22 +137,22 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
 
 class CustomChip extends StatelessWidget {
   final String label;
-  final Color color;
+  final Color? color;
   final double width;
   final double height;
-  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry? margin;
   final bool selected;
   final Function(bool selected) onSelect;
 
   CustomChip({
-    Key key,
-    this.label,
+    Key? key,
+    required this.label,
     this.color,
-    this.width,
-    this.height,
+    required this.width,
+    required this.height,
     this.margin,
-    this.selected,
-    this.onSelect,
+    required this.selected,
+    required this.onSelect,
   }) : super(key: key);
 
   @override

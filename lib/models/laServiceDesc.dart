@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
@@ -53,10 +52,10 @@ class LAServiceDesc {
   IconData icon;
   bool optional;
   bool withoutUrl;
-  LAServiceName depends;
+  LAServiceName? depends;
   bool forceSubdomain;
-  String sample;
-  String hint;
+  String? sample;
+  String? hint;
   bool recommended;
   String path;
   bool initUse;
@@ -65,12 +64,12 @@ class LAServiceDesc {
   bool alaAdmin;
 
   LAServiceDesc(
-      {@required this.name,
-      @required this.nameInt,
-      @required this.desc,
-      @required this.optional,
+      {required this.name,
+      required this.nameInt,
+      required this.desc,
+      required this.optional,
       // The host group in ansible
-      @required this.group,
+      required this.group,
       this.withoutUrl = false,
       this.forceSubdomain = false,
       // Optional Some backend services don't have sample urls
@@ -78,13 +77,13 @@ class LAServiceDesc {
       // Optional: Not all services has a hint to show in the textfield
       this.hint,
       this.recommended = false,
-      @required this.path,
+      required this.path,
       this.depends,
-      @required this.icon,
+      required this.icon,
       subServices,
       this.admin: false,
       this.alaAdmin: false,
-      this.initUse})
+      this.initUse: false})
       : subServices = subServices ?? [];
 
   static final Map<String, LAServiceDesc> map = {
@@ -335,11 +334,11 @@ class LAServiceDesc {
   };
 
   static LAServiceDesc get(String nameInt) {
-    return map[nameInt];
+    return map[nameInt]!;
   }
 
   static LAServiceDesc getE(LAServiceName nameInt) {
-    return map[nameInt.toS()];
+    return map[nameInt.toS()]!;
   }
 
   static List<LAServiceDesc> list = map.values.toList();

@@ -41,13 +41,13 @@ class CreateProject extends AppActions {
 
 class ImportProject extends AppActions {
   String yoRcJson;
-  ImportProject({this.yoRcJson});
+  ImportProject({required this.yoRcJson});
 }
 
 class AddTemplateProjects extends AppActions {
   Map<String, dynamic> templates;
   Function(int) onAdded;
-  AddTemplateProjects({this.templates, this.onAdded});
+  AddTemplateProjects({required this.templates, required this.onAdded});
 }
 
 class AddProject extends AppActions {
@@ -92,7 +92,8 @@ class PrepareDeployProject extends AppActions {
   LAProject project;
   VoidCallback onReady;
   Function(String) onError;
-  PrepareDeployProject({this.project, this.onReady, this.onError});
+  PrepareDeployProject(
+      {required this.project, required this.onReady, required this.onError});
 }
 
 class DeployProject extends AppActions {
@@ -109,17 +110,17 @@ class DeployProject extends AppActions {
   ErrorCallback onError;
 
   DeployProject(
-      {this.project,
-      this.deployServices,
-      this.limitToServers,
-      this.tags,
-      this.skipTags,
-      this.onlyProperties,
-      this.continueEvenIfFails,
-      this.debug,
-      this.dryRun,
-      this.onStart,
-      this.onError});
+      {required this.project,
+      required this.deployServices,
+      required this.limitToServers,
+      required this.tags,
+      required this.skipTags,
+      required this.onlyProperties,
+      required this.continueEvenIfFails,
+      required this.debug,
+      required this.dryRun,
+      required this.onStart,
+      required this.onError});
 }
 
 class GetDeployProjectResults extends AppActions {
@@ -161,7 +162,7 @@ class EditService extends AppActions {
 class SaveCurrentProject extends AppActions {
   LAProject project;
 
-  SaveCurrentProject([this.project]);
+  SaveCurrentProject(this.project);
 }
 
 typedef void VoidCallback();

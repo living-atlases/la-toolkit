@@ -6,7 +6,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/actions.dart';
 
 class ALAInstallSelector extends StatefulWidget {
-  ALAInstallSelector({Key key}) : super(key: key);
+  ALAInstallSelector({Key? key}) : super(key: key);
 
   @override
   _ALAInstallSelectorState createState() => _ALAInstallSelectorState();
@@ -27,8 +27,9 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
           tooltip: "Choose the latest release to update your portal",
           initialValue: currentProject.alaInstallRelease,
           versions: vm.state.alaInstallReleases,
-          onChange: (value) {
-            currentProject.alaInstallRelease = value;
+          onChange: (String? value) {
+            currentProject.alaInstallRelease =
+                value ?? vm.state.alaInstallReleases[0];
             vm.onUpdateProject(currentProject);
           });
     });
@@ -39,5 +40,6 @@ class _ALAInstallSelectorViewModel {
   final AppState state;
   final void Function(LAProject project) onUpdateProject;
 
-  _ALAInstallSelectorViewModel({this.state, this.onUpdateProject});
+  _ALAInstallSelectorViewModel(
+      {required this.state, required this.onUpdateProject});
 }

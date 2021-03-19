@@ -29,73 +29,69 @@ class ProjectDrawer extends StatelessWidget {
           child: ListView(
               // Important: Remove any padding from the ListView.
               padding: EdgeInsets.zero,
-              children: ListUtils.listWithoutNulls(<Widget>[
-                GestureDetector(
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, '/');
-                  },
-                  child: DrawerHeader(
-                    child: Column(
-                      children: <Widget>[
-                        vm.state.currentProject
-                                        .getVariable("favicon_url")
-                                        .value !=
-                                    null &&
-                                !AppUtils.isDemo()
-                            ? ImageIcon(
-                                NetworkImage(AppUtils.proxyImg(vm
-                                    .state.currentProject
-                                    .getVariable("favicon_url")
-                                    .value)),
-                                color: LAColorTheme.laPalette,
-                                size: 80)
-                            : Image.asset(
-                                'assets/images/la-icon.png',
-                                fit: BoxFit.scaleDown,
-                                height: 80.0,
-                              ),
-                        const SizedBox(height: 10.0),
-                        // FIXME
-                        Text(vm.state.currentProject.shortName,
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              color: Colors.white,
-                            )),
-                      ],
-                    ),
-                    decoration: BoxDecoration(
-                      color: LAColorTheme.laPalette.shade300,
-                    ),
-                  ),
+              children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                Navigator.popAndPushNamed(context, '/');
+              },
+              child: DrawerHeader(
+                child: Column(
+                  children: <Widget>[
+                    vm.state.currentProject.getVariable("favicon_url").value !=
+                                null &&
+                            !AppUtils.isDemo()
+                        ? ImageIcon(
+                            NetworkImage(AppUtils.proxyImg(vm
+                                .state.currentProject
+                                .getVariable("favicon_url")
+                                .value)),
+                            color: LAColorTheme.laPalette,
+                            size: 80)
+                        : Image.asset(
+                            'assets/images/la-icon.png',
+                            fit: BoxFit.scaleDown,
+                            height: 80.0,
+                          ),
+                    const SizedBox(height: 10.0),
+                    // FIXME
+                    Text(vm.state.currentProject.shortName,
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          color: Colors.white,
+                        )),
+                  ],
                 ),
-                ListTile(
-                  leading: const Icon(LAIcon.la),
-                  title: Text('Home'),
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, HomePage.routeName);
-                  },
+                decoration: BoxDecoration(
+                  color: LAColorTheme.laPalette.shade300,
                 ),
-                ListTile(
-                  leading: const Icon(Mdi.key),
-                  title: Text('SSH Keys'),
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, SshKeyPage.routeName);
-                  },
-                ),
-                TermDialog.drawerItem(context),
-                Column(children: _createProjectLinks(vm.state.currentProject)),
-                AppUtils.isDev()
-                    ? ListTile(
-                        leading: const Icon(Icons.build),
-                        title: Text('Sandbox'),
-                        onTap: () {
-                          Navigator.popAndPushNamed(
-                              context, SandboxPage.routeName);
-                        },
-                      )
-                    : null,
-                Column(children: ListTileLink.drawerBottomLinks)
-                /*
+              ),
+            ),
+            ListTile(
+              leading: const Icon(LAIcon.la),
+              title: Text('Home'),
+              onTap: () {
+                Navigator.popAndPushNamed(context, HomePage.routeName);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Mdi.key),
+              title: Text('SSH Keys'),
+              onTap: () {
+                Navigator.popAndPushNamed(context, SshKeyPage.routeName);
+              },
+            ),
+            TermDialog.drawerItem(context),
+            Column(children: _createProjectLinks(vm.state.currentProject)),
+            if (AppUtils.isDev())
+              ListTile(
+                leading: const Icon(Icons.build),
+                title: Text('Sandbox'),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, SandboxPage.routeName);
+                },
+              ),
+            Column(children: ListTileLink.drawerBottomLinks)
+            /*
               Screenshots does not work yet:
               https://github.com/ueman/feedback/issues/13
               ListTile(
@@ -106,7 +102,7 @@ class ProjectDrawer extends StatelessWidget {
                   BetterFeedback.of(context).show();
                 },
               ),*/
-              ])));
+          ]));
     });
   }
 
@@ -165,5 +161,5 @@ class ProjectDrawer extends StatelessWidget {
 class _ProjectDrawerViewModel {
   final AppState state;
 
-  _ProjectDrawerViewModel({this.state});
+  _ProjectDrawerViewModel({required this.state});
 }

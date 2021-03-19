@@ -15,9 +15,10 @@ import 'helpIcon.dart';
 
 class LaServiceWidget extends StatelessWidget {
   final String serviceName;
+  final FocusNode? collectoryFocusNode;
 
-  final FocusNode collectoryFocusNode;
-  LaServiceWidget({Key key, this.serviceName, this.collectoryFocusNode})
+  LaServiceWidget(
+      {Key? key, required this.serviceName, required this.collectoryFocusNode})
       : super(key: key);
   final domainTextStyle =
       TextStyle(fontSize: 16, color: LAColorTheme.laThemeData.hintColor);
@@ -125,7 +126,7 @@ class LaServiceWidget extends StatelessWidget {
                               ]),
                           trailing: serviceDesc.sample != null
                               ? HelpIcon.url(
-                                  url: serviceDesc.sample,
+                                  url: serviceDesc.sample!,
                                   tooltip:
                                       "See a similar service in production")
                               : null,
@@ -209,7 +210,7 @@ class LaServiceWidget extends StatelessWidget {
     });
   }
 
-  Widget _wrapField({Widget child}) {
+  Widget _wrapField({required Widget child}) {
     return IntrinsicWidth(
         child: Column(
             // mainAxisAlignment: MainAxisAlignment.start,
@@ -279,5 +280,7 @@ class _LAServiceViewModel {
   int get hashCode => currentProject.hashCode;
 
   _LAServiceViewModel(
-      {this.currentProject, this.onEditService, this.onSaveProject});
+      {required this.currentProject,
+      required this.onEditService,
+      required this.onSaveProject});
 }

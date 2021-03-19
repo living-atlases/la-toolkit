@@ -1,7 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
 import 'basicService.dart';
 import 'laServiceDesc.dart';
 
@@ -10,8 +6,8 @@ class LAServiceDepsDesc {
   List<BasicService> basicDepends;
 
   LAServiceDepsDesc({
-    @required this.nameInt,
-    @required this.basicDepends,
+    required this.nameInt,
+    required this.basicDepends,
   });
 
   static final Map<String, LAServiceDepsDesc> v2_0_4 = {

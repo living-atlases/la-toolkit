@@ -68,7 +68,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       /* if (!AppUtils.isDev() ||
           store.state.alaInstallReleases == null ||
           store.state.alaInstallReleases.length == 0) { */
-      var alaInstallReleasesApiUrl =
+      String alaInstallReleasesApiUrl =
           'https://api.github.com/repos/AtlasOfLivingAustralia/ala-install/releases';
       var alaInstallReleasesResponse = await http.get(alaInstallReleasesApiUrl);
       if (alaInstallReleasesResponse.statusCode == 200) {

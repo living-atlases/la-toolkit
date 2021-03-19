@@ -221,10 +221,10 @@ class _ProjectsPageViewModel {
   final void Function() onCreateProject;
 
   _ProjectsPageViewModel(
-      {this.state,
-      this.onOpenProjectTools,
-      this.onCreateProject,
-      this.onDeleteProject});
+      {required this.state,
+      required this.onOpenProjectTools,
+      required this.onCreateProject,
+      required this.onDeleteProject});
 
   @override
   bool operator ==(Object other) =>

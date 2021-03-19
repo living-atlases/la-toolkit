@@ -6,7 +6,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/actions.dart';
 
 class GeneratorSelector extends StatefulWidget {
-  GeneratorSelector({Key key}) : super(key: key);
+  GeneratorSelector({Key? key}) : super(key: key);
 
   @override
   _GeneratorSelectorState createState() => _GeneratorSelectorState();
@@ -27,8 +27,9 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
           tooltip: "Choose the latest release to update your portal",
           versions: vm.state.generatorReleases,
           initialValue: currentProject.generatorRelease,
-          onChange: (value) {
-            currentProject.generatorRelease = value;
+          onChange: (String? value) {
+            currentProject.generatorRelease =
+                value ?? vm.state.generatorReleases[0];
             vm.onUpdateProject(currentProject);
           });
     });
@@ -39,5 +40,6 @@ class _GeneratorSelectorViewModel {
   final AppState state;
   final void Function(LAProject project) onUpdateProject;
 
-  _GeneratorSelectorViewModel({this.state, this.onUpdateProject});
+  _GeneratorSelectorViewModel(
+      {required this.state, required this.onUpdateProject});
 }

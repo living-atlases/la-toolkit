@@ -4,7 +4,8 @@ class ChoiceEmptyPanel extends StatelessWidget {
   final String title;
   final String body;
   final String footer;
-  ChoiceEmptyPanel({this.title, this.body, this.footer});
+  ChoiceEmptyPanel(
+      {required this.title, required this.body, required this.footer});
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -45,11 +45,11 @@ class DeployResultsPage extends StatelessWidget {
             var subResult = DeploySubResultWidget(key, result['stats'][key]);
             resultsDetails.add(subResult);
             resultTypes.forEach((type) => resultsTotals[type] =
-                resultsTotals[type] + result['stats'][key][type]);
+                resultsTotals[type]! + int.parse(result['stats'][key][type]));
           });
         });
 
-        int failures = resultsTotals['failures'];
+        int failures = resultsTotals['failures'] ?? 0;
         bool noFailures = failures == 0;
         context.hideLoaderOverlay();
         return Scaffold(
@@ -128,7 +128,7 @@ class _DeployResultsViewModel {
   final LAProject project;
   final Function(LAProject) onClose;
 
-  _DeployResultsViewModel({this.project, this.onClose});
+  _DeployResultsViewModel({required this.project, required this.onClose});
 
   @override
   bool operator ==(Object other) =>

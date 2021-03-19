@@ -292,7 +292,10 @@ class _SshKeyViewModel {
   final void Function(String, String, String) onImportKey;
 
   _SshKeyViewModel(
-      {this.state, this.onAddKey, this.onScanKeys, this.onImportKey});
+      {required this.state,
+      required this.onAddKey,
+      required this.onScanKeys,
+      required this.onImportKey});
 
   @override
   bool operator ==(Object other) =>

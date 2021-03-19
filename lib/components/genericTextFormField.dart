@@ -5,23 +5,23 @@ import 'package:la_toolkit/utils/debounce.dart';
 import 'helpIcon.dart';
 
 class GenericTextFormField extends StatefulWidget {
-  final String label;
-  final String hint;
-  final TextStyle hintStyle;
-  final String initialValue;
-  final String prefixText;
-  final String wikipage;
+  final String? label;
+  final String? hint;
+  final TextStyle? hintStyle;
+  final String? initialValue;
+  final String? prefixText;
+  final String? wikipage;
   final RegExp regexp;
   final String error;
   final bool isDense;
   final bool isCollapsed;
   final ValueChanged<String> onChanged;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final bool allowEmpty;
-  final int minLines;
-  final int maxLines;
-  final TextInputType keyboardType;
-  final Color fillColor;
+  final int? minLines;
+  final int? maxLines;
+  final TextInputType? keyboardType;
+  final Color? fillColor;
   final bool enabledBorder;
   final bool monoSpaceFont;
   final bool deployed;
@@ -30,12 +30,12 @@ class GenericTextFormField extends StatefulWidget {
     this.label,
     this.hint,
     this.hintStyle,
-    @required this.initialValue,
+    required this.initialValue,
     this.prefixText,
     this.wikipage,
-    this.regexp,
-    @required this.error,
-    @required this.onChanged,
+    required this.regexp,
+    required this.error,
+    required this.onChanged,
     this.isDense = false,
     this.isCollapsed = false,
     this.focusNode,
@@ -57,7 +57,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
     with AutomaticKeepAliveClientMixin {
   final debouncer = Debouncer(milliseconds: 1000);
   var formKey;
-  String delayedValue;
+  late String delayedValue;
 
   @override
   void initState() {
@@ -81,10 +81,10 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
             ? null
             : Padding(
                 padding: EdgeInsets.only(top: 5), // add padding to adjust icon
-                child: HelpIcon(wikipage: widget.wikipage)),
+                child: HelpIcon(wikipage: widget.wikipage!)),
         enabledBorder: widget.enabledBorder
             ? OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey[500]))
+                borderSide: BorderSide(color: Colors.grey[500]!))
             : null // , width: 1.0),
         );
     final onChange = (String value) => debouncer.run(() {

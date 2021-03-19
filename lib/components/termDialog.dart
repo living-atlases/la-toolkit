@@ -10,7 +10,7 @@ import 'package:web_browser/web_browser.dart';
 import '../laTheme.dart';
 
 class TermDialog {
-  static show(context, {title: 'Console', VoidCallback onClose}) async {
+  static show(context, {title: 'Console', VoidCallback? onClose}) async {
     await showFloatingModalBottomSheet(
         // This can be added to the custom modal
         // expand: false,
@@ -66,9 +66,9 @@ class TermDialog {
   }
 
   static Future<T> showFloatingModalBottomSheet<T>({
-    @required BuildContext context,
-    @required WidgetBuilder builder,
-    Color backgroundColor,
+    required BuildContext context,
+    required WidgetBuilder builder,
+    Color? backgroundColor,
   }) async {
     final result = await showCustomModalBottomSheet(
         context: context,
@@ -126,9 +126,9 @@ class TermDialog {
 
 class FloatingModal extends StatelessWidget {
   final Widget child;
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
-  const FloatingModal({Key key, @required this.child, this.backgroundColor})
+  const FloatingModal({Key? key, required this.child, this.backgroundColor})
       : super(key: key);
 
   @override

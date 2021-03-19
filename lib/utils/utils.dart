@@ -1,26 +1,25 @@
 import 'package:area/area.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
+/*
 class ListUtils {
-  static bool notNull(Object o) => o != null;
+  static bool notNull(Object? o) => o != null;
 
 // What is the best way to optionally include a widget in a list of children
 // https://github.com/flutter/flutter/issues/3783
-
-  static List<Widget> listWithoutNulls(List<Widget> children) =>
+  static List<Widget> listWithoutNulls(List<Widget?> children) =>
       children.where(notNull).toList();
 }
-
+*/
 class AppUtils {
   static bool isDev() {
     return !kReleaseMode;
   }
 
   static bool isDemo() {
-    return env['DEMO'].parseBool();
+    return (env['DEMO'] ?? "false").parseBool();
   }
 
   static String proxyImg(imgUrl) {
@@ -30,29 +29,32 @@ class AppUtils {
 
 class MapUtils {
   // https://pub.dev/packages/area
-  static List<double> center(List<double> p1, List<double> p2) {
-    return [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+  static List<double> center(List<double?> p1, List<double?> p2) {
+    return [(p1[0]! + p2[0]!) / 2, (p1[1]! + p2[1]!) / 2];
   }
 
-  static List<List<double>> toSquare(List<double> p1, List<double> p2) {
+  static List<List<double>> toSquare(
+      double p01, double p00, double p11, double p10) {
     List<List<double>> area = []..length = 4;
-    area[0] = p1;
-    area[2] = p2;
-    var x1 = area[0][1];
-    var y1 = area[0][0];
-    var x2 = area[2][1];
-    var y2 = area[2][0];
+    area[0] = [p00, p01];
+    area[2] = [p10, p11];
+    var x1 = p01;
+    var y1 = p00;
+    var x2 = p11;
+    var y2 = p10;
 
     area[1] = [y2 - (y2 - y1), x2];
     area[3] = [y2, x2 - (x2 - x1)];
     return area;
   }
 
-  static Map<String, dynamic> toInvVariables(List<double> p1, List<double> p2) {
-    if (p1 == null || p2 == null) return {};
+  static Map<String, dynamic> toInvVariables(
+      List<double?> p1, List<double?> p2) {
+    if (p1[0] == null || p1[1] == null || p2[0] == null || p2[1] == null)
+      return {};
     var center = MapUtils.center(p1, p2);
     var bbox = [p1[0], p1[1], p2[0], p2[1]];
-    var square = MapUtils.toSquare(p1, p2);
+    var square = MapUtils.toSquare(p1[1]!, p1[0]!, p2[1]!, p2[0]!);
 
     var polygon = {
       'type': 'Polygon',

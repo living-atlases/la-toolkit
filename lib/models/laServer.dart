@@ -15,13 +15,13 @@ class LAServer {
   String uuid;
   String name;
   String ip;
-  @JsonSerializable(nullable: false)
+  //@JsonSerializable(nullable: false)
   int sshPort;
-  String sshUser;
-  @JsonSerializable(nullable: false)
+  String? sshUser;
+  //@JsonSerializable(nullable: false)
   List<String> aliases;
-  SshKey sshKey;
-  @JsonSerializable(nullable: false)
+  SshKey? sshKey;
+  //@JsonSerializable(nullable: false)
   List<String> gateways;
   ServiceStatus reachable;
   ServiceStatus sshReachable;
@@ -30,13 +30,13 @@ class LAServer {
   String osVersion;
 
   LAServer(
-      {String uuid,
-      this.name,
-      String ip,
+      {String? uuid,
+      required this.name,
+      String? ip,
       this.sshPort: 22,
       this.sshUser,
-      List<String> aliases,
-      List<String> gateways,
+      List<String>? aliases,
+      List<String>? gateways,
       this.sshKey,
       this.reachable: ServiceStatus.unknown,
       this.sshReachable: ServiceStatus.unknown,

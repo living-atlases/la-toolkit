@@ -15,7 +15,10 @@ class MainDrawer extends StatefulWidget {
   final String currentRoute;
   final PackageInfo packageInfo;
 
-  MainDrawer({this.appName, this.currentRoute, this.packageInfo});
+  MainDrawer(
+      {required this.appName,
+      required this.currentRoute,
+      required this.packageInfo});
   /*  : super(
             key: key,
             child: mainDrawer(context, currentRoute, appName, packageInfo)); */
@@ -38,65 +41,65 @@ class _MainDrawerState extends State<MainDrawer> {
         child: ListView(
             // Important: Remove any padding from the ListView.
             padding: EdgeInsets.zero,
-            children: ListUtils.listWithoutNulls(<Widget>[
-              GestureDetector(
-                onTap: () {
-                  Navigator.popAndPushNamed(context, '/');
-                },
-                child: DrawerHeader(
-                  child: Column(
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/images/la-icon.png',
-                        fit: BoxFit.scaleDown,
-                        height: 80.0,
-                      ),
-                      const SizedBox(height: 20.0),
-                      Text(appName,
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            color: Colors.white,
-                          )),
-                    ],
+            children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              Navigator.popAndPushNamed(context, '/');
+            },
+            child: DrawerHeader(
+              child: Column(
+                children: <Widget>[
+                  Image.asset(
+                    'assets/images/la-icon.png',
+                    fit: BoxFit.scaleDown,
+                    height: 80.0,
                   ),
-                  decoration: BoxDecoration(
-                    color: LAColorTheme.laPalette.shade300,
-                  ),
-                ),
+                  const SizedBox(height: 20.0),
+                  Text(appName,
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        color: Colors.white,
+                      )),
+                ],
               ),
-              ListTile(
-                leading: const Icon(Mdi.key),
-                title: Text('SSH Keys'),
-                onTap: () {
-                  Navigator.popAndPushNamed(context, SshKeyPage.routeName);
-                },
+              decoration: BoxDecoration(
+                color: LAColorTheme.laPalette.shade300,
               ),
-              TermDialog.drawerItem(context),
-              if (AppUtils.isDev())
-                ListTile(
-                  leading: const Icon(Icons.build),
-                  title: Text('Sandbox'),
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, SandboxPage.routeName);
-                  },
-                ),
-              Column(children: ListTileLink.drawerBottomLinks),
-              AboutListTile(
-                  icon: Icon(LAIcon.la),
-                  applicationName: appName,
-                  applicationVersion:
-                      "Version: ${packageInfo.version} build: ${packageInfo.buildNumber}",
-                  applicationIcon: Icon(LAIcon.la),
-                  applicationLegalese:
-                      "© 2020-${DateTime.now().year.toString()} Living Atlases, under Apache 2.0",
-                  aboutBoxChildren: <Widget>[
-                    SizedBox(height: 10.0),
-                    /* Text(S.of(context).appMoto),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Mdi.key),
+            title: Text('SSH Keys'),
+            onTap: () {
+              Navigator.popAndPushNamed(context, SshKeyPage.routeName);
+            },
+          ),
+          TermDialog.drawerItem(context),
+          if (AppUtils.isDev())
+            ListTile(
+              leading: const Icon(Icons.build),
+              title: Text('Sandbox'),
+              onTap: () {
+                Navigator.popAndPushNamed(context, SandboxPage.routeName);
+              },
+            ),
+          Column(children: ListTileLink.drawerBottomLinks),
+          AboutListTile(
+              icon: Icon(LAIcon.la),
+              applicationName: appName,
+              applicationVersion:
+                  "Version: ${packageInfo.version} build: ${packageInfo.buildNumber}",
+              applicationIcon: Icon(LAIcon.la),
+              applicationLegalese:
+                  "© 2020-${DateTime.now().year.toString()} Living Atlases, under Apache 2.0",
+              aboutBoxChildren: <Widget>[
+                SizedBox(height: 10.0),
+                /* Text(S.of(context).appMoto),
                     // , style: TextStyle(fontStyle: FontStyle.italic)),
                     SizedBox(height: 10.0),
                     Text(S.of(context).NASAAck, style: bottomTextStyle), */
-                    // More ?
-                  ])
-            ])));
+                // More ?
+              ])
+        ]));
   }
 }

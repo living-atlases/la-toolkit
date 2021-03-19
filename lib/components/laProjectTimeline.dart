@@ -20,7 +20,7 @@ class LAProjectTimeline extends StatelessWidget {
 
   final String uuid;
 
-  LAProjectTimeline({this.uuid});
+  LAProjectTimeline({required this.uuid});
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +197,7 @@ class LAProjectTimeline extends StatelessWidget {
 class _LAProjectTimelineViewModel {
   final LAProjectStatus status;
 
-  _LAProjectTimelineViewModel({this.status});
+  _LAProjectTimelineViewModel({required this.status});
 
   @override
   bool operator ==(Object other) =>
@@ -214,7 +214,7 @@ class _LAProjectTimelineViewModel {
 /// TODO: Bezier curve into package component
 class _BezierPainter extends CustomPainter {
   const _BezierPainter({
-    @required this.color,
+    required this.color,
     this.drawStart = true,
     this.drawEnd = true,
   });

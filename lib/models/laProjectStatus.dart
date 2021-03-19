@@ -26,8 +26,6 @@ extension LAProjectStatusExtension on LAProjectStatus {
         return '1st Deploy';
       case LAProjectStatus.inProduction:
         return 'In Production';
-      default:
-        return null;
     }
   }
 }
@@ -47,8 +45,6 @@ extension LAProjectStatusIconExtension on LAProjectStatus {
         return Mdi.rocketLaunch;
       case LAProjectStatus.inProduction:
         return Icons.cached;
-      default:
-        return null;
     }
   }
 }
@@ -68,8 +64,6 @@ extension LAProjectStatusValExtension on LAProjectStatus {
         return 4;
       case LAProjectStatus.inProduction:
         return 5;
-      default:
-        return null;
     }
   }
 }
@@ -89,8 +83,6 @@ extension LAProjectStatusPercentExtension on LAProjectStatus {
         return 100;
       case LAProjectStatus.inProduction:
         return 100;
-      default:
-        return null;
     }
   }
 }

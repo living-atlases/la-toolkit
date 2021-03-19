@@ -6,8 +6,9 @@ import 'package:latlong/latlong.dart';
 import 'package:mdi/mdi.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:web_browser/web_browser.dart';
-import 'package:xterm/theme/terminal_themes.dart';
-import 'package:xterm/xterm.dart';
+
+/*import 'package:xterm/theme/terminal_themes.dart';
+import 'package:xterm/xterm.dart';*/
 
 import 'components/defDivider.dart';
 import 'models/appState.dart';
@@ -23,28 +24,28 @@ class _SandboxPageState extends State<SandboxPage> {
   List<LatLng> area = []..length = 5;
   bool firstPoint = true;
 
-  Terminal terminal;
+  // late Terminal terminal;
 
   @override
   void initState() {
     super.initState();
-    terminal = Terminal(onInput: onInput, theme: TerminalThemes.defaultTheme);
+    /*terminal = Terminal(onInput: onInput, theme: TerminalThemes.defaultTheme);
     terminal.write('🧭 🏳️\u200d🌈🐣🐣￼  xterm.dart demo\r\n');
     for (var i = 0; i < 100; i++) {
       terminal.write('\x1B[${i}mHello World \x1B[0m\r\n');
     }
     terminal.write('\r\n');
-    terminal.write('\$ ');
+    terminal.write('\$ ');*/
   }
 
-  void onInput(String input) {
+/*  void onInput(String input) {
     if (input == '\r') {
       terminal.write('\r\n');
       terminal.write('\$ ');
     } else {
       terminal.write(input);
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -176,9 +177,9 @@ class _SandboxPageState extends State<SandboxPage> {
   }
 
   Future<T> showFloatingModalBottomSheet<T>({
-    @required BuildContext context,
-    @required WidgetBuilder builder,
-    Color backgroundColor,
+    required BuildContext context,
+    required WidgetBuilder builder,
+    Color? backgroundColor,
   }) async {
     final result = await showCustomModalBottomSheet(
         context: context,
@@ -213,9 +214,9 @@ class _SandboxPageState extends State<SandboxPage> {
 
 class FloatingModal extends StatelessWidget {
   final Widget child;
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
-  const FloatingModal({Key key, @required this.child, this.backgroundColor})
+  const FloatingModal({Key? key, required this.child, this.backgroundColor})
       : super(key: key);
 
   @override
@@ -237,7 +238,7 @@ class FloatingModal extends StatelessWidget {
 class _SandboxViewModel {
   final AppState state;
 
-  _SandboxViewModel({this.state});
+  _SandboxViewModel({required this.state});
 }
 /*
 class ModalWithPageView extends StatelessWidget {

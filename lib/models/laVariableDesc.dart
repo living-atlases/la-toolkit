@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/foundation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/regexp.dart';

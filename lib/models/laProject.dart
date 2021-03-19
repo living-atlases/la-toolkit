@@ -21,23 +21,23 @@ part 'laProject.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAProject {
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   String uuid;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   String longName;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   String shortName;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   String domain;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   bool useSSL;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   List<LAServer> servers;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   Map<String, LAServer> serversMap;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   Map<String, LAService> services;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   Map<String, LAVariable> variables;
   String additionalVariables;
   Map<String, List<String>> serverServices;
@@ -45,39 +45,39 @@ class LAProject {
   bool isCreated;
   bool advancedEdit;
   bool advancedTune;
-  @JsonSerializable(nullable: false)
+  // @JsonSerializable(nullable: false)
   LAProjectStatus status;
   String theme;
-  String alaInstallRelease;
-  String generatorRelease;
-  List<double> mapBounds1stPoint = []..length = 2;
-  List<double> mapBounds2ndPoint = []..length = 2;
-  double mapZoom;
+  String? alaInstallRelease;
+  String? generatorRelease;
+  List<double>? mapBounds1stPoint = []..length = 2;
+  List<double>? mapBounds2ndPoint = []..length = 2;
+  double? mapZoom;
   List<dynamic> lastDeploymentResults;
 
   LAProject(
-      {String uuid,
+      {String? uuid,
       this.longName = "",
       this.shortName = "",
       this.domain = "",
       this.useSSL = true,
       this.isCreated = false,
-      List<LAServer> servers,
-      Map<String, LAService> services,
-      Map<String, LAServer> serversMap,
-      Map<String, LAVariable> variables,
+      List<LAServer>? servers,
+      Map<String, LAService>? services,
+      Map<String, LAServer>? serversMap,
+      Map<String, LAVariable>? variables,
       this.additionalVariables = "",
-      Map<String, List<String>> serverServices,
-      this.status,
+      Map<String, List<String>>? serverServices,
+      this.status = LAProjectStatus.basicDefined,
       this.alaInstallRelease,
       this.generatorRelease,
       this.mapBounds1stPoint,
       this.mapBounds2ndPoint,
       this.theme = "clean",
       this.mapZoom,
-      List<dynamic> lastDeploymentResults,
-      bool advancedEdit,
-      bool advancedTune})
+      List<dynamic>? lastDeploymentResults,
+      bool advancedEdit = false,
+      bool advancedTune = false})
       : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],
         serversMap = serversMap ?? {},
@@ -301,9 +301,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   void upsertByName(LAServer laServer) {
     servers = LAServer.upsertByName(servers, laServer);
     LAServer upsertServer =
-        servers.firstWhereOrNull((s) => s.name == laServer.name);
+        servers.firstWhereOrNull((s) => s.name == laServer.name)!;
 
-    assert(upsertServer.uuid != null);
     serversMap[upsertServer.uuid] = upsertServer;
     _cleanServerServices(upsertServer);
   }
@@ -484,7 +483,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     return conf;
   }
 
-  factory LAProject.import({String yoRcJson}) {
+  factory LAProject.import({required String yoRcJson}) {
     Map<String, dynamic> yoRc =
         json.decode(yoRcJson)["generator-living-atlas"]["promptValues"];
     return LAProject.fromObject(yoRc);

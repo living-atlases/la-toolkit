@@ -301,7 +301,10 @@ class _ProjectTuneViewModel {
   final void Function(LAProject) onCancel;
 
   _ProjectTuneViewModel(
-      {this.project, this.onUpdateProject, this.onSaveProject, this.onCancel});
+      {required this.project,
+      required this.onUpdateProject,
+      required this.onSaveProject,
+        required this.onCancel});
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

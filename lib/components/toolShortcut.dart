@@ -6,13 +6,13 @@ import 'tool.dart';
 class ToolShortcut extends StatelessWidget {
   final Tool tool;
 
-  ToolShortcut({this.tool});
+  ToolShortcut({required this.tool});
 
   @override
   Widget build(BuildContext context) {
     // https://api.flutter.dev/flutter/material/Colors/grey-constant.html
-    Color color = tool.enabled ? LAColorTheme.laPalette : Colors.grey[500];
-    Color backgroundColor = tool.enabled ? Colors.white : Colors.grey[200];
+    Color color = tool.enabled ? LAColorTheme.laPalette : Colors.grey[500]!;
+    Color backgroundColor = tool.enabled ? Colors.white : Colors.grey[200]!;
     double elevation = tool.enabled ? 4 : 0;
     Widget btn = ElevatedButton(
       style: TextButton.styleFrom(
@@ -67,7 +67,7 @@ class ToolShortcut extends StatelessWidget {
       return Tooltip(
         waitDuration: Duration(seconds: 1, milliseconds: 0),
         padding: EdgeInsets.all(10),
-        message: tool.tooltip,
+        message: tool.tooltip!,
         child: btn,
       );
     }

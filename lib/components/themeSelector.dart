@@ -8,7 +8,7 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:smart_select/smart_select.dart';
 
 class ThemeSelector extends StatefulWidget {
-  ThemeSelector({Key key}) : super(key: key);
+  ThemeSelector({Key? key}) : super(key: key);
 
   @override
   _ThemeSelectorState createState() => _ThemeSelectorState();
@@ -106,7 +106,7 @@ class _ThemeSelectorViewModel {
   final LAProject project;
   final void Function(LAProject project) onSaveProject;
 
-  _ThemeSelectorViewModel({this.project, this.onSaveProject});
+  _ThemeSelectorViewModel({required this.project, required this.onSaveProject});
 
   @override
   bool operator ==(Object other) =>

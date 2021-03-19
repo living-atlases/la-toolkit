@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 
 class SoftwareSelector extends StatelessWidget {
   final List<String> versions;
-  final String initialValue;
-  final Function(String) onChange;
+  final String? initialValue;
+  final Function(String?) onChange;
   final String label;
   final String tooltip;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   SoftwareSelector(
-      {Key key,
-      this.label,
-      this.tooltip,
-      this.versions,
+      {Key? key,
+      required this.label,
+      required this.tooltip,
+      required this.versions,
       this.initialValue,
-      this.onChange})
+      required this.onChange})
       : super(key: key);
 
   @override
@@ -43,13 +43,13 @@ class SoftwareSelector extends StatelessWidget {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
-                value: initialValue != null && initialValue.isNotEmpty
+                value: initialValue != null && initialValue!.isNotEmpty
                     ? initialValue
                     : items.length > 0
                         ? items[0].value
                         : "",
                 items: items,
-                onChanged: (value) {
+                onChanged: (String? value) {
                   onChange(value);
                 })));
   }

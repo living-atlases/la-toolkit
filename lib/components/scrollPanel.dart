@@ -6,7 +6,7 @@ class ScrollPanel extends StatelessWidget {
 
   final bool withPadding;
 
-  ScrollPanel({this.child, this.withPadding = false});
+  ScrollPanel({required this.child, this.withPadding = false});
   @override
   Widget build(BuildContext context) {
     return Container(

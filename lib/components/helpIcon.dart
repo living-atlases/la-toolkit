@@ -3,19 +3,19 @@ import 'package:url_launcher/url_launcher.dart';
 
 class HelpIcon extends StatelessWidget {
   final String url;
-  final String tooltip;
+  final String? tooltip;
 
-  HelpIcon({String wikipage, String tooltip})
+  HelpIcon({required String wikipage, String? tooltip})
       : url =
             "https://github.com/AtlasOfLivingAustralia/documentation/wiki/${wikipage.replaceAll(' ', '-')}",
-        this.tooltip = wikipage != null ? "Read more in our Wiki" : null;
+        this.tooltip = tooltip == null ? "Read more in our Wiki" : null;
 
-  HelpIcon.url({this.url, this.tooltip});
+  HelpIcon.url({required this.url, this.tooltip});
 
   @override
   Widget build(BuildContext context) {
     Widget icon = _createIcon(url);
-    return tooltip != null ? Tooltip(message: tooltip, child: icon) : icon;
+    return tooltip != null ? Tooltip(message: tooltip!, child: icon) : icon;
   }
 
   Widget _createIcon(url) {

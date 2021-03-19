@@ -8,15 +8,15 @@ part of 'sshKey.dart';
 
 extension SshKeyCopyWith on SshKey {
   SshKey copyWith({
-    String desc,
-    bool encrypted,
-    String fingerprint,
-    bool missing,
-    String name,
-    String privateKey,
-    String publicKey,
-    int size,
-    String type,
+    String? desc,
+    bool? encrypted,
+    String? fingerprint,
+    bool? missing,
+    String? name,
+    String? privateKey,
+    String? publicKey,
+    int? size,
+    String? type,
   }) {
     return SshKey(
       desc: desc ?? this.desc,
@@ -40,10 +40,10 @@ SshKey _$SshKeyFromJson(Map<String, dynamic> json) {
   return SshKey(
     name: json['name'] as String,
     publicKey: json['publicKey'] as String,
-    type: json['type'] as String,
-    size: json['size'] as int,
+    type: json['type'] as String?,
+    size: json['size'] as int?,
     desc: json['desc'] as String,
-    fingerprint: json['fingerprint'] as String,
+    fingerprint: json['fingerprint'] as String?,
     encrypted: json['encrypted'] as bool,
     missing: json['missing'] as bool,
   );

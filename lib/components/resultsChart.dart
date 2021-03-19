@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/utils/constants.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';

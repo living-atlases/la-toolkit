@@ -6,7 +6,7 @@ class TextWithHelp extends StatelessWidget {
   final String text;
   final String helpPage;
 
-  TextWithHelp({this.text, this.helpPage});
+  TextWithHelp({required this.text, required this.helpPage});
   @override
   Widget build(BuildContext context) {
     return ListTile(
