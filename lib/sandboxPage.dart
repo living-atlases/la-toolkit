@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/laTheme.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:mdi/mdi.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:web_browser/web_browser.dart';

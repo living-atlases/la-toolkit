@@ -4,22 +4,17 @@ import 'package:test/test.dart';
 
 void main() {
   test('Capitalize strings', () {
-    var string = 'abc';
+    String string = 'abc';
     expect(StringUtils.capitalize(string), equals('Abc'));
   });
 
   test('Capitalize strings', () {
-    var string = 'a';
+    String string = 'a';
     expect(StringUtils.capitalize(string), equals('A'));
   });
 
-  test('Capitalize null strings', () {
-    var string;
-    expect(StringUtils.capitalize(string), equals(null));
-  });
-
   test('Capitalize empty strings', () {
-    var string = "";
+    String string = "";
     expect(StringUtils.capitalize(string), equals(""));
   });
 
@@ -45,8 +40,8 @@ void main() {
     // List<double> mapBounds1stPoint = [44.4806, -19.4184];
     // List<double> mapBounds2ndPoint = [26.6767, 5.7989];
 
-    List<double> mapBounds1stPoint = [40, 20];
-    List<double> mapBounds2ndPoint = [20, 10];
+    List<double> mapBounds1stPoint = [40.0, 20.0];
+    List<double> mapBounds2ndPoint = [20.0, 10.0];
 
     var invVariables = MapUtils.toInvVariables(mapBounds1stPoint[0],
         mapBounds1stPoint[1], mapBounds2ndPoint[0], mapBounds2ndPoint[1]);

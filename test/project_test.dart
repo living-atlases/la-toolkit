@@ -48,7 +48,9 @@ void main() {
     LAProject testProject = LAProject(
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
-        domain: "l-a.site");
+        domain: "l-a.site",
+        alaInstallRelease: "",
+        generatorRelease: "");
     expect(testProject.validateCreation(), equals(false));
     expect(testProject.isCreated, equals(false));
     expect(testProject.status, equals(LAProjectStatus.basicDefined));
@@ -58,7 +60,9 @@ void main() {
     LAProject testProject = LAProject(
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
-        domain: "l-a.site");
+        domain: "l-a.site",
+        alaInstallRelease: "",
+        generatorRelease: "");
     testProject.upsertByName(LAServer(name: "vm1"));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(1));
@@ -70,7 +74,9 @@ void main() {
     LAProject testProject = LAProject(
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
-        domain: "l-a.site");
+        domain: "l-a.site",
+        alaInstallRelease: "",
+        generatorRelease: "");
     testProject.upsertByName(LAServer(name: "vm1"));
     testProject.upsertByName(LAServer(name: "vm2", ip: "10.0.0.1"));
     testProject.upsertByName(LAServer(name: "vm2", ip: "10.0.0.2"));
@@ -106,12 +112,16 @@ void main() {
         uuid: "0",
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
-        domain: "l-a.site");
+        domain: "l-a.site",
+        alaInstallRelease: "",
+        generatorRelease: "");
     LAProject testProjectOther = LAProject(
         uuid: "0",
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
-        domain: "l-a.site");
+        domain: "l-a.site",
+        alaInstallRelease: "",
+        generatorRelease: "");
 
     expect(
         MapEquality().equals(testProject.services, testProjectOther.services),
@@ -120,7 +130,9 @@ void main() {
         MapEquality().equals(testProject.getServerServicesForTest(),
             testProjectOther.getServerServicesForTest()),
         equals(true));
-    expect(testProject.mapBounds2ndPoint == testProjectOther.mapBounds1stPoint,
+    expect(
+        ListEquality().equals(
+            testProject.mapBounds1stPoint, testProject.mapBounds2ndPoint),
         equals(true));
     expect(ListEquality().equals(testProject.servers, testProjectOther.servers),
         equals(true));
@@ -161,7 +173,9 @@ void main() {
         MapEquality().equals(testProject.getServerServicesForTest(),
             testProjectCopy.getServerServicesForTest()),
         equals(false));
-    expect(testProject.mapBounds2ndPoint == testProjectCopy.mapBounds1stPoint,
+    expect(
+        ListEquality().equals(
+            testProject.mapBounds2ndPoint, testProjectCopy.mapBounds1stPoint),
         equals(true));
     expect(ListEquality().equals(testProject.servers, testProjectCopy.servers),
         equals(false));
@@ -248,7 +262,8 @@ void main() {
   });
 
   test('Test lat/lng center', () {
-    var p = LAProject(mapBounds1stPoint: [10, 10], mapBounds2ndPoint: [20, 20]);
+    LAProject p = LAProject(
+        mapBounds1stPoint: [10.0, 10.0], mapBounds2ndPoint: [20.0, 20.0]);
     expect(p.getCenter(), equals(LatLng(15, 15)));
     p.mapBounds1stPoint = [20, 20];
     p.mapBounds2ndPoint = [40, 40];

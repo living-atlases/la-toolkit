@@ -35,16 +35,16 @@ class MapUtils {
 
   static List<List<double>> toSquare(
       double p01, double p00, double p11, double p10) {
-    List<List<double>> area = []..length = 4;
-    area[0] = [p00, p01];
-    area[2] = [p10, p11];
     double x1 = p01;
     double y1 = p00;
     double x2 = p11;
     double y2 = p10;
-
-    area[1] = [y2 - (y2 - y1), x2];
-    area[3] = [y2, x2 - (x2 - x1)];
+    List<List<double>> area = [
+      [p00, p01],
+      [y2 - (y2 - y1), x2],
+      [p10, p11],
+      [y2, x2 - (x2 - x1)]
+    ];
     return area;
   }
 

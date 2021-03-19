@@ -68,7 +68,7 @@ class LAProject {
       Map<String, LAVariable>? variables,
       this.additionalVariables = "",
       Map<String, List<String>>? serverServices,
-      this.status = LAProjectStatus.basicDefined,
+      this.status = LAProjectStatus.created,
       this.alaInstallRelease,
       this.generatorRelease,
       mapBounds1stPoint,
