@@ -139,10 +139,12 @@ packages:
   chips_choice:
     dependency: "direct main"
     description:
-      name: chips_choice
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
+      path: "."
+      ref: "985243b"
+      resolved-ref: "985243b7bdca0b239b9b826404a957293eb52b06"
+      url: "https://github.com/fareesh/flutter_chips_choice.git"
+    source: git
+    version: "2.0.0"
   cli_util:
     dependency: transitive
     description:
@@ -786,10 +788,12 @@ packages:
   responsive_grid:
     dependency: "direct main"
     description:
-      name: responsive_grid
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.1+1"
+      path: "."
+      ref: "22ee88e"
+      resolved-ref: "22ee88eedca76cd70c0b9bacf7f506fd69ee20a6"
+      url: "git://github.com/mohamed-selim-a/ResponsiveGrid_Flutter.git"
+    source: git
+    version: "2.0.0"
   rflutter_alert:
     dependency: "direct main"
     description:
@@ -987,9 +991,11 @@ packages:
   timelines:
     dependency: "direct main"
     description:
-      name: timelines
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: null-safety
+      resolved-ref: "93ca55c553d3fe89bfae5c52eab5456c1a11faaa"
+      url: "https://github.com/areille/timelines.git"
+    source: git
     version: "0.0.2+1"
   timing:
     dependency: transitive

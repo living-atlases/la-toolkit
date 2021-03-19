@@ -103,7 +103,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                               // color: Colors.redAccent,
                               margin: const EdgeInsets.fromLTRB(0, 15, 30, 5),
                               selected: item.selected,
-                              onSelect: item.select);
+                              onSelect: item.select!);
                         else
                           return null;
                       },

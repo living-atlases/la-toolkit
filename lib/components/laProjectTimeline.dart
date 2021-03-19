@@ -174,7 +174,7 @@ class LAProjectTimeline extends StatelessWidget {
                         );
                       }
                     } else {
-                      return null;
+                      return Container(); // previously null
                     }
                   },
                   itemCount: size,

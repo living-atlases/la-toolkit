@@ -41,12 +41,23 @@ dependencies:
        ref: master
   url_launcher: ^6.0.2
   flutter_markdown: ^0.6.0
-  timelines: ^0.0.2+1
-  responsive_grid: ^1.2.1+1
+  # https://github.com/chulwoo-park/timelines/pull/33
+  timelines: # ^0.0.2+1
+    git:
+      url: https://github.com/areille/timelines.git
+      ref: null-safety
+  responsive_grid: # ^1.2.1+1
+    git:
+      url: git://github.com/mohamed-selim-a/ResponsiveGrid_Flutter.git
+      ref: 22ee88e
   # feedback: ^1.0.1
   flutter_advanced_switch: ^2.0.0
   # Used for service selection (for instance in service deploy)
-  chips_choice: ^2.0.1
+  # https://github.com/davigmacode/flutter_chips_choice/pull/21
+  chips_choice: # ^2.0.1
+    git:
+      url: https://github.com/fareesh/flutter_chips_choice.git
+      ref: 985243b
   # Used by server service selection
   smart_select: ^4.3.2
   percent_indicator: ^2.1.9+1
