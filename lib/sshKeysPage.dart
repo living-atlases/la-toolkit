@@ -150,7 +150,7 @@ class SshKeyPage extends StatelessWidget {
   }
 
   void _generateKeyDialog(BuildContext context, _SshKeyViewModel vm) {
-    var name;
+    String? name;
     Alert(
         context: context,
         closeIcon: Icon(Icons.close),
@@ -186,8 +186,8 @@ class SshKeyPage extends StatelessWidget {
           DialogButton(
             width: 500,
             onPressed: () {
-              if (LARegExp.hostnameRegexp.hasMatch(name)) {
-                vm.onAddKey(name);
+              if (name != null && LARegExp.hostnameRegexp.hasMatch(name!)) {
+                vm.onAddKey(name!);
                 Navigator.pop(context);
               }
             },
@@ -200,9 +200,9 @@ class SshKeyPage extends StatelessWidget {
   }
 
   void _importKeysDialog(BuildContext context, _SshKeyViewModel vm) {
-    var name;
-    var publicKey;
-    var privateKey;
+    String? name;
+    String? publicKey;
+    String? privateKey;
     Alert(
         context: context,
         closeIcon: Icon(Icons.close),
@@ -269,11 +269,13 @@ class SshKeyPage extends StatelessWidget {
           DialogButton(
             width: 500,
             onPressed: () {
-              if (LARegExp.hostnameRegexp.hasMatch(name) &&
-                  LARegExp.sshPubKey.hasMatch(publicKey) &&
-                  LARegExp.anyThing.hasMatch(privateKey)) {
-                vm.onImportKey(name, publicKey, privateKey);
-                Navigator.pop(context);
+              if (name != null && publicKey != null && privateKey != null) {
+                if (LARegExp.hostnameRegexp.hasMatch(name!) &&
+                    LARegExp.sshPubKey.hasMatch(publicKey!) &&
+                    LARegExp.anyThing.hasMatch(privateKey!)) {
+                  vm.onImportKey(name!, publicKey!, privateKey!);
+                  Navigator.pop(context);
+                }
               }
             },
             child: Text(

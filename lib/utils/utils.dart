@@ -29,8 +29,8 @@ class AppUtils {
 
 class MapUtils {
   // https://pub.dev/packages/area
-  static List<double> center(List<double?> p1, List<double?> p2) {
-    return [(p1[0]! + p2[0]!) / 2, (p1[1]! + p2[1]!) / 2];
+  static List<double> center(double p01, double p00, double p11, double p10) {
+    return [(p00 + p10) / 2, (p01 + p11) / 2];
   }
 
   static List<List<double>> toSquare(
@@ -38,10 +38,10 @@ class MapUtils {
     List<List<double>> area = []..length = 4;
     area[0] = [p00, p01];
     area[2] = [p10, p11];
-    var x1 = p01;
-    var y1 = p00;
-    var x2 = p11;
-    var y2 = p10;
+    double x1 = p01;
+    double y1 = p00;
+    double x2 = p11;
+    double y2 = p10;
 
     area[1] = [y2 - (y2 - y1), x2];
     area[3] = [y2, x2 - (x2 - x1)];
@@ -49,14 +49,13 @@ class MapUtils {
   }
 
   static Map<String, dynamic> toInvVariables(
-      List<double?> p1, List<double?> p2) {
-    if (p1[0] == null || p1[1] == null || p2[0] == null || p2[1] == null)
-      return {};
-    var center = MapUtils.center(p1, p2);
-    var bbox = [p1[0], p1[1], p2[0], p2[1]];
-    var square = MapUtils.toSquare(p1[1]!, p1[0]!, p2[1]!, p2[0]!);
+      double? p10, double? p11, double? p20, double? p21) {
+    if (p10 == null || p11 == null || p20 == null || p21 == null) return {};
+    List<double> center = MapUtils.center(p11, p10, p21, p20);
+    List<double> bbox = [p10, p11, p20, p21];
+    List<List<double>> square = MapUtils.toSquare(p11, p10, p21, p20);
 
-    var polygon = {
+    Map<String, Object> polygon = {
       'type': 'Polygon',
       'coordinates': [
         [square[0], square[1], square[2], square[3], square[0]]

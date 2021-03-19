@@ -34,7 +34,7 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 
 Future<void> main() async {
-  var appStateMiddleware = AppStateMiddleware();
+  AppStateMiddleware appStateMiddleware = AppStateMiddleware();
 
   await DotEnv.load(
       fileName: "${kReleaseMode ? 'env.production.txt' : '.env.development'}");
@@ -47,10 +47,10 @@ Future<void> main() async {
     print("Backend: ${env['BACKEND']}");
   }
 
-  var initialState = await appStateMiddleware.getState();
+  AppState initialState = await appStateMiddleware.getState();
   // print("Loaded prefs: $state");
 
-  var store = Store<AppState>(
+  Store<AppState> store = Store<AppState>(
     appReducer,
     initialState: initialState,
     middleware: [

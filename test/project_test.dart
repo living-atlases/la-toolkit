@@ -232,10 +232,10 @@ void main() {
     expect(testProject.numServers(), equals(4));
     // no ssh keys
     expect(testProject.validateCreation(), equals(false));
-    vm1.sshKey = SshKey();
-    vm2.sshKey = SshKey();
-    vm3.sshKey = SshKey();
-    vm4.sshKey = SshKey();
+    vm1.sshKey = SshKey(name: "k1", desc: "", encrypted: false);
+    vm2.sshKey = SshKey(name: "k2", desc: "", encrypted: false);
+    vm3.sshKey = SshKey(name: "k3", desc: "", encrypted: false);
+    vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
     expect(testProject.validateCreation(), equals(true));
     expect(
         testProject.servers.where((element) => element.name == "vm2").first.ip,

@@ -240,11 +240,11 @@ class HeadingItem implements ListItem {
     return Text(heading,
         style: !subheading
             ? Theme.of(context).textTheme.headline5
-            : Theme.of(context).textTheme.headline6.copyWith(
+            : Theme.of(context).textTheme.headline6!.copyWith(
                 fontSize: 18, color: LAColorTheme.laThemeData.hintColor));
   }
 
-  Widget buildSubtitle(BuildContext context) => null;
+  Widget buildSubtitle(BuildContext context) => Text("");
 }
 
 // A ListItem that contains data to display a message.
@@ -291,7 +291,7 @@ class MessageItem implements ListItem {
             variable.help != null ? HelpIcon(wikipage: variable.help) : null);
   }
 
-  Widget buildSubtitle(BuildContext context) => null; // Text("");
+  Widget buildSubtitle(BuildContext context) => Text("");
 }
 
 class _ProjectTuneViewModel {
@@ -304,7 +304,7 @@ class _ProjectTuneViewModel {
       {required this.project,
       required this.onUpdateProject,
       required this.onSaveProject,
-        required this.onCancel});
+      required this.onCancel});
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

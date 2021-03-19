@@ -111,10 +111,12 @@ class LAProjectEditPage extends StatelessWidget {
             _project.init();
           }
           // Set default version of the project
-          if (_project.alaInstallRelease.isEmpty ||
+          if (_project.alaInstallRelease != null &&
+                  _project.alaInstallRelease!.isEmpty ||
               vm.state.alaInstallReleases.length > 0)
             _project.alaInstallRelease = vm.state.alaInstallReleases[0];
-          if (_project.generatorRelease.isEmpty ||
+          if (_project.generatorRelease != null &&
+                  _project.generatorRelease!.isEmpty ||
               vm.state.generatorReleases.length > 0)
             _project.generatorRelease = vm.state.generatorReleases[0];
           int _step = vm.state.currentStep;

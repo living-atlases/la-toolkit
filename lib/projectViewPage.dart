@@ -48,7 +48,9 @@ class LAProjectViewPage extends StatelessWidget {
               onDeployProject: (project) {
                 context.showLoaderOverlay();
                 store.dispatch(PrepareDeployProject(
-                    project: project,
+                    uuid: project.uuid,
+                    alaInstallRelease: project.alaInstallRelease!,
+                    generatorRelease: project.generatorRelease!,
                     onReady: () => context.hideLoaderOverlay(),
                     onError: (e) {
                       context.hideLoaderOverlay();

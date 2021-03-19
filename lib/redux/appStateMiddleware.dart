@@ -15,7 +15,7 @@ import 'appActions.dart';
 
 class AppStateMiddleware implements MiddlewareClass<AppState> {
   final String key = "laTool20210418";
-  SharedPreferences _pref;
+  SharedPreferences? _pref;
 
   _initPrefs() async {
     if (_pref == null) _pref = await SharedPreferences.getInstance();
@@ -25,10 +25,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     AppState appState;
     bool failedLoad = false;
 
-    String asS;
+    String? asS;
     if (AppUtils.isDemo()) {
       await _initPrefs();
-      asS = _pref.getString(key);
+      asS = _pref!.getString(key);
     } else {
       asS = await Api.getConf().onError((error, stackTrace) {
         failedLoad = true;
@@ -68,15 +68,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       /* if (!AppUtils.isDev() ||
           store.state.alaInstallReleases == null ||
           store.state.alaInstallReleases.length == 0) { */
-      String alaInstallReleasesApiUrl =
-          'https://api.github.com/repos/AtlasOfLivingAustralia/ala-install/releases';
+      Uri alaInstallReleasesApiUrl = Uri.https('api.github.com',
+          '/repos/AtlasOfLivingAustralia/ala-install/releases');
       var alaInstallReleasesResponse = await http.get(alaInstallReleasesApiUrl);
       if (alaInstallReleasesResponse.statusCode == 200) {
         var l = jsonDecode(alaInstallReleasesResponse.body) as List;
         List<String> alaInstallReleases = [];
         l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
         // Remove the old ones
-        num limitResults = 6;
+        int limitResults = 6;
         alaInstallReleases.removeRange(alaInstallReleases.length - limitResults,
             alaInstallReleases.length);
         alaInstallReleases.add('upstream');
@@ -91,11 +91,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (AppUtils.isDemo()) {
         store.dispatch(OnFetchGeneratorReleases(['1.1.31', '1.1.30']));
       } else {
-        var generatorReleasesApiUrl =
-            "https://registry.npmjs.org/generator-living-atlas";
+        //var generatorReleasesApiUrl =
+        //  "https://registry.npmjs.org/generator-living-atlas";
         // As this does not have CORS enabled we use a proxy
-        generatorReleasesApiUrl =
-            "${env['BACKEND']}api/v1/get-generator-versions";
+        Uri generatorReleasesApiUrl =
+            Uri.http(env['BACKEND']!, "api/v1/get-generator-versions");
         var generatorReleasesResponse = await http.get(
           generatorReleasesApiUrl,
           //  headers: {'Accept': 'application/vnd.npm.install-v1+json'},
@@ -138,12 +138,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           .then((_) => scanSshKeys(store, () => {}));
     }
     if (action is PrepareDeployProject) {
-      await Api.alaInstallSelect(
-              action.project.alaInstallRelease, action.onError)
+      await Api.alaInstallSelect(action.alaInstallRelease, action.onError)
           .then((_) => scanSshKeys(store, () => {}));
-      await Api.regenerateInv(
-          uuid: action.project.uuid, onError: action.onError);
-      await Api.generatorSelect(action.project.generatorRelease, action.onError)
+      await Api.regenerateInv(uuid: action.uuid, onError: action.onError);
+      await Api.generatorSelect(action.generatorRelease, action.onError)
           .then((_) => action.onReady());
     }
     if (action is DeployProject) {
@@ -176,7 +174,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       await _initPrefs();
       var toJ = state.toJson();
       // print("Saved prefs: $toJ.toString()");
-      _pref.setString(key, json.encode(toJ));
+      _pref!.setString(key, json.encode(toJ));
     } else {
       if (state.failedLoad) {
         print(

@@ -107,7 +107,7 @@ class TagsConstants {
     "custom": v2_0_5,
   };
 
-  static List<String> getTagsFor(String alaInstallVersion) {
+  static List<String> getTagsFor(String? alaInstallVersion) {
     if (!_map.containsKey(alaInstallVersion))
       return v2_0_5;
     else

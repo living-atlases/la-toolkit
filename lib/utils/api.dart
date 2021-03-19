@@ -13,7 +13,7 @@ import 'package:la_toolkit/utils/utils.dart';
 class Api {
   static Future<String> genCasKey(int size) async {
     if (AppUtils.isDemo()) return "";
-    var url = "${env['BACKEND']}api/v1/cas-gen/$size";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/cas-gen/$size");
     var response = await http.get(url);
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
@@ -25,7 +25,7 @@ class Api {
 
   static void genSshConf(LAProject project) async {
     if (AppUtils.isDemo()) return;
-    var url = "${env['BACKEND']}api/v1/gen-ssh-conf";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/gen-ssh-conf");
     var servers = project.toJson()['servers'];
     var user =
         project.getVariable(LAVariableDesc.get("ansible_user").nameInt).value;
@@ -45,7 +45,7 @@ class Api {
 
   static Future<List<SshKey>> sshKeysScan() async {
     if (AppUtils.isDemo()) return [];
-    var url = "${env['BACKEND']}api/v1/ssh-key-scan";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/ssh-key-scan");
     var response = await http.get(url);
     if (response.statusCode == 200) {
       //print(response.body);
@@ -62,7 +62,7 @@ class Api {
 
   static Future<void> genSshKey(String name) async {
     if (AppUtils.isDemo()) return;
-    var url = "${env['BACKEND']}api/v1/ssh-key-gen/$name";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/ssh-key-gen/$name");
     http
         .get(url)
         .then((response) => jsonDecode(response.body))
@@ -72,7 +72,7 @@ class Api {
   static Future<Map<String, dynamic>> testConnectivity(
       List<LAServer> servers) async {
     if (AppUtils.isDemo()) return {};
-    var url = "${env['BACKEND']}api/v1/test-connectivity";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/test-connectivity");
     var response = await http.post(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({
@@ -92,7 +92,7 @@ class Api {
   static Future<void> importSshKey(
       String name, String publicKey, String privateKey) async {
     if (AppUtils.isDemo()) return;
-    var url = "${env['BACKEND']}api/v1/ssh-key-import";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/ssh-key-import");
     var response = await http.post(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({
@@ -110,7 +110,7 @@ class Api {
       for (var item in state.projects) item.uuid: item.toGeneratorJson()
     };
     if (AppUtils.isDemo()) return;
-    var url = "${env['BACKEND']}api/v1/save-conf";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/save-conf");
     Map<String, dynamic> stateJ = state.toJson();
     stateJ['projectsMap'] = map;
     await http.post(url,
@@ -121,7 +121,7 @@ class Api {
 
   static Future<String> getConf() async {
     if (AppUtils.isDemo()) return "";
-    var url = "${env['BACKEND']}api/v1/get-conf";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/get-conf");
 
     var response = await http.get(url);
     if (response.statusCode == 200) {
@@ -135,7 +135,7 @@ class Api {
       String version, Function(String) onError) async {
     const userError = 'Error selecting that ala-install version';
     if (AppUtils.isDemo()) return;
-    var url = "${env['BACKEND']}api/v1/ala-install-select/$version";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/ala-install-select/$version");
     await http
         .get(url)
         .then(
@@ -150,7 +150,7 @@ class Api {
       String version, Function(String) onError) async {
     if (AppUtils.isDemo()) return;
     const userError = 'Error installing that generator version';
-    var url = "${env['BACKEND']}api/v1/generator-select/$version";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/generator-select/$version");
     await http
         .get(url)
         .then(
@@ -162,10 +162,10 @@ class Api {
   }
 
   static Future<void> regenerateInv(
-      {String uuid, Function(String) onError}) async {
+      {required String uuid, required Function(String) onError}) async {
     if (AppUtils.isDemo()) return;
     const userError = 'Error generating your inventories';
-    var url = "${env['BACKEND']}api/v1/gen/$uuid/false";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/gen/$uuid/false");
     http
         .get(url)
         .then(
@@ -177,12 +177,12 @@ class Api {
   }
 
   static Future<void> term(
-      {VoidCallback onStart, ErrorCallback onError}) async {
+      {required VoidCallback onStart, required ErrorCallback onError}) async {
     if (AppUtils.isDemo()) {
       onStart();
       return;
     }
-    var url = "${env['BACKEND']}api/v1/term";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/term");
     http
         .get(url)
         .then((response) => response.statusCode == 200
@@ -193,7 +193,7 @@ class Api {
 
   static Future<void> ansiblew(DeployProject action) async {
     if (AppUtils.isDemo()) return;
-    var url = "${env['BACKEND']}api/v1/ansiblew";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/ansiblew");
     var cmd = {
       'uuid': action.project.uuid,
       'shortName': action.project.shortName,
@@ -224,7 +224,7 @@ class Api {
 
   static Future<List<dynamic>> getAnsiblewResults(String logsSuffix) async {
     if (AppUtils.isDemo()) return [];
-    var url = "${env['BACKEND']}api/v1/ansiblew-results";
+    Uri url = Uri.http(env['BACKEND']!, "api/v1/ansiblew-results");
     var response = await http.post(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({'logsSuffix': logsSuffix})));

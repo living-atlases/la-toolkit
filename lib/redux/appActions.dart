@@ -89,11 +89,17 @@ class TuneProject extends AppActions {
 }
 
 class PrepareDeployProject extends AppActions {
-  LAProject project;
+  String alaInstallRelease;
+  String generatorRelease;
+  String uuid;
   VoidCallback onReady;
   Function(String) onError;
   PrepareDeployProject(
-      {required this.project, required this.onReady, required this.onError});
+      {required this.uuid,
+      required this.alaInstallRelease,
+      required this.generatorRelease,
+      required this.onReady,
+      required this.onError});
 }
 
 class DeployProject extends AppActions {

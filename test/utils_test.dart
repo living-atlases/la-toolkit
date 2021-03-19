@@ -48,8 +48,8 @@ void main() {
     List<double> mapBounds1stPoint = [40, 20];
     List<double> mapBounds2ndPoint = [20, 10];
 
-    var invVariables =
-        MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint);
+    var invVariables = MapUtils.toInvVariables(mapBounds1stPoint[0],
+        mapBounds1stPoint[1], mapBounds2ndPoint[0], mapBounds2ndPoint[1]);
     expect(invVariables['LA_collectory_map_centreMapLat'], equals(30));
     expect(invVariables['LA_collectory_map_centreMapLng'], equals(15));
     expect(invVariables['LA_spatial_map_lan'], equals(30));

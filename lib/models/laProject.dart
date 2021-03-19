@@ -50,8 +50,8 @@ class LAProject {
   String theme;
   String? alaInstallRelease;
   String? generatorRelease;
-  List<double>? mapBounds1stPoint = []..length = 2;
-  List<double>? mapBounds2ndPoint = []..length = 2;
+  List<double?> mapBounds1stPoint;
+  List<double?> mapBounds2ndPoint;
   double? mapZoom;
   List<dynamic> lastDeploymentResults;
 
@@ -71,13 +71,13 @@ class LAProject {
       this.status = LAProjectStatus.basicDefined,
       this.alaInstallRelease,
       this.generatorRelease,
-      this.mapBounds1stPoint,
-      this.mapBounds2ndPoint,
+      mapBounds1stPoint,
+      mapBounds2ndPoint,
       this.theme = "clean",
       this.mapZoom,
       List<dynamic>? lastDeploymentResults,
-      bool advancedEdit = false,
-      bool advancedTune = false})
+      bool? advancedEdit,
+      bool? advancedTune})
       : uuid = uuid ?? Uuid().v4(),
         servers = servers ?? [],
         serversMap = serversMap ?? {},
@@ -87,7 +87,11 @@ class LAProject {
         serverServices = serverServices ?? {},
         lastDeploymentResults = lastDeploymentResults ?? [],
         advancedEdit = advancedEdit ?? false,
-        advancedTune = advancedTune ?? false {
+        advancedTune = advancedTune ?? false,
+        mapBounds1stPoint = mapBounds1stPoint ?? []
+          ..length = 2,
+        mapBounds2ndPoint = mapBounds2ndPoint ?? []
+          ..length = 2 {
     if (this.serversMap.entries.length != this.servers.length) {
       // serversMap is new
       this.serversMap =
@@ -98,10 +102,10 @@ class LAProject {
 
   init() async {
     // Try to generate default CAS keys
-    var pac4jSignKey = await CASUtils.gen512CasKey();
-    var pac4jEncKey = await CASUtils.gen256CasKey();
-    var webflowSignKey = await CASUtils.gen512CasKey();
-    var webflowEncKey = await CASUtils.gen128CasKey();
+    String pac4jSignKey = await CASUtils.gen512CasKey();
+    String pac4jEncKey = await CASUtils.gen256CasKey();
+    String webflowSignKey = await CASUtils.gen512CasKey();
+    String webflowEncKey = await CASUtils.gen128CasKey();
     setVariable(LAVariableDesc.get("pac4j_cookie_signing_key"), pac4jSignKey);
     setVariable(LAVariableDesc.get("pac4j_cookie_encryption_key"), pac4jEncKey);
     setVariable(LAVariableDesc.get("cas_webflow_signing_key"), webflowSignKey);
@@ -112,9 +116,12 @@ class LAProject {
   int numServers() => servers.length;
 
   LatLng getCenter() {
-    return (mapBounds1stPoint != null && mapBounds2ndPoint != null)
-        ? LatLng((mapBounds1stPoint[0] + mapBounds2ndPoint[0]) / 2,
-            (mapBounds1stPoint[1] + mapBounds2ndPoint[1]) / 2)
+    return (mapBounds1stPoint[0] != null &&
+            mapBounds1stPoint[1] != null &&
+            mapBounds2ndPoint[0] != null &&
+            mapBounds2ndPoint[1] != null)
+        ? LatLng((mapBounds1stPoint[0]! + mapBounds2ndPoint[0]!) / 2,
+            (mapBounds1stPoint[1]! + mapBounds2ndPoint[1]!) / 2)
         // Australia as default
         : LatLng(-28.2, 134);
   }
@@ -133,7 +140,9 @@ class LAProject {
     valid = valid &&
         LARegExp.projectNameRegexp.hasMatch(longName) &&
         LARegExp.shortNameRegexp.hasMatch(shortName) &&
-        LARegExp.domainRegexp.hasMatch(domain);
+        LARegExp.domainRegexp.hasMatch(domain) &&
+        alaInstallRelease != null &&
+        generatorRelease != null;
     if (valid) status = LAProjectStatus.basicDefined;
     if (debug) print("Step 1 valid: ${valid ? 'yes' : 'no'}");
 
@@ -163,8 +172,7 @@ class LAProject {
         allServersWithServicesReady() &&
         this.status.value < status.value) setProjectStatus(status);
     // Only update status if is better
-    if (this.status == null || status.value > this.status.value)
-      setProjectStatus(status);
+    if (status.value > this.status.value) setProjectStatus(status);
     return valid;
   }
 
@@ -179,7 +187,11 @@ class LAProject {
   }
 
   List<LAServer> serversWithServices() {
-    return servers.where((s) => serverServices[s.uuid].length > 0).toList();
+    return servers
+        .where((s) =>
+            serverServices[s.uuid] != null &&
+            serverServices[s.uuid]!.length > 0)
+        .toList();
   }
 
   bool allServersWithIPs() {
@@ -246,8 +258,8 @@ class LAProject {
 
   @override
   String toString() {
-    var sToS = serverServices.entries
-        .map((entry) => '${serversMap[entry.key].name} has ${entry.value}')
+    String sToS = serverServices.entries
+        .map((entry) => '${serversMap[entry.key]!.name} has ${entry.value}')
         .toList()
         .join(', ');
     return '''PROJECT: longName: $longName ($shortName), domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
@@ -269,14 +281,14 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     return services;
   }
 
-  LAService getServiceE(LAServiceName nameInt) {
+  LAService? getServiceE(LAServiceName nameInt) {
     return getService(nameInt.toS());
   }
 
-  LAService getService(String nameInt) {
+  LAService? getService(String? nameInt) {
     // getDepends can be null so the getService returns also null. Find a better way to do this
     if (nameInt == null) return null;
-    var curService = services[nameInt];
+    LAService? curService = services[nameInt];
     if (curService == null)
       services[nameInt] =
           curService = LAService.fromDesc(LAServiceDesc.get(nameInt));
@@ -289,13 +301,13 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   void setVariable(LAVariableDesc variable, Object value) {
-    var cur = getVariable(variable.nameInt);
+    LAVariable cur = getVariable(variable.nameInt);
     cur.value = value;
     variables[variable.nameInt] = cur;
   }
 
   List<String> getServicesNameListInServer(String serverName) {
-    return serverServices[serverName];
+    return serverServices[serverName] ?? [];
   }
 
   void upsertByName(LAServer laServer) {
@@ -334,7 +346,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   String additionalVariablesDecoded() {
-    return additionalVariables != null && additionalVariables.length > 0
+    return additionalVariables.length > 0
         ? utf8.decode(base64.decode(additionalVariables))
         : "";
   }
@@ -347,7 +359,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
         if (service == currentService) {
           // print(uuid);
           // print("servers map: ${serversMap[uuid]}");
-          if (serversMap[uuid] != null) hostnames.add(serversMap[uuid].name);
+          if (serversMap[uuid] != null) hostnames.add(serversMap[uuid]!.name);
         }
       });
     });
@@ -423,12 +435,12 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   void serviceInUse(String serviceNameInt, bool use) {
     if (!services.keys.contains(serviceNameInt))
       services[serviceNameInt] ??=
-          LAService.fromDesc(LAServiceDesc.map[serviceNameInt]);
-    var service = services[serviceNameInt];
+          LAService.fromDesc(LAServiceDesc.map[serviceNameInt]!);
+    LAService service = services[serviceNameInt]!;
 
     service.use = use;
-    var depends = LAServiceDesc.map.values
-        .where((curSer) => curSer.depends.toS() == serviceNameInt);
+    Iterable<LAServiceDesc> depends = LAServiceDesc.map.values.where((curSer) =>
+        (curSer.depends != null && curSer.depends!.toS() == serviceNameInt));
     if (!use) {
       // Remove
       serverServices.forEach((uuid, services) {
@@ -456,7 +468,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       "LA_theme": theme,
       "LA_generate_branding": true
     };
-    conf.addAll(MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint));
+    conf.addAll(MapUtils.toInvVariables(mapBounds1stPoint[0],
+        mapBounds1stPoint[1], mapBounds2ndPoint[0], mapBounds2ndPoint[1]));
 
     List<String> ips = List.empty(growable: true);
     serversWithServices().forEach((server) => ips.add(server.ip));
@@ -491,14 +504,14 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   factory LAProject.fromObject(Map<String, dynamic> yoRc) {
     bool debug = false;
-    var a = (tag) => yoRc["LA_$tag"];
+    Function a = (tag) => yoRc["LA_$tag"];
     LAProject p = LAProject(
         longName: yoRc['LA_project_name'],
         shortName: yoRc['LA_project_shortname'],
         domain: yoRc["LA_domain"],
         useSSL: yoRc["LA_enable_ssl"],
         services: {});
-    var domain = p.domain;
+    String domain = p.domain;
     Map<String, List<String>> serverServices = {};
 
     LAServiceDesc.list.forEach((service) {
@@ -509,7 +522,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           : a("use_$n") ?? n == 'ala_bie' || n == 'images'
               ? true
               : false;
-      LAService projectService = p.getService(service.nameInt);
+      LAService projectService = p.getService(service.nameInt)!;
       p.serviceInUse(service.nameInt, useIt);
       n = service.nameInt == "species_lists" ? "lists" : service.nameInt;
       bool useSub =
@@ -544,14 +557,13 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
         } else {
           s = p.servers.where((c) => c.name == hostname).toList()[0];
         }
-        assert(s.uuid != null);
         if (!serverServices.containsKey(s.uuid))
           serverServices[s.uuid] = List<String>.empty(growable: true);
-        serverServices[s.uuid].add(service.nameInt);
+        serverServices[s.uuid]!.add(service.nameInt);
       }
     });
     p.servers
-        .forEach((server) => p.assign(server, serverServices[server.uuid]));
+        .forEach((server) => p.assign(server, serverServices[server.uuid]!));
     return p;
   }
 }

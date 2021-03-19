@@ -133,7 +133,7 @@ class AppState {
 LA projects: ${projects.length} 
 view status: $status , currentStep: $currentStep
 ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}
-snackMessage: ${appSnackBarMessage.message ?? ''}
+snackMessage: ${appSnackBarMessage.message}
 currentProject of ${projects.length} -----
 ${currentProject != null ? currentProject : ''}
 ''';

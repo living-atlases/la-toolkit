@@ -36,11 +36,10 @@ extension ParseToString on LAServiceName {
 
 extension EnumParser on String {
   LAServiceName toServiceDescName() {
-    return LAServiceName.values.firstWhere(
-        (e) =>
-            e.toString().toLowerCase() ==
-            '${(LAServiceName).toString()}.$this'.toLowerCase(),
-        orElse: () => null); //return null if not found
+    return LAServiceName.values.firstWhere((e) =>
+        e.toString().toLowerCase() ==
+        '${(LAServiceName).toString()}.$this'
+            .toLowerCase()); //return null if not found
   }
 }
 
@@ -344,16 +343,15 @@ class LAServiceDesc {
   static List<LAServiceDesc> list = map.values.toList();
 
   bool isCompatibleWith(String alaInstallVersion, LAServiceDesc otherService) {
-    var compatible = true;
+    bool compatible = true;
     if (otherService == this) return true;
 
-    var deps = LAServiceDepsDesc.map[alaInstallVersion];
-    deps = deps ?? LAServiceDepsDesc.map["v2.0.4"];
-    assert(deps != null,
-        "The deps of some new ala-install version should have a default deps");
+    Map<String, LAServiceDepsDesc> deps =
+        LAServiceDepsDesc.map[alaInstallVersion] ??
+            LAServiceDepsDesc.map["v2.0.4"]!;
 
-    deps[this.nameInt].basicDepends.forEach((service) {
-      deps[otherService.nameInt].basicDepends.forEach((otherService) {
+    deps[this.nameInt]!.basicDepends.forEach((service) {
+      deps[otherService.nameInt]!.basicDepends.forEach((otherService) {
         compatible = compatible && service.isCompatible(otherService);
       });
     });

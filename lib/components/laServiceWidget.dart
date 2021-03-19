@@ -36,16 +36,16 @@ class LaServiceWidget extends StatelessWidget {
     }, builder: (BuildContext context, _LAServiceViewModel vm) {
       LAProject currentProject = vm.currentProject;
       LAService service = vm.currentProject.getService(serviceName);
-      var serviceDesc = LAServiceDesc.get(serviceName);
+      LAServiceDesc serviceDesc = LAServiceDesc.get(serviceName);
       bool visible = (serviceDesc.depends == null ||
               vm.currentProject.getServiceE(serviceDesc.depends).use) &&
           !serviceDesc.withoutUrl;
-      var optional = serviceDesc.optional;
+      bool optional = serviceDesc.optional;
       bool canUseSubdomain =
           !serviceDesc.forceSubdomain && !serviceDesc.withoutUrl;
 
-      var domain = vm.currentProject.domain;
-      var usesSubdomain = !serviceDesc.withoutUrl && service.usesSubdomain;
+      String domain = vm.currentProject.domain;
+      bool usesSubdomain = !serviceDesc.withoutUrl && service.usesSubdomain;
       var domainSwitchController = AdvancedSwitchController();
       domainSwitchController.value = !service.usesSubdomain;
       domainSwitchController.addListener(() {
