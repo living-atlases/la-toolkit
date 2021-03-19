@@ -281,13 +281,13 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     return services;
   }
 
-  LAService? getServiceE(LAServiceName nameInt) {
+  LAService getServiceE(LAServiceName nameInt) {
     return getService(nameInt.toS());
   }
 
-  LAService? getService(String? nameInt) {
+  LAService getService(String nameInt) {
     // getDepends can be null so the getService returns also null. Find a better way to do this
-    if (nameInt == null) return null;
+    // if (nameInt == null) return null;
     LAService? curService = services[nameInt];
     if (curService == null)
       services[nameInt] =
@@ -522,7 +522,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           : a("use_$n") ?? n == 'ala_bie' || n == 'images'
               ? true
               : false;
-      LAService projectService = p.getService(service.nameInt)!;
+      LAService projectService = p.getService(service.nameInt);
       p.serviceInUse(service.nameInt, useIt);
       n = service.nameInt == "species_lists" ? "lists" : service.nameInt;
       bool useSub =

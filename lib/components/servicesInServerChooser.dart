@@ -45,6 +45,7 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
         builder: (BuildContext context, _ServicesInServerChooserViewModel vm) {
           LAProject _project = vm.currentProject;
           String uuid = widget.server.uuid;
+
           List<String> servicesInServer = _project.serverServices[uuid];
           return Container(
               // If we want to limit the size:

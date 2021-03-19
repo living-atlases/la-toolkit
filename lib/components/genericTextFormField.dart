@@ -11,7 +11,7 @@ class GenericTextFormField extends StatefulWidget {
   final String? initialValue;
   final String? prefixText;
   final String? wikipage;
-  final RegExp regexp;
+  final RegExp? regexp;
   final String error;
   final bool isDense;
   final bool isCollapsed;
@@ -33,7 +33,7 @@ class GenericTextFormField extends StatefulWidget {
     required this.initialValue,
     this.prefixText,
     this.wikipage,
-    required this.regexp,
+    this.regexp,
     required this.error,
     required this.onChanged,
     this.isDense = false,
@@ -97,7 +97,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
         });
     final validator = (_) => widget.regexp != null &&
             delayedValue != null &&
-            !widget.regexp.hasMatch(delayedValue) &&
+            !widget.regexp!.hasMatch(delayedValue) &&
             !(widget.allowEmpty && delayedValue.isEmpty)
         ? widget.error
         : null;

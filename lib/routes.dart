@@ -28,29 +28,22 @@ class Routes {
       switch (settings.name) {
         case HomePage.routeName:
           return HomePage(title: appName);
-          break;
         case LAProjectEditPage.routeName:
           return LAProjectEditPage();
-          break;
         case LAProjectViewPage.routeName:
           return LAProjectViewPage();
-          break;
         case SandboxPage.routeName:
           return SandboxPage();
         case LAProjectTunePage.routeName:
           return LAProjectTunePage();
-          break;
         case SshKeyPage.routeName:
           return SshKeyPage();
-          break;
         case DeployPage.routeName:
           return DeployPage();
-          break;
         case DeployResultsPage.routeName:
           return DeployResultsPage();
         default:
           return HomePage(title: appName);
-          break;
       }
     });
   }

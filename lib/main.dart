@@ -331,8 +331,8 @@ class _HomePageState extends State<HomePage> {
           onPressed: () async {
             try {
               context.showLoaderOverlay();
-              var yoRcJson = await FileUtils.getYoRcJson();
-              vm.onImportProject(yoRcJson);
+              String? yoRcJson = await FileUtils.getYoRcJson();
+              if (yoRcJson != null) vm.onImportProject(yoRcJson);
             } catch (e) {
               context.hideLoaderOverlay();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(

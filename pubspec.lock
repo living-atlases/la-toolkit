@@ -240,7 +240,7 @@ packages:
     source: hosted
     version: "0.17.0"
   cupertino_icons:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: cupertino_icons
       url: "https://pub.dartlang.org"
@@ -254,7 +254,7 @@ packages:
     source: hosted
     version: "1.3.14"
   dbcrypt:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: dbcrypt
       url: "https://pub.dartlang.org"
@@ -274,13 +274,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
-  feedback:
-    dependency: "direct main"
-    description:
-      name: feedback
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   ffi:
     dependency: transitive
     description:
@@ -295,20 +288,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.0"
-  file_picker_platform_interface:
-    dependency: transitive
-    description:
-      name: file_picker_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
-  file_picker_web:
+  file_picker:
     dependency: "direct main"
     description:
-      name: file_picker_web
+      name: file_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "3.0.0"
   fixnum:
     dependency: transitive
     description:
@@ -351,11 +337,6 @@ packages:
       url: "https://github.com/MohamedEL-Torky/flutter_linkify.git"
     source: git
     version: "5.0.2"
-  flutter_localizations:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   flutter_map:
     dependency: "direct main"
     description:
@@ -370,6 +351,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter_redux:
     dependency: "direct main"
     description:
@@ -624,7 +612,7 @@ packages:
       name: package_info_plus_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0-nullsafety.0"
+    version: "1.0.0"
   package_info_plus_web:
     dependency: transitive
     description:
@@ -708,7 +696,7 @@ packages:
       name: plugin_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0-nullsafety.2"
+    version: "2.0.0"
   pool:
     dependency: transitive
     description:

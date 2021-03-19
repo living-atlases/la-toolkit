@@ -150,9 +150,9 @@ class LAProjectTunePage extends StatelessWidget {
                             //ListTile(
                             //                        title:
                             GenericTextFormField(
-                                initialValue: project.additionalVariables !=
-                                            null &&
-                                        project.additionalVariables.length > 0
+                                initialValue: project
+                                            .additionalVariables.length >
+                                        0
                                     ? utf8.decode(base64
                                         .decode(project.additionalVariables))
                                     : _initialExtraAnsibleVariables(project),
@@ -200,15 +200,16 @@ ${_doLine()}
                                                                                                                                                                       
 ''' +
         currentProject.services.values.map((service) {
-          var name = service.nameInt;
+          String name = service.nameInt;
+          LAServiceDesc serviceDesc = LAServiceDesc.map[name]!;
           final String title =
-              " ${LAServiceDesc.map[name].name} ${LAServiceDesc.map[name].name != LAServiceDesc.map[name].nameInt ? '(' + LAServiceDesc.map[name].nameInt + ') ' : ''}extra variables ";
+              " ${serviceDesc.name} ${serviceDesc.name != serviceDesc.nameInt ? '(' + serviceDesc.nameInt + ') ' : ''}extra variables ";
           return '''
 
 ${_doTitle(title)} 
-${service.use ? '' : '# '}[${LAServiceDesc.map[name].group}:vars]${service.use ? '' : ' #uncomment this line if you enable this service to tune it'} 
+${service.use ? '' : '# '}[${serviceDesc.group}:vars]${service.use ? '' : ' #uncomment this line if you enable this service to tune it'} 
 
-# End of ${StringUtils.capitalize(LAServiceDesc.map[name].name)} variables
+# End of ${StringUtils.capitalize(serviceDesc.name)} variables
 ${_doLine()}
 ''';
         }).join("\n\n");

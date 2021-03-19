@@ -114,7 +114,8 @@ class ProjectDrawer extends StatelessWidget {
             nameInt != LAServiceName.branding.toS())
         .map((nameInt) {
       LAServiceDesc desc = LAServiceDesc.get(nameInt);
-      String url = currentProject.services[nameInt]
+      String url = currentProject
+          .getService(nameInt)
           .fullUrl(currentProject.useSSL, currentProject.domain);
       String name = StringUtils.capitalize(desc.name);
       List<Widget> allServices = List<Widget>.empty(growable: true);

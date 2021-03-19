@@ -17,8 +17,8 @@ extension LAProjectCopyWith on LAProject {
     bool? isCreated,
     List<dynamic>? lastDeploymentResults,
     String? longName,
-    List<double>? mapBounds1stPoint,
-    List<double>? mapBounds2ndPoint,
+    dynamic? mapBounds1stPoint,
+    dynamic? mapBounds2ndPoint,
     double? mapZoom,
     Map<String, List<String>>? serverServices,
     List<LAServer>? servers,
@@ -90,17 +90,13 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     status: _$enumDecode(_$LAProjectStatusEnumMap, json['status']),
     alaInstallRelease: json['alaInstallRelease'] as String?,
     generatorRelease: json['generatorRelease'] as String?,
-    mapBounds1stPoint: (json['mapBounds1stPoint'] as List<dynamic>?)
-        ?.map((e) => (e as num).toDouble())
-        .toList(),
-    mapBounds2ndPoint: (json['mapBounds2ndPoint'] as List<dynamic>?)
-        ?.map((e) => (e as num).toDouble())
-        .toList(),
+    mapBounds1stPoint: json['mapBounds1stPoint'],
+    mapBounds2ndPoint: json['mapBounds2ndPoint'],
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num?)?.toDouble(),
     lastDeploymentResults: json['lastDeploymentResults'] as List<dynamic>?,
-    advancedEdit: json['advancedEdit'] as bool,
-    advancedTune: json['advancedTune'] as bool,
+    advancedEdit: json['advancedEdit'] as bool?,
+    advancedTune: json['advancedTune'] as bool?,
   );
 }
 
