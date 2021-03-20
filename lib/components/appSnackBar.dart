@@ -19,9 +19,8 @@ class AppSnackBar extends StatelessWidget {
       builder: (context, view) => child,
       onWillChange: (oldVm, newVm) {
         // onDidChange: (newVm) {
-        var appSnackMessage = newVm.messageToShow; // ?? oldVm.messageToShow;
-        if (appSnackMessage != null &&
-            appSnackMessage != AppSnackBarMessage.empty) {
+        AppSnackBarMessage appSnackMessage = newVm.messageToShow;
+        if (appSnackMessage != AppSnackBarMessage.empty) {
           // print(
           //    ">>>>>>>>>>>>>>>> Snackbar message '${appSnackMessage?.message}'");
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(

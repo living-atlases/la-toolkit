@@ -42,7 +42,8 @@ class DeployResultsPage extends StatelessWidget {
         List<Widget> resultsDetails = List.empty(growable: true);
         vm.project.lastDeploymentResults.forEach((result) {
           result['stats'].keys.forEach((key) {
-            var subResult = DeploySubResultWidget(key, result['stats'][key]);
+            DeploySubResultWidget subResult =
+                DeploySubResultWidget(key, result['stats'][key]);
             resultsDetails.add(subResult);
             resultTypes.forEach((type) => resultsTotals[type] =
                 resultsTotals[type]! + int.parse(result['stats'][key][type]));

@@ -100,7 +100,7 @@ class _ServicesInServerChooserState extends State<ServicesInServerChooser> {
               },
               // useful for disable elements (incompatibility):
               /* disabled: (index, nameInt) {
-          var compatible = true;
+          bool compatible = true;
           // widget.servicesInUse
           widget.servicesInServer.forEach((otherNameInt) {
             // print("${otherNameInt} compatible with ${nameInt}");

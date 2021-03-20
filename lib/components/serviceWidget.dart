@@ -13,11 +13,11 @@ import 'package:la_toolkit/utils/regexp.dart';
 
 import 'helpIcon.dart';
 
-class LaServiceWidget extends StatelessWidget {
+class ServiceWidget extends StatelessWidget {
   final String serviceName;
   final FocusNode? collectoryFocusNode;
 
-  LaServiceWidget(
+  ServiceWidget(
       {Key? key, required this.serviceName, required this.collectoryFocusNode})
       : super(key: key);
   final domainTextStyle =
@@ -46,7 +46,8 @@ class LaServiceWidget extends StatelessWidget {
 
       String domain = vm.currentProject.domain;
       bool usesSubdomain = !serviceDesc.withoutUrl && service.usesSubdomain;
-      var domainSwitchController = AdvancedSwitchController();
+      AdvancedSwitchController domainSwitchController =
+          AdvancedSwitchController();
       domainSwitchController.value = !service.usesSubdomain;
       domainSwitchController.addListener(() {
         if (canUseSubdomain) {

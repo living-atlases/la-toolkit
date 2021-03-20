@@ -73,9 +73,6 @@ dependencies:
   syncfusion_flutter_charts: ^18.4.46
   # bottom floating button
   flutter_speed_dial: ^3.0.4
-  # uploads
-  # file_picker_web: ^2.0.0
-  file_picker: ^3.0.0
   # listview animation
   flutter_staggered_animations: ^1.0.0
 

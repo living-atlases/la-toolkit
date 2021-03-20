@@ -21,7 +21,7 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
           state: store.state,
           onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _ALAInstallSelectorViewModel vm) {
-      var currentProject = vm.state.currentProject;
+      LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
           label: "Using ala-install release:",
           tooltip: "Choose the latest release to update your portal",

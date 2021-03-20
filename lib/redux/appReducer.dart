@@ -154,8 +154,8 @@ AppState _openProjectTools(AppState state, OpenProjectTools action) {
 
 AppState _generateInvProject(AppState state, GenerateInvProject action) {
   if (AppUtils.isDemo()) return state;
-  var uuid = action.project.uuid;
-  var url = "${env['BACKEND']}api/v1/gen/$uuid/true";
+  String uuid = action.project.uuid;
+  String url = "http://${env['BACKEND']}/api/v1/gen/$uuid/true";
   html.AnchorElement anchorElement = new html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();
@@ -207,7 +207,7 @@ AppState _testConnectivityProject(
 
 AppState _onTestConnectivityResults(
     AppState state, OnTestConnectivityResults action) {
-  var currentProject = state.currentProject;
+  LAProject currentProject = state.currentProject;
   currentProject.servers.forEach((server) {
     server.reachable = ServiceStatus.unknown;
     server.sshReachable = ServiceStatus.unknown;
@@ -216,8 +216,8 @@ AppState _onTestConnectivityResults(
     server.osVersion = "";
     currentProject.upsertByName(server);
   });
-  for (var serverName in action.results.keys) {
-    var server =
+  for (String serverName in action.results.keys) {
+    LAServer server =
         currentProject.servers.where((e) => e.name == serverName).toList()[0];
     server.reachable = serviceStatus(action.results[serverName]['ping']);
     server.sshReachable = serviceStatus(action.results[serverName]['ssh']);

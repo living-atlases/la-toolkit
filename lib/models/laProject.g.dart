@@ -17,8 +17,8 @@ extension LAProjectCopyWith on LAProject {
     bool? isCreated,
     List<dynamic>? lastDeploymentResults,
     String? longName,
-    dynamic? mapBounds1stPoint,
-    dynamic? mapBounds2ndPoint,
+    List<double>? mapBounds1stPoint,
+    List<double>? mapBounds2ndPoint,
     double? mapZoom,
     Map<String, List<String>>? serverServices,
     List<LAServer>? servers,
@@ -45,7 +45,7 @@ extension LAProjectCopyWith on LAProject {
       mapBounds1stPoint: mapBounds1stPoint ?? this.mapBounds1stPoint,
       mapBounds2ndPoint: mapBounds2ndPoint ?? this.mapBounds2ndPoint,
       mapZoom: mapZoom ?? this.mapZoom,
-      serverServices: serverServices ?? this._serverServices,
+      serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
       serversMap: serversMap ?? this.serversMap,
       services: services ?? this.services,
@@ -90,8 +90,12 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     status: _$enumDecode(_$LAProjectStatusEnumMap, json['status']),
     alaInstallRelease: json['alaInstallRelease'] as String?,
     generatorRelease: json['generatorRelease'] as String?,
-    mapBounds1stPoint: json['mapBounds1stPoint'],
-    mapBounds2ndPoint: json['mapBounds2ndPoint'],
+    mapBounds1stPoint: (json['mapBounds1stPoint'] as List<dynamic>?)
+        ?.map((e) => (e as num?)?.toDouble())
+        .toList(),
+    mapBounds2ndPoint: (json['mapBounds2ndPoint'] as List<dynamic>?)
+        ?.map((e) => (e as num?)?.toDouble())
+        .toList(),
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num?)?.toDouble(),
     lastDeploymentResults: json['lastDeploymentResults'] as List<dynamic>?,
@@ -111,7 +115,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'services': instance.services.map((k, e) => MapEntry(k, e.toJson())),
       'variables': instance.variables.map((k, e) => MapEntry(k, e.toJson())),
       'additionalVariables': instance.additionalVariables,
-      'serverServices': instance._serverServices,
+      'serverServices': instance.serverServices,
       'advancedEdit': instance.advancedEdit,
       'advancedTune': instance.advancedTune,
       'status': _$LAProjectStatusEnumMap[instance.status],

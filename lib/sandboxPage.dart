@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
-import 'package:la_toolkit/laTheme.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:mdi/mdi.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:web_browser/web_browser.dart';
 
 /*import 'package:xterm/theme/terminal_themes.dart';
 import 'package:xterm/xterm.dart';*/
@@ -31,7 +28,7 @@ class _SandboxPageState extends State<SandboxPage> {
     super.initState();
     /*terminal = Terminal(onInput: onInput, theme: TerminalThemes.defaultTheme);
     terminal.write('🧭 🏳️\u200d🌈🐣🐣￼  xterm.dart demo\r\n');
-    for (var i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++) {
       terminal.write('\x1B[${i}mHello World \x1B[0m\r\n');
     }
     terminal.write('\r\n');
@@ -79,7 +76,9 @@ class _SandboxPageState extends State<SandboxPage> {
             children: [
               Container(
                 child: Column(
-                  children: [],
+                  children: [
+                    // FilePickerDemo(),
+                  ],
                 ),
               ),
               Column(
@@ -89,7 +88,8 @@ class _SandboxPageState extends State<SandboxPage> {
                   // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
                   const SizedBox(height: 7),
                   //
-                  ElevatedButton.icon(
+
+                  /* ElevatedButton.icon(
                       icon: Icon(Mdi.console),
                       label: Text('CONSOLE'),
                       onPressed: () => showFloatingModalBottomSheet(
@@ -142,7 +142,7 @@ class _SandboxPageState extends State<SandboxPage> {
                                 ),
                               )
 
-                          /*
+                          */ /*
                                 SafeArea(
                                 child: Column(children: [
                               Container(
@@ -154,8 +154,8 @@ class _SandboxPageState extends State<SandboxPage> {
                                         topBar: null, bottomBar: null),
                                 javascriptEnabled: true,
                               )
-                            ])), */
-                          )),
+                            ])), */ /*
+                          ))*/
 
                   /* Wrap(
                       spacing: 6,

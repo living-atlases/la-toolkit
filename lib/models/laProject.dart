@@ -40,7 +40,7 @@ class LAProject {
   // @JsonSerializable(nullable: false)
   Map<String, LAVariable> variables;
   String additionalVariables;
-  Map<String, List<String>> _serverServices;
+  Map<String, List<String>> serverServices;
   @JsonKey(ignore: true)
   bool isCreated;
   bool advancedEdit;
@@ -71,8 +71,8 @@ class LAProject {
       this.status = LAProjectStatus.created,
       this.alaInstallRelease,
       this.generatorRelease,
-      mapBounds1stPoint,
-      mapBounds2ndPoint,
+      List<double?>? mapBounds1stPoint,
+      List<double?>? mapBounds2ndPoint,
       this.theme = "clean",
       this.mapZoom,
       List<dynamic>? lastDeploymentResults,
@@ -84,14 +84,12 @@ class LAProject {
         // _serversNameList = _serversNameList ?? [],
         services = services ?? initialServices,
         variables = variables ?? {},
-        _serverServices = serverServices ?? {},
+        serverServices = serverServices ?? {},
         lastDeploymentResults = lastDeploymentResults ?? [],
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
-        mapBounds1stPoint = mapBounds1stPoint ?? []
-          ..length = 2,
-        mapBounds2ndPoint = mapBounds2ndPoint ?? []
-          ..length = 2 {
+        mapBounds1stPoint = mapBounds1stPoint ?? List<double?>.filled(2, null),
+        mapBounds2ndPoint = mapBounds2ndPoint ?? List<double?>.filled(2, null) {
     if (this.serversMap.entries.length != this.servers.length) {
       // serversMap is new
       this.serversMap =
@@ -129,13 +127,12 @@ class LAProject {
   // List<LAServer> get servers => _servers;
   //  set servers(servers) => _servers = servers;
 
-  bool validateCreation() {
+  bool validateCreation({debug: false}) {
     bool valid = true;
-    bool debug = false;
     LAProjectStatus status = LAProjectStatus.created;
-    if (_serverServices.length != serversMap.entries.length ||
-        servers.length != _serverServices.length)
-      throw ('Servers in $longName ($uuid) are inconsistent (serverServices: ${_serverServices.length} serversMap: ${serversMap.entries.length} servers: ${servers.length})');
+    if (serverServices.length != serversMap.entries.length ||
+        servers.length != serverServices.length)
+      throw ('Servers in $longName ($uuid) are inconsistent (serverServices: ${serverServices.length} serversMap: ${serversMap.entries.length} servers: ${servers.length})');
 
     valid = valid &&
         LARegExp.projectNameRegexp.hasMatch(longName) &&
@@ -189,8 +186,8 @@ class LAProject {
   List<LAServer> serversWithServices() {
     return servers
         .where((s) =>
-            _serverServices[s.uuid] != null &&
-            _serverServices[s.uuid]!.length > 0)
+            serverServices[s.uuid] != null &&
+            serverServices[s.uuid]!.length > 0)
         .toList();
   }
 
@@ -247,7 +244,7 @@ class LAProject {
 
   List<String> getServicesNameListSelected() {
     List<String> selected = [];
-    _serverServices.forEach((uuid, service) => selected.addAll(service));
+    serverServices.forEach((uuid, service) => selected.addAll(service));
     return selected;
   }
 
@@ -258,7 +255,7 @@ class LAProject {
 
   @override
   String toString() {
-    String sToS = _serverServices.entries
+    String sToS = serverServices.entries
         .map((entry) => '${serversMap[entry.key]!.name} has ${entry.value}')
         .toList()
         .join(', ');
@@ -307,7 +304,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   List<String> getServicesNameListInServer(String serverName) {
-    return _serverServices[serverName] ?? [];
+    return serverServices[serverName] ?? [];
   }
 
   void upsertByName(LAServer laServer) {
@@ -326,8 +323,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   void _cleanServerServices(LAServer laServer) {
-    if (!_serverServices.containsKey(laServer.uuid)) {
-      _serverServices[laServer.uuid] = [];
+    if (!serverServices.containsKey(laServer.uuid)) {
+      serverServices[laServer.uuid] = [];
     }
   }
 
@@ -336,11 +333,11 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   void assign(LAServer server, List<String> assignedServices) {
-    _serverServices[server.uuid] = assignedServices;
+    serverServices[server.uuid] = assignedServices;
   }
 
   void delete(LAServer serverToDelete) {
-    _serverServices.removeWhere((key, value) => key == serverToDelete.uuid);
+    serverServices.removeWhere((key, value) => key == serverToDelete.uuid);
     servers.remove(serverToDelete);
     serversMap.remove(serverToDelete.uuid);
   }
@@ -354,7 +351,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   List<String> getHostname(String service) {
     List<String> hostnames = [];
 
-    _serverServices.forEach((uuid, services) {
+    serverServices.forEach((uuid, services) {
       services.forEach((currentService) {
         if (service == currentService) {
           // print(uuid);
@@ -395,7 +392,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           DeepCollectionEquality.unordered()
               .equals(variables, other.variables) &&
           DeepCollectionEquality.unordered()
-              .equals(_serverServices, other._serverServices) &&
+              .equals(serverServices, other.serverServices) &&
           additionalVariables == other.additionalVariables &&
           isCreated == other.isCreated &&
           advancedEdit == other.advancedEdit &&
@@ -419,7 +416,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       DeepCollectionEquality.unordered().hash(servers) ^
       DeepCollectionEquality.unordered().hash(services) ^
       DeepCollectionEquality.unordered().hash(variables) ^
-      DeepCollectionEquality.unordered().hash(_serverServices) ^
+      DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
       advancedEdit.hashCode ^
       advancedTune.hashCode ^
@@ -443,7 +440,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
         (curSer.depends != null && curSer.depends!.toS() == serviceNameInt));
     if (!use) {
       // Remove
-      _serverServices.forEach((uuid, services) {
+      serverServices.forEach((uuid, services) {
         services.remove(serviceNameInt);
       });
       // Disable dependents
@@ -475,15 +472,14 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     serversWithServices().forEach((server) => ips.add(server.ip));
     conf["LA_server_ips"] = ips.join(',');
 
-    if (additionalVariables != null && additionalVariables != "") {
+    if (additionalVariables != "") {
       conf["LA_additionalVariables"] = additionalVariables;
     }
     services.forEach((key, service) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
       conf["LA_${service.nameInt}_hostname"] =
-          getHostname(service.nameInt) != null &&
-                  getHostname(service.nameInt).length > 0
+          getHostname(service.nameInt).length > 0
               ? getHostname(service.nameInt)[0]
               : "";
       conf["LA_${service.nameInt}_url"] = service.url(domain);
@@ -502,8 +498,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     return LAProject.fromObject(yoRc);
   }
 
-  factory LAProject.fromObject(Map<String, dynamic> yoRc) {
-    bool debug = false;
+  factory LAProject.fromObject(Map<String, dynamic> yoRc, {debug: false}) {
     Function a = (tag) => yoRc["LA_$tag"];
     LAProject p = LAProject(
         longName: yoRc['LA_project_name'],
@@ -568,12 +563,12 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   List<String> getServerServices({required String serverUuid}) {
-    if (!_serverServices.containsKey(serverUuid))
-      _serverServices[serverUuid] = List<String>.empty(growable: true);
-    return _serverServices[serverUuid]!;
+    if (!serverServices.containsKey(serverUuid))
+      serverServices[serverUuid] = List<String>.empty(growable: true);
+    return serverServices[serverUuid]!;
   }
 
   Map<String, List<String>> getServerServicesForTest() {
-    return _serverServices;
+    return serverServices;
   }
 }

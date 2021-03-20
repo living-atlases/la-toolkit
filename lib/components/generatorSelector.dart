@@ -21,7 +21,7 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
           state: store.state,
           onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _GeneratorSelectorViewModel vm) {
-      var currentProject = vm.state.currentProject;
+      LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
           label: "Using generator-la release:",
           tooltip: "Choose the latest release to update your portal",

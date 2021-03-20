@@ -10,8 +10,8 @@ import 'package:timelines/timelines.dart';
 
 import '../laTheme.dart';
 
-var completeColor = LAColorTheme.laPalette.shade400;
-var inProgressColor = LAColorTheme.laPalette.shade900;
+Color completeColor = LAColorTheme.laPalette.shade400;
+Color inProgressColor = LAColorTheme.laPalette.shade900;
 const todoColor = Colors.grey;
 const _iconsVerticalPadding = 4.0;
 
@@ -85,8 +85,8 @@ class LAProjectTimeline extends StatelessWidget {
                     );
                   },
                   indicatorBuilder: (_, index) {
-                    var color;
-                    var child;
+                    Color color;
+                    Widget? child;
                     if (index == vm.status.value) {
                       color = inProgressColor;
                       child = Padding(
@@ -149,16 +149,16 @@ class LAProjectTimeline extends StatelessWidget {
                       if (index == vm.status.value) {
                         final prevColor = getColor(vm.status, index - 1);
                         final color = getColor(vm.status, index);
-                        var gradientColors;
+                        List<Color> gradientColors;
                         if (type == ConnectorType.start) {
                           gradientColors = [
-                            Color.lerp(prevColor, color, 0.5),
+                            Color.lerp(prevColor, color, 0.5)!,
                             color
                           ];
                         } else {
                           gradientColors = [
                             prevColor,
-                            Color.lerp(prevColor, color, 0.5)
+                            Color.lerp(prevColor, color, 0.5)!
                           ];
                         }
                         return DecoratedLineConnector(
@@ -174,7 +174,7 @@ class LAProjectTimeline extends StatelessWidget {
                         );
                       }
                     } else {
-                      return Container(); // previously null
+                      return const SizedBox(); // Icon(Icons.close); // previously null
                     }
                   },
                   itemCount: size,
@@ -241,7 +241,6 @@ class _BezierPainter extends CustomPainter {
     var angle;
     var offset1;
     var offset2;
-
     var path;
 
     if (drawStart) {

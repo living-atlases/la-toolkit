@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -44,8 +45,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         // appState = AppState.fromJson(asJ);
         appState = AppState.fromJson(asJ);
       } catch (e) {
-        print(e);
-        appState = initialEmptyAppState(failedLoad: failedLoad);
+        print("Failed to decode conf: $e");
+        appState = initialEmptyAppState(failedLoad: true);
       }
     }
     return appState;
@@ -70,9 +71,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           store.state.alaInstallReleases.length == 0) { */
       Uri alaInstallReleasesApiUrl = Uri.https('api.github.com',
           '/repos/AtlasOfLivingAustralia/ala-install/releases');
-      var alaInstallReleasesResponse = await http.get(alaInstallReleasesApiUrl);
+      Response alaInstallReleasesResponse =
+          await http.get(alaInstallReleasesApiUrl);
       if (alaInstallReleasesResponse.statusCode == 200) {
-        var l = jsonDecode(alaInstallReleasesResponse.body) as List;
+        List<dynamic> l = jsonDecode(alaInstallReleasesResponse.body) as List;
         List<String> alaInstallReleases = [];
         l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
         // Remove the old ones
@@ -91,12 +93,12 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (AppUtils.isDemo()) {
         store.dispatch(OnFetchGeneratorReleases(['1.1.31', '1.1.30']));
       } else {
-        //var generatorReleasesApiUrl =
+        // generatorReleasesApiUrl =
         //  "https://registry.npmjs.org/generator-living-atlas";
         // As this does not have CORS enabled we use a proxy
         Uri generatorReleasesApiUrl =
-            Uri.http(env['BACKEND']!, "api/v1/get-generator-versions");
-        var generatorReleasesResponse = await http.get(
+            Uri.http(env['BACKEND']!, "/api/v1/get-generator-versions");
+        Response generatorReleasesResponse = await http.get(
           generatorReleasesApiUrl,
           //  headers: {'Accept': 'application/vnd.npm.install-v1+json'},
         );
@@ -120,7 +122,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       genSshConf(action.project);
     }
     if (action is TestConnectivityProject) {
-      var project = action.project;
+      LAProject project = action.project;
       genSshConf(project);
       Api.testConnectivity(project.serversWithServices()).then((results) {
         store.dispatch(OnTestConnectivityResults(results));
@@ -172,7 +174,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   saveAppState(AppState state) async {
     if (AppUtils.isDemo()) {
       await _initPrefs();
-      var toJ = state.toJson();
+      Object toJ = state.toJson();
       // print("Saved prefs: $toJ.toString()");
       _pref!.setString(key, json.encode(toJ));
     } else {

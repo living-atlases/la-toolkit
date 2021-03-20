@@ -30,7 +30,7 @@ class LAProjectsList extends StatelessWidget {
           );
         },
         builder: (BuildContext context, _ProjectsPageViewModel vm) {
-          var num = vm.state.projects.length;
+          int num = vm.state.projects.length;
           return num > 0
               ? new ScrollPanel(
                   child: Container(

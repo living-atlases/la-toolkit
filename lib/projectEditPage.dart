@@ -16,8 +16,8 @@ import 'components/appSnackBar.dart';
 import 'components/genericTextFormField.dart';
 import 'components/helpIcon.dart';
 import 'components/laAppBar.dart';
-import 'components/laServiceWidget.dart';
 import 'components/scrollPanel.dart';
+import 'components/serviceWidget.dart';
 import 'components/servicesInServerChooser.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
@@ -302,7 +302,7 @@ If you are unsure type something like "server1, server2, server3".
                           itemCount: LAServiceDesc.map.length,
                           // itemCount: appStateProv.appState.projects.length,
                           itemBuilder: (BuildContext context, int index) =>
-                              LaServiceWidget(
+                              ServiceWidget(
                                   serviceName: LAServiceDesc.list
                                       .elementAt(index)
                                       .nameInt,

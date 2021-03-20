@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -13,18 +12,18 @@ import '../laTheme.dart';
 import 'dragmarker.dart';
 
 class MapAreaSelector extends StatefulWidget {
-  MapAreaSelector({Key key}) : super(key: key);
+  MapAreaSelector({Key? key}) : super(key: key);
 
   @override
   _MapAreaSelectorState createState() => _MapAreaSelectorState();
 }
 
 class _MapAreaSelectorState extends State<MapAreaSelector> {
-  List<LatLng> area = []..length = 5;
-  List<LatLng> projectArea = []..length = 5;
+  List<LatLng?> area = []..length = 5;
+  List<LatLng?> projectArea = []..length = 5;
   bool firstPoint = true;
   final MapController mapController = MapController();
-  LAProject _project;
+  LAProject? _project;
   static const _minZoom = 1.0;
   static const _maxZoom = 20.0;
 
@@ -36,16 +35,18 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
           return _MapAreaSelectorViewModel(
               currentProject: store.state.currentProject,
               onUpdateProject: (project) =>
-                  store.dispatch(UpdateProject(project)));
+                  store.dispatch(UpdateProject(project!)));
         },
         builder: (BuildContext context, _MapAreaSelectorViewModel vm) {
           _project = vm.currentProject;
-          if (_project.mapBounds1stPoint != null &&
-              _project.mapBounds2ndPoint != null) {
-            var fstPoint = LatLng(
-                _project.mapBounds1stPoint[0], _project.mapBounds1stPoint[1]);
-            var sndPoint = LatLng(
-                _project.mapBounds2ndPoint[0], _project.mapBounds2ndPoint[1]);
+          if (_project!.mapBounds1stPoint[0] != null &&
+              _project!.mapBounds2ndPoint[0] != null &&
+              _project!.mapBounds1stPoint[1] != null &&
+              _project!.mapBounds2ndPoint[1] != null) {
+            var fstPoint = LatLng(_project!.mapBounds1stPoint[0]!,
+                _project!.mapBounds1stPoint[1]!);
+            var sndPoint = LatLng(_project!.mapBounds2ndPoint[0]!,
+                _project!.mapBounds2ndPoint[1]!);
             projectArea = [fstPoint, null, sndPoint, null, fstPoint];
             _calSquare(projectArea);
           } else {}
@@ -53,7 +54,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
             return Marker(
               width: 80.0,
               height: 80.0,
-              point: latLng,
+              point: latLng!,
               builder: (ctx) => Container(
                 child: new Icon(Icons.circle, size: 16, color: Colors.blueGrey),
               ),
@@ -65,8 +66,8 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
               child: FlutterMap(
                 mapController: mapController,
                 options: new MapOptions(
-                    center: vm.currentProject.getCenter(),
-                    zoom: vm.currentProject.mapZoom ?? 1.0,
+                    center: vm.currentProject!.getCenter(),
+                    zoom: vm.currentProject!.mapZoom ?? 1.0,
                     /* center: LatLng(-28.2, 134),
                     zoom: 3.0, */
                     /* boundsOptions:
@@ -99,7 +100,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                     polylines: [
                       if (projectArea[0] != null && projectArea[2] != null)
                         Polyline(
-                            points: projectArea,
+                            points: projectArea as List<LatLng>,
                             strokeWidth: 4.0,
                             isDotted: false,
                             color: LAColorTheme.laPalette),
@@ -108,28 +109,34 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                   PolylineLayerOptions(polylines: [
                     if (area[0] != null && area[2] != null)
                       Polyline(
-                          points: area,
+                          points: area as List<LatLng>,
                           strokeWidth: 4.0,
                           isDotted: true,
                           color: LAColorTheme.laPalette)
                   ]),
                   ZoomButtonsPluginOption(
+                      key: GlobalKey(),
                       minZoom: _minZoom.toInt(),
                       maxZoom: _maxZoom.toInt(),
                       mini: true,
                       padding: 10,
+                      rebuild: null,
+                      //   rebuild: () {}, // new in nullsafety ??
                       alignment: Alignment.bottomRight),
                   ScaleLayerPluginOption(
+                    key: GlobalKey(),
                     lineColor: Colors.blue,
                     lineWidth: 2,
+                    rebuild: null,
+                    //   rebuild: () {}, // new in nullsafety ??
                     textStyle: TextStyle(color: Colors.blue, fontSize: 12),
                     padding: EdgeInsets.all(10),
                   ),
                   DragMarkerPluginOptions(markers: [
                     if (projectArea[0] != null && projectArea[2] != null)
-                      _createDragMarker(projectArea[0], vm),
+                      _createDragMarker(projectArea[0]!, vm),
                     if (projectArea[0] != null && projectArea[2] != null)
-                      _createDragMarker(projectArea[2], vm)
+                      _createDragMarker(projectArea[2]!, vm)
                   ])
                 ],
               ));
@@ -141,8 +148,8 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
       if (area[0] != null && area[2] != null) {
         _calSquare(area);
         Future.delayed(const Duration(milliseconds: 1000), () => _fit());
-        _project.setMap(area[0], area[2], mapController.zoom);
-        vm.onUpdateProject(_project);
+        _project!.setMap(area[0]!, area[2]!, mapController.zoom);
+        vm.onUpdateProject!(_project);
       }
     });
   }
@@ -186,11 +193,11 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
     );
   }
 
-  _calSquare(List<LatLng> area) {
-    var x1 = area[0].longitude;
-    var y1 = area[0].latitude;
-    var x2 = area[2].longitude;
-    var y2 = area[2].latitude;
+  _calSquare(List<LatLng?> area) {
+    var x1 = area[0]!.longitude;
+    var y1 = area[0]!.latitude;
+    var x2 = area[2]!.longitude;
+    var y2 = area[2]!.latitude;
 
     area[1] = LatLng(y2 - (y2 - y1), x2);
     area[3] = LatLng(y2, x2 - (x2 - x1));
@@ -198,10 +205,10 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
 
   _fit() {
     var bounds = LatLngBounds();
-    bounds.extend(area[0]);
-    bounds.extend(area[1]);
-    bounds.extend(area[2]);
-    bounds.extend(area[3]);
+    bounds.extend(area[0]!);
+    bounds.extend(area[1]!);
+    bounds.extend(area[2]!);
+    bounds.extend(area[3]!);
     mapController.fitBounds(
       bounds,
       options: FitBoundsOptions(
@@ -212,8 +219,8 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
 }
 
 class _MapAreaSelectorViewModel {
-  final LAProject currentProject;
-  final void Function(LAProject project) onUpdateProject;
+  final LAProject? currentProject;
+  final void Function(LAProject? project)? onUpdateProject;
 
   _MapAreaSelectorViewModel({this.currentProject, this.onUpdateProject});
 

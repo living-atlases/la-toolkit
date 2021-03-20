@@ -9,8 +9,8 @@ part of 'appState.dart';
 extension AppStateCopyWith on AppState {
   AppState copyWith({
     List<String>? alaInstallReleases,
-    dynamic? appSnackBarMessage,
-    dynamic? currentProject,
+    AppSnackBarMessage? appSnackBarMessage,
+    LAProject? currentProject,
     int? currentStep,
     bool? failedLoad,
     bool? firstUsage,
@@ -43,9 +43,10 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
     projects: (json['projects'] as List<dynamic>?)
         ?.map((e) => LAProject.fromJson(e as Map<String, dynamic>))
         .toList(),
-    failedLoad: json['failedLoad'] as bool,
     firstUsage: json['firstUsage'] as bool,
-    currentProject: json['currentProject'],
+    currentProject: json['currentProject'] == null
+        ? null
+        : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
     currentStep: json['currentStep'] as int,
     status: _$enumDecode(_$LAProjectViewStatusEnumMap, json['status']),
     alaInstallReleases: (json['alaInstallReleases'] as List<dynamic>?)
@@ -61,7 +62,6 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
-      'failedLoad': instance.failedLoad,
       'firstUsage': instance.firstUsage,
       'currentProject': instance.currentProject.toJson(),
       'status': _$LAProjectViewStatusEnumMap[instance.status],

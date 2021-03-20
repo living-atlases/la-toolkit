@@ -43,12 +43,12 @@ class LAProjectTunePage extends StatelessWidget {
         );
       },
       builder: (BuildContext context, _ProjectTuneViewModel vm) {
-        var project = vm.project;
-        var varCatName = project.getServicesNameListInUse();
+        LAProject project = vm.project;
+        List<String> varCatName = project.getServicesNameListInUse();
         varCatName.add(LAServiceName.all.toS());
         List<ListItem> items = [];
-        var lastCategory;
-        var lastSubcategory;
+        LAServiceName? lastCategory;
+        LAVariableSubcategory? lastSubcategory;
         LAVariableDesc.map.entries
             .where((laVar) =>
                 laVar.value.inTunePage &&
@@ -258,7 +258,7 @@ class MessageItem implements ListItem {
 
   Widget buildTitle(BuildContext context) {
     final initialValue = project.getVariable(variable.nameInt).value;
-    final deployed = project.getVariable(variable.nameInt).status ==
+    final bool deployed = project.getVariable(variable.nameInt).status ==
         LAVariableStatus.deployed;
     var defValue;
     if (variable.defValue != null) defValue = variable.defValue!(project);

@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:collection/collection.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
@@ -661,9 +660,9 @@ void main() {
     expect(p.getServicesNameListNotInUse().contains(alerts), equals(true));
     expect(p.getServicesNameListInUse().contains(alerts), equals(false));
     p.servers.forEach((server) {
-      expect(p.getServerServicesForTest()[server.uuid].contains(doi),
+      expect(p.getServerServicesForTest()[server.uuid]!.contains(doi),
           equals(false));
-      expect(p.getServerServicesForTest()[server.uuid].contains(alerts),
+      expect(p.getServerServicesForTest()[server.uuid]!.contains(alerts),
           equals(false));
     });
     expect(

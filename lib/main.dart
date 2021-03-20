@@ -61,8 +61,12 @@ Future<void> main() async {
   );
   store.onChange.listen((state) {
     print("On store change: $state");
-
-    appStateMiddleware.saveAppState(state);
+    try {
+      appStateMiddleware.saveAppState(state);
+    } catch (e) {
+      store.dispatch(ShowSnackBar(AppSnackBarMessage(
+          message: "Something failed when tryin to save your configuration")));
+    }
   });
   store.dispatch(OnFetchState());
   runApp(MyApp(store: store));

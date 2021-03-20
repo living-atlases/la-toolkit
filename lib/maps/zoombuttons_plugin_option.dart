@@ -1,4 +1,4 @@
-// @dart=2.9
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -9,13 +9,13 @@ class ZoomButtonsPluginOption extends LayerOptions {
   final bool mini;
   final double padding;
   final Alignment alignment;
-  final Color zoomInColor;
-  final Color zoomOutColor;
+  final Color? zoomInColor;
+  final Color? zoomOutColor;
   final IconData zoomInIcon;
   final IconData zoomOutIcon;
 
   ZoomButtonsPluginOption({
-    Key key,
+    required Key key,
     this.minZoom = 1,
     this.maxZoom = 18,
     this.mini = true,
@@ -25,7 +25,7 @@ class ZoomButtonsPluginOption extends LayerOptions {
     this.zoomInIcon = Icons.zoom_in,
     this.zoomOutColor,
     this.zoomOutIcon = Icons.zoom_out,
-    rebuild,
+    required rebuild,
   }) : super(key: key, rebuild: rebuild);
 }
 

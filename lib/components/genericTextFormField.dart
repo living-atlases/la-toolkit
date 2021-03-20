@@ -56,8 +56,8 @@ class GenericTextFormField extends StatefulWidget {
 class _GenericTextFormFieldState extends State<GenericTextFormField>
     with AutomaticKeepAliveClientMixin {
   final debouncer = Debouncer(milliseconds: 1000);
-  var formKey;
-  late String delayedValue;
+  late GlobalKey<FormState> formKey;
+  String? delayedValue;
 
   @override
   void initState() {
@@ -90,15 +90,16 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
     final onChange = (String value) => debouncer.run(() {
           setState(() {
             delayedValue = value;
-            if (formKey.currentState.validate()) {
+            if (formKey.currentState != null &&
+                formKey.currentState!.validate()) {
               widget.onChanged(value);
             }
           });
         });
     final validator = (_) => widget.regexp != null &&
             delayedValue != null &&
-            !widget.regexp!.hasMatch(delayedValue) &&
-            !(widget.allowEmpty && delayedValue.isEmpty)
+            !widget.regexp!.hasMatch(delayedValue!) &&
+            !(widget.allowEmpty && delayedValue!.isEmpty)
         ? widget.error
         : null;
     final style = widget.deployed

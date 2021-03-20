@@ -307,7 +307,7 @@ class ServersDetailsCardList extends StatelessWidget {
       required _ServersCardListViewModel vm,
       required LAServer server,
       required LAProject project}) {
-    var name;
+    String? name;
     Alert(
         context: context,
         closeIcon: Icon(Icons.close),
@@ -337,11 +337,13 @@ class ServersDetailsCardList extends StatelessWidget {
           DialogButton(
             width: 500,
             onPressed: () {
-              if (LARegExp.hostnameRegexp.hasMatch(name)) {
-                server.name = name;
-                project.upsertById(server);
-                vm.onSaveCurrentProject(project);
-                Navigator.pop(context);
+              if (name != null) {
+                if (LARegExp.hostnameRegexp.hasMatch(name!)) {
+                  server.name = name!;
+                  project.upsertById(server);
+                  vm.onSaveCurrentProject(project);
+                  Navigator.pop(context);
+                }
               }
             },
             child: Text(

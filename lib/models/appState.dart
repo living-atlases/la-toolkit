@@ -39,6 +39,7 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
 @CopyWith()
 class AppState {
   // from SharedPreferences
+  @JsonKey(ignore: true)
   final bool failedLoad;
   final bool firstUsage;
   // @JsonKey(nullable: false)
@@ -59,12 +60,12 @@ class AppState {
       {List<LAProject>? projects,
       this.failedLoad = false,
       this.firstUsage = true,
-      currentProject,
+      LAProject? currentProject,
       this.currentStep = 0,
       this.status = LAProjectViewStatus.view,
       List<String>? alaInstallReleases,
       List<String>? generatorReleases,
-      appSnackBarMessage,
+      AppSnackBarMessage? appSnackBarMessage,
       List<SshKey>? sshKeys})
       : this.projects = projects ?? [],
         this.sshKeys = sshKeys ?? [],
@@ -131,11 +132,11 @@ class AppState {
 
 === AppState ===
 LA projects: ${projects.length} 
-view status: $status , currentStep: $currentStep
+view status: $status , currentStep: $currentStep, failedToLoad: $failedLoad
 ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}
 snackMessage: ${appSnackBarMessage.message}
 currentProject of ${projects.length} -----
-${currentProject != null ? currentProject : ''}
+$currentProject
 ''';
   }
 }

@@ -23,7 +23,7 @@ class AppUtils {
   }
 
   static String proxyImg(imgUrl) {
-    return "${env['BACKEND']}api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
+    return "http://${env['BACKEND']}/api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
   }
 }
 
