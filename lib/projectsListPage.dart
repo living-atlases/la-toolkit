@@ -123,27 +123,32 @@ class ProjectCard extends StatelessWidget {
                                   trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        if (AppUtils.isDev())
-                                          IconButton(
-                                            padding: EdgeInsets.zero,
-                                            constraints: BoxConstraints(),
-                                            icon: Icon(
-                                              Icons.delete,
-                                              color: Colors.grey,
-                                            ),
-                                            onPressed: () => onDelete(),
-                                          ),
-                                        if (AppUtils.isDev())
-                                          SizedBox(width: 10),
-                                        IconButton(
-                                          padding: EdgeInsets.zero,
-                                          constraints: BoxConstraints(),
-                                          icon: Icon(
-                                            Icons.settings,
-                                            color: Colors.grey,
-                                          ),
-                                          onPressed: () => onOpen(),
-                                        )
+                                        Tooltip(
+                                            message: "Delete this project",
+                                            child: IconButton(
+                                              padding: EdgeInsets.zero,
+                                              constraints: BoxConstraints(),
+                                              icon: Icon(
+                                                Icons.delete,
+                                                color: Colors.grey,
+                                              ),
+                                              onPressed: () => !AppUtils.isDev()
+                                                  ? UiUtils.showAlertDialog(
+                                                      context, () => onDelete())
+                                                  : onDelete(),
+                                            )),
+                                        SizedBox(width: 20),
+                                        Tooltip(
+                                            message: "Configure this project",
+                                            child: IconButton(
+                                              padding: EdgeInsets.zero,
+                                              constraints: BoxConstraints(),
+                                              icon: Icon(
+                                                Icons.settings,
+                                                color: Colors.grey,
+                                              ),
+                                              onPressed: () => onOpen(),
+                                            ))
                                       ])),
                               Text(
                                 // SHORT NAME

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
 import 'tool.dart';
 
@@ -30,7 +31,7 @@ class ToolShortcut extends StatelessWidget {
           ? null
           : () {
               if (tool.askConfirmation)
-                showAlertDialog(context, () => tool.action());
+                UiUtils.showAlertDialog(context, () => tool.action());
               else
                 tool.action();
             },
@@ -72,37 +73,5 @@ class ToolShortcut extends StatelessWidget {
       );
     }
     return btn;
-  }
-
-  showAlertDialog(BuildContext context, VoidCallback onConfirm) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: Text("CANCEL"),
-      onPressed: () {
-        Navigator.of(context, rootNavigator: true).pop();
-      },
-    );
-    Widget continueButton = TextButton(
-        child: Text("CONFIRM"),
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pop();
-          onConfirm();
-        });
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("Please Confirm"),
-      content: Text("Are you sure?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
   }
 }
