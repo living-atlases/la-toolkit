@@ -6,8 +6,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
+import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
-import 'package:la_toolkit/utils/utils.dart';
 import 'package:latlong/latlong.dart';
 import 'package:uuid/uuid.dart';
 

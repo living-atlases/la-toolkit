@@ -1,5 +1,5 @@
 import 'package:la_toolkit/utils/StringUtils.dart';
-import 'package:la_toolkit/utils/utils.dart';
+import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:test/test.dart';
 
 void main() {
