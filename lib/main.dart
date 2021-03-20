@@ -331,18 +331,22 @@ class _HomePageState extends State<HomePage> {
       ),
       actions: <Widget>[
         TextButton(
+            child: Text('CANCEL'),
+            onPressed: () async {
+              onFinish(context, false);
+            }),
+        TextButton(
           child: Text('OK'),
           onPressed: () async {
             try {
               context.showLoaderOverlay();
               String? yoRcJson = await FileUtils.getYoRcJson();
-              if (yoRcJson != null) vm.onImportProject(yoRcJson);
+              if (yoRcJson != null)
+                vm.onImportProject(yoRcJson);
+              else
+                onFinish(context, true);
             } catch (e) {
-              context.hideLoaderOverlay();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    'Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),
-              ));
+              onFinish(context, true);
             }
           },
         ),
@@ -355,6 +359,17 @@ class _HomePageState extends State<HomePage> {
         return alert;
       },
     );
+  }
+
+  void onFinish(BuildContext context, bool withError) {
+    context.hideLoaderOverlay();
+    Navigator.pop(context);
+    if (withError) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            'Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),
+      ));
+    }
   }
 }
 
