@@ -1542,25 +1542,37 @@
         "pac4j_cookie_signing_key": {
           "nameInt": "pac4j_cookie_signing_key",
           "service": "cas",
-          "value": "bypUs5Hbuew-cM4WovY8INRHm9b8g3DH2F2pRGm5xMY-I3Dk7hZZ8yQMn9piuCHWApwchFjpE7pHdC4HMo-gQg",
+          "value": "dYCj6M9ywhxy2lgrvgIL3azo9-BN1iow37kFmqXENhHbWVolvok240tCktNVgU8L9x4PrM54MUvU2RqrBd72Bw",
           "status": "undeployed"
         },
         "pac4j_cookie_encryption_key": {
           "nameInt": "pac4j_cookie_encryption_key",
           "service": "cas",
-          "value": "Gi9GmxjaVHBU4PbXOq5_XJhlW63EEvIsKFvGnYCT_yk",
+          "value": "E3mgxFhsuvkYxpxO6ibyUoxWVExBM_4Y5aIVm2Ccwng",
           "status": "undeployed"
         },
         "cas_webflow_signing_key": {
           "nameInt": "cas_webflow_signing_key",
           "service": "cas",
-          "value": "E3vwjJN4Z_PQ0lWR4tkqGJPEZ9-itAmjpWUcGpGGk8sk9dg_x_0NFQ561-sKtxqI_WgCvaRJpm-nErWQWMpJGw",
+          "value": "N6NStJRjXIKhCkLIzrQ3Y759rhynLdnNZ_5CN3j8bn-sl-BkuiG2-O6cmct6ywlzvt8j47DMPm3MW_wXPFIQzQ",
           "status": "undeployed"
         },
         "cas_webflow_encryption_key": {
           "nameInt": "cas_webflow_encryption_key",
           "service": "cas",
-          "value": "1NMcKsne6CiorQSyO70Hyg",
+          "value": "dxpFu_x6Yh9DK9WLgYWljw",
+          "status": "undeployed"
+        },
+        "favicon_url": {
+          "nameInt": "favicon_url",
+          "service": "all",
+          "value": "https://layout.canadensys.net/common/images/favicon.ico",
+          "status": "undeployed"
+        },
+        "map_zone_name": {
+          "nameInt": "map_zone_name",
+          "service": "all",
+          "value": "Canada",
           "status": "undeployed"
         }
       },
