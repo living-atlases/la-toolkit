@@ -265,7 +265,7 @@ class LAProjectEditPage extends StatelessWidget {
                                     _serverAddController.text,
                                   ).forEach((server) {
                                     _addServer(server, _project,
-                                        vm.onSaveCurrentProject);
+                                        vm.onSaveCurrentProject(_project));
                                   });
                                 }
                               },
