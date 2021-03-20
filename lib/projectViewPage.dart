@@ -3,17 +3,16 @@ import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/alaInstallSelector.dart';
+import 'package:la_toolkit/components/lintProject.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
-import 'package:la_toolkit/sshKeysPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import 'components/alertCard.dart';
 import 'components/generatorSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
@@ -24,7 +23,6 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
-import 'models/sshKey.dart';
 import 'redux/actions.dart';
 
 class LAProjectViewPage extends StatelessWidget {
@@ -39,7 +37,7 @@ class LAProjectViewPage extends StatelessWidget {
         converter: (store) {
           return _ProjectPageViewModel(
               project: store.state.currentProject,
-              sshKeys: store.state.sshKeys,
+              /* sshKeys: store.state.sshKeys, -*/
               status: store.state.currentProject.status,
               alaInstallReleases: store.state.alaInstallReleases,
               generatorReleases: store.state.generatorReleases,
@@ -78,9 +76,6 @@ class LAProjectViewPage extends StatelessWidget {
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           print("Building ProjectViewPage $_scaffoldKey");
           final LAProject project = vm.project;
-          final bool basicDefined =
-              vm.status.value >= LAProjectStatus.basicDefined.value;
-          LAProjectStatus.advancedDefined.value;
           final cron = Cron();
           const minutes = 10;
           cron.schedule(Schedule.parse('*/$minutes * * * *'), () async {
@@ -215,34 +210,7 @@ class LAProjectViewPage extends StatelessWidget {
                                 child: ToolShortcut(tool: tool),
                               ));
                         }).toList()),
-                        if (vm.sshKeys.isEmpty)
-                          AlertCard(
-                              message: "You don't have any SSH key",
-                              actionText: "SOLVE",
-                              action: () => Navigator.popAndPushNamed(
-                                  context, SshKeyPage.routeName)),
-                        if (project.allServersWithServicesReady() &&
-                            !project.allServersWithOs('Ubuntu', '18.04'))
-                          AlertCard(
-                              message:
-                                  "The current supported OS version in Ubuntu 18.04"),
-                        if (basicDefined &&
-                            !project.allServicesAssignedToServers())
-                          AlertCard(
-                              message:
-                                  "Some service is not assigned to a server"),
-                        if (basicDefined && !project.allServersWithIPs())
-                          AlertCard(
-                              message:
-                                  "All servers should have configured their IP address"),
-                        if (basicDefined && !project.allServersWithSshKeys())
-                          AlertCard(
-                              message:
-                                  "All servers should have configured their SSH keys"),
-                        if (!project.collectoryAndBiocacheDifferentServers())
-                          AlertCard(
-                              message:
-                                  "The collections and the occurrences front-end (bioache-hub) services are in the same server. This can cause start-up problems when caches are enabled")
+                        LintProjectPanel()
                       ]))));
         });
   }
@@ -294,23 +262,20 @@ class LAProjectViewPage extends StatelessWidget {
 
 class _ProjectPageViewModel {
   final LAProject project;
+  final LAProjectStatus status;
   List<String> alaInstallReleases;
   List<String> generatorReleases;
-  List<SshKey> sshKeys;
   final void Function(LAProject project) onOpenProject;
   final void Function(LAProject project) onTuneProject;
-
   final void Function(LAProject project) onDeployProject;
   final void Function(LAProject project) onDelProject;
   final void Function(LAProject project) onGenInvProject;
   final void Function(LAProject project, bool) onTestConnProject;
-  final LAProjectStatus status;
 
   _ProjectPageViewModel(
       {required this.project,
       required this.alaInstallReleases,
       required this.generatorReleases,
-      required this.sshKeys,
       required this.status,
       required this.onOpenProject,
       required this.onTuneProject,
@@ -327,9 +292,7 @@ class _ProjectPageViewModel {
             project == other.project &&
             status.value == other.status.value &&
             ListEquality().equals(generatorReleases, other.generatorReleases) &&
-            ListEquality()
-                .equals(alaInstallReleases, other.alaInstallReleases) &&
-            ListEquality().equals(sshKeys, other.sshKeys);
+            ListEquality().equals(alaInstallReleases, other.alaInstallReleases);
     print("Is different project view $result");
     return result;
   }
@@ -338,7 +301,6 @@ class _ProjectPageViewModel {
   int get hashCode =>
       project.hashCode ^
       status.value.hashCode ^
-      ListEquality().hash(sshKeys) ^
       ListEquality().hash(generatorReleases) ^
       ListEquality().hash(alaInstallReleases);
 }

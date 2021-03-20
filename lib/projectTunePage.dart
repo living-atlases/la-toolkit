@@ -14,6 +14,7 @@ import 'package:la_toolkit/utils/regexp.dart';
 
 import 'components/appSnackBar.dart';
 import 'components/laAppBar.dart';
+import 'components/lintProject.dart';
 import 'components/scrollPanel.dart';
 import 'models/laServiceDesc.dart';
 import 'models/laVariable.dart';
@@ -174,6 +175,7 @@ class LAProjectTunePage extends StatelessWidget {
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
                           SizedBox(height: 20),
+                          LintProjectPanel(),
                           if (_endNoteEnabled)
                             Row(children: [
                               Text(

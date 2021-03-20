@@ -16,6 +16,7 @@ import 'components/appSnackBar.dart';
 import 'components/genericTextFormField.dart';
 import 'components/helpIcon.dart';
 import 'components/laAppBar.dart';
+import 'components/lintProject.dart';
 import 'components/scrollPanel.dart';
 import 'components/serviceWidget.dart';
 import 'components/servicesInServerChooser.dart';
@@ -413,7 +414,8 @@ If you have doubts or need to ask for some information, save this project and co
                   )
                 ]),
             body: AppSnackBar(ScrollPanel(
-              child: Stepper(
+                child: Column(children: [
+              Stepper(
                   steps: _steps,
                   currentStep: _step,
                   type: stepperType,
@@ -439,7 +441,8 @@ If you have doubts or need to ask for some information, save this project and co
                       ],
                     );
                   }),
-            )),
+              LintProjectPanel()
+            ]))),
             //     ])
           );
         });
