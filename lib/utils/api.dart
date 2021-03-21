@@ -219,7 +219,7 @@ class Api {
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
-        action.onStart(l['logsSuffix']);
+        action.onStart(l['cmd'], l['logsSuffix']);
       } else
         action.onError(response.statusCode);
     }).catchError((error) {
@@ -228,7 +228,7 @@ class Api {
     });
   }
 
-  static Future<List<dynamic>> getAnsiblewResults(String logsSuffix) async {
+  static Future<List<dynamic>?> getAnsiblewResults(String logsSuffix) async {
     if (AppUtils.isDemo()) return [];
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/ansiblew-results");
     Response response = await http.post(url,
@@ -237,6 +237,8 @@ class Api {
     if (response.statusCode == 200) {
       Map<String, dynamic> l = json.decode(response.body);
       return l['results'];
+    } else if (response.statusCode == 404) {
+      return null;
     } else {
       throw Exception('Failed to load results');
     }
