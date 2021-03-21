@@ -37,7 +37,7 @@ class DeployResultsPage extends StatelessWidget {
             onClose: (project) => store.dispatch(OpenProjectTools(project)));
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {
-        Map<String, int> resultsTotals = {};
+        Map<String, num> resultsTotals = {};
         resultTypes.forEach((type) => resultsTotals[type] = 0);
         List<Widget> resultsDetails = List.empty(growable: true);
         vm.project.lastDeploymentResults.forEach((result) {
@@ -46,11 +46,11 @@ class DeployResultsPage extends StatelessWidget {
                 DeploySubResultWidget(key, result['stats'][key]);
             resultsDetails.add(subResult);
             resultTypes.forEach((type) => resultsTotals[type] =
-                resultsTotals[type]! + int.parse(result['stats'][key][type]));
+                resultsTotals[type]! + result['stats'][key][type]);
           });
         });
 
-        int failures = resultsTotals['failures'] ?? 0;
+        num failures = resultsTotals['failures'] ?? 0;
         bool noFailures = failures == 0;
         context.hideLoaderOverlay();
         return Scaffold(

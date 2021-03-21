@@ -3,7 +3,7 @@ import 'package:la_toolkit/utils/constants.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ResultsChart extends StatelessWidget {
-  final Map<String, int> values;
+  final Map<String, num> values;
 
   ResultsChart(this.values);
   Widget build(BuildContext context) {

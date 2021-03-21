@@ -11,6 +11,7 @@ import 'components/hostSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/selectUtils.dart';
+import 'components/servicesChipPanel.dart';
 import 'components/termDialog.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
@@ -116,11 +117,11 @@ class _DeployPageState extends State<DeployPage> {
                               Text("Select which services you want to deploy:",
                                   style: TextStyle(fontSize: 16)),
                               // TODO: limit to real selected services
-                              /*  ServicesChipPanel(
+                              ServicesChipPanel(
                                   services: vm.state.currentProject
                                       .getServicesNameListSelected(),
                                   onChange: (s) =>
-                                      setState(() => _deployServices = s)), */
+                                      setState(() => _deployServices = s)),
                               HostSelector(
                                   title: "Deploy to servers:",
                                   modalTitle:
