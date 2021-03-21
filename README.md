@@ -38,8 +38,12 @@ flutter pub run build_runner watch --delete-conflicting-outputs
 We need to have the frontend build prior to build the docker image:
 
 ```
-
 flutter test && flutter build web
+```
+
+While we finish the null safety migration we have to use:
+```
+flutter build web --no-sound-null-safety 
 ```
 
 ### Docker 
@@ -158,3 +162,4 @@ Deployment results (failed):
 Console for the intrepids:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s14.png)
+
