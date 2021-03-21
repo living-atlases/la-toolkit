@@ -25,10 +25,16 @@ import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
 import 'redux/actions.dart';
 
-class LAProjectViewPage extends StatelessWidget {
+class LAProjectViewPage extends StatefulWidget {
+  // It's StatefulWidget to retrieve _scaffoldKey.currentState
   static const routeName = "tools";
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
+  @override
+  _LAProjectViewPageState createState() => _LAProjectViewPageState();
+}
+
+class _LAProjectViewPageState extends State<LAProjectViewPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(
