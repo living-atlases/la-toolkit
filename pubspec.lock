@@ -139,12 +139,10 @@ packages:
   chips_choice:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "985243b"
-      resolved-ref: "985243b7bdca0b239b9b826404a957293eb52b06"
-      url: "https://github.com/fareesh/flutter_chips_choice.git"
-    source: git
-    version: "2.0.0"
+      name: chips_choice
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   cli_util:
     dependency: transitive
     description:
@@ -977,11 +975,9 @@ packages:
   timelines:
     dependency: "direct main"
     description:
-      path: "."
-      ref: null-safety
-      resolved-ref: "93ca55c553d3fe89bfae5c52eab5456c1a11faaa"
-      url: "https://github.com/areille/timelines.git"
-    source: git
+      name: timelines
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.0.2+1"
   timing:
     dependency: transitive

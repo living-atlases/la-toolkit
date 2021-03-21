@@ -97,7 +97,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                             activeStyle: allStyle,
                             style: allStyle)),
                       choiceBuilder: (item) {
-                        /* if (item.value == 'all')
+                        if (item.value == 'all')
                           return CustomChip(
                               label: item.label,
                               width: double.infinity,
@@ -106,8 +106,8 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                               margin: const EdgeInsets.fromLTRB(0, 15, 30, 5),
                               selected: item.selected,
                               onSelect: item.select!);
-                         else
-                          return null; */
+                        else
+                          return null;
                       },
                       choiceStyle: const C2ChoiceStyle(
                           // color: Colors.indigo,
