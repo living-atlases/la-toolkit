@@ -124,6 +124,10 @@ COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
 
+# bash command with echo to show to the users
+COPY docker/echo-bash.sh /usr/local/bin/echo-bash
+RUN chmod +x /usr/local/bin/echo-bash
+
 # The year of ALA Portal launch ;-)
 EXPOSE 2010
 
