@@ -98,10 +98,14 @@ Future<void> main() async {
 
 final String appName = 'Living Atlases Toolkit';
 
+// https://stackoverflow.com/questions/50303441/flutter-redux-navigator-globalkey-currentstate-returns-null
+class MainKeys {
+  static final GlobalKey<NavigatorState> navKey =
+      new GlobalKey<NavigatorState>();
+}
+
 class MyApp extends StatelessWidget {
   final Store<AppState> store;
-  static final GlobalKey<NavigatorState> _navigatorKey =
-      new GlobalKey<NavigatorState>();
 
   const MyApp({Key? key, required this.store}) : super(key: key);
 
@@ -114,7 +118,7 @@ class MyApp extends StatelessWidget {
             overlayOpacity: 0.5,
             overlayColor: Colors.black,
             child: MaterialApp(
-              navigatorKey: _navigatorKey,
+              navigatorKey: MainKeys.navKey,
               builder: (context, widget) => ResponsiveWrapper.builder(
                   BouncingScrollWrapper.builder(context, widget!),
                   maxWidth: 1200,
@@ -411,41 +415,40 @@ class _HomePageViewModel {
 class NavigationMiddleware implements MiddlewareClass<AppState> {
   @override
   call(Store<AppState> store, action, next) {
-    if (action is CreateProject ||
-        action is OpenProject ||
-        action is ImportProject) {
-      MyApp._navigatorKey.currentState
-          ?.pushReplacementNamed(LAProjectEditPage.routeName);
-    }
-    if (action is TuneProject) {
-      MyApp._navigatorKey.currentState
-          ?.pushReplacementNamed(LAProjectTunePage.routeName);
-    }
-    if (action is PrepareDeployProject) {
-      MyApp._navigatorKey.currentState
-          ?.pushReplacementNamed(DeployPage.routeName);
-    }
-    if (action is OpenProjectTools) {
-      MyApp._navigatorKey.currentState
-          ?.pushReplacementNamed(LAProjectViewPage.routeName);
-    }
-    if (action is DelProject) {
-      MyApp._navigatorKey.currentState
-          ?.pushReplacementNamed(HomePage.routeName);
-    }
-    if (action is AddProject) {
-      // We open Tools instead of:
-      MyApp._navigatorKey.currentState
-          ?.pushReplacementNamed(HomePage.routeName);
-    }
-    if (action is UpdateProject) {
-      // We open Tools instead of:
-      // MyApp._navigatorKey.currentState.pushReplacementNamed(HomePage.routeName);
-    }
-    if (action is ShowDeployProjectResults) {
-      MyApp._navigatorKey.currentState
-          ?.pushReplacementNamed(DeployResultsPage.routeName);
-    }
+    /// The current state is null if (1) there is no widget in the tree that
+    /// matches this global key, (2) that widget is not a [StatefulWidget], or the
+    /// associated [State] object is not a subtype of `T`.
+    NavigatorState? navigatorState = MainKeys.navKey.currentState;
     next(action);
+    if (navigatorState != null) {
+      if (action is CreateProject ||
+          action is OpenProject ||
+          action is ImportProject) {
+        navigatorState.pushReplacementNamed(LAProjectEditPage.routeName);
+      }
+      if (action is TuneProject) {
+        navigatorState.pushReplacementNamed(LAProjectTunePage.routeName);
+      }
+      if (action is PrepareDeployProject) {
+        navigatorState.pushReplacementNamed(DeployPage.routeName);
+      }
+      if (action is OpenProjectTools) {
+        navigatorState.pushReplacementNamed(LAProjectViewPage.routeName);
+      }
+      if (action is DelProject) {
+        navigatorState.pushReplacementNamed(HomePage.routeName);
+      }
+      if (action is AddProject) {
+        // We open Tools instead of:
+        navigatorState.pushReplacementNamed(HomePage.routeName);
+      }
+      if (action is UpdateProject) {
+        // We open Tools instead of:
+        // MyApp._navigatorKey.currentState.pushReplacementNamed(HomePage.routeName);
+      }
+      if (action is ShowDeployProjectResults) {
+        navigatorState.pushReplacementNamed(DeployResultsPage.routeName);
+      }
+    }
   }
 }
