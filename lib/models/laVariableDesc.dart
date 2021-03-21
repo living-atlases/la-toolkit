@@ -99,6 +99,7 @@ class LAVariableDesc {
         error: "Invalid username",
         help: "Before-Start-Your-LA-Installation#default-user-ubuntu",
         // We moved "ansible_user" to the servers definition
+        defValue: (project) => 'ubuntu',
         inTunePage: false,
         hint:
             "The user name that we'll use to access to your servers with sudo passwordless permission. By default 'ubuntu'"),
@@ -193,7 +194,7 @@ class LAVariableDesc {
         nameInt: "orgCountry",
         regExp: LARegExp.anyThing,
         defValue: (LAProject project) =>
-            project.getVariable('map_zone_name').value,
+            project.getVariableValue('map_zone_name'),
         subcategory: LAVariableSubcategory.org),
     "google_api_key": LAVariableDesc(
         name: "Google Maps API Key",

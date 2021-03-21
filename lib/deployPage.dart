@@ -11,7 +11,6 @@ import 'components/hostSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/selectUtils.dart';
-import 'components/servicesChipPanel.dart';
 import 'components/termDialog.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
@@ -117,11 +116,11 @@ class _DeployPageState extends State<DeployPage> {
                               Text("Select which services you want to deploy:",
                                   style: TextStyle(fontSize: 16)),
                               // TODO: limit to real selected services
-                              ServicesChipPanel(
+                              /*  ServicesChipPanel(
                                   services: vm.state.currentProject
                                       .getServicesNameListSelected(),
                                   onChange: (s) =>
-                                      setState(() => _deployServices = s)),
+                                      setState(() => _deployServices = s)), */
                               HostSelector(
                                   title: "Deploy to servers:",
                                   modalTitle:
@@ -135,7 +134,7 @@ class _DeployPageState extends State<DeployPage> {
                                   onChange: (limitToServers) => setState(
                                       () => _limitToServers = limitToServers)),
                               TagsSelector(
-                                  key: _selectTagsKey,
+                                  selectorKey: _selectTagsKey,
                                   tags: TagsConstants.getTagsFor(vm
                                       .state.currentProject.alaInstallRelease),
                                   icon: Mdi.tagPlusOutline,
@@ -146,7 +145,7 @@ class _DeployPageState extends State<DeployPage> {
                                   onChange: (tags) =>
                                       setState(() => _tags = tags)),
                               TagsSelector(
-                                  key: _skipTagsKey,
+                                  selectorKey: _skipTagsKey,
                                   tags: TagsConstants.getTagsFor(vm
                                       .state.currentProject.alaInstallRelease),
                                   icon: Mdi.tagOffOutline,
@@ -249,7 +248,7 @@ class _DeployPageState extends State<DeployPage> {
 }
 
 class TagsSelector extends StatelessWidget {
-  final GlobalKey<S2MultiState<String>> key;
+  final GlobalKey<S2MultiState<String>> selectorKey;
   final List<String> tags;
   final IconData icon;
   final String title;
@@ -258,7 +257,7 @@ class TagsSelector extends StatelessWidget {
   final Function(List<String>) onChange;
 
   TagsSelector(
-      {required this.key,
+      {required this.selectorKey,
       required this.tags,
       required this.icon,
       required this.title,
@@ -269,7 +268,7 @@ class TagsSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SmartSelect<String>.multiple(
-        key: key,
+        key: selectorKey,
         value: [],
         title: title,
         choiceItems: S2Choice.listFrom<String, String>(

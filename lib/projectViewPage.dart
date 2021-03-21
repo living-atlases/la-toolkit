@@ -161,7 +161,7 @@ class LAProjectViewPage extends StatelessWidget {
             // - Inventories download
           ];
           String projectIconUrl =
-              project.getVariable("favicon_url").value.toString();
+              project.getVariableValue("favicon_url").toString();
           return Scaffold(
               key: _scaffoldKey,
               backgroundColor: Colors.white,

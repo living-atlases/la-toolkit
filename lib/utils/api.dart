@@ -6,7 +6,6 @@ import 'package:http/http.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -27,12 +26,9 @@ class Api {
   static void genSshConf(LAProject project) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/gen-ssh-conf");
-    Map<String, dynamic> servers = project.toJson()['servers'];
-    Object user = project
-            .getVariable(LAVariableDesc.get("ansible_user").nameInt)
-            .value ??
-        project
-            .getVariable(LAVariableDesc.get("ansible_user").defValue!(project));
+    List<Map<String, dynamic>> servers = project.toJson()['servers'];
+    String user = project.getVariableValue("ansible_user")!.toString();
+    print(user);
     Response response = await http.post(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({
@@ -42,6 +38,7 @@ class Api {
           'user': user.toString()
         })));
     if (response.statusCode == 200) {}
+    // errors.dart:187 Uncaught (in promise) Error: Expected a value of type 'Map<String, dynamic>', but got one of type 'List<Map<String, dynamic>>'
     return;
   }
 

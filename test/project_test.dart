@@ -671,4 +671,19 @@ void main() {
         equals(true));
     expect(p.getService(collectory).suburl, equals('collectory'));
   });
+
+  test('Test empty project creation toString should not fail', () {
+    LAProject testProject = LAProject();
+    // https://stackoverflow.com/questions/13298969/how-do-you-unittest-exceptions-in-dart
+    expect(() => testProject.toString(), returnsNormally);
+    expect(() => testProject.toJson(), returnsNormally);
+    expect(() => testProject.toGeneratorJson(), returnsNormally);
+  });
+
+  test('get def ansible user of project', () {
+    LAProject testProject = LAProject();
+
+    expect(testProject.getVariableValue("ansible_user"), equals("ubuntu"));
+    expect(testProject.getVariable("ansible_user").value, equals("ubuntu"));
+  });
 }

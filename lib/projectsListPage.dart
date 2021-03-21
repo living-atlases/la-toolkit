@@ -198,11 +198,11 @@ class ProjectCard extends StatelessWidget {
               child: Align(
                 child: CircleAvatar(
                   radius: 25.0,
-                  child: project.getVariable("favicon_url").value != null &&
+                  child: project.getVariableValue("favicon_url") != null &&
                           !AppUtils.isDemo()
                       ? ImageIcon(
                           NetworkImage(AppUtils.proxyImg(
-                              project.getVariable("favicon_url").value)),
+                              project.getVariableValue("favicon_url"))),
                           color: LAColorTheme.laPalette,
                           size: 35)
                       : Text(project.shortName.length > 3

@@ -293,14 +293,27 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   LAVariable getVariable(String nameInt) {
-    return variables[nameInt] ??
-        LAVariable.fromDesc(LAVariableDesc.get(nameInt));
+    if (variables[nameInt] == null) {
+      variables[nameInt] = LAVariable.fromDesc(LAVariableDesc.get(nameInt));
+    }
+    return variables[nameInt]!;
   }
 
-  void setVariable(LAVariableDesc variable, Object value) {
-    LAVariable cur = getVariable(variable.nameInt);
+  Object? getVariableValue(String nameInt) {
+    LAVariable variable = getVariable(nameInt);
+    bool isEmpty = variable.value == null;
+    LAVariableDesc desc = LAVariableDesc.get(nameInt);
+    Object? value = variable.value ??= desc.defValue != null
+        ? LAVariableDesc.get(nameInt).defValue!(this)
+        : null;
+    if (isEmpty && value != null) setVariable(desc, value);
+    return value;
+  }
+
+  void setVariable(LAVariableDesc variableDesc, Object value) {
+    LAVariable cur = getVariable(variableDesc.nameInt);
     cur.value = value;
-    variables[variable.nameInt] = cur;
+    variables[variableDesc.nameInt] = cur;
   }
 
   List<String> getServicesNameListInServer(String serverName) {

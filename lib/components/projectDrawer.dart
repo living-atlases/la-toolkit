@@ -37,14 +37,13 @@ class ProjectDrawer extends StatelessWidget {
               child: DrawerHeader(
                 child: Column(
                   children: <Widget>[
-                    vm.state.currentProject.getVariable("favicon_url").value !=
+                    vm.state.currentProject.getVariableValue("favicon_url") !=
                                 null &&
                             !AppUtils.isDemo()
                         ? ImageIcon(
                             NetworkImage(AppUtils.proxyImg(vm
                                 .state.currentProject
-                                .getVariable("favicon_url")
-                                .value)),
+                                .getVariableValue("favicon_url"))),
                             color: LAColorTheme.laPalette,
                             size: 80)
                         : Image.asset(

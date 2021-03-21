@@ -259,7 +259,7 @@ class MessageItem implements ListItem {
   MessageItem(this.project, this.variable, this.onChanged);
 
   Widget buildTitle(BuildContext context) {
-    final initialValue = project.getVariable(variable.nameInt).value;
+    final initialValue = project.getVariableValue(variable.nameInt);
     final bool deployed = project.getVariable(variable.nameInt).status ==
         LAVariableStatus.deployed;
     var defValue;

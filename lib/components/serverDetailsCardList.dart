@@ -237,7 +237,7 @@ class ServersDetailsCardList extends StatelessWidget {
                                                       label:
                                                           "SSH alternative username",
                                                       hint:
-                                                          'Only if it\'s different than \'${_project.getVariable("ansible_user").value}\' in this server',
+                                                          'Only if it\'s different than \'${_project.getVariableValue("ansible_user")}\' in this server',
                                                       error: 'Invalid username',
                                                       initialValue: _project
                                                               .servers[index]
