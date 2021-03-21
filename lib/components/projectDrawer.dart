@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/helpIcon.dart';
 import 'package:la_toolkit/components/laIcon.dart';
 import 'package:la_toolkit/components/listTileLink.dart';
 import 'package:la_toolkit/components/termDialog.dart';
@@ -116,31 +117,41 @@ class ProjectDrawer extends StatelessWidget {
       String url = currentProject
           .getService(nameInt)
           .fullUrl(currentProject.useSSL, currentProject.domain);
+
       String name = StringUtils.capitalize(desc.name);
       List<Widget> allServices = List<Widget>.empty(growable: true);
+      String? help = nameInt == LAServiceName.solr.toS()
+          ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
+          : null;
       ListTileLink mainServices = _createServiceTileLink(
           name: name,
           icon: desc.icon,
           url: url,
           admin: desc.admin,
-          alaAdmin: desc.alaAdmin);
+          alaAdmin: desc.alaAdmin,
+          help: help);
       // This is for userdetails, apikeys, etc
-      if (nameInt != 'cas') allServices.add(mainServices);
+      if (nameInt != LAServiceName.cas.toS()) allServices.add(mainServices);
+      // print('service: $nameInt, url: $url, help: $help');
       desc.subServices.forEach((sub) => allServices.add(_createServiceTileLink(
-          name: sub.name,
-          icon: sub.icon,
-          url: url,
-          admin: sub.admin,
-          alaAdmin: sub.alaAdmin)));
+            name: sub.name,
+            icon: sub.icon,
+            url: url + sub.path,
+            admin: sub.admin,
+            alaAdmin: sub.alaAdmin,
+          )));
       return Column(children: allServices);
     }).toList();
   }
 
-  ListTileLink _createServiceTileLink({icon, name, url, admin, alaAdmin}) {
+  ListTileLink _createServiceTileLink(
+      {icon, name, url, admin, alaAdmin, String? help}) {
     return ListTileLink(
       icon: Icon(icon),
       title: name,
-      tooltip: "Open the $name service",
+      tooltip: name != "Index"
+          ? "Open the $name service"
+          : "This is protected by default, see our wiki for more info",
       url: url,
       additionalTrailingIcon: alaAdmin
           ? new IconButton(
@@ -148,12 +159,16 @@ class ProjectDrawer extends StatelessWidget {
               tooltip: "alaAdmin section",
               onPressed: () async => await launch(url + '/alaAdmin'))
           : null,
-      trailingIcon: admin
-          ? new IconButton(
-              icon: Icon(Icons.admin_panel_settings_rounded),
-              tooltip: "Admin section",
-              onPressed: () async => await launch(url + '/admin'))
-          : null,
+      trailingIcon: help != null
+          ? HelpIcon(
+              wikipage: help,
+            )
+          : admin
+              ? IconButton(
+                  icon: Icon(Icons.admin_panel_settings_rounded),
+                  tooltip: "Admin section",
+                  onPressed: () async => await launch(url + '/admin'))
+              : null,
     );
   }
 }

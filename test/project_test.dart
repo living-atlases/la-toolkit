@@ -16,6 +16,7 @@ void main() {
   final biocacheService = LAServiceName.biocache_service.toS();
   final alerts = LAServiceName.alerts.toS();
   final images = LAServiceName.images.toS();
+  final solr = LAServiceName.solr.toS();
   final webapi = LAServiceName.webapi.toS();
   final regions = LAServiceName.regions.toS();
   final spatial = LAServiceName.spatial.toS();
@@ -616,6 +617,8 @@ void main() {
     expect(p.getService(spatial).suburl, equals('espacial'));
     expect(p.getService(cas).suburl, equals('auth'));
     expect(p.getService(lists).suburl, equals('listas'));
+    expect(p.getService(solr).fullUrl(p.useSSL, p.domain),
+        equals('https://index.gbif.es'));
 
     p = new LAProject.import(yoRcJson: yoRcJsonCa);
     expect(p.longName, equals('Canadensys'));
