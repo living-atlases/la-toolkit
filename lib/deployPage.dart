@@ -59,16 +59,14 @@ class _DeployPageState extends State<DeployPage> {
                   continueEvenIfFails: _continueEvenIfFails,
                   debug: _debug,
                   dryRun: _dryRun,
-                  onStart: (l) {
+                  onStart: (cmd, logsSuffix) {
                     // print("Logs suffix: $l");
-                    logsSuffix = l;
-
                     context.hideLoaderOverlay();
                     TermDialog.show(context, title: "Ansible console",
                         onClose: () async {
                       // Show the results
                       context.showLoaderOverlay();
-                      store.dispatch(GetDeployProjectResults(logsSuffix));
+                      store.dispatch(GetDeployProjectResults(cmd, logsSuffix, () => context.hideLoaderOverlay()));
                       // context.hideLoaderOverlay();
                     });
                   },

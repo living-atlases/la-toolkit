@@ -112,7 +112,7 @@ class DeployProject extends AppActions {
   bool continueEvenIfFails;
   bool debug;
   bool dryRun;
-  Function(String) onStart;
+  Function(String cmd, String logsSuffix) onStart;
   ErrorCallback onError;
 
   DeployProject(
@@ -130,9 +130,10 @@ class DeployProject extends AppActions {
 }
 
 class GetDeployProjectResults extends AppActions {
+  String cmd;
   String logsSuffix;
-
-  GetDeployProjectResults(this.logsSuffix);
+  VoidCallback onFailed;
+  GetDeployProjectResults(this.cmd, this.logsSuffix, this.onFailed);
 }
 
 class ShowDeployProjectResults extends AppActions {
@@ -140,6 +141,8 @@ class ShowDeployProjectResults extends AppActions {
 
   ShowDeployProjectResults(this.results);
 }
+
+class OnShowDeployProjectResultsFailed extends AppActions {}
 
 class OpenProjectTools extends AppActions {
   LAProject project;
