@@ -72,8 +72,8 @@ Living Atlases portals''',
             decoration: pageDecoration,
           ),
           PageViewModel(
-            titleWidget:
-                _buildTitle("This LA Toolkit\nputs all these part together..."),
+            titleWidget: _buildTitle(
+                "This LA Toolkit\nputs all these parts together..."),
             body:
                 "...with an user friendly interface , and an up-to-date environment\nto perform the common maintenance tasks of a LA portal",
             image: _buildImage('la-toolkit-intro-images-3.png', 150),
