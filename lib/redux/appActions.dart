@@ -1,4 +1,6 @@
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
+import 'package:la_toolkit/models/cmdHistoryDetails.dart';
+import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -93,6 +95,11 @@ class OnPreDeployTasks extends AppActions {
   OnPreDeployTasks(this.project);
 }
 
+class OnViewLogs extends AppActions {
+  LAProject project;
+  OnViewLogs(this.project);
+}
+
 class PrepareDeployProject extends AppActions {
   String alaInstallRelease;
   String generatorRelease;
@@ -117,7 +124,7 @@ class DeployProject extends AppActions {
   bool continueEvenIfFails;
   bool debug;
   bool dryRun;
-  Function(String cmd, String logsSuffix) onStart;
+  Function(String cmd, String logsPrefix, String logsSuffix) onStart;
   ErrorCallback onError;
 
   DeployProject(
@@ -135,16 +142,17 @@ class DeployProject extends AppActions {
 }
 
 class GetDeployProjectResults extends AppActions {
-  String cmd;
-  String logsSuffix;
+  CmdHistoryEntry cmdHistoryEntry;
   VoidCallback onFailed;
-  GetDeployProjectResults(this.cmd, this.logsSuffix, this.onFailed);
+
+  GetDeployProjectResults(this.cmdHistoryEntry, this.onFailed);
 }
 
 class ShowDeployProjectResults extends AppActions {
-  List<dynamic> results;
+  CmdHistoryEntry cmdHistoryEntry;
+  CmdHistoryDetails results;
 
-  ShowDeployProjectResults(this.results);
+  ShowDeployProjectResults(this.cmdHistoryEntry, this.results);
 }
 
 class OnShowDeployProjectResultsFailed extends AppActions {}

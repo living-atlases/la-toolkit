@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -219,7 +220,7 @@ class Api {
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
-        action.onStart(l['cmd'], l['logsSuffix']);
+        action.onStart(l['cmd'], l['logsPrefix'], l['logsSuffix']);
       } else
         action.onError(response.statusCode);
     }).catchError((error) {
@@ -228,19 +229,17 @@ class Api {
     });
   }
 
-  static Future<List<dynamic>?> getAnsiblewResults(String logsSuffix) async {
-    if (AppUtils.isDemo()) return [];
+  static Future<CmdHistoryDetails?> getAnsiblewResults(
+      {required String logsPrefix, required String logsSuffix}) async {
+    if (AppUtils.isDemo()) return null;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/ansiblew-results");
     Response response = await http.post(url,
         headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({'logsSuffix': logsSuffix})));
+        body: utf8.encode(
+            json.encode({'logsPrefix': logsPrefix, 'logsSuffix': logsSuffix})));
     if (response.statusCode == 200) {
-      Map<String, dynamic> l = json.decode(response.body);
-      return l['results'];
-    } else if (response.statusCode == 404) {
-      return null;
-    } else {
-      throw Exception('Failed to load results');
+      return CmdHistoryDetails.fromJson(json.decode(response.body));
     }
+    return null;
   }
 }

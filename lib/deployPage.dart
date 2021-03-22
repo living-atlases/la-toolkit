@@ -16,6 +16,7 @@ import 'components/servicesChipPanel.dart';
 import 'components/termDialog.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
+import 'models/cmdHistoryEntry.dart';
 import 'models/laProject.dart';
 
 class DeployPage extends StatefulWidget {
@@ -60,15 +61,21 @@ class _DeployPageState extends State<DeployPage> {
                   continueEvenIfFails: _continueEvenIfFails,
                   debug: _debug,
                   dryRun: _dryRun,
-                  onStart: (cmd, logsSuffix) {
+                  onStart: (cmd, logsPrefix, logsSuffix) {
                     // print("Logs suffix: $l");
                     context.hideLoaderOverlay();
                     TermDialog.show(context, title: "Ansible console",
                         onClose: () async {
                       // Show the results
                       context.showLoaderOverlay();
-                      store.dispatch(GetDeployProjectResults(
-                          cmd, logsSuffix, () => context.hideLoaderOverlay()));
+                      CmdHistoryEntry cmdHistory = CmdHistoryEntry(
+                          title:
+                              "Deploy of ${_deployServices.join(', ')}${_limitToServers.length > 0 ? ' in ' : ''}${_limitToServers.length > 0 ? _limitToServers.join(',') : ''}",
+                          cmd: cmd,
+                          logsPrefix: logsPrefix,
+                          logsSuffix: logsSuffix);
+                      store.dispatch(
+                          CmdUtils.getCmdResults(cmdHistory, context));
                       // context.hideLoaderOverlay();
                     });
                   },
@@ -293,4 +300,21 @@ class _DeployViewModel {
 
   @override
   int get hashCode => state.hashCode;
+}
+
+class CmdUtils {
+  static AppActions getCmdResults(
+      CmdHistoryEntry cmdHistory, BuildContext context) {
+    return GetDeployProjectResults(cmdHistory, () {
+      context.hideLoaderOverlay();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('There was some problem retrieving the results'),
+        duration: Duration(days: 365),
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: () {},
+        ),
+      ));
+    });
+  }
 }

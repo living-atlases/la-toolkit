@@ -12,10 +12,11 @@ extension LAProjectCopyWith on LAProject {
     bool? advancedEdit,
     bool? advancedTune,
     String? alaInstallRelease,
+    List<CmdHistoryEntry>? cmdHistory,
     String? domain,
     String? generatorRelease,
     bool? isCreated,
-    List<dynamic>? lastDeploymentResults,
+    CmdHistoryDetails? lastCmdHistoryDetails,
     String? longName,
     List<double>? mapBounds1stPoint,
     List<double>? mapBounds2ndPoint,
@@ -36,11 +37,12 @@ extension LAProjectCopyWith on LAProject {
       advancedEdit: advancedEdit ?? this.advancedEdit,
       advancedTune: advancedTune ?? this.advancedTune,
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
+      cmdHistory: cmdHistory ?? this.cmdHistory,
       domain: domain ?? this.domain,
       generatorRelease: generatorRelease ?? this.generatorRelease,
       isCreated: isCreated ?? this.isCreated,
-      lastDeploymentResults:
-          lastDeploymentResults ?? this.lastDeploymentResults,
+      lastCmdHistoryDetails:
+          lastCmdHistoryDetails ?? this.lastCmdHistoryDetails,
       longName: longName ?? this.longName,
       mapBounds1stPoint: mapBounds1stPoint ?? this.mapBounds1stPoint,
       mapBounds2ndPoint: mapBounds2ndPoint ?? this.mapBounds2ndPoint,
@@ -98,7 +100,13 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
         .toList(),
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num?)?.toDouble(),
-    lastDeploymentResults: json['lastDeploymentResults'] as List<dynamic>?,
+    lastCmdHistoryDetails: json['lastCmdHistoryDetails'] == null
+        ? null
+        : CmdHistoryDetails.fromJson(
+            json['lastCmdHistoryDetails'] as Map<String, dynamic>),
+    cmdHistory: (json['cmdHistory'] as List<dynamic>?)
+        ?.map((e) => CmdHistoryEntry.fromJson(e as Map<String, dynamic>))
+        .toList(),
     advancedEdit: json['advancedEdit'] as bool?,
     advancedTune: json['advancedTune'] as bool?,
   );
@@ -125,7 +133,8 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'mapBounds1stPoint': instance.mapBounds1stPoint,
       'mapBounds2ndPoint': instance.mapBounds2ndPoint,
       'mapZoom': instance.mapZoom,
-      'lastDeploymentResults': instance.lastDeploymentResults,
+      'lastCmdHistoryDetails': instance.lastCmdHistoryDetails?.toJson(),
+      'cmdHistory': instance.cmdHistory.map((e) => e.toJson()).toList(),
     };
 
 K _$enumDecode<K, V>(

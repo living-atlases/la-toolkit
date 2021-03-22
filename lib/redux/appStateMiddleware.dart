@@ -150,10 +150,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       Api.ansiblew(action);
     }
     if (action is GetDeployProjectResults) {
-      Api.getAnsiblewResults(action.logsSuffix).then((results) {
-        if (results != null)
-          store.dispatch(ShowDeployProjectResults(results));
-        else {
+      Api.getAnsiblewResults(
+              logsPrefix: action.cmdHistoryEntry.logsPrefix,
+              logsSuffix: action.cmdHistoryEntry.logsSuffix)
+          .then((results) {
+        if (results != null) {
+          store.dispatch(
+              ShowDeployProjectResults(action.cmdHistoryEntry, results));
+          store.dispatch(SaveCurrentProject(store.state.currentProject));
+        } else {
           store.dispatch(OnShowDeployProjectResultsFailed());
           action.onFailed();
         }

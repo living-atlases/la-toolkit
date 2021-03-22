@@ -40,7 +40,8 @@ class DeployResultsPage extends StatelessWidget {
         Map<String, num> resultsTotals = {};
         resultTypes.forEach((type) => resultsTotals[type] = 0);
         List<Widget> resultsDetails = List.empty(growable: true);
-        vm.project.lastDeploymentResults.forEach((result) {
+        List<dynamic> results = vm.project.lastCmdHistoryDetails!.results;
+        results.forEach((result) {
           result['stats'].keys.forEach((key) {
             DeploySubResultWidget subResult =
                 DeploySubResultWidget(key, result['stats'][key]);
@@ -60,6 +61,7 @@ class DeployResultsPage extends StatelessWidget {
                 titleIcon: Icons.analytics_outlined,
                 title: "Deployment Results",
                 showLaIcon: false,
+                showBack: false,
                 actions: [
                   IconButton(
                       icon: Tooltip(

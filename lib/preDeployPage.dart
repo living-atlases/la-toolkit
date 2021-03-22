@@ -38,6 +38,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
             _addUbuntuUser || _giveSudo || _etcHost || _solrLimits
                 ? () => vm.onDoPreDeployTasks(vm.project)
                 : null;
+        String defUser = vm.project.getVariableValue("ansible_user").toString();
         return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
@@ -61,7 +62,8 @@ class _PreDeployPageState extends State<PreDeployPage> {
                         child: Column(
                           children: [
                             PreDeployTask(
-                                title: "Add the 'ubuntu' user to your servers",
+                                title:
+                                    "Add the '$defUser' user to your servers",
                                 initialValue: _addUbuntuUser,
                                 help:
                                     "Before-Start-Your-LA-Installation#default-user-ubuntu",

@@ -76,6 +76,8 @@ dependencies:
   flutter_speed_dial: ^3.0.4
   # listview animation
   flutter_staggered_animations: ^1.0.0
+  # date
+  simple_moment: ^1.1.0
 
   # icon
   mdi: ^5.0.0-nullsafety.0

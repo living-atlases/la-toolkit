@@ -39,12 +39,20 @@ class LAAppBar extends AppBar {
               child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                 if (showBack)
                   IconButton(
-                      tooltip: "Homepage",
+                      tooltip: "Back",
                       icon:
                           Icon(Icons.arrow_back, size: 28, color: Colors.black),
                       onPressed: () {
-                        Navigator.of(context).pushReplacementNamed(
-                            backRoute ?? HomePage.routeName);
+                        if (backRoute != null) {
+                          Navigator.of(context).pushReplacementNamed(backRoute);
+                        } else {
+                          try {
+                            Navigator.of(context).pop();
+                          } catch (e) {
+                            Navigator.of(context)
+                                .pushReplacementNamed(HomePage.routeName);
+                          }
+                        }
                       }),
                 if (showLaIcon)
                   IconButton(

@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
+import 'package:la_toolkit/logsPage.dart';
 import 'package:la_toolkit/preDeployPage.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -39,6 +40,8 @@ class Routes {
           return LAProjectTunePage();
         case PreDeployPage.routeName:
           return PreDeployPage();
+        case LogsHistoryPage.routeName:
+          return LogsHistoryPage();
         case SshKeyPage.routeName:
           return SshKeyPage();
         case DeployPage.routeName:

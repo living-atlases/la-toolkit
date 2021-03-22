@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
@@ -11,6 +12,7 @@ import 'package:la_toolkit/utils/regexp.dart';
 import 'package:latlong/latlong.dart';
 import 'package:uuid/uuid.dart';
 
+import 'cmdHistoryDetails.dart';
 import 'laServer.dart';
 import 'laService.dart';
 import 'laVariable.dart';
@@ -53,7 +55,8 @@ class LAProject {
   List<double?> mapBounds1stPoint;
   List<double?> mapBounds2ndPoint;
   double? mapZoom;
-  List<dynamic> lastDeploymentResults;
+  CmdHistoryDetails? lastCmdHistoryDetails;
+  List<CmdHistoryEntry> cmdHistory;
 
   LAProject(
       {String? uuid,
@@ -75,7 +78,8 @@ class LAProject {
       List<double?>? mapBounds2ndPoint,
       this.theme = "clean",
       this.mapZoom,
-      List<dynamic>? lastDeploymentResults,
+      this.lastCmdHistoryDetails,
+      List<CmdHistoryEntry>? cmdHistory,
       bool? advancedEdit,
       bool? advancedTune})
       : uuid = uuid ?? Uuid().v4(),
@@ -85,9 +89,9 @@ class LAProject {
         services = services ?? initialServices,
         variables = variables ?? {},
         serverServices = serverServices ?? {},
-        lastDeploymentResults = lastDeploymentResults ?? [],
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
+        cmdHistory = cmdHistory ?? [],
         mapBounds1stPoint = mapBounds1stPoint ?? List<double?>.filled(2, null),
         mapBounds2ndPoint = mapBounds2ndPoint ?? List<double?>.filled(2, null) {
     if (this.serversMap.entries.length != this.servers.length) {
@@ -415,8 +419,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           generatorRelease == other.generatorRelease &&
           ListEquality().equals(mapBounds1stPoint, other.mapBounds1stPoint) &&
           ListEquality().equals(mapBounds2ndPoint, other.mapBounds2ndPoint) &&
-          ListEquality()
-              .equals(lastDeploymentResults, other.lastDeploymentResults) &&
+          lastCmdHistoryDetails == other.lastCmdHistoryDetails &&
+          ListEquality().equals(cmdHistory, other.cmdHistory) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -439,7 +443,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       generatorRelease.hashCode ^
       ListEquality().hash(mapBounds1stPoint) ^
       ListEquality().hash(mapBounds2ndPoint) ^
-      ListEquality().hash(lastDeploymentResults) ^
+      lastCmdHistoryDetails.hashCode ^
+      ListEquality().hash(cmdHistory) ^
       mapZoom.hashCode;
 
   void serviceInUse(String serviceNameInt, bool use) {

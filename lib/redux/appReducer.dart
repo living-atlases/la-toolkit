@@ -1,5 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
+import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
@@ -227,7 +228,7 @@ AppState _onTestConnectivityResults(
     currentProject.upsertByName(server);
   }
   if (currentProject.allServersWithServicesReady() &&
-      currentProject.status.value < LAProjectStatus.reachable.value) {
+      currentProject.status.value <= LAProjectStatus.reachable.value) {
     currentProject.setProjectStatus(LAProjectStatus.reachable);
   } else
     currentProject.setProjectStatus(LAProjectStatus.advancedDefined);
@@ -263,7 +264,10 @@ AppState _onImportSshKey(AppState state, OnImportSshKey action) {
 AppState _showDeployProjectResults(
     AppState state, ShowDeployProjectResults action) {
   LAProject currentProject = state.currentProject;
-  currentProject.lastDeploymentResults = action.results;
+  currentProject.lastCmdHistoryDetails = action.results;
+  action.cmdHistoryEntry.result =
+      action.results.code == 0 ? CmdResult.success : CmdResult.failed;
+  currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
   return state.copyWith(currentProject: currentProject);
 }
 

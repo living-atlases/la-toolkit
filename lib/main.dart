@@ -9,6 +9,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
+import 'package:la_toolkit/logsPage.dart';
 import 'package:la_toolkit/preDeployPage.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -433,6 +434,9 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
       if (action is OnPreDeployTasks) {
         navigatorState.pushReplacementNamed(PreDeployPage.routeName);
       }
+      if (action is OnViewLogs) {
+        navigatorState.pushReplacementNamed(LogsHistoryPage.routeName);
+      }
       if (action is PrepareDeployProject) {
         navigatorState.pushReplacementNamed(DeployPage.routeName);
       }
@@ -451,7 +455,7 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
         // MyApp._navigatorKey.currentState.pushReplacementNamed(HomePage.routeName);
       }
       if (action is ShowDeployProjectResults) {
-        navigatorState.pushReplacementNamed(DeployResultsPage.routeName);
+        navigatorState.pushNamed(DeployResultsPage.routeName);
       }
     }
   }
