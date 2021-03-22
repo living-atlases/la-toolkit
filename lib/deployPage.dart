@@ -75,7 +75,7 @@ class _DeployPageState extends State<DeployPage> {
                           logsPrefix: logsPrefix,
                           logsSuffix: logsSuffix);
                       store.dispatch(
-                          CmdUtils.getCmdResults(cmdHistory, context));
+                          CmdUtils.getCmdResults(context, cmdHistory, true));
                       // context.hideLoaderOverlay();
                     });
                   },
@@ -304,8 +304,8 @@ class _DeployViewModel {
 
 class CmdUtils {
   static AppActions getCmdResults(
-      CmdHistoryEntry cmdHistory, BuildContext context) {
-    return GetDeployProjectResults(cmdHistory, () {
+      BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
+    return GetDeployProjectResults(cmdHistory, fstRetrieved, () {
       context.hideLoaderOverlay();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('There was some problem retrieving the results'),

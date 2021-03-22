@@ -144,15 +144,19 @@ class DeployProject extends AppActions {
 class GetDeployProjectResults extends AppActions {
   CmdHistoryEntry cmdHistoryEntry;
   VoidCallback onFailed;
+  bool fstRetrieved;
 
-  GetDeployProjectResults(this.cmdHistoryEntry, this.onFailed);
+  GetDeployProjectResults(
+      this.cmdHistoryEntry, this.fstRetrieved, this.onFailed);
 }
 
 class ShowDeployProjectResults extends AppActions {
   CmdHistoryEntry cmdHistoryEntry;
   CmdHistoryDetails results;
+  bool fstRetrieved;
 
-  ShowDeployProjectResults(this.cmdHistoryEntry, this.results);
+  ShowDeployProjectResults(
+      this.cmdHistoryEntry, this.fstRetrieved, this.results);
 }
 
 class OnShowDeployProjectResultsFailed extends AppActions {}

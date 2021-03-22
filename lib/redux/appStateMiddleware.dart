@@ -155,8 +155,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               logsSuffix: action.cmdHistoryEntry.logsSuffix)
           .then((results) {
         if (results != null) {
-          store.dispatch(
-              ShowDeployProjectResults(action.cmdHistoryEntry, results));
+          store.dispatch(ShowDeployProjectResults(
+              action.cmdHistoryEntry, action.fstRetrieved, results));
           store.dispatch(SaveCurrentProject(store.state.currentProject));
         } else {
           store.dispatch(OnShowDeployProjectResultsFailed());

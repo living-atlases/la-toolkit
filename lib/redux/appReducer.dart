@@ -267,7 +267,8 @@ AppState _showDeployProjectResults(
   currentProject.lastCmdHistoryDetails = action.results;
   action.cmdHistoryEntry.result =
       action.results.code == 0 ? CmdResult.success : CmdResult.failed;
-  currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
+  if (action.fstRetrieved)
+    currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
   return state.copyWith(currentProject: currentProject);
 }
 

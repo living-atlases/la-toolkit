@@ -24,7 +24,8 @@ class LogsHistoryPage extends StatelessWidget {
         return _ViewModel(
             project: store.state.currentProject,
             onOpenDeployResults: (cmdHistory) {
-              store.dispatch(CmdUtils.getCmdResults(cmdHistory, context));
+              store
+                  .dispatch(CmdUtils.getCmdResults(context, cmdHistory, false));
             });
       },
       builder: (BuildContext context, _ViewModel vm) {
