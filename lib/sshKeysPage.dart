@@ -4,6 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -14,6 +15,7 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/textWithHelp.dart';
 import 'laTheme.dart';
+import 'notInDemo.dart';
 
 class SshKeyPage extends StatelessWidget {
   static const routeName = "ssh-keys";
@@ -70,75 +72,9 @@ class SshKeyPage extends StatelessWidget {
                     ),
                     Expanded(
                         flex: 8, // 80%,
-                        child: DataTable(
-                            dataRowHeight: 65,
-                            // sortAscending: sort,
-                            // sortColumnIndex: 0,
-                            showCheckboxColumn: false,
-                            columns: [
-                              const DataColumn(
-                                label: const Text("NAME"),
-                                numeric: false,
-                                tooltip: "This is the key name",
-                              ),
-                              const DataColumn(
-                                label: const Text("DESCRIPTION"),
-                                numeric: false,
-                                tooltip: "",
-                              ),
-                              const DataColumn(
-                                label: const Text("PROTECTED?"),
-                                numeric: false,
-                                tooltip:
-                                    "If the key is passphrase protected (for now we only support passwordless keys)",
-                              ),
-                              const DataColumn(
-                                label: const Text("PUBLIC KEY"),
-                                numeric: false,
-                                tooltip:
-                                    "SSH Public key, press the icon to copy",
-                              ),
-                            ],
-                            rows: vm.state.sshKeys
-                                .map((sshKey) => DataRow(cells: [
-                                      DataCell(Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 10),
-                                        child: Text(sshKey.name),
-                                      )),
-                                      DataCell(Text(sshKey.desc)),
-                                      DataCell(Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 30),
-                                          child: sshKey.encrypted
-                                              ? Tooltip(
-                                                  message:
-                                                      "SSH Key password encrypted, no supported right now",
-                                                  child: Icon(Mdi.lockOutline))
-                                              : Tooltip(
-                                                  message:
-                                                      "SSH Key without password",
-                                                  child: Icon(
-                                                      Mdi.lockOpenVariantOutline,
-                                                      color: Colors.grey)))),
-                                      DataCell(Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 15),
-                                          child: Tooltip(
-                                              message:
-                                                  "Press to copy the SSH public key",
-                                              child: IconButton(
-                                                icon: Icon(Icons.copy),
-                                                onPressed: () => FlutterClipboard
-                                                        .copy(sshKey.publicKey)
-                                                    .then((value) => ScaffoldMessenger
-                                                            .of(context)
-                                                        .showSnackBar(SnackBar(
-                                                            content: Text(
-                                                                "SSH Key copied to clipboard")))),
-                                              )))),
-                                    ]))
-                                .toList())),
+                        child: AppUtils.isDemo()
+                            ? NotInTheDemoPanel()
+                            : SshKeysTable(vm: vm)),
                     Expanded(
                       flex: 1, // 10%
                       child: Container(),
@@ -284,6 +220,76 @@ class SshKeyPage extends StatelessWidget {
             ),
           )
         ]).show();
+  }
+}
+
+class SshKeysTable extends StatelessWidget {
+  final _SshKeyViewModel vm;
+  const SshKeysTable({Key? key, required this.vm}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DataTable(
+        dataRowHeight: 65,
+        // sortAscending: sort,
+        // sortColumnIndex: 0,
+        showCheckboxColumn: false,
+        columns: [
+          const DataColumn(
+            label: const Text("NAME"),
+            numeric: false,
+            tooltip: "This is the key name",
+          ),
+          const DataColumn(
+            label: const Text("DESCRIPTION"),
+            numeric: false,
+            tooltip: "",
+          ),
+          const DataColumn(
+            label: const Text("PROTECTED?"),
+            numeric: false,
+            tooltip:
+                "If the key is passphrase protected (for now we only support passwordless keys)",
+          ),
+          const DataColumn(
+            label: const Text("PUBLIC KEY"),
+            numeric: false,
+            tooltip: "SSH Public key, press the icon to copy",
+          ),
+        ],
+        rows: vm.state.sshKeys
+            .map((sshKey) => DataRow(cells: [
+                  DataCell(Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Text(sshKey.name),
+                  )),
+                  DataCell(Text(sshKey.desc)),
+                  DataCell(Padding(
+                      padding: const EdgeInsets.only(left: 30),
+                      child: sshKey.encrypted
+                          ? Tooltip(
+                              message:
+                                  "SSH Key password encrypted, no supported right now",
+                              child: Icon(Mdi.lockOutline))
+                          : Tooltip(
+                              message: "SSH Key without password",
+                              child: Icon(Mdi.lockOpenVariantOutline,
+                                  color: Colors.grey)))),
+                  DataCell(Padding(
+                      padding: const EdgeInsets.only(left: 15),
+                      child: Tooltip(
+                          message: "Press to copy the SSH public key",
+                          child: IconButton(
+                            icon: Icon(Icons.copy),
+                            onPressed: () => FlutterClipboard.copy(
+                                    sshKey.publicKey)
+                                .then((value) => ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                        content: Text(
+                                            "SSH Key copied to clipboard")))),
+                          )))),
+                ]))
+            .toList());
   }
 }
 

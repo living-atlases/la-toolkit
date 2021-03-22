@@ -8,6 +8,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:web_browser/web_browser.dart';
 
 import '../laTheme.dart';
+import '../notInDemo.dart';
 
 class TermDialog {
   static show(context, {title: 'Console', VoidCallback? onClose}) async {
@@ -53,12 +54,7 @@ class TermDialog {
                                       topBar: null, bottomBar: null),
                               javascriptEnabled: true,
                             )
-                          : Center(
-                              child: Text(
-                                "This does not work in the demo",
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                          : NotInTheDemoPanel(),
                     )),
               ),
             ));
