@@ -7,6 +7,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
 
+import 'components/deployBtn.dart';
 import 'components/hostSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
@@ -66,7 +67,8 @@ class _DeployPageState extends State<DeployPage> {
                         onClose: () async {
                       // Show the results
                       context.showLoaderOverlay();
-                      store.dispatch(GetDeployProjectResults(cmd, logsSuffix, () => context.hideLoaderOverlay()));
+                      store.dispatch(GetDeployProjectResults(
+                          cmd, logsSuffix, () => context.hideLoaderOverlay()));
                       // context.hideLoaderOverlay();
                     });
                   },
@@ -84,6 +86,10 @@ class _DeployPageState extends State<DeployPage> {
             onCancel: (project) => store.dispatch(OpenProjectTools(project)));
       },
       builder: (BuildContext context, _DeployViewModel vm) {
+        String execBtn = "Deploy";
+        VoidCallback? onTap = _deployServices.isEmpty
+            ? null
+            : () => vm.onDeployProject(vm.state.currentProject);
         return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
@@ -201,39 +207,8 @@ class _DeployPageState extends State<DeployPage> {
                                         value: _dryRun,
                                         onChanged: (value) =>
                                             setState(() => _dryRun = value))),
-                              SizedBox(height: 40),
-                              Center(
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                    ButtonTheme(
-                                        // minWidth: 200.0,
-                                        height: 100.0,
-                                        child: ElevatedButton.icon(
-                                            onPressed: _deployServices.isEmpty
-                                                ? null
-                                                : () => vm.onDeployProject(
-                                                    vm.state.currentProject),
-                                            style: TextButton.styleFrom(
-                                                primary: Colors.white,
-                                                minimumSize: Size(140, 50),
-                                                // primary: LAColorTheme.laPalette,
-                                                // padding: const EdgeInsets.all(8.0),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          30.0),
-                                                  // side: BorderSide(color: Colors.red)),
-                                                )),
-                                            icon: Icon(Mdi.rocketLaunch,
-                                                size: 30),
-                                            label: new Text("Deploy",
-                                                style:
-                                                    TextStyle(fontSize: 18))))
-                                  ])),
+
+                              LaunchBtn(onTap: onTap, execBtn: execBtn),
                             ])),
                     Expanded(
                       flex: 1, // 10%

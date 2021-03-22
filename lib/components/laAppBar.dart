@@ -12,6 +12,7 @@ class LAAppBar extends AppBar {
       String? projectIcon,
       bool showLaIcon: false,
       bool showBack: false,
+      String? backRoute,
       List<Widget>? actions,
       Widget? leading,
       IconData? titleIcon})
@@ -42,14 +43,16 @@ class LAAppBar extends AppBar {
                       icon:
                           Icon(Icons.arrow_back, size: 28, color: Colors.black),
                       onPressed: () {
-                        Navigator.of(context).pushNamed(HomePage.routeName);
+                        Navigator.of(context).pushReplacementNamed(
+                            backRoute ?? HomePage.routeName);
                       }),
                 if (showLaIcon)
                   IconButton(
                       tooltip: "Homepage",
                       icon: Icon(LAIcon.la, size: 34, color: Colors.white),
                       onPressed: () {
-                        Navigator.of(context).pushNamed(HomePage.routeName);
+                        Navigator.of(context)
+                            .pushReplacementNamed(HomePage.routeName);
                       }),
                 Container(
                     padding: const EdgeInsets.all(8.0),

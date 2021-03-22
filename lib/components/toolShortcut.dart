@@ -44,9 +44,7 @@ class ToolShortcut extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: IconTheme.merge(
-              data: IconThemeData(
-                  //  size: iconSize,
-                  color: color),
+              data: IconThemeData(color: color),
               child: tool.icon,
             ),
           ),

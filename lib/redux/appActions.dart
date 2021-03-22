@@ -88,6 +88,11 @@ class TuneProject extends AppActions {
   TuneProject(this.project);
 }
 
+class OnPreDeployTasks extends AppActions {
+  LAProject project;
+  OnPreDeployTasks(this.project);
+}
+
 class PrepareDeployProject extends AppActions {
   String alaInstallRelease;
   String generatorRelease;

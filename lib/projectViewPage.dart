@@ -49,6 +49,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               generatorReleases: store.state.generatorReleases,
               onOpenProject: (project) => store.dispatch(OpenProject(project)),
               onTuneProject: (project) => store.dispatch(TuneProject(project)),
+              onPreDeployTasks: (project) =>
+                  store.dispatch(OnPreDeployTasks(project)),
               onDeployProject: (project) {
                 context.showLoaderOverlay();
                 store.dispatch(PrepareDeployProject(
@@ -120,7 +122,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.foundation),
                 title: "Pre-Deploy Tasks",
-                action: () => {}),
+                enabled: project.isCreated,
+                action: () => {vm.onPreDeployTasks(project)}),
             Tool(
                 icon: const Icon(Icons.format_paint),
                 title: "Branding Deploy",
@@ -132,6 +135,13 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 grid: 12,
                 enabled: project.allServersWithServicesReady(),
                 action: () => vm.onDeployProject(project)),
+            Tool(
+                icon: const Icon(Icons.receipt_long),
+                title: "Logs",
+                tooltip: "Show deploy logs",
+                enabled: true,
+                askConfirmation: false,
+                action: () {}),
             Tool(
                 icon: const Icon(Icons.house_siding),
                 title: "Post-Deploy Tasks",
@@ -155,6 +165,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             /*     action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("In Development: come back soon!"),
                 ))), */
+
             Tool(
                 icon: const Icon(Icons.delete),
                 title: "Delete",
@@ -277,6 +288,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onDelProject;
   final void Function(LAProject project) onGenInvProject;
   final void Function(LAProject project, bool) onTestConnProject;
+  final void Function(LAProject project) onPreDeployTasks;
 
   _ProjectPageViewModel(
       {required this.project,
@@ -286,6 +298,7 @@ class _ProjectPageViewModel {
       required this.onOpenProject,
       required this.onTuneProject,
       required this.onDelProject,
+      required this.onPreDeployTasks,
       required this.onDeployProject,
       required this.onGenInvProject,
       required this.onTestConnProject});

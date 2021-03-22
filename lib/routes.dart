@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
+import 'package:la_toolkit/preDeployPage.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/projectViewPage.dart';
@@ -36,6 +37,8 @@ class Routes {
           return SandboxPage();
         case LAProjectTunePage.routeName:
           return LAProjectTunePage();
+        case PreDeployPage.routeName:
+          return PreDeployPage();
         case SshKeyPage.routeName:
           return SshKeyPage();
         case DeployPage.routeName:
