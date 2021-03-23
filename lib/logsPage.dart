@@ -78,8 +78,9 @@ class LogItem extends StatelessWidget {
   LogItem(this.log, this.onTap, this.onRepeat, this.onDelete);
   @override
   Widget build(BuildContext context) {
+    // print(log.deployCmd.toStringClassic());
     return ListTile(
-        title: Text(log.title),
+        title: Text(log.deployCmd.toString()),
         subtitle: Text(
             "Finished status: ${log.result.toS()}, ${Moment.now().from(log.date).toString()}"),
         onTap: () => onTap(),

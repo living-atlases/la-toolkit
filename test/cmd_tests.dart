@@ -46,6 +46,10 @@ void main() {
         cmd.toString(),
         equals(
             "Deploy of some services in vm1 (tags: tomcat, properties, nginx)"));
+    cmd.onlyProperties = true;
+    cmd.tags = [];
+    expect(cmd.toString(),
+        equals("Deploy of some services in vm1 (tags: properties)"));
     cmd.tags = ['tomcat', 'properties', 'nginx', 'java'];
     cmd.deployServices = [collectory, bie];
     expect(
@@ -53,6 +57,7 @@ void main() {
         equals(
             "Deploy of collections and species services in vm1 (only some tasks)"));
     cmd.dryRun = true;
+    cmd.onlyProperties = false;
     cmd.tags = [];
     expect(cmd.toString(),
         equals("Dry run deploy of collections and species services in vm1"));

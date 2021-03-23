@@ -59,16 +59,17 @@ class _DeployPageState extends State<DeployPage> {
                     context.hideLoaderOverlay();
                     TermDialog.show(context, title: "Ansible console",
                         onClose: () async {
-                      // Show the results
-                      context.showLoaderOverlay();
-                      CmdHistoryEntry cmdHistory = CmdHistoryEntry(
-                          title: cmd.toString(),
-                          cmd: ansibleCmd,
-                          deployCmd: cmd,
-                          logsPrefix: logsPrefix,
-                          logsSuffix: logsSuffix);
-                      store.dispatch(
-                          DeployUtils.getCmdResults(context, cmdHistory, true));
+                      if (!cmd.dryRun) {
+                        // Show the results
+                        context.showLoaderOverlay();
+                        CmdHistoryEntry cmdHistory = CmdHistoryEntry(
+                            cmd: ansibleCmd,
+                            deployCmd: cmd,
+                            logsPrefix: logsPrefix,
+                            logsSuffix: logsSuffix);
+                        store.dispatch(DeployUtils.getCmdResults(
+                            context, cmdHistory, true));
+                      }
                       // context.hideLoaderOverlay();
                     });
                   },

@@ -63,6 +63,10 @@ class DeployCmd {
       debug.hashCode ^
       dryRun.hashCode;
 
+  String toStringClassic() {
+    return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun}';
+  }
+
   @override
   String toString() {
     bool isAll = ListEquality().equals(deployServices, ['all']);
@@ -91,9 +95,11 @@ class DeployCmd {
     else
       servers = ' in some servers';
     String prefix = '';
-    if (tags.length > 0 && tags.length <= 3) {
-      prefix += ' (tags: ' + tags.join(', ') + ')';
-    } else if (tags.length > 3) {
+    List<String> lTags = List<String>.from(tags);
+    if (onlyProperties) lTags.add('properties');
+    if (lTags.length > 0 && lTags.length <= 3) {
+      prefix += ' (tags: ' + lTags.join(', ') + ')';
+    } else if (lTags.length > 3) {
       prefix = ' (only some tasks)';
     }
     String result = "$services$servers$prefix";

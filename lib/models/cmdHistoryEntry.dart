@@ -34,7 +34,6 @@ extension CmdResultToIconData on CmdResult {
 @CopyWith()
 class CmdHistoryEntry {
   String uuid;
-  String title;
   String logsPrefix;
   String logsSuffix;
   String cmd;
@@ -44,7 +43,6 @@ class CmdHistoryEntry {
 
   CmdHistoryEntry(
       {String? uuid,
-      required this.title,
       required this.logsPrefix,
       required this.logsSuffix,
       required this.cmd,
@@ -57,4 +55,27 @@ class CmdHistoryEntry {
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryEntryFromJson(json);
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CmdHistoryEntry &&
+          runtimeType == other.runtimeType &&
+          uuid == other.uuid &&
+          logsPrefix == other.logsPrefix &&
+          logsSuffix == other.logsSuffix &&
+          cmd == other.cmd &&
+          deployCmd == other.deployCmd &&
+          date == other.date &&
+          result == other.result;
+
+  @override
+  int get hashCode =>
+      uuid.hashCode ^
+      logsPrefix.hashCode ^
+      logsSuffix.hashCode ^
+      cmd.hashCode ^
+      deployCmd.hashCode ^
+      date.hashCode ^
+      result.hashCode;
 }
