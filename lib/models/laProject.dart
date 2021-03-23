@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
+import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
@@ -52,8 +53,8 @@ class LAProject {
   String theme;
   String? alaInstallRelease;
   String? generatorRelease;
-  List<double?> mapBounds1stPoint;
-  List<double?> mapBounds2ndPoint;
+  LALatLng mapBoundsFstPoint;
+  LALatLng mapBoundsSndPoint;
   double? mapZoom;
   CmdHistoryDetails? lastCmdHistoryDetails;
   List<CmdHistoryEntry> cmdHistory;
@@ -74,8 +75,8 @@ class LAProject {
       this.status = LAProjectStatus.created,
       this.alaInstallRelease,
       this.generatorRelease,
-      List<double?>? mapBounds1stPoint,
-      List<double?>? mapBounds2ndPoint,
+      LALatLng? mapBoundsFstPoint,
+      LALatLng? mapBoundsSndPoint,
       this.theme = "clean",
       this.mapZoom,
       this.lastCmdHistoryDetails,
@@ -92,8 +93,8 @@ class LAProject {
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
         cmdHistory = cmdHistory ?? [],
-        mapBounds1stPoint = mapBounds1stPoint ?? List<double?>.filled(2, null),
-        mapBounds2ndPoint = mapBounds2ndPoint ?? List<double?>.filled(2, null) {
+        mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng(-44, 112),
+        mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng(-9, 154) {
     if (this.serversMap.entries.length != this.servers.length) {
       // serversMap is new
       this.serversMap =
@@ -118,14 +119,10 @@ class LAProject {
   int numServers() => servers.length;
 
   LatLng getCenter() {
-    return (mapBounds1stPoint[0] != null &&
-            mapBounds1stPoint[1] != null &&
-            mapBounds2ndPoint[0] != null &&
-            mapBounds2ndPoint[1] != null)
-        ? LatLng((mapBounds1stPoint[0]! + mapBounds2ndPoint[0]!) / 2,
-            (mapBounds1stPoint[1]! + mapBounds2ndPoint[1]!) / 2)
-        // Australia as default
-        : LatLng(-28.2, 134);
+    return LatLng((mapBoundsFstPoint.latitude + mapBoundsSndPoint.latitude) / 2,
+        (mapBoundsFstPoint.longitude + mapBoundsSndPoint.longitude) / 2);
+    //        : LatLng(-28.2, 134);
+    // Australia as default
   }
 
   // List<LAServer> get servers => _servers;
@@ -265,7 +262,7 @@ class LAProject {
         .join(', ');
     return '''PROJECT: longName: $longName ($shortName), domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated,  validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
-map: $mapBounds1stPoint $mapBounds2ndPoint, zoom: $mapZoom
+map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
 servers-services: $sToS  
 services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
@@ -389,8 +386,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   void setMap(LatLng firstPoint, LatLng sndPoint, double zoom) {
-    mapBounds1stPoint = [firstPoint.latitude, firstPoint.longitude];
-    mapBounds2ndPoint = [sndPoint.latitude, sndPoint.longitude];
+    mapBoundsFstPoint = LALatLng(firstPoint.latitude, firstPoint.longitude);
+    mapBoundsSndPoint = LALatLng(sndPoint.latitude, sndPoint.longitude);
     mapZoom = zoom;
   }
 
@@ -417,8 +414,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           status == other.status &&
           alaInstallRelease == other.alaInstallRelease &&
           generatorRelease == other.generatorRelease &&
-          ListEquality().equals(mapBounds1stPoint, other.mapBounds1stPoint) &&
-          ListEquality().equals(mapBounds2ndPoint, other.mapBounds2ndPoint) &&
+          mapBoundsFstPoint == other.mapBoundsFstPoint &&
+          mapBoundsSndPoint == other.mapBoundsSndPoint &&
           lastCmdHistoryDetails == other.lastCmdHistoryDetails &&
           ListEquality().equals(cmdHistory, other.cmdHistory) &&
           mapZoom == other.mapZoom;
@@ -441,8 +438,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       status.hashCode ^
       alaInstallRelease.hashCode ^
       generatorRelease.hashCode ^
-      ListEquality().hash(mapBounds1stPoint) ^
-      ListEquality().hash(mapBounds2ndPoint) ^
+      mapBoundsFstPoint.hashCode ^
+      mapBoundsSndPoint.hashCode ^
       lastCmdHistoryDetails.hashCode ^
       ListEquality().hash(cmdHistory) ^
       mapZoom.hashCode;
@@ -483,8 +480,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       "LA_theme": theme,
       "LA_generate_branding": true
     };
-    conf.addAll(MapUtils.toInvVariables(mapBounds1stPoint[0],
-        mapBounds1stPoint[1], mapBounds2ndPoint[0], mapBounds2ndPoint[1]));
+    conf.addAll(MapUtils.toInvVariables(mapBoundsFstPoint, mapBoundsSndPoint));
 
     List<String> ips = List.empty(growable: true);
     serversWithServices().forEach((server) => ips.add(server.ip));

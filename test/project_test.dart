@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
@@ -131,8 +132,8 @@ void main() {
             testProjectOther.getServerServicesForTest()),
         equals(true));
     expect(
-        ListEquality().equals(
-            testProject.mapBounds1stPoint, testProject.mapBounds2ndPoint),
+        testProject.mapBoundsFstPoint == testProjectOther.mapBoundsFstPoint &&
+            testProject.mapBoundsSndPoint == testProjectOther.mapBoundsSndPoint,
         equals(true));
     expect(ListEquality().equals(testProject.servers, testProjectOther.servers),
         equals(true));
@@ -174,13 +175,12 @@ void main() {
             testProjectCopy.getServerServicesForTest()),
         equals(false));
     expect(
-        ListEquality().equals(
-            testProject.mapBounds2ndPoint, testProjectCopy.mapBounds1stPoint),
+        testProject.mapBoundsFstPoint == testProjectCopy.mapBoundsFstPoint &&
+            testProject.mapBoundsSndPoint == testProjectCopy.mapBoundsSndPoint,
         equals(true));
     expect(ListEquality().equals(testProject.servers, testProjectCopy.servers),
         equals(false));
     expect(testProject.hashCode == testProjectCopy.hashCode, equals(false));
-
     expect(testProject == testProjectCopy, equals(false));
     testProjectCopy.upsertByName(vm2);
     expect(testProject == testProjectCopy, equals(true));
@@ -263,10 +263,11 @@ void main() {
 
   test('Test lat/lng center', () {
     LAProject p = LAProject(
-        mapBounds1stPoint: [10.0, 10.0], mapBounds2ndPoint: [20.0, 20.0]);
+        mapBoundsFstPoint: LALatLng(10.0, 10.0),
+        mapBoundsSndPoint: LALatLng(20.0, 20.0));
     expect(p.getCenter(), equals(LatLng(15, 15)));
-    p.mapBounds1stPoint = [20, 20];
-    p.mapBounds2ndPoint = [40, 40];
+    p.mapBoundsFstPoint = LALatLng(20, 20);
+    p.mapBoundsSndPoint = LALatLng(40, 40);
     p.setMap(LatLng(20, 20), LatLng(40, 40), 10);
     expect(p.getCenter(), equals(LatLng(30, 30)));
     expect(p.mapZoom, equals(10));

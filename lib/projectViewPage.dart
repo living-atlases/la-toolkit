@@ -6,6 +6,7 @@ import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/lintProject.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
+import 'package:la_toolkit/main.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -40,7 +41,6 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(
         distinct: true,
-        rebuildOnChange: false,
         converter: (store) {
           return _ProjectPageViewModel(
               project: store.state.currentProject,
@@ -179,6 +179,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   context: context,
                   showLaIcon: false,
                   showBack: true,
+                  backRoute: HomePage.routeName,
                   projectIcon: projectIconUrl,
                   title: "Toolkit of ${project.shortName} Portal"),
               body: new ScrollPanel(

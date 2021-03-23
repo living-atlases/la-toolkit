@@ -1,5 +1,6 @@
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -40,11 +41,11 @@ void main() {
     // List<double> mapBounds1stPoint = [44.4806, -19.4184];
     // List<double> mapBounds2ndPoint = [26.6767, 5.7989];
 
-    List<double> mapBounds1stPoint = [40.0, 20.0];
-    List<double> mapBounds2ndPoint = [20.0, 10.0];
+    LatLng mapBounds1stPoint = LatLng(40.0, 20.0);
+    LatLng mapBounds2ndPoint = LatLng(20.0, 10.0);
 
-    var invVariables = MapUtils.toInvVariables(mapBounds1stPoint[0],
-        mapBounds1stPoint[1], mapBounds2ndPoint[0], mapBounds2ndPoint[1]);
+    var invVariables =
+        MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint);
     expect(invVariables['LA_collectory_map_centreMapLat'], equals(30));
     expect(invVariables['LA_collectory_map_centreMapLng'], equals(15));
     expect(invVariables['LA_spatial_map_lan'], equals(30));

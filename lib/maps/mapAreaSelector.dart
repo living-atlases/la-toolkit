@@ -39,17 +39,12 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
         },
         builder: (BuildContext context, _MapAreaSelectorViewModel vm) {
           _project = vm.currentProject;
-          if (_project!.mapBounds1stPoint[0] != null &&
-              _project!.mapBounds2ndPoint[0] != null &&
-              _project!.mapBounds1stPoint[1] != null &&
-              _project!.mapBounds2ndPoint[1] != null) {
-            var fstPoint = LatLng(_project!.mapBounds1stPoint[0]!,
-                _project!.mapBounds1stPoint[1]!);
-            var sndPoint = LatLng(_project!.mapBounds2ndPoint[0]!,
-                _project!.mapBounds2ndPoint[1]!);
-            projectArea = [fstPoint, null, sndPoint, null, fstPoint];
-            _calSquare(projectArea);
-          } else {}
+
+          var fstPoint = _project!.mapBoundsFstPoint;
+          var sndPoint = _project!.mapBoundsSndPoint;
+          projectArea = [fstPoint, null, sndPoint, null, fstPoint];
+          _calSquare(projectArea);
+
           var markers = area.where((latLng) => latLng != null).map((latLng) {
             return Marker(
               width: 80.0,

@@ -18,8 +18,8 @@ extension LAProjectCopyWith on LAProject {
     bool? isCreated,
     CmdHistoryDetails? lastCmdHistoryDetails,
     String? longName,
-    List<double>? mapBounds1stPoint,
-    List<double>? mapBounds2ndPoint,
+    LALatLng? mapBoundsFstPoint,
+    LALatLng? mapBoundsSndPoint,
     double? mapZoom,
     Map<String, List<String>>? serverServices,
     List<LAServer>? servers,
@@ -44,8 +44,8 @@ extension LAProjectCopyWith on LAProject {
       lastCmdHistoryDetails:
           lastCmdHistoryDetails ?? this.lastCmdHistoryDetails,
       longName: longName ?? this.longName,
-      mapBounds1stPoint: mapBounds1stPoint ?? this.mapBounds1stPoint,
-      mapBounds2ndPoint: mapBounds2ndPoint ?? this.mapBounds2ndPoint,
+      mapBoundsFstPoint: mapBoundsFstPoint ?? this.mapBoundsFstPoint,
+      mapBoundsSndPoint: mapBoundsSndPoint ?? this.mapBoundsSndPoint,
       mapZoom: mapZoom ?? this.mapZoom,
       serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
@@ -92,12 +92,12 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     status: _$enumDecode(_$LAProjectStatusEnumMap, json['status']),
     alaInstallRelease: json['alaInstallRelease'] as String?,
     generatorRelease: json['generatorRelease'] as String?,
-    mapBounds1stPoint: (json['mapBounds1stPoint'] as List<dynamic>?)
-        ?.map((e) => (e as num?)?.toDouble())
-        .toList(),
-    mapBounds2ndPoint: (json['mapBounds2ndPoint'] as List<dynamic>?)
-        ?.map((e) => (e as num?)?.toDouble())
-        .toList(),
+    mapBoundsFstPoint: json['mapBoundsFstPoint'] == null
+        ? null
+        : LALatLng.fromJson(json['mapBoundsFstPoint'] as Map<String, dynamic>),
+    mapBoundsSndPoint: json['mapBoundsSndPoint'] == null
+        ? null
+        : LALatLng.fromJson(json['mapBoundsSndPoint'] as Map<String, dynamic>),
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num?)?.toDouble(),
     lastCmdHistoryDetails: json['lastCmdHistoryDetails'] == null
@@ -130,8 +130,8 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'theme': instance.theme,
       'alaInstallRelease': instance.alaInstallRelease,
       'generatorRelease': instance.generatorRelease,
-      'mapBounds1stPoint': instance.mapBounds1stPoint,
-      'mapBounds2ndPoint': instance.mapBounds2ndPoint,
+      'mapBoundsFstPoint': instance.mapBoundsFstPoint.toJson(),
+      'mapBoundsSndPoint': instance.mapBoundsSndPoint.toJson(),
       'mapZoom': instance.mapZoom,
       'lastCmdHistoryDetails': instance.lastCmdHistoryDetails?.toJson(),
       'cmdHistory': instance.cmdHistory.map((e) => e.toJson()).toList(),

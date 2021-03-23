@@ -727,14 +727,14 @@
       "theme": "custom",
       "alaInstallRelease": "v2.0.5",
       "generatorRelease": "1.1.31",
-      "mapBounds1stPoint": [
-        -7.878266224830796,
-        109.59428362302445
-      ],
-      "mapBounds2ndPoint": [
-        -45.12506469111486,
-        156.61516412910575
-      ],
+      "mapBoundsFstPoint": {
+        "latitude": -44,
+        "longitude": 112
+      },
+      "mapBoundsSndPoint": {
+        "latitude": -9,
+        "longitude": 154
+      },
       "mapZoom": 3.684255836941924,
       "lastDeploymentResults": []
     },
@@ -1015,14 +1015,14 @@
       "theme": "custom",
       "alaInstallRelease": "v2.0.5",
       "generatorRelease": "1.1.31",
-      "mapBounds1stPoint": [
-        49.19955563408631,
-        9.052745931952636
-      ],
-      "mapBounds2ndPoint": [
-        46.27036348705896,
-        17.33482803254438
-      ],
+      "mapBoundsFstPoint": {
+        "latitude": 49.19955563408631,
+        "longitude": 9.052745931952636
+      },
+      "mapBoundsSndPoint": {
+        "latitude": 46.27036348705896,
+        "longitude": 17.33482803254438
+      },
       "mapZoom": 6.997914769303923,
       "lastDeploymentResults": []
     },
@@ -1622,14 +1622,14 @@
       "theme": "custom",
       "alaInstallRelease": "v2.0.5",
       "generatorRelease": "1.1.31",
-      "mapBounds1stPoint": [
-        83.56578781211654,
-        -151.8203125
-      ],
-      "mapBounds2ndPoint": [
-        39.310394124020334,
-        -49.692126044801036
-      ],
+      "mapBoundsFstPoint": {
+        "latitude": 83.56578781211654,
+        "longitude": -151.8203125
+      },
+      "mapBoundsSndPoint": {
+        "latitude": 39.310394124020334,
+        "longitude":-49.692126044801036
+      },
       "mapZoom": 2.1670137608245583,
       "lastDeploymentResults": []
     },
@@ -2393,14 +2393,14 @@
       "theme": "clean",
       "alaInstallRelease": "v2.0.5",
       "generatorRelease": "1.1.31",
-      "mapBounds1stPoint": [
-        44.81743010006506,
-        -19.101222431053316
-      ],
-      "mapBounds2ndPoint": [
-        26.743042624493725,
-        5.148250775991666
-      ],
+      "mapBoundsFstPoint": {
+        "latitude": 44.81743010006506,
+        "longitude": -19.101222431053316
+      },
+      "mapBoundsSndPoint": {
+        "latitude": 26.743042624493725,
+        "longitude": 5.148250775991666
+      },
       "mapZoom": 4.583159536905647,
       "lastDeploymentResults": []
     },
@@ -2680,14 +2680,14 @@
       "theme": "clean",
       "alaInstallRelease": "v2.0.5",
       "generatorRelease": "1.1.31",
-      "mapBounds1stPoint": [
-        45.20135257494316,
-        -74.46010353310328
-      ],
-      "mapBounds2ndPoint": [
-        42.238244979905616,
-        -71.58370151327317
-      ],
+      "mapBoundsFstPoint": {
+        "latitude": 45.20135257494316,
+        "longitude": -74.46010353310328
+      },
+      "mapBoundsSndPoint": {
+        "latitude": 42.238244979905616,
+        "longitude": -71.58370151327317
+      },
       "mapZoom": 6.808881604103011,
       "lastDeploymentResults": []
     }
