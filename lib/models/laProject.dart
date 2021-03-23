@@ -119,10 +119,7 @@ class LAProject {
   int numServers() => servers.length;
 
   LatLng getCenter() {
-    return LatLng((mapBoundsFstPoint.latitude + mapBoundsSndPoint.latitude) / 2,
-        (mapBoundsFstPoint.longitude + mapBoundsSndPoint.longitude) / 2);
-    //        : LatLng(-28.2, 134);
-    // Australia as default
+    return MapUtils.center(mapBoundsFstPoint, mapBoundsSndPoint);
   }
 
   // List<LAServer> get servers => _servers;
