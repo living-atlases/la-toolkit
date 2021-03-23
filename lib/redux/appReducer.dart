@@ -50,6 +50,8 @@ final appReducer = combineReducers<AppState>([
       _showDeployProjectResults),
   new TypedReducer<AppState, ShowSnackBar>(_showSnackBar),
   new TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
+  new TypedReducer<AppState, PrepareDeployProject>(_prepareDeployProject),
+  new TypedReducer<AppState, DeleteLog>(_onDeleteLog),
 ]);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
@@ -269,7 +271,7 @@ AppState _showDeployProjectResults(
       action.results.code == 0 ? CmdResult.success : CmdResult.failed;
   if (action.fstRetrieved)
     currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
-  return state.copyWith(currentProject: currentProject);
+  return state.copyWith(currentProject: currentProject, repeatCmd: null);
 }
 
 AppState _showSnackBar(AppState state, ShowSnackBar action) {
@@ -278,4 +280,18 @@ AppState _showSnackBar(AppState state, ShowSnackBar action) {
 
 AppState _onShowedSnackBar(AppState state, OnShowedSnackBar action) {
   return state.copyWith(appSnackBarMessage: AppSnackBarMessage.empty);
+}
+
+AppState _prepareDeployProject(AppState state, PrepareDeployProject action) {
+  return state.copyWith(repeatCmd: action.repeatCmd);
+}
+
+AppState _onDeleteLog(AppState state, DeleteLog action) {
+  LAProject p = state.currentProject;
+  p.cmdHistory = new List<CmdHistoryEntry>.from(p.cmdHistory)
+    ..removeWhere((cmd) => cmd.uuid == action.cmd.uuid);
+  List<LAProject> projects = new List<LAProject>.from(state.projects);
+  int index = projects.indexWhere((cur) => cur.uuid == p.uuid);
+  projects.replaceRange(index, index + 1, [p]);
+  return state.copyWith(currentProject: p, projects: projects);
 }

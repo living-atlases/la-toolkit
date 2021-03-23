@@ -1,6 +1,7 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/utils/constants.dart';
 import 'package:uuid/uuid.dart';
 
@@ -37,6 +38,7 @@ class CmdHistoryEntry {
   String logsPrefix;
   String logsSuffix;
   String cmd;
+  DeployCmd deployCmd;
   DateTime date;
   CmdResult result;
 
@@ -46,6 +48,7 @@ class CmdHistoryEntry {
       required this.logsPrefix,
       required this.logsSuffix,
       required this.cmd,
+      required this.deployCmd,
       DateTime? date,
       this.result: CmdResult.unknown})
       : uuid = uuid ?? Uuid().v4(),

@@ -6,6 +6,7 @@ import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/lintProject.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
+import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -53,23 +54,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   store.dispatch(OnPreDeployTasks(project)),
               onViewLogs: (project) => store.dispatch(OnViewLogs(project)),
               onDeployProject: (project) {
-                context.showLoaderOverlay();
-                store.dispatch(PrepareDeployProject(
-                    uuid: project.uuid,
-                    alaInstallRelease: project.alaInstallRelease!,
-                    generatorRelease: project.generatorRelease!,
-                    onReady: () => context.hideLoaderOverlay(),
-                    onError: (e) {
-                      context.hideLoaderOverlay();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(e),
-                        duration: Duration(days: 365),
-                        action: SnackBarAction(
-                          label: 'OK',
-                          onPressed: () {},
-                        ),
-                      ));
-                    }));
+                DeployUtils.doDeploy(context, store, project, DeployCmd.empty);
               },
               onDelProject: (project) => store.dispatch(DelProject(project)),
               onGenInvProject: (project) =>
@@ -140,7 +125,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 icon: const Icon(Icons.receipt_long),
                 title: "Logs History",
                 tooltip: "Show deploy logs history",
-                enabled: project.allServersWithServicesReady(),
+                enabled: project.allServersWithServicesReady() &&
+                    project.cmdHistory.length > 0,
                 action: () => vm.onViewLogs(project)),
             Tool(
                 icon: const Icon(Icons.house_siding),

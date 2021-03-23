@@ -16,6 +16,7 @@ extension AppStateCopyWith on AppState {
     bool? firstUsage,
     List<String>? generatorReleases,
     List<LAProject>? projects,
+    DeployCmd? repeatCmd,
     List<SshKey>? sshKeys,
     LAProjectViewStatus? status,
   }) {
@@ -28,6 +29,7 @@ extension AppStateCopyWith on AppState {
       firstUsage: firstUsage ?? this.firstUsage,
       generatorReleases: generatorReleases ?? this.generatorReleases,
       projects: projects ?? this.projects,
+      repeatCmd: repeatCmd ?? this.repeatCmd,
       sshKeys: sshKeys ?? this.sshKeys,
       status: status ?? this.status,
     );

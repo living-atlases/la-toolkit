@@ -9,6 +9,8 @@ import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 
+import 'deployCmd.dart';
+
 part 'appState.g.dart';
 
 enum LAProjectViewStatus { view, edit, tune, create }
@@ -55,6 +57,8 @@ class AppState {
   final List<SshKey> sshKeys;
   @JsonKey(ignore: true) //, nullable: true)
   final AppSnackBarMessage appSnackBarMessage;
+  @JsonKey(ignore: true) //, nullable: true)
+  final DeployCmd repeatCmd;
 
   AppState(
       {List<LAProject>? projects,
@@ -66,14 +70,15 @@ class AppState {
       List<String>? alaInstallReleases,
       List<String>? generatorReleases,
       AppSnackBarMessage? appSnackBarMessage,
+      DeployCmd? repeatCmd,
       List<SshKey>? sshKeys})
-      : this.projects = projects ?? [],
-        this.sshKeys = sshKeys ?? [],
-        this.currentProject = currentProject ?? LAProject(),
-        this.alaInstallReleases = alaInstallReleases ?? [],
-        this.generatorReleases = generatorReleases ?? [],
-        this.appSnackBarMessage =
-            appSnackBarMessage ?? AppSnackBarMessage.empty;
+      : projects = projects ?? [],
+        sshKeys = sshKeys ?? [],
+        currentProject = currentProject ?? LAProject(),
+        alaInstallReleases = alaInstallReleases ?? [],
+        generatorReleases = generatorReleases ?? [],
+        repeatCmd = repeatCmd ?? DeployCmd.empty,
+        appSnackBarMessage = appSnackBarMessage ?? AppSnackBarMessage.empty;
 
   /*
       sshKeys})
@@ -94,6 +99,7 @@ class AppState {
           currentProject == other.currentProject &&
           status == other.status &&
           currentStep == other.currentStep &&
+          repeatCmd == other.repeatCmd &&
           listEquals(projects, other.projects) &&
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
           listEquals(generatorReleases, other.generatorReleases) &&
@@ -106,6 +112,7 @@ class AppState {
       currentProject.hashCode ^
       status.hashCode ^
       currentStep.hashCode ^
+      repeatCmd.hashCode ^
       ListEquality().hash(projects) ^
       ListEquality().hash(alaInstallReleases) ^
       ListEquality().hash(generatorReleases) ^
@@ -134,7 +141,7 @@ class AppState {
 LA projects: ${projects.length} 
 view status: $status , currentStep: $currentStep, failedToLoad: $failedLoad
 ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}
-snackMessage: ${appSnackBarMessage.message}
+snackMessage: ${appSnackBarMessage.message} repeatCmd: $repeatCmd
 currentProject of ${projects.length} -----
 $currentProject
 ''';

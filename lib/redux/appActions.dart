@@ -1,6 +1,7 @@
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
+import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -101,16 +102,14 @@ class OnViewLogs extends AppActions {
 }
 
 class PrepareDeployProject extends AppActions {
-  String alaInstallRelease;
-  String generatorRelease;
-  String uuid;
+  LAProject project;
   VoidCallback onReady;
+  DeployCmd repeatCmd;
   Function(String) onError;
   PrepareDeployProject(
-      {required this.uuid,
-      required this.alaInstallRelease,
-      required this.generatorRelease,
+      {required this.project,
       required this.onReady,
+      required this.repeatCmd,
       required this.onError});
 }
 
@@ -239,3 +238,8 @@ class ShowSnackBar extends AppActions {
 }
 
 class OnShowedSnackBar extends AppActions {}
+
+class DeleteLog extends AppActions {
+  CmdHistoryEntry cmd;
+  DeleteLog(this.cmd);
+}

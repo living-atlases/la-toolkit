@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/tagsConstants.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -31,16 +32,6 @@ class _DeployPageState extends State<DeployPage> {
       GlobalKey<S2MultiState<String>>();
   final GlobalKey<S2MultiState<String>> _selectTagsKey =
       GlobalKey<S2MultiState<String>>();
-  List<String> _deployServices = [];
-  List<String> _limitToServers = [];
-  List<String> _skipTags = [];
-  List<String> _tags = [];
-  bool _advanced = false;
-  bool _onlyProperties = false;
-  bool _continueEvenIfFails = false;
-  bool _debug = false;
-  bool _dryRun = false;
-  late String logsSuffix;
   // TODO do something with --skip-tags nameindex
 
   @override
@@ -48,20 +39,21 @@ class _DeployPageState extends State<DeployPage> {
     return StoreConnector<AppState, _DeployViewModel>(
       converter: (store) {
         return _DeployViewModel(
-            state: store.state,
-            onDeployProject: (project) {
+            project: store.state.currentProject,
+            cmd: store.state.repeatCmd,
+            onDeployProject: (project, cmd) {
               context.showLoaderOverlay();
               store.dispatch(DeployProject(
                   project: project,
-                  deployServices: _deployServices,
-                  limitToServers: _limitToServers,
-                  tags: _tags,
-                  skipTags: _skipTags,
-                  onlyProperties: _onlyProperties,
-                  continueEvenIfFails: _continueEvenIfFails,
-                  debug: _debug,
-                  dryRun: _dryRun,
-                  onStart: (cmd, logsPrefix, logsSuffix) {
+                  deployServices: cmd.deployServices,
+                  limitToServers: cmd.limitToServers,
+                  tags: cmd.tags,
+                  skipTags: cmd.skipTags,
+                  onlyProperties: cmd.onlyProperties,
+                  continueEvenIfFails: cmd.continueEvenIfFails,
+                  debug: cmd.debug,
+                  dryRun: cmd.dryRun,
+                  onStart: (ansibleCmd, logsPrefix, logsSuffix) {
                     // print("Logs suffix: $l");
                     context.hideLoaderOverlay();
                     TermDialog.show(context, title: "Ansible console",
@@ -69,9 +61,9 @@ class _DeployPageState extends State<DeployPage> {
                       // Show the results
                       context.showLoaderOverlay();
                       CmdHistoryEntry cmdHistory = CmdHistoryEntry(
-                          title:
-                              "Deploy of ${_deployServices.join(', ')}${_limitToServers.length > 0 ? ' in ' : ''}${_limitToServers.length > 0 ? _limitToServers.join(',') : ''}",
-                          cmd: cmd,
+                          title: cmd.toString(),
+                          cmd: ansibleCmd,
+                          deployCmd: cmd,
                           logsPrefix: logsPrefix,
                           logsSuffix: logsSuffix);
                       store.dispatch(
@@ -94,9 +86,10 @@ class _DeployPageState extends State<DeployPage> {
       },
       builder: (BuildContext context, _DeployViewModel vm) {
         String execBtn = "Deploy";
-        VoidCallback? onTap = _deployServices.isEmpty
+        DeployCmd cmd = vm.cmd;
+        VoidCallback? onTap = cmd.deployServices.isEmpty
             ? null
-            : () => vm.onDeployProject(vm.state.currentProject);
+            : () => vm.onDeployProject(vm.project, cmd);
         return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
@@ -104,12 +97,13 @@ class _DeployPageState extends State<DeployPage> {
                 titleIcon: Mdi.rocketLaunch,
                 title: "Deployment",
                 showLaIcon: false,
+                showBack: false,
                 actions: [
                   IconButton(
                       icon: Tooltip(
                           child: const Icon(Icons.close, color: Colors.white),
                           message: "Cancel the deploy"),
-                      onPressed: () => vm.onCancel(vm.state.currentProject)),
+                      onPressed: () => vm.onCancel(vm.project)),
                 ]),
             body: ScrollPanel(
                 withPadding: true,
@@ -129,44 +123,48 @@ class _DeployPageState extends State<DeployPage> {
                                   style: TextStyle(fontSize: 16)),
                               // TODO: limit to real selected services
                               ServicesChipPanel(
-                                  services: vm.state.currentProject
-                                      .getServicesNameListSelected(),
+                                  initialValue: cmd.deployServices,
+                                  services:
+                                      vm.project.getServicesNameListSelected(),
                                   onChange: (s) =>
-                                      setState(() => _deployServices = s)),
+                                      setState(() => cmd.deployServices = s)),
                               HostSelector(
                                   title: "Deploy to servers:",
                                   modalTitle:
                                       "Choose some servers if you want to limit the deploy to them",
                                   emptyPlaceholder: "All servers",
-                                  serverList: vm.state.currentProject
+                                  initialValue: cmd.limitToServers,
+                                  serverList: vm.project
                                       .serversWithServices()
                                       .map((e) => e.name)
                                       .toList(),
                                   icon: Mdi.server,
-                                  onChange: (limitToServers) => setState(
-                                      () => _limitToServers = limitToServers)),
+                                  onChange: (limitToServers) => setState(() =>
+                                      cmd.limitToServers = limitToServers)),
                               TagsSelector(
+                                  initialValue: cmd.tags,
                                   selectorKey: _selectTagsKey,
-                                  tags: TagsConstants.getTagsFor(vm
-                                      .state.currentProject.alaInstallRelease),
+                                  tags: TagsConstants.getTagsFor(
+                                      vm.project.alaInstallRelease),
                                   icon: Mdi.tagPlusOutline,
                                   title: "Tags:",
                                   placeHolder: "All",
                                   modalTitle:
                                       "Select the tags you want to limit to",
                                   onChange: (tags) =>
-                                      setState(() => _tags = tags)),
+                                      setState(() => cmd.tags = tags)),
                               TagsSelector(
+                                  initialValue: cmd.skipTags,
                                   selectorKey: _skipTagsKey,
-                                  tags: TagsConstants.getTagsFor(vm
-                                      .state.currentProject.alaInstallRelease),
+                                  tags: TagsConstants.getTagsFor(
+                                      vm.project.alaInstallRelease),
                                   icon: Mdi.tagOffOutline,
                                   title: "Skip tags:",
                                   placeHolder: "None",
                                   modalTitle:
                                       "Select the tags you want to skip",
                                   onChange: (skipTags) =>
-                                      setState(() => _skipTags = skipTags)),
+                                      setState(() => cmd.skipTags = skipTags)),
                               TipsCard(
                                   text:
                                       '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
@@ -176,44 +174,44 @@ class _DeployPageState extends State<DeployPage> {
                                     'Only deploy properties (service configurations)',
                                   ),
                                   trailing: Switch(
-                                      value: _onlyProperties,
+                                      value: cmd.onlyProperties,
                                       onChanged: (value) => setState(
-                                          () => _onlyProperties = value))),
+                                          () => cmd.onlyProperties = value))),
                               ListTile(
                                   title: const Text(
                                     'Advanced options',
                                   ),
                                   trailing: Switch(
-                                      value: _advanced,
-                                      onChanged: (value) =>
-                                          setState(() => _advanced = value))),
-                              if (_advanced)
+                                      value: cmd.advanced,
+                                      onChanged: (value) => setState(
+                                          () => cmd.advanced = value))),
+                              if (cmd.advanced)
                                 ListTile(
                                     title: const Text(
                                       'Show extra debug info',
                                     ),
                                     trailing: Switch(
-                                        value: _debug,
+                                        value: cmd.debug,
                                         onChanged: (value) =>
-                                            setState(() => _debug = value))),
-                              if (_advanced)
+                                            setState(() => cmd.debug = value))),
+                              if (cmd.advanced)
                                 ListTile(
                                     title: const Text(
                                       'Continue even if some service deployment fails',
                                     ),
                                     trailing: Switch(
-                                        value: _continueEvenIfFails,
+                                        value: cmd.continueEvenIfFails,
                                         onChanged: (value) => setState(() =>
-                                            _continueEvenIfFails = value))),
-                              if (_advanced)
+                                            cmd.continueEvenIfFails = value))),
+                              if (cmd.advanced)
                                 ListTile(
                                     title: const Text(
                                       'Dry run (only show the ansible command)',
                                     ),
                                     trailing: Switch(
-                                        value: _dryRun,
-                                        onChanged: (value) =>
-                                            setState(() => _dryRun = value))),
+                                        value: cmd.dryRun,
+                                        onChanged: (value) => setState(
+                                            () => cmd.dryRun = value))),
 
                               LaunchBtn(onTap: onTap, execBtn: execBtn),
                             ])),
@@ -235,12 +233,14 @@ class TagsSelector extends StatelessWidget {
   final String title;
   final String placeHolder;
   final String modalTitle;
+  final List<String> initialValue;
   final Function(List<String>) onChange;
 
   TagsSelector(
       {required this.selectorKey,
       required this.tags,
       required this.icon,
+      required this.initialValue,
       required this.title,
       required this.placeHolder,
       required this.modalTitle,
@@ -250,7 +250,7 @@ class TagsSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return SmartSelect<String>.multiple(
         key: selectorKey,
-        value: [],
+        value: initialValue,
         title: title,
         choiceItems: S2Choice.listFrom<String, String>(
             source: tags, value: (index, e) => e, title: (index, e) => e),
@@ -282,12 +282,14 @@ class TagsSelector extends StatelessWidget {
 }
 
 class _DeployViewModel {
-  final AppState state;
+  final LAProject project;
+  final DeployCmd cmd;
   final Function(LAProject) onCancel;
-  final Function(LAProject) onDeployProject;
+  final Function(LAProject, DeployCmd) onDeployProject;
 
   _DeployViewModel(
-      {required this.state,
+      {required this.project,
+      required this.cmd,
       required this.onCancel,
       required this.onDeployProject});
 
@@ -296,10 +298,11 @@ class _DeployViewModel {
       identical(this, other) ||
       other is _DeployViewModel &&
           runtimeType == other.runtimeType &&
-          state == other.state;
+          project == other.project &&
+          cmd == other.cmd;
 
   @override
-  int get hashCode => state.hashCode;
+  int get hashCode => project.hashCode ^ cmd.hashCode;
 }
 
 class CmdUtils {

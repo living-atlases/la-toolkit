@@ -2,7 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit/models/deployCmd.dart';
+import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 /*
 class ListUtils {
@@ -66,5 +70,31 @@ class UiUtils {
         return alert;
       },
     );
+  }
+
+  static showSnackBarError(BuildContext context, String e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(e),
+      duration: Duration(days: 365),
+      action: SnackBarAction(
+        label: 'OK',
+        onPressed: () {},
+      ),
+    ));
+  }
+}
+
+class DeployUtils {
+  static doDeploy(
+      BuildContext context, var store, LAProject project, DeployCmd repeatCmd) {
+    context.showLoaderOverlay();
+    store.dispatch(PrepareDeployProject(
+        project: project,
+        onReady: () => context.hideLoaderOverlay(),
+        repeatCmd: repeatCmd,
+        onError: (e) {
+          context.hideLoaderOverlay();
+          UiUtils.showSnackBarError(context, e);
+        }));
   }
 }

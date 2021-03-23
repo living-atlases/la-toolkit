@@ -438,7 +438,7 @@ class NavigationMiddleware implements MiddlewareClass<AppState> {
         navigatorState.pushReplacementNamed(LogsHistoryPage.routeName);
       }
       if (action is PrepareDeployProject) {
-        navigatorState.pushReplacementNamed(DeployPage.routeName);
+        navigatorState.pushNamed(DeployPage.routeName);
       }
       if (action is OpenProjectTools) {
         navigatorState.pushReplacementNamed(LAProjectViewPage.routeName);

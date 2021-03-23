@@ -8,8 +8,12 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 class ServicesChipPanel extends StatefulWidget {
   final Function(List<String>) onChange;
   final List<String> services;
-
-  ServicesChipPanel({Key? key, required this.onChange, required this.services})
+  final List<String> initialValue;
+  ServicesChipPanel(
+      {Key? key,
+      required this.onChange,
+      required this.services,
+      required this.initialValue})
       : super(key: key);
 
   @override
@@ -30,7 +34,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
     padding: EdgeInsets.fromLTRB(10, 0, 10, 2),
     showCheckmark: true,
   );
-  List<String> formValue = []; // LAServiceDesc.list[3].name];
+  late List<String> formValue; // LAServiceDesc.list[3].name];
   List<String> _selectAllOrElements(List<String> values) {
     List<String> newVal = values.length > 0
         ? values.last == 'all'
@@ -39,6 +43,12 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
         : [];
     // print(newVal);
     return newVal;
+  }
+
+  @override
+  void initState() {
+    formValue = widget.initialValue;
+    super.initState();
   }
 
   @override
