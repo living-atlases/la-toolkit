@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -10,22 +9,26 @@ class ZoomButtonsPluginOption extends LayerOptions {
   final double padding;
   final Alignment alignment;
   final Color? zoomInColor;
+  final Color? zoomInColorIcon;
   final Color? zoomOutColor;
+  final Color? zoomOutColorIcon;
   final IconData zoomInIcon;
   final IconData zoomOutIcon;
 
   ZoomButtonsPluginOption({
-    required Key key,
+    Key? key,
     this.minZoom = 1,
     this.maxZoom = 18,
     this.mini = true,
     this.padding = 2.0,
     this.alignment = Alignment.topRight,
     this.zoomInColor,
+    this.zoomInColorIcon,
     this.zoomInIcon = Icons.zoom_in,
     this.zoomOutColor,
+    this.zoomOutColorIcon,
     this.zoomOutIcon = Icons.zoom_out,
-    required rebuild,
+    Stream<Null>? rebuild,
   }) : super(key: key, rebuild: rebuild);
 }
 
@@ -73,16 +76,19 @@ class ZoomButtons extends StatelessWidget {
               backgroundColor:
                   zoomButtonsOpts.zoomInColor ?? Theme.of(context).primaryColor,
               onPressed: () {
-                var bounds = map.getBounds();
+                var bounds = map.getBounds()!;
                 var centerZoom = map.getBoundsCenterZoom(bounds, options);
                 var zoom = centerZoom.zoom + 1;
                 if (zoom < zoomButtonsOpts.minZoom) {
                   zoom = zoomButtonsOpts.minZoom as double;
                 } else {
-                  map.move(centerZoom.center, zoom);
+                  map.move(centerZoom.center, zoom,
+                      source: MapEventSource.custom);
                 }
               },
-              child: Icon(zoomButtonsOpts.zoomInIcon),
+              child: Icon(zoomButtonsOpts.zoomInIcon,
+                  color: zoomButtonsOpts.zoomInColorIcon ??
+                      IconTheme.of(context).color),
             ),
           ),
           Padding(
@@ -93,16 +99,19 @@ class ZoomButtons extends StatelessWidget {
               backgroundColor: zoomButtonsOpts.zoomOutColor ??
                   Theme.of(context).primaryColor,
               onPressed: () {
-                var bounds = map.getBounds();
+                var bounds = map.getBounds()!;
                 var centerZoom = map.getBoundsCenterZoom(bounds, options);
                 var zoom = centerZoom.zoom - 1;
                 if (zoom > zoomButtonsOpts.maxZoom) {
                   zoom = zoomButtonsOpts.maxZoom as double;
                 } else {
-                  map.move(centerZoom.center, zoom);
+                  map.move(centerZoom.center, zoom,
+                      source: MapEventSource.custom);
                 }
               },
-              child: Icon(zoomButtonsOpts.zoomOutIcon),
+              child: Icon(zoomButtonsOpts.zoomOutIcon,
+                  color: zoomButtonsOpts.zoomOutColorIcon ??
+                      IconTheme.of(context).color),
             ),
           ),
         ],

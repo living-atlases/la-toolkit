@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 
 class DragMarkerPluginOptions extends LayerOptions {
   List<DragMarker>? markers;
@@ -228,7 +228,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
 
     marker.point = mapState.unproject(CustomPoint(
         oldMarkerPoint.x + autoOffsetX, oldMarkerPoint.y + autoOffsetY));
-    mapState.move(newMapLatLng, mapState.zoom);
+    mapState.move(newMapLatLng, mapState.zoom, source: MapEventSource.custom);
   }
 
   void onPanEnd(details) {

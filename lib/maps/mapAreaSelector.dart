@@ -6,7 +6,7 @@ import 'package:la_toolkit/maps/zoombuttons_plugin_option.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/actions.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../laTheme.dart';
 import 'dragmarker.dart';
