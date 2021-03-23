@@ -109,14 +109,10 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
           width: marker.width,
           height: marker.height,
           left: pixelPosition.x +
-              ((isDragging && (marker.feedbackOffset != null))
-                  ? marker.feedbackOffset.dx
-                  : marker.offset.dx),
+              ((isDragging) ? marker.feedbackOffset.dx : marker.offset.dx),
           top: pixelPosition.y +
-              ((isDragging && (marker.feedbackOffset != null))
-                  ? marker.feedbackOffset.dy
-                  : marker.offset.dy),
-          child: (isDragging && (marker.feedbackBuilder != null))
+              ((isDragging) ? marker.feedbackOffset.dy : marker.offset.dy),
+          child: (isDragging)
               ? marker.feedbackBuilder!(context)
               : marker.builder!(context),
         ),
@@ -162,7 +158,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
 
     /// If we're near an edge, move the map to compensate.
 
-    if (marker.updateMapNearEdge != null && marker.updateMapNearEdge) {
+    if (marker.updateMapNearEdge) {
       /// How much we'll move the map by to compensate
 
       var autoOffsetX = 0.0;

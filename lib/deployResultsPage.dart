@@ -1,12 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/deploySubResultWidget.dart';
 import 'package:la_toolkit/components/resultsChart.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
+import 'package:xterm/frontend/terminal_view.dart';
+import 'package:xterm/terminal/terminal.dart';
 
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
@@ -50,7 +56,8 @@ class DeployResultsPage extends StatelessWidget {
                 resultsTotals[type]! + result['stats'][key][type]);
           });
         });
-
+        bool fistRetrieved = vm.project.lastCmdHistoryDetails != null &&
+            vm.project.lastCmdHistoryDetails!.fstRetrieved;
         num failures = resultsTotals['failures'] ?? 0;
         bool noFailures = failures == 0;
         context.hideLoaderOverlay();
@@ -98,7 +105,7 @@ class DeployResultsPage extends StatelessWidget {
                                       noFailures
                                           ? "All steps ok"
                                           : "Uuppps! Some step${failures > 1 ? 's' : ''} failed",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
                                       ))
@@ -113,7 +120,20 @@ class DeployResultsPage extends StatelessWidget {
                                       children: resultsDetails)
                                 ]),
                             SizedBox(height: 20),
-                            ResultsChart(resultsTotals)
+                            ResultsChart(resultsTotals),
+                            SizedBox(height: 20),
+                            if (!fistRetrieved)
+                              Text('Ansible Logs:',
+                                  style: DeployUtils.titleStyle),
+                            if (!fistRetrieved) SizedBox(height: 20),
+                            if (!fistRetrieved)
+                              Container(
+                                  height: 400,
+                                  width: 600,
+                                  child: SafeArea(
+                                    child: TerminalPanel(
+                                        vm.project.lastCmdHistoryDetails!),
+                                  ))
                           ],
                         )),
                     Expanded(
@@ -124,6 +144,32 @@ class DeployResultsPage extends StatelessWidget {
                 )));
       },
     );
+  }
+}
+
+class TerminalPanel extends StatelessWidget {
+  final CmdHistoryDetails cmdHistoryDetails;
+  TerminalPanel(this.cmdHistoryDetails);
+
+  @override
+  Widget build(BuildContext context) {
+    Terminal terminal = Terminal(theme: DeployUtils.laTerminalTheme);
+    var convertedLog = utf8
+        .decode(Base64Decoder().convert(cmdHistoryDetails.logsColorized))
+        // this should match banner of docker/logs-colorized-ansible-callback.py
+        .replaceAll('\n', '\r\n');
+    terminal.resize(101, 40);
+    terminal.write(convertedLog);
+
+    return Container(
+        padding: EdgeInsets.all(10),
+        color: Color(DeployUtils.laTerminalTheme.background.value),
+        child: TerminalView(
+          terminal: terminal,
+
+          opacity: .7,
+          // style: TerminalStyle(),
+        ));
   }
 }
 

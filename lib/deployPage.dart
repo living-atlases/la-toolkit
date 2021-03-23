@@ -4,6 +4,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/tagsConstants.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
@@ -67,7 +68,7 @@ class _DeployPageState extends State<DeployPage> {
                           logsPrefix: logsPrefix,
                           logsSuffix: logsSuffix);
                       store.dispatch(
-                          CmdUtils.getCmdResults(context, cmdHistory, true));
+                          DeployUtils.getCmdResults(context, cmdHistory, true));
                       // context.hideLoaderOverlay();
                     });
                   },
@@ -303,21 +304,4 @@ class _DeployViewModel {
 
   @override
   int get hashCode => project.hashCode ^ cmd.hashCode;
-}
-
-class CmdUtils {
-  static AppActions getCmdResults(
-      BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
-    return GetDeployProjectResults(cmdHistory, fstRetrieved, () {
-      context.hideLoaderOverlay();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('There was some problem retrieving the results'),
-        duration: Duration(days: 365),
-        action: SnackBarAction(
-          label: 'OK',
-          onPressed: () {},
-        ),
-      ));
-    });
-  }
 }

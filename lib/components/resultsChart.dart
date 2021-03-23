@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/utils/constants.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ResultsChart extends StatelessWidget {
@@ -12,7 +13,7 @@ class ResultsChart extends StatelessWidget {
       SfCircularChart(
           title: ChartTitle(
               text: 'Ansible tasks result totals:',
-              textStyle: TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
+              textStyle: DeployUtils.titleStyle),
           legend: Legend(isVisible: true),
           series: <PieSeries<_PieData, String>>[
             PieSeries<_PieData, String>(

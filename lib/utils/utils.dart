@@ -2,11 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:xterm/theme/terminal_color.dart';
+import 'package:xterm/theme/terminal_theme.dart';
 
 /*
 class ListUtils {
@@ -97,4 +100,45 @@ class DeployUtils {
           UiUtils.showSnackBarError(context, e);
         }));
   }
+
+  static AppActions getCmdResults(
+      BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
+    return GetDeployProjectResults(cmdHistory, fstRetrieved, () {
+      context.hideLoaderOverlay();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('There was some problem retrieving the results'),
+        duration: Duration(days: 365),
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: () {},
+        ),
+      ));
+    });
+  }
+
+  static const TextStyle titleStyle =
+      TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
+
+  static const laTerminalTheme = TerminalTheme(
+    cursor: TerminalColor(0xffaeafad),
+    selection: TerminalColor(0xffffff40),
+    foreground: TerminalColor(0xffcccccc),
+    background: TerminalColor(0xff29322e),
+    black: TerminalColor(0xff000000),
+    red: TerminalColor(0xffcd3131),
+    green: TerminalColor(0xff0dbc79),
+    yellow: TerminalColor(0xffe5e510),
+    blue: TerminalColor(0xff2472c8),
+    magenta: TerminalColor(0xffbc3fbc),
+    cyan: TerminalColor(0xff11a8cd),
+    white: TerminalColor(0xffe5e5e5),
+    brightBlack: TerminalColor(0xff666666),
+    brightRed: TerminalColor(0xfff14c4c),
+    brightGreen: TerminalColor(0xff23d18b),
+    brightYellow: TerminalColor(0xfff5f543),
+    brightBlue: TerminalColor(0xff3b8eea),
+    brightMagenta: TerminalColor(0xffd670d6),
+    brightCyan: TerminalColor(0xff29b8db),
+    brightWhite: TerminalColor(0xffffffff),
+  );
 }

@@ -13,7 +13,6 @@ import 'package:simple_moment/simple_moment.dart';
 
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
-import 'deployPage.dart';
 
 class LogsHistoryPage extends StatelessWidget {
   static const routeName = "logs";
@@ -31,8 +30,8 @@ class LogsHistoryPage extends StatelessWidget {
             onRepeatCmd: (project, log) => store.dispatch(
                 DeployUtils.doDeploy(context, store, project, log.deployCmd)),
             onOpenDeployResults: (cmdHistory) {
-              store
-                  .dispatch(CmdUtils.getCmdResults(context, cmdHistory, false));
+              store.dispatch(
+                  DeployUtils.getCmdResults(context, cmdHistory, false));
             });
       },
       builder: (BuildContext context, _ViewModel vm) {

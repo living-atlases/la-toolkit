@@ -9,12 +9,14 @@ part of 'cmdHistoryDetails.dart';
 extension CmdHistoryDetailsCopyWith on CmdHistoryDetails {
   CmdHistoryDetails copyWith({
     int? code,
+    bool? fstRetrieved,
     String? logs,
     String? logsColorized,
     List<dynamic>? results,
   }) {
     return CmdHistoryDetails(
       code: code ?? this.code,
+      fstRetrieved: fstRetrieved ?? this.fstRetrieved,
       logs: logs ?? this.logs,
       logsColorized: logsColorized ?? this.logsColorized,
       results: results ?? this.results,
@@ -32,6 +34,7 @@ CmdHistoryDetails _$CmdHistoryDetailsFromJson(Map<String, dynamic> json) {
     results: json['results'] as List<dynamic>,
     logs: json['logs'] as String,
     logsColorized: json['logsColorized'] as String,
+    fstRetrieved: json['fstRetrieved'] as bool?,
   );
 }
 
@@ -41,4 +44,5 @@ Map<String, dynamic> _$CmdHistoryDetailsToJson(CmdHistoryDetails instance) =>
       'results': instance.results,
       'logs': instance.logs,
       'logsColorized': instance.logsColorized,
+      'fstRetrieved': instance.fstRetrieved,
     };
