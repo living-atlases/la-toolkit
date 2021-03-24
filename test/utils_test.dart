@@ -2,6 +2,7 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   test('Capitalize strings', () {
@@ -71,5 +72,41 @@ void main() {
       ]
     };
     expect(MapUtils.areaKm2(world), equals(511207893.3958111));
+  });
+
+  test('dirName suggestions', () {
+    const List<String> shortNames = [
+      '回尚芸策出多探政検済浜朝毎。車記隠地実問底欠葉下女保月兄介禄情内線裁。的点回父政埼芸岡',
+      'LA Wäkßandâ',
+      'ALA',
+      'GBIF.ES',
+      'LA',
+      'Biodiversitäts-Atlas Österreich',
+      'Лорем ипсум долор сит амет, фастидии ехпетенда при ид.',
+      '議さだや設9売サコヱ助送首し康美イヤエテ決竹ハキ約泣ヘハ式追だじけ',
+    ];
+    shortNames.forEach((shortName) {
+      String uuid = Uuid().v4();
+      String dirName =
+          StringUtils.suggestDirName(shortName: shortName, uuid: uuid);
+      // print("$shortName: $dirName");
+      expect(dirName.length >= 2, equals(true));
+    });
+  });
+
+  test('dirName generated as expected', () {
+    const List<List<String>> pairs = [
+      ['GBIF.ES', 'gbif-es'],
+      ['LA.TEST', 'la-test'],
+      ['ALA', 'ala']
+    ];
+    pairs.forEach((pair) {
+      String uuid = Uuid().v4();
+      String dirName =
+          StringUtils.suggestDirName(shortName: pair[0], uuid: uuid);
+      print("${pair[0]}: $dirName");
+      expect(dirName.length >= 2, equals(true));
+      expect(dirName == pair[1], equals(true));
+    });
   });
 }

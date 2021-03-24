@@ -7,7 +7,10 @@ part 'laLatLng.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LALatLng extends LatLng {
-  LALatLng(double latitude, double longitude) : super(latitude, longitude);
+  LALatLng({required double latitude, required double longitude})
+      : super(latitude, longitude);
+
+  LALatLng.from(double latitude, double longitude) : super(latitude, longitude);
 
   factory LALatLng.fromJson(Map<String, dynamic> json) =>
       _$LALatLngFromJson(json);

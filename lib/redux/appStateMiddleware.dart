@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -140,14 +142,29 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           .then((_) => scanSshKeys(store, () => {}));
     }
     if (action is PrepareDeployProject) {
-      await Api.alaInstallSelect(
-              action.project.alaInstallRelease!, action.onError)
-          .then((_) => scanSshKeys(store, () => {}));
-      await Api.regenerateInv(
-          uuid: action.project.uuid, onError: action.onError);
-      await Api.generatorSelect(
-              action.project.generatorRelease!, action.onError)
-          .then((_) => action.onReady());
+      String? currentDirName = action.project.dirName;
+      currentDirName ??= action.project.suggestDirName();
+      String? checkedDirName = await Api.checkDirName(
+          dirName: currentDirName, uuid: action.project.uuid);
+      if (checkedDirName == null) {
+        store.dispatch(ShowSnackBar(AppSnackBarMessage(
+            message:
+                "Failed to prepare your configuration (in details, the dirName to store it)")));
+      } else {
+        if (action.project.dirName != checkedDirName) {
+          LAProject updatedProject =
+              action.project.copyWith(dirName: checkedDirName);
+          store.dispatch(UpdateProject(updatedProject));
+        }
+        await Api.alaInstallSelect(
+                action.project.alaInstallRelease!, action.onError)
+            .then((_) => scanSshKeys(store, () => {}));
+        await Api.regenerateInv(
+            uuid: action.project.uuid, onError: action.onError);
+        await Api.generatorSelect(
+                action.project.generatorRelease!, action.onError)
+            .then((_) => action.onReady());
+      }
     }
     if (action is DeployProject) {
       Api.ansiblew(action);

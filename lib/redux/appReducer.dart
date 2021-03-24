@@ -175,6 +175,7 @@ AppState _addProject(AppState state, AddProject action) {
       throw ("Trying to add an existing project.");
     return;
   });
+  action.project.dirName = action.project.suggestDirName();
   return state.copyWith(
       currentProject: action.project,
       projects: new List<LAProject>.from(state.projects)

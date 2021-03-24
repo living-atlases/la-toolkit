@@ -204,6 +204,7 @@ class Api {
     Object cmd = {
       'uuid': action.project.uuid,
       'shortName': action.project.shortName,
+      'dirName': action.project.dirName,
       'deployServices': action.deployServices,
       'limitToServers': action.limitToServers,
       'tags': action.tags,
@@ -239,6 +240,19 @@ class Api {
             json.encode({'logsPrefix': logsPrefix, 'logsSuffix': logsSuffix})));
     if (response.statusCode == 200) {
       return CmdHistoryDetails.fromJson(json.decode(response.body));
+    }
+    return null;
+  }
+
+  static Future<String?> checkDirName(
+      {required String dirName, required String uuid}) async {
+    if (AppUtils.isDemo()) return null;
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/check-dir-name");
+    Response response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({'dirName': dirName, 'uuid': uuid})));
+    if (response.statusCode == 200) {
+      return json.decode(response.body)['dirName'];
     }
     return null;
   }

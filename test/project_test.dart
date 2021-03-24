@@ -263,11 +263,11 @@ void main() {
 
   test('Test lat/lng center', () {
     LAProject p = LAProject(
-        mapBoundsFstPoint: LALatLng(10.0, 10.0),
-        mapBoundsSndPoint: LALatLng(20.0, 20.0));
+        mapBoundsFstPoint: LALatLng.from(10.0, 10.0),
+        mapBoundsSndPoint: LALatLng.from(20.0, 20.0));
     expect(p.getCenter(), equals(LatLng(15, 15)));
-    p.mapBoundsFstPoint = LALatLng(20, 20);
-    p.mapBoundsSndPoint = LALatLng(40, 40);
+    p.mapBoundsFstPoint = LALatLng.from(20, 20);
+    p.mapBoundsSndPoint = LALatLng.from(40, 40);
     p.setMap(LatLng(20, 20), LatLng(40, 40), 10);
     expect(p.getCenter(), equals(LatLng(30, 30)));
     expect(p.mapZoom, equals(10));

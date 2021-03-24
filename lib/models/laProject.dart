@@ -7,6 +7,7 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
@@ -30,6 +31,7 @@ class LAProject {
   String longName;
   // @JsonSerializable(nullable: false)
   String shortName;
+  String? dirName;
   // @JsonSerializable(nullable: false)
   String domain;
   // @JsonSerializable(nullable: false)
@@ -64,6 +66,7 @@ class LAProject {
       this.longName = "",
       this.shortName = "",
       this.domain = "",
+      this.dirName = "",
       this.useSSL = true,
       this.isCreated = false,
       List<LAServer>? servers,
@@ -93,8 +96,8 @@ class LAProject {
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
         cmdHistory = cmdHistory ?? [],
-        mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng(-44, 112),
-        mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng(-9, 154) {
+        mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng.from(-44, 112),
+        mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154) {
     if (this.serversMap.entries.length != this.servers.length) {
       // serversMap is new
       this.serversMap =
@@ -121,9 +124,6 @@ class LAProject {
   LatLng getCenter() {
     return MapUtils.center(mapBoundsFstPoint, mapBoundsSndPoint);
   }
-
-  // List<LAServer> get servers => _servers;
-  //  set servers(servers) => _servers = servers;
 
   bool validateCreation({debug: false}) {
     bool valid = true;
@@ -257,7 +257,7 @@ class LAProject {
         .map((entry) => '${serversMap[entry.key]!.name} has ${entry.value}')
         .toList()
         .join(', ');
-    return '''PROJECT: longName: $longName ($shortName), domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
+    return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated,  validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
 map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
@@ -383,8 +383,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   void setMap(LatLng firstPoint, LatLng sndPoint, double zoom) {
-    mapBoundsFstPoint = LALatLng(firstPoint.latitude, firstPoint.longitude);
-    mapBoundsSndPoint = LALatLng(sndPoint.latitude, sndPoint.longitude);
+    mapBoundsFstPoint =
+        LALatLng.from(firstPoint.latitude, firstPoint.longitude);
+    mapBoundsSndPoint = LALatLng.from(sndPoint.latitude, sndPoint.longitude);
     mapZoom = zoom;
   }
 
@@ -396,6 +397,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           uuid == other.uuid &&
           longName == other.longName &&
           shortName == other.shortName &&
+          dirName == other.dirName &&
           domain == other.domain &&
           useSSL == other.useSSL &&
           DeepCollectionEquality.unordered().equals(servers, other.servers) &&
@@ -422,6 +424,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       uuid.hashCode ^
       longName.hashCode ^
       shortName.hashCode ^
+      dirName.hashCode ^
       domain.hashCode ^
       useSSL.hashCode ^
       DeepCollectionEquality.unordered().hash(servers) ^
@@ -469,6 +472,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   Map<String, dynamic> toGeneratorJson() {
     Map<String, dynamic> conf = {
       "LA_uuid": uuid,
+      "LA_pkg_name": dirName,
       "LA_project_name": longName,
       "LA_project_shortname": shortName,
       "LA_domain": domain,
@@ -581,5 +585,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   Map<String, List<String>> getServerServicesForTest() {
     return serverServices;
+  }
+
+  String suggestDirName() {
+    return StringUtils.suggestDirName(shortName: shortName, uuid: uuid);
   }
 }

@@ -3,13 +3,29 @@
 part of 'laLatLng.dart';
 
 // **************************************************************************
+// CopyWithGenerator
+// **************************************************************************
+
+extension LALatLngCopyWith on LALatLng {
+  LALatLng copyWith({
+    double? latitude,
+    double? longitude,
+  }) {
+    return LALatLng(
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+    );
+  }
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
 LALatLng _$LALatLngFromJson(Map<String, dynamic> json) {
   return LALatLng(
-    (json['latitude'] as num).toDouble(),
-    (json['longitude'] as num).toDouble(),
+    latitude: (json['latitude'] as num).toDouble(),
+    longitude: (json['longitude'] as num).toDouble(),
   );
 }
 

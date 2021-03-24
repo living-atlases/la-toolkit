@@ -13,6 +13,7 @@ extension LAProjectCopyWith on LAProject {
     bool? advancedTune,
     String? alaInstallRelease,
     List<CmdHistoryEntry>? cmdHistory,
+    String? dirName,
     String? domain,
     String? generatorRelease,
     bool? isCreated,
@@ -38,6 +39,7 @@ extension LAProjectCopyWith on LAProject {
       advancedTune: advancedTune ?? this.advancedTune,
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
       cmdHistory: cmdHistory ?? this.cmdHistory,
+      dirName: dirName ?? this.dirName,
       domain: domain ?? this.domain,
       generatorRelease: generatorRelease ?? this.generatorRelease,
       isCreated: isCreated ?? this.isCreated,
@@ -71,6 +73,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     longName: json['longName'] as String,
     shortName: json['shortName'] as String,
     domain: json['domain'] as String,
+    dirName: json['dirName'] as String?,
     useSSL: json['useSSL'] as bool,
     servers: (json['servers'] as List<dynamic>?)
         ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
@@ -116,6 +119,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'uuid': instance.uuid,
       'longName': instance.longName,
       'shortName': instance.shortName,
+      'dirName': instance.dirName,
       'domain': instance.domain,
       'useSSL': instance.useSSL,
       'servers': instance.servers.map((e) => e.toJson()).toList(),

@@ -324,7 +324,7 @@ class _HomePageState extends State<HomePage> {
         child: ListBody(
           children: <Widget>[
             Text(
-                'Please select a \'.yo-rc.json\' file of some previous generated inventories to import it. This file is located in the parent directory of your inventories.'),
+                'Please select a \'.yo-rc.json\' file of some previous generated inventories to import it. This file is located in the parent directory of your inventories (maybe you have to show hidden files).'),
             SizedBox(height: 20),
             Text('You will have later to:'),
             SizedBox(height: 10),

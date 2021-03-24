@@ -214,7 +214,9 @@ class _DeployPageState extends State<DeployPage> {
                                         value: cmd.dryRun,
                                         onChanged: (value) => setState(
                                             () => cmd.dryRun = value))),
-
+                              TipsCard(
+                                  text:
+                                      "This project is generated in the '${vm.project.dirName}' directory."),
                               LaunchBtn(onTap: onTap, execBtn: execBtn),
                             ])),
                     Expanded(
