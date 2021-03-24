@@ -88,8 +88,8 @@ class LAProjectEditPage extends StatelessWidget {
                 if (store.state.status == LAProjectViewStatus.edit) {
                   store.dispatch(UpdateProject(project));
                   store.dispatch(OpenProjectTools(project));
-                  Beamer.of(context).beamTo(LAProjectViewLocation());
                 }
+                Beamer.of(context).beamTo(LAProjectViewLocation());
               },
               onCancel: (project) {
                 store.dispatch(OpenProjectTools(project));
