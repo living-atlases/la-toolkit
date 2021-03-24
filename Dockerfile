@@ -104,11 +104,11 @@ RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
 RUN su - ubuntu -c 'npm install -g yo'
 RUN su - ubuntu -c 'npm install -g sails'
 RUN su - ubuntu -c 'npm install -g forever'
-RUN echo "2021030401"
+RUN echo "2021030424"
 RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 
 # ala-install
-RUN echo "2020112401 (change this date to rebuild & repeat this and the following steps)"
+RUN echo "2021030424 (change this date to rebuild & repeat this and the following steps)"
 RUN su - ubuntu -c 'git clone --depth 1 --branch v2.0.5 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
 # la-toolkit backend
@@ -119,7 +119,7 @@ RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-too
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 # la-toolkit frontend
-RUN echo "2021030401"
+RUN echo "2021030424"
 COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
