@@ -6,56 +6,27 @@ Living Atlases Toolkit - Frontend
 
 This is a the frontend of the LA Toolkit. It uses [this repo](https://github.com/living-atlases/la-toolkit-backend) as backend and both components are packaged together in a docker image with all the dependencies to deploy and maintain a LA Portal.
 
-## Development
+## Docker 
 
-This frontend is developed using Flutter Web.
+To run the `la-toolkit` you need to [install docker](https://docs.docker.com/engine/install/) in the computer you are using.
 
-A few resources to get you started if your are new to Flutter:
+### LA-Toolkit Image 
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-- [Flutter Web support](https://flutter.dev/web)
-
-### Using flutter web
-
-https://flutter.dev/docs/get-started/web
-```
-$ flutter channel stable
-$ flutter upgrade
-```
-
-### Autogeneration of code
-
-There are some code (like the json serialization) that should be generated when some model changes. This is done with:
-```
-flutter pub run build_runner watch --delete-conflicting-outputs
-``` 
-
-### Environments
-
-## Build and Run
-
-We need to have the frontend build prior to build the docker image:
+Download it from Docker Hub via:
 
 ```
-flutter test && flutter build web
+docker pull livingatlases/la-toolkit
 ```
 
-While we finish the null safety migration we have to use:
-```
-flutter build web --no-sound-null-safety 
-```
-
-### Docker 
-
-Build the image (or download it from Docker Hub):
+or build the image from source:
 
 ```
 docker build . -f ./docker/u18/Dockerfile -t la-toolkit # for ubuntu 18.04
 docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (testing right now)
 ```
+### Run the LA-Toolkit docker image
 
-Run the image exposing the port `2010` that is were the la-toolkit web interface is listen to, and configuring the volumes for:
+Run the image exposing the port `2010` that is were the la-toolkit web interface is listen to,  the `2011` port, used by interactive terminal commands, and configuring the volumes for:
 
 - your ssh keys
 - your inventories and configuration
@@ -88,6 +59,43 @@ http://localhost:2010/
 Stop it with:
 ```
 docker stop la-toolkit
+```
+## Development
+
+This frontend is developed using Flutter Web.
+
+A few resources to get you started if your are new to Flutter:
+
+- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- [Flutter Web support](https://flutter.dev/web)
+
+### Using flutter web
+
+https://flutter.dev/docs/get-started/web
+```
+$ flutter channel stable
+$ flutter upgrade
+```
+
+### Autogeneration of code
+
+There are some code (like the json serialization) that should be generated when some model changes. This is done with:
+```
+flutter pub run build_runner watch --delete-conflicting-outputs
+``` 
+
+## Build and Run
+
+We need to have the frontend build prior to build the docker image:
+
+```
+flutter test && flutter build web
+```
+
+While we finish the null safety migration we have to use:
+```
+flutter build web --no-sound-null-safety 
 ```
 
 ### Screenshots
