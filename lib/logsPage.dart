@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -6,6 +7,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/constants.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:simple_moment/simple_moment.dart';
@@ -26,14 +28,17 @@ class LogsHistoryPage extends StatelessWidget {
             project: store.state.currentProject,
             logsNum: store.state.currentProject.cmdHistory.length,
             onDeleteCmd: (log) => store.dispatch(DeleteLog(log)),
-            onRepeatCmd: (project, log) => store.dispatch(DeployUtils.doDeploy(
-                context: context,
-                store: store,
-                project: project,
-                repeatCmd: log.deployCmd)),
+            onRepeatCmd: (project, log) {
+              store.dispatch(DeployUtils.doDeploy(
+                  context: context,
+                  store: store,
+                  project: project,
+                  repeatCmd: log.deployCmd));
+            },
             onOpenDeployResults: (cmdHistory) {
               store.dispatch(
                   DeployUtils.getCmdResults(context, cmdHistory, false));
+              Beamer.of(context).beamTo(DeployResultsLocation());
             });
       },
       builder: (BuildContext context, _ViewModel vm) {

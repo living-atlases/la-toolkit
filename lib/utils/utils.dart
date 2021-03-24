@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -10,6 +11,8 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:xterm/theme/terminal_color.dart';
 import 'package:xterm/theme/terminal_theme.dart';
+
+import '../routes.dart';
 
 /*
 class ListUtils {
@@ -96,7 +99,10 @@ class DeployUtils {
     context.showLoaderOverlay();
     store.dispatch(PrepareDeployProject(
         project: project,
-        onReady: () => context.hideLoaderOverlay(),
+        onReady: () {
+          context.hideLoaderOverlay();
+          Beamer.of(context).beamTo(DeployLocation());
+        },
         repeatCmd: repeatCmd,
         onError: (e) {
           context.hideLoaderOverlay();

@@ -11,7 +11,6 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:xterm/frontend/terminal_view.dart';
 import 'package:xterm/terminal/terminal.dart';
@@ -65,7 +64,6 @@ class DeployResultsPage extends StatelessWidget {
             vm.project.lastCmdHistoryDetails!.fstRetrieved;
         num failures = resultsTotals['failures'] ?? 0;
         bool noFailures = failures == 0;
-        context.hideLoaderOverlay();
         return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
@@ -73,7 +71,7 @@ class DeployResultsPage extends StatelessWidget {
                 titleIcon: Icons.analytics_outlined,
                 title: "Deployment Results",
                 showLaIcon: false,
-                showBack: false,
+                showBack: true,
                 actions: [
                   IconButton(
                       icon: Tooltip(

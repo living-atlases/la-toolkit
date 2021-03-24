@@ -71,7 +71,6 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     store: store,
                     project: project,
                     repeatCmd: DeployCmd());
-                Beamer.of(context).beamTo(DeployLocation());
               },
               onDelProject: (project) {
                 store.dispatch(DelProject(project));

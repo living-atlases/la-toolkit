@@ -1,4 +1,5 @@
 import 'package:beamer/beamer.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/logsPage.dart';
@@ -10,10 +11,19 @@ import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/sshKeysPage.dart';
 
 import 'deployPage.dart';
-import 'main.dart';
+import 'homePage.dart';
 
 class Routes {
+  static final notFoundPage = BeamPage(
+    child: Scaffold(
+      body: Center(
+        child: Text('Not found'),
+      ),
+    ),
+  );
+
   static final routerDelegate = BeamerRouterDelegate(
+    notFoundPage: notFoundPage,
     beamLocations: [
       HomeLocation(),
       LAProjectEditLocation(),

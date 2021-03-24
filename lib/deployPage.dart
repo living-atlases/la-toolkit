@@ -63,7 +63,6 @@ class _DeployPageState extends State<DeployPage> {
                         onClose: () async {
                       if (!cmd.dryRun) {
                         // Show the results
-                        context.showLoaderOverlay();
                         CmdHistoryEntry cmdHistory = CmdHistoryEntry(
                             cmd: ansibleCmd,
                             deployCmd: cmd,
@@ -102,7 +101,7 @@ class _DeployPageState extends State<DeployPage> {
                 titleIcon: Mdi.rocketLaunch,
                 title: "Deployment",
                 showLaIcon: false,
-                showBack: false,
+                showBack: true,
                 actions: [
                   IconButton(
                       icon: Tooltip(
