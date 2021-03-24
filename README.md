@@ -8,22 +8,18 @@ This is a the frontend of the LA Toolkit. It uses [this repo](https://github.com
 
 ## Docker 
 
-To run the `la-toolkit` you need to [install docker](https://docs.docker.com/engine/install/) in the computer you are using.
+To run the `la-toolkit` you need to [install docker](https://docs.docker.com/engine/install/) in the computer you want to use to deploy your LA Portal (like your laptop, or similar computer).
 
 ### LA-Toolkit Image 
 
 Download it from Docker Hub via:
 
 ```
-docker pull livingatlases/la-toolkit
+docker pull livingatlases/la-toolkit:latest
 ```
 
-or build the image from source:
+you can also build yourself the images (see the Development section).
 
-```
-docker build . -f ./docker/u18/Dockerfile -t la-toolkit # for ubuntu 18.04
-docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (testing right now)
-```
 ### Run the LA-Toolkit docker image
 
 Run the image exposing the port `2010` that is were the la-toolkit web interface is listen to,  the `2011` port, used by interactive terminal commands, and configuring the volumes for:
@@ -85,7 +81,7 @@ There are some code (like the json serialization) that should be generated when 
 flutter pub run build_runner watch --delete-conflicting-outputs
 ``` 
 
-## Build and Run
+### Flutter build
 
 We need to have the frontend build prior to build the docker image:
 
@@ -98,7 +94,16 @@ While we finish the null safety migration we have to use:
 flutter build web --no-sound-null-safety 
 ```
 
-### Screenshots
+### Docker image build
+
+You will need to build the flutter web as described below prior to build a `la-toolkit` image.
+
+```
+docker build . -f ./docker/u18/Dockerfile -t la-toolkit # for ubuntu 18.04
+docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (testing right now)
+```
+
+## Screenshots
 
 Loading:
 
