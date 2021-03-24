@@ -1,4 +1,4 @@
-import 'package:animations/animations.dart';
+import 'package:beamer/beamer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/logsPage.dart';
@@ -13,46 +13,149 @@ import 'deployPage.dart';
 import 'main.dart';
 
 class Routes {
-  static Route<T> fadeThrough<T>(RouteSettings settings, WidgetBuilder page,
-      {int duration = 300}) {
-    return PageRouteBuilder<T>(
-      settings: settings,
-      transitionDuration: Duration(milliseconds: duration),
-      pageBuilder: (context, animation, secondaryAnimation) => page(context),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeScaleTransition(animation: animation, child: child);
-      },
-    );
-  }
+  static final routerDelegate = BeamerRouterDelegate(
+    beamLocations: [
+      HomeLocation(),
+      LAProjectEditLocation(),
+      LAProjectViewLocation(),
+      SandboxLocation(),
+      LAProjectTuneLocation(),
+      PreDeployLocation(),
+      LogsHistoryLocation(),
+      SshKeysLocation(),
+      DeployLocation(),
+      DeployResultsLocation()
+    ],
+  );
+}
 
-  static Route<T> onGenerateRoute<T>(RouteSettings settings) {
-    return Routes.fadeThrough(settings, (context) {
-      switch (settings.name) {
-        case HomePage.routeName:
-          return HomePage(title: appName);
-        case LAProjectEditPage.routeName:
-          return LAProjectEditPage();
-        case LAProjectViewPage.routeName:
-          return LAProjectViewPage();
-        case SandboxPage.routeName:
-          return SandboxPage();
-        case LAProjectTunePage.routeName:
-          return LAProjectTunePage();
-        case PreDeployPage.routeName:
-          return PreDeployPage();
-        case LogsHistoryPage.routeName:
-          return LogsHistoryPage();
-        case SshKeyPage.routeName:
-          return SshKeyPage();
-        case DeployPage.routeName:
-          return DeployPage();
-        case DeployResultsPage.routeName:
-          return DeployResultsPage();
-        default:
-          return HomePage(title: appName);
-      }
-    });
-  }
+class HomeLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('home'),
+          child: HomePage(),
+        )
+      ];
+}
+
+class LAProjectEditLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/edit'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('edit'),
+          child: LAProjectEditPage(),
+        )
+      ];
+}
+
+class LAProjectViewLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/tools'];
+
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('tools'),
+          child: LAProjectViewPage(),
+        )
+      ];
+}
+
+class SandboxLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/sandbox'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('sandbox'),
+          child: SandboxPage(),
+        )
+      ];
+}
+
+class LAProjectTuneLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/tune'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('tune'),
+          child: LAProjectTunePage(),
+        )
+      ];
+}
+
+class PreDeployLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/predeploy'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('predeploy'),
+          child: PreDeployPage(),
+        )
+      ];
+}
+
+class LogsHistoryLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/logs'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('logs'),
+          child: LogsHistoryPage(),
+        )
+      ];
+}
+
+class SshKeysLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/ssh-keys'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('ssh-keys'),
+          child: SshKeyPage(),
+        )
+      ];
+}
+
+class DeployLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/deploy'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('deploy'),
+          child: DeployPage(),
+        )
+      ];
+}
+
+class DeployResultsLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/deploy-results'];
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey('deploy-results'),
+          child: DeployResultsPage(),
+        )
+      ];
 }
 
 /*

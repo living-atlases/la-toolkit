@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/serverCardList.dart';
@@ -9,6 +10,7 @@ import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -86,10 +88,12 @@ class LAProjectEditPage extends StatelessWidget {
                 if (store.state.status == LAProjectViewStatus.edit) {
                   store.dispatch(UpdateProject(project));
                   store.dispatch(OpenProjectTools(project));
+                  Beamer.of(context).beamTo(LAProjectViewLocation());
                 }
               },
               onCancel: (project) {
                 store.dispatch(OpenProjectTools(project));
+                Beamer.of(context).beamTo(LAProjectViewLocation());
               },
               onSaveCurrentProject: (project) {
                 print('On Save Current Project');

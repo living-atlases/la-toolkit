@@ -5,7 +5,6 @@ import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/constants.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -46,7 +45,6 @@ class LogsHistoryPage extends StatelessWidget {
                 title: "Logs History",
                 showLaIcon: false,
                 showBack: true,
-                backRoute: LAProjectViewPage.routeName,
                 actions: []),
             body: new ScrollPanel(
                 child: Container(

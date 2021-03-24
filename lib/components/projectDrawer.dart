@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/helpIcon.dart';
@@ -8,14 +9,12 @@ import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../main.dart';
-import '../sshKeysPage.dart';
+import '../routes.dart';
 
 class ProjectDrawer extends StatelessWidget {
   @override
@@ -33,7 +32,8 @@ class ProjectDrawer extends StatelessWidget {
               children: <Widget>[
             GestureDetector(
               onTap: () {
-                Navigator.popAndPushNamed(context, '/');
+                context.beamBack();
+                // Navigator.popAndPushNamed(context, '/');
               },
               child: DrawerHeader(
                 child: Column(
@@ -70,14 +70,16 @@ class ProjectDrawer extends StatelessWidget {
               leading: const Icon(LAIcon.la),
               title: Text('Home'),
               onTap: () {
-                Navigator.popAndPushNamed(context, HomePage.routeName);
+                context.beamBack();
+                // Navigator.popAndPushNamed(context, HomePage.routeName);
               },
             ),
             ListTile(
               leading: const Icon(Mdi.key),
               title: Text('SSH Keys'),
               onTap: () {
-                Navigator.popAndPushNamed(context, SshKeyPage.routeName);
+                Beamer.of(context).beamTo(SshKeysLocation());
+                // Navigator.popAndPushNamed(context, SshKeyPage.routeName);
               },
             ),
             TermDialog.drawerItem(context),
@@ -87,7 +89,8 @@ class ProjectDrawer extends StatelessWidget {
                 leading: const Icon(Icons.build),
                 title: Text('Sandbox'),
                 onTap: () {
-                  Navigator.popAndPushNamed(context, SandboxPage.routeName);
+                  // Navigator.popAndPushNamed(context, SandboxPage.routeName);
+                  Beamer.of(context).beamTo(SandboxLocation());
                 },
               ),
             Column(children: ListTileLink.drawerBottomLinks)

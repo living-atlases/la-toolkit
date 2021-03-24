@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:collection/collection.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +7,9 @@ import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/lintProject.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
-import 'package:la_toolkit/main.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
+import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
@@ -48,19 +49,34 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               status: store.state.currentProject.status,
               alaInstallReleases: store.state.alaInstallReleases,
               generatorReleases: store.state.generatorReleases,
-              onOpenProject: (project) => store.dispatch(OpenProject(project)),
-              onTuneProject: (project) => store.dispatch(TuneProject(project)),
-              onPreDeployTasks: (project) =>
-                  store.dispatch(OnPreDeployTasks(project)),
-              onViewLogs: (project) => store.dispatch(OnViewLogs(project)),
+              onOpenProject: (project) {
+                store.dispatch(OpenProject(project));
+                Beamer.of(context).beamTo(LAProjectEditLocation());
+              },
+              onTuneProject: (project) {
+                store.dispatch(TuneProject(project));
+                Beamer.of(context).beamTo(LAProjectTuneLocation());
+              },
+              onPreDeployTasks: (project) {
+                store.dispatch(OnPreDeployTasks(project));
+                Beamer.of(context).beamTo(PreDeployLocation());
+              },
+              onViewLogs: (project) {
+                store.dispatch(OnViewLogs(project));
+                Beamer.of(context).beamTo(LogsHistoryLocation());
+              },
               onDeployProject: (project) {
                 DeployUtils.doDeploy(
                     context: context,
                     store: store,
                     project: project,
                     repeatCmd: DeployCmd());
+                Beamer.of(context).beamTo(DeployLocation());
               },
-              onDelProject: (project) => store.dispatch(DelProject(project)),
+              onDelProject: (project) {
+                store.dispatch(DelProject(project));
+                Beamer.of(context).beamTo(HomeLocation());
+              },
               onGenInvProject: (project) =>
                   store.dispatch(GenerateInvProject(project)),
               onTestConnProject: (project, silence) {
@@ -183,7 +199,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   context: context,
                   showLaIcon: false,
                   showBack: true,
-                  backRoute: HomePage.routeName,
+                  // backRoute: HomePage.routeName,
                   projectIcon: projectIconUrl,
                   title: "Toolkit of ${project.shortName} Portal"),
               body: new ScrollPanel(

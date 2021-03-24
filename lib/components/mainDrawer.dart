@@ -1,12 +1,12 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/sshKeysPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../sandboxPage.dart';
+import '../routes.dart';
 import 'laIcon.dart';
 import 'listTileLink.dart';
 
@@ -44,7 +44,8 @@ class _MainDrawerState extends State<MainDrawer> {
             children: <Widget>[
           GestureDetector(
             onTap: () {
-              Navigator.popAndPushNamed(context, '/');
+              // Navigator.popAndPushNamed(context, '/');
+              context.beamBack();
             },
             child: DrawerHeader(
               child: Column(
@@ -71,7 +72,8 @@ class _MainDrawerState extends State<MainDrawer> {
             leading: const Icon(Mdi.key),
             title: Text('SSH Keys'),
             onTap: () {
-              Navigator.popAndPushNamed(context, SshKeyPage.routeName);
+              // Navigator.popAndPushNamed(context, SshKeyPage.routeName);
+              Beamer.of(context).beamTo(SshKeysLocation());
             },
           ),
           TermDialog.drawerItem(context),
@@ -80,7 +82,8 @@ class _MainDrawerState extends State<MainDrawer> {
               leading: const Icon(Icons.build),
               title: Text('Sandbox'),
               onTap: () {
-                Navigator.popAndPushNamed(context, SandboxPage.routeName);
+                // Navigator.popAndPushNamed(context, SandboxPage.routeName);
+                Beamer.of(context).beamTo(SandboxLocation());
               },
             ),
           Column(children: ListTileLink.drawerBottomLinks),

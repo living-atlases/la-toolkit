@@ -1,8 +1,9 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_toolkit/main.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
+import '../routes.dart';
 import 'laIcon.dart';
 
 class LAAppBar extends AppBar {
@@ -12,7 +13,6 @@ class LAAppBar extends AppBar {
       String? projectIcon,
       bool showLaIcon: false,
       bool showBack: false,
-      String? backRoute,
       List<Widget>? actions,
       Widget? leading,
       IconData? titleIcon})
@@ -43,15 +43,10 @@ class LAAppBar extends AppBar {
                       icon:
                           Icon(Icons.arrow_back, size: 28, color: Colors.black),
                       onPressed: () {
-                        if (backRoute != null) {
-                          Navigator.of(context).pushReplacementNamed(backRoute);
-                        } else {
-                          try {
-                            Navigator.of(context).pop();
-                          } catch (e) {
-                            Navigator.of(context)
-                                .pushReplacementNamed(HomePage.routeName);
-                          }
+                        try {
+                          context.beamBack();
+                        } catch (e) {
+                          Beamer.of(context).beamTo(HomeLocation());
                         }
                       }),
                 if (showLaIcon)
@@ -59,8 +54,7 @@ class LAAppBar extends AppBar {
                       tooltip: "Homepage",
                       icon: Icon(LAIcon.la, size: 34, color: Colors.white),
                       onPressed: () {
-                        Navigator.of(context)
-                            .pushReplacementNamed(HomePage.routeName);
+                        Beamer.of(context).beamTo(HomeLocation());
                       }),
                 Container(
                     padding: const EdgeInsets.all(8.0),

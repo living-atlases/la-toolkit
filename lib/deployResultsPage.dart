@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/deploySubResultWidget.dart';
@@ -8,6 +9,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
@@ -40,7 +42,10 @@ class DeployResultsPage extends StatelessWidget {
       converter: (store) {
         return _DeployResultsViewModel(
             project: store.state.currentProject,
-            onClose: (project) => store.dispatch(OpenProjectTools(project)));
+            onClose: (project) {
+              store.dispatch(OpenProjectTools(project));
+              Beamer.of(context).beamTo(LAProjectViewLocation());
+            });
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {
         Map<String, num> resultsTotals = {};

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/helpIcon.dart';
 import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/projectViewPage.dart';
 
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
@@ -46,7 +45,6 @@ class _PreDeployPageState extends State<PreDeployPage> {
                 titleIcon: Icons.foundation,
                 showBack: true,
                 title: "Pre-Deploy Tasks",
-                backRoute: LAProjectViewPage.routeName,
                 showLaIcon: false,
                 actions: []),
             body: ScrollPanel(

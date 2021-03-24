@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,6 +9,7 @@ import 'package:la_toolkit/components/laProjectTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -23,10 +25,20 @@ class LAProjectsList extends StatelessWidget {
         converter: (store) {
           return _ProjectsPageViewModel(
             state: store.state,
-            onCreateProject: () => store.dispatch(CreateProject()),
-            onDeleteProject: (project) => store.dispatch(DelProject(project)),
-            onOpenProjectTools: (project) =>
-                store.dispatch(OpenProjectTools(project)),
+            onCreateProject: () {
+              store.dispatch(CreateProject());
+              Beamer.of(context).beamTo(LAProjectEditLocation());
+            },
+            onDeleteProject: (project) {
+              store.dispatch(DelProject(project));
+              Beamer.of(context).beamTo(HomeLocation());
+              //context.beamToNamed(HomePage.routeName);
+            },
+            onOpenProjectTools: (project) {
+              store.dispatch(OpenProjectTools(project));
+              //context.beamToNamed(LAProjectViewPage.routeName);
+              Beamer.of(context).beamTo(LAProjectViewLocation());
+            },
           );
         },
         builder: (BuildContext context, _ProjectsPageViewModel vm) {

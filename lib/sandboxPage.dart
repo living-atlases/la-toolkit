@@ -61,6 +61,7 @@ class _SandboxPageState extends State<SandboxPage> {
           appBar: LAAppBar(
             context: context,
             title: 'Sandbox',
+            showBack: true,
             actions: [
               /* new CircularPercentIndicator(
                 radius: 45.0,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:beamer/beamer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +20,6 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
-import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/fileUtils.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -34,6 +34,7 @@ import 'deployPage.dart';
 import 'intro.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
+import 'routes.dart';
 
 Future<void> main() async {
   AppStateMiddleware appStateMiddleware = AppStateMiddleware();
@@ -58,7 +59,7 @@ Future<void> main() async {
     middleware: [
       customLogPrinter(),
       appStateMiddleware,
-      NavigationMiddleware(),
+      // NavigationMiddleware(),
     ],
   );
   store.onChange.listen((state) {
@@ -98,7 +99,7 @@ Future<void> main() async {
   )); */
 }
 
-final String appName = 'Living Atlases Toolkit';
+const String appName = 'Living Atlases Toolkit';
 
 // https://stackoverflow.com/questions/50303441/flutter-redux-navigator-globalkey-currentstate-returns-null
 class MainKeys {
@@ -119,8 +120,12 @@ class MyApp extends StatelessWidget {
             useDefaultLoading: true,
             overlayOpacity: 0.5,
             overlayColor: Colors.black,
-            child: MaterialApp(
-              navigatorKey: MainKeys.navKey,
+            child: MaterialApp.router(
+              routerDelegate: Routes.routerDelegate,
+              routeInformationParser: BeamerRouteInformationParser(),
+              backButtonDispatcher:
+                  BeamerBackButtonDispatcher(delegate: Routes.routerDelegate),
+              // navigatorKey: MainKeys.navKey,
               builder: (context, widget) => ResponsiveWrapper.builder(
                   BouncingScrollWrapper.builder(context, widget!),
                   maxWidth: 1200,
@@ -134,9 +139,9 @@ class MyApp extends StatelessWidget {
                     ResponsiveBreakpoint.autoScale(2460, name: "4K"),
                   ],
                   background: Container(color: Color(0xFFF5F5F5))),
-              initialRoute: HomePage.routeName,
-              onGenerateRoute: (RouteSettings settings) =>
-                  Routes.onGenerateRoute(settings),
+              // initialRoute: HomePage.routeName,
+              // onGenerateRoute: (RouteSettings settings) =>
+              //  Routes.onGenerateRoute(settings),
               title: appName,
               theme: LAColorTheme.laThemeData,
               debugShowCheckedModeBanner: false,
@@ -147,7 +152,7 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatefulWidget {
   static const routeName = "/";
 
-  HomePage({Key? key, required this.title}) : super(key: key);
+  HomePage({Key? key, this.title: appName}) : super(key: key);
 
   final String title;
 
@@ -188,9 +193,11 @@ class _HomePageState extends State<HomePage> {
               onImportProject: (yoRc) {
                 store.dispatch(ImportProject(yoRcJson: yoRc));
                 context.hideLoaderOverlay();
+                Beamer.of(context).beamTo(LAProjectEditLocation());
               },
               onAddProject: () {
                 store.dispatch(CreateProject());
+                Beamer.of(context).beamTo(LAProjectEditLocation());
               },
               onAddTemplates: (templates) {
                 context.showLoaderOverlay();

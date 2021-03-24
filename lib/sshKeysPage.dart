@@ -42,6 +42,7 @@ class SshKeyPage extends StatelessWidget {
                 titleIcon: Mdi.key,
                 title: "SSH KEYS",
                 showLaIcon: false,
+                showBack: true,
                 actions: [
                   TextButton.icon(
                       icon: Icon(Icons.add_circle_outline),

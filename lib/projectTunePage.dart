@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
@@ -9,6 +10,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 
@@ -37,9 +39,11 @@ class LAProjectTunePage extends StatelessWidget {
           onUpdateProject: (project) {
             store.dispatch(UpdateProject(project));
             store.dispatch(OpenProjectTools(project));
+            Beamer.of(context).beamTo(LAProjectViewLocation());
           },
           onCancel: (project) {
             store.dispatch(OpenProjectTools(project));
+            Beamer.of(context).beamTo(LAProjectViewLocation());
           },
         );
       },
