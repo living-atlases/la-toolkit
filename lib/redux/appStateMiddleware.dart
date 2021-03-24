@@ -154,7 +154,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         if (action.project.dirName != checkedDirName) {
           LAProject updatedProject =
               action.project.copyWith(dirName: checkedDirName);
-          store.dispatch(UpdateProject(updatedProject));
+
+          // store.dispatch(UpdateProject(updatedProject));
         }
         await Api.alaInstallSelect(
                 action.project.alaInstallRelease!, action.onError)
@@ -178,7 +179,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           results.fstRetrieved = action.fstRetrieved;
           store.dispatch(ShowDeployProjectResults(
               action.cmdHistoryEntry, action.fstRetrieved, results));
-          store.dispatch(SaveCurrentProject(store.state.currentProject));
+//           store.dispatch(SaveCurrentProject(store.state.currentProject));
         } else {
           store.dispatch(OnShowDeployProjectResultsFailed());
           action.onFailed();

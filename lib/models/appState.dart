@@ -40,24 +40,19 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class AppState {
-  // from SharedPreferences
   @JsonKey(ignore: true)
   final bool failedLoad;
   final bool firstUsage;
-  // @JsonKey(nullable: false)
   final LAProject currentProject;
-  // @JsonKey(nullable: false)
   final LAProjectViewStatus status;
-  // @JsonKey(nullable: false)
   final int currentStep;
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
-  // @JsonSerializable(nullable: false)
   final List<SshKey> sshKeys;
   @JsonKey(ignore: true) //, nullable: true)
   final AppSnackBarMessage appSnackBarMessage;
-  @JsonKey(ignore: true) //, nullable: true)
+  @JsonKey(ignore: true)
   final DeployCmd repeatCmd;
 
   AppState(
@@ -77,12 +72,8 @@ class AppState {
         currentProject = currentProject ?? LAProject(),
         alaInstallReleases = alaInstallReleases ?? [],
         generatorReleases = generatorReleases ?? [],
-        repeatCmd = repeatCmd ?? DeployCmd.empty,
+        repeatCmd = repeatCmd ?? DeployCmd(),
         appSnackBarMessage = appSnackBarMessage ?? AppSnackBarMessage.empty;
-
-  /*
-      sshKeys})
-      : sshKeys = sshKeys ?? []; */
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
       _$AppStateFromJson(json);

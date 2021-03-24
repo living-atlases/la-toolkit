@@ -89,7 +89,10 @@ class UiUtils {
 
 class DeployUtils {
   static doDeploy(
-      BuildContext context, var store, LAProject project, DeployCmd repeatCmd) {
+      {required BuildContext context,
+      required var store,
+      required LAProject project,
+      required DeployCmd repeatCmd}) {
     context.showLoaderOverlay();
     store.dispatch(PrepareDeployProject(
         project: project,

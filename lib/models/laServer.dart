@@ -15,13 +15,10 @@ class LAServer {
   String uuid;
   String name;
   String ip;
-  //@JsonSerializable(nullable: false)
   int sshPort;
   String? sshUser;
-  //@JsonSerializable(nullable: false)
   List<String> aliases;
   SshKey? sshKey;
-  //@JsonSerializable(nullable: false)
   List<String> gateways;
   ServiceStatus reachable;
   ServiceStatus sshReachable;

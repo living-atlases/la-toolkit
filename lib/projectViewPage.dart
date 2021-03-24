@@ -54,7 +54,11 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   store.dispatch(OnPreDeployTasks(project)),
               onViewLogs: (project) => store.dispatch(OnViewLogs(project)),
               onDeployProject: (project) {
-                DeployUtils.doDeploy(context, store, project, DeployCmd.empty);
+                DeployUtils.doDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    repeatCmd: DeployCmd());
               },
               onDelProject: (project) => store.dispatch(DelProject(project)),
               onGenInvProject: (project) =>

@@ -27,8 +27,11 @@ class LogsHistoryPage extends StatelessWidget {
             project: store.state.currentProject,
             logsNum: store.state.currentProject.cmdHistory.length,
             onDeleteCmd: (log) => store.dispatch(DeleteLog(log)),
-            onRepeatCmd: (project, log) => store.dispatch(
-                DeployUtils.doDeploy(context, store, project, log.deployCmd)),
+            onRepeatCmd: (project, log) => store.dispatch(DeployUtils.doDeploy(
+                context: context,
+                store: store,
+                project: project,
+                repeatCmd: log.deployCmd)),
             onOpenDeployResults: (cmdHistory) {
               store.dispatch(
                   DeployUtils.getCmdResults(context, cmdHistory, false));

@@ -19,8 +19,6 @@ class DeployCmd {
   bool debug;
   bool dryRun;
 
-  static final DeployCmd empty = DeployCmd();
-
   DeployCmd(
       {List<String>? deployServices,
       List<String>? limitToServers,
