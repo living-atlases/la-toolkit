@@ -74,16 +74,18 @@ class _DeployPageState extends State<DeployPage> {
                       // context.hideLoaderOverlay();
                     });
                   },
-                  onError: (error) => ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(
-                          action: SnackBarAction(
-                            label: 'OK',
-                            onPressed: () {
-                              // Some code to undo the change.
-                            },
-                          ),
-                          content: Text(
-                              'Oooopss, some problem have arisen trying to start the deploy: $error')))));
+                  onError: (error) {
+                    context.hideLoaderOverlay();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        action: SnackBarAction(
+                          label: 'OK',
+                          onPressed: () {
+                            // Some code to undo the change.
+                          },
+                        ),
+                        content: Text(
+                            'Oooopss, some problem have arisen trying to start the deploy: $error')));
+                  }));
             },
             onCancel: (project) {
               store.dispatch(OpenProjectTools(project));

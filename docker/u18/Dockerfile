@@ -95,7 +95,7 @@ WORKDIR /home/ubuntu/ansible
 # base-branding
 RUN mkdir -p /home/ubuntu/base-branding
 RUN chown -R ubuntu:ubuntu /home/ubuntu/base-branding
-RUN echo "2021022401 (change this date to rebuild & repeat this and the following steps)"
+RUN echo "2021032402 (change this date to rebuild & repeat this and the following steps)"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/base-branding.git /home/ubuntu/base-branding'
 
 # yeoman, LA generator, sails and related
@@ -104,23 +104,24 @@ RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
 RUN su - ubuntu -c 'npm install -g yo'
 RUN su - ubuntu -c 'npm install -g sails'
 RUN su - ubuntu -c 'npm install -g forever'
-RUN echo "2021030424"
+RUN echo "2021032402"
 RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 
 # ala-install
-RUN echo "2021030424 (change this date to rebuild & repeat this and the following steps)"
+RUN echo "2021032402 (change this date to rebuild & repeat this and the following steps)"
 RUN su - ubuntu -c 'git clone --depth 1 --branch v2.0.5 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-RUN echo "2021030302"
+RUN echo "2021032404"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 # la-toolkit frontend
-RUN echo "2021030424"
-COPY build/web/ /home/ubuntu/la-toolkit/assets/
+RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.0.2/flutter-web-1.0.2.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
+# RUN echo "2021032402"
+# COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
 
