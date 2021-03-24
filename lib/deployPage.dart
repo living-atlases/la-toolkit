@@ -1,9 +1,11 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/tagsConstants.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
@@ -83,7 +85,10 @@ class _DeployPageState extends State<DeployPage> {
                           content: Text(
                               'Oooopss, some problem have arisen trying to start the deploy: $error')))));
             },
-            onCancel: (project) => store.dispatch(OpenProjectTools(project)));
+            onCancel: (project) {
+              store.dispatch(OpenProjectTools(project));
+              Beamer.of(context).beamTo(LAProjectViewLocation());
+            });
       },
       builder: (BuildContext context, _DeployViewModel vm) {
         String execBtn = "Deploy";
