@@ -51,7 +51,8 @@ flutter build web --no-sound-null-safety
 Build the image (or download it from Docker Hub):
 
 ```
-docker build . -t la-toolkit
+docker build . -f ./docker/u18/Dockerfile -t la-toolkit # for ubuntu 18.04
+docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (testing right now)
 ```
 
 Run the image exposing the port `2010` that is were the la-toolkit web interface is listen to, and configuring the volumes for:
