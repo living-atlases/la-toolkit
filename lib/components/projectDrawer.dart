@@ -33,7 +33,6 @@ class ProjectDrawer extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 context.beamBack();
-                // Navigator.popAndPushNamed(context, '/');
               },
               child: DrawerHeader(
                 child: Column(
@@ -71,7 +70,6 @@ class ProjectDrawer extends StatelessWidget {
               title: Text('Home'),
               onTap: () {
                 context.beamBack();
-                // Navigator.popAndPushNamed(context, HomePage.routeName);
               },
             ),
             ListTile(
@@ -79,7 +77,6 @@ class ProjectDrawer extends StatelessWidget {
               title: Text('SSH Keys'),
               onTap: () {
                 Beamer.of(context).beamTo(SshKeysLocation());
-                // Navigator.popAndPushNamed(context, SshKeyPage.routeName);
               },
             ),
             TermDialog.drawerItem(context),
@@ -89,7 +86,6 @@ class ProjectDrawer extends StatelessWidget {
                 leading: const Icon(Icons.build),
                 title: Text('Sandbox'),
                 onTap: () {
-                  // Navigator.popAndPushNamed(context, SandboxPage.routeName);
                   Beamer.of(context).beamTo(SandboxLocation());
                 },
               ),

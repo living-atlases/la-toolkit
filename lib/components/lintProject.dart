@@ -1,11 +1,12 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/sshKey.dart';
+import 'package:la_toolkit/routes.dart';
 
-import '../sshKeysPage.dart';
 import 'alertCard.dart';
 
 class LintProjectPanel extends StatefulWidget {
@@ -36,8 +37,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 AlertCard(
                     message: "You don't have any SSH key",
                     actionText: "SOLVE",
-                    action: () => Navigator.popAndPushNamed(
-                        context, SshKeyPage.routeName)),
+                    action: () => Beamer.of(context).beamTo(SshKeysLocation())),
               if (project.allServersWithServicesReady() &&
                   !project.allServersWithOs('Ubuntu', '18.04'))
                 AlertCard(

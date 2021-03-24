@@ -44,7 +44,6 @@ class _MainDrawerState extends State<MainDrawer> {
             children: <Widget>[
           GestureDetector(
             onTap: () {
-              // Navigator.popAndPushNamed(context, '/');
               context.beamBack();
             },
             child: DrawerHeader(
@@ -72,7 +71,6 @@ class _MainDrawerState extends State<MainDrawer> {
             leading: const Icon(Mdi.key),
             title: Text('SSH Keys'),
             onTap: () {
-              // Navigator.popAndPushNamed(context, SshKeyPage.routeName);
               Beamer.of(context).beamTo(SshKeysLocation());
             },
           ),
@@ -82,7 +80,6 @@ class _MainDrawerState extends State<MainDrawer> {
               leading: const Icon(Icons.build),
               title: Text('Sandbox'),
               onTap: () {
-                // Navigator.popAndPushNamed(context, SandboxPage.routeName);
                 Beamer.of(context).beamTo(SandboxLocation());
               },
             ),
