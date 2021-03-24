@@ -142,11 +142,15 @@ class DeployProject extends AppActions {
 
 class GetDeployProjectResults extends AppActions {
   CmdHistoryEntry cmdHistoryEntry;
+  VoidCallback onReady;
   VoidCallback onFailed;
   bool fstRetrieved;
 
   GetDeployProjectResults(
-      this.cmdHistoryEntry, this.fstRetrieved, this.onFailed);
+      {required this.cmdHistoryEntry,
+      required this.fstRetrieved,
+      required this.onReady,
+      required this.onFailed});
 }
 
 class ShowDeployProjectResults extends AppActions {

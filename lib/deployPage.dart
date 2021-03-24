@@ -1,11 +1,9 @@
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/tagsConstants.dart';
 import 'package:la_toolkit/redux/appActions.dart';
-import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
@@ -70,7 +68,6 @@ class _DeployPageState extends State<DeployPage> {
                             logsSuffix: logsSuffix);
                         store.dispatch(DeployUtils.getCmdResults(
                             context, cmdHistory, true));
-                        Beamer.of(context).beamTo(DeployResultsLocation());
                       }
                       // context.hideLoaderOverlay();
                     });

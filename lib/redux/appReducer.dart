@@ -1,7 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
-import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
@@ -273,7 +272,8 @@ AppState _showDeployProjectResults(
       action.results.code == 0 ? CmdResult.success : CmdResult.failed;
   if (action.fstRetrieved)
     currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
-  return state.copyWith(currentProject: currentProject, repeatCmd: DeployCmd());
+  return state.copyWith(
+      currentProject: currentProject); //, repeatCmd: DeployCmd());
 }
 
 AppState _showSnackBar(AppState state, ShowSnackBar action) {

@@ -112,17 +112,25 @@ class DeployUtils {
 
   static AppActions getCmdResults(
       BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
-    return GetDeployProjectResults(cmdHistory, fstRetrieved, () {
-      context.hideLoaderOverlay();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('There was some problem retrieving the results'),
-        duration: Duration(days: 365),
-        action: SnackBarAction(
-          label: 'OK',
-          onPressed: () {},
-        ),
-      ));
-    });
+    context.showLoaderOverlay();
+    return GetDeployProjectResults(
+        cmdHistoryEntry: cmdHistory,
+        fstRetrieved: fstRetrieved,
+        onReady: () {
+          context.hideLoaderOverlay();
+          Beamer.of(context).beamTo(DeployResultsLocation());
+        },
+        onFailed: () {
+          context.hideLoaderOverlay();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('There was some problem retrieving the results'),
+            duration: Duration(days: 365),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {},
+            ),
+          ));
+        });
   }
 
   static const TextStyle titleStyle =
