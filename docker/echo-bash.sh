@@ -9,3 +9,14 @@ colblu='\033[0;34m' # Blue
 colrst='\033[0m'    # Text Reset
 
 echo -e ${colblu}"\$ "${colrst}${colgrn}"$@ "${colgre}"### This is the command we've executed"${colrst} ; "$@" ;
+
+RESULT=$?
+echo
+if [[ $RESULT -eq 0 ]]; then
+  echo -e "${colgrn}This command ended correctly${colrst}"
+else
+  echo -e "${colred}This command ended abnormally (exit code $RESULT)${colrst}"
+fi
+echo
+
+exit $RESULT
