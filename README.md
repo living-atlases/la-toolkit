@@ -59,13 +59,15 @@ Run the image exposing the port `2010` that is were the la-toolkit web interface
 
 - your ssh keys
 - your inventories and configuration
+- your logs
 
+So create this directories or reuse existing ones and run:
 
 ```
 docker run --rm \
-   -v YOUR_SSH_KEYS_DIRECTORY:/home/ubuntu/.ssh/ \
-   -v YOUR_CONFIG_DIRECTORY:/home/ubuntu/ansible/la-inventories \
-   -v YOUR_LOGS_DIRECTORY:/home/ubuntu/ansible/logs \
+   -v PUT_YOUR_SSH_KEYS_DIRECTORY_HERE:/home/ubuntu/.ssh/ \
+   -v PUT_YOUR_CONFIG_DIRECTORY_HERE:/home/ubuntu/ansible/la-inventories \
+   -v PUT_YOUR_LOGS_DIRECTORY_HERE:/home/ubuntu/ansible/logs \
    -t -d --name la-toolkit -h la-toolkit -p 2010:2010 -p 2011:2011 la-toolkit:latest
 ```
 
@@ -75,7 +77,7 @@ Optionally you can mount a different `ala-install` repository (for instance a mo
 
 ```
    (...)
-   -v /home/youruser/dev/my-ala-install/:/home/ubuntu/ansible/ala-install/ \
+   -v PUT_YOUR_ALA_INSTALL_DIRECTORY_HERE/:/home/ubuntu/ansible/ala-install/ \
    (...)
 ```
 In this case, use `custom` in the ala-install releases version dropdown.
