@@ -18,11 +18,11 @@ This LA Toolkit puts all these parts together with an user friendly interface, a
 
 ### Demo
 
-There is a non-functiona demo of this tool in:
+There is a non-functional demo of this tool in:
 
 http://toolkit-demo.l-a.site/
 
-is not functional because is only the UI frontend and does not configure any server or portal. It's just for demostration purposes. You can have a look there and create some sample project to see how this tool works.
+this demo is not functional because is only the UI frontend and does not configure any server or portal. It's just for demostration purposes. You can have a look there and create some sample project to see how this tool works.
 
 ### How the code is organized 
 
