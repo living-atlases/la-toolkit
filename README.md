@@ -1,5 +1,7 @@
 # Living Atlases Toolkit
 
+_Under development tool_
+
 ## Introduction
 
 This tool facilitates the installation, maintenance and monitor of Living Atlases portals.
@@ -13,6 +15,14 @@ A Living Atlas (LA) can be deployed and maintained using:
 3) some configuration that describes your LA portal that is used by ala-install
 
 This LA Toolkit puts all these parts together with an user friendly interface, and an up-to-date environment to perform the common maintenance tasks of a LA portal.
+
+### Demo
+
+There is a non-functiona demo of this tool in:
+
+http://toolkit-demo.l-a.site/
+
+is not functional because is only the UI frontend and does not configure any server or portal. It's just for demostration purposes. You can have a look there and create some sample project to see how this tool works.
 
 ### How the code is organized 
 
@@ -51,6 +61,9 @@ run `./dockerTask.sh` for more options (like how to run a development environmen
 
 In Windows, try `dockerTask.ps1` (feedback welcome).
 
+### Ubuntu 20 vs Ubuntu 18
+
+Right now there are two images based in Ubuntu 20.04 and 18.04 respectively. We have tested more u18 as deployment environment, but we are tryng to start using u20. So if you have some ansible issue during deploying (like python2/ptython3 issues), try 18.04 instead.
 
 ### Or using only docker if you don't want to use docker-compose
 
@@ -155,6 +168,31 @@ You will need to build the flutter web as described below prior to build a `la-t
 docker build . -f ./docker/u18/Dockerfile -t la-toolkit # for ubuntu 18.04
 docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (testing right now)
 ```
+
+## Developed so far and Roadmap
+
+- [X] Basic configuration of LA Portals
+- [X] Tunning of LA configurations with advanced mode
+- [X] Software compatibility and other project checks and recommendations
+- [X] Helper for configuration of ssh
+- [X] Connectivity and other servers checks
+- [X] Generation and update of inventories
+- [X] CAS additional tasks (like keys generation)
+- [X] Map helper to configure collections, spatial and regions homepages
+- [X] Ansible deployment of portals
+- [X] Inline help and descriptive commands that are executed for educational purposes
+- [X] Terminal with deployment environment
+- [X] Ansible use stats (number of tasks executed with success or failed,...)
+- [X] Import of previous inventories
+- [X] Template projects of existing LA Portals
+- [X] Logs store and replay previous deploy tasks
+- [ ] Develop pre-deploy tasks (wip)
+- [ ] Develop post-deploy tasks
+- [ ] Develop of branding deployment (wip)
+- [ ] Develop of stats tool
+- [ ] Develop of monitor tool
+- [ ] Improve ssh keys management
+- [ ] Support additional hubs configuration
 
 ## Screenshots
 
