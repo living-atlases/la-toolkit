@@ -200,81 +200,81 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 
 ### Loading:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s1.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s1.png)
 
 ### Intro page:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s2.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s2.png)
 
 ### Intro continuation:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s3.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s3.png)
 
 ### List of created projects:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s4.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s4.png)
 
 ### Project Tools:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s5.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s5.png)
 
 ### Editing the project:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s6.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s6.png)
 
 ### Service definition:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s7.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s7.png)
 
 ### Theme selection:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s15.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s15.png)
 
 ### Services in servers:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s8.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s8.png)
 
 ### Servers connectivity:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s9.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s9.png)
 
 ### Project tunning:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s10.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s10.png)
 
 ### Project drawer with links to each service and admin interfaces:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s11.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s11.png)
 
 ### SSH keys administration:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s12.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s12.png)
 
 ### Testing connectivity with the project servers:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s13.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s13.png)
 
 ### Deployment:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s16.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s16.png)
 
 ### Deployment Ansible terminal:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s17.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s17.png)
 
 ### Deployment results (success):
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s19.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s19.png)
 
 ### Deployment results (failed):
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s18.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s18.png)
 
 ### History of deployments with repeat function 
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s20.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s20.png)
 
 ### Console for the intrepids:
 
-![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s14.png)
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s14.png)
 
