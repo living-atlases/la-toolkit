@@ -91,6 +91,18 @@ class UiUtils {
 }
 
 class DeployUtils {
+  static const TextStyle subtitleStyle =
+      TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
+
+  static const TextStyle cmdStyle = TextStyle(
+    fontSize: 32,
+    // fontWeight: FontWeight.bold,
+  );
+  static const TextStyle titleStyle = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+
   static doDeploy(
       {required BuildContext context,
       required var store,
@@ -132,9 +144,6 @@ class DeployUtils {
           ));
         });
   }
-
-  static const TextStyle titleStyle =
-      TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
 
   static const laTerminalTheme = TerminalTheme(
     cursor: TerminalColor(0xffaeafad),

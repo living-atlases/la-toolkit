@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:beamer/beamer.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/components/deploySubResultWidget.dart';
 import 'package:la_toolkit/components/resultsChart.dart';
 import 'package:la_toolkit/models/appState.dart';
@@ -112,6 +114,9 @@ class DeployResultsPage extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             SizedBox(height: 20),
+                            Text(cmdHistoryDetails.cmd!.deployCmd.toString(),
+                                style: DeployUtils.cmdStyle),
+                            SizedBox(height: 20),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -128,24 +133,27 @@ class DeployResultsPage extends StatelessWidget {
                                       noFailures
                                           ? "All steps ok"
                                           : "Uuppps! Some step${failures > 1 ? 's' : ''} failed",
-                                      style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                      ))
+                                      style: DeployUtils.titleStyle)
                                 ]),
                             SizedBox(height: 20),
                             ResultsChart(resultsTotals),
                             SizedBox(height: 20),
                             Text('Task details:',
-                                style: DeployUtils.titleStyle),
+                                style: DeployUtils.subtitleStyle),
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: resultsDetails),
                             SizedBox(height: 20),
+                            Text('Command executed:',
+                                style: DeployUtils.subtitleStyle),
+                            SizedBox(height: 20),
+                            AnsiblewCmdPanel(
+                                cmdHistoryDetails: cmdHistoryDetails),
+                            SizedBox(height: 20),
                             if (!fistRetrieved)
                               Text('Ansible Logs:',
-                                  style: DeployUtils.titleStyle),
+                                  style: DeployUtils.subtitleStyle),
                             if (!fistRetrieved) SizedBox(height: 20),
                             if (!fistRetrieved)
                               Container(
@@ -164,6 +172,32 @@ class DeployResultsPage extends StatelessWidget {
                 )));
       },
     );
+  }
+}
+
+class AnsiblewCmdPanel extends StatelessWidget {
+  const AnsiblewCmdPanel({
+    Key? key,
+    required this.cmdHistoryDetails,
+  }) : super(key: key);
+
+  final CmdHistoryDetails cmdHistoryDetails;
+
+  @override
+  Widget build(BuildContext context) {
+    String cmd = cmdHistoryDetails.cmd!.cmd;
+    return ListTile(
+        title: Text(cmd,
+            style: GoogleFonts.robotoMono(
+                color: LAColorTheme.inactive, fontSize: 18)),
+        trailing: Tooltip(
+            message: "Press to copy the command",
+            child: IconButton(
+              icon: Icon(Icons.copy),
+              onPressed: () => FlutterClipboard.copy(cmd).then((value) =>
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Command copied to clipboard")))),
+            )));
   }
 }
 

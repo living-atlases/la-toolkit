@@ -9,6 +9,8 @@ part 'cmdHistoryDetails.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class CmdHistoryDetails {
+  @JsonKey(ignore: true)
+  CmdHistoryEntry? cmd;
   int code;
   List<dynamic> results;
   String logs;
@@ -18,7 +20,8 @@ class CmdHistoryDetails {
   Map<String, num>? _resultsTotals;
 
   CmdHistoryDetails(
-      {required this.code,
+      {this.cmd,
+      required this.code,
       required this.results,
       required this.logs,
       required this.logsColorized,
@@ -31,6 +34,7 @@ class CmdHistoryDetails {
       other is CmdHistoryDetails &&
           runtimeType == other.runtimeType &&
           code == other.code &&
+          cmd == other.cmd &&
           results == other.results &&
           logs == other.logs &&
           fstRetrieved == other.fstRetrieved &&
@@ -66,6 +70,7 @@ class CmdHistoryDetails {
       code.hashCode ^
       results.hashCode ^
       logs.hashCode ^
+      cmd.hashCode ^
       logsColorized.hashCode ^
       fstRetrieved.hashCode;
 

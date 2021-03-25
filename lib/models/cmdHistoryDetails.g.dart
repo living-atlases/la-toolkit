@@ -8,6 +8,7 @@ part of 'cmdHistoryDetails.dart';
 
 extension CmdHistoryDetailsCopyWith on CmdHistoryDetails {
   CmdHistoryDetails copyWith({
+    CmdHistoryEntry? cmd,
     int? code,
     bool? fstRetrieved,
     String? logs,
@@ -15,6 +16,7 @@ extension CmdHistoryDetailsCopyWith on CmdHistoryDetails {
     List<dynamic>? results,
   }) {
     return CmdHistoryDetails(
+      cmd: cmd ?? this.cmd,
       code: code ?? this.code,
       fstRetrieved: fstRetrieved ?? this.fstRetrieved,
       logs: logs ?? this.logs,

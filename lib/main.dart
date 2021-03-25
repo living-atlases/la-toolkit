@@ -100,10 +100,10 @@ class MyApp extends StatelessWidget {
             overlayOpacity: 0.5,
             overlayColor: Colors.black,
             child: MaterialApp.router(
-              routerDelegate: Routes.routerDelegate,
+              routerDelegate: Routes().routerDelegate,
               routeInformationParser: BeamerRouteInformationParser(),
               backButtonDispatcher:
-                  BeamerBackButtonDispatcher(delegate: Routes.routerDelegate),
+                  BeamerBackButtonDispatcher(delegate: Routes().routerDelegate),
               // navigatorKey: MainKeys.navKey,
               builder: (context, widget) => ResponsiveWrapper.builder(
                   BouncingScrollWrapper.builder(context, widget!),

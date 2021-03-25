@@ -22,21 +22,27 @@ class Routes {
     ),
   );
 
-  static final routerDelegate = BeamerRouterDelegate(
-    notFoundPage: notFoundPage,
-    beamLocations: [
-      HomeLocation(),
-      LAProjectEditLocation(),
-      LAProjectViewLocation(),
-      SandboxLocation(),
-      LAProjectTuneLocation(),
-      PreDeployLocation(),
-      LogsHistoryLocation(),
-      SshKeysLocation(),
-      DeployLocation(),
-      DeployResultsLocation()
-    ],
-  );
+  BeamerRouterDelegate routerDelegate;
+
+  Routes._privateConstructor()
+      : routerDelegate =
+            BeamerRouterDelegate(notFoundPage: notFoundPage, beamLocations: [
+          HomeLocation(),
+          LAProjectEditLocation(),
+          LAProjectViewLocation(),
+          SandboxLocation(),
+          LAProjectTuneLocation(),
+          PreDeployLocation(),
+          LogsHistoryLocation(),
+          SshKeysLocation(),
+          DeployLocation(),
+          DeployResultsLocation()
+        ]);
+
+  static final Routes _instance = Routes._privateConstructor();
+  factory Routes() {
+    return _instance;
+  }
 }
 
 class HomeLocation extends BeamLocation {

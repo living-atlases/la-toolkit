@@ -176,6 +176,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           .then((results) {
         if (results != null) {
           results.fstRetrieved = action.fstRetrieved;
+          results.cmd = action.cmdHistoryEntry;
           store.dispatch(ShowDeployProjectResults(
               action.cmdHistoryEntry, action.fstRetrieved, results));
           action.onReady();

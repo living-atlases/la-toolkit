@@ -13,7 +13,7 @@ class ResultsChart extends StatelessWidget {
       SfCircularChart(
           title: ChartTitle(
               text: 'Ansible tasks result totals:',
-              textStyle: DeployUtils.titleStyle),
+              textStyle: DeployUtils.subtitleStyle),
           legend: Legend(isVisible: true),
           series: <PieSeries<_PieData, String>>[
             PieSeries<_PieData, String>(
