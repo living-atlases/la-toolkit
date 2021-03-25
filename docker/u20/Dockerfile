@@ -132,5 +132,8 @@ RUN chmod +x /usr/local/bin/echo-bash
 # The year of ALA Portal launch ;-)
 EXPOSE 2010
 
+# Used by ttyd
+EXPOSE 2011
+
 # launch the backend
 CMD /usr/local/bin/la-toolkit-launch

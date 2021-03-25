@@ -44,4 +44,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-TODO
+TODO.org
+la-toolkit-data
+la-toolkit-ssh

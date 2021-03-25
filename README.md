@@ -1,18 +1,58 @@
-# la_toolkit
-
-Living Atlases Toolkit - Frontend
+# Living Atlases Toolkit
 
 ## Introduction
 
-This is a the frontend of the LA Toolkit. It uses [this repo](https://github.com/living-atlases/la-toolkit-backend) as backend and both components are packaged together in a docker image with all the dependencies to deploy and maintain a LA Portal.
+This tool facilitates the installation, maintenance and monitor of Living Atlases portals.
 
-## Docker 
+### How ?
 
-To run the `la-toolkit` you need to [install docker](https://docs.docker.com/engine/install/) in the computer you want to use to deploy your LA Portal (like your laptop, or similar computer).
+A Living Atlas (LA) can be deployed and maintained using:
 
-### LA-Toolkit Image 
+1) the [Atlas of Living Australia](https://ala.org.au/) (ALA) Free and Open Source Software, with
+2) the [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/), the official [ansible](https://www.ansible.com/) code that automatically deploy and maintain a Living Atlas (LA) portal
+3) some configuration that describes your LA portal that is used by ala-install
 
-Download it from Docker Hub via:
+### How the code is organized 
+
+This repository is a the frontend of the LA Toolkit. It uses [this repo](https://github.com/living-atlases/la-toolkit-backend) as backend and both components are packaged together in a docker image with all the dependencies to deploy and maintain a LA Portal. It's also uses the [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/) and the [LA Ansible Inventories Generator](https://github.com/living-atlases/generator-living-atlas).
+
+## Prerequisites
+
+### Docker 
+
+To run the `la-toolkit` you need to [install docker](https://docs.docker.com/engine/install/) in the computer you want to use to deploy your LA Portal (like your laptop, or similar computer). 
+
+### Docker compose
+
+Optionally you'll need the [Docker Compose](https://docs.docker.com/compose/install/).
+
+### Data directories
+
+Your will need also some directories to store your config, logs and ssh configuration. In GNU/Linux you can use:
+
+```
+ mkdir -p ./la-toolkit-data/config/ ./la-toolkit-data/logs/ ./la-toolkit-data/ssh/
+``` 
+or similar to create it. If you use a diferent directory, you'll have to update the docker-compose files accordinly.
+
+## Running the la-toolkit
+
+### Using docker-compose
+
+```
+./dockerTask.sh compose
+```
+
+This will open the toolkit in http://localhost:2010/
+
+run `./dockerTask.sh` for more options (like how to run a development environment).
+
+In Windows, try `dockerTask.ps1` (feedback welcome).
+
+
+### Or using only docker if you don't want to use docker-compose
+
+Download  the LA-Toolkit Image from Docker Hub via:
 
 ```
 docker pull livingatlases/la-toolkit:latest
@@ -20,7 +60,7 @@ docker pull livingatlases/la-toolkit:latest
 
 you can also build yourself the images (see the Development section).
 
-### Run the LA-Toolkit docker image
+#### Run the LA-Toolkit docker image
 
 Run the image exposing the port `2010` that is were the la-toolkit web interface is listen to,  the `2011` port, used by interactive terminal commands, and configuring the volumes for:
 
@@ -56,6 +96,14 @@ Stop it with:
 ```
 docker stop la-toolkit
 ```
+### Running the la-toolkit in an external server.
+
+You can run the la-toolkit in another server and redirect the ports via ssh like:
+
+```
+ ssh -L 2010:127.0.0.1:2010 -L 2011:127.0.0.1:2011 yourUser@yourRemoteServer -N -f
+```
+
 ## Development
 
 This frontend is developed using Flutter Web.
@@ -80,7 +128,10 @@ There are some code (like the json serialization) that should be generated when 
 ```
 flutter pub run build_runner watch --delete-conflicting-outputs
 ``` 
+### Backend during development
 
+During development you'll need to have running [the backend](https://github.com/living-atlases/la-toolkit-backend) and also a docker container of the la-toolkit (with this name).
+ 
 ### Flutter build
 
 We need to have the frontend build prior to build the docker image:

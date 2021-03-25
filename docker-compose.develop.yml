@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  la-toolkit:
+    image: la-toolkit
+    container_name: la-toolkit
+    hostname: la-toolkit
+    build:
+      context: .
+      dockerfile: docker/u20/Dockerfile
+    ports:
+      - "2010:2010"
+      - "2011:2011"
+    volumes:
+      # mkdir -p ./la-toolkit-data/config/ ./la-toolkit-data/logs/ ./la-toolkit-data/ssh/
+      - ./la-toolkit-data/config/:/home/ubuntu/ansible/la-inventories/:rw
+      - ./la-toolkit-data/logs/:/home/ubuntu/ansible/logs/:rw
+      - ./la-toolkit-data/ssh:/home/ubuntu/.ssh/:rw
+      # For 'custom' ala-install
+      # - ./la-toolkit-data/ala-install:/home/ubuntu/ansible/ala-install/:rw
