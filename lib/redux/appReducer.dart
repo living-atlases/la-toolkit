@@ -268,10 +268,18 @@ AppState _showDeployProjectResults(
     AppState state, ShowDeployProjectResults action) {
   LAProject currentProject = state.currentProject;
   currentProject.lastCmdHistoryDetails = action.results;
-  action.cmdHistoryEntry.result =
-      action.results.code == 0 ? CmdResult.success : CmdResult.failed;
-  if (action.fstRetrieved)
+  action.cmdHistoryEntry.result = currentProject.lastCmdHistoryDetails!.result;
+  if (action.fstRetrieved) {
+    // remove and just search?
     currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
+  } else {
+    int index = currentProject.cmdHistory
+        .indexWhere((cur) => cur.uuid == action.cmdHistoryEntry.uuid);
+    if (index != -1) {
+      currentProject.cmdHistory
+          .replaceRange(index, index + 1, [action.cmdHistoryEntry]);
+    }
+  }
   return state.copyWith(
       currentProject: currentProject); //, repeatCmd: DeployCmd());
 }

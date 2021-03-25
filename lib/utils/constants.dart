@@ -24,3 +24,15 @@ class ResultsColors {
   static final Color ignored = Colors.grey;
   static final Color rescued = Colors.blueGrey;
 }
+
+class Result {
+  static const types = [
+    "changed",
+    "failures",
+    "ignored",
+    "ok",
+    "rescued",
+    "skipped",
+    "unreachable"
+  ];
+}

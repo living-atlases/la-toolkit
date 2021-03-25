@@ -48,6 +48,7 @@ class LAProject {
   LALatLng mapBoundsFstPoint;
   LALatLng mapBoundsSndPoint;
   double? mapZoom;
+  @JsonKey(ignore: true)
   CmdHistoryDetails? lastCmdHistoryDetails;
   List<CmdHistoryEntry> cmdHistory;
 

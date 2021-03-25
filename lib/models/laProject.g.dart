@@ -103,10 +103,6 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
         : LALatLng.fromJson(json['mapBoundsSndPoint'] as Map<String, dynamic>),
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num?)?.toDouble(),
-    lastCmdHistoryDetails: json['lastCmdHistoryDetails'] == null
-        ? null
-        : CmdHistoryDetails.fromJson(
-            json['lastCmdHistoryDetails'] as Map<String, dynamic>),
     cmdHistory: (json['cmdHistory'] as List<dynamic>?)
         ?.map((e) => CmdHistoryEntry.fromJson(e as Map<String, dynamic>))
         .toList(),
@@ -137,7 +133,6 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'mapBoundsFstPoint': instance.mapBoundsFstPoint.toJson(),
       'mapBoundsSndPoint': instance.mapBoundsSndPoint.toJson(),
       'mapZoom': instance.mapZoom,
-      'lastCmdHistoryDetails': instance.lastCmdHistoryDetails?.toJson(),
       'cmdHistory': instance.cmdHistory.map((e) => e.toJson()).toList(),
     };
 

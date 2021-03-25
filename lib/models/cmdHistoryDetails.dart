@@ -1,5 +1,8 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/utils/constants.dart';
+
+import 'cmdHistoryEntry.dart';
 
 part 'cmdHistoryDetails.g.dart';
 
@@ -11,6 +14,8 @@ class CmdHistoryDetails {
   String logs;
   String logsColorized;
   bool fstRetrieved;
+  @JsonKey(ignore: true)
+  Map<String, num>? _resultsTotals;
 
   CmdHistoryDetails(
       {required this.code,
@@ -30,6 +35,26 @@ class CmdHistoryDetails {
           logs == other.logs &&
           fstRetrieved == other.fstRetrieved &&
           logsColorized == other.logsColorized;
+
+  Map<String, num> get resultsTotals {
+    if (_resultsTotals == null) {
+      _resultsTotals = {};
+      Result.types.forEach((type) => _resultsTotals![type] = 0);
+      results.forEach((result) {
+        result['stats'].keys.forEach((key) {
+          Result.types.forEach((type) => _resultsTotals![type] =
+              _resultsTotals![type]! + result['stats'][key][type]);
+        });
+      });
+    }
+    return _resultsTotals!;
+  }
+
+  bool get failed {
+    return !(code == 0 && resultsTotals['failures'] == 0);
+  }
+
+  CmdResult get result => !failed ? CmdResult.success : CmdResult.failed;
 
   @override
   String toString() {

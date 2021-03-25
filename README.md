@@ -187,6 +187,7 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 - [X] Import of previous inventories
 - [X] Template projects of existing LA Portals
 - [X] Logs store and replay previous deploy tasks
+- [X] Ansible task errors summary
 - [ ] Develop pre-deploy tasks (wip)
 - [ ] Develop post-deploy tasks
 - [ ] Develop of branding deployment (wip)
