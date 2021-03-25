@@ -5,11 +5,6 @@ services:
     image: livingatlases/la-toolkit:latest
     container_name: la-toolkit
     hostname: la-toolkit
-    # or
-    # image: la-toolkit
-    # build:
-    #   context: .
-    #   dockerfile: docker/u20/Dockerfile
     ports:
       - "2010:2010"
       - "2011:2011"
