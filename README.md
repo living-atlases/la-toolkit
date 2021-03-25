@@ -270,6 +270,10 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s18.png)
 
+### History of deployments with repeat function 
+
+![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s20.png)
+
 ### Console for the intrepids:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/dev/screenshots/s14.png)
