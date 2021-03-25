@@ -2,6 +2,29 @@
 
 _Under development tool_
 
+* [Introduction](#introduction)
+   * [How ?](#how-)
+   * [Demo](#demo)
+   * [How the code is organized](#how-the-code-is-organized)
+* [Prerequisites](#prerequisites)
+   * [Docker](#docker)
+   * [Docker compose](#docker-compose)
+   * [Data directories](#data-directories)
+* [Running the la-toolkit](#running-the-la-toolkit)
+   * [Using docker-compose](#using-docker-compose)
+   * [Ubuntu 20 vs Ubuntu 18](#ubuntu-20-vs-ubuntu-18)
+   * [Or using only docker if you don't want to use docker-compose](#or-using-only-docker-if-you-dont-want-to-use-docker-compose)
+* [Run the LA-Toolkit docker image](#run-the-la-toolkit-docker-image)
+   * [Running the la-toolkit in an external server.](#running-the-la-toolkit-in-an-external-server)
+* [Development](#development)
+   * [Using flutter web](#using-flutter-web)
+   * [Autogeneration of code](#autogeneration-of-code)
+   * [Backend during development](#backend-during-development)
+   * [Flutter build](#flutter-build)
+   * [Docker image build](#docker-image-build)
+* [Developed so far and Roadmap](#developed-so-far-and-roadmap)
+* [Screenshots](#screenshots)
+
 ## Introduction
 
 This tool facilitates the installation, maintenance and monitor of Living Atlases portals.
