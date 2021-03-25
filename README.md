@@ -174,6 +174,7 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 - [X] Basic configuration of LA Portals
 - [X] Tunning of LA configurations with advanced mode
 - [X] Software compatibility and other project checks and recommendations
+- [X] Branding theme selection
 - [X] Helper for configuration of ssh
 - [X] Connectivity and other servers checks
 - [X] Generation and update of inventories
