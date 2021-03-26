@@ -312,17 +312,14 @@ class _ProjectPageViewModel {
       required this.onTestConnProject});
 
   @override
-  bool operator ==(Object other) {
-    bool result = identical(this, other) ||
-        other is _ProjectPageViewModel &&
-            runtimeType == other.runtimeType &&
-            project == other.project &&
-            status.value == other.status.value &&
-            ListEquality().equals(generatorReleases, other.generatorReleases) &&
-            ListEquality().equals(alaInstallReleases, other.alaInstallReleases);
-    print("Is different project view $result");
-    return result;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _ProjectPageViewModel &&
+          runtimeType == other.runtimeType &&
+          project == other.project &&
+          status.value == other.status.value &&
+          ListEquality().equals(generatorReleases, other.generatorReleases) &&
+          ListEquality().equals(alaInstallReleases, other.alaInstallReleases);
 
   @override
   int get hashCode =>
