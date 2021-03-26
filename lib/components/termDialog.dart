@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:web_browser/web_browser.dart';
@@ -82,14 +83,17 @@ class TermDialog {
     return result;
   }
 
-  static ListTile drawerItem(context) {
+  static ListTile drawerItem(BuildContext context) {
     return ListTile(
       leading: const Icon(Mdi.console),
       title: Text('Console'),
       onTap: () {
+        context.showLoaderOverlay();
         Api.term(onStart: () {
+          context.hideLoaderOverlay();
           TermDialog.show(context);
         }, onError: (error) {
+          context.hideLoaderOverlay();
           UiUtils.termErrorAlert(context, error);
         });
       },
