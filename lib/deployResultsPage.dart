@@ -63,10 +63,16 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                 task['hosts'].keys.forEach((host) {
                   if (task['hosts'][host]['failed'] != null &&
                       task['hosts'][host]['failed'] == true) {
-                    String action = task['hosts'][host]['action'];
-                    String msg = task['hosts'][host]['msg'];
+                    String taskName =
+                        task['task'] != null ? task['task']['name'] : '';
+                    String msg = task['hosts'][host] != null
+                        ? task['hosts'][host]['msg']
+                        : '';
                     errors.add(AnsibleError(
-                        host: host, playName: name, action: action, msg: msg));
+                        host: host,
+                        playName: name,
+                        taskName: taskName,
+                        msg: msg));
                   }
                 });
               });

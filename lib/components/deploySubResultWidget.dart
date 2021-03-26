@@ -28,9 +28,9 @@ class DeploySubResultWidget extends StatelessWidget {
                   textAlign: TextAlign.left,
                   softWrap: true,
                   text: TextSpan(children: <TextSpan>[
-                    TextSpan(text: "Task "),
+                    TextSpan(text: "Task:  "),
                     TextSpan(
-                        text: error.action, style: GoogleFonts.robotoMono()),
+                        text: error.taskName, style: GoogleFonts.robotoMono()),
                     TextSpan(text: " failed with message: ")
                   ])),
               RichText(
