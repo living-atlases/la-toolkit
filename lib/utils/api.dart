@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
+import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -192,6 +193,23 @@ class Api {
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/term");
     http
         .get(url)
+        .then((response) => response.statusCode == 200
+            ? onStart()
+            : onError(response.statusCode))
+        .catchError((error) => {print(error)});
+  }
+
+  static Future<void> termLogs(
+      {required CmdHistoryEntry cmd,
+      required VoidCallback onStart,
+      required ErrorCallback onError}) async {
+    if (AppUtils.isDemo()) return;
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/term-logs");
+    http
+        .post(url,
+            headers: {'Content-type': 'application/json'},
+            body: utf8.encode(json.encode(
+                {'logsPrefix': cmd.logsPrefix, 'logsSuffix': cmd.logsSuffix})))
         .then((response) => response.statusCode == 200
             ? onStart()
             : onError(response.statusCode))

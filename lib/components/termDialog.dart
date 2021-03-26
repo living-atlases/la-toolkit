@@ -4,7 +4,6 @@ import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:web_browser/web_browser.dart';
 
 import '../laTheme.dart';
@@ -41,24 +40,27 @@ class TermDialog {
                     ),
                   ],
                 ),
-                body: SafeArea(
-                    bottom: false,
-                    child: Container(
-                      color: LAColorTheme.laPalette,
-                      padding: EdgeInsets.fromLTRB(3, 0, 8, 0),
-                      child: !AppUtils.isDemo()
-                          ? WebBrowser(
-                              initialUrl: 'http://localhost:2011/',
-                              interactionSettings:
-                                  WebBrowserInteractionSettings(
-                                      topBar: null, bottomBar: null),
-                              javascriptEnabled: true,
-                            )
-                          : NotInTheDemoPanel(),
-                    )),
+                body: termArea(),
               ),
             ));
     if (onClose != null) onClose();
+  }
+
+  static SafeArea termArea() {
+    return SafeArea(
+        bottom: false,
+        child: Container(
+          color: LAColorTheme.laPalette,
+          padding: EdgeInsets.fromLTRB(3, 0, 8, 0),
+          child: !AppUtils.isDemo()
+              ? WebBrowser(
+                  initialUrl: 'http://localhost:2011/',
+                  interactionSettings: WebBrowserInteractionSettings(
+                      topBar: null, bottomBar: null),
+                  javascriptEnabled: true,
+                )
+              : NotInTheDemoPanel(),
+        ));
   }
 
   static Future<T> showFloatingModalBottomSheet<T>({
@@ -85,35 +87,7 @@ class TermDialog {
         Api.term(onStart: () {
           TermDialog.show(context);
         }, onError: (error) {
-          Alert(
-              context: context,
-              closeIcon: Icon(Icons.close),
-              image: Icon(Icons.error_outline,
-                  size: 60, color: LAColorTheme.inactive),
-              title: "ERROR",
-              style: AlertStyle(
-                  constraints: BoxConstraints.expand(height: 600, width: 600)),
-              content: Column(children: <Widget>[
-                Text(
-                  "We had some problem ($error)",
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                // Text(error),
-              ]),
-              buttons: [
-                DialogButton(
-                  width: 500,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "OK",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                )
-              ]).show();
+          UiUtils.termErrorAlert(context, error);
         });
       },
     );

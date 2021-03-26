@@ -3,9 +3,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:xterm/frontend/terminal_view.dart';
-import 'package:xterm/theme/terminal_themes.dart';
-import 'package:xterm/xterm.dart';
 
 import 'components/defDivider.dart';
 import 'models/appState.dart';
@@ -20,29 +17,6 @@ class _SandboxPageState extends State<SandboxPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<LatLng> area = []..length = 5;
   bool firstPoint = true;
-
-  late Terminal terminal;
-
-  @override
-  void initState() {
-    super.initState();
-    terminal = Terminal(onInput: onInput, theme: TerminalThemes.defaultTheme);
-    terminal.write('🧭 🏳️\u200d🌈🐣🐣￼  xterm.dart demo\r\n');
-    for (int i = 0; i < 100; i++) {
-      terminal.write('\x1B[${i}mHello World \x1B[0m\r\n');
-    }
-    terminal.write('\r\n');
-    terminal.write('\$ ');
-  }
-
-  void onInput(String input) {
-    if (input == '\r') {
-      terminal.write('\r\n');
-      terminal.write('\$ ');
-    } else {
-      terminal.write(input);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,11 +139,6 @@ class _SandboxPageState extends State<SandboxPage> {
                           .map((service) =>
                               _buildChip(LAServiceDesc.map[service].name))
                           .toList()), */
-                  Container(
-                      height: 400,
-                      child: SafeArea(
-                        child: TerminalView(terminal: terminal),
-                      )),
                 ],
               ),
             ],

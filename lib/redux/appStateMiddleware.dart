@@ -173,13 +173,23 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       Api.getAnsiblewResults(
               logsPrefix: action.cmdHistoryEntry.logsPrefix,
               logsSuffix: action.cmdHistoryEntry.logsSuffix)
-          .then((results) {
+          .then((results) async {
         if (results != null) {
           results.fstRetrieved = action.fstRetrieved;
           results.cmd = action.cmdHistoryEntry;
-          store.dispatch(ShowDeployProjectResults(
-              action.cmdHistoryEntry, action.fstRetrieved, results));
-          action.onReady();
+          Api.termLogs(
+              cmd: action.cmdHistoryEntry,
+              onStart: () {
+                store.dispatch(ShowDeployProjectResults(
+                    action.cmdHistoryEntry, action.fstRetrieved, results));
+                action.onReady();
+                // TermDialog.show(context);
+              },
+              onError: (error) {
+                store.dispatch(OnShowDeployProjectResultsFailed());
+                action.onFailed();
+                /* UiUtils.termErrorAlert(context, error); */
+              });
         } else {
           store.dispatch(OnShowDeployProjectResultsFailed());
           action.onFailed();

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:beamer/beamer.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/components/deploySubResultWidget.dart';
 import 'package:la_toolkit/components/resultsChart.dart';
+import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -14,21 +13,24 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
-import 'package:xterm/frontend/terminal_view.dart';
-import 'package:xterm/terminal/terminal.dart';
 
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
+import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/ansibleError.dart';
 import 'models/cmdHistoryEntry.dart';
 
-class DeployResultsPage extends StatelessWidget {
+class DeployResultsPage extends StatefulWidget {
   static const routeName = "deploy-results";
 
-  // final Terminal terminal = Terminal(theme: TerminalThemes.defaultTheme);
+  @override
+  _DeployResultsPageState createState() => _DeployResultsPageState();
+}
 
+class _DeployResultsPageState extends State<DeployResultsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _loadCall = false;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +90,6 @@ class DeployResultsPage extends StatelessWidget {
               resultsDetails.add(subResult);
             });
           });
-          bool fistRetrieved = cmdHistoryDetails.fstRetrieved;
           num failures = resultsTotals['failures'] ?? 0;
           bool noFailures = failures == 0;
           return Scaffold(
@@ -158,17 +159,33 @@ class DeployResultsPage extends StatelessWidget {
                               AnsiblewCmdPanel(
                                   cmdHistoryDetails: cmdHistoryDetails),
                               SizedBox(height: 20),
-                              if (!fistRetrieved)
-                                Text('Ansible Logs:',
-                                    style: DeployUtils.subtitleStyle),
-                              if (!fistRetrieved) SizedBox(height: 20),
-                              if (!fistRetrieved)
-                                Container(
-                                    height: 400,
-                                    width: 600,
-                                    child: SafeArea(
-                                      child: TerminalPanel(cmdHistoryDetails),
-                                    ))
+                              Text('Ansible Logs:',
+                                  style: DeployUtils.subtitleStyle),
+                              SizedBox(height: 20),
+                              Container(
+                                  height: 600,
+                                  width: 1000,
+                                  child: TermDialog.termArea()),
+                              TipsCard(text: """## Tips with the logs
+This logs are located in the file `logs/${cmdHistoryDetails.cmd!.logsPrefix}-${cmdHistoryDetails.cmd!.logsSuffix}.log`.
+
+This term shows the end of that log file using the command `less`. You can use your mouse scroll or the keyboard:
+
+- `CTRL+B`: backward one page in the log file
+- `CTRL+F`: forward one page
+- `g`: go to the start of the log file
+- `G`: go to the end
+
+You can can search words backwards or forward:
+
+- `?`: search for a pattern which will take you to the previous occurrence.
+- `/`: search for a pattern which will take you to the next occurrence.
+- `n`: for next match in forward
+
+This is useful to search errors. For instance `?FAILED` will search backward the logs for the work `FAILED` and your can follow searching typing `n`.
+
+More info about [how to navigate in this log file](https://www.thegeekstuff.com/2010/02/unix-less-command-10-tips-for-effective-navigation/).
+"""),
                             ],
                           )),
                       Expanded(
@@ -178,7 +195,12 @@ class DeployResultsPage extends StatelessWidget {
                     ],
                   )));
         } else {
-          vm.onOpenDeployResults(vm.project.lastCmdEntry!);
+          if (_loadCall == false) {
+            setState(() {
+              _loadCall = true;
+              vm.onOpenDeployResults(vm.project.lastCmdEntry!);
+            });
+          }
           return Container();
         }
       },
@@ -209,32 +231,6 @@ class AnsiblewCmdPanel extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Command copied to clipboard")))),
             )));
-  }
-}
-
-class TerminalPanel extends StatelessWidget {
-  final CmdHistoryDetails cmdHistoryDetails;
-  TerminalPanel(this.cmdHistoryDetails);
-
-  @override
-  Widget build(BuildContext context) {
-    Terminal terminal = Terminal(theme: DeployUtils.laTerminalTheme);
-    var convertedLog = utf8
-        .decode(Base64Decoder().convert(cmdHistoryDetails.logsColorized))
-        // this should match banner of docker/logs-colorized-ansible-callback.py
-        .replaceAll('\n', '\r\n');
-    terminal.resize(101, 40);
-    terminal.write(convertedLog);
-
-    return Container(
-        padding: EdgeInsets.all(10),
-        color: Color(DeployUtils.laTerminalTheme.background.value),
-        child: TerminalView(
-          terminal: terminal,
-
-          opacity: .7,
-          // style: TerminalStyle(),
-        ));
   }
 }
 
