@@ -141,6 +141,24 @@ You can run the la-toolkit in another server and redirect the ports via ssh like
 ```
  ssh -L 2010:127.0.0.1:2010 -L 2011:127.0.0.1:2011 yourUser@yourRemoteServer -N -f
 ```
+## Upgrade the toolkit
+
+Get the latest version of the la-toolkit with:
+
+```
+./dockerTask.sh update
+```
+
+or :
+
+```
+docker-compose kill
+docker-compose rm -f
+docker-compose pull 
+docker-compose up -d
+```
+
+TODO: Add the update task to the Windows script.
 
 ## Development
 

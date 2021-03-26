@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
@@ -10,6 +11,8 @@ import '../laTheme.dart';
 import '../notInDemo.dart';
 
 class TermDialog {
+  static final String initialUrl = 'http://localhost:${env['TTYD_PORT']}/';
+
   static show(context, {title: 'Console', VoidCallback? onClose}) async {
     await showFloatingModalBottomSheet(
         // This can be added to the custom modal
@@ -54,7 +57,7 @@ class TermDialog {
           padding: EdgeInsets.fromLTRB(3, 0, 8, 0),
           child: !AppUtils.isDemo()
               ? WebBrowser(
-                  initialUrl: 'http://localhost:2011/',
+                  initialUrl: initialUrl,
                   interactionSettings: WebBrowserInteractionSettings(
                       topBar: null, bottomBar: null),
                   javascriptEnabled: true,

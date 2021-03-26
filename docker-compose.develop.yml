@@ -9,8 +9,8 @@ services:
       context: .
       dockerfile: docker/u20/Dockerfile
     ports:
-      - "2010:2010"
-      - "2011:2011"
+      - "20100:2010"
+      - "20110:20110"
     volumes:
       # mkdir -p ./la-toolkit-data/config/ ./la-toolkit-data/logs/ ./la-toolkit-data/ssh/
       - ./la-toolkit-data/config/:/home/ubuntu/ansible/la-inventories/:rw

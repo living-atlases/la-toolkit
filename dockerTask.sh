@@ -67,6 +67,27 @@ compose () {
   fi
 }
 
+update () {
+    if [[ -z $ENVIRONMENT ]]; then
+        ENVIRONMENT="release"
+    fi
+
+    composeFileName="docker-compose.yml"
+    if [[ $ENVIRONMENT != "release" ]]; then
+        composeFileName="docker-compose.$ENVIRONMENT.yml"
+    fi
+
+    if [[ ! -f $composeFileName ]]; then
+        echo "$ENVIRONMENT is not a valid parameter. File '$composeFileName' does not exist."
+    else
+        echo "Running compose file $composeFileName"
+        docker-compose -f $composeFileName -p $projectName kill
+        docker-compose -f $composeFileName -p $projectName rm -f
+        docker-compose -f $composeFileName -p $projectName pull
+        docker-compose -f $composeFileName -p $projectName up -d
+    fi
+}
+
 openSite () {
   printf 'Opening site'
   until $(curl --output /dev/null --silent --fail $url); do
@@ -90,6 +111,7 @@ showUsage () {
   echo "Commands:"
   echo "    build: Builds a Docker image ('$imageName')."
   echo "    compose: Runs docker-compose."
+  echo "    update: rm the previous la-toolkit image and pulls the latest version"
   echo "    clean: Removes the image '$imageName' and kills all containers based on that image."
   echo "    composeForDevelop: Builds the image and runs docker-compose."
   echo ""
@@ -122,6 +144,11 @@ else
             ENVIRONMENT=$(echo $2 | tr "[:upper:]" "[:lower:]")
             buildImage
             ;;
+    "update")
+        ENVIRONMENT=$(echo $2 | tr "[:upper:]" "[:lower:]")
+        update
+        openSite
+        ;;
     "clean")
             ENVIRONMENT=$(echo $2 | tr "[:upper:]" "[:lower:]")
             cleanAll
