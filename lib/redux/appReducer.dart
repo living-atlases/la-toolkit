@@ -267,8 +267,9 @@ AppState _onImportSshKey(AppState state, OnImportSshKey action) {
 AppState _showDeployProjectResults(
     AppState state, ShowDeployProjectResults action) {
   LAProject currentProject = state.currentProject;
-  currentProject.lastCmdHistoryDetails = action.results;
-  action.cmdHistoryEntry.result = currentProject.lastCmdHistoryDetails!.result;
+  currentProject.lastCmdEntry = action.cmdHistoryEntry;
+  currentProject.lastCmdDetails = action.results;
+  action.cmdHistoryEntry.result = currentProject.lastCmdDetails!.result;
   if (action.fstRetrieved) {
     // remove and just search?
     currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
@@ -280,8 +281,17 @@ AppState _showDeployProjectResults(
           .replaceRange(index, index + 1, [action.cmdHistoryEntry]);
     }
   }
+  List<LAProject> projects = replaceProject(state, currentProject);
   return state.copyWith(
-      currentProject: currentProject); //, repeatCmd: DeployCmd());
+      currentProject: currentProject,
+      projects: projects); //, repeatCmd: DeployCmd());
+}
+
+List<LAProject> replaceProject(AppState state, LAProject currentProject) {
+  List<LAProject> projects = new List<LAProject>.from(state.projects);
+  int index = projects.indexWhere((cur) => cur.uuid == currentProject.uuid);
+  projects.replaceRange(index, index + 1, [currentProject]);
+  return projects;
 }
 
 AppState _showSnackBar(AppState state, ShowSnackBar action) {
@@ -293,7 +303,7 @@ AppState _onShowedSnackBar(AppState state, OnShowedSnackBar action) {
 }
 
 AppState _prepareDeployProject(AppState state, PrepareDeployProject action) {
-  print("REPEAT-CMD ${action.repeatCmd}");
+  // print("REPEAT-CMD ${action.repeatCmd}");
   return state.copyWith(repeatCmd: action.repeatCmd);
 }
 
@@ -301,8 +311,6 @@ AppState _onDeleteLog(AppState state, DeleteLog action) {
   LAProject p = state.currentProject;
   p.cmdHistory = new List<CmdHistoryEntry>.from(p.cmdHistory)
     ..removeWhere((cmd) => cmd.uuid == action.cmd.uuid);
-  List<LAProject> projects = new List<LAProject>.from(state.projects);
-  int index = projects.indexWhere((cur) => cur.uuid == p.uuid);
-  projects.replaceRange(index, index + 1, [p]);
+  List<LAProject> projects = replaceProject(state, p);
   return state.copyWith(currentProject: p, projects: projects);
 }

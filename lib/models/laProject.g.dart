@@ -17,7 +17,8 @@ extension LAProjectCopyWith on LAProject {
     String? domain,
     String? generatorRelease,
     bool? isCreated,
-    CmdHistoryDetails? lastCmdHistoryDetails,
+    CmdHistoryDetails? lastCmdDetails,
+    CmdHistoryEntry? lastCmdEntry,
     String? longName,
     LALatLng? mapBoundsFstPoint,
     LALatLng? mapBoundsSndPoint,
@@ -43,8 +44,8 @@ extension LAProjectCopyWith on LAProject {
       domain: domain ?? this.domain,
       generatorRelease: generatorRelease ?? this.generatorRelease,
       isCreated: isCreated ?? this.isCreated,
-      lastCmdHistoryDetails:
-          lastCmdHistoryDetails ?? this.lastCmdHistoryDetails,
+      lastCmdDetails: lastCmdDetails ?? this.lastCmdDetails,
+      lastCmdEntry: lastCmdEntry ?? this.lastCmdEntry,
       longName: longName ?? this.longName,
       mapBoundsFstPoint: mapBoundsFstPoint ?? this.mapBoundsFstPoint,
       mapBoundsSndPoint: mapBoundsSndPoint ?? this.mapBoundsSndPoint,
@@ -103,6 +104,10 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
         : LALatLng.fromJson(json['mapBoundsSndPoint'] as Map<String, dynamic>),
     theme: json['theme'] as String,
     mapZoom: (json['mapZoom'] as num?)?.toDouble(),
+    lastCmdEntry: json['lastCmdEntry'] == null
+        ? null
+        : CmdHistoryEntry.fromJson(
+            json['lastCmdEntry'] as Map<String, dynamic>),
     cmdHistory: (json['cmdHistory'] as List<dynamic>?)
         ?.map((e) => CmdHistoryEntry.fromJson(e as Map<String, dynamic>))
         .toList(),
@@ -133,6 +138,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'mapBoundsFstPoint': instance.mapBoundsFstPoint.toJson(),
       'mapBoundsSndPoint': instance.mapBoundsSndPoint.toJson(),
       'mapZoom': instance.mapZoom,
+      'lastCmdEntry': instance.lastCmdEntry?.toJson(),
       'cmdHistory': instance.cmdHistory.map((e) => e.toJson()).toList(),
     };
 

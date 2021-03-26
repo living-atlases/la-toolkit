@@ -48,8 +48,9 @@ class LAProject {
   LALatLng mapBoundsFstPoint;
   LALatLng mapBoundsSndPoint;
   double? mapZoom;
+  CmdHistoryEntry? lastCmdEntry;
   @JsonKey(ignore: true)
-  CmdHistoryDetails? lastCmdHistoryDetails;
+  CmdHistoryDetails? lastCmdDetails;
   List<CmdHistoryEntry> cmdHistory;
 
   LAProject(
@@ -73,7 +74,8 @@ class LAProject {
       LALatLng? mapBoundsSndPoint,
       this.theme = "clean",
       this.mapZoom,
-      this.lastCmdHistoryDetails,
+      this.lastCmdEntry,
+      this.lastCmdDetails,
       List<CmdHistoryEntry>? cmdHistory,
       bool? advancedEdit,
       bool? advancedTune})
@@ -250,7 +252,7 @@ class LAProject {
         .join(', ');
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated,  validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
-map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
+lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
 servers-services: $sToS  
 services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
@@ -406,7 +408,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           generatorRelease == other.generatorRelease &&
           mapBoundsFstPoint == other.mapBoundsFstPoint &&
           mapBoundsSndPoint == other.mapBoundsSndPoint &&
-          lastCmdHistoryDetails == other.lastCmdHistoryDetails &&
+          lastCmdEntry == other.lastCmdEntry &&
+          lastCmdDetails == other.lastCmdDetails &&
           ListEquality().equals(cmdHistory, other.cmdHistory) &&
           mapZoom == other.mapZoom;
 
@@ -431,7 +434,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       generatorRelease.hashCode ^
       mapBoundsFstPoint.hashCode ^
       mapBoundsSndPoint.hashCode ^
-      lastCmdHistoryDetails.hashCode ^
+      lastCmdDetails.hashCode ^
       ListEquality().hash(cmdHistory) ^
       mapZoom.hashCode;
 

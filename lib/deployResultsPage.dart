@@ -21,6 +21,7 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 import 'models/ansibleError.dart';
+import 'models/cmdHistoryEntry.dart';
 
 class DeployResultsPage extends StatelessWidget {
   static const routeName = "deploy-results";
@@ -35,36 +36,41 @@ class DeployResultsPage extends StatelessWidget {
       converter: (store) {
         return _DeployResultsViewModel(
             project: store.state.currentProject,
+            onOpenDeployResults: (cmdHistory) {
+              store.dispatch(
+                  DeployUtils.getCmdResults(context, cmdHistory, false));
+            },
             onClose: (project) {
               store.dispatch(OpenProjectTools(project));
               Beamer.of(context).beamTo(LAProjectViewLocation());
             });
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {
-        List<Widget> resultsDetails = List.empty(growable: true);
-        var cmdHistoryDetails = vm.project.lastCmdHistoryDetails;
-        List<dynamic> results = cmdHistoryDetails!.results;
-        Map<String, num> resultsTotals = cmdHistoryDetails.resultsTotals;
-        results.forEach((result) {
-          List<String> playNames = [];
-          List<AnsibleError> errors = [];
-          result['plays'].forEach((play) {
-            String name = play['play']['name'];
-            if (name != 'all') playNames.add(name);
-            play['tasks'].forEach((task) {
-              task['hosts'].keys.forEach((host) {
-                if (task['hosts'][host]['failed'] != null &&
-                    task['hosts'][host]['failed'] == true) {
-                  String action = task['hosts'][host]['action'];
-                  String msg = task['hosts'][host]['msg'];
-                  errors.add(AnsibleError(
-                      host: host, playName: name, action: action, msg: msg));
-                }
+        var cmdHistoryDetails = vm.project.lastCmdDetails;
+        if (cmdHistoryDetails != null) {
+          List<Widget> resultsDetails = List.empty(growable: true);
+          List<dynamic> results = cmdHistoryDetails.results;
+          Map<String, num> resultsTotals = cmdHistoryDetails.resultsTotals;
+          results.forEach((result) {
+            List<String> playNames = [];
+            List<AnsibleError> errors = [];
+            result['plays'].forEach((play) {
+              String name = play['play']['name'];
+              if (name != 'all') playNames.add(name);
+              play['tasks'].forEach((task) {
+                task['hosts'].keys.forEach((host) {
+                  if (task['hosts'][host]['failed'] != null &&
+                      task['hosts'][host]['failed'] == true) {
+                    String action = task['hosts'][host]['action'];
+                    String msg = task['hosts'][host]['msg'];
+                    errors.add(AnsibleError(
+                        host: host, playName: name, action: action, msg: msg));
+                  }
+                });
               });
             });
-          });
 
-          /* "tasks": [ { "hosts": {
+            /* "tasks": [ { "hosts": {
                         "ala-install-test-2": {
                             "_ansible_no_log": false,
                             "action": "postgresql_db",
@@ -73,103 +79,108 @@ class DeployResultsPage extends StatelessWidget {
                             },
                             "msg" : "Error" */
 
-          result['stats'].keys.forEach((key) {
-            DeploySubResultWidget subResult = DeploySubResultWidget(
-                title: playNames.join(', '),
-                name: key,
-                results: result['stats'][key],
-                errors: errors);
-            resultsDetails.add(subResult);
+            result['stats'].keys.forEach((key) {
+              DeploySubResultWidget subResult = DeploySubResultWidget(
+                  title: playNames.join(', '),
+                  name: key,
+                  results: result['stats'][key],
+                  errors: errors);
+              resultsDetails.add(subResult);
+            });
           });
-        });
-        bool fistRetrieved = cmdHistoryDetails.fstRetrieved;
-        num failures = resultsTotals['failures'] ?? 0;
-        bool noFailures = failures == 0;
-        return Scaffold(
-            key: _scaffoldKey,
-            appBar: LAAppBar(
-                context: context,
-                titleIcon: Icons.analytics_outlined,
-                title: "Deployment Results",
-                showLaIcon: false,
-                showBack: true,
-                actions: [
-                  IconButton(
-                      icon: Tooltip(
-                          child: const Icon(Icons.close, color: Colors.white),
-                          message: "Close"),
-                      onPressed: () => vm.onClose(vm.project)),
-                ]),
-            body: ScrollPanel(
-                withPadding: true,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1, // 10%
-                      child: Container(),
-                    ),
-                    Expanded(
-                        flex: 8, // 80%,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(height: 20),
-                            Text(cmdHistoryDetails.cmd!.deployCmd.toString(),
-                                style: DeployUtils.cmdStyle),
-                            SizedBox(height: 20),
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                      noFailures
-                                          ? Mdi.checkboxMarkedCircleOutline
-                                          : Icons.remove_done,
-                                      size: 60,
-                                      color: noFailures
-                                          ? LAColorTheme.up
-                                          : LAColorTheme.down),
-                                  SizedBox(width: 20),
-                                  Text(
-                                      noFailures
-                                          ? "All steps ok"
-                                          : "Uuppps! Some step${failures > 1 ? 's' : ''} failed",
-                                      style: DeployUtils.titleStyle)
-                                ]),
-                            SizedBox(height: 20),
-                            ResultsChart(resultsTotals),
-                            SizedBox(height: 20),
-                            Text('Task details:',
-                                style: DeployUtils.subtitleStyle),
-                            Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: resultsDetails),
-                            SizedBox(height: 20),
-                            Text('Command executed:',
-                                style: DeployUtils.subtitleStyle),
-                            SizedBox(height: 20),
-                            AnsiblewCmdPanel(
-                                cmdHistoryDetails: cmdHistoryDetails),
-                            SizedBox(height: 20),
-                            if (!fistRetrieved)
-                              Text('Ansible Logs:',
+          bool fistRetrieved = cmdHistoryDetails.fstRetrieved;
+          num failures = resultsTotals['failures'] ?? 0;
+          bool noFailures = failures == 0;
+          return Scaffold(
+              key: _scaffoldKey,
+              appBar: LAAppBar(
+                  context: context,
+                  titleIcon: Icons.analytics_outlined,
+                  title: "Deployment Results",
+                  showLaIcon: false,
+                  showBack: true,
+                  actions: [
+                    IconButton(
+                        icon: Tooltip(
+                            child: const Icon(Icons.close, color: Colors.white),
+                            message: "Close"),
+                        onPressed: () => vm.onClose(vm.project)),
+                  ]),
+              body: ScrollPanel(
+                  withPadding: true,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 1, // 10%
+                        child: Container(),
+                      ),
+                      Expanded(
+                          flex: 8, // 80%,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(height: 20),
+                              Text(cmdHistoryDetails.cmd!.deployCmd.toString(),
+                                  style: DeployUtils.cmdStyle),
+                              SizedBox(height: 20),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                        noFailures
+                                            ? Mdi.checkboxMarkedCircleOutline
+                                            : Icons.remove_done,
+                                        size: 60,
+                                        color: noFailures
+                                            ? LAColorTheme.up
+                                            : LAColorTheme.down),
+                                    SizedBox(width: 20),
+                                    Text(
+                                        noFailures
+                                            ? "All steps ok"
+                                            : "Uuppps! Some step${failures > 1 ? 's' : ''} failed",
+                                        style: DeployUtils.titleStyle)
+                                  ]),
+                              SizedBox(height: 20),
+                              ResultsChart(resultsTotals),
+                              SizedBox(height: 20),
+                              Text('Task details:',
                                   style: DeployUtils.subtitleStyle),
-                            if (!fistRetrieved) SizedBox(height: 20),
-                            if (!fistRetrieved)
-                              Container(
-                                  height: 400,
-                                  width: 600,
-                                  child: SafeArea(
-                                    child: TerminalPanel(cmdHistoryDetails),
-                                  ))
-                          ],
-                        )),
-                    Expanded(
-                      flex: 1, // 10%
-                      child: Container(),
-                    )
-                  ],
-                )));
+                              SizedBox(height: 20),
+                              Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: resultsDetails),
+                              SizedBox(height: 20),
+                              Text('Command executed:',
+                                  style: DeployUtils.subtitleStyle),
+                              SizedBox(height: 20),
+                              AnsiblewCmdPanel(
+                                  cmdHistoryDetails: cmdHistoryDetails),
+                              SizedBox(height: 20),
+                              if (!fistRetrieved)
+                                Text('Ansible Logs:',
+                                    style: DeployUtils.subtitleStyle),
+                              if (!fistRetrieved) SizedBox(height: 20),
+                              if (!fistRetrieved)
+                                Container(
+                                    height: 400,
+                                    width: 600,
+                                    child: SafeArea(
+                                      child: TerminalPanel(cmdHistoryDetails),
+                                    ))
+                            ],
+                          )),
+                      Expanded(
+                        flex: 1, // 10%
+                        child: Container(),
+                      )
+                    ],
+                  )));
+        } else {
+          vm.onOpenDeployResults(vm.project.lastCmdEntry!);
+          return Container();
+        }
       },
     );
   }
@@ -230,8 +241,11 @@ class TerminalPanel extends StatelessWidget {
 class _DeployResultsViewModel {
   final LAProject project;
   final Function(LAProject) onClose;
-
-  _DeployResultsViewModel({required this.project, required this.onClose});
+  final void Function(CmdHistoryEntry entry) onOpenDeployResults;
+  _DeployResultsViewModel(
+      {required this.project,
+      required this.onClose,
+      required this.onOpenDeployResults});
 
   @override
   bool operator ==(Object other) =>
