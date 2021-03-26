@@ -114,7 +114,7 @@ class CallbackModule(CallbackBase):
     def log_banner(self, data):
         msg = data
         msg = msg.strip()
-        star_len = 100 - len(msg)
+        star_len = 95 - len(msg)
         if star_len <= 3:
             star_len = 3
         stars = u"*" * star_len
