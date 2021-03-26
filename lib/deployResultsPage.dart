@@ -96,8 +96,9 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
               resultsDetails.add(subResult);
             });
           });
-          num failures = resultsTotals['failures'] ?? 0;
-          bool noFailures = failures == 0;
+          bool failed = cmdHistoryDetails.failed;
+          CmdResult result = cmdHistoryDetails.result;
+          print(result);
           return Scaffold(
               key: _scaffoldKey,
               appBar: LAAppBar(
@@ -134,18 +135,24 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                        noFailures
+                                        !failed
                                             ? Mdi.checkboxMarkedCircleOutline
-                                            : Icons.remove_done,
+                                            : result == CmdResult.aborted
+                                                ? Mdi.heartBroken
+                                                : Icons.remove_done,
                                         size: 60,
-                                        color: noFailures
+                                        color: !failed
                                             ? LAColorTheme.up
                                             : LAColorTheme.down),
                                     SizedBox(width: 20),
                                     Text(
-                                        noFailures
+                                        !failed
                                             ? "All steps ok"
-                                            : "Uuppps! Some step${failures > 1 ? 's' : ''} failed",
+                                            : result == CmdResult.failed
+                                                ? "Uuppps! some step failed"
+                                                : result == CmdResult.aborted
+                                                    ? "The command didn't finished correctly"
+                                                    : "The command failed for some reason",
                                         style: DeployUtils.titleStyle)
                                   ]),
                               SizedBox(height: 20),

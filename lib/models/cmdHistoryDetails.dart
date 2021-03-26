@@ -55,10 +55,18 @@ class CmdHistoryDetails {
   }
 
   bool get failed {
-    return !(code == 0 && resultsTotals['failures'] == 0);
+    return !(code == 0 && numFailures() == 0);
   }
 
-  CmdResult get result => !failed ? CmdResult.success : CmdResult.failed;
+  num? numFailures() => resultsTotals['failures'];
+
+  CmdResult get result => !failed
+      ? CmdResult.success
+      : code == 100
+          ? CmdResult.aborted
+          : numFailures() != null && numFailures()! > 0
+              ? CmdResult.failed
+              : CmdResult.unknown;
 
   @override
   String toString() {
