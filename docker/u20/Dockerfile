@@ -56,6 +56,7 @@ RUN su - ubuntu -c 'git clone --depth 1 https://github.com/moul/assh.git'
 RUN echo 'export GOPATH=$HOME/go' >> /home/ubuntu/.profile
 RUN echo 'export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"' >> /home/ubuntu/.profile
 RUN echo 'export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"' >> /home/ubuntu/.bashrc
+RUN echo 'alias ssh="assh wrapper ssh --"' >> /home/ubuntu/.profile
 RUN echo 'alias ssh="assh wrapper ssh --"' >> /home/ubuntu/.bashrc
 RUN su -l ubuntu -c 'cd assh; go get -u moul.io/assh/v2'
 
