@@ -3,7 +3,6 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_toolkit/components/deploySubResultWidget.dart';
 import 'package:la_toolkit/components/resultsChart.dart';
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/appState.dart';
@@ -18,7 +17,6 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
-import 'models/ansibleError.dart';
 import 'models/cmdHistoryEntry.dart';
 
 class DeployResultsPage extends StatefulWidget {
@@ -50,52 +48,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
       builder: (BuildContext context, _DeployResultsViewModel vm) {
         var cmdHistoryDetails = vm.project.lastCmdDetails;
         if (cmdHistoryDetails != null) {
-          List<Widget> resultsDetails = List.empty(growable: true);
-          List<dynamic> results = cmdHistoryDetails.results;
-          Map<String, num> resultsTotals = cmdHistoryDetails.resultsTotals;
-          results.forEach((result) {
-            List<String> playNames = [];
-            List<AnsibleError> errors = [];
-            result['plays'].forEach((play) {
-              String name = play['play']['name'];
-              if (name != 'all') playNames.add(name);
-              play['tasks'].forEach((task) {
-                task['hosts'].keys.forEach((host) {
-                  if (task['hosts'][host]['failed'] != null &&
-                      task['hosts'][host]['failed'] == true) {
-                    String taskName =
-                        task['task'] != null ? task['task']['name'] : '';
-                    String msg = task['hosts'][host] != null
-                        ? task['hosts'][host]['msg']
-                        : '';
-                    errors.add(AnsibleError(
-                        host: host,
-                        playName: name,
-                        taskName: taskName,
-                        msg: msg));
-                  }
-                });
-              });
-            });
-
-            /* "tasks": [ { "hosts": {
-                        "ala-install-test-2": {
-                            "_ansible_no_log": false,
-                            "action": "postgresql_db",
-                            "changed": false,
-                            "failed": true,
-                            },
-                            "msg" : "Error" */
-
-            result['stats'].keys.forEach((key) {
-              DeploySubResultWidget subResult = DeploySubResultWidget(
-                  title: playNames.join(', '),
-                  name: key,
-                  results: result['stats'][key],
-                  errors: errors);
-              resultsDetails.add(subResult);
-            });
-          });
+          List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
           bool failed = cmdHistoryDetails.failed;
           CmdResult result = cmdHistoryDetails.result;
           print(result);
@@ -156,7 +109,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                         style: DeployUtils.titleStyle)
                                   ]),
                               const SizedBox(height: 20),
-                              ResultsChart(resultsTotals),
+                              ResultsChart(cmdHistoryDetails.resultsTotals),
                               SizedBox(height: 20),
                               const Text('Task details:',
                                   style: DeployUtils.subtitleStyle),

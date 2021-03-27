@@ -1,5 +1,8 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/components/deploySubResultWidget.dart';
+import 'package:la_toolkit/models/ansibleError.dart';
 import 'package:la_toolkit/utils/constants.dart';
 
 import 'cmdHistoryEntry.dart';
@@ -18,6 +21,8 @@ class CmdHistoryDetails {
   bool fstRetrieved;
   @JsonKey(ignore: true)
   Map<String, num>? _resultsTotals;
+  @JsonKey(ignore: true)
+  List<Widget>? _details;
 
   CmdHistoryDetails(
       {this.cmd,
@@ -52,6 +57,53 @@ class CmdHistoryDetails {
       });
     }
     return _resultsTotals!;
+  }
+
+  List<Widget> get detailsWidgetList {
+    if (_details == null) {
+      _details = [];
+      results.forEach((result) {
+        List<String> playNames = [];
+        List<AnsibleError> errors = [];
+        result['plays'].forEach((play) {
+          String name = play['play']['name'];
+          if (name != 'all') playNames.add(name);
+          play['tasks'].forEach((task) {
+            task['hosts'].keys.forEach((host) {
+              if (task['hosts'][host]['failed'] != null &&
+                  task['hosts'][host]['failed'] == true) {
+                String taskName =
+                    task['task'] != null ? task['task']['name'] : '';
+                String msg = task['hosts'][host] != null
+                    ? task['hosts'][host]['msg']
+                    : '';
+                errors.add(AnsibleError(
+                    host: host, playName: name, taskName: taskName, msg: msg));
+              }
+            });
+          });
+        });
+
+        /* "tasks": [ { "hosts": {
+-                        "ala-install-test-2": {
+-                            "_ansible_no_log": false,
+-                            "action": "postgresql_db",
+-                            "changed": false,
+-                            "failed": true,
+-                            },
+-                            "msg" : "Error" */
+
+        result['stats'].keys.forEach((key) {
+          DeploySubResultWidget subResult = DeploySubResultWidget(
+              title: playNames.join(', '),
+              name: key,
+              results: result['stats'][key],
+              errors: errors);
+          _details!.add(subResult);
+        });
+      });
+    }
+    return _details!;
   }
 
   bool get failed {
