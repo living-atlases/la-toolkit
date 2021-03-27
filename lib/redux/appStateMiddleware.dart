@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/utils/api.dart';
@@ -204,31 +205,36 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       Api.ansiblew(action);
     }
     if (action is GetDeployProjectResults) {
-      Api.getAnsiblewResults(
-              logsPrefix: action.cmdHistoryEntry.logsPrefix,
-              logsSuffix: action.cmdHistoryEntry.logsSuffix)
-          .then((results) async {
-        if (results != null) {
-          results.fstRetrieved = action.fstRetrieved;
-          results.cmd = action.cmdHistoryEntry;
-          Api.termLogs(
-              cmd: action.cmdHistoryEntry,
-              onStart: () {
-                store.dispatch(ShowDeployProjectResults(
-                    action.cmdHistoryEntry, action.fstRetrieved, results));
-                action.onReady();
-                // TermDialog.show(context);
-              },
-              onError: (error) {
-                store.dispatch(OnShowDeployProjectResultsFailed());
-                action.onFailed();
-                /* UiUtils.termErrorAlert(context, error); */
-              });
-        } else {
-          store.dispatch(OnShowDeployProjectResultsFailed());
-          action.onFailed();
-        }
-      });
+      CmdHistoryDetails? lastCmdDet = store.state.currentProject.lastCmdDetails;
+      if (lastCmdDet != null &&
+          lastCmdDet.cmd != null &&
+          lastCmdDet.cmd!.uuid == action.cmdHistoryEntry.uuid) {
+        // Don't load results again we have this already
+      } else {
+        lastCmdDet = await Api.getAnsiblewResults(
+            logsPrefix: action.cmdHistoryEntry.logsPrefix,
+            logsSuffix: action.cmdHistoryEntry.logsSuffix);
+      }
+      if (lastCmdDet != null) {
+        lastCmdDet.fstRetrieved = action.fstRetrieved;
+        lastCmdDet.cmd = action.cmdHistoryEntry;
+        Api.termLogs(
+            cmd: action.cmdHistoryEntry,
+            onStart: () {
+              store.dispatch(ShowDeployProjectResults(
+                  action.cmdHistoryEntry, action.fstRetrieved, lastCmdDet!));
+              action.onReady();
+              // TermDialog.show(context);
+            },
+            onError: (error) {
+              store.dispatch(OnShowDeployProjectResultsFailed());
+              action.onFailed();
+              /* UiUtils.termErrorAlert(context, error); */
+            });
+      } else {
+        store.dispatch(OnShowDeployProjectResultsFailed());
+        action.onFailed();
+      }
     }
     next(action);
   }
