@@ -295,11 +295,19 @@ List<LAProject> replaceProject(AppState state, LAProject currentProject) {
 }
 
 AppState _showSnackBar(AppState state, ShowSnackBar action) {
-  return state.copyWith(appSnackBarMessage: action.message);
+  List<AppSnackBarMessage> currentMessages =
+      List<AppSnackBarMessage>.from(state.appSnackBarMessages);
+  if (!currentMessages.contains(action.snackMessage)) {
+    currentMessages.add(action.snackMessage);
+  }
+  return state.copyWith(appSnackBarMessages: currentMessages);
 }
 
 AppState _onShowedSnackBar(AppState state, OnShowedSnackBar action) {
-  return state.copyWith(appSnackBarMessage: AppSnackBarMessage.empty);
+  List<AppSnackBarMessage> currentMessages =
+      List<AppSnackBarMessage>.from(state.appSnackBarMessages);
+  currentMessages.removeWhere((m) => m.message == action.snackMessage.message);
+  return state.copyWith(appSnackBarMessages: currentMessages);
 }
 
 AppState _prepareDeployProject(AppState state, PrepareDeployProject action) {

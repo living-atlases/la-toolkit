@@ -9,7 +9,7 @@ part of 'appState.dart';
 extension AppStateCopyWith on AppState {
   AppState copyWith({
     List<String>? alaInstallReleases,
-    AppSnackBarMessage? appSnackBarMessage,
+    List<AppSnackBarMessage>? appSnackBarMessages,
     LAProject? currentProject,
     int? currentStep,
     bool? failedLoad,
@@ -22,7 +22,7 @@ extension AppStateCopyWith on AppState {
   }) {
     return AppState(
       alaInstallReleases: alaInstallReleases ?? this.alaInstallReleases,
-      appSnackBarMessage: appSnackBarMessage ?? this.appSnackBarMessage,
+      appSnackBarMessages: appSnackBarMessages ?? this.appSnackBarMessages,
       currentProject: currentProject ?? this.currentProject,
       currentStep: currentStep ?? this.currentStep,
       failedLoad: failedLoad ?? this.failedLoad,

@@ -51,7 +51,7 @@ class AppState {
   final List<String> generatorReleases;
   final List<SshKey> sshKeys;
   @JsonKey(ignore: true) //, nullable: true)
-  final AppSnackBarMessage appSnackBarMessage;
+  final List<AppSnackBarMessage> appSnackBarMessages;
   @JsonKey(ignore: true)
   final DeployCmd repeatCmd;
 
@@ -64,7 +64,7 @@ class AppState {
       this.status = LAProjectViewStatus.view,
       List<String>? alaInstallReleases,
       List<String>? generatorReleases,
-      AppSnackBarMessage? appSnackBarMessage,
+      List<AppSnackBarMessage>? appSnackBarMessages,
       DeployCmd? repeatCmd,
       List<SshKey>? sshKeys})
       : projects = projects ?? [],
@@ -73,7 +73,7 @@ class AppState {
         alaInstallReleases = alaInstallReleases ?? [],
         generatorReleases = generatorReleases ?? [],
         repeatCmd = repeatCmd ?? DeployCmd(),
-        appSnackBarMessage = appSnackBarMessage ?? AppSnackBarMessage.empty;
+        appSnackBarMessages = appSnackBarMessages ?? [];
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
       _$AppStateFromJson(json);
@@ -94,6 +94,7 @@ class AppState {
           listEquals(projects, other.projects) &&
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
           listEquals(generatorReleases, other.generatorReleases) &&
+          listEquals(appSnackBarMessages, other.appSnackBarMessages) &&
           listEquals(sshKeys, other.sshKeys);
 
   @override
@@ -104,6 +105,7 @@ class AppState {
       status.hashCode ^
       currentStep.hashCode ^
       repeatCmd.hashCode ^
+      ListEquality().hash(appSnackBarMessages) ^
       ListEquality().hash(projects) ^
       ListEquality().hash(alaInstallReleases) ^
       ListEquality().hash(generatorReleases) ^
@@ -132,7 +134,7 @@ class AppState {
 LA projects: ${projects.length} 
 view status: $status , currentStep: $currentStep, failedToLoad: $failedLoad
 ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}
-snackMessage: ${appSnackBarMessage.message} repeatCmd: $repeatCmd
+snackMessages: ${appSnackBarMessages.length} repeatCmd: $repeatCmd
 currentProject of ${projects.length} -----
 $currentProject
 ''';

@@ -237,11 +237,14 @@ class OnImportSshKey extends AppActions {
 }
 
 class ShowSnackBar extends AppActions {
-  AppSnackBarMessage message;
-  ShowSnackBar(this.message);
+  AppSnackBarMessage snackMessage;
+  ShowSnackBar(this.snackMessage);
 }
 
-class OnShowedSnackBar extends AppActions {}
+class OnShowedSnackBar extends AppActions {
+  AppSnackBarMessage snackMessage;
+  OnShowedSnackBar(this.snackMessage);
+}
 
 class DeleteLog extends AppActions {
   CmdHistoryEntry cmd;

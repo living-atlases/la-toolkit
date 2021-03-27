@@ -4,10 +4,9 @@ class AppSnackBarMessage {
   final String message;
   final Duration? duration;
   final SnackBarAction? action;
+  static final AppSnackBarMessage empty = AppSnackBarMessage(message: "");
 
   AppSnackBarMessage({required this.message, this.duration, this.action});
-
-  static final AppSnackBarMessage empty = AppSnackBarMessage(message: "");
 
   @override
   bool operator ==(Object other) =>
@@ -18,4 +17,12 @@ class AppSnackBarMessage {
 
   @override
   int get hashCode => message.hashCode;
+
+  factory AppSnackBarMessage.ok(String message) => AppSnackBarMessage(
+      message: message,
+      duration: Duration(days: 365),
+      action: SnackBarAction(
+        label: 'OK',
+        onPressed: () {},
+      ));
 }

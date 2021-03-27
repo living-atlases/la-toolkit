@@ -47,8 +47,10 @@ Future<void> main() async {
     try {
       appStateMiddleware.saveAppState(state);
     } catch (e) {
-      store.dispatch(ShowSnackBar(AppSnackBarMessage(
-          message: "Something failed when tryin to save your configuration")));
+      store.dispatch(ShowSnackBar(
+        AppSnackBarMessage.ok(
+            "Something failed when trying to save your configuration"),
+      ));
     }
   });
   store.dispatch(OnFetchState());
@@ -57,7 +59,7 @@ Future<void> main() async {
   if (initialState.failedLoad) {
     store.dispatch(OnFetchStateFailed());
     store.dispatch(ShowSnackBar(
-        AppSnackBarMessage(message: "Failed to retrieve your configuration")));
+        AppSnackBarMessage.ok("Failed to retrieve your configuration")));
   }
   /*
   Does not work because creates an additional new MaterialApp and this breaks the navigation
