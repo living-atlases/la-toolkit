@@ -313,7 +313,7 @@ AppState _onShowedSnackBar(AppState state, OnShowedSnackBar action) {
 
 AppState _prepareDeployProject(AppState state, PrepareDeployProject action) {
   // print("REPEAT-CMD ${action.repeatCmd}");
-  return state.copyWith(repeatCmd: action.repeatCmd);
+  return state.copyWith(repeatCmd: action.deployCmd);
 }
 
 AppState _onDeleteLog(AppState state, DeleteLog action) {

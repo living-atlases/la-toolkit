@@ -31,7 +31,7 @@ class LogsHistoryPage extends StatelessWidget {
                   context: context,
                   store: store,
                   project: project,
-                  repeatCmd: log.deployCmd));
+                  deployCmd: log.deployCmd));
             },
             onOpenDeployResults: (cmdHistory) {
               store.dispatch(

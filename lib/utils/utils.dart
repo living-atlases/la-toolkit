@@ -12,6 +12,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../laTheme.dart';
+import '../models/preDeployCmd.dart';
 import '../routes.dart';
 
 /*
@@ -139,7 +140,7 @@ class DeployUtils {
       {required BuildContext context,
       required var store,
       required LAProject project,
-      required DeployCmd repeatCmd}) {
+      required DeployCmd deployCmd}) {
     context.showLoaderOverlay();
     store.dispatch(PrepareDeployProject(
         project: project,
@@ -147,7 +148,26 @@ class DeployUtils {
           context.hideLoaderOverlay();
           Beamer.of(context).beamTo(DeployLocation());
         },
-        repeatCmd: repeatCmd,
+        deployCmd: deployCmd,
+        onError: (e) {
+          context.hideLoaderOverlay();
+          UiUtils.showSnackBarError(context, e);
+        }));
+  }
+
+  static doPreDeploy(
+      {required BuildContext context,
+      required var store,
+      required LAProject project,
+      required PreDeployCmd preDeployCmd}) {
+    context.showLoaderOverlay();
+    store.dispatch(PreparePreDeployProject(
+        project: project,
+        onReady: () {
+          context.hideLoaderOverlay();
+          Beamer.of(context).beamTo(PreDeployLocation());
+        },
+        deployCmd: preDeployCmd,
         onError: (e) {
           context.hideLoaderOverlay();
           UiUtils.showSnackBarError(context, e);

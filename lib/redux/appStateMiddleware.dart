@@ -201,6 +201,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             .then((_) => action.onReady());
       }
     }
+    if (action is PreparePreDeployProject) {
+      // For now, nothing
+      action.onReady();
+    }
     if (action is DeployProject) {
       Api.ansiblew(action);
     }

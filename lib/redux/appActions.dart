@@ -7,6 +7,8 @@ import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../models/preDeployCmd.dart';
+
 abstract class AppActions {}
 
 class FetchState extends AppActions {}
@@ -94,7 +96,8 @@ class TuneProject extends AppActions {
 
 class OnPreDeployTasks extends AppActions {
   LAProject project;
-  OnPreDeployTasks(this.project);
+  PreDeployCmd preDeployCmd;
+  OnPreDeployTasks(this.project, this.preDeployCmd);
 }
 
 class OnViewLogs extends AppActions {
@@ -105,13 +108,22 @@ class OnViewLogs extends AppActions {
 class PrepareDeployProject extends AppActions {
   LAProject project;
   VoidCallback onReady;
-  DeployCmd repeatCmd;
+  DeployCmd deployCmd;
   Function(String) onError;
   PrepareDeployProject(
       {required this.project,
       required this.onReady,
-      required this.repeatCmd,
+      required this.deployCmd,
       required this.onError});
+}
+
+class PreparePreDeployProject extends PrepareDeployProject {
+  PreparePreDeployProject({project, onReady, deployCmd, onError})
+      : super(
+            project: project,
+            onReady: onReady,
+            deployCmd: deployCmd,
+            onError: onError);
 }
 
 class DeployProject extends AppActions {

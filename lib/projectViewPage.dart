@@ -9,6 +9,7 @@ import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
+import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -58,8 +59,11 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 Beamer.of(context).beamTo(LAProjectTuneLocation());
               },
               onPreDeployTasks: (project) {
-                store.dispatch(OnPreDeployTasks(project));
-                Beamer.of(context).beamTo(PreDeployLocation());
+                DeployUtils.doPreDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    preDeployCmd: PreDeployCmd());
               },
               onViewLogs: (project) {
                 store.dispatch(OnViewLogs(project));
@@ -70,7 +74,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     context: context,
                     store: store,
                     project: project,
-                    repeatCmd: DeployCmd());
+                    deployCmd: DeployCmd());
               },
               onDelProject: (project) {
                 store.dispatch(DelProject(project));
