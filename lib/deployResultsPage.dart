@@ -118,19 +118,19 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                   withPadding: true,
                   child: Row(
                     children: <Widget>[
-                      Expanded(
+                      const Expanded(
                         flex: 1, // 10%
-                        child: Container(),
+                        child: const SizedBox(),
                       ),
                       Expanded(
                           flex: 8, // 80%,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Text(cmdHistoryDetails.cmd!.deployCmd.toString(),
                                   style: DeployUtils.cmdStyle),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -144,7 +144,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                         color: !failed
                                             ? LAColorTheme.up
                                             : LAColorTheme.down),
-                                    SizedBox(width: 20),
+                                    const SizedBox(width: 20),
                                     Text(
                                         !failed
                                             ? "All steps ok"
@@ -155,26 +155,26 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                                     : "The command failed for some reason",
                                         style: DeployUtils.titleStyle)
                                   ]),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               ResultsChart(resultsTotals),
                               SizedBox(height: 20),
-                              Text('Task details:',
+                              const Text('Task details:',
                                   style: DeployUtils.subtitleStyle),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
                                   children: resultsDetails),
-                              SizedBox(height: 20),
-                              Text('Command executed:',
+                              const SizedBox(height: 20),
+                              const Text('Command executed:',
                                   style: DeployUtils.subtitleStyle),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               AnsiblewCmdPanel(
                                   cmdHistoryDetails: cmdHistoryDetails),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Text('Ansible Logs:',
                                   style: DeployUtils.subtitleStyle),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Container(
                                   height: 600,
                                   width: 1000,
@@ -201,20 +201,18 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
 """),
                             ],
                           )),
-                      Expanded(
+                      const Expanded(
                         flex: 1, // 10%
-                        child: Container(),
+                        child: const SizedBox(),
                       )
                     ],
                   )));
         } else {
           if (_loadCall == false) {
-            setState(() {
-              _loadCall = true;
-              vm.onOpenDeployResults(vm.project.lastCmdEntry!);
-            });
+            _loadCall = true;
+            vm.onOpenDeployResults(vm.project.lastCmdEntry!);
           }
-          return Container();
+          return const SizedBox();
         }
       },
     );
