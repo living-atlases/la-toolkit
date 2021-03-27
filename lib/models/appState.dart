@@ -8,6 +8,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'deployCmd.dart';
 
@@ -54,6 +55,8 @@ class AppState {
   final List<AppSnackBarMessage> appSnackBarMessages;
   @JsonKey(ignore: true)
   final DeployCmd repeatCmd;
+  @JsonKey(ignore: true)
+  final PackageInfo? pkgInfo;
 
   AppState(
       {List<LAProject>? projects,
@@ -66,6 +69,7 @@ class AppState {
       List<String>? generatorReleases,
       List<AppSnackBarMessage>? appSnackBarMessages,
       DeployCmd? repeatCmd,
+      this.pkgInfo,
       List<SshKey>? sshKeys})
       : projects = projects ?? [],
         sshKeys = sshKeys ?? [],
@@ -91,6 +95,7 @@ class AppState {
           status == other.status &&
           currentStep == other.currentStep &&
           repeatCmd == other.repeatCmd &&
+          pkgInfo == other.pkgInfo &&
           listEquals(projects, other.projects) &&
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
           listEquals(generatorReleases, other.generatorReleases) &&
@@ -105,6 +110,7 @@ class AppState {
       status.hashCode ^
       currentStep.hashCode ^
       repeatCmd.hashCode ^
+      pkgInfo.hashCode ^
       ListEquality().hash(appSnackBarMessages) ^
       ListEquality().hash(projects) ^
       ListEquality().hash(alaInstallReleases) ^
@@ -131,8 +137,8 @@ class AppState {
     return '''
 
 === AppState ===
+view status: $status , currentStep: $currentStep, failedToLoad: $failedLoad, appVersion: ${pkgInfo != null ? pkgInfo!.version : 'unknown'}
 LA projects: ${projects.length} 
-view status: $status , currentStep: $currentStep, failedToLoad: $failedLoad
 ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}
 snackMessages: ${appSnackBarMessages.length} repeatCmd: $repeatCmd
 currentProject of ${projects.length} -----

@@ -33,12 +33,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
+  static const String unknown = 'Unknown';
   PackageInfo _packageInfo = PackageInfo(
-    appName: 'Unknown',
-    packageName: 'Unknown',
-    version: 'Unknown',
-    buildNumber: 'Unknown',
+    appName: unknown,
+    packageName: unknown,
+    version: unknown,
+    buildNumber: unknown,
   );
 
   @override
@@ -70,6 +70,8 @@ class _HomePageState extends State<HomePage> {
                 store.dispatch(CreateProject());
                 Beamer.of(context).beamTo(LAProjectEditLocation());
               },
+              onAppPackageInfo: (pkgInfo) =>
+                  store.dispatch(OnAppPackageInfo(pkgInfo)),
               onAddTemplates: (templates) {
                 context.showLoaderOverlay();
                 store.dispatch(AddTemplateProjects(
@@ -83,6 +85,12 @@ class _HomePageState extends State<HomePage> {
               });
         },
         builder: (BuildContext context, _HomePageViewModel vm) {
+          if (_packageInfo != vm.state.pkgInfo &&
+              _packageInfo.version != unknown) {
+            print(
+                "------------------------------------------------------------${_packageInfo.version} ------------------------------");
+            vm.onAppPackageInfo(_packageInfo);
+          }
           return !vm.state.firstUsage
               ? Scaffold(
                   key: _scaffoldKey,
@@ -261,13 +269,16 @@ class _HomePageViewModel {
   final AppState state;
   final void Function() onAddProject;
   final void Function(String) onImportProject;
+  final void Function(PackageInfo) onAppPackageInfo;
   final void Function(Map<String, dynamic>) onAddTemplates;
 
-  _HomePageViewModel(
-      {required this.state,
-      required this.onAddProject,
-      required this.onImportProject,
-      required this.onAddTemplates});
+  _HomePageViewModel({
+    required this.state,
+    required this.onAddProject,
+    required this.onImportProject,
+    required this.onAddTemplates,
+    required this.onAppPackageInfo,
+  });
 
   @override
   bool operator ==(Object other) =>

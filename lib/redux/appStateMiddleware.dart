@@ -91,7 +91,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         scanSshKeys(store, () => {});
       } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
+        AppSnackBarMessage.ok("Failed to fetch github ala-install releases");
       }
+
       if (AppUtils.isDemo()) {
         store.dispatch(OnFetchGeneratorReleases(['1.1.31', '1.1.30']));
       } else {
@@ -147,9 +149,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       String? checkedDirName = await Api.checkDirName(
           dirName: currentDirName, uuid: action.project.uuid);
       if (checkedDirName == null) {
-        store.dispatch(ShowSnackBar(AppSnackBarMessage(
-            message:
-                "Failed to prepare your configuration (in details, the dirName to store it)")));
+        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+            "Failed to prepare your configuration (in details, the dirName to store it)")));
       } else {
         if (action.project.dirName != checkedDirName) {
           LAProject updatedProject =

@@ -52,6 +52,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
   new TypedReducer<AppState, PrepareDeployProject>(_prepareDeployProject),
   new TypedReducer<AppState, DeleteLog>(_onDeleteLog),
+  new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
 ]);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
@@ -321,4 +322,8 @@ AppState _onDeleteLog(AppState state, DeleteLog action) {
     ..removeWhere((cmd) => cmd.uuid == action.cmd.uuid);
   List<LAProject> projects = replaceProject(state, p);
   return state.copyWith(currentProject: p, projects: projects);
+}
+
+AppState _onAppPackageInfo(AppState state, OnAppPackageInfo action) {
+  return state.copyWith(pkgInfo: action.packageInfo);
 }

@@ -5,6 +5,7 @@ import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/sshKey.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 abstract class AppActions {}
 
@@ -249,4 +250,9 @@ class OnShowedSnackBar extends AppActions {
 class DeleteLog extends AppActions {
   CmdHistoryEntry cmd;
   DeleteLog(this.cmd);
+}
+
+class OnAppPackageInfo extends AppActions {
+  PackageInfo packageInfo;
+  OnAppPackageInfo(this.packageInfo);
 }
