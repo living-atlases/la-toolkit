@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:mdi/mdi.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -42,18 +45,37 @@ class ListTileLink extends StatelessWidget {
     );
   }
 
-  static final List<Widget> drawerBottomLinks = [
-    ListTileLink(
-        icon: Icon(Icons.bug_report),
-        title: 'Report an issue',
-        url: "https://github.com/living-atlases/la-toolkit/issues"),
+  static List<Widget> drawerBottomLinks(
+      BuildContext context, bool enableFeedback) {
+    return [
+      ListTileLink(
+          icon: Icon(Icons.bug_report),
+          title: 'Report an issue',
+          url: "https://github.com/living-atlases/la-toolkit/issues"),
+      if (enableFeedback)
+        ListTile(
+          leading: const Icon(Icons.feedback),
+          title: Text('Feedback'),
+          onTap: () {
+            BetterFeedback.of(context)?.show(
+              (
+                String feedbackText,
+                Uint8List? feedbackScreenshot,
+              ) async {
+                // upload to server, share whatever
+                // for example purposes just show it to the user
+                alertFeedbackFunction(
+                    context, feedbackText, feedbackScreenshot);
+              },
+            );
+          },
+        ),
+      // TODO:
+      // - Verify environment
+      // - ssh-keys
+      // - check for updates
 
-    // TODO:
-    // - Verify environment
-    // - ssh-keys
-    // - check for updates
-
-    /*
+      /*
               Screenshots does not work yet:
               https://github.com/ueman/feedback/issues/13
               ListTile(
@@ -65,21 +87,22 @@ class ListTileLink extends StatelessWidget {
                 },
               ),*/
 
-    const DefDivider(),
-    ListTileLink(
-        icon: Icon(LAIcon.la),
-        title: 'Living Atlases Community',
-        url: "https://living-atlases.gbif.org"),
-    ListTileLink(
-        icon: ImageIcon(AssetImage("assets/images/ala-icon.png")),
-        /* NetworkImage(
+      const DefDivider(),
+      ListTileLink(
+          icon: Icon(LAIcon.la),
+          title: 'Living Atlases Community',
+          url: "https://living-atlases.gbif.org"),
+      ListTileLink(
+          icon: ImageIcon(AssetImage("assets/images/ala-icon.png")),
+          /* NetworkImage(
                           "https://www.ala.org.au/app/uploads/2019/01/cropped-favicon-32x32.png")), */
-        title: 'Atlas of Living Australia',
-        url: "https://ala.org.au"),
-    const DefDivider(),
-    ListTileLink(
-        icon: Icon(Mdi.github),
-        title: 'This software on GitHub',
-        url: "https://github.com/living-atlases/la-toolkit/")
-  ];
+          title: 'Atlas of Living Australia',
+          url: "https://ala.org.au"),
+      const DefDivider(),
+      ListTileLink(
+          icon: Icon(Mdi.github),
+          title: 'This software on GitHub',
+          url: "https://github.com/living-atlases/la-toolkit/")
+    ];
+  }
 }

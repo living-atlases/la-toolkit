@@ -1,4 +1,5 @@
 import 'package:beamer/beamer.dart';
+import 'package:feedback/feedback.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
@@ -54,19 +55,11 @@ Future<void> main() async {
     }
   });
   store.dispatch(OnFetchState());
-  runApp(MyApp(store: store));
-
-  if (initialState.failedLoad) {
-    store.dispatch(OnFetchStateFailed());
-    store.dispatch(ShowSnackBar(
-        AppSnackBarMessage.ok("Failed to retrieve your configuration")));
-  }
-  /*
-  Does not work because creates an additional new MaterialApp and this breaks the navigation
+  // runApp(MyApp(store: store));
   runApp(BetterFeedback(
-    key: _mainKey,
+    // key: _mainKey,
     child: MyApp(store: store),
-    onFeedback: (
+    /*  onFeedback: (
       BuildContext context,
       String feedbackText,
       Uint8List feedbackScreenshot,
@@ -77,8 +70,16 @@ Future<void> main() async {
       // https://github.com/ueman/feedback#upload-feedback
       alertFeedbackFunction(context, feedbackText, feedbackScreenshot);
       return;
-    },
-  )); */
+    }, */
+  ));
+
+  if (initialState.failedLoad) {
+    store.dispatch(OnFetchStateFailed());
+    store.dispatch(ShowSnackBar(
+        AppSnackBarMessage.ok("Failed to retrieve your configuration")));
+  }
+  /*
+  Does not work because creates an additional new MaterialApp and this breaks the navigation */
 }
 
 // https://stackoverflow.com/questions/50303441/flutter-redux-navigator-globalkey-currentstate-returns-null

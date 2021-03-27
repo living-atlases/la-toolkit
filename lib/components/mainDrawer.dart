@@ -83,7 +83,7 @@ class _MainDrawerState extends State<MainDrawer> {
                 Beamer.of(context).beamTo(SandboxLocation());
               },
             ),
-          Column(children: ListTileLink.drawerBottomLinks),
+          Column(children: ListTileLink.drawerBottomLinks(context, false)),
           AboutListTile(
               icon: Icon(LAIcon.la),
               applicationName: appName,

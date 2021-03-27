@@ -89,18 +89,7 @@ class ProjectDrawer extends StatelessWidget {
                   Beamer.of(context).beamTo(SandboxLocation());
                 },
               ),
-            Column(children: ListTileLink.drawerBottomLinks)
-            /*
-              Screenshots does not work yet:
-              https://github.com/ueman/feedback/issues/13
-              ListTile(
-                leading: const Icon(Icons.feedback),
-                title: Text('Feedback (WIP)'),
-                // selected: currentRoute == SandboxPage.routeName,
-                onTap: () {
-                  BetterFeedback.of(context).show();
-                },
-              ),*/
+            Column(children: ListTileLink.drawerBottomLinks(context, false))
           ]));
     });
   }

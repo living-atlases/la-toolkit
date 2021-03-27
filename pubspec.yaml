@@ -51,7 +51,7 @@ dependencies:
     git:
       url: git://github.com/mohamed-selim-a/ResponsiveGrid_Flutter.git
       ref: 22ee88e
-  # feedback: ^1.0.1
+  feedback: ^1.1.0
   flutter_advanced_switch: ^2.0.0
   # Used for service selection (for instance in service deploy)
   # https://github.com/davigmacode/flutter_chips_choice/pull/21
