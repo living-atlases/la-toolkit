@@ -43,10 +43,10 @@ dependencies:
   url_launcher: ^6.0.2
   flutter_markdown: ^0.6.1
   # https://github.com/chulwoo-park/timelines/pull/33
-  timelines: 0.0.2+1
-    # git:
-    #  url: https://github.com/areille/timelines.git
-    #  ref: null-safety
+  timelines: # 0.0.2+1
+    git:
+     url: https://github.com/areille/timelines.git
+     ref: null-safety
   responsive_grid: # ^1.2.1+1
     git:
       url: git://github.com/mohamed-selim-a/ResponsiveGrid_Flutter.git
