@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # version: 1.0.0+1
-version: 1.0.14
+version: 1.0.18
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -81,6 +81,8 @@ dependencies:
   simple_moment: ^1.1.0
   # navigation
   beamer: 1.0.0-nullsafety.7
+  # version comparison
+  version: ^2.0.0
 
   # icon
   mdi: ^5.0.0-nullsafety.0

@@ -274,4 +274,15 @@ class Api {
     }
     return null;
   }
+
+  static Future<String?> getBackendVersion() async {
+    if (AppUtils.isDemo()) return null;
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/get-backend-version");
+    Response response = await http.get(url);
+    if (response.statusCode == 200) {
+      return json.decode(response.body)['version'];
+    } else {
+      return null;
+    }
+  }
 }

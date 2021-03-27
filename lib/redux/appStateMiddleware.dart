@@ -13,6 +13,8 @@ import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:version/version.dart';
 
 import 'appActions.dart';
 
@@ -73,25 +75,56 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           store.state.alaInstallReleases.length == 0) { */
       Uri alaInstallReleasesApiUrl = Uri.https('api.github.com',
           '/repos/AtlasOfLivingAustralia/ala-install/releases');
-      Response alaInstallReleasesResponse =
-          await http.get(alaInstallReleasesApiUrl);
-      if (alaInstallReleasesResponse.statusCode == 200) {
-        List<dynamic> l = jsonDecode(alaInstallReleasesResponse.body) as List;
-        List<String> alaInstallReleases = [];
-        l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
-        // Remove the old ones
-        int limitResults = 6;
-        alaInstallReleases.removeRange(alaInstallReleases.length - limitResults,
-            alaInstallReleases.length);
-        alaInstallReleases.add('upstream');
-        alaInstallReleases.add('custom');
-        if (!ListEquality()
-            .equals(alaInstallReleases, store.state.alaInstallReleases))
-          store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
-        scanSshKeys(store, () => {});
-      } else {
+      try {
+        Response alaInstallReleasesResponse =
+            await http.get(alaInstallReleasesApiUrl);
+        if (alaInstallReleasesResponse.statusCode == 200) {
+          List<dynamic> l = jsonDecode(alaInstallReleasesResponse.body) as List;
+          List<String> alaInstallReleases = [];
+          l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
+          // Remove the old ones
+          int limitResults = 6;
+          alaInstallReleases.removeRange(
+              alaInstallReleases.length - limitResults,
+              alaInstallReleases.length);
+          alaInstallReleases.add('upstream');
+          alaInstallReleases.add('custom');
+          if (!ListEquality()
+              .equals(alaInstallReleases, store.state.alaInstallReleases))
+            store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
+          scanSshKeys(store, () => {});
+        }
+      } catch (e) {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
-        AppSnackBarMessage.ok("Failed to fetch github ala-install releases");
+        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+            "Failed to fetch github ala-install releases. Are connected to Internet?")));
+      }
+
+      Uri laToolkitReleasesApiUrl = Uri.https(
+          'api.github.com', '/repos/living-atlases/la-toolkit/releases');
+      Response laToolkitReleasesResponse =
+          await http.get(laToolkitReleasesApiUrl);
+      if (laToolkitReleasesResponse.statusCode == 200) {
+        List<dynamic> l = jsonDecode(laToolkitReleasesResponse.body) as List;
+        if (l.length > 0) {
+          Version lastLAToolkitVersion = Version.parse(
+              l.first["tag_name"].toString().replaceFirst('v', ''));
+          Version backendVersion = Version.parse(await Api.getBackendVersion());
+          if (backendVersion < lastLAToolkitVersion) {
+            store.dispatch(ShowSnackBar(AppSnackBarMessage(
+                "There is a new version the LA-Toolkit available. Please upgrade this toolkit.",
+                Duration(days: 256),
+                SnackBarAction(
+                    label: "MORE INFO",
+                    onPressed: () async {
+                      await launch(
+                          "https://github.com/living-atlases/la-toolkit/#upgrade-the-toolkit");
+                    }))));
+          }
+        }
+      } else {
+        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+            "Failed to fetch github la-toolkit releases")));
       }
 
       if (AppUtils.isDemo()) {
