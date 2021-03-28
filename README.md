@@ -291,6 +291,14 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 
 ![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s12.png)
 
+### SSH Gateways configuration:
+
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s22.png)
+
+### Project configuration lint warnings
+
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s12.png)
+
 ### Testing connectivity with the project servers:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s13.png)
