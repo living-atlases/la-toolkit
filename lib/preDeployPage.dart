@@ -30,13 +30,16 @@ class _PreDeployPageState extends State<PreDeployPage> {
         return _ViewModel(
             project: store.state.currentProject,
             onCancel: (project) {},
-            onDoPreDeployTasks: (project, cmd) {},
-            cmd: store.state.repeatCmd as PreDeployCmd);
+            onDoPreDeployTasks: (project, cmd) =>
+                DeployUtils.deployActionDispatch(
+                    context: context, store: store, project: project, cmd: cmd),
+            cmd: store.state.repeatCmd.runtimeType != PreDeployCmd
+                ? PreDeployCmd()
+                : store.state.repeatCmd as PreDeployCmd);
       },
       builder: (BuildContext context, _ViewModel vm) {
         String execBtn = "Run tasks";
         PreDeployCmd cmd = vm.cmd;
-
         VoidCallback? onTap =
             cmd.addUbuntuUser || cmd.giveSudo || cmd.etcHost || cmd.solrLimits
                 ? () => vm.onDoPreDeployTasks(vm.project, cmd)
@@ -64,23 +67,8 @@ class _PreDeployPageState extends State<PreDeployPage> {
                         flex: 8, // 80%,
                         child: Column(
                           children: [
-                            const SizedBox(height: 20),
-                            HostSelector(
-                                title: "Do the pre-deploy in servers:",
-                                modalTitle:
-                                    "Choose some servers if you want to limit the pre-deploy to them",
-                                emptyPlaceholder: "All servers",
-                                initialValue: cmd.limitToServers,
-                                serverList: vm.project
-                                    .serversWithServices()
-                                    .map((e) => e.name)
-                                    .toList(),
-                                icon: Mdi.server,
-                                onChange: (limitToServers) => setState(
-                                    () => cmd.limitToServers = limitToServers)),
-                            const SizedBox(height: 20),
-                            const Text('Tasks:',
-                                style: DeployUtils.subtitleStyle),
+                            /* const SizedBox(height: 20),
+                            const Text('Tasks:', style: DeployUtils.titleStyle), */
                             const SizedBox(height: 20),
                             PreDeployTask(
                                 title:
@@ -113,6 +101,21 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                     "Before-Start-Your-LA-Installation#solr-limits",
                                 onChanged: (newValue) =>
                                     setState(() => cmd.solrLimits = newValue)),
+                            const SizedBox(height: 20),
+                            HostSelector(
+                                title: "Do the pre-deploy in servers:",
+                                modalTitle:
+                                    "Choose some servers if you want to limit the pre-deploy to them",
+                                emptyPlaceholder: "All servers",
+                                initialValue: cmd.limitToServers,
+                                serverList: vm.project
+                                    .serversWithServices()
+                                    .map((e) => e.name)
+                                    .toList(),
+                                icon: Mdi.server,
+                                onChange: (limitToServers) => setState(
+                                    () => cmd.limitToServers = limitToServers)),
+                            const SizedBox(height: 20),
                             LaunchBtn(onTap: onTap, execBtn: execBtn),
                           ],
                         )),

@@ -223,14 +223,14 @@ class Api {
       'uuid': action.project.uuid,
       'shortName': action.project.shortName,
       'dirName': action.project.dirName,
-      'deployServices': action.deployServices,
-      'limitToServers': action.limitToServers,
-      'tags': action.tags,
-      'skipTags': action.skipTags,
-      'onlyProperties': action.onlyProperties,
-      'continueEvenIfFails': action.continueEvenIfFails,
-      'debug': action.debug,
-      'dryRun': action.dryRun
+      'deployServices': action.cmd.deployServices,
+      'limitToServers': action.cmd.limitToServers,
+      'tags': action.cmd.tags,
+      'skipTags': action.cmd.skipTags,
+      'onlyProperties': action.cmd.onlyProperties,
+      'continueEvenIfFails': action.cmd..continueEvenIfFails,
+      'debug': action.cmd.debug,
+      'dryRun': action.cmd.dryRun
     };
     http
         .post(url,

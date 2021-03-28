@@ -128,27 +128,13 @@ class PreparePreDeployProject extends PrepareDeployProject {
 
 class DeployProject extends AppActions {
   LAProject project;
-  List<String> deployServices;
-  List<String> limitToServers;
-  List<String> skipTags;
-  List<String> tags;
-  bool onlyProperties;
-  bool continueEvenIfFails;
-  bool debug;
-  bool dryRun;
+  DeployCmd cmd;
   Function(String cmd, String logsPrefix, String logsSuffix) onStart;
   ErrorCallback onError;
 
   DeployProject(
       {required this.project,
-      required this.deployServices,
-      required this.limitToServers,
-      required this.tags,
-      required this.skipTags,
-      required this.onlyProperties,
-      required this.continueEvenIfFails,
-      required this.debug,
-      required this.dryRun,
+      required this.cmd,
       required this.onStart,
       required this.onError});
 }

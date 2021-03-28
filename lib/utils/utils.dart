@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -151,6 +152,45 @@ class DeployUtils {
         onError: (e) {
           context.hideLoaderOverlay();
           UiUtils.showSnackBarError(context, e);
+        }));
+  }
+
+  static deployActionDispatch(
+      {required BuildContext context,
+      var store,
+      required LAProject project,
+      required DeployCmd cmd}) {
+    context.showLoaderOverlay();
+    store.dispatch(DeployProject(
+        project: project,
+        cmd: cmd,
+        onStart: (ansibleCmd, logsPrefix, logsSuffix) {
+          context.hideLoaderOverlay();
+          TermDialog.show(context, title: "Ansible console", onClose: () async {
+            if (!cmd.dryRun) {
+              // Show the results
+              CmdHistoryEntry cmdHistory = CmdHistoryEntry(
+                  cmd: ansibleCmd,
+                  deployCmd: cmd,
+                  logsPrefix: logsPrefix,
+                  logsSuffix: logsSuffix);
+              store.dispatch(
+                  DeployUtils.getCmdResults(context, cmdHistory, true));
+            }
+            // context.hideLoaderOverlay();
+          });
+        },
+        onError: (error) {
+          context.hideLoaderOverlay();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              action: SnackBarAction(
+                label: 'OK',
+                onPressed: () {
+                  // Some code to undo the change.
+                },
+              ),
+              content: Text(
+                  'Oooopss, some problem have arisen trying to start the deploy: $error')));
         }));
   }
 

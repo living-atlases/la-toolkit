@@ -6,7 +6,6 @@ import 'package:la_toolkit/models/tagsConstants.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:smart_select/smart_select.dart';
 
@@ -16,10 +15,8 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/selectUtils.dart';
 import 'components/servicesChipPanel.dart';
-import 'components/termDialog.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
-import 'models/cmdHistoryEntry.dart';
 import 'models/laProject.dart';
 
 class DeployPage extends StatefulWidget {
@@ -43,49 +40,8 @@ class _DeployPageState extends State<DeployPage> {
         return _DeployViewModel(
             project: store.state.currentProject,
             cmd: store.state.repeatCmd,
-            onDeployProject: (project, cmd) {
-              context.showLoaderOverlay();
-              store.dispatch(DeployProject(
-                  project: project,
-                  deployServices: cmd.deployServices,
-                  limitToServers: cmd.limitToServers,
-                  tags: cmd.tags,
-                  skipTags: cmd.skipTags,
-                  onlyProperties: cmd.onlyProperties,
-                  continueEvenIfFails: cmd.continueEvenIfFails,
-                  debug: cmd.debug,
-                  dryRun: cmd.dryRun,
-                  onStart: (ansibleCmd, logsPrefix, logsSuffix) {
-                    // print("Logs suffix: $l");
-                    context.hideLoaderOverlay();
-                    TermDialog.show(context, title: "Ansible console",
-                        onClose: () async {
-                      if (!cmd.dryRun) {
-                        // Show the results
-                        CmdHistoryEntry cmdHistory = CmdHistoryEntry(
-                            cmd: ansibleCmd,
-                            deployCmd: cmd,
-                            logsPrefix: logsPrefix,
-                            logsSuffix: logsSuffix);
-                        store.dispatch(DeployUtils.getCmdResults(
-                            context, cmdHistory, true));
-                      }
-                      // context.hideLoaderOverlay();
-                    });
-                  },
-                  onError: (error) {
-                    context.hideLoaderOverlay();
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        action: SnackBarAction(
-                          label: 'OK',
-                          onPressed: () {
-                            // Some code to undo the change.
-                          },
-                        ),
-                        content: Text(
-                            'Oooopss, some problem have arisen trying to start the deploy: $error')));
-                  }));
-            },
+            onDeployProject: (project, cmd) => DeployUtils.deployActionDispatch(
+                context: context, store: store, project: project, cmd: cmd),
             onCancel: (project) {
               store.dispatch(OpenProjectTools(project));
               BeamerCond.of(context, LAProjectViewLocation());
