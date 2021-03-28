@@ -1,5 +1,7 @@
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/postDeployCmd.dart';
+import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -61,5 +63,19 @@ void main() {
     cmd.tags = [];
     expect(cmd.toString(),
         equals("Dry run deploy of collections and species services in vm1"));
+  });
+
+  test('Test pre-cmd to String', () {
+    DeployCmd cmd = PreDeployCmd();
+    expect(
+        cmd.toString(),
+        equals(
+            "Pre-deploy tasks (add default user, add sudo permissions, setup '/etc/hosts', setup solrs limits)"));
+  });
+
+  test('Test post-cmd to String', () {
+    PostDeployCmd cmd = PostDeployCmd();
+    cmd.configurePostfix = true;
+    expect(cmd.toString(), equals("Post-deploy tasks (configure Postfix)"));
   });
 }

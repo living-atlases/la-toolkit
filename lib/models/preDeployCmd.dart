@@ -39,4 +39,14 @@ class PreDeployCmd extends DeployCmd {
   factory PreDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PreDeployCmdFromJson(json);
   Map<String, dynamic> toJson() => _$PreDeployCmdToJson(this);
+
+  @override
+  String toString() {
+    List<String> tasks = [];
+    if (addUbuntuUser) tasks.add('add default user');
+    if (giveSudo) tasks.add('add sudo permissions');
+    if (etcHost) tasks.add("setup '/etc/hosts'");
+    if (solrLimits) tasks.add('setup solrs limits');
+    return 'Pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
+  }
 }

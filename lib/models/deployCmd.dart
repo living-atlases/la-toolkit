@@ -69,7 +69,7 @@ class DeployCmd {
   String toString() {
     bool isAll = ListEquality().equals(deployServices, ['all']);
     String services = 'deploy of';
-    String servers = '';
+
     var serviceLength = deployServices.length;
     if (isAll)
       services = 'full deploy';
@@ -86,12 +86,7 @@ class DeployCmd {
     } else
       services += ' some services';
 
-    if (limitToServers.length == 0)
-      servers = '';
-    else if (limitToServers.length <= 3)
-      servers += ' in ' + limitToServers.join(', ');
-    else
-      servers = ' in some servers';
+    String servers = toStringServers();
     String prefix = '';
     List<String> lTags = List<String>.from(tags);
     if (onlyProperties) lTags.add('properties');
@@ -103,6 +98,17 @@ class DeployCmd {
     String result = "$services$servers$prefix";
     result = dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);
     return result;
+  }
+
+  String toStringServers() {
+    String servers = '';
+    if (limitToServers.length == 0)
+      servers = '';
+    else if (limitToServers.length <= 3)
+      servers += ' in ' + limitToServers.join(', ');
+    else
+      servers = ' in some servers';
+    return servers;
   }
 
   factory DeployCmd.fromJson(Map<String, dynamic> json) =>

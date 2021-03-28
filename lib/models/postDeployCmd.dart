@@ -33,4 +33,11 @@ class PostDeployCmd extends DeployCmd {
   factory PostDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PostDeployCmdFromJson(json);
   Map<String, dynamic> toJson() => _$PostDeployCmdToJson(this);
+
+  @override
+  String toString() {
+    List<String> tasks = [];
+    if (configurePostfix) tasks.add('configure Postfix');
+    return 'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
+  }
 }
