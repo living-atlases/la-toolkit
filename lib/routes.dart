@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/logsPage.dart';
+import 'package:la_toolkit/postDeployPage.dart';
 import 'package:la_toolkit/preDeployPage.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -54,6 +55,17 @@ class Routes {
 
 abstract class NamedBeamLocation extends BeamLocation {
   String get route;
+  @override
+  List<String> get pathBlueprints => ['/' + route];
+}
+
+class BeamerCond {
+  static of(BuildContext context, NamedBeamLocation loc) {
+    if (AppUtils.isDev())
+      Beamer.of(context).beamToNamed(loc.route);
+    else
+      Beamer.of(context).beamTo(loc);
+  }
 }
 
 class HomeLocation extends NamedBeamLocation {
@@ -74,12 +86,9 @@ class HomeLocation extends NamedBeamLocation {
 
 class LAProjectEditLocation extends NamedBeamLocation {
   @override
-  List<String> get pathBlueprints => ['/edit'];
-
-  @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('edit'),
+          key: ValueKey(route),
           child: LAProjectEditPage(),
         )
       ];
@@ -88,12 +97,9 @@ class LAProjectEditLocation extends NamedBeamLocation {
 }
 
 class LAProjectViewLocation extends NamedBeamLocation {
-  @override
-  List<String> get pathBlueprints => ['/tools'];
-
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('tools'),
+          key: ValueKey(route),
           child: LAProjectViewPage(),
         )
       ];
@@ -104,36 +110,23 @@ class LAProjectViewLocation extends NamedBeamLocation {
 
 class SandboxLocation extends NamedBeamLocation {
   @override
-  List<String> get pathBlueprints => ['/sandbox'];
-  @override
   String get route => SandboxPage.routeName;
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('sandbox'),
+          key: ValueKey(route),
           child: SandboxPage(),
         )
       ];
 }
 
-class BeamerCond {
-  static of(BuildContext context, NamedBeamLocation loc) {
-    if (AppUtils.isDev())
-      Beamer.of(context).beamToNamed(loc.route);
-    else
-      Beamer.of(context).beamTo(loc);
-  }
-}
-
 class LAProjectTuneLocation extends NamedBeamLocation {
-  @override
-  List<String> get pathBlueprints => ['/tune'];
   @override
   String get route => LAProjectTunePage.routeName;
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('tune'),
+          key: ValueKey(route),
           child: LAProjectTunePage(),
         )
       ];
@@ -141,30 +134,38 @@ class LAProjectTuneLocation extends NamedBeamLocation {
 
 class PreDeployLocation extends NamedBeamLocation {
   @override
-  List<String> get pathBlueprints => ['/predeploy'];
-
-  @override
   String get route => PreDeployPage.routeName;
 
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('predeploy'),
+          key: ValueKey(PreDeployPage.routeName),
           child: PreDeployPage(),
+        )
+      ];
+}
+
+class PostDeployLocation extends NamedBeamLocation {
+  @override
+  String get route => PostDeployPage.routeName;
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey(PostDeployPage.routeName),
+          child: PostDeployPage(),
         )
       ];
 }
 
 class LogsHistoryLocation extends NamedBeamLocation {
   @override
-  List<String> get pathBlueprints => ['/logs'];
-  @override
   String get route => LogsHistoryPage.routeName;
 
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('logs'),
+          key: ValueKey(route),
           child: LogsHistoryPage(),
         )
       ];
@@ -172,13 +173,11 @@ class LogsHistoryLocation extends NamedBeamLocation {
 
 class SshKeysLocation extends NamedBeamLocation {
   @override
-  List<String> get pathBlueprints => ['/ssh-keys'];
-  @override
   String get route => SshKeyPage.routeName;
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('ssh-keys'),
+          key: ValueKey(route),
           child: SshKeyPage(),
         )
       ];
@@ -186,15 +185,12 @@ class SshKeysLocation extends NamedBeamLocation {
 
 class DeployLocation extends NamedBeamLocation {
   @override
-  List<String> get pathBlueprints => ['/deploy'];
-
-  @override
   String get route => DeployPage.routeName;
 
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('deploy'),
+          key: ValueKey(route),
           child: DeployPage(),
         )
       ];
@@ -202,15 +198,12 @@ class DeployLocation extends NamedBeamLocation {
 
 class DeployResultsLocation extends NamedBeamLocation {
   @override
-  List<String> get pathBlueprints => ['/deploy-results'];
-
-  @override
   String get route => DeployResultsPage.routeName;
 
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
-          key: ValueKey('deploy-results'),
+          key: ValueKey(route),
           child: DeployResultsPage(),
         )
       ];
