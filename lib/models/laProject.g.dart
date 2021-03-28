@@ -15,6 +15,7 @@ extension LAProjectCopyWith on LAProject {
     List<CmdHistoryEntry>? cmdHistory,
     String? dirName,
     String? domain,
+    bool? fstDeployed,
     String? generatorRelease,
     bool? isCreated,
     CmdHistoryDetails? lastCmdDetails,
@@ -42,6 +43,7 @@ extension LAProjectCopyWith on LAProject {
       cmdHistory: cmdHistory ?? this.cmdHistory,
       dirName: dirName ?? this.dirName,
       domain: domain ?? this.domain,
+      fstDeployed: fstDeployed ?? this.fstDeployed,
       generatorRelease: generatorRelease ?? this.generatorRelease,
       isCreated: isCreated ?? this.isCreated,
       lastCmdDetails: lastCmdDetails ?? this.lastCmdDetails,
@@ -76,6 +78,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     domain: json['domain'] as String,
     dirName: json['dirName'] as String?,
     useSSL: json['useSSL'] as bool,
+    fstDeployed: json['fstDeployed'] as bool?,
     servers: (json['servers'] as List<dynamic>?)
         ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
         .toList(),
@@ -129,6 +132,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'variables': instance.variables.map((k, e) => MapEntry(k, e.toJson())),
       'additionalVariables': instance.additionalVariables,
       'serverServices': instance.serverServices,
+      'fstDeployed': instance.fstDeployed,
       'advancedEdit': instance.advancedEdit,
       'advancedTune': instance.advancedTune,
       'status': _$LAProjectStatusEnumMap[instance.status],

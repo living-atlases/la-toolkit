@@ -1,17 +1,15 @@
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/components/resultsChart.dart';
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
+import 'components/TermCommandDesc.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/tipsCard.dart';
@@ -51,6 +49,8 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
           bool failed = cmdHistoryDetails.failed;
           CmdResult result = cmdHistoryDetails.result;
           print(result);
+          var nothingDone = !failed && cmdHistoryDetails.nothingDone;
+          var noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
           return Scaffold(
               key: _scaffoldKey,
               appBar: LAAppBar(
@@ -87,24 +87,30 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                        !failed
+                                        noFailedButDone
                                             ? Mdi.checkboxMarkedCircleOutline
                                             : result == CmdResult.aborted
                                                 ? Mdi.heartBroken
                                                 : Icons.remove_done,
                                         size: 60,
-                                        color: !failed
+                                        color: noFailedButDone
                                             ? LAColorTheme.up
-                                            : LAColorTheme.down),
+                                            : nothingDone ||
+                                                    result == CmdResult.aborted
+                                                ? LAColorTheme.inactive
+                                                : LAColorTheme.down),
                                     const SizedBox(width: 20),
                                     Text(
-                                        !failed
+                                        noFailedButDone
                                             ? "All steps ok"
-                                            : result == CmdResult.failed
-                                                ? "Uuppps! some step failed"
-                                                : result == CmdResult.aborted
-                                                    ? "The command didn't finished correctly"
-                                                    : "The command failed for some reason",
+                                            : nothingDone
+                                                ? "No steps were executed"
+                                                : result == CmdResult.failed
+                                                    ? "Uuppps! some step failed"
+                                                    : result ==
+                                                            CmdResult.aborted
+                                                        ? "The command didn't finished correctly"
+                                                        : "The command failed for some reason",
                                         style: DeployUtils.titleStyle)
                                   ]),
                               const SizedBox(height: 20),
@@ -121,7 +127,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                               const Text('Command executed:',
                                   style: DeployUtils.subtitleStyle),
                               const SizedBox(height: 20),
-                              AnsiblewCmdPanel(
+                              TermCommandDesc(
                                   cmdHistoryDetails: cmdHistoryDetails),
                               const SizedBox(height: 20),
                               Text('Ansible Logs:',
@@ -168,32 +174,6 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
         }
       },
     );
-  }
-}
-
-class AnsiblewCmdPanel extends StatelessWidget {
-  const AnsiblewCmdPanel({
-    Key? key,
-    required this.cmdHistoryDetails,
-  }) : super(key: key);
-
-  final CmdHistoryDetails cmdHistoryDetails;
-
-  @override
-  Widget build(BuildContext context) {
-    String cmd = cmdHistoryDetails.cmd!.cmd;
-    return ListTile(
-        title: Text(cmd,
-            style: GoogleFonts.robotoMono(
-                color: LAColorTheme.inactive, fontSize: 18)),
-        trailing: Tooltip(
-            message: "Press to copy the command",
-            child: IconButton(
-              icon: Icon(Icons.copy),
-              onPressed: () => FlutterClipboard.copy(cmd).then((value) =>
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Command copied to clipboard")))),
-            )));
   }
 }
 

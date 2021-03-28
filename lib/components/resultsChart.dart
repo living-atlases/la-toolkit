@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/utils/constants.dart';
+import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -20,19 +20,19 @@ class ResultsChart extends StatelessWidget {
                 explode: true,
                 explodeIndex: 0,
                 dataSource: <_PieData>[
-                  _PieData(
-                      values['changed'] ?? 0, ResultsColors.changed, 'Changed'),
-                  _PieData(
-                      values['failures'] ?? 0, ResultsColors.failure, 'Failed'),
-                  _PieData(
-                      values['ignored'] ?? 0, ResultsColors.ignored, 'Ignored'),
-                  _PieData(values['ok'] ?? 0, ResultsColors.ok, 'Success'),
-                  _PieData(
-                      values['rescued'] ?? 0, ResultsColors.rescued, 'Rescued'),
-                  _PieData(
-                      values['skipped'] ?? 0, ResultsColors.skipped, 'Skipped'),
-                  _PieData(values['unreachable'] ?? 0, Colors.deepOrange,
-                      'Unreachable')
+                  _PieData(values['changed'] ?? 0, ResultType.changed.color,
+                      'Changed'),
+                  _PieData(values['failures'] ?? 0, ResultType.failures.color,
+                      'Failed'),
+                  _PieData(values['ignored'] ?? 0, ResultType.ignored.color,
+                      'Ignored'),
+                  _PieData(values['ok'] ?? 0, ResultType.ok.color, 'Success'),
+                  _PieData(values['rescued'] ?? 0, ResultType.rescued.color,
+                      'Rescued'),
+                  _PieData(values['skipped'] ?? 0, ResultType.skipped.color,
+                      'Skipped'),
+                  _PieData(values['unreachable'] ?? 0,
+                      ResultType.unreachable.color, 'Unreachable')
                 ],
                 xValueMapper: (_PieData data, _) => data.xData,
                 yValueMapper: (_PieData data, _) => data.yData,

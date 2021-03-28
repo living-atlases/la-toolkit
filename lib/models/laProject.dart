@@ -39,6 +39,7 @@ class LAProject {
   Map<String, List<String>> serverServices;
   @JsonKey(ignore: true)
   bool isCreated;
+  bool fstDeployed;
   bool advancedEdit;
   bool advancedTune;
   LAProjectStatus status;
@@ -61,6 +62,7 @@ class LAProject {
       this.dirName = "",
       this.useSSL = true,
       this.isCreated = false,
+      bool? fstDeployed,
       List<LAServer>? servers,
       Map<String, LAService>? services,
       Map<String, LAServer>? serversMap,
@@ -89,6 +91,7 @@ class LAProject {
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
         cmdHistory = cmdHistory ?? [],
+        fstDeployed = fstDeployed ?? false,
         mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng.from(-44, 112),
         mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154) {
     if (this.serversMap.entries.length != this.servers.length) {
@@ -156,6 +159,9 @@ class LAProject {
     isCreated = valid;
     if (isCreated && !allServersWithServicesReady())
       setProjectStatus(LAProjectStatus.advancedDefined);
+    if (isCreated && fstDeployed && allServersWithServicesReady()) {
+      status = LAProjectStatus.firstDeploy;
+    }
     if (isCreated &&
         allServersWithServicesReady() &&
         this.status.value < status.value) setProjectStatus(status);
@@ -251,7 +257,7 @@ class LAProject {
         .toList()
         .join(', ');
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
-isCreated: $isCreated,  validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
+isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
 servers-services: $sToS  
@@ -401,6 +407,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
               .equals(serverServices, other.serverServices) &&
           additionalVariables == other.additionalVariables &&
           isCreated == other.isCreated &&
+          fstDeployed == other.fstDeployed &&
           advancedEdit == other.advancedEdit &&
           advancedTune == other.advancedTune &&
           status == other.status &&
@@ -426,6 +433,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       DeepCollectionEquality.unordered().hash(variables) ^
       DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
+      fstDeployed.hashCode ^
       advancedEdit.hashCode ^
       advancedTune.hashCode ^
       additionalVariables.hashCode ^

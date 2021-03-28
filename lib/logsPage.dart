@@ -6,7 +6,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
-import 'package:la_toolkit/utils/constants.dart';
+import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:simple_moment/simple_moment.dart';
 
@@ -93,7 +93,7 @@ class LogItem extends StatelessWidget {
             Tooltip(
                 message: "Repeat this command",
                 child: IconButton(
-                  icon: Icon(Icons.play_arrow, color: ResultsColors.ok),
+                  icon: Icon(Icons.play_arrow, color: ResultType.ok.color),
                   onPressed: () => onRepeat(),
                 )), // icon-1
             Tooltip(

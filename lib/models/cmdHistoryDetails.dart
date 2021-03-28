@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/components/deploySubResultWidget.dart';
 import 'package:la_toolkit/models/ansibleError.dart';
-import 'package:la_toolkit/utils/constants.dart';
+import 'package:la_toolkit/utils/resultTypes.dart';
 
 import 'cmdHistoryEntry.dart';
 
@@ -48,16 +48,24 @@ class CmdHistoryDetails {
   Map<String, num> get resultsTotals {
     if (_resultsTotals == null) {
       _resultsTotals = {};
-      Result.types.forEach((type) => _resultsTotals![type] = 0);
+      ResultTypes.list.forEach((type) => _resultsTotals![type] = 0);
       results.forEach((result) {
         result['stats'].keys.forEach((key) {
-          Result.types.forEach((type) => _resultsTotals![type] =
+          ResultTypes.list.forEach((type) => _resultsTotals![type] =
               _resultsTotals![type]! + result['stats'][key][type]);
         });
       });
     }
     return _resultsTotals!;
   }
+
+  num get stepsExec =>
+      (resultsTotals[ResultType.changed.toS()] ?? 0) +
+      (resultsTotals[ResultType.failures.toS()] ?? 0) +
+      (resultsTotals[ResultType.ok.toS()] ?? 0) +
+      (resultsTotals[ResultType.unreachable.toS()] ?? 0);
+
+  bool get nothingDone => stepsExec == 0;
 
   List<Widget> get detailsWidgetList {
     if (_details == null) {

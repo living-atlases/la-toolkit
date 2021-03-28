@@ -2,7 +2,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
-import 'package:la_toolkit/utils/constants.dart';
+import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:uuid/uuid.dart';
 
 part 'cmdHistoryEntry.g.dart';
@@ -23,9 +23,9 @@ extension CmdResultToIconData on CmdResult {
       case CmdResult.aborted:
         return Colors.black12;
       case CmdResult.success:
-        return ResultsColors.ok;
+        return ResultType.ok.color;
       case CmdResult.failed:
-        return ResultsColors.failure;
+        return ResultType.failures.color;
     }
   }
 }

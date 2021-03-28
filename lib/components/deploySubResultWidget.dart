@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/models/ansibleError.dart';
-import 'package:la_toolkit/utils/constants.dart';
+import 'package:la_toolkit/utils/resultTypes.dart';
 
 class DeploySubResultWidget extends StatelessWidget {
   final String name;
@@ -41,7 +41,7 @@ class DeploySubResultWidget extends StatelessWidget {
                     TextSpan(
                         text: "${error.msg}",
                         style: GoogleFonts.robotoMono(
-                            color: ResultsColors.failure)),
+                            color: ResultType.failures.color)),
                     // TextSpan(text: ""),
                   ]))
             ]))
@@ -80,25 +80,26 @@ class DeployTextSummary extends StatelessWidget {
       Text(title == "" ? "$name: " : "$title in $name: ", style: TextStyle()),
       if (results['changed'] > 0)
         Text("changed (${results['changed']})",
-            style: TextStyle(color: ResultsColors.changed)),
+            style: TextStyle(color: ResultType.changed.color)),
       if (results['changed'] > 0) Text(", "),
       if (results['failures'] > 0)
         Text("failures (${results['failures']})",
-            style: TextStyle(color: ResultsColors.failure)),
+            style: TextStyle(color: ResultType.failures.color)),
       if (results['failures'] > 0) Text(", "),
-      Text("ok (${results['ok']})", style: TextStyle(color: ResultsColors.ok)),
+      Text("ok (${results['ok']})",
+          style: TextStyle(color: ResultType.ok.color)),
       if (results['ignored'] > 0) Text(", "),
       if (results['ignored'] > 0)
         Text("ignored (${results['ignored']})",
-            style: TextStyle(color: ResultsColors.ignored)),
+            style: TextStyle(color: ResultType.ignored.color)),
       if (results['rescued'] > 0 || results['skipped'] > 0) Text(", "),
       if (results['rescued'] > 0)
         Text("rescued (${results['rescued']})",
-            style: TextStyle(color: ResultsColors.rescued)),
+            style: TextStyle(color: ResultType.rescued.color)),
       if (results['rescued'] > 0) Text(", "),
       if (results['skipped'] > 0)
         Text("skipped (${results['skipped']}) ",
-            style: TextStyle(color: ResultsColors.skipped))
+            style: TextStyle(color: ResultType.skipped.color))
     ]);
   }
 }

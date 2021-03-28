@@ -270,6 +270,9 @@ AppState _showDeployProjectResults(
   LAProject currentProject = state.currentProject;
   currentProject.lastCmdEntry = action.cmdHistoryEntry;
   currentProject.lastCmdDetails = action.results;
+  bool fstDeployed = currentProject.lastCmdDetails!.numFailures() != null &&
+      currentProject.lastCmdDetails!.numFailures()! < 10;
+  currentProject.fstDeployed = currentProject.fstDeployed || fstDeployed;
   action.cmdHistoryEntry.result = currentProject.lastCmdDetails!.result;
   if (action.fstRetrieved) {
     // remove and just search?

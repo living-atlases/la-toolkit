@@ -111,6 +111,8 @@ class DeployCmd {
     return servers;
   }
 
+  bool get isFullDeploy => deployServices.contains('all');
+
   factory DeployCmd.fromJson(Map<String, dynamic> json) =>
       _$DeployCmdFromJson(json);
   Map<String, dynamic> toJson() => _$DeployCmdToJson(this);
