@@ -977,12 +977,10 @@ packages:
   timelines:
     dependency: "direct main"
     description:
-      path: "."
-      ref: null-safety
-      resolved-ref: "6d4cf0eefaa4dc90ea1e3a406c2d7d55ff2da1cf"
-      url: "https://github.com/areille/timelines.git"
-    source: git
-    version: "0.0.2+1"
+      name: timelines
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   timing:
     dependency: transitive
     description:
