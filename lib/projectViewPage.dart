@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:collection/collection.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
@@ -52,11 +51,11 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               generatorReleases: store.state.generatorReleases,
               onOpenProject: (project) {
                 store.dispatch(OpenProject(project));
-                Beamer.of(context).beamTo(LAProjectEditLocation());
+                BeamerCond.of(context, LAProjectEditLocation());
               },
               onTuneProject: (project) {
                 store.dispatch(TuneProject(project));
-                Beamer.of(context).beamTo(LAProjectTuneLocation());
+                BeamerCond.of(context, LAProjectTuneLocation());
               },
               onPreDeployTasks: (project) {
                 DeployUtils.doPreDeploy(
@@ -67,7 +66,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               },
               onViewLogs: (project) {
                 store.dispatch(OnViewLogs(project));
-                Beamer.of(context).beamTo(LogsHistoryLocation());
+                BeamerCond.of(context, LogsHistoryLocation());
               },
               onDeployProject: (project) {
                 DeployUtils.doDeploy(
@@ -78,7 +77,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               },
               onDelProject: (project) {
                 store.dispatch(DelProject(project));
-                Beamer.of(context).beamTo(HomeLocation());
+                BeamerCond.of(context, HomeLocation());
               },
               onGenInvProject: (project) =>
                   store.dispatch(GenerateInvProject(project)),

@@ -46,7 +46,7 @@ class LAAppBar extends AppBar {
                         try {
                           context.beamBack();
                         } catch (e) {
-                          Beamer.of(context).beamTo(HomeLocation());
+                          BeamerCond.of(context, HomeLocation());
                         }
                       }),
                 if (showLaIcon)
@@ -54,7 +54,7 @@ class LAAppBar extends AppBar {
                       tooltip: "Homepage",
                       icon: Icon(LAIcon.la, size: 34, color: Colors.white),
                       onPressed: () {
-                        Beamer.of(context).beamTo(HomeLocation());
+                        BeamerCond.of(context, HomeLocation());
                       }),
                 Container(
                     padding: const EdgeInsets.all(8.0),

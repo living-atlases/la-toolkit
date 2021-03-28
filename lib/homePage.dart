@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:beamer/beamer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,11 +63,11 @@ class _HomePageState extends State<HomePage> {
               onImportProject: (yoRc) {
                 store.dispatch(ImportProject(yoRcJson: yoRc));
                 context.hideLoaderOverlay();
-                Beamer.of(context).beamTo(LAProjectEditLocation());
+                BeamerCond.of(context, LAProjectEditLocation());
               },
               onAddProject: () {
                 store.dispatch(CreateProject());
-                Beamer.of(context).beamTo(LAProjectEditLocation());
+                BeamerCond.of(context, LAProjectEditLocation());
               },
               onAppPackageInfo: (pkgInfo) =>
                   store.dispatch(OnAppPackageInfo(pkgInfo)),

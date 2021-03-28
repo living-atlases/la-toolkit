@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
@@ -37,7 +36,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 AlertCard(
                     message: "You don't have any SSH key",
                     actionText: "SOLVE",
-                    action: () => Beamer.of(context).beamTo(SshKeysLocation())),
+                    action: () => BeamerCond.of(context, SshKeysLocation())),
               if (project.allServersWithServicesReady() &&
                   !project.allServersWithOs('Ubuntu', '18.04'))
                 AlertCard(

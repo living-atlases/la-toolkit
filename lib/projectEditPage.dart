@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/serverCardList.dart';
@@ -89,11 +88,11 @@ class LAProjectEditPage extends StatelessWidget {
                   store.dispatch(UpdateProject(project));
                   store.dispatch(OpenProjectTools(project));
                 }
-                Beamer.of(context).beamTo(LAProjectViewLocation());
+                BeamerCond.of(context, LAProjectViewLocation());
               },
               onCancel: (project) {
                 store.dispatch(OpenProjectTools(project));
-                Beamer.of(context).beamTo(LAProjectViewLocation());
+                BeamerCond.of(context, LAProjectViewLocation());
               },
               onSaveCurrentProject: (project) {
                 print('On Save Current Project');

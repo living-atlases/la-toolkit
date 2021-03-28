@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -27,17 +26,17 @@ class LAProjectsList extends StatelessWidget {
             state: store.state,
             onCreateProject: () {
               store.dispatch(CreateProject());
-              Beamer.of(context).beamTo(LAProjectEditLocation());
+              BeamerCond.of(context, LAProjectEditLocation());
             },
             onDeleteProject: (project) {
               store.dispatch(DelProject(project));
-              Beamer.of(context).beamTo(HomeLocation());
+              BeamerCond.of(context, HomeLocation());
               //context.beamToNamed(HomePage.routeName);
             },
             onOpenProjectTools: (project) {
               store.dispatch(OpenProjectTools(project));
               //context.beamToNamed(LAProjectViewPage.routeName);
-              Beamer.of(context).beamTo(LAProjectViewLocation());
+              BeamerCond.of(context, LAProjectViewLocation());
             },
           );
         },

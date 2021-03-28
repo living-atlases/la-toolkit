@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
@@ -39,11 +38,11 @@ class LAProjectTunePage extends StatelessWidget {
           onUpdateProject: (project) {
             store.dispatch(UpdateProject(project));
             store.dispatch(OpenProjectTools(project));
-            Beamer.of(context).beamTo(LAProjectViewLocation());
+            BeamerCond.of(context, LAProjectViewLocation());
           },
           onCancel: (project) {
             store.dispatch(OpenProjectTools(project));
-            Beamer.of(context).beamTo(LAProjectViewLocation());
+            BeamerCond.of(context, LAProjectViewLocation());
           },
         );
       },

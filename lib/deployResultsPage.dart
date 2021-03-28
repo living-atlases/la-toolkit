@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -42,7 +41,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
             },
             onClose: (project) {
               store.dispatch(OpenProjectTools(project));
-              Beamer.of(context).beamTo(LAProjectViewLocation());
+              BeamerCond.of(context, LAProjectViewLocation());
             });
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {

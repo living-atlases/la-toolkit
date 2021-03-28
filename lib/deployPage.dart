@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
@@ -89,7 +88,7 @@ class _DeployPageState extends State<DeployPage> {
             },
             onCancel: (project) {
               store.dispatch(OpenProjectTools(project));
-              Beamer.of(context).beamTo(LAProjectViewLocation());
+              BeamerCond.of(context, LAProjectViewLocation());
             });
       },
       builder: (BuildContext context, _DeployViewModel vm) {

@@ -76,7 +76,7 @@ class ProjectDrawer extends StatelessWidget {
               leading: const Icon(Mdi.key),
               title: Text('SSH Keys'),
               onTap: () {
-                Beamer.of(context).beamTo(SshKeysLocation());
+                BeamerCond.of(context, SshKeysLocation());
               },
             ),
             TermDialog.drawerItem(context),
@@ -86,7 +86,7 @@ class ProjectDrawer extends StatelessWidget {
                 leading: const Icon(Icons.build),
                 title: Text('Sandbox'),
                 onTap: () {
-                  Beamer.of(context).beamTo(SandboxLocation());
+                  BeamerCond.of(context, SandboxLocation());
                 },
               ),
             Column(children: ListTileLink.drawerBottomLinks(context, false))

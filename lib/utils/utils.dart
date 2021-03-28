@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -146,7 +145,7 @@ class DeployUtils {
         project: project,
         onReady: () {
           context.hideLoaderOverlay();
-          Beamer.of(context).beamTo(DeployLocation());
+          BeamerCond.of(context, DeployLocation());
         },
         deployCmd: deployCmd,
         onError: (e) {
@@ -165,7 +164,7 @@ class DeployUtils {
         project: project,
         onReady: () {
           context.hideLoaderOverlay();
-          Beamer.of(context).beamTo(PreDeployLocation());
+          BeamerCond.of(context, PreDeployLocation());
         },
         deployCmd: preDeployCmd,
         onError: (e) {
@@ -182,7 +181,7 @@ class DeployUtils {
         fstRetrieved: fstRetrieved,
         onReady: () {
           context.hideLoaderOverlay();
-          Beamer.of(context).beamTo(DeployResultsLocation());
+          BeamerCond.of(context, DeployResultsLocation());
         },
         onFailed: () {
           context.hideLoaderOverlay();

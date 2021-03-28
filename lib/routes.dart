@@ -9,6 +9,7 @@ import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/sshKeysPage.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
 import 'deployPage.dart';
 import 'homePage.dart';
@@ -23,21 +24,27 @@ class Routes {
   );
 
   BeamerRouterDelegate routerDelegate;
+  static final NavigatorObserver devNavObserver = NavigatorObserver();
 
   Routes._privateConstructor()
-      : routerDelegate =
-            BeamerRouterDelegate(notFoundPage: notFoundPage, beamLocations: [
-          HomeLocation(),
-          LAProjectEditLocation(),
-          LAProjectViewLocation(),
-          SandboxLocation(),
-          LAProjectTuneLocation(),
-          PreDeployLocation(),
-          LogsHistoryLocation(),
-          SshKeysLocation(),
-          DeployLocation(),
-          DeployResultsLocation()
-        ]);
+      : routerDelegate = BeamerRouterDelegate(
+            notFoundPage: notFoundPage,
+            notFoundRedirect: HomeLocation(),
+            navigatorObservers: [
+              if (AppUtils.isDev()) devNavObserver
+            ],
+            beamLocations: [
+              HomeLocation(),
+              LAProjectEditLocation(),
+              LAProjectViewLocation(),
+              SandboxLocation(),
+              LAProjectTuneLocation(),
+              PreDeployLocation(),
+              LogsHistoryLocation(),
+              SshKeysLocation(),
+              DeployLocation(),
+              DeployResultsLocation()
+            ]);
 
   static final Routes _instance = Routes._privateConstructor();
   factory Routes() {
@@ -45,7 +52,11 @@ class Routes {
   }
 }
 
-class HomeLocation extends BeamLocation {
+abstract class NamedBeamLocation extends BeamLocation {
+  String get route;
+}
+
+class HomeLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/'];
 
@@ -56,9 +67,12 @@ class HomeLocation extends BeamLocation {
           child: HomePage(),
         )
       ];
+
+  @override
+  String get route => HomePage.routeName;
 }
 
-class LAProjectEditLocation extends BeamLocation {
+class LAProjectEditLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/edit'];
 
@@ -69,9 +83,11 @@ class LAProjectEditLocation extends BeamLocation {
           child: LAProjectEditPage(),
         )
       ];
+  @override
+  String get route => LAProjectEditPage.routeName;
 }
 
-class LAProjectViewLocation extends BeamLocation {
+class LAProjectViewLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/tools'];
 
@@ -81,12 +97,16 @@ class LAProjectViewLocation extends BeamLocation {
           child: LAProjectViewPage(),
         )
       ];
+
+  @override
+  String get route => LAProjectViewPage.routeName;
 }
 
-class SandboxLocation extends BeamLocation {
+class SandboxLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/sandbox'];
-
+  @override
+  String get route => SandboxPage.routeName;
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
@@ -96,10 +116,20 @@ class SandboxLocation extends BeamLocation {
       ];
 }
 
-class LAProjectTuneLocation extends BeamLocation {
+class BeamerCond {
+  static of(BuildContext context, NamedBeamLocation loc) {
+    if (AppUtils.isDev())
+      Beamer.of(context).beamToNamed(loc.route);
+    else
+      Beamer.of(context).beamTo(loc);
+  }
+}
+
+class LAProjectTuneLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/tune'];
-
+  @override
+  String get route => LAProjectTunePage.routeName;
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
@@ -109,9 +139,12 @@ class LAProjectTuneLocation extends BeamLocation {
       ];
 }
 
-class PreDeployLocation extends BeamLocation {
+class PreDeployLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/predeploy'];
+
+  @override
+  String get route => PreDeployPage.routeName;
 
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
@@ -122,9 +155,11 @@ class PreDeployLocation extends BeamLocation {
       ];
 }
 
-class LogsHistoryLocation extends BeamLocation {
+class LogsHistoryLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/logs'];
+  @override
+  String get route => LogsHistoryPage.routeName;
 
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
@@ -135,10 +170,11 @@ class LogsHistoryLocation extends BeamLocation {
       ];
 }
 
-class SshKeysLocation extends BeamLocation {
+class SshKeysLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/ssh-keys'];
-
+  @override
+  String get route => SshKeyPage.routeName;
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
         BeamPage(
@@ -148,9 +184,12 @@ class SshKeysLocation extends BeamLocation {
       ];
 }
 
-class DeployLocation extends BeamLocation {
+class DeployLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/deploy'];
+
+  @override
+  String get route => DeployPage.routeName;
 
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
@@ -161,9 +200,12 @@ class DeployLocation extends BeamLocation {
       ];
 }
 
-class DeployResultsLocation extends BeamLocation {
+class DeployResultsLocation extends NamedBeamLocation {
   @override
   List<String> get pathBlueprints => ['/deploy-results'];
+
+  @override
+  String get route => DeployResultsPage.routeName;
 
   @override
   List<BeamPage> pagesBuilder(BuildContext context) => [
@@ -173,22 +215,3 @@ class DeployResultsLocation extends BeamLocation {
         )
       ];
 }
-
-/*
-static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case ROUTE_HOME:
-        final page = HomeScreen(settings.arguments);
-        return MaterialPageRoute(builder: (context) => page);
-
-      case ROUTE_SEARCH:
-        final page = SearchScreen();
-        return MaterialPageRoute(builder: (context) => page);
-
-      default:
-         return MaterialPageRoute(builder: (context) => LoginScreen());
-    }
-  }
-
-}
-*/
