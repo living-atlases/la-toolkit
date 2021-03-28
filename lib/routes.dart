@@ -28,24 +28,24 @@ class Routes {
   static final NavigatorObserver devNavObserver = NavigatorObserver();
 
   Routes._privateConstructor()
-      : routerDelegate = BeamerRouterDelegate(
-            notFoundPage: notFoundPage,
-            notFoundRedirect: HomeLocation(),
+      : routerDelegate = BeamerRouterDelegate(notFoundPage: notFoundPage,
+            // Better show a NotFoundPage
+            // notFoundRedirect: HomeLocation(),
             navigatorObservers: [
               if (AppUtils.isDev()) devNavObserver
-            ],
-            beamLocations: [
-              HomeLocation(),
-              LAProjectEditLocation(),
-              LAProjectViewLocation(),
-              SandboxLocation(),
-              LAProjectTuneLocation(),
-              PreDeployLocation(),
-              LogsHistoryLocation(),
-              SshKeysLocation(),
-              DeployLocation(),
-              DeployResultsLocation()
-            ]);
+            ], beamLocations: [
+          HomeLocation(),
+          LAProjectEditLocation(),
+          LAProjectViewLocation(),
+          SandboxLocation(),
+          LAProjectTuneLocation(),
+          LogsHistoryLocation(),
+          SshKeysLocation(),
+          DeployLocation(),
+          PreDeployLocation(),
+          PostDeployLocation(),
+          DeployResultsLocation()
+        ]);
 
   static final Routes _instance = Routes._privateConstructor();
   factory Routes() {

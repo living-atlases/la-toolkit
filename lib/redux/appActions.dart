@@ -4,6 +4,7 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -100,6 +101,12 @@ class OnPreDeployTasks extends AppActions {
   OnPreDeployTasks(this.project, this.preDeployCmd);
 }
 
+class OnPostDeployTasks extends AppActions {
+  LAProject project;
+  PostDeployCmd postDeployCmd;
+  OnPostDeployTasks(this.project, this.postDeployCmd);
+}
+
 class OnViewLogs extends AppActions {
   LAProject project;
   OnViewLogs(this.project);
@@ -119,6 +126,15 @@ class PrepareDeployProject extends AppActions {
 
 class PreparePreDeployProject extends PrepareDeployProject {
   PreparePreDeployProject({project, onReady, deployCmd, onError})
+      : super(
+            project: project,
+            onReady: onReady,
+            deployCmd: deployCmd,
+            onError: onError);
+}
+
+class PreparePostDeployProject extends PrepareDeployProject {
+  PreparePostDeployProject({project, onReady, deployCmd, onError})
       : super(
             project: project,
             onReady: onReady,

@@ -6,6 +6,7 @@ import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -207,6 +208,25 @@ class DeployUtils {
           BeamerCond.of(context, PreDeployLocation());
         },
         deployCmd: preDeployCmd,
+        onError: (e) {
+          context.hideLoaderOverlay();
+          UiUtils.showSnackBarError(context, e);
+        }));
+  }
+
+  static doPostDeploy(
+      {required BuildContext context,
+      required var store,
+      required LAProject project,
+      required PostDeployCmd postDeployCmd}) {
+    context.showLoaderOverlay();
+    store.dispatch(PreparePostDeployProject(
+        project: project,
+        onReady: () {
+          context.hideLoaderOverlay();
+          BeamerCond.of(context, PostDeployLocation());
+        },
+        deployCmd: postDeployCmd,
         onError: (e) {
           context.hideLoaderOverlay();
           UiUtils.showSnackBarError(context, e);

@@ -26,6 +26,7 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
+import 'models/postDeployCmd.dart';
 import 'redux/actions.dart';
 
 class LAProjectViewPage extends StatefulWidget {
@@ -63,6 +64,13 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     store: store,
                     project: project,
                     preDeployCmd: PreDeployCmd());
+              },
+              onPostDeployTasks: (project) {
+                DeployUtils.doPostDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    postDeployCmd: PostDeployCmd());
               },
               onViewLogs: (project) {
                 store.dispatch(OnViewLogs(project));
@@ -153,7 +161,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.house_siding),
                 title: "Post-Deploy Tasks",
-                action: () => {}),
+                enabled: project.allServersWithServicesReady(),
+                action: () => vm.onPostDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.fact_check),
                 title: "Test Services",
@@ -299,6 +308,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onViewLogs;
   final void Function(LAProject project, bool) onTestConnProject;
   final void Function(LAProject project) onPreDeployTasks;
+  final void Function(LAProject project) onPostDeployTasks;
 
   _ProjectPageViewModel(
       {required this.project,
@@ -309,6 +319,7 @@ class _ProjectPageViewModel {
       required this.onTuneProject,
       required this.onDelProject,
       required this.onPreDeployTasks,
+      required this.onPostDeployTasks,
       required this.onViewLogs,
       required this.onDeployProject,
       required this.onGenInvProject,

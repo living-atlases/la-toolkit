@@ -9,6 +9,7 @@ import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/utils/api.dart';
@@ -206,8 +207,14 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       // For now, nothing
       action.onReady();
     }
+    if (action is PreparePostDeployProject) {
+      // For now, nothing
+      action.onReady();
+    }
     if (action is DeployProject) {
       if (action.cmd.runtimeType == PreDeployCmd) {
+        action.onError("This is under development");
+      } else if (action.cmd.runtimeType == PostDeployCmd) {
         action.onError("This is under development");
       } else
         Api.ansiblew(action);
