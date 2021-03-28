@@ -99,7 +99,7 @@ dependencies:
 
   # responsive framework and deps
   responsive_framework: ^0.1.0
-  animations: ^2.0.0
+  # animations: ^2.0.0
 
   # state
   flutter_redux: ^0.8.2
