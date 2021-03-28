@@ -165,7 +165,7 @@ class DeployUtils {
     store.dispatch(DeployProject(
         project: project,
         cmd: cmd,
-        onStart: (ansibleCmd, logsPrefix, logsSuffix) {
+        onStart: (ansibleCmd, logsPrefix, logsSuffix, invDir) {
           context.hideLoaderOverlay();
           TermDialog.show(context, title: "Ansible console", onClose: () async {
             if (!cmd.dryRun) {
@@ -174,7 +174,8 @@ class DeployUtils {
                   cmd: ansibleCmd,
                   deployCmd: cmd,
                   logsPrefix: logsPrefix,
-                  logsSuffix: logsSuffix);
+                  logsSuffix: logsSuffix,
+                  invDir: invDir);
               store.dispatch(
                   DeployUtils.getCmdResults(context, cmdHistory, true));
             }

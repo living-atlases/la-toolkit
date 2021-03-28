@@ -90,9 +90,10 @@ class LAProjectsList extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(30.0),
                                     // side: BorderSide(color: Colors.red)),
                                   )),
-                              icon: Icon(Icons.add_circle_outline, size: 30),
-                              label: new Text("Create a New LA Project",
-                                  style: TextStyle(fontSize: 18))))
+                              icon: const Icon(Icons.add_circle_outline,
+                                  size: 30),
+                              label: const Text("Create a New LA Project",
+                                  style: const TextStyle(fontSize: 18))))
                     ]));
         });
   }

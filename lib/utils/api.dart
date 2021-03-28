@@ -239,7 +239,7 @@ class Api {
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
-        action.onStart(l['cmd'], l['logsPrefix'], l['logsSuffix']);
+        action.onStart(l['cmd'], l['logsPrefix'], l['logsSuffix'], l['invDir']);
       } else
         action.onError(response.statusCode);
     }).catchError((error) {

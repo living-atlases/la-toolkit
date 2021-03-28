@@ -145,7 +145,8 @@ class PreparePostDeployProject extends PrepareDeployProject {
 class DeployProject extends AppActions {
   LAProject project;
   DeployCmd cmd;
-  Function(String cmd, String logsPrefix, String logsSuffix) onStart;
+  Function(String cmd, String logsPrefix, String logsSuffix, String invDir)
+      onStart;
   ErrorCallback onError;
 
   DeployProject(

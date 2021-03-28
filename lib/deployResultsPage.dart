@@ -9,9 +9,9 @@ import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
-import 'components/TermCommandDesc.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
+import 'components/termCommandDesc.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/cmdHistoryEntry.dart';

@@ -37,6 +37,7 @@ class CmdHistoryEntry {
   String logsPrefix;
   String logsSuffix;
   String cmd;
+  String invDir;
   DeployCmd deployCmd;
   DateTime date;
   CmdResult result;
@@ -45,11 +46,13 @@ class CmdHistoryEntry {
       {String? uuid,
       required this.logsPrefix,
       required this.logsSuffix,
+      String? invDir,
       required this.cmd,
       required this.deployCmd,
       DateTime? date,
       this.result: CmdResult.unknown})
       : uuid = uuid ?? Uuid().v4(),
+        invDir = invDir ?? "",
         this.date = date ?? DateTime.now();
 
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
@@ -67,11 +70,13 @@ class CmdHistoryEntry {
           cmd == other.cmd &&
           deployCmd == other.deployCmd &&
           date == other.date &&
+          invDir == other.invDir &&
           result == other.result;
 
   @override
   int get hashCode =>
       uuid.hashCode ^
+      invDir.hashCode ^
       logsPrefix.hashCode ^
       logsSuffix.hashCode ^
       cmd.hashCode ^
