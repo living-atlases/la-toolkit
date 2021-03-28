@@ -16,6 +16,7 @@ _Under development tool_
    * [Or using only docker if you don't want to use docker-compose](#or-using-only-docker-if-you-dont-want-to-use-docker-compose)
 * [Run the LA-Toolkit docker image](#run-the-la-toolkit-docker-image)
    * [Running the la-toolkit in an external server.](#running-the-la-toolkit-in-an-external-server)
+* [Upgrade the toolkit](#upgrade-the-toolkit)
 * [Development](#development)
    * [Using flutter web](#using-flutter-web)
    * [Autogeneration of code](#autogeneration-of-code)
