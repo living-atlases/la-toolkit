@@ -41,7 +41,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
         String execBtn = "Run tasks";
         PreDeployCmd cmd = vm.cmd;
         VoidCallback? onTap =
-            cmd.addUbuntuUser || cmd.giveSudo || cmd.etcHost || cmd.solrLimits
+            cmd.addAnsibleUser || cmd.giveSudo || cmd.etcHost || cmd.solrLimits
                 ? () => vm.onDoPreDeployTasks(vm.project, cmd)
                 : null;
         String defUser = vm.project.getVariableValue("ansible_user").toString();
@@ -73,11 +73,11 @@ class _PreDeployPageState extends State<PreDeployPage> {
                             PreDeployTask(
                                 title:
                                     "Add the '$defUser' user to your servers",
-                                initialValue: cmd.addUbuntuUser,
+                                initialValue: cmd.addAnsibleUser,
                                 help:
                                     "Before-Start-Your-LA-Installation#default-user-ubuntu",
                                 onChanged: (newValue) => setState(
-                                    () => cmd.addUbuntuUser = newValue)),
+                                    () => cmd.addAnsibleUser = newValue)),
                             PreDeployTask(
                                 title:
                                     "Give the 'ubuntu' user sudo permissions",
@@ -85,6 +85,14 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                 help: "Before-Start-Your-LA-Installation#sudo",
                                 onChanged: (newValue) =>
                                     setState(() => cmd.giveSudo = newValue)),
+                            PreDeployTask(
+                                title:
+                                    "Add your public ssh keys to '$defUser' user",
+                                initialValue: cmd.addSshKeys,
+                                help:
+                                    "SSH-for-Beginners#public-and-private-ip-addresses",
+                                onChanged: (newValue) =>
+                                    setState(() => cmd.addSshKeys = newValue)),
                             PreDeployTask(
                                 title:
                                     "Configure the '/etc/hosts' in your servers",
@@ -101,6 +109,12 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                     "Before-Start-Your-LA-Installation#solr-limits",
                                 onChanged: (newValue) =>
                                     setState(() => cmd.solrLimits = newValue)),
+                            PreDeployTask(
+                                title:
+                                    "Add additional package utils for monitoring and troubleshooting",
+                                initialValue: cmd.addAdditionalDeps,
+                                onChanged: (newValue) => setState(
+                                    () => cmd.addAdditionalDeps = newValue)),
                             const SizedBox(height: 20),
                             HostSelector(
                                 title: "Do the pre-deploy in servers:",
@@ -150,7 +164,11 @@ class PreDeployTask extends StatelessWidget {
         value: initialValue,
         title: Text(this.title,
             style: TextStyle(color: LAColorTheme.laThemeData.hintColor)),
-        secondary: help != null ? HelpIcon(wikipage: help!) : null,
+        secondary: help != null
+            ? HelpIcon(wikipage: help!)
+            : Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
+                child: Icon(Icons.circle, color: Colors.white)),
         onChanged: (bool newValue) {
           onChanged(newValue);
         });

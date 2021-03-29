@@ -286,6 +286,7 @@ void main() {
 
   test('Test disable of services', () {
     var p = LAProject();
+    p.domain = "l-a.site";
     p.serviceInUse(bie, true);
     p.serviceInUse(lists, true);
     expect(p.getService(bie).use, equals(true));
@@ -339,6 +340,9 @@ void main() {
     expect(p.getServicesNameListSelected().contains(bieIndex), equals(true));
     expect(p.getHostname(bieIndex), equals(['vm1']));
     expect(p.getHostname(bie), equals(['vm1']));
+    p.getService(bie).iniPath = "/species";
+    expect(p.etcHostsVar,
+        equals('      10.0.0.1 species.l-a.site species-ws.l-a.site'));
   });
 
   test('Import yo-rc.json', () {

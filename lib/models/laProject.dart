@@ -373,6 +373,29 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     return hostnames;
   }
 
+  String get etcHostsVar {
+    List<String> etcHostLines = [];
+    serversWithServices().forEach((server) => etcHostLines.add(
+        "      ${server.ip} ${getServerServices(serverUuid: server.uuid).map((sName) => services[sName]!.url(domain)).toList().join(' ')}"));
+    return etcHostLines.join('\n');
+  }
+
+  String get hostnames {
+    List<String> hostList = [];
+    serversWithServices().forEach((server) => hostList.add("${server.name}"));
+    return hostList.join('|');
+  }
+
+  String get sshKeysInUse {
+    List<String> sshKeysInUseList = [];
+    serversWithServices().forEach((server) {
+      if (server.sshKey != null)
+        sshKeysInUseList.add("'~/.ssh/${server.sshKey!.name}.pub'");
+    });
+    // toSet.toList to remove dups
+    return sshKeysInUseList.toSet().toList().join(', ');
+  }
+
   bool collectoryAndBiocacheDifferentServers() {
     List<String> colHosts = getHostname(LAServiceName.collectory.toS());
     List<String> biocacheHubHosts = getHostname(LAServiceName.ala_hub.toS());
@@ -481,6 +504,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       "LA_enable_ssl": useSSL,
       "LA_use_git": true,
       "LA_theme": theme,
+      "LA_etc_hosts": etcHostsVar,
+      "LA_ssh_keys": sshKeysInUse,
+      "LA_hostnames": hostnames,
       "LA_generate_branding": true
     };
     conf.addAll(MapUtils.toInvVariables(mapBoundsFstPoint, mapBoundsSndPoint));

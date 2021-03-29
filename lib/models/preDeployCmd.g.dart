@@ -21,7 +21,7 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
     dynamic? tags,
   }) {
     return PreDeployCmd(
-      addUbuntuUser: addUbuntuUser ?? this.addUbuntuUser,
+      addAnsibleUser: addUbuntuUser ?? this.addAnsibleUser,
       advanced: advanced ?? this.advanced,
       continueEvenIfFails: continueEvenIfFails ?? this.continueEvenIfFails,
       debug: debug ?? this.debug,
@@ -42,7 +42,7 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
 
 PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) {
   return PreDeployCmd(
-    addUbuntuUser: json['addUbuntuUser'] as bool,
+    addAnsibleUser: json['addUbuntuUser'] as bool,
     giveSudo: json['giveSudo'] as bool,
     etcHost: json['etcHost'] as bool,
     solrLimits: json['solrLimits'] as bool,
@@ -71,7 +71,7 @@ Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) =>
       'continueEvenIfFails': instance.continueEvenIfFails,
       'debug': instance.debug,
       'dryRun': instance.dryRun,
-      'addUbuntuUser': instance.addUbuntuUser,
+      'addUbuntuUser': instance.addAnsibleUser,
       'giveSudo': instance.giveSudo,
       'etcHost': instance.etcHost,
       'solrLimits': instance.solrLimits,
