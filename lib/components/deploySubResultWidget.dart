@@ -1,3 +1,4 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/models/ansibleError.dart';
@@ -23,27 +24,28 @@ class DeploySubResultWidget extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(20, 10, 0, 0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              RichText(
-                  overflow: TextOverflow.visible,
-                  textAlign: TextAlign.left,
-                  softWrap: true,
-                  text: TextSpan(children: <TextSpan>[
-                    TextSpan(text: "Task:  "),
-                    TextSpan(
-                        text: error.taskName, style: GoogleFonts.robotoMono()),
-                    TextSpan(text: " failed with message: ")
-                  ])),
-              RichText(
-                  overflow: TextOverflow.visible,
-                  textAlign: TextAlign.left,
-                  softWrap: true,
-                  text: TextSpan(children: <TextSpan>[
-                    TextSpan(
-                        text: "${error.msg}",
-                        style: GoogleFonts.robotoMono(
-                            color: ResultType.failures.color)),
-                    // TextSpan(text: ""),
-                  ]))
+              SelectableText.rich(
+                //overflow: TextOverflow.visible,
+                //softWrap: true,
+                TextSpan(children: <TextSpan>[
+                  TextSpan(text: "  Task:  "),
+                  TextSpan(
+                      text: error.taskName, style: GoogleFonts.robotoMono()),
+                  TextSpan(text: " failed with message: \n"),
+                  TextSpan(
+                      text: "${error.msg}",
+                      style: GoogleFonts.robotoMono(
+                          color: ResultType.failures.color)),
+                ]),
+                textAlign: TextAlign.left,
+                showCursor: true,
+                autofocus: true,
+                onTap: () => FlutterClipboard.copy(error.msg).then((value) =>
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Error copied to clipboard")))),
+              ),
+
+              // TextSpan(text: ""),
             ]))
       ]);
     });
