@@ -41,7 +41,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
         String execBtn = "Run tasks";
         PreDeployCmd cmd = vm.cmd;
         VoidCallback? onTap =
-            cmd.addAnsibleUser || cmd.giveSudo || cmd.etcHost || cmd.solrLimits
+            cmd.addAnsibleUser || cmd.giveSudo || cmd.etcHosts || cmd.solrLimits
                 ? () => vm.onDoPreDeployTasks(vm.project, cmd)
                 : null;
         String defUser = vm.project.getVariableValue("ansible_user").toString();
@@ -96,11 +96,11 @@ class _PreDeployPageState extends State<PreDeployPage> {
                             PreDeployTask(
                                 title:
                                     "Configure the '/etc/hosts' in your servers",
-                                initialValue: cmd.etcHost,
+                                initialValue: cmd.etcHosts,
                                 help:
                                     "Before-Start-Your-LA-Installation#fake-dns-calls",
                                 onChanged: (newValue) =>
-                                    setState(() => cmd.etcHost = newValue)),
+                                    setState(() => cmd.etcHosts = newValue)),
                             PreDeployTask(
                                 title:
                                     "Adjust solr limits (increase the number of files and process allowed to create)",

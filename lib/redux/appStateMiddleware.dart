@@ -213,8 +213,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is DeployProject) {
       if (action.cmd.runtimeType == PreDeployCmd) {
-        action.onError("This is under development");
+        Api.preDeploy(action);
+        // action.onError("This is under development");
       } else if (action.cmd.runtimeType == PostDeployCmd) {
+        Api.postDeploy(action);
         action.onError("This is under development");
       } else
         Api.ansiblew(action);

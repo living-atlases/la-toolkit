@@ -8,6 +8,8 @@ import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/models/postDeployCmd.dart';
+import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -219,19 +221,11 @@ class Api {
   static Future<void> ansiblew(DeployProject action) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/ansiblew");
-    Object cmd = {
-      'uuid': action.project.uuid,
-      'shortName': action.project.shortName,
-      'dirName': action.project.dirName,
-      'deployServices': action.cmd.deployServices,
-      'limitToServers': action.cmd.limitToServers,
-      'tags': action.cmd.tags,
-      'skipTags': action.cmd.skipTags,
-      'onlyProperties': action.cmd.onlyProperties,
-      'continueEvenIfFails': action.cmd..continueEvenIfFails,
-      'debug': action.cmd.debug,
-      'dryRun': action.cmd.dryRun
-    };
+    Object cmd = cmdToObj(action);
+    doCmd(url, cmd, action);
+  }
+
+  static void doCmd(Uri url, Object cmd, DeployProject action) {
     http
         .post(url,
             headers: {'Content-type': 'application/json'},
@@ -246,6 +240,23 @@ class Api {
       print(error);
       action.onError(error);
     });
+  }
+
+  static dynamic cmdToObj(DeployProject action) {
+    Object cmd = {
+      'uuid': action.project.uuid,
+      'shortName': action.project.shortName,
+      'dirName': action.project.dirName,
+      'deployServices': action.cmd.deployServices,
+      'limitToServers': action.cmd.limitToServers,
+      'tags': action.cmd.tags,
+      'skipTags': action.cmd.skipTags,
+      'onlyProperties': action.cmd.onlyProperties,
+      'continueEvenIfFails': action.cmd.continueEvenIfFails,
+      'debug': action.cmd.debug,
+      'dryRun': action.cmd.dryRun
+    };
+    return cmd;
   }
 
   static Future<CmdHistoryDetails?> getAnsiblewResults(
@@ -284,5 +295,23 @@ class Api {
     } else {
       return null;
     }
+  }
+
+  static Future<void> preDeploy(DeployProject action) async {
+    if (AppUtils.isDemo()) return;
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/pre-deploy");
+    var cmd = cmdToObj(action);
+    cmd['tags'] = (action.cmd as PreDeployCmd).preTags;
+    cmd['services'] = [];
+    doCmd(url, cmd, action);
+  }
+
+  static Future<void> postDeploy(DeployProject action) async {
+    if (AppUtils.isDemo()) return;
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/post-deploy");
+    var cmd = cmdToObj(action);
+    cmd['tags'] = (action.cmd as PostDeployCmd).postTags;
+    cmd['services'] = [];
+    doCmd(url, cmd, action);
   }
 }

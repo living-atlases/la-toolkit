@@ -40,4 +40,13 @@ class PostDeployCmd extends DeployCmd {
     if (configurePostfix) tasks.add('configure Postfix');
     return 'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
   }
+
+  List<String> get postTags {
+    List<String> tags = [];
+    if (configurePostfix) tags.add("post-task-postfix");
+    return tags;
+  }
+
+  @override
+  String getTitle() => "Post-Deployment Results";
 }

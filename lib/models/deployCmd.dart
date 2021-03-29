@@ -116,4 +116,6 @@ class DeployCmd {
   factory DeployCmd.fromJson(Map<String, dynamic> json) =>
       _$DeployCmdFromJson(json);
   Map<String, dynamic> toJson() => _$DeployCmdToJson(this);
+
+  String getTitle() => "Deployment Results";
 }

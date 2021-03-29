@@ -56,7 +56,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
               appBar: LAAppBar(
                   context: context,
                   titleIcon: Icons.analytics_outlined,
-                  title: "Deployment Results",
+                  title: cmdHistoryDetails.cmd!.deployCmd.getTitle(),
                   showLaIcon: false,
                   showBack: true,
                   actions: [

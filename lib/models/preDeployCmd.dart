@@ -11,7 +11,7 @@ class PreDeployCmd extends DeployCmd {
   bool addAnsibleUser;
   bool addSshKeys;
   bool giveSudo;
-  bool etcHost;
+  bool etcHosts;
   bool solrLimits;
   bool addAdditionalDeps;
 
@@ -19,7 +19,7 @@ class PreDeployCmd extends DeployCmd {
       {this.addAnsibleUser = false,
       this.addSshKeys = false,
       this.giveSudo = false,
-      this.etcHost = true,
+      this.etcHosts = true,
       this.solrLimits = true,
       this.addAdditionalDeps = true,
       limitToServers,
@@ -44,15 +44,29 @@ class PreDeployCmd extends DeployCmd {
       _$PreDeployCmdFromJson(json);
   Map<String, dynamic> toJson() => _$PreDeployCmdToJson(this);
 
+  List<String> get preTags {
+    List<String> tags = [];
+    if (addAnsibleUser) tags.add("pre-task-def-user");
+    if (addSshKeys) tags.add("pre-task-ssh-keys");
+    if (giveSudo) tags.add("pre-task-sudo");
+    if (etcHosts) tags.add("pre-task-etc-hosts");
+    if (solrLimits) tags.add("pre-task-solr-limits");
+    if (addAdditionalDeps) tags.add("pre-task-deps");
+    return tags;
+  }
+
   @override
   String toString() {
     List<String> tasks = [];
     if (addAnsibleUser) tasks.add('add default user');
     if (addSshKeys) tasks.add('add ssh keys');
     if (giveSudo) tasks.add('add sudo permissions');
-    if (etcHost) tasks.add("setup '/etc/hosts'");
+    if (etcHosts) tasks.add("setup '/etc/hosts'");
     if (solrLimits) tasks.add('setup solrs limits');
     if (addAdditionalDeps) tasks.add('additional deps install');
     return 'Pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
   }
+
+  @override
+  String getTitle() => "Pre-Deployment Results";
 }
