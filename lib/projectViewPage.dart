@@ -209,6 +209,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   ),
                   context: context,
                   showLaIcon: false,
+                  backLocation: HomeLocation(),
                   showBack: true,
                   // backRoute: HomePage.routeName,
                   projectIcon: projectIconUrl,

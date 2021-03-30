@@ -12,6 +12,7 @@ class LAAppBar extends AppBar {
       required String title,
       String? projectIcon,
       bool showLaIcon: false,
+      NamedBeamLocation? backLocation,
       bool showBack: false,
       List<Widget>? actions,
       Widget? leading,
@@ -43,10 +44,14 @@ class LAAppBar extends AppBar {
                       icon:
                           Icon(Icons.arrow_back, size: 28, color: Colors.black),
                       onPressed: () {
-                        try {
-                          context.beamBack();
-                        } catch (e) {
-                          BeamerCond.of(context, HomeLocation());
+                        if (backLocation != null) {
+                          BeamerCond.of(context, backLocation);
+                        } else {
+                          try {
+                            context.beamBack();
+                          } catch (e) {
+                            BeamerCond.of(context, HomeLocation());
+                          }
                         }
                       }),
                 if (showLaIcon)

@@ -77,9 +77,9 @@ class _HomePageState extends State<HomePage> {
                     templates: templates,
                     onAdded: (num) {
                       context.hideLoaderOverlay();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      /* ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('Added $num sample LA Projects'),
-                      ));
+                      )); */
                     }));
               });
         },

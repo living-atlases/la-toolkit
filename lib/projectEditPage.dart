@@ -82,13 +82,14 @@ class LAProjectEditPage extends StatelessWidget {
               onFinish: (project) {
                 print('On Finish');
                 project.validateCreation();
-                if (store.state.status == LAProjectViewStatus.create)
+                if (store.state.status == LAProjectViewStatus.create) {
                   store.dispatch(AddProject(project));
-                if (store.state.status == LAProjectViewStatus.edit) {
+                  BeamerCond.of(context, HomeLocation());
+                } else {
                   store.dispatch(UpdateProject(project));
                   store.dispatch(OpenProjectTools(project));
+                  BeamerCond.of(context, LAProjectViewLocation());
                 }
-                BeamerCond.of(context, LAProjectViewLocation());
               },
               onCancel: (project) {
                 store.dispatch(OpenProjectTools(project));

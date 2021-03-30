@@ -179,6 +179,7 @@ AppState _addProject(AppState state, AddProject action) {
   action.project.dirName = action.project.suggestDirName();
   return state.copyWith(
       currentProject: action.project,
+      status: LAProjectViewStatus.view,
       projects: new List<LAProject>.from(state.projects)
         ..insert(0, action.project));
 }
