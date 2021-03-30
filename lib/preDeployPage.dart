@@ -67,8 +67,9 @@ class _PreDeployPageState extends State<PreDeployPage> {
                         flex: 8, // 80%,
                         child: Column(
                           children: [
-                            /* const SizedBox(height: 20),
-                            const Text('Tasks:', style: DeployUtils.titleStyle), */
+                            const SizedBox(height: 20),
+                            const Text(
+                                'These are tasks that depending on the status of your servers can be helpful to setup them correctly.'),
                             const SizedBox(height: 20),
                             PreDeployTask(
                                 title:
