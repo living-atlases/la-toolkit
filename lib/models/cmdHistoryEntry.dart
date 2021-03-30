@@ -39,6 +39,8 @@ class CmdHistoryEntry {
   String cmd;
   String invDir;
   DeployCmd deployCmd;
+  DeployCmd preDeployCmd;
+  DeployCmd postDeployCmd;
   DateTime date;
   CmdResult result;
 

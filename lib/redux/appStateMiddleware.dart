@@ -180,36 +180,36 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           .then((_) => scanSshKeys(store, () => {}));
     }
     if (action is PrepareDeployProject) {
-      String? currentDirName = action.project.dirName;
-      currentDirName ??= action.project.suggestDirName();
-      String? checkedDirName = await Api.checkDirName(
-          dirName: currentDirName, uuid: action.project.uuid);
-      if (checkedDirName == null) {
-        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
-            "Failed to prepare your configuration (in details, the dirName to store it)")));
+      if (action.deployCmd.runtimeType == PreDeployCmd) {
+        action.onReady();
+        // action.onError("This is under development");
+      } else if (action.deployCmd.runtimeType == PostDeployCmd) {
+        action.onReady();
+        action.onError("This is under development");
       } else {
-        if (action.project.dirName != checkedDirName) {
-          LAProject updatedProject =
-              action.project.copyWith(dirName: checkedDirName);
-          store.dispatch(UpdateProject(updatedProject));
+        String? currentDirName = action.project.dirName;
+        currentDirName ??= action.project.suggestDirName();
+        String? checkedDirName = await Api.checkDirName(
+            dirName: currentDirName, uuid: action.project.uuid);
+        if (checkedDirName == null) {
+          store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+              "Failed to prepare your configuration (in details, the dirName to store it)")));
+        } else {
+          if (action.project.dirName != checkedDirName) {
+            LAProject updatedProject =
+                action.project.copyWith(dirName: checkedDirName);
+            store.dispatch(UpdateProject(updatedProject));
+          }
+          await Api.alaInstallSelect(
+                  action.project.alaInstallRelease!, action.onError)
+              .then((_) => scanSshKeys(store, () => {}));
+          await Api.regenerateInv(
+              uuid: action.project.uuid, onError: action.onError);
+          await Api.generatorSelect(
+                  action.project.generatorRelease!, action.onError)
+              .then((_) => action.onReady());
         }
-        await Api.alaInstallSelect(
-                action.project.alaInstallRelease!, action.onError)
-            .then((_) => scanSshKeys(store, () => {}));
-        await Api.regenerateInv(
-            uuid: action.project.uuid, onError: action.onError);
-        await Api.generatorSelect(
-                action.project.generatorRelease!, action.onError)
-            .then((_) => action.onReady());
       }
-    }
-    if (action is PreparePreDeployProject) {
-      // For now, nothing
-      action.onReady();
-    }
-    if (action is PreparePostDeployProject) {
-      // For now, nothing
-      action.onReady();
     }
     if (action is DeployProject) {
       if (action.cmd.runtimeType == PreDeployCmd) {

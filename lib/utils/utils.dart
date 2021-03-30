@@ -147,7 +147,13 @@ class DeployUtils {
         project: project,
         onReady: () {
           context.hideLoaderOverlay();
-          BeamerCond.of(context, DeployLocation());
+          if (deployCmd is PreDeployCmd) {
+            BeamerCond.of(context, PreDeployLocation());
+          }
+          if (deployCmd is PostDeployCmd) {
+            BeamerCond.of(context, PostDeployLocation());
+          } else
+            BeamerCond.of(context, DeployLocation());
         },
         deployCmd: deployCmd,
         onError: (e) {
@@ -202,7 +208,7 @@ class DeployUtils {
       required LAProject project,
       required PreDeployCmd preDeployCmd}) {
     context.showLoaderOverlay();
-    store.dispatch(PreparePreDeployProject(
+    store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {
           context.hideLoaderOverlay();
@@ -221,7 +227,7 @@ class DeployUtils {
       required LAProject project,
       required PostDeployCmd postDeployCmd}) {
     context.showLoaderOverlay();
-    store.dispatch(PreparePostDeployProject(
+    store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {
           context.hideLoaderOverlay();

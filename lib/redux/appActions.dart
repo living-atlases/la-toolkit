@@ -124,24 +124,6 @@ class PrepareDeployProject extends AppActions {
       required this.onError});
 }
 
-class PreparePreDeployProject extends PrepareDeployProject {
-  PreparePreDeployProject({project, onReady, deployCmd, onError})
-      : super(
-            project: project,
-            onReady: onReady,
-            deployCmd: deployCmd,
-            onError: onError);
-}
-
-class PreparePostDeployProject extends PrepareDeployProject {
-  PreparePostDeployProject({project, onReady, deployCmd, onError})
-      : super(
-            project: project,
-            onReady: onReady,
-            deployCmd: deployCmd,
-            onError: onError);
-}
-
 class DeployProject extends AppActions {
   LAProject project;
   DeployCmd cmd;
