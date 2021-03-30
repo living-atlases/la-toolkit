@@ -14,6 +14,8 @@ extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
     String? invDir,
     String? logsPrefix,
     String? logsSuffix,
+    PostDeployCmd? postDeployCmd,
+    PreDeployCmd? preDeployCmd,
     CmdResult? result,
     String? uuid,
   }) {
@@ -24,6 +26,8 @@ extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
       invDir: invDir ?? this.invDir,
       logsPrefix: logsPrefix ?? this.logsPrefix,
       logsSuffix: logsSuffix ?? this.logsSuffix,
+      postDeployCmd: postDeployCmd ?? this.postDeployCmd,
+      preDeployCmd: preDeployCmd ?? this.preDeployCmd,
       result: result ?? this.result,
       uuid: uuid ?? this.uuid,
     );
@@ -42,6 +46,12 @@ CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) {
     invDir: json['invDir'] as String?,
     cmd: json['cmd'] as String,
     deployCmd: DeployCmd.fromJson(json['deployCmd'] as Map<String, dynamic>),
+    preDeployCmd: json['preDeployCmd'] == null
+        ? null
+        : PreDeployCmd.fromJson(json['preDeployCmd'] as Map<String, dynamic>),
+    postDeployCmd: json['postDeployCmd'] == null
+        ? null
+        : PostDeployCmd.fromJson(json['postDeployCmd'] as Map<String, dynamic>),
     date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
     result: _$enumDecode(_$CmdResultEnumMap, json['result']),
   );
@@ -55,6 +65,8 @@ Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
       'cmd': instance.cmd,
       'invDir': instance.invDir,
       'deployCmd': instance.deployCmd.toJson(),
+      'preDeployCmd': instance.preDeployCmd?.toJson(),
+      'postDeployCmd': instance.postDeployCmd?.toJson(),
       'date': instance.date.toIso8601String(),
       'result': _$CmdResultEnumMap[instance.result],
     };

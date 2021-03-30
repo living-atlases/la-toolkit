@@ -13,9 +13,9 @@ extension PostDeployCmdCopyWith on PostDeployCmd {
     dynamic? continueEvenIfFails,
     dynamic? debug,
     dynamic? dryRun,
-    dynamic? limitToServers,
-    dynamic? skipTags,
-    dynamic? tags,
+    List<String>? limitToServers,
+    List<String>? skipTags,
+    List<String>? tags,
   }) {
     return PostDeployCmd(
       advanced: advanced ?? this.advanced,
@@ -37,9 +37,12 @@ extension PostDeployCmdCopyWith on PostDeployCmd {
 PostDeployCmd _$PostDeployCmdFromJson(Map<String, dynamic> json) {
   return PostDeployCmd(
     configurePostfix: json['configurePostfix'] as bool,
-    limitToServers: json['limitToServers'],
-    skipTags: json['skipTags'],
-    tags: json['tags'],
+    limitToServers: (json['limitToServers'] as List<dynamic>?)
+        ?.map((e) => e as String)
+        .toList(),
+    skipTags:
+        (json['skipTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+    tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
     advanced: json['advanced'],
     continueEvenIfFails: json['continueEvenIfFails'],
     debug: json['debug'],

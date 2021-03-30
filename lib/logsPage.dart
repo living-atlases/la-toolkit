@@ -26,12 +26,12 @@ class LogsHistoryPage extends StatelessWidget {
             project: store.state.currentProject,
             logsNum: store.state.currentProject.cmdHistory.length,
             onDeleteCmd: (log) => store.dispatch(DeleteLog(log)),
-            onRepeatCmd: (project, log) {
+            onRepeatCmd: (project, cmdHistory) {
               store.dispatch(DeployUtils.doDeploy(
                   context: context,
                   store: store,
                   project: project,
-                  deployCmd: log.deployCmd));
+                  deployCmd: cmdHistory.inhCmd));
             },
             onOpenDeployResults: (cmdHistory) {
               store.dispatch(
@@ -83,7 +83,7 @@ class LogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // print(log.deployCmd.toStringClassic());
     return ListTile(
-        title: Text(log.deployCmd.toString()),
+        title: Text(log.inhCmd.toString()),
         subtitle: Text(
             "Finished status: ${log.result.toS()}, ${Moment.now().from(log.date).toString()}"),
         onTap: () => onTap(),

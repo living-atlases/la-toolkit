@@ -149,11 +149,11 @@ class DeployUtils {
           context.hideLoaderOverlay();
           if (deployCmd is PreDeployCmd) {
             BeamerCond.of(context, PreDeployLocation());
-          }
-          if (deployCmd is PostDeployCmd) {
+          } else if (deployCmd is PostDeployCmd) {
             BeamerCond.of(context, PostDeployLocation());
-          } else
+          } else {
             BeamerCond.of(context, DeployLocation());
+          }
         },
         deployCmd: deployCmd,
         onError: (e) {
@@ -179,6 +179,8 @@ class DeployUtils {
               CmdHistoryEntry cmdHistory = CmdHistoryEntry(
                   cmd: ansibleCmd,
                   deployCmd: cmd,
+                  preDeployCmd: cmd is PreDeployCmd ? cmd : null,
+                  postDeployCmd: cmd is PostDeployCmd ? cmd : null,
                   logsPrefix: logsPrefix,
                   logsSuffix: logsSuffix,
                   invDir: invDir);
@@ -199,44 +201,6 @@ class DeployUtils {
               ),
               content: Text(
                   'Oooopss, some problem have arisen trying to start the deploy: $error')));
-        }));
-  }
-
-  static doPreDeploy(
-      {required BuildContext context,
-      required var store,
-      required LAProject project,
-      required PreDeployCmd preDeployCmd}) {
-    context.showLoaderOverlay();
-    store.dispatch(PrepareDeployProject(
-        project: project,
-        onReady: () {
-          context.hideLoaderOverlay();
-          BeamerCond.of(context, PreDeployLocation());
-        },
-        deployCmd: preDeployCmd,
-        onError: (e) {
-          context.hideLoaderOverlay();
-          UiUtils.showSnackBarError(context, e);
-        }));
-  }
-
-  static doPostDeploy(
-      {required BuildContext context,
-      required var store,
-      required LAProject project,
-      required PostDeployCmd postDeployCmd}) {
-    context.showLoaderOverlay();
-    store.dispatch(PrepareDeployProject(
-        project: project,
-        onReady: () {
-          context.hideLoaderOverlay();
-          BeamerCond.of(context, PostDeployLocation());
-        },
-        deployCmd: postDeployCmd,
-        onError: (e) {
-          context.hideLoaderOverlay();
-          UiUtils.showSnackBarError(context, e);
         }));
   }
 

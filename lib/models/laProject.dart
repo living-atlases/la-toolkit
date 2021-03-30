@@ -258,7 +258,7 @@ class LAProject {
         .join(', ');
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
-lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
+lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.inhCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
 servers-services: $sToS  
 services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]

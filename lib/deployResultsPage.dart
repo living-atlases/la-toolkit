@@ -56,7 +56,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
               appBar: LAAppBar(
                   context: context,
                   titleIcon: Icons.analytics_outlined,
-                  title: cmdHistoryDetails.cmd!.deployCmd.getTitle(),
+                  title: cmdHistoryDetails.cmd!.inhCmd.getTitle(),
                   showLaIcon: false,
                   showBack: true,
                   actions: [
@@ -80,7 +80,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const SizedBox(height: 20),
-                              Text(cmdHistoryDetails.cmd!.deployCmd.toString(),
+                              Text(cmdHistoryDetails.cmd!.inhCmd.toString(),
                                   style: DeployUtils.cmdStyle),
                               const SizedBox(height: 20),
                               Row(

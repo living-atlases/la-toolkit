@@ -59,18 +59,18 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 BeamerCond.of(context, LAProjectTuneLocation());
               },
               onPreDeployTasks: (project) {
-                DeployUtils.doPreDeploy(
+                DeployUtils.doDeploy(
                     context: context,
                     store: store,
                     project: project,
-                    preDeployCmd: PreDeployCmd());
+                    deployCmd: PreDeployCmd());
               },
               onPostDeployTasks: (project) {
-                DeployUtils.doPostDeploy(
+                DeployUtils.doDeploy(
                     context: context,
                     store: store,
                     project: project,
-                    postDeployCmd: PostDeployCmd());
+                    deployCmd: PostDeployCmd());
               },
               onViewLogs: (project) {
                 store.dispatch(OnViewLogs(project));

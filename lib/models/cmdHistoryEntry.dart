@@ -2,6 +2,8 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
+import 'package:la_toolkit/models/postDeployCmd.dart';
+import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:uuid/uuid.dart';
 
@@ -39,8 +41,9 @@ class CmdHistoryEntry {
   String cmd;
   String invDir;
   DeployCmd deployCmd;
-  DeployCmd preDeployCmd;
-  DeployCmd postDeployCmd;
+  // We add this in order to serialize other inherit class correctly
+  PreDeployCmd? preDeployCmd;
+  PostDeployCmd? postDeployCmd;
   DateTime date;
   CmdResult result;
 
@@ -51,6 +54,8 @@ class CmdHistoryEntry {
       String? invDir,
       required this.cmd,
       required this.deployCmd,
+      this.preDeployCmd,
+      this.postDeployCmd,
       DateTime? date,
       this.result: CmdResult.unknown})
       : uuid = uuid ?? Uuid().v4(),
@@ -60,6 +65,16 @@ class CmdHistoryEntry {
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryEntryFromJson(json);
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
+
+  DeployCmd get inhCmd {
+    if (preDeployCmd != null) {
+      deployCmd = preDeployCmd!;
+    }
+    if (postDeployCmd != null) {
+      deployCmd = postDeployCmd!;
+    }
+    return deployCmd;
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -71,6 +86,8 @@ class CmdHistoryEntry {
           logsSuffix == other.logsSuffix &&
           cmd == other.cmd &&
           deployCmd == other.deployCmd &&
+          preDeployCmd == other.preDeployCmd &&
+          postDeployCmd == other.postDeployCmd &&
           date == other.date &&
           invDir == other.invDir &&
           result == other.result;
@@ -83,6 +100,8 @@ class CmdHistoryEntry {
       logsSuffix.hashCode ^
       cmd.hashCode ^
       deployCmd.hashCode ^
+      preDeployCmd.hashCode ^
+      postDeployCmd.hashCode ^
       date.hashCode ^
       result.hashCode;
 }

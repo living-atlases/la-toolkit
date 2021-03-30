@@ -180,10 +180,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           .then((_) => scanSshKeys(store, () => {}));
     }
     if (action is PrepareDeployProject) {
-      if (action.deployCmd.runtimeType == PreDeployCmd) {
-        action.onReady();
-        // action.onError("This is under development");
-      } else if (action.deployCmd.runtimeType == PostDeployCmd) {
+      if (action.deployCmd.runtimeType == PostDeployCmd) {
         action.onReady();
         action.onError("This is under development");
       } else {
@@ -200,21 +197,25 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
                 action.project.copyWith(dirName: checkedDirName);
             store.dispatch(UpdateProject(updatedProject));
           }
-          await Api.alaInstallSelect(
-                  action.project.alaInstallRelease!, action.onError)
-              .then((_) => scanSshKeys(store, () => {}));
           await Api.regenerateInv(
               uuid: action.project.uuid, onError: action.onError);
-          await Api.generatorSelect(
-                  action.project.generatorRelease!, action.onError)
-              .then((_) => action.onReady());
+          if (action.deployCmd.runtimeType != PreDeployCmd &&
+              action.deployCmd.runtimeType != PostDeployCmd) {
+            await Api.alaInstallSelect(
+                    action.project.alaInstallRelease!, action.onError)
+                .then((_) => scanSshKeys(store, () => {}));
+            await Api.generatorSelect(
+                    action.project.generatorRelease!, action.onError)
+                .then((_) => action.onReady());
+          } else {
+            action.onReady();
+          }
         }
       }
     }
     if (action is DeployProject) {
       if (action.cmd.runtimeType == PreDeployCmd) {
         Api.preDeploy(action);
-        // action.onError("This is under development");
       } else if (action.cmd.runtimeType == PostDeployCmd) {
         Api.postDeploy(action);
         action.onError("This is under development");

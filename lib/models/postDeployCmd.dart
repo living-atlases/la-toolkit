@@ -12,9 +12,9 @@ class PostDeployCmd extends DeployCmd {
 
   PostDeployCmd(
       {this.configurePostfix = false,
-      limitToServers,
-      skipTags,
-      tags,
+      List<String>? limitToServers,
+      List<String>? skipTags,
+      List<String>? tags,
       advanced = false,
       continueEvenIfFails = false,
       debug = false,

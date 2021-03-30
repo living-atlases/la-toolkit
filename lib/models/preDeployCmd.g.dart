@@ -8,25 +8,29 @@ part of 'preDeployCmd.dart';
 
 extension PreDeployCmdCopyWith on PreDeployCmd {
   PreDeployCmd copyWith({
-    bool? addUbuntuUser,
+    bool? addAdditionalDeps,
+    bool? addAnsibleUser,
+    bool? addSshKeys,
     dynamic? advanced,
     dynamic? continueEvenIfFails,
     dynamic? debug,
     dynamic? dryRun,
-    bool? etcHost,
+    bool? etcHosts,
     bool? giveSudo,
-    dynamic? limitToServers,
-    dynamic? skipTags,
+    List<String>? limitToServers,
+    List<String>? skipTags,
     bool? solrLimits,
-    dynamic? tags,
+    List<String>? tags,
   }) {
     return PreDeployCmd(
-      addAnsibleUser: addUbuntuUser ?? this.addAnsibleUser,
+      addAdditionalDeps: addAdditionalDeps ?? this.addAdditionalDeps,
+      addAnsibleUser: addAnsibleUser ?? this.addAnsibleUser,
+      addSshKeys: addSshKeys ?? this.addSshKeys,
       advanced: advanced ?? this.advanced,
       continueEvenIfFails: continueEvenIfFails ?? this.continueEvenIfFails,
       debug: debug ?? this.debug,
       dryRun: dryRun ?? this.dryRun,
-      etcHosts: etcHost ?? this.etcHosts,
+      etcHosts: etcHosts ?? this.etcHosts,
       giveSudo: giveSudo ?? this.giveSudo,
       limitToServers: limitToServers ?? this.limitToServers,
       skipTags: skipTags ?? this.skipTags,
@@ -42,13 +46,18 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
 
 PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) {
   return PreDeployCmd(
-    addAnsibleUser: json['addUbuntuUser'] as bool,
+    addAnsibleUser: json['addAnsibleUser'] as bool,
+    addSshKeys: json['addSshKeys'] as bool,
     giveSudo: json['giveSudo'] as bool,
-    etcHosts: json['etcHost'] as bool,
+    etcHosts: json['etcHosts'] as bool,
     solrLimits: json['solrLimits'] as bool,
-    limitToServers: json['limitToServers'],
-    skipTags: json['skipTags'],
-    tags: json['tags'],
+    addAdditionalDeps: json['addAdditionalDeps'] as bool,
+    limitToServers: (json['limitToServers'] as List<dynamic>?)
+        ?.map((e) => e as String)
+        .toList(),
+    skipTags:
+        (json['skipTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+    tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
     advanced: json['advanced'],
     continueEvenIfFails: json['continueEvenIfFails'],
     debug: json['debug'],
@@ -71,8 +80,10 @@ Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) =>
       'continueEvenIfFails': instance.continueEvenIfFails,
       'debug': instance.debug,
       'dryRun': instance.dryRun,
-      'addUbuntuUser': instance.addAnsibleUser,
+      'addAnsibleUser': instance.addAnsibleUser,
+      'addSshKeys': instance.addSshKeys,
       'giveSudo': instance.giveSudo,
-      'etcHost': instance.etcHosts,
+      'etcHosts': instance.etcHosts,
       'solrLimits': instance.solrLimits,
+      'addAdditionalDeps': instance.addAdditionalDeps,
     };
