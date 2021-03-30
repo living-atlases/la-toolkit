@@ -128,8 +128,8 @@ class DeployUtils {
   static const TextStyle subtitleStyle =
       TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
 
-  static const TextStyle cmdStyle = TextStyle(
-    fontSize: 32,
+  static const TextStyle cmdTitleStyle = TextStyle(
+    fontSize: 28,
     // fontWeight: FontWeight.bold,
   );
   static const TextStyle titleStyle = TextStyle(

@@ -88,7 +88,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                     setState(() => cmd.giveSudo = newValue)),
                             PreDeployTask(
                                 title:
-                                    "Add your public ssh keys to '$defUser' user",
+                                    "Add your public ssh keys to '$defUser' user (warning: right now we add all your ssh keys)",
                                 initialValue: cmd.addSshKeys,
                                 help:
                                     "SSH-for-Beginners#public-and-private-ip-addresses",

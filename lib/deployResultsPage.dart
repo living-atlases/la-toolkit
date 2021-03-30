@@ -81,7 +81,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                             children: [
                               const SizedBox(height: 20),
                               Text(cmdHistoryDetails.cmd!.inhCmd.toString(),
-                                  style: DeployUtils.cmdStyle),
+                                  style: DeployUtils.cmdTitleStyle),
                               const SizedBox(height: 20),
                               Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
