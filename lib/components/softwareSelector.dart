@@ -6,9 +6,12 @@ class SoftwareSelector extends StatelessWidget {
   final String? initialValue;
   final Function(String?) onChange;
   final String label;
-  static const String outdatedTooltip =
-      "Choose the latest release to update your portal";
-  static const String updatedTooltip = "Component up-to-dated";
+  static const String outdatedTooltip = '''
+  
+New version available. 
+Choose the latest release to update your portal.
+''';
+  static const String updatedTooltip = "This current version is up-to-date";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   SoftwareSelector(
