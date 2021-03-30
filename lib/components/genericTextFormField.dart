@@ -25,6 +25,7 @@ class GenericTextFormField extends StatefulWidget {
   final bool enabledBorder;
   final bool monoSpaceFont;
   final bool deployed;
+  final bool obscureText;
 
   GenericTextFormField({
     this.label,
@@ -45,6 +46,7 @@ class GenericTextFormField extends StatefulWidget {
     this.allowEmpty = false,
     this.enabledBorder = false,
     this.monoSpaceFont = false,
+    this.obscureText = false,
     this.keyboardType,
     this.deployed = false,
   });
@@ -58,10 +60,12 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
   final debouncer = Debouncer(milliseconds: 1000);
   late GlobalKey<FormState> formKey;
   String? delayedValue;
+  late bool obscureTextState;
 
   @override
   void initState() {
     formKey = GlobalKey<FormState>();
+    obscureTextState = widget.obscureText;
     super.initState();
   }
 
@@ -78,7 +82,14 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
         prefixText: widget.prefixText,
         filled: widget.fillColor != null,
         suffixIcon: widget.wikipage == null
-            ? null
+            ? widget.obscureText
+                ? IconButton(
+                    icon: Icon(obscureTextState
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: (() =>
+                        setState(() => {obscureTextState = !obscureTextState})))
+                : null
             : Padding(
                 padding: EdgeInsets.only(top: 5), // add padding to adjust icon
                 child: HelpIcon(wikipage: widget.wikipage!)),
@@ -121,6 +132,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
                   onChanged: onChange,
                   style: style,
                   focusNode: widget.focusNode,
+                  obscureText: obscureTextState,
                   minLines: widget.minLines,
                   maxLines: widget.maxLines,
                   keyboardType: widget.keyboardType,

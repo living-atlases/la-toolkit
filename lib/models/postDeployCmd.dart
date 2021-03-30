@@ -11,7 +11,7 @@ class PostDeployCmd extends DeployCmd {
   bool configurePostfix;
 
   PostDeployCmd(
-      {this.configurePostfix = false,
+      {this.configurePostfix = true,
       List<String>? limitToServers,
       List<String>? skipTags,
       List<String>? tags,

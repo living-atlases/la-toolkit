@@ -42,6 +42,7 @@ class LAVariableDesc {
   bool advanced;
   bool enabled;
   bool inTunePage;
+  bool protected;
 
   LAVariableDesc(
       {required this.name,
@@ -58,7 +59,8 @@ class LAVariableDesc {
       this.depends,
       this.inTunePage = true,
       this.advanced = false,
-      this.enabled = true});
+      this.enabled = true,
+      this.protected = false});
 
   @override
   bool operator ==(Object other) =>
@@ -75,6 +77,7 @@ class LAVariableDesc {
           confName == other.confName &&
           advanced == other.advanced &&
           inTunePage == other.inTunePage &&
+          protected == other.protected &&
           enabled == other.enabled;
 
   @override
@@ -89,6 +92,7 @@ class LAVariableDesc {
       confName.hashCode ^
       advanced.hashCode ^
       inTunePage.hashCode ^
+      protected.hashCode ^
       enabled.hashCode;
 
   static final Map<String, LAVariableDesc> map = {
@@ -133,6 +137,41 @@ class LAVariableDesc {
         defValue: (project) => 'noreply@${project.domain}',
         hint:
             "Used by some notifications. Should be something like noreply@l-a.site"),
+    "email_sender_password": LAVariableDesc(
+        name: "Email password",
+        nameInt: "email_sender_password",
+        regExp: LARegExp.anyThing,
+        error: "Invalid password",
+        inTunePage: false,
+        protected: true,
+        hint:
+            "The email password of the previous email sender. This user/password should exist in that email server"),
+    "email_sender_server": LAVariableDesc(
+        name: "Email server",
+        nameInt: "email_sender_server",
+        regExp: LARegExp.domainRegexp,
+        error: "Invalid email server",
+        inTunePage: false,
+        // defValue: (project) => 'mailserver.${project.domain}',
+        hint:
+            "Used to send LA portal notifications. The previous account should exists in this server."),
+    "email_sender_server_port": LAVariableDesc(
+        name: "Email server port",
+        nameInt: "email_sender_server_port",
+        regExp: LARegExp.int,
+        error: "Invalid email server port",
+        inTunePage: false,
+        defValue: (project) => '587',
+        hint: "usually 25 or 587"),
+    "email_sender_server_tls": LAVariableDesc(
+        name: "The server use TLS?",
+        nameInt: "email_sender_server_tls",
+        // regExp: LARegExp.int,
+        // error: "Invalid email server port",
+        inTunePage: false,
+        defValue: (project) => true,
+        type: LAVariableType.bool,
+        hint: "usually 25 or 587"),
     "header_and_footer_baseurl": LAVariableDesc(
       name: "Headers and Footer Base URL",
       nameInt: "header_and_footer_baseurl",

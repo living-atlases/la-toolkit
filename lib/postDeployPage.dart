@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/helpIcon.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/projectTunePage.dart';
+import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
@@ -11,6 +13,7 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 import 'models/laProject.dart';
+import 'models/laVariableDesc.dart';
 import 'models/postDeployCmd.dart';
 
 class PostDeployPage extends StatefulWidget {
@@ -30,6 +33,9 @@ class _PostDeployPageState extends State<PostDeployPage> {
         return _ViewModel(
             project: store.state.currentProject,
             onCancel: (project) {},
+            onUpdateProject: (project) {
+              store.dispatch(UpdateProject(project));
+            },
             onDoPostDeployTasks: (project, cmd) =>
                 DeployUtils.deployActionDispatch(
                     context: context, store: store, project: project, cmd: cmd),
@@ -74,6 +80,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
                                 help: "Postfix-configuration",
                                 onChanged: (newValue) => setState(
                                     () => cmd.configurePostfix = newValue)),
+                            if (cmd.configurePostfix) PostDeployFields(),
                             const SizedBox(height: 20),
                             HostSelector(
                                 title: "Do the Post-deploy in servers:",
@@ -103,11 +110,58 @@ class _PostDeployPageState extends State<PostDeployPage> {
   }
 }
 
+class PostDeployFields extends StatefulWidget {
+  PostDeployFields({Key? key}) : super(key: key);
+
+  @override
+  _PostDeployFieldsState createState() => _PostDeployFieldsState();
+}
+
+class _PostDeployFieldsState extends State<PostDeployFields> {
+  static const List<String> _fields = [
+    "email_sender",
+    "email_sender_password",
+    "email_sender_server",
+    "email_sender_server_port",
+    "email_sender_server_tls"
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, _PostDeployFieldsViewModel>(
+        converter: (store) {
+      return _PostDeployFieldsViewModel(
+          project: store.state.currentProject,
+          onUpdateProject: (project) {
+            // store.dispatch(UpdateProject(project)
+          });
+    }, builder: (BuildContext context, _PostDeployFieldsViewModel vm) {
+      List<Widget> items = [];
+      _fields.forEach((varName) {
+        items.add(const SizedBox(height: 20));
+        items.add(MessageItem(vm.project, LAVariableDesc.get(varName), (value) {
+          vm.project.setVariable(LAVariableDesc.get(varName), value);
+          vm.onUpdateProject(vm.project);
+        }).buildTitle(context));
+      });
+      return Column(children: items);
+    });
+  }
+}
+
+class _PostDeployFieldsViewModel {
+  final LAProject project;
+  final void Function(LAProject project) onUpdateProject;
+
+  _PostDeployFieldsViewModel(
+      {required this.project, required this.onUpdateProject});
+}
+
 class PostDeployTask extends StatelessWidget {
   final String title;
   final String? help;
   final bool initialValue;
   final Function(bool) onChanged;
+
   const PostDeployTask({
     Key? key,
     required this.title,
@@ -135,11 +189,13 @@ class _ViewModel {
   final Function(LAProject, PostDeployCmd) onDoPostDeployTasks;
   final PostDeployCmd cmd;
   final Function(LAProject) onCancel;
+  final Function(LAProject) onUpdateProject;
 
   _ViewModel(
       {required this.project,
       required this.onDoPostDeployTasks,
       required this.cmd,
+      required this.onUpdateProject,
       required this.onCancel});
 
   @override

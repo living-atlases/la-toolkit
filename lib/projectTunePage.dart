@@ -256,46 +256,47 @@ class HeadingItem implements ListItem {
 
 // A ListItem that contains data to display a message.
 class MessageItem implements ListItem {
-  LAVariableDesc variable;
+  LAVariableDesc varDesc;
   LAProject project;
   ValueChanged<Object> onChanged;
-  MessageItem(this.project, this.variable, this.onChanged);
+  MessageItem(this.project, this.varDesc, this.onChanged);
 
   Widget buildTitle(BuildContext context) {
-    final initialValue = project.getVariableValue(variable.nameInt);
-    final bool deployed = project.getVariable(variable.nameInt).status ==
-        LAVariableStatus.deployed;
+    final initialValue = project.getVariableValue(varDesc.nameInt);
+    var laVariable = project.getVariable(varDesc.nameInt);
+    final bool deployed = laVariable.status == LAVariableStatus.deployed;
     var defValue;
-    if (variable.defValue != null) defValue = variable.defValue!(project);
+    if (varDesc.defValue != null) defValue = varDesc.defValue!(project);
     return ListTile(
-        title: (variable.type == LAVariableType.bool)
+        title: (varDesc.type == LAVariableType.bool)
             ? SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 value: initialValue ?? defValue ?? false,
-                title: Text(variable.name,
+                title: Text(varDesc.name,
                     style:
                         TextStyle(color: LAColorTheme.laThemeData.hintColor)),
                 onChanged: (bool newValue) {
                   onChanged(newValue);
                 })
             : GenericTextFormField(
-                label: variable.name,
-                hint: variable.hint,
+                label: varDesc.name,
+                hint: varDesc.hint,
                 initialValue: initialValue ?? defValue,
                 allowEmpty: true,
                 enabledBorder: false,
+                obscureText: varDesc.protected,
                 deployed: deployed,
-                regexp: variable.type == LAVariableType.int
+                regexp: varDesc.type == LAVariableType.int
                     ? LARegExp.int
-                    : variable.type == LAVariableType.double
+                    : varDesc.type == LAVariableType.double
                         ? LARegExp.double
-                        : variable.regExp,
-                error: variable.error,
+                        : varDesc.regExp,
+                error: varDesc.error,
                 onChanged: (newValue) {
                   onChanged(newValue);
                 }),
         trailing:
-            variable.help != null ? HelpIcon(wikipage: variable.help!) : null);
+            varDesc.help != null ? HelpIcon(wikipage: varDesc.help!) : null);
   }
 
   Widget buildSubtitle(BuildContext context) => Text("");
