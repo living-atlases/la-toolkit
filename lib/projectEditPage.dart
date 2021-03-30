@@ -146,7 +146,6 @@ class LAProjectEditPage extends StatelessWidget {
                         wikipage: "Glossary#Long-name",
                         error: 'Project name invalid.',
                         initialValue: _project.longName,
-                        //vm: vm,
                         regexp: LARegExp.projectNameRegexp,
                         focusNode: _focusNodes[_basicStep],
                         onChanged: (value) {
