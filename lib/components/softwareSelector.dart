@@ -25,10 +25,12 @@ Choose the latest release to update your portal.
   @override
   Widget build(BuildContext context) {
     Map<String, DropdownMenuItem<String>> releases = {};
-    versions.forEach((element) {
+    versions.forEach((String element) {
       // remove dups
-      releases[element] =
-          DropdownMenuItem(child: Text(element), value: element);
+      releases[element] = DropdownMenuItem(
+          // remove starting 'v' from git tags
+          child: Text(element.replaceFirst(RegExp(r'^v'), '')),
+          value: element);
     });
     bool outDated = versions.first != initialValue &&
         (initialValue != 'custom' || initialValue != 'upstream');
