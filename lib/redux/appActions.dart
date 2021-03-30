@@ -16,8 +16,8 @@ class FetchState extends AppActions {}
 
 class OnIntroEnd extends AppActions {}
 
-class OnFetchState extends AppActions {
-  OnFetchState();
+class OnFetchSoftwareDepsState extends AppActions {
+  OnFetchSoftwareDepsState();
 }
 
 class OnFetchStateFailed extends AppActions {

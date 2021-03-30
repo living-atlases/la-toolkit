@@ -24,7 +24,6 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
       LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
           label: "Using generator-la release:",
-          tooltip: "Choose the latest release to update your portal",
           versions: vm.state.generatorReleases,
           initialValue: currentProject.generatorRelease,
           onChange: (String? value) {

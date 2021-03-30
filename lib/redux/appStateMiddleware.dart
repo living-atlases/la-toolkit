@@ -72,10 +72,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
   @override
   call(Store<AppState> store, action, next) async {
-    if (action is OnFetchState) {
-      /* if (!AppUtils.isDev() ||
-          store.state.alaInstallReleases == null ||
-          store.state.alaInstallReleases.length == 0) { */
+    if (action is OnFetchSoftwareDepsState) {
+      // ALA-INSTALL RELEASES
       Uri alaInstallReleasesApiUrl = Uri.https('api.github.com',
           '/repos/AtlasOfLivingAustralia/ala-install/releases');
       try {
@@ -103,6 +101,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             "Failed to fetch github ala-install releases. Are connected to Internet?")));
       }
 
+      // LA-TOOLKIT RELEASES
       Uri laToolkitReleasesApiUrl = Uri.https(
           'api.github.com', '/repos/living-atlases/la-toolkit/releases');
       Response laToolkitReleasesResponse =
@@ -130,6 +129,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             "Failed to fetch github la-toolkit releases")));
       }
 
+      // GENERATOR RELEASES
       if (AppUtils.isDemo()) {
         store.dispatch(OnFetchGeneratorReleases(['1.1.31', '1.1.30']));
       } else {

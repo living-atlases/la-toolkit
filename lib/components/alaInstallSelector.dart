@@ -24,7 +24,6 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
       LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
           label: "Using ala-install release:",
-          tooltip: "Choose the latest release to update your portal",
           initialValue: currentProject.alaInstallRelease,
           versions: vm.state.alaInstallReleases,
           onChange: (String? value) {

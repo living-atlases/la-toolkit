@@ -14,7 +14,7 @@ import 'actions.dart';
 
 final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
-  new TypedReducer<AppState, OnFetchState>(_onFetchState),
+  new TypedReducer<AppState, OnFetchSoftwareDepsState>(_onFetchState),
   new TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
   new TypedReducer<AppState, OnFetchAlaInstallReleases>(
       _onFetchAlaInstallReleases),
@@ -59,7 +59,7 @@ AppState _onIntroEnd(AppState state, OnIntroEnd action) {
   return state.copyWith(firstUsage: false);
 }
 
-AppState _onFetchState(AppState state, OnFetchState action) {
+AppState _onFetchState(AppState state, OnFetchSoftwareDepsState action) {
   return state;
 }
 

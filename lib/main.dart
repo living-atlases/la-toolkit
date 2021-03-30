@@ -1,4 +1,5 @@
 import 'package:beamer/beamer.dart';
+import 'package:cron/cron.dart';
 import 'package:feedback/feedback.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,14 @@ Future<void> main() async {
       ));
     }
   });
-  store.dispatch(OnFetchState());
+  store.dispatch(OnFetchSoftwareDepsState());
+
+  final cron = Cron();
+  cron.schedule(Schedule.parse('0 */3 * * *'), () async {
+    // Every 3 hours check for new versions
+    store.dispatch(OnFetchSoftwareDepsState());
+  });
+
   // runApp(MyApp(store: store));
   runApp(BetterFeedback(
     // key: _mainKey,

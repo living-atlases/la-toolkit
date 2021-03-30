@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
 class SoftwareSelector extends StatelessWidget {
@@ -5,13 +6,14 @@ class SoftwareSelector extends StatelessWidget {
   final String? initialValue;
   final Function(String?) onChange;
   final String label;
-  final String tooltip;
+  static const String outdatedTooltip =
+      "Choose the latest release to update your portal";
+  static const String updatedTooltip = "Component up-to-dated";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   SoftwareSelector(
       {Key? key,
       required this.label,
-      required this.tooltip,
       required this.versions,
       this.initialValue,
       required this.onChange})
@@ -25,32 +27,45 @@ class SoftwareSelector extends StatelessWidget {
       releases[element] =
           DropdownMenuItem(child: Text(element), value: element);
     });
+    bool outDated = versions.first != initialValue &&
+        (initialValue != 'custom' || initialValue != 'upstream');
     List<DropdownMenuItem<String>> items = releases.values.toList();
+    DropdownButtonFormField menu = DropdownButtonFormField(
+        key: _formKey,
+        icon: Icon(Icons.arrow_drop_down),
+        iconSize: 32,
+        // hint: Text("Recommended a recent version"),
+        // underline: SizedBox(),
+        decoration: InputDecoration(
+          // filled: true,
+          // fillColor: Colors.grey[500],
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        value: initialValue != null && initialValue!.isNotEmpty
+            ? initialValue
+            : items.length > 0
+                ? items[0].value
+                : "",
+        items: items,
+        onChanged: (value) {
+          onChange(value);
+        });
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Tooltip(
-            message: tooltip,
-            child: DropdownButtonFormField(
-                key: _formKey,
-                icon: Icon(Icons.arrow_drop_down),
-                iconSize: 32,
-                // hint: Text("Recommended a recent version"),
-                // underline: SizedBox(),
-                decoration: InputDecoration(
-                  // filled: true,
-                  // fillColor: Colors.grey[500],
-                  labelText: label,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                value: initialValue != null && initialValue!.isNotEmpty
-                    ? initialValue
-                    : items.length > 0
-                        ? items[0].value
-                        : "",
-                items: items,
-                onChanged: (String? value) {
-                  onChange(value);
-                })));
+            message: outDated ? outdatedTooltip : updatedTooltip,
+            child: outDated
+                // https://pub.dev/packages/badges
+                ? Badge(
+                    toAnimate: false,
+                    shape: BadgeShape.square,
+                    badgeColor: Colors.orangeAccent,
+                    borderRadius: BorderRadius.circular(8),
+                    badgeContent: const Text('NEW',
+                        style: const TextStyle(color: Colors.white)),
+                    child: menu,
+                  )
+                : menu));
   }
 }
