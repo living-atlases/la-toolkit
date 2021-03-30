@@ -115,7 +115,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           if (!AppUtils.isDemo() && backendVersion < lastLAToolkitVersion) {
             store.dispatch(ShowSnackBar(AppSnackBarMessage(
                 "There is a new version the LA-Toolkit available. Please upgrade this toolkit.",
-                Duration(days: 256),
+                Duration(seconds: 10),
                 SnackBarAction(
                     label: "MORE INFO",
                     onPressed: () async {
