@@ -62,8 +62,9 @@ class CmdHistoryDetails {
   num get stepsExec =>
       (resultsTotals[ResultType.changed.toS()] ?? 0) +
       (resultsTotals[ResultType.failures.toS()] ?? 0) +
-      (resultsTotals[ResultType.ok.toS()] ?? 0) +
-      (resultsTotals[ResultType.unreachable.toS()] ?? 0);
+      (resultsTotals[ResultType.ok.toS()] ?? 0);
+  /* +
+      (resultsTotals[ResultType.unreachable.toS()] ?? 0 */
 
   bool get nothingDone => stepsExec == 0;
 
@@ -118,7 +119,12 @@ class CmdHistoryDetails {
     return !(code == 0 && numFailures() == 0);
   }
 
-  num? numFailures() => resultsTotals['failures'];
+  num? numFailures() {
+    num? fails = resultsTotals[ResultType.failures.toS()];
+    num? unReach = resultsTotals[ResultType.unreachable.toS()];
+    if (fails == null && unReach == null) return null;
+    return (fails ?? 0) + (unReach ?? 0);
+  }
 
   CmdResult get result => !failed
       ? CmdResult.success
