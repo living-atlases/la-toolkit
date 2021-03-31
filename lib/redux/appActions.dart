@@ -32,6 +32,11 @@ class OnFetchAlaInstallReleases extends AppActions {
   OnFetchAlaInstallReleases(this.releases);
 }
 
+class OnFetchBackendVersion extends AppActions {
+  String version;
+  OnFetchBackendVersion(this.version);
+}
+
 class OnFetchAlaInstallReleasesFailed extends AppActions {}
 
 class OnFetchGeneratorReleases extends AppActions {

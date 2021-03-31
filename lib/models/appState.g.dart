@@ -10,6 +10,7 @@ extension AppStateCopyWith on AppState {
   AppState copyWith({
     List<String>? alaInstallReleases,
     List<AppSnackBarMessage>? appSnackBarMessages,
+    String? backendVersion,
     LAProject? currentProject,
     int? currentStep,
     bool? failedLoad,
@@ -24,6 +25,7 @@ extension AppStateCopyWith on AppState {
     return AppState(
       alaInstallReleases: alaInstallReleases ?? this.alaInstallReleases,
       appSnackBarMessages: appSnackBarMessages ?? this.appSnackBarMessages,
+      backendVersion: backendVersion ?? this.backendVersion,
       currentProject: currentProject ?? this.currentProject,
       currentStep: currentStep ?? this.currentStep,
       failedLoad: failedLoad ?? this.failedLoad,

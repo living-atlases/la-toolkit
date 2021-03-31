@@ -1,7 +1,6 @@
+import 'package:la_toolkit/models/Dependencies.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
-
-enum Component { laToolkit, alaInstall, laGenerator }
 
 void main() {
   test('Compare versions', () {
@@ -23,39 +22,42 @@ void main() {
     validConstraints.forEach((cont) {
       expect(cont.allows(v123), equals(true));
     });
+  });
+
+  test('Compare dependencies ', () {
     Map<String, String> dep = {};
     dep['ala-install'] = "2.0.6";
-    Map<String, Map<Component, String>> deps =
-        Map<String, Map<Component, String>>();
-    const toolkit = Component.laToolkit;
-    const alaInstall = Component.alaInstall;
-    const generator = Component.laGenerator;
-    deps = {
-      '> 1.0.22': {alaInstall: '>=2.0.6', generator: '>= 1.1.36'},
-      '< 1.0.22': {alaInstall: '<2.0.6', generator: '>= 1.1.37'},
-      '> 1.0.23': {alaInstall: '>=2.0.6', generator: '>= 1.1.37'}
-    };
-    Map<Component, String> combo = {
-      toolkit: '1.0.22',
-      alaInstall: '2.0.6',
-      generator: '1.1.36'
-    };
-    deps.keys.forEach((String key) {
-      Map<Component, String> someDeps = deps[key]!;
-      VersionConstraint currentConst = VersionConstraint.parse(key);
-      if (currentConst.allows(Version.parse(combo[toolkit]!))) {
-        expect(
-            VersionConstraint.parse(someDeps[alaInstall]!)
-                .allows(Version.parse(combo[alaInstall]!)),
-            equals(true));
-        expect(
-            VersionConstraint.parse(someDeps[generator]!)
-                .allows(Version.parse(combo[generator]!)),
-            equals(true));
-      }
-    });
 
-    // Map<String,Map<String,String>> = deps = {};
-    // toolkit 1.0.22, ala-install 2.0.6 - gen 1.1.36
+    Map<Component, String> combo = {
+      Component.laToolkit: '1.0.22',
+      Component.alaInstall: '2.0.6',
+      Component.laGenerator: '1.1.36'
+    };
+    List<String>? lintErrors = Dependencies.verify(combo);
+    expect(lintErrors != null, equals(true));
+    expect(lintErrors!.length, equals(0));
+
+    combo = {
+      Component.laToolkit: '1.0.21',
+      Component.alaInstall: '2.0.6',
+      Component.laGenerator: '1.1.36'
+    };
+
+    lintErrors = Dependencies.verify(combo);
+    expect(lintErrors == null, equals(true));
+
+    combo = {
+      Component.laToolkit: '1.0.22',
+      Component.alaInstall: '2.0.5',
+      Component.laGenerator: '1.1.34'
+    };
+    lintErrors = Dependencies.verify(combo);
+    expect(lintErrors != null, equals(true));
+    expect(lintErrors!.length, equals(2));
+    expect(lintErrors[0],
+        equals('ala-install recommended version should be >=2.0.6'));
+    expect(lintErrors[1],
+        equals('la-generator recommended version should be >=1.1.36'));
+    // print(lintErrors);
   });
 }

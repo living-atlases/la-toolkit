@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/models/Dependencies.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
 import 'alertCard.dart';
 
@@ -23,6 +25,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
         converter: (store) {
           return _LintProjectPanelViewModel(
               project: store.state.currentProject,
+              backendVersion: store.state.backendVersion,
               sshKeys: store.state.sshKeys,
               status: store.state.currentProject.status);
         },
@@ -30,8 +33,15 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           LAProject project = vm.project;
           final bool basicDefined =
               vm.status.value >= LAProjectStatus.basicDefined.value;
+          List<String>? lintVersionErrors = AppUtils.isDemo()
+              ? []
+              : Dependencies.check(
+                  toolkitV: vm.backendVersion,
+                  alaInstallV: project.alaInstallRelease,
+                  generatorV: project.generatorRelease);
           return Column(
             children: [
+              if (lintVersionErrors != null) LintErrorPanel(lintVersionErrors),
               if (vm.sshKeys.isEmpty)
                 AlertCard(
                     message: "You don't have any SSH key",
@@ -62,10 +72,24 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
   }
 }
 
+class LintErrorPanel extends StatelessWidget {
+  final List<String> errors;
+
+  LintErrorPanel(this.errors);
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: errors.map((e) => AlertCard(message: e)).toList());
+  }
+}
+
 class _LintProjectPanelViewModel {
   final LAProject project;
+  final String? backendVersion;
   final List<SshKey> sshKeys;
   final LAProjectStatus status;
   _LintProjectPanelViewModel(
-      {required this.project, required this.sshKeys, required this.status});
+      {required this.project,
+      required this.sshKeys,
+      required this.status,
+      required this.backendVersion});
 }

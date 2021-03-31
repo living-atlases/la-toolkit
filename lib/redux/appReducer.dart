@@ -18,6 +18,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
   new TypedReducer<AppState, OnFetchAlaInstallReleases>(
       _onFetchAlaInstallReleases),
+  new TypedReducer<AppState, OnFetchBackendVersion>(_onFetchBackendVersion),
   new TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(
       _onFetchAlaInstallReleasesFailed),
   new TypedReducer<AppState, OnFetchGeneratorReleases>(
@@ -81,6 +82,10 @@ AppState _onFetchAlaInstallReleasesFailed(
 AppState _onFetchGeneratorReleases(
     AppState state, OnFetchGeneratorReleases action) {
   return state.copyWith(generatorReleases: action.releases);
+}
+
+AppState _onFetchBackendVersion(AppState state, OnFetchBackendVersion action) {
+  return state.copyWith(backendVersion: action.version);
 }
 
 AppState _onFetchGeneratorReleasesFailed(

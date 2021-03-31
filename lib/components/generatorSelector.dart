@@ -23,7 +23,7 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
     }, builder: (BuildContext context, _GeneratorSelectorViewModel vm) {
       LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
-          label: "Using generator-la release:",
+          label: "Using la-generator release:",
           versions: vm.state.generatorReleases,
           initialValue: currentProject.generatorRelease,
           onChange: (String? value) {

@@ -112,6 +112,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           Version lastLAToolkitVersion = Version.parse(
               l.first["tag_name"].toString().replaceFirst('v', ''));
           Version backendVersion = Version.parse(await Api.getBackendVersion());
+          store.dispatch(OnFetchBackendVersion(backendVersion.toString()));
           if (!AppUtils.isDemo() && backendVersion < lastLAToolkitVersion) {
             print("$backendVersion < $lastLAToolkitVersion");
             store.dispatch(ShowSnackBar(AppSnackBarMessage(
