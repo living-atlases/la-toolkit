@@ -231,8 +231,8 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 - [X] Logs store and replay previous deploy tasks
 - [X] Ansible task errors summary
 - [X] Software dependencies release checking and notification of available upgrades
-- [ ] Pre-deploy tasks (wip)
-- [ ] Post-deploy tasks
+- [~] Pre-deploy tasks (wip)
+- [~] Post-deploy tasks (wip)
 - [ ] Branding deployment (wip)
 - [ ] Stats tool
 - [ ] Monitor tool
