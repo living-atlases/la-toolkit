@@ -45,8 +45,14 @@ class _PreDeployPageState extends State<PreDeployPage> {
       builder: (BuildContext context, _ViewModel vm) {
         String execBtn = "Run tasks";
         PreDeployCmd cmd = vm.cmd;
-        VoidCallback? onTap =
-             ? () => vm.onDoDeployTaskSwitchs(vm.project, cmd) : null;
+        VoidCallback? onTap = cmd.addAnsibleUser ||
+                cmd.giveSudo ||
+                cmd.etcHosts ||
+                cmd.solrLimits ||
+                cmd.addSshKeys ||
+                cmd.addAdditionalDeps
+            ? () => vm.onDoDeployTaskSwitchs(vm.project, cmd)
+            : null;
         String defUser = vm.project.getVariableValue("ansible_user").toString();
 
         return Scaffold(
@@ -177,8 +183,9 @@ class _ViewModel {
       identical(this, other) ||
       other is _ViewModel &&
           runtimeType == other.runtimeType &&
+          cmd == other.cmd &&
           project == other.project;
 
   @override
-  int get hashCode => project.hashCode;
+  int get hashCode => project.hashCode ^ project.hashCode ^ cmd.hashCode;
 }

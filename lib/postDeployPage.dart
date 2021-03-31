@@ -120,13 +120,6 @@ class _PostDeployPageState extends State<PostDeployPage> {
 class PostDeployFields extends StatelessWidget {
   PostDeployFields({Key? key}) : super(key: key);
 
-  static const List<String> _fields = [
-    "email_sender",
-    "email_sender_password",
-    "email_sender_server",
-    "email_sender_server_port",
-    "email_sender_server_tls"
-  ];
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _PostDeployFieldsViewModel>(
@@ -136,7 +129,7 @@ class PostDeployFields extends StatelessWidget {
           onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _PostDeployFieldsViewModel vm) {
       List<Widget> items = [];
-      _fields.forEach((varName) {
+      PostDeployCmd.postDeployVariables.forEach((varName) {
         items.add(const SizedBox(height: 20));
         items.add(MessageItem(vm.project, LAVariableDesc.get(varName), (value) {
           vm.project.setVariable(LAVariableDesc.get(varName), value);
@@ -158,8 +151,8 @@ class _PostDeployFieldsViewModel {
 
 class _ViewModel {
   final LAProject project;
-  final Function(LAProject, PostDeployCmd) onDoPostDeployTasks;
   final PostDeployCmd cmd;
+  final Function(LAProject, PostDeployCmd) onDoPostDeployTasks;
   final Function(LAProject) onCancel;
   final Function(LAProject) onUpdateProject;
   final Function(DeployCmd) onSaveDeployCmd;
@@ -177,8 +170,9 @@ class _ViewModel {
       identical(this, other) ||
       other is _ViewModel &&
           runtimeType == other.runtimeType &&
+          cmd == other.cmd &&
           project == other.project;
 
   @override
-  int get hashCode => project.hashCode;
+  int get hashCode => project.hashCode ^ project.hashCode ^ cmd.hashCode;
 }

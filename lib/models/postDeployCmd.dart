@@ -10,6 +10,14 @@ part 'postDeployCmd.g.dart';
 class PostDeployCmd extends DeployCmd {
   bool configurePostfix;
 
+  static const List<String> postDeployVariables = [
+    "email_sender",
+    "email_sender_password",
+    "email_sender_server",
+    "email_sender_server_port",
+    "email_sender_server_tls"
+  ];
+
   PostDeployCmd(
       {this.configurePostfix = true,
       List<String>? limitToServers,
