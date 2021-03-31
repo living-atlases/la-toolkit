@@ -182,36 +182,31 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           .then((_) => scanSshKeys(store, () => {}));
     }
     if (action is PrepareDeployProject) {
-      if (action.deployCmd.runtimeType == PostDeployCmd) {
-        action.onReady();
-        action.onError("This is under development");
+      String? currentDirName = action.project.dirName;
+      currentDirName ??= action.project.suggestDirName();
+      String? checkedDirName = await Api.checkDirName(
+          dirName: currentDirName, uuid: action.project.uuid);
+      if (checkedDirName == null) {
+        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+            "Failed to prepare your configuration (in details, the dirName to store it)")));
       } else {
-        String? currentDirName = action.project.dirName;
-        currentDirName ??= action.project.suggestDirName();
-        String? checkedDirName = await Api.checkDirName(
-            dirName: currentDirName, uuid: action.project.uuid);
-        if (checkedDirName == null) {
-          store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
-              "Failed to prepare your configuration (in details, the dirName to store it)")));
+        if (action.project.dirName != checkedDirName) {
+          LAProject updatedProject =
+              action.project.copyWith(dirName: checkedDirName);
+          store.dispatch(UpdateProject(updatedProject));
+        }
+        await Api.regenerateInv(
+            uuid: action.project.uuid, onError: action.onError);
+        if (action.deployCmd.runtimeType != PreDeployCmd &&
+            action.deployCmd.runtimeType != PostDeployCmd) {
+          await Api.alaInstallSelect(
+                  action.project.alaInstallRelease!, action.onError)
+              .then((_) => scanSshKeys(store, () => {}));
+          await Api.generatorSelect(
+                  action.project.generatorRelease!, action.onError)
+              .then((_) => action.onReady());
         } else {
-          if (action.project.dirName != checkedDirName) {
-            LAProject updatedProject =
-                action.project.copyWith(dirName: checkedDirName);
-            store.dispatch(UpdateProject(updatedProject));
-          }
-          await Api.regenerateInv(
-              uuid: action.project.uuid, onError: action.onError);
-          if (action.deployCmd.runtimeType != PreDeployCmd &&
-              action.deployCmd.runtimeType != PostDeployCmd) {
-            await Api.alaInstallSelect(
-                    action.project.alaInstallRelease!, action.onError)
-                .then((_) => scanSshKeys(store, () => {}));
-            await Api.generatorSelect(
-                    action.project.generatorRelease!, action.onError)
-                .then((_) => action.onReady());
-          } else {
-            action.onReady();
-          }
+          action.onReady();
         }
       }
     }
@@ -220,7 +215,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         Api.preDeploy(action);
       } else if (action.cmd.runtimeType == PostDeployCmd) {
         Api.postDeploy(action);
-        action.onError("This is under development");
+        // action.onError("This is under development");
       } else
         Api.ansiblew(action);
     }

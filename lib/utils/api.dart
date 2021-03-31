@@ -310,8 +310,18 @@ class Api {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/post-deploy");
     var cmd = cmdToObj(action);
-    cmd['tags'] = (action.cmd as PostDeployCmd).postTags;
     cmd['services'] = [];
+    var postDeployCmd = action.cmd as PostDeployCmd;
+    cmd['tags'] = postDeployCmd.postTags;
+    if (postDeployCmd.configurePostfix) {
+      PostDeployCmd.postDeployVariables.forEach((varName) {
+        setCmdVar(action.project, cmd, varName);
+      });
+    }
     doCmd(url, cmd, action);
+  }
+
+  static void setCmdVar(LAProject project, cmd, String varName) {
+    cmd[varName] = project.getVariableValue(varName)!.toString();
   }
 }

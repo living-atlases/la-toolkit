@@ -168,6 +168,17 @@ class DeployUtils {
       required LAProject project,
       required DeployCmd cmd}) {
     context.showLoaderOverlay();
+    if (cmd.runtimeType == PostDeployCmd) {
+      // We generate again the inventories with the smtp values
+      store.dispatch(PrepareDeployProject(
+          project: project,
+          onReady: () {},
+          deployCmd: cmd,
+          onError: (e) {
+            context.hideLoaderOverlay();
+            UiUtils.showSnackBarError(context, e);
+          }));
+    }
     store.dispatch(DeployProject(
         project: project,
         cmd: cmd,

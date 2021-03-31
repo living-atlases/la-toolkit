@@ -62,7 +62,7 @@ class PreDeployCmd extends DeployCmd {
     if (addSshKeys) tasks.add('add ssh keys');
     if (giveSudo) tasks.add('add sudo permissions');
     if (etcHosts) tasks.add("setup '/etc/hosts'");
-    if (solrLimits) tasks.add('setup solrs limits');
+    if (solrLimits) tasks.add('setup solr limits');
     if (addAdditionalDeps) tasks.add('additional deps install');
     return 'Pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
   }

@@ -45,7 +45,7 @@ class PostDeployCmd extends DeployCmd {
   @override
   String toString() {
     List<String> tasks = [];
-    if (configurePostfix) tasks.add('configure Postfix');
+    if (configurePostfix) tasks.add('configure postfix');
     return 'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
   }
 
