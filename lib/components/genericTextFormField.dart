@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/utils/debounce.dart';
 
@@ -69,6 +70,12 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
     super.initState();
   }
 
+  void showPass(bool state) {
+    setState(() {
+      obscureTextState = state;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -83,12 +90,14 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
         filled: widget.fillColor != null,
         suffixIcon: widget.wikipage == null
             ? widget.obscureText
-                ? IconButton(
-                    icon: Icon(obscureTextState
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: (() =>
-                        setState(() => {obscureTextState = !obscureTextState})))
+                ? MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                        child: Icon(obscureTextState
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onTapUp: (tap) => showPass(true),
+                        onTapDown: (tap) => showPass(false)))
                 : null
             : Padding(
                 padding: EdgeInsets.only(top: 5), // add padding to adjust icon
