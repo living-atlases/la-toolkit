@@ -124,6 +124,11 @@ class PrepareDeployProject extends AppActions {
       required this.onError});
 }
 
+class SaveDeployCmd extends AppActions {
+  DeployCmd deployCmd;
+  SaveDeployCmd({required this.deployCmd});
+}
+
 class DeployProject extends AppActions {
   LAProject project;
   DeployCmd cmd;

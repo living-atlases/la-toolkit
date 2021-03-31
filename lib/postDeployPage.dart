@@ -12,6 +12,7 @@ import 'components/hostSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
+import 'models/deployCmd.dart';
 import 'models/laProject.dart';
 import 'models/laVariableDesc.dart';
 import 'models/postDeployCmd.dart';
@@ -28,11 +29,14 @@ class _PostDeployPageState extends State<PostDeployPage> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
-      distinct: true,
+      // Fails the switch distinct: true,
       converter: (store) {
         return _ViewModel(
             project: store.state.currentProject,
             onCancel: (project) {},
+            onSaveDeployCmd: (cmd) {
+              store.dispatch(SaveDeployCmd(deployCmd: cmd));
+            },
             onUpdateProject: (project) {
               store.dispatch(UpdateProject(project));
             },
@@ -74,12 +78,14 @@ class _PostDeployPageState extends State<PostDeployPage> {
                             /* const SizedBox(height: 20),
                             const Text('Tasks:', style: DeployUtils.titleStyle), */
                             const SizedBox(height: 20),
-                            PostDeployTask(
+                            DeployTaskSwitch(
                                 title: "Configure postfix email service",
                                 initialValue: cmd.configurePostfix,
                                 help: "Postfix-configuration",
-                                onChanged: (newValue) => setState(
-                                    () => cmd.configurePostfix = newValue)),
+                                onChanged: (newValue) {
+                                  cmd.configurePostfix = newValue;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
                             if (cmd.configurePostfix) PostDeployFields(),
                             const SizedBox(height: 20),
                             HostSelector(
@@ -93,8 +99,10 @@ class _PostDeployPageState extends State<PostDeployPage> {
                                     .map((e) => e.name)
                                     .toList(),
                                 icon: Mdi.server,
-                                onChange: (limitToServers) => setState(
-                                    () => cmd.limitToServers = limitToServers)),
+                                onChange: (limitToServers) {
+                                  cmd.limitToServers = limitToServers;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
                             const SizedBox(height: 20),
                             LaunchBtn(onTap: onTap, execBtn: execBtn),
                           ],
@@ -110,14 +118,9 @@ class _PostDeployPageState extends State<PostDeployPage> {
   }
 }
 
-class PostDeployFields extends StatefulWidget {
+class PostDeployFields extends StatelessWidget {
   PostDeployFields({Key? key}) : super(key: key);
 
-  @override
-  _PostDeployFieldsState createState() => _PostDeployFieldsState();
-}
-
-class _PostDeployFieldsState extends State<PostDeployFields> {
   static const List<String> _fields = [
     "email_sender",
     "email_sender_password",
@@ -131,9 +134,7 @@ class _PostDeployFieldsState extends State<PostDeployFields> {
         converter: (store) {
       return _PostDeployFieldsViewModel(
           project: store.state.currentProject,
-          onUpdateProject: (project) {
-            // store.dispatch(UpdateProject(project)
-          });
+          onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _PostDeployFieldsViewModel vm) {
       List<Widget> items = [];
       _fields.forEach((varName) {
@@ -156,13 +157,13 @@ class _PostDeployFieldsViewModel {
       {required this.project, required this.onUpdateProject});
 }
 
-class PostDeployTask extends StatelessWidget {
+class DeployTaskSwitch extends StatelessWidget {
   final String title;
   final String? help;
   final bool initialValue;
   final Function(bool) onChanged;
 
-  const PostDeployTask({
+  const DeployTaskSwitch({
     Key? key,
     required this.title,
     this.help,
@@ -175,7 +176,7 @@ class PostDeployTask extends StatelessWidget {
     return SwitchListTile(
         // contentPadding: EdgeInsets.zero,
         value: initialValue,
-        title: Text(this.title,
+        title: Text(title,
             style: TextStyle(color: LAColorTheme.laThemeData.hintColor)),
         secondary: help != null ? HelpIcon(wikipage: help!) : null,
         onChanged: (bool newValue) {
@@ -190,12 +191,14 @@ class _ViewModel {
   final PostDeployCmd cmd;
   final Function(LAProject) onCancel;
   final Function(LAProject) onUpdateProject;
+  final Function(DeployCmd) onSaveDeployCmd;
 
   _ViewModel(
       {required this.project,
       required this.onDoPostDeployTasks,
       required this.cmd,
       required this.onUpdateProject,
+      required this.onSaveDeployCmd,
       required this.onCancel});
 
   @override

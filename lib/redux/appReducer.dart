@@ -51,6 +51,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, ShowSnackBar>(_showSnackBar),
   new TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
   new TypedReducer<AppState, PrepareDeployProject>(_prepareDeployProject),
+  new TypedReducer<AppState, SaveDeployCmd>(_saveDeployCmd),
   new TypedReducer<AppState, DeleteLog>(_onDeleteLog),
   new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
 ]);
@@ -317,6 +318,10 @@ AppState _onShowedSnackBar(AppState state, OnShowedSnackBar action) {
 
 AppState _prepareDeployProject(AppState state, PrepareDeployProject action) {
   // print("REPEAT-CMD ${action.repeatCmd}");
+  return state.copyWith(repeatCmd: action.deployCmd);
+}
+
+AppState _saveDeployCmd(AppState state, SaveDeployCmd action) {
   return state.copyWith(repeatCmd: action.deployCmd);
 }
 
