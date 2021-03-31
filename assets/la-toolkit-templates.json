@@ -726,7 +726,7 @@
       "status": "basicDefined",
       "theme": "custom",
       "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.31",
+      "generatorRelease": "1.1.35",
       "mapBoundsFstPoint": {
         "latitude": -44,
         "longitude": 112
@@ -1014,7 +1014,7 @@
       "status": "basicDefined",
       "theme": "custom",
       "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.31",
+      "generatorRelease": "1.1.35",
       "mapBoundsFstPoint": {
         "latitude": 49.19955563408631,
         "longitude": 9.052745931952636
@@ -1621,7 +1621,7 @@
       "status": "basicDefined",
       "theme": "custom",
       "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.31",
+      "generatorRelease": "1.1.35",
       "mapBoundsFstPoint": {
         "latitude": 83.56578781211654,
         "longitude": -151.8203125
@@ -2392,7 +2392,7 @@
       "status": "basicDefined",
       "theme": "clean",
       "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.31",
+      "generatorRelease": "1.1.35",
       "mapBoundsFstPoint": {
         "latitude": 44.81743010006506,
         "longitude": -19.101222431053316
@@ -2679,7 +2679,7 @@
       "status": "basicDefined",
       "theme": "clean",
       "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.31",
+      "generatorRelease": "1.1.35",
       "mapBoundsFstPoint": {
         "latitude": 45.20135257494316,
         "longitude": -74.46010353310328

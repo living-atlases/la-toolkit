@@ -111,19 +111,22 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         if (l.length > 0) {
           Version lastLAToolkitVersion = Version.parse(
               l.first["tag_name"].toString().replaceFirst('v', ''));
-          Version backendVersion = Version.parse(await Api.getBackendVersion());
-          store.dispatch(OnFetchBackendVersion(backendVersion.toString()));
-          if (!AppUtils.isDemo() && backendVersion < lastLAToolkitVersion) {
-            print("$backendVersion < $lastLAToolkitVersion");
-            store.dispatch(ShowSnackBar(AppSnackBarMessage(
-                "There is a new version the LA-Toolkit available. Please upgrade this toolkit.",
-                Duration(seconds: 10),
-                SnackBarAction(
-                    label: "MORE INFO",
-                    onPressed: () async {
-                      await launch(
-                          "https://github.com/living-atlases/la-toolkit/#upgrade-the-toolkit");
-                    }))));
+          if (!AppUtils.isDemo()) {
+            Version backendVersion =
+                Version.parse(await Api.getBackendVersion());
+            store.dispatch(OnFetchBackendVersion(backendVersion.toString()));
+            if (backendVersion < lastLAToolkitVersion) {
+              print("$backendVersion < $lastLAToolkitVersion");
+              store.dispatch(ShowSnackBar(AppSnackBarMessage(
+                  "There is a new version the LA-Toolkit available. Please upgrade this toolkit.",
+                  Duration(seconds: 10),
+                  SnackBarAction(
+                      label: "MORE INFO",
+                      onPressed: () async {
+                        await launch(
+                            "https://github.com/living-atlases/la-toolkit/#upgrade-the-toolkit");
+                      }))));
+            }
           }
         }
       } else {
@@ -133,7 +136,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
       // GENERATOR RELEASES
       if (AppUtils.isDemo()) {
-        store.dispatch(OnFetchGeneratorReleases(['1.1.31', '1.1.30']));
+        store
+            .dispatch(OnFetchGeneratorReleases(['1.1.37', '1.1.36', '1.1.35']));
       } else {
         // generatorReleasesApiUrl =
         //  "https://registry.npmjs.org/generator-living-atlas";

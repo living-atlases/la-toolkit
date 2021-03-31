@@ -6,7 +6,6 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
-import 'package:la_toolkit/utils/utils.dart';
 
 import 'alertCard.dart';
 
@@ -33,12 +32,13 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           LAProject project = vm.project;
           final bool basicDefined =
               vm.status.value >= LAProjectStatus.basicDefined.value;
-          List<String>? lintVersionErrors = AppUtils.isDemo()
-              ? []
-              : Dependencies.check(
-                  toolkitV: vm.backendVersion,
-                  alaInstallV: project.alaInstallRelease,
-                  generatorV: project.generatorRelease);
+          List<String>? lintVersionErrors =
+              vm.backendVersion == null // AppUtils.isDemo()
+                  ? []
+                  : Dependencies.check(
+                      toolkitV: vm.backendVersion,
+                      alaInstallV: project.alaInstallRelease,
+                      generatorV: project.generatorRelease);
           return Column(
             children: [
               if (lintVersionErrors != null) LintErrorPanel(lintVersionErrors),
