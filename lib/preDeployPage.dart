@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/helpIcon.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
+import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
+import 'components/deployTaskSwitch.dart';
 import 'components/hostSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
-import 'laTheme.dart';
+import 'models/deployCmd.dart';
 import 'models/laProject.dart';
 
 class PreDeployPage extends StatefulWidget {
@@ -25,12 +26,16 @@ class _PreDeployPageState extends State<PreDeployPage> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
-      distinct: true,
+      // The switch fails
+      // distinct: true,
       converter: (store) {
         return _ViewModel(
             project: store.state.currentProject,
             onCancel: (project) {},
-            onDoPreDeployTasks: (project, cmd) =>
+            onSaveDeployCmd: (cmd) {
+              store.dispatch(SaveDeployCmd(deployCmd: cmd));
+            },
+            onDoDeployTaskSwitchs: (project, cmd) =>
                 DeployUtils.deployActionDispatch(
                     context: context, store: store, project: project, cmd: cmd),
             cmd: store.state.repeatCmd.runtimeType != PreDeployCmd
@@ -41,9 +46,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
         String execBtn = "Run tasks";
         PreDeployCmd cmd = vm.cmd;
         VoidCallback? onTap =
-            cmd.addAnsibleUser || cmd.giveSudo || cmd.etcHosts || cmd.solrLimits
-                ? () => vm.onDoPreDeployTasks(vm.project, cmd)
-                : null;
+             ? () => vm.onDoDeployTaskSwitchs(vm.project, cmd) : null;
         String defUser = vm.project.getVariableValue("ansible_user").toString();
 
         return Scaffold(
@@ -71,38 +74,46 @@ class _PreDeployPageState extends State<PreDeployPage> {
                             const Text(
                                 'These are tasks that depending on the status of your servers can be helpful to setup them correctly.'),
                             const SizedBox(height: 20),
-                            PreDeployTask(
+                            DeployTaskSwitch(
                                 title:
                                     "Add the '$defUser' user to your servers",
                                 initialValue: cmd.addAnsibleUser,
                                 help:
                                     "Before-Start-Your-LA-Installation#default-user-ubuntu",
-                                onChanged: (newValue) => setState(
-                                    () => cmd.addAnsibleUser = newValue)),
-                            PreDeployTask(
+                                onChanged: (newValue) {
+                                  cmd.addAnsibleUser = newValue;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
+                            DeployTaskSwitch(
                                 title:
                                     "Give the 'ubuntu' user sudo permissions",
                                 initialValue: cmd.giveSudo,
                                 help: "Before-Start-Your-LA-Installation#sudo",
-                                onChanged: (newValue) =>
-                                    setState(() => cmd.giveSudo = newValue)),
-                            PreDeployTask(
+                                onChanged: (newValue) {
+                                  cmd.giveSudo = newValue;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
+                            DeployTaskSwitch(
                                 title:
                                     "Add your public ssh keys to '$defUser' user (warning: right now we add all your ssh keys)",
                                 initialValue: cmd.addSshKeys,
                                 help:
                                     "SSH-for-Beginners#public-and-private-ip-addresses",
-                                onChanged: (newValue) =>
-                                    setState(() => cmd.addSshKeys = newValue)),
-                            PreDeployTask(
+                                onChanged: (newValue) {
+                                  cmd.addSshKeys = newValue;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
+                            DeployTaskSwitch(
                                 title:
                                     "Configure the '/etc/hosts' in your servers",
                                 initialValue: cmd.etcHosts,
                                 help:
                                     "Before-Start-Your-LA-Installation#fake-dns-calls",
-                                onChanged: (newValue) =>
-                                    setState(() => cmd.etcHosts = newValue)),
-                            PreDeployTask(
+                                onChanged: (newValue) {
+                                  cmd.etcHosts = newValue;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
+                            DeployTaskSwitch(
                                 title:
                                     "Adjust solr limits (increase the number of files and process allowed to create)",
                                 initialValue: cmd.solrLimits,
@@ -110,12 +121,14 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                     "Before-Start-Your-LA-Installation#solr-limits",
                                 onChanged: (newValue) =>
                                     setState(() => cmd.solrLimits = newValue)),
-                            PreDeployTask(
+                            DeployTaskSwitch(
                                 title:
                                     "Add additional package utils for monitoring and troubleshooting",
                                 initialValue: cmd.addAdditionalDeps,
-                                onChanged: (newValue) => setState(
-                                    () => cmd.addAdditionalDeps = newValue)),
+                                onChanged: (newValue) {
+                                  cmd.addAdditionalDeps = newValue;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
                             const SizedBox(height: 20),
                             HostSelector(
                                 title: "Do the pre-deploy in servers:",
@@ -145,47 +158,18 @@ class _PreDeployPageState extends State<PreDeployPage> {
   }
 }
 
-class PreDeployTask extends StatelessWidget {
-  final String title;
-  final String? help;
-  final bool initialValue;
-  final Function(bool) onChanged;
-  const PreDeployTask({
-    Key? key,
-    required this.title,
-    this.help,
-    required this.initialValue,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SwitchListTile(
-        // contentPadding: EdgeInsets.zero,
-        value: initialValue,
-        title: Text(this.title,
-            style: TextStyle(color: LAColorTheme.laThemeData.hintColor)),
-        secondary: help != null
-            ? HelpIcon(wikipage: help!)
-            : Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-                child: Icon(Icons.circle, color: Colors.white)),
-        onChanged: (bool newValue) {
-          onChanged(newValue);
-        });
-  }
-}
-
 class _ViewModel {
   final LAProject project;
-  final Function(LAProject, PreDeployCmd) onDoPreDeployTasks;
+  final Function(LAProject, PreDeployCmd) onDoDeployTaskSwitchs;
   final PreDeployCmd cmd;
   final Function(LAProject) onCancel;
+  final Function(DeployCmd) onSaveDeployCmd;
 
   _ViewModel(
       {required this.project,
-      required this.onDoPreDeployTasks,
+      required this.onDoDeployTaskSwitchs,
       required this.cmd,
+      required this.onSaveDeployCmd,
       required this.onCancel});
 
   @override

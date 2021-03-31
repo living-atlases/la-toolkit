@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/helpIcon.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
@@ -8,10 +7,10 @@ import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
+import 'components/deployTaskSwitch.dart';
 import 'components/hostSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
-import 'laTheme.dart';
 import 'models/deployCmd.dart';
 import 'models/laProject.dart';
 import 'models/laVariableDesc.dart';
@@ -155,34 +154,6 @@ class _PostDeployFieldsViewModel {
 
   _PostDeployFieldsViewModel(
       {required this.project, required this.onUpdateProject});
-}
-
-class DeployTaskSwitch extends StatelessWidget {
-  final String title;
-  final String? help;
-  final bool initialValue;
-  final Function(bool) onChanged;
-
-  const DeployTaskSwitch({
-    Key? key,
-    required this.title,
-    this.help,
-    required this.initialValue,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SwitchListTile(
-        // contentPadding: EdgeInsets.zero,
-        value: initialValue,
-        title: Text(title,
-            style: TextStyle(color: LAColorTheme.laThemeData.hintColor)),
-        secondary: help != null ? HelpIcon(wikipage: help!) : null,
-        onChanged: (bool newValue) {
-          onChanged(newValue);
-        });
-  }
 }
 
 class _ViewModel {
