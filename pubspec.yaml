@@ -42,7 +42,6 @@ dependencies:
        ref: master
   url_launcher: ^6.0.2
   flutter_markdown: ^0.6.1
-  # https://github.com/chulwoo-park/timelines/pull/33
   timelines: ^0.1.0
   responsive_grid: # ^1.2.1+1
     git:
@@ -69,7 +68,7 @@ dependencies:
   modal_bottom_sheet: ^2.0.0
   web_browser: ^0.5.0
   # charts
-  syncfusion_flutter_charts: ^18.4.46
+  syncfusion_flutter_charts: 19.1.54+1
   # bottom floating button
   flutter_speed_dial: ^3.0.5
   # listview animation
