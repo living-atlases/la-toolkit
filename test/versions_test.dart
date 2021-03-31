@@ -58,6 +58,19 @@ void main() {
         equals('ala-install recommended version should be >=2.0.6'));
     expect(lintErrors[1],
         equals('la-generator recommended version should be >=1.1.36'));
+
+    combo = {
+      Component.laToolkit: '1.0.23',
+      Component.alaInstall: '2.0.6',
+      Component.laGenerator: '1.1.34'
+    };
+    lintErrors = Dependencies.verify(combo);
+    expect(lintErrors != null, equals(true));
+    expect(lintErrors!.length, equals(1));
+    expect(lintErrors[0],
+        equals('la-generator recommended version should be >=1.1.37'));
+
+    // TODO: Check that deps are ok!
     // print(lintErrors);
   });
 }

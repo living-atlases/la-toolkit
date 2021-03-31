@@ -15,7 +15,11 @@ class Dependencies {
   }; */
 
   static Map<VersionConstraint, Map<Component, VersionConstraint>> deps = {
-    vc('>= 1.0.22'): {alaInstall: vc('>= 2.0.6'), generator: vc('>= 1.1.36')},
+    vc('>= 1.0.22 < 1.0.23'): {
+      alaInstall: vc('>= 2.0.6'),
+      generator: vc('>= 1.1.36')
+    },
+    vc('>= 1.0.23'): {alaInstall: vc('>= 2.0.6'), generator: vc('>= 1.1.37')},
   };
 
   static VersionConstraint vc(String c) => VersionConstraint.parse(c);
