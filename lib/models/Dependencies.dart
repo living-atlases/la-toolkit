@@ -23,7 +23,8 @@ class Dependencies {
 
   static List<String>? verify(Map<Component, String> combo) {
     Version toolkitV = v(combo[toolkit]!);
-    Version alaInstallV = v(combo[alaInstall]!);
+    String alaInstallS = combo[alaInstall]!;
+    bool skipAlaInstall = alaInstallS == 'custom' || alaInstallS == 'upstream';
     Version generatorV = v(combo[generator]!);
     List<String>? lintError;
     try {
@@ -31,7 +32,7 @@ class Dependencies {
       lintError = [];
       Map<Component, VersionConstraint> match =
           deps.entries.firstWhere((e) => e.key.allows(toolkitV)).value;
-      if (!match[alaInstall]!.allows(alaInstallV)) {
+      if (!skipAlaInstall && !match[alaInstall]!.allows(v(alaInstallS))) {
         lintError.add(
             'ala-install recommended version should be ${match[alaInstall]!}');
       }
