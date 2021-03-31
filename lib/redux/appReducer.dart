@@ -339,5 +339,9 @@ AppState _onDeleteLog(AppState state, DeleteLog action) {
 }
 
 AppState _onAppPackageInfo(AppState state, OnAppPackageInfo action) {
-  return state.copyWith(pkgInfo: action.packageInfo);
+  return AppUtils.isDemo()
+      ? state.copyWith(
+          pkgInfo: action.packageInfo,
+          backendVersion: action.packageInfo.version)
+      : state.copyWith(pkgInfo: action.packageInfo);
 }
