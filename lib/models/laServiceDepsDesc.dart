@@ -110,5 +110,5 @@ class LAServiceDepsDesc {
   };
 
   // use https://pub.dev/packages/pub_semver/example
-  // toolkit 1.0.18, ala-install 2.0.6 - gen 1.1.36
+  // toolkit 1.0.22, ala-install 2.0.6 - gen 1.1.36
 }
