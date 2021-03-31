@@ -66,11 +66,14 @@ void main() {
   });
 
   test('Test pre-cmd to String', () {
-    DeployCmd cmd = PreDeployCmd();
+    PreDeployCmd cmd = PreDeployCmd();
+    cmd.addAnsibleUser = true;
+    cmd.giveSudo = true;
+    cmd.addSshKeys = true;
     expect(
         cmd.toString(),
         equals(
-            "Pre-deploy tasks (add default user, add sudo permissions, setup '/etc/hosts', setup solrs limits)"));
+            "Pre-deploy tasks (add default user, add ssh keys, add sudo permissions, setup '/etc/hosts', setup solr limits, additional deps install)"));
   });
 
   test('Test post-cmd to String', () {
