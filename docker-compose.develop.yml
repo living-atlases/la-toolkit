@@ -11,6 +11,10 @@ services:
     ports:
       - "20100:2010"
       - "20110:20110"
+    environment:
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      # Useful for having logs with local time
+      TZ: "Europe/Copenhagen"
     volumes:
       # mkdir -p ./la-toolkit-data/config/ ./la-toolkit-data/logs/ ./la-toolkit-data/ssh/
       - ./la-toolkit-data/config/:/home/ubuntu/ansible/la-inventories/:rw
