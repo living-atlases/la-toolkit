@@ -7,13 +7,6 @@ class Dependencies {
   static const alaInstall = Component.alaInstall;
   static const generator = Component.laGenerator;
 
-  /*
-  static Map<String, Map<Component, String>> deps = {
-    '> 1.0.22': {alaInstall: '>=2.0.6', generator: '>= 1.1.36'},
-    '< 1.0.22': {alaInstall: '<2.0.6', generator: '>= 1.1.37'},
-    '> 1.0.23': {alaInstall: '>=2.0.6', generator: '>= 1.1.37'}
-  }; */
-
   static Map<VersionConstraint, Map<Component, VersionConstraint>> deps = {
     vc('>= 1.0.22 < 1.0.23'): {
       alaInstall: vc('>= 2.0.6'),
