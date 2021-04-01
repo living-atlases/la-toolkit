@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 imageName="la-toolkit"
 projectName="la-toolkit"
-publicPort=2010
-url="http://localhost:$publicPort"
 
 # Kills all running containers of an image and then removes them.
 cleanAll () {
@@ -90,6 +88,11 @@ update () {
 
 openSite () {
   printf 'Opening site'
+  publicPort=2010
+  if [[ $ENVIRONMENT != "release" ]]; then
+    publicProt=20100
+  fi
+  url="http://localhost:$publicPort"
   until $(curl --output /dev/null --silent --fail $url); do
     printf '.'
     sleep 1
