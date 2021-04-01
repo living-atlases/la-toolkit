@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:la_toolkit/utils/cardContants.dart';
+import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TipsCard extends StatelessWidget {

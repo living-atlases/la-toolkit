@@ -8,8 +8,7 @@ import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
+import 'package:la_toolkit/models/serviceLinkDesc.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -95,45 +94,31 @@ class ProjectDrawer extends StatelessWidget {
   }
 
   List<Widget> _createProjectLinks(LAProject currentProject) {
-    return currentProject
-        .getServicesNameListInUse()
-        .where((nameInt) =>
-            !LAServiceDesc.get(nameInt).withoutUrl &&
-            nameInt != LAServiceName.branding.toS())
-        .map((nameInt) {
-      LAServiceDesc desc = LAServiceDesc.get(nameInt);
-      String url = currentProject
-          .getService(nameInt)
-          .fullUrl(currentProject.useSSL, currentProject.domain);
-
-      String name = StringUtils.capitalize(desc.name);
-      List<Widget> allServices = List<Widget>.empty(growable: true);
-      String? help = nameInt == LAServiceName.solr.toS()
-          ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
-          : null;
-      ListTileLink mainServices = _createServiceTileLink(
-          name: name,
-          icon: desc.icon,
-          url: url,
-          admin: desc.admin,
-          alaAdmin: desc.alaAdmin,
-          help: help);
-      // This is for userdetails, apikeys, etc
-      if (nameInt != LAServiceName.cas.toS()) allServices.add(mainServices);
-      // print('service: $nameInt, url: $url, help: $help');
-      desc.subServices.forEach((sub) => allServices.add(_createServiceTileLink(
-            name: sub.name,
-            icon: sub.icon,
-            url: url + sub.path,
-            admin: sub.admin,
-            alaAdmin: sub.alaAdmin,
-          )));
-      return Column(children: allServices);
-    }).toList();
+    return [
+      for (var serviceDesc in currentProject.linkList)
+        ServiceListTileLink(desc: serviceDesc)
+    ];
   }
+}
 
-  ListTileLink _createServiceTileLink(
-      {icon, name, url, admin, alaAdmin, String? help}) {
+class ServiceListTileLink extends StatelessWidget {
+  final IconData icon;
+  final String name;
+  final String url;
+  final bool admin;
+  final bool alaAdmin;
+  final String? help;
+
+  ServiceListTileLink({required ServiceLinkDesc desc})
+      : this.icon = desc.icon,
+        this.name = desc.name,
+        this.url = desc.name,
+        this.admin = desc.admin,
+        this.alaAdmin = desc.alaAdmin,
+        this.help = desc.help;
+
+  @override
+  Widget build(BuildContext context) {
     return ListTileLink(
       icon: Icon(icon),
       title: name,
@@ -149,7 +134,7 @@ class ProjectDrawer extends StatelessWidget {
           : null,
       trailingIcon: help != null
           ? HelpIcon(
-              wikipage: help,
+              wikipage: help!,
             )
           : admin
               ? IconButton(

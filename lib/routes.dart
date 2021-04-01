@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/logsPage.dart';
+import 'package:la_toolkit/portalStatusPage.dart';
 import 'package:la_toolkit/postDeployPage.dart';
 import 'package:la_toolkit/preDeployPage.dart';
 import 'package:la_toolkit/projectEditPage.dart';
@@ -44,7 +45,8 @@ class Routes {
           DeployLocation(),
           PreDeployLocation(),
           PostDeployLocation(),
-          DeployResultsLocation()
+          DeployResultsLocation(),
+          PortalStatusLocation()
         ]);
 
   static final Routes _instance = Routes._privateConstructor();
@@ -205,6 +207,19 @@ class DeployResultsLocation extends NamedBeamLocation {
         BeamPage(
           key: ValueKey(route),
           child: DeployResultsPage(),
+        )
+      ];
+}
+
+class PortalStatusLocation extends NamedBeamLocation {
+  @override
+  String get route => PortalStatusPage.routeName;
+
+  @override
+  List<BeamPage> pagesBuilder(BuildContext context) => [
+        BeamPage(
+          key: ValueKey(route),
+          child: PortalStatusPage(),
         )
       ];
 }

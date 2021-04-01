@@ -7,7 +7,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
-import 'package:la_toolkit/utils/cardContants.dart';
+import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:mdi/mdi.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';

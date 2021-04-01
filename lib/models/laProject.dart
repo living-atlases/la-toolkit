@@ -7,6 +7,7 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/serviceLinkDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
@@ -262,6 +263,7 @@ lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.inhCmd.toString() : 'none'} 
 servers (${servers.length}): ${servers.join('| ')}
 servers-services: $sToS  
 services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
+services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().join(', ')}]
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
   }
 
@@ -617,5 +619,38 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   String suggestDirName() {
     return StringUtils.suggestDirName(shortName: shortName, uuid: uuid);
+  }
+
+  List<ServiceLinkDesc> get linkList {
+    List<ServiceLinkDesc> allServices = [];
+    getServicesNameListInUse()
+        /* .where((nameInt) =>
+            !LAServiceDesc.get(nameInt).withoutUrl &&
+            nameInt != LAServiceName.branding.toS()) */
+        .forEach((nameInt) {
+      LAServiceDesc desc = LAServiceDesc.get(nameInt);
+      String url = getService(nameInt).fullUrl(useSSL, domain);
+      String name = StringUtils.capitalize(desc.name);
+      String? help = nameInt == LAServiceName.solr.toS()
+          ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
+          : null;
+      if (nameInt != LAServiceName.cas.toS())
+        allServices.add(ServiceLinkDesc(
+            name: name,
+            icon: desc.icon,
+            url: url,
+            admin: desc.admin,
+            alaAdmin: desc.alaAdmin,
+            help: help));
+      // This is for userdetails, apikeys, etc
+      desc.subServices.forEach((sub) => allServices.add(ServiceLinkDesc(
+            name: sub.name,
+            icon: sub.icon,
+            url: url + sub.path,
+            admin: sub.admin,
+            alaAdmin: sub.alaAdmin,
+          )));
+    });
+    return allServices;
   }
 }

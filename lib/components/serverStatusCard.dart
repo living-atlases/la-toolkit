@@ -2,12 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/utils/cardContants.dart';
+import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:mdi/mdi.dart';
 
-class ServerDiagram extends StatelessWidget {
+class ServerStatusCard extends StatelessWidget {
   final LAServer server;
-  ServerDiagram(this.server);
+  final bool extendedStatus;
+  ServerStatusCard(this.server, this.extendedStatus);
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +42,17 @@ class ServerDiagram extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _createStatus(
+                        SimpleServerStatusItem(
                             "REACHABLE",
                             server.reachable,
                             'Ping to this server works great',
                             'I cannot reach this server, review your IP and ssh configuration for this server'),
-                        _createStatus(
+                        SimpleServerStatusItem(
                             "SSH",
                             server.sshReachable,
                             'SSH access to this server is ok',
                             'I cannot SSH to this server, review your SSH config and keys for this server'),
-                        _createStatus(
+                        SimpleServerStatusItem(
                             "SUDO",
                             server.sudoEnabled,
                             'SUDO is enabled for this server',
@@ -59,9 +60,18 @@ class ServerDiagram extends StatelessWidget {
                       ])
                 ]))));
   }
+}
 
-  _createStatus(
-      String text, ServiceStatus status, String successHint, String errorHint) {
+class SimpleServerStatusItem extends StatelessWidget {
+  final String text;
+  final ServiceStatus status;
+  final String successHint;
+  final String errorHint;
+  SimpleServerStatusItem(
+      this.text, this.status, this.successHint, this.errorHint);
+
+  @override
+  Widget build(BuildContext context) {
     bool ready = status == ServiceStatus.success;
     Color readyColor = ready ? LAColorTheme.up : LAColorTheme.down;
     return Tooltip(

@@ -21,7 +21,7 @@ import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
 import 'components/scrollPanel.dart';
-import 'components/serverDiagram.dart';
+import 'components/serversStatusPanel.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
@@ -89,6 +89,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               },
               onGenInvProject: (project) =>
                   store.dispatch(GenerateInvProject(project)),
+              onPortalStatus: () =>
+                  BeamerCond.of(context, PortalStatusLocation()),
               onTestConnProject: (project, silence) {
                 if (!silence) context.showLoaderOverlay();
                 store.dispatch(TestConnectivityProject(project, () {
@@ -165,12 +167,14 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 action: () => vm.onPostDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.fact_check),
-                title: "Test Services",
-                action: () => {}),
-            Tool(
+                title: "Portal Status",
+                tooltip: "Check your portal servers and services status",
+                enabled: AppUtils.isDev(),
+                action: () => vm.onPortalStatus()),
+            /* Tool(
                 icon: const Icon(Icons.pie_chart),
                 title: "Stats",
-                action: () => {}),
+                action: () => {}), */
             Tool(
                 icon: const Icon(Icons.file_download),
                 tooltip: AppUtils.isDemo()
@@ -252,10 +256,6 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
   }
 
   void _showServersStatus(BuildContext context, LAProject currentProject) {
-    List<Widget> serversWidgets = currentProject
-        .serversWithServices()
-        .map((server) => ServerDiagram(server))
-        .toList();
     bool allReady = currentProject.allServersWithServicesReady();
     context.hideLoaderOverlay();
     Alert(
@@ -277,10 +277,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   : "Uuppps! It seems that some servers are not yet ready",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
           SizedBox(height: 20),
-          Wrap(children: serversWidgets)
-        ])
-            //..addAll(),
-            ),
+          ServersStatusPanel(extendedStatus: false)
+        ])),
         buttons: [
           DialogButton(
             width: 500,
@@ -310,6 +308,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project, bool) onTestConnProject;
   final void Function(LAProject project) onPreDeployTasks;
   final void Function(LAProject project) onPostDeployTasks;
+  final void Function() onPortalStatus;
 
   _ProjectPageViewModel(
       {required this.project,
@@ -324,7 +323,8 @@ class _ProjectPageViewModel {
       required this.onViewLogs,
       required this.onDeployProject,
       required this.onGenInvProject,
-      required this.onTestConnProject});
+      required this.onTestConnProject,
+      required this.onPortalStatus});
 
   @override
   bool operator ==(Object other) =>
