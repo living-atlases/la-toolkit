@@ -15,9 +15,11 @@ import 'package:la_toolkit/utils/regexp.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:uuid/uuid.dart';
 
+import 'basicService.dart';
 import 'cmdHistoryDetails.dart';
 import 'laServer.dart';
 import 'laService.dart';
+import 'laServiceDepsDesc.dart';
 import 'laVariable.dart';
 import 'laVariableDesc.dart';
 
@@ -623,6 +625,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   List<ServiceLinkDesc> get linkList {
     List<ServiceLinkDesc> allServices = [];
+    Map<String, LAServiceDepsDesc> depsDesc =
+        LAServiceDepsDesc.getDeps(alaInstallRelease);
     getServicesNameListInUse()
         /* .where((nameInt) =>
             !LAServiceDesc.get(nameInt).withoutUrl &&
@@ -638,10 +642,18 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           ? serviceTooltip(name)
           : "This is protected by default, see our wiki for more info";
       // LAService service = getService(nameInt);
+
+      LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
+      List<BasicService>? deps;
+      if (mainDeps != null)
+        deps =
+            LAServiceDepsDesc.getDeps(alaInstallRelease)[nameInt]!.basicDepends;
       String hostnames = getHostname(nameInt).join(', ');
       if (nameInt != LAServiceName.cas.toS())
         allServices.add(ServiceLinkDesc(
             name: name,
+            nameInt: nameInt,
+            deps: deps,
             tooltip: tooltip,
             subtitle: hostnames,
             icon: desc.icon,
@@ -652,6 +664,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       // This is for userdetails, apikeys, etc
       desc.subServices.forEach((sub) => allServices.add(ServiceLinkDesc(
             name: sub.name,
+            // This maybe is not correct
+            nameInt: nameInt,
+            deps: deps,
             tooltip: serviceTooltip(name),
             subtitle: hostnames,
             icon: sub.icon,

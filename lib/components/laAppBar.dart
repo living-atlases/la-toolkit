@@ -16,7 +16,8 @@ class LAAppBar extends AppBar {
       bool showBack: false,
       List<Widget>? actions,
       Widget? leading,
-      IconData? titleIcon})
+      IconData? titleIcon,
+      PreferredSize? bottom})
       : super(
             /*
             // This breaks the Navigation
@@ -35,6 +36,7 @@ class LAAppBar extends AppBar {
             toolbarHeight: kToolbarHeight * 1.2,
             actions: actions ?? List<Widget>.empty(growable: true),
             leading: leading,
+            bottom: bottom,
             title: SizedBox(
               height: kToolbarHeight * 1.2,
               child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [

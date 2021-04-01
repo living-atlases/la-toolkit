@@ -16,6 +16,7 @@ import 'package:mdi/mdi.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import 'components/appSnackBarMessage.dart';
 import 'components/generatorSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
@@ -89,8 +90,12 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               },
               onGenInvProject: (project) =>
                   store.dispatch(GenerateInvProject(project)),
-              onPortalStatus: () =>
-                  BeamerCond.of(context, PortalStatusLocation()),
+              onPortalStatus: (project) {
+                store.dispatch(
+                    ShowSnackBar(AppSnackBarMessage("Under development")));
+                store.dispatch(TestConnectivityProject(project, () {}));
+                BeamerCond.of(context, PortalStatusLocation());
+              },
               onTestConnProject: (project, silence) {
                 if (!silence) context.showLoaderOverlay();
                 store.dispatch(TestConnectivityProject(project, () {
@@ -170,7 +175,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 title: "Portal Status",
                 tooltip: "Check your portal servers and services status",
                 enabled: project.fstDeployed,
-                action: () => vm.onPortalStatus()),
+                action: () => vm.onPortalStatus(vm.project)),
             /* Tool(
                 icon: const Icon(Icons.pie_chart),
                 title: "Stats",
@@ -308,7 +313,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project, bool) onTestConnProject;
   final void Function(LAProject project) onPreDeployTasks;
   final void Function(LAProject project) onPostDeployTasks;
-  final void Function() onPortalStatus;
+  final void Function(LAProject project) onPortalStatus;
 
   _ProjectPageViewModel(
       {required this.project,

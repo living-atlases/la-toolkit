@@ -143,6 +143,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  circular_countdown_timer:
+    dependency: "direct main"
+    description:
+      name: circular_countdown_timer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   cli_util:
     dependency: transitive
     description:
@@ -386,6 +393,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_xlider:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "6c8fd24"
+      resolved-ref: "6c8fd246647fc0e863892a2348384a79dca54391"
+      url: "https://github.com/Ksomething/flutter_xlider.git"
+    source: git
+    version: "3.4.0"
   glob:
     dependency: transitive
     description:

@@ -1,15 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:la_toolkit/components/defDivider.dart';
+import 'package:la_toolkit/components/serviceStatusCard.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:mdi/mdi.dart';
 
 class ServerStatusCard extends StatelessWidget {
   final LAServer server;
   final bool extendedStatus;
-  ServerStatusCard(this.server, this.extendedStatus);
+  final List<String> services;
+  ServerStatusCard(this.server, this.services, this.extendedStatus);
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +25,10 @@ class ServerStatusCard extends StatelessWidget {
             // color: Colors.black12,
             margin: EdgeInsets.all(10),
             child: Padding(
-                padding: EdgeInsets.all(5),
+                padding: EdgeInsets.all(extendedStatus ? 10 : 5),
                 child: Row(children: [
                   Icon(Mdi.serverNetwork,
-                      size: 30,
+                      size: extendedStatus ? 40 : 30,
                       color: server.isReady()
                           ? LAColorTheme.up
                           : LAColorTheme.down),
@@ -34,7 +40,28 @@ class ServerStatusCard extends StatelessWidget {
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16)),
                       SizedBox(height: 5),
-                      Text(server.ip),
+                      Text("IP: ${server.ip}", style: GoogleFonts.robotoMono()),
+                      if (extendedStatus) DefDivider(),
+                      if (extendedStatus)
+                        Container(
+                            width: 140,
+                            child: RichText(
+                              overflow: TextOverflow.visible,
+                              softWrap: true,
+                              text: TextSpan(
+                                  text: services
+                                      .map((nameInt) => StringUtils.capitalize(
+                                          LAServiceDesc.get(nameInt).name))
+                                      .toList()
+                                      .join(', '),
+                                  style: ServiceStatusCard.subtitle),
+                            ))
+                      /* for (var service in services)
+                          Text(
+                            StringUtils.capitalize(
+                                LAServiceDesc.map[service]!.name),
+                            textAlign: TextAlign.right,
+                          )*/
                     ],
                   ),
                   SizedBox(width: 20),

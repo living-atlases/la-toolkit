@@ -26,7 +26,10 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
         builder: (BuildContext context, _ServersStatusPanelViewModel vm) {
           return Wrap(children: [
             for (var server in vm.project.serversWithServices())
-              ServerStatusCard(server, widget.extendedStatus)
+              ServerStatusCard(
+                  server,
+                  vm.project.getServerServices(serverUuid: server.uuid),
+                  widget.extendedStatus)
           ]);
         });
   }

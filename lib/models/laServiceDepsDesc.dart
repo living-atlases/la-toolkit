@@ -101,13 +101,22 @@ class LAServiceDepsDesc {
       basicDepends: [Java.v8],
     )
   };
-
+/*
   static final Map<String, Map<String, LAServiceDepsDesc>> map = {
     "v2.0.6": v2_0_4,
     "v2.0.5": v2_0_4,
     "v2.0.4": v2_0_4,
     "latest": v2_0_4,
-  };
+   }; */
+
+  static Map<String, LAServiceDepsDesc> getDeps(String? version) {
+    switch (version) {
+      case "v2.0.6":
+        return v2_0_4;
+      default:
+        return v2_0_4;
+    }
+  }
 
   // use https://pub.dev/packages/pub_semver/example
   // toolkit 1.0.22, ala-install 2.0.6 - gen 1.1.36

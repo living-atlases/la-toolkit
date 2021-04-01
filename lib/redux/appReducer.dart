@@ -215,7 +215,7 @@ AppState _editService(AppState state, EditService action) {
 
 AppState _testConnectivityProject(
     AppState state, TestConnectivityProject action) {
-  return state;
+  return state.copyWith(loading: true);
 }
 
 AppState _onTestConnectivityResults(
@@ -247,6 +247,7 @@ AppState _onTestConnectivityResults(
 
   return state.copyWith(
       currentProject: currentProject,
+      loading: false,
       projects: state.projects
           .map((project) =>
               project.uuid == currentProject.uuid ? currentProject : project)

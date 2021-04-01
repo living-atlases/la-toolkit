@@ -12,6 +12,7 @@ import 'package:simple_moment/simple_moment.dart';
 
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
+import 'components/statusIcon.dart';
 
 class LogsHistoryPage extends StatelessWidget {
   static const routeName = "logs";
@@ -106,7 +107,7 @@ class LogItem extends StatelessWidget {
         ),
         leading: Padding(
             padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-            child: Icon(Icons.circle, size: 12, color: log.result.iconColor)));
+            child: StatusIcon(log.result)));
   }
 }
 

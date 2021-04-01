@@ -28,6 +28,7 @@ class _SandboxPageState extends State<SandboxPage> {
       List<DropdownMenuItem<String>> releases = [];
       vm.state.alaInstallReleases.forEach((element) =>
           releases.add(DropdownMenuItem(child: Text(element), value: element)));
+
       return Scaffold(
           key: _scaffoldKey,
           // backgroundColor: Colors.white,

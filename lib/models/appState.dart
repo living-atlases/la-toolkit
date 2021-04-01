@@ -59,6 +59,8 @@ class AppState {
   final PackageInfo? pkgInfo;
   @JsonKey(ignore: true)
   final String? backendVersion;
+  @JsonKey(ignore: true)
+  final bool loading;
 
   AppState(
       {List<LAProject>? projects,
@@ -73,6 +75,7 @@ class AppState {
       DeployCmd? repeatCmd,
       this.pkgInfo,
       this.backendVersion,
+      this.loading = false,
       List<SshKey>? sshKeys})
       : projects = projects ?? [],
         sshKeys = sshKeys ?? [],
@@ -99,6 +102,7 @@ class AppState {
           currentStep == other.currentStep &&
           repeatCmd == other.repeatCmd &&
           pkgInfo == other.pkgInfo &&
+          loading == other.loading &&
           backendVersion == other.backendVersion &&
           listEquals(projects, other.projects) &&
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
@@ -116,6 +120,7 @@ class AppState {
       repeatCmd.hashCode ^
       pkgInfo.hashCode ^
       backendVersion.hashCode ^
+      loading.hashCode ^
       ListEquality().hash(appSnackBarMessages) ^
       ListEquality().hash(projects) ^
       ListEquality().hash(alaInstallReleases) ^
@@ -141,7 +146,7 @@ class AppState {
   String toString() {
     return '''
 
-=== AppState ===
+=== AppState ${loading ? '(loading)' : ''} ===
 view status: $status , currentStep: $currentStep, failedToLoad: $failedLoad, appVersion: ${pkgInfo != null ? pkgInfo!.version : 'unknown'}, backendVersion ${backendVersion ?? ''}
 LA projects: ${projects.length} 
 ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}

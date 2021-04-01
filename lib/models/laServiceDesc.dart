@@ -347,8 +347,7 @@ class LAServiceDesc {
     if (otherService == this) return true;
 
     Map<String, LAServiceDepsDesc> deps =
-        LAServiceDepsDesc.map[alaInstallVersion] ??
-            LAServiceDepsDesc.map["v2.0.4"]!;
+        LAServiceDepsDesc.getDeps(alaInstallVersion);
 
     deps[this.nameInt]!.basicDepends.forEach((service) {
       deps[otherService.nameInt]!.basicDepends.forEach((otherService) {
