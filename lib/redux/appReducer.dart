@@ -4,6 +4,7 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
@@ -277,8 +278,7 @@ AppState _showDeployProjectResults(
   LAProject currentProject = state.currentProject;
   currentProject.lastCmdEntry = action.cmdHistoryEntry;
   currentProject.lastCmdDetails = action.results;
-  bool fstDeployed = currentProject.lastCmdDetails!.numFailures() != null &&
-      currentProject.lastCmdDetails!.numFailures()! < 10;
+  bool fstDeployed = currentProject.lastCmdDetails!.numFailures() != null;
   currentProject.fstDeployed = currentProject.fstDeployed || fstDeployed;
   action.cmdHistoryEntry.result = currentProject.lastCmdDetails!.result;
   if (action.fstRetrieved) {

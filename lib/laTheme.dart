@@ -38,11 +38,10 @@ class LAColorTheme {
             ButtonTextTheme.primary, //  <-- this auto selects the right color
       ));
 
-  static const Color inactive = Colors.blueGrey;
-
+  static const inactive = Colors.blueGrey;
+  static final Color link = Colors.blueAccent.shade100;
   static final unDeployedColor = LAColorTheme.laPalette.shade800;
   static final deployedColor = Colors.brown;
-
   static final up = Colors.green.shade400;
   static final down = Colors.red.shade300;
   static final unDeployedTextStyle = TextStyle(color: unDeployedColor);

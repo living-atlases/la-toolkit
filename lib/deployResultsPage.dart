@@ -81,7 +81,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                             children: [
                               const SizedBox(height: 20),
                               Text(cmdHistoryDetails.cmd!.inhCmd.toString(),
-                                  style: DeployUtils.cmdTitleStyle),
+                                  style: UiUtils.cmdTitleStyle),
                               const SizedBox(height: 20),
                               Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -111,13 +111,13 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                                             CmdResult.aborted
                                                         ? "The command didn't finished correctly"
                                                         : "The command failed for some reason",
-                                        style: DeployUtils.titleStyle)
+                                        style: UiUtils.titleStyle)
                                   ]),
                               const SizedBox(height: 20),
                               ResultsChart(cmdHistoryDetails.resultsTotals),
                               SizedBox(height: 20),
                               const Text('Task details:',
-                                  style: DeployUtils.subtitleStyle),
+                                  style: UiUtils.subtitleStyle),
                               const SizedBox(height: 20),
                               Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,13 +125,13 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                   children: resultsDetails),
                               const SizedBox(height: 20),
                               const Text('Command executed:',
-                                  style: DeployUtils.subtitleStyle),
+                                  style: UiUtils.subtitleStyle),
                               const SizedBox(height: 20),
                               TermCommandDesc(
                                   cmdHistoryDetails: cmdHistoryDetails),
                               const SizedBox(height: 20),
                               Text('Ansible Logs:',
-                                  style: DeployUtils.subtitleStyle),
+                                  style: UiUtils.subtitleStyle),
                               const SizedBox(height: 20),
                               Container(
                                   height: 600,

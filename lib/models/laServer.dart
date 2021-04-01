@@ -5,9 +5,9 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:uuid/uuid.dart';
 
-part 'laServer.g.dart';
+import 'laService.dart';
 
-enum ServiceStatus { unknown, success, failed }
+part 'laServer.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()

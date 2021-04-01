@@ -634,9 +634,16 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       String? help = nameInt == LAServiceName.solr.toS()
           ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
           : null;
+      String tooltip = name != "Index"
+          ? serviceTooltip(name)
+          : "This is protected by default, see our wiki for more info";
+      // LAService service = getService(nameInt);
+      String hostnames = getHostname(nameInt).join(', ');
       if (nameInt != LAServiceName.cas.toS())
         allServices.add(ServiceLinkDesc(
             name: name,
+            tooltip: tooltip,
+            subtitle: hostnames,
             icon: desc.icon,
             url: url,
             admin: desc.admin,
@@ -645,6 +652,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       // This is for userdetails, apikeys, etc
       desc.subServices.forEach((sub) => allServices.add(ServiceLinkDesc(
             name: sub.name,
+            tooltip: serviceTooltip(name),
+            subtitle: hostnames,
             icon: sub.icon,
             url: url + sub.path,
             admin: sub.admin,
@@ -653,4 +662,6 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     });
     return allServices;
   }
+
+  String serviceTooltip(String name) => "Open the $name service";
 }

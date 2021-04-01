@@ -5,6 +5,8 @@ import 'package:la_toolkit/models/appState.dart';
 
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
+import 'components/servicesStatusPanel.dart';
+import 'components/textTitle.dart';
 import 'models/laProject.dart';
 
 class PortalStatusPage extends StatelessWidget {
@@ -37,7 +39,15 @@ class PortalStatusPage extends StatelessWidget {
                     ),
                     Expanded(
                         flex: 8, // 80%,
-                        child: ServersStatusPanel(extendedStatus: true)),
+                        child: Column(children: [
+                          // Add
+                          // https://pub.dev/packages/circular_countdown_timer
+                          // or similar and a slider
+                          TextTitle(text: "Servers"),
+                          ServersStatusPanel(extendedStatus: true),
+                          TextTitle(text: "Services", separator: true),
+                          ServicesStatusPanel(),
+                        ])),
                     Expanded(
                       flex: 1, // 10%
                       child: Container(),

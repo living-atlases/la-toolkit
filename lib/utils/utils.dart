@@ -48,6 +48,17 @@ class AssetsUtils {
 }
 
 class UiUtils {
+  static const TextStyle cmdTitleStyle = TextStyle(
+    fontSize: 28,
+    // fontWeight: FontWeight.bold,
+  );
+  static const TextStyle titleStyle = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+  static const TextStyle subtitleStyle =
+      TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
+
   static showAlertDialog(BuildContext context, VoidCallback onConfirm) {
     // set up the buttons
     Widget cancelButton = TextButton(
@@ -125,18 +136,6 @@ class UiUtils {
 }
 
 class DeployUtils {
-  static const TextStyle subtitleStyle =
-      TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
-
-  static const TextStyle cmdTitleStyle = TextStyle(
-    fontSize: 28,
-    // fontWeight: FontWeight.bold,
-  );
-  static const TextStyle titleStyle = TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-  );
-
   static doDeploy(
       {required BuildContext context,
       required var store,

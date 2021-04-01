@@ -11,9 +11,9 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/serviceLinkDesc.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../routes.dart';
+import 'adminIconButton.dart';
 
 class ProjectDrawer extends StatelessWidget {
   @override
@@ -104,6 +104,7 @@ class ProjectDrawer extends StatelessWidget {
 class ServiceListTileLink extends StatelessWidget {
   final IconData icon;
   final String name;
+  final String tooltip;
   final String url;
   final bool admin;
   final bool alaAdmin;
@@ -112,6 +113,7 @@ class ServiceListTileLink extends StatelessWidget {
   ServiceListTileLink({required ServiceLinkDesc desc})
       : this.icon = desc.icon,
         this.name = desc.name,
+        this.tooltip = desc.tooltip,
         this.url = desc.name,
         this.admin = desc.admin,
         this.alaAdmin = desc.alaAdmin,
@@ -122,25 +124,16 @@ class ServiceListTileLink extends StatelessWidget {
     return ListTileLink(
       icon: Icon(icon),
       title: name,
-      tooltip: name != "Index"
-          ? "Open the $name service"
-          : "This is protected by default, see our wiki for more info",
+      tooltip: tooltip,
       url: url,
-      additionalTrailingIcon: alaAdmin
-          ? new IconButton(
-              icon: Icon(Icons.admin_panel_settings_outlined),
-              tooltip: "alaAdmin section",
-              onPressed: () async => await launch(url + '/alaAdmin'))
-          : null,
+      additionalTrailingIcon:
+          alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
       trailingIcon: help != null
           ? HelpIcon(
               wikipage: help!,
             )
           : admin
-              ? IconButton(
-                  icon: Icon(Icons.admin_panel_settings_rounded),
-                  tooltip: "Admin section",
-                  onPressed: () async => await launch(url + '/admin'))
+              ? AdminIconButton(url: url, alaAdmin: false)
               : null,
     );
   }

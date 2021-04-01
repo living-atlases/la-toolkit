@@ -163,13 +163,13 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.house_siding),
                 title: "Post-Deploy Tasks",
-                enabled: project.allServersWithServicesReady(),
+                enabled: project.fstDeployed,
                 action: () => vm.onPostDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.fact_check),
                 title: "Portal Status",
                 tooltip: "Check your portal servers and services status",
-                enabled: AppUtils.isDev(),
+                enabled: project.fstDeployed,
                 action: () => vm.onPortalStatus()),
             /* Tool(
                 icon: const Icon(Icons.pie_chart),
