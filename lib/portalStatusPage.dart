@@ -54,11 +54,11 @@ class PortalStatusPage extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    flex: 1, // 10%
+                    flex: 0, // 10%
                     child: Container(),
                   ),
                   Expanded(
-                      flex: 8, // 80%,
+                      flex: 10, // 80%,
                       child: Column(children: [
                         // Add
                         // https://pub.dev/packages/circular_countdown_timer
@@ -69,7 +69,7 @@ class PortalStatusPage extends StatelessWidget {
                         ServicesStatusPanel(),
                       ])),
                   Expanded(
-                    flex: 1, // 10%
+                    flex: 0, // 10%
                     child: Container(),
                   )
                 ],
