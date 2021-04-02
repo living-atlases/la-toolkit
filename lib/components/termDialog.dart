@@ -88,15 +88,21 @@ class TermDialog {
       leading: const Icon(Mdi.console),
       title: Text('Console'),
       onTap: () {
-        context.showLoaderOverlay();
-        Api.term(onStart: () {
-          context.hideLoaderOverlay();
-          TermDialog.show(context);
-        }, onError: (error) {
-          context.hideLoaderOverlay();
-          UiUtils.termErrorAlert(context, error);
-        });
+        openTerm(context);
       },
+    );
+  }
+
+  // Opens a bash or a ssh on server
+  static void openTerm(BuildContext context, [String? projectUuid, String? server]) {
+    context.showLoaderOverlay();
+    Api.term(onStart: () {
+      context.hideLoaderOverlay();
+      TermDialog.show(context);
+    }, onError: (error) {
+      context.hideLoaderOverlay();
+      UiUtils.termErrorAlert(context, error);
+    }, projectUuid: projectUuid, server: server
     );
   }
 }

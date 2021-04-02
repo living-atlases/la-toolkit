@@ -187,14 +187,20 @@ class Api {
   }
 
   static Future<void> term(
-      {required VoidCallback onStart, required ErrorCallback onError}) async {
+      {required VoidCallback onStart,
+      required ErrorCallback onError,
+      String? server,
+      String? projectUuid}) async {
     if (AppUtils.isDemo()) {
       onStart();
       return;
     }
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/term");
     http
-        .get(url)
+        .post(url,
+            headers: {'Content-type': 'application/json'},
+            body: utf8
+                .encode(json.encode({'uuid': projectUuid, 'server': server})))
         .then((response) => response.statusCode == 200
             ? onStart()
             : onError(response.statusCode))

@@ -349,8 +349,8 @@ class LAServiceDesc {
     Map<String, LAServiceDepsDesc> deps =
         LAServiceDepsDesc.getDeps(alaInstallVersion);
 
-    deps[this.nameInt]!.basicDepends.forEach((service) {
-      deps[otherService.nameInt]!.basicDepends.forEach((otherService) {
+    deps[this.nameInt]!.serviceDepends.forEach((service) {
+      deps[otherService.nameInt]!.serviceDepends.forEach((otherService) {
         compatible = compatible && service.isCompatible(otherService);
       });
     });

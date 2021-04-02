@@ -1,10 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/adminIconButton.dart';
-import 'package:la_toolkit/components/statusIcon.dart';
 import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/basicService.dart';
-import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/serviceLinkDesc.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
@@ -40,8 +37,6 @@ class ServiceStatusCard extends StatelessWidget {
                       Text(service.subtitle, style: subtitle),
                     ],
                   ),
-                  if (service.deps != null) DepsPanel(service.deps!),
-                  SizedBox(width: 20),
                   ServiceSmallLinks(service: service, iconDefSize: iconDefSize),
                 ]))));
   }
@@ -101,26 +96,5 @@ class SimpleServiceStatusItem extends StatelessWidget {
     return Row(children: [
       icon,
     ]);
-  }
-}
-
-class DepsPanel extends StatelessWidget {
-  final List<BasicService> deps;
-  DepsPanel(this.deps);
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var dep in deps.where((dep) => dep.name != "java"))
-                Row(children: [
-                  StatusIcon(CmdResult.success, size: 10),
-                  SizedBox(width: 3),
-                  Text(dep.name)
-                ])
-            ]));
   }
 }

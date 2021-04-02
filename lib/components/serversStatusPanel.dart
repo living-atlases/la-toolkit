@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/serverStatusCard.dart';
+import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laServer.dart';
 
 class ServersStatusPanel extends StatefulWidget {
   final bool extendedStatus;
@@ -21,15 +23,21 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
         converter: (store) {
           return _ServersStatusPanelViewModel(
             project: store.state.currentProject,
+            openTerm: (project, server) =>
+                TermDialog.openTerm(context, project.uuid, server.name),
           );
         },
         builder: (BuildContext context, _ServersStatusPanelViewModel vm) {
           return Wrap(children: [
             for (var server in vm.project.serversWithServices())
               ServerStatusCard(
-                  server,
-                  vm.project.getServerServices(serverUuid: server.uuid),
-                  widget.extendedStatus)
+                server: server,
+                services:
+                    vm.project.getServerServicesFull(serverUuid: server.uuid),
+                alaInstallVersion: vm.project.alaInstallRelease!,
+                extendedStatus: widget.extendedStatus,
+                onTerm: () => vm.openTerm(vm.project, server),
+              )
           ]);
         });
   }
@@ -37,6 +45,6 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
 
 class _ServersStatusPanelViewModel {
   final LAProject project;
-
-  _ServersStatusPanelViewModel({required this.project});
+  final void Function(LAProject, LAServer) openTerm;
+  _ServersStatusPanelViewModel({required this.project, required this.openTerm});
 }

@@ -4,7 +4,7 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 class StatusIcon extends StatelessWidget {
   final CmdResult type;
   final double size;
-  StatusIcon(this.type, {this.size = 12});
+  const StatusIcon(this.type, {this.size = 12});
 
   @override
   Widget build(BuildContext context) {

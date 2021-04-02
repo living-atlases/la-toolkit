@@ -43,6 +43,7 @@ class PortalStatusPage extends StatelessWidget {
                   preferredSize: Size(double.infinity, 1.0),
                   child: vm.loading
                       ? LinearProgressIndicator(
+                          minHeight: 6,
                           backgroundColor: LAColorTheme.laPaletteAccent,
                         )
                       : Container()),
@@ -51,6 +52,7 @@ class PortalStatusPage extends StatelessWidget {
               FloatingActionButtonLocation.centerDocked,
           body: ScrollPanel(
               withPadding: true,
+              padding: 40,
               child: Row(
                 children: <Widget>[
                   Expanded(

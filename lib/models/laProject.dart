@@ -615,6 +615,11 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     return serverServices[serverUuid]!;
   }
 
+  List<LAService> getServerServicesFull({required String serverUuid}) {
+    List<String> listS = getServerServices(serverUuid: serverUuid);
+    return services.values.where((s) => listS.contains(s.nameInt)).toList();
+  }
+
   Map<String, List<String>> getServerServicesForTest() {
     return serverServices;
   }
@@ -646,8 +651,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
       List<BasicService>? deps;
       if (mainDeps != null)
-        deps =
-            LAServiceDepsDesc.getDeps(alaInstallRelease)[nameInt]!.basicDepends;
+        deps = LAServiceDepsDesc.getDeps(alaInstallRelease)[nameInt]!
+            .serviceDepends;
       String hostnames = getHostname(nameInt).join(', ');
       if (nameInt != LAServiceName.cas.toS())
         allServices.add(ServiceLinkDesc(
