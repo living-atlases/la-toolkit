@@ -196,11 +196,12 @@ class Api {
       return;
     }
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/term");
+    Object? body;
+    if (server != null && projectUuid != null) {
+      body = utf8.encode(json.encode({'uuid': projectUuid, 'server': server}));
+    }
     http
-        .post(url,
-            headers: {'Content-type': 'application/json'},
-            body: utf8
-                .encode(json.encode({'uuid': projectUuid, 'server': server})))
+        .post(url, headers: {'Content-type': 'application/json'}, body: body)
         .then((response) => response.statusCode == 200
             ? onStart()
             : onError(response.statusCode))
