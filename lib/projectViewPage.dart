@@ -174,7 +174,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 icon: const Icon(Icons.fact_check),
                 title: "Portal Status",
                 tooltip: "Check your portal servers and services status",
-                enabled: project.fstDeployed,
+                enabled: project.allServersWithServicesReady(),
                 action: () => vm.onPortalStatus(vm.project)),
             /* Tool(
                 icon: const Icon(Icons.pie_chart),
@@ -191,7 +191,12 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             /*     action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("In Development: come back soon!"),
                 ))), */
-
+            Tool(
+                icon: const Icon(Mdi.pipe),
+                title: "Pipelines",
+                tooltip: "Pipelines for data processing (Not yet developed)",
+                enabled: false,
+                action: () => {}),
             Tool(
                 icon: const Icon(Icons.delete),
                 title: "Delete",

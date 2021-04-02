@@ -678,7 +678,7 @@ void main() {
             p.servers.length == p.getServerServicesForTest().length,
         equals(true));
     expect(p.getService(collectory).suburl, equals('collectory'));
-    expect(p.linkList.length > 0, equals(true));
+    expect(p.prodServices.length > 0, equals(true));
   });
 
   test('Test empty project creation toString should not fail', () {

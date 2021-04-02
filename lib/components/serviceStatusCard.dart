@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/adminIconButton.dart';
 import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/serviceLinkDesc.dart';
+import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ServiceStatusCard extends StatelessWidget {
-  final ServiceLinkDesc service;
+  final ProdServiceDesc service;
   static final TextStyle subtitle = TextStyle(color: LAColorTheme.inactive);
 
   ServiceStatusCard(this.service);
@@ -49,7 +49,7 @@ class ServiceSmallLinks extends StatelessWidget {
     required this.iconDefSize,
   }) : super(key: key);
 
-  final ServiceLinkDesc service;
+  final ProdServiceDesc service;
   final double iconDefSize;
 
   @override

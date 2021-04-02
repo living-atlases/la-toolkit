@@ -2,6 +2,7 @@ import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
+import 'package:la_toolkit/models/hostServicesChecks.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
@@ -210,6 +211,15 @@ class TestConnectivityProject extends AppActions {
   VoidCallback onServersStatusReady;
 
   TestConnectivityProject(this.project, this.onServersStatusReady);
+}
+
+class TestServicesProject extends AppActions {
+  LAProject project;
+  HostsServicesChecks hostsServicesChecks;
+  VoidCallback onServersStatusReady;
+
+  TestServicesProject(
+      this.project, this.hostsServicesChecks, this.onServersStatusReady);
 }
 
 class OnTestConnectivityResults extends AppActions {

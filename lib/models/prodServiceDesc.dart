@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'basicService.dart';
 
-class ServiceLinkDesc {
+class ProdServiceDesc {
   final IconData icon;
   final String name;
   final String nameInt;
@@ -12,8 +12,9 @@ class ServiceLinkDesc {
   final bool alaAdmin;
   final String? help;
   final String subtitle;
+  final List<String> hostnames;
   final List<BasicService>? deps;
-  ServiceLinkDesc({
+  ProdServiceDesc({
     required this.icon,
     required this.name,
     required this.nameInt,
@@ -22,6 +23,7 @@ class ServiceLinkDesc {
     required this.admin,
     required this.alaAdmin,
     required this.subtitle,
+    required this.hostnames,
     this.help,
     required this.deps,
   });

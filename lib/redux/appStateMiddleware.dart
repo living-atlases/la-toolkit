@@ -175,6 +175,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         action.onServersStatusReady();
       });
     }
+    if (action is TestServicesProject) {
+      print("@@@@@@@@@@@@@@@ ${action.hostsServicesChecks} ");
+      await Api.checkHostServices(action.hostsServicesChecks);
+    }
     if (action is OnSshKeysScan) {
       scanSshKeys(store, action.onKeysScanned);
     }

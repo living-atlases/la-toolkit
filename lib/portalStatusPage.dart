@@ -4,13 +4,16 @@ import 'package:la_toolkit/components/serversStatusPanel.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:tuple/tuple.dart';
 
 import 'components/countdownWidget.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/servicesStatusPanel.dart';
 import 'components/textTitle.dart';
+import 'models/hostServicesChecks.dart';
 import 'models/laProject.dart';
+import 'models/prodServiceDesc.dart';
 
 class PortalStatusPage extends StatelessWidget {
   static const routeName = "status";
@@ -22,9 +25,16 @@ class PortalStatusPage extends StatelessWidget {
       converter: (store) {
         return _PortalStatusViewModel(
             project: store.state.currentProject,
+            serverServicesToMonitor:
+                store.state.currentProject.serverServicesToMonitor(),
             loading: store.state.loading,
-            checkServices: () => store.dispatch(
-                TestConnectivityProject(store.state.currentProject, () {})));
+            checkServices: (hostsServicesChecks) {
+              store.dispatch(
+                  TestConnectivityProject(store.state.currentProject, () {
+                store.dispatch(TestServicesProject(
+                    store.state.currentProject, hostsServicesChecks, () {}));
+              }));
+            });
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
         /*if (vm.loading)
@@ -68,7 +78,8 @@ class PortalStatusPage extends StatelessWidget {
                         TextTitle(text: "Servers"),
                         ServersStatusPanel(extendedStatus: true),
                         TextTitle(text: "Services", separator: true),
-                        ServicesStatusPanel(),
+                        ServicesStatusPanel(
+                            services: vm.serverServicesToMonitor.item1),
                       ])),
                   Expanded(
                     flex: 0, // 10%
@@ -76,8 +87,9 @@ class PortalStatusPage extends StatelessWidget {
                   )
                 ],
               )),
-          floatingActionButton:
-              CountDownWidget(onReload: () => vm.checkServices()),
+          floatingActionButton: CountDownWidget(
+              onReload: () =>
+                  vm.checkServices(vm.serverServicesToMonitor.item2)),
         );
       },
     );
@@ -86,13 +98,16 @@ class PortalStatusPage extends StatelessWidget {
 
 class _PortalStatusViewModel {
   final LAProject project;
-  final void Function() checkServices;
+  final Tuple2<List<ProdServiceDesc>, HostsServicesChecks>
+      serverServicesToMonitor;
+  final void Function(HostsServicesChecks) checkServices;
   final bool loading;
 
   _PortalStatusViewModel(
       {required this.project,
       required this.loading,
-      required this.checkServices});
+      required this.checkServices,
+      required this.serverServicesToMonitor});
 
   @override
   bool operator ==(Object other) =>

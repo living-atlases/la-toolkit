@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
+import 'package:la_toolkit/models/hostServicesChecks.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
@@ -330,5 +331,25 @@ class Api {
 
   static void setCmdVar(LAProject project, cmd, String varName) {
     cmd[varName] = project.getVariableValue(varName)!.toString();
+  }
+
+  static Future<Map<String, dynamic>> checkHostServices(
+      HostsServicesChecks hostsServicesChecks) async {
+    if (AppUtils.isDemo()) return {};
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/test-host-services");
+    Response response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({
+          'hostsServices': hostsServicesChecks.toJson(),
+        })));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> l = json.decode(response.body);
+      l.keys.forEach((element) {
+        // print("out: ${l[element]['out']}");
+      });
+      return l;
+    } else {
+      return {};
+    }
   }
 }

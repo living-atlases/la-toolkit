@@ -8,7 +8,7 @@ import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/serviceLinkDesc.dart';
+import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
@@ -95,7 +95,7 @@ class ProjectDrawer extends StatelessWidget {
 
   List<Widget> _createProjectLinks(LAProject currentProject) {
     return [
-      for (var serviceDesc in currentProject.linkList)
+      for (var serviceDesc in currentProject.prodServices)
         ServiceListTileLink(desc: serviceDesc)
     ];
   }
@@ -110,7 +110,7 @@ class ServiceListTileLink extends StatelessWidget {
   final bool alaAdmin;
   final String? help;
 
-  ServiceListTileLink({required ServiceLinkDesc desc})
+  ServiceListTileLink({required ProdServiceDesc desc})
       : this.icon = desc.icon,
         this.name = desc.name,
         this.tooltip = desc.tooltip,

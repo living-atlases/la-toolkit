@@ -13,23 +13,31 @@ class LAServiceDepsDesc {
   static final Map<String, LAServiceDepsDesc> v2_0_4 = {
     LAServiceName.collectory.toS(): LAServiceDepsDesc(
       nameInt: "collectory",
-      serviceDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
     ),
     LAServiceName.ala_hub.toS(): LAServiceDepsDesc(
       nameInt: "ala_hub",
-      serviceDepends: [Java.v8, Tomcat.v8, Nginx.def],
+      serviceDepends: [
+        Java.v8,
+        Nginx.def,
+        Tomcat.v8,
+      ],
     ),
     LAServiceName.biocache_service.toS(): LAServiceDepsDesc(
       nameInt: "biocache_service",
-      serviceDepends: [Java.v8, Tomcat.v8, Nginx.def],
+      serviceDepends: [
+        Java.v8,
+        Nginx.def,
+        Tomcat.v8,
+      ],
     ),
     LAServiceName.ala_bie.toS(): LAServiceDepsDesc(
       nameInt: "ala_bie",
-      serviceDepends: [Java.v8, Tomcat.v8, Nginx.def],
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
     LAServiceName.bie_index.toS(): LAServiceDepsDesc(
       nameInt: "bie_index",
-      serviceDepends: [Java.v8, Tomcat.v8, Nginx.def],
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
     LAServiceName.images.toS(): LAServiceDepsDesc(
       nameInt: "images",
@@ -43,15 +51,20 @@ class LAServiceDepsDesc {
     ),
     LAServiceName.species_lists.toS(): LAServiceDepsDesc(
       nameInt: "species_lists",
-      serviceDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
+      serviceDepends: [
+        Java.v8,
+        Nginx.def,
+        Tomcat.v8,
+        MySql.v5_7,
+      ],
     ),
     LAServiceName.regions.toS(): LAServiceDepsDesc(
       nameInt: "regions",
-      serviceDepends: [Java.v8, Tomcat.v8, Nginx.def],
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
     LAServiceName.logger.toS(): LAServiceDepsDesc(
       nameInt: "logger",
-      serviceDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
     ),
     LAServiceName.solr.toS(): LAServiceDepsDesc(
       nameInt: "solr",
@@ -61,14 +74,14 @@ class LAServiceDepsDesc {
       nameInt: "cas",
       serviceDepends: [
         Java.v8,
-        Postfix.def,
+        Nginx.def,
         MySql.v5_7,
         Mongo.v4_0,
-        Nginx.def,
         Cas.def,
         UserDetails.def,
         CasManagement.def,
-        ApiKey.def
+        ApiKey.def,
+        Postfix.def,
       ],
     ),
     LAServiceName.spatial.toS(): LAServiceDepsDesc(
@@ -77,24 +90,24 @@ class LAServiceDepsDesc {
     ),
     LAServiceName.webapi.toS(): LAServiceDepsDesc(
       nameInt: "webapi",
-      serviceDepends: [Java.v8, Tomcat.v8, MySql.v5_7, Nginx.def],
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
     ),
     LAServiceName.dashboard.toS(): LAServiceDepsDesc(
       nameInt: "dashboard",
-      serviceDepends: [Java.v8, Tomcat.v8, Nginx.def],
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
     LAServiceName.alerts.toS(): LAServiceDepsDesc(
       nameInt: "alerts",
-      serviceDepends: [Java.v8, Postfix.def, Tomcat.v8, MySql.v5_7, Nginx.def],
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, Postfix.def, MySql.v5_7],
     ),
     LAServiceName.doi.toS(): LAServiceDepsDesc(
       nameInt: "doi",
       serviceDepends: [
         Java.v8,
         Nginx.def,
-        Postfix.def,
         ElasticSearch.v7_3_0,
-        PostgresSql.v9_6
+        PostgresSql.v9_6,
+        Postfix.def,
       ],
     ),
     LAServiceName.biocache_backend.toS(): LAServiceDepsDesc(

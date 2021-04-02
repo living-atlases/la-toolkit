@@ -7,16 +7,18 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/models/serviceLinkDesc.dart';
+import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 
 import 'basicService.dart';
 import 'cmdHistoryDetails.dart';
+import 'hostServicesChecks.dart';
 import 'laServer.dart';
 import 'laService.dart';
 import 'laServiceDepsDesc.dart';
@@ -628,10 +630,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     return StringUtils.suggestDirName(shortName: shortName, uuid: uuid);
   }
 
-  List<ServiceLinkDesc> get linkList {
-    List<ServiceLinkDesc> allServices = [];
-    Map<String, LAServiceDepsDesc> depsDesc =
-        LAServiceDepsDesc.getDeps(alaInstallRelease);
+  List<ProdServiceDesc> get prodServices {
+    List<ProdServiceDesc> allServices = [];
+    Map<String, LAServiceDepsDesc> depsDesc = getDeps();
     getServicesNameListInUse()
         /* .where((nameInt) =>
             !LAServiceDesc.get(nameInt).withoutUrl &&
@@ -650,30 +651,30 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
       List<BasicService>? deps;
-      if (mainDeps != null)
-        deps = LAServiceDepsDesc.getDeps(alaInstallRelease)[nameInt]!
-            .serviceDepends;
-      String hostnames = getHostname(nameInt).join(', ');
+      if (mainDeps != null) deps = getDeps()[nameInt]!.serviceDepends;
+      List<String> hostnames = getHostname(nameInt);
       if (nameInt != LAServiceName.cas.toS())
-        allServices.add(ServiceLinkDesc(
+        allServices.add(ProdServiceDesc(
             name: name,
             nameInt: nameInt,
             deps: deps,
             tooltip: tooltip,
-            subtitle: hostnames,
+            subtitle: hostnames.join(', '),
+            hostnames: hostnames,
             icon: desc.icon,
             url: url,
             admin: desc.admin,
             alaAdmin: desc.alaAdmin,
             help: help));
       // This is for userdetails, apikeys, etc
-      desc.subServices.forEach((sub) => allServices.add(ServiceLinkDesc(
+      desc.subServices.forEach((sub) => allServices.add(ProdServiceDesc(
             name: sub.name,
             // This maybe is not correct
             nameInt: nameInt,
             deps: deps,
             tooltip: serviceTooltip(name),
-            subtitle: hostnames,
+            subtitle: hostnames.join(', '),
+            hostnames: hostnames,
             icon: sub.icon,
             url: url + sub.path,
             admin: sub.admin,
@@ -684,4 +685,27 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   String serviceTooltip(String name) => "Open the $name service";
+
+  HostsServicesChecks getHostServicesChecks(
+      List<ProdServiceDesc> prodServices) {
+    HostsServicesChecks hostsChecks = HostsServicesChecks();
+    prodServices.forEach((service) {
+      service.hostnames.forEach((server) {
+        service.deps!.forEach((dep) {
+          hostsChecks.add(server, service.deps);
+          //  tcpPorts.addAll(dep.tcp);
+        });
+      });
+    });
+    return hostsChecks;
+  }
+
+  Tuple2<List<ProdServiceDesc>, HostsServicesChecks> serverServicesToMonitor() {
+    List<ProdServiceDesc> services = prodServices;
+    HostsServicesChecks checks = getHostServicesChecks(services);
+    return Tuple2(services, checks);
+  }
+
+  Map<String, LAServiceDepsDesc> getDeps() =>
+      LAServiceDepsDesc.getDeps(alaInstallRelease);
 }
