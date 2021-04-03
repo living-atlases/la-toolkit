@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
 
 import 'basicService.dart';
 
@@ -14,6 +15,8 @@ class ProdServiceDesc {
   final String subtitle;
   final List<String> hostnames;
   final List<BasicService>? deps;
+  final List<String> urls = [];
+
   ProdServiceDesc({
     required this.icon,
     required this.name,
@@ -26,5 +29,13 @@ class ProdServiceDesc {
     required this.hostnames,
     this.help,
     required this.deps,
-  });
+  }) {
+    if (nameInt != LAServiceName.biocache_backend.toS() &&
+        nameInt != LAServiceName.nameindexer.toS() &&
+        nameInt != LAServiceName.biocache_cli.toS()) {
+      urls.add(url);
+      if (alaAdmin) urls.add(url + '/alaAdmin/');
+      if (admin) urls.add(url + '/admin/');
+    }
+  }
 }

@@ -23,6 +23,3 @@ Map<String, dynamic> _$HostsServicesChecksToJson(
 HostServicesChecks _$HostServicesChecksFromJson(Map<String, dynamic> json) {
   return HostServicesChecks();
 }
-
-Map<String, dynamic> _$HostServicesChecksToJson(HostServicesChecks instance) =>
-    <String, dynamic>{};

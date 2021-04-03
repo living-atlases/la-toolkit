@@ -1,7 +1,7 @@
 import 'dart:collection';
-import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/basicService.dart';
 
@@ -16,14 +16,13 @@ class HostsServicesChecks {
       _$HostsServicesChecksFromJson(json);
   Map<String, dynamic> toJson() => _$HostsServicesChecksToJson(this);
 
+  void setUrls(String server, List<String> urls) {
+    HostServicesChecks hostServices = _getServer(server);
+    hostServices.setUrls(urls);
+  }
+
   void add(String server, List<BasicService>? deps) {
-    HostServicesChecks hostServices;
-    if (!map.containsKey(server)) {
-      hostServices = HostServicesChecks();
-      map[server] = hostServices;
-    } else {
-      hostServices = map[server]!;
-    }
+    HostServicesChecks hostServices = _getServer(server);
     if (deps != null) {
       deps.forEach((dep) {
         hostServices.tcpPorts.addAll(dep.tcp);
@@ -33,6 +32,17 @@ class HostsServicesChecks {
         }
       });
     }
+  }
+
+  HostServicesChecks _getServer(String server) {
+    HostServicesChecks hostServices;
+    if (!map.containsKey(server)) {
+      hostServices = HostServicesChecks();
+      map[server] = hostServices;
+    } else {
+      hostServices = map[server]!;
+    }
+    return hostServices;
   }
 
   @override
@@ -51,11 +61,13 @@ class HostsServicesChecks {
   int get hashCode => DeepCollectionEquality.unordered().hash(map);
 }
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(createToJson: false)
 class HostServicesChecks {
   final HashSet<num> tcpPorts = HashSet<num>();
   final HashSet<num> udpPorts = HashSet<num>();
   final HashSet<String> otherChecks = HashSet<String>();
+  final List<String> urls = [];
+
   HostServicesChecks();
 
   factory HostServicesChecks.fromJson(Map<String, dynamic> json) =>
@@ -68,9 +80,11 @@ class HostServicesChecks {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> toJ = {};
-    toJ['tcpPorts'] = jsonEncode(tcpPorts.toList());
-    toJ['udpPorts'] = jsonEncode(udpPorts.toList());
-    toJ['otherChecks'] = jsonEncode(otherChecks.toList());
+    // jsonEncode(
+    toJ['tcpPorts'] = tcpPorts.toList();
+    toJ['udpPorts'] = udpPorts.toList();
+    toJ['otherChecks'] = otherChecks.toList();
+    toJ['urls'] = urls;
     return toJ;
   }
 
@@ -82,11 +96,17 @@ class HostServicesChecks {
           DeepCollectionEquality.unordered().equals(tcpPorts, other.tcpPorts) &&
           DeepCollectionEquality.unordered().equals(udpPorts, other.udpPorts) &&
           DeepCollectionEquality.unordered()
-              .equals(otherChecks, other.otherChecks);
+              .equals(otherChecks, other.otherChecks) &&
+          listEquals(urls, other.urls);
 
   @override
   int get hashCode =>
       DeepCollectionEquality.unordered().hash(tcpPorts) ^
       DeepCollectionEquality.unordered().hash(udpPorts) ^
-      DeepCollectionEquality.unordered().hash(otherChecks);
+      DeepCollectionEquality.unordered().hash(otherChecks) ^
+      ListEquality().hash(urls);
+
+  void setUrls(List<String> urls) {
+    this.urls.addAll(urls);
+  }
 }

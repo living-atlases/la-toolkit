@@ -691,9 +691,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     HostsServicesChecks hostsChecks = HostsServicesChecks();
     prodServices.forEach((service) {
       service.hostnames.forEach((server) {
+        hostsChecks.setUrls(server, service.urls);
         service.deps!.forEach((dep) {
           hostsChecks.add(server, service.deps);
-          //  tcpPorts.addAll(dep.tcp);
         });
       });
     });

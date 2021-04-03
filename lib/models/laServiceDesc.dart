@@ -219,15 +219,15 @@ class LAServiceDesc {
           ),
           LASubServiceDesc(
             name: "User Details",
-            path: '/userdetails/',
+            path: '/userdetails',
             icon: Mdi.accountGroup,
             admin: true,
             alaAdmin: true,
           ),
-          LASubServiceDesc(name: "API keys", path: '/apikey/', icon: Mdi.api),
+          LASubServiceDesc(name: "API keys", path: '/apikey', icon: Mdi.api),
           LASubServiceDesc(
               name: "CAS Management",
-              path: '/cas-management/',
+              path: '/cas-management',
               icon: Mdi.accountNetwork),
         ],
         path: ""),
@@ -243,9 +243,9 @@ class LAServiceDesc {
         sample: "https://spatial.ala.org.au",
         subServices: [
           LASubServiceDesc(
-              name: 'Spatial Webservice', path: '/ws/', icon: Mdi.layersPlus),
+              name: 'Spatial Webservice', path: '/ws', icon: Mdi.layersPlus),
           LASubServiceDesc(
-              name: 'Geoserver', path: '/geoserver/', icon: Mdi.layersSearch)
+              name: 'Geoserver', path: '/geoserver', icon: Mdi.layersSearch)
         ],
         path: ""),
     LAServiceName.webapi.toS(): LAServiceDesc(

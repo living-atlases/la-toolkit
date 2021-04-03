@@ -108,6 +108,7 @@ class LAServiceDepsDesc {
         ElasticSearch.v7_3_0,
         PostgresSql.v9_6,
         Postfix.def,
+        Doi.def,
       ],
     ),
     LAServiceName.biocache_backend.toS(): LAServiceDepsDesc(

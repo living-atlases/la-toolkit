@@ -61,6 +61,11 @@ class ApiKey extends Tcp {
   static final def = ApiKey("");
 }
 
+class Doi extends Tcp {
+  Doi(version) : super("doi", version, 8081);
+  static final def = Doi("");
+}
+
 class Nginx extends BasicService {
   Nginx(version) : super(name: "nginx", version: version, tcp: [80, 443]);
   static final def = Nginx("");
