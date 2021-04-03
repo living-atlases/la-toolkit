@@ -41,6 +41,7 @@ class PortalStatusPage extends StatelessWidget {
           context.showLoaderOverlay();
         else
           context.hideLoaderOverlay(); */
+        print("Building PortalStatus $_scaffoldKey");
         return Scaffold(
           key: _scaffoldKey,
           appBar: LAAppBar(
@@ -115,8 +116,10 @@ class _PortalStatusViewModel {
       other is _PortalStatusViewModel &&
           runtimeType == other.runtimeType &&
           loading == other.loading &&
+          serverServicesToMonitor == other.serverServicesToMonitor &&
           project == other.project;
 
   @override
-  int get hashCode => project.hashCode ^ loading.hashCode;
+  int get hashCode =>
+      project.hashCode ^ loading.hashCode ^ serverServicesToMonitor.hashCode;
 }
