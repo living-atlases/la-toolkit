@@ -37,8 +37,11 @@ class LAProject {
   String domain;
   bool useSSL;
   List<LAServer> servers;
+  // mapped by uuid
   Map<String, LAServer> serversMap;
+  // mapped by service.nameInt
   Map<String, LAService> services;
+  // Mapped by variable name
   Map<String, LAVariable> variables;
   String additionalVariables;
   Map<String, List<String>> serverServices;
