@@ -192,18 +192,19 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   content: Text("In Development: come back soon!"),
                 ))), */
             Tool(
-                icon: const Icon(Mdi.pipe),
-                title: "Pipelines",
-                tooltip: "Pipelines for data processing (Not yet developed)",
-                enabled: false,
-                action: () => {}),
-            Tool(
                 icon: const Icon(Icons.delete),
                 title: "Delete",
                 tooltip: "Delete this LA project",
                 enabled: true,
                 askConfirmation: true,
                 action: () => vm.onDelProject(project)),
+            Tool(
+                icon: const Icon(Mdi.pipe),
+                title: "Data Processing Pipelines",
+                tooltip: "Pipelines for data processing (Not yet developed)",
+                enabled: false,
+                grid: 12,
+                action: () => {}),
             // To think about:
             // - Data generation
             // - Inventories download
