@@ -642,6 +642,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
             nameInt != LAServiceName.branding.toS()) */
         .forEach((nameInt) {
       LAServiceDesc desc = LAServiceDesc.get(nameInt);
+      LAService service = getService(nameInt);
       String url = getService(nameInt).fullUrl(useSSL, domain);
       String name = StringUtils.capitalize(desc.name);
       String? help = nameInt == LAServiceName.solr.toS()
@@ -668,6 +669,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
             url: url,
             admin: desc.admin,
             alaAdmin: desc.alaAdmin,
+            status: service.status,
             help: help));
       // This is for userdetails, apikeys, etc
       desc.subServices.forEach((sub) => allServices.add(ProdServiceDesc(
@@ -682,6 +684,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
             url: url + sub.path,
             admin: sub.admin,
             alaAdmin: sub.alaAdmin,
+            status: service.status,
           )));
     });
     return allServices;

@@ -1,32 +1,61 @@
+import 'dart:ui';
+
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/utils/resultTypes.dart';
+import 'package:uuid/uuid.dart';
 
 part 'laService.g.dart';
 
 enum ServiceStatus { unknown, success, failed }
 
+extension ParseToString on ServiceStatus {
+  String toS() {
+    return this.toString().split('.').last;
+  }
+
+  Color get color {
+    switch (this) {
+      case ServiceStatus.failed:
+        return ResultType.failures.color;
+      case ServiceStatus.unknown:
+        return ResultType.ignored.color;
+      case ServiceStatus.success:
+        return ResultType.ok.color;
+    }
+  }
+}
+
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAService {
+  String uuid;
   String nameInt;
   String iniPath;
   bool use;
   bool usesSubdomain;
   String suburl;
+  ServiceStatus status;
 
   LAService(
-      {required this.nameInt,
+      {String? uuid,
+      required this.nameInt,
       required this.iniPath,
       required this.use,
       required this.usesSubdomain,
-      required this.suburl});
+      ServiceStatus? status,
+      required this.suburl})
+      : uuid = uuid ?? Uuid().v4(),
+        status = status ?? ServiceStatus.unknown;
 
   LAService.fromDesc(LAServiceDesc desc)
-      : nameInt = desc.nameInt,
+      : uuid = Uuid().v4(),
+        nameInt = desc.nameInt,
         iniPath = desc.path,
         use = !desc.optional ? true : desc.initUse,
         usesSubdomain = true,
+        this.status = ServiceStatus.unknown,
         suburl = desc.name;
 
   String get path => usesSubdomain
@@ -59,6 +88,8 @@ class LAService {
           nameInt == other.nameInt &&
           iniPath == other.iniPath &&
           use == other.use &&
+          uuid == other.uuid &&
+          status == other.status &&
           usesSubdomain == other.usesSubdomain &&
           suburl == other.suburl;
 
@@ -68,5 +99,7 @@ class LAService {
       iniPath.hashCode ^
       use.hashCode ^
       usesSubdomain.hashCode ^
+      uuid.hashCode ^
+      status.hashCode ^
       suburl.hashCode;
 }

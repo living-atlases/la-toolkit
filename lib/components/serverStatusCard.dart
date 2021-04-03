@@ -169,6 +169,7 @@ class SimpleServerStatusItem extends StatelessWidget {
 class DepsPanel extends StatelessWidget {
   final LinkedHashSet<BasicService> deps;
   const DepsPanel(this.deps);
+
   @override
   Widget build(BuildContext context) {
     return Padding(

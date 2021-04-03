@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/adminIconButton.dart';
 import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
-import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ServiceStatusCard extends StatelessWidget {
@@ -16,6 +16,7 @@ class ServiceStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double iconDefSize = 18;
+
     return IntrinsicWidth(
         child: Card(
             elevation: CardConstants.defaultElevation,
@@ -24,8 +25,7 @@ class ServiceStatusCard extends StatelessWidget {
             child: Padding(
                 padding: EdgeInsets.all(5),
                 child: Row(children: [
-                  Icon(service.icon,
-                      size: 30, color: ResultType.unreachable.color),
+                  Icon(service.icon, size: 30, color: service.status.color),
                   SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
