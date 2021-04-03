@@ -114,7 +114,7 @@ class ServiceListTileLink extends StatelessWidget {
       : this.icon = desc.icon,
         this.name = desc.name,
         this.tooltip = desc.tooltip,
-        this.url = desc.name,
+        this.url = desc.url,
         this.admin = desc.admin,
         this.alaAdmin = desc.alaAdmin,
         this.help = desc.help;
