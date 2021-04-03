@@ -496,7 +496,7 @@
           "iniPath": "",
           "use": true,
           "usesSubdomain": true,
-          "suburl": "collectory"
+          "suburl": "collections"
         },
         "ala_hub": {
           "nameInt": "ala_hub",
