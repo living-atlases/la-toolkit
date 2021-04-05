@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/resultsChart.dart';
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -10,6 +9,7 @@ import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
 import 'components/laAppBar.dart';
+import 'components/resultsPieChart.dart';
 import 'components/scrollPanel.dart';
 import 'components/termCommandDesc.dart';
 import 'components/tipsCard.dart';
@@ -114,7 +114,11 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                         style: UiUtils.titleStyle)
                                   ]),
                               const SizedBox(height: 20),
-                              ResultsChart(cmdHistoryDetails.resultsTotals),
+                              Container(
+                                  width: 400,
+                                  height: 300,
+                                  child: ResultsPieChart(
+                                      cmdHistoryDetails.resultsTotals)),
                               SizedBox(height: 20),
                               const Text('Task details:',
                                   style: UiUtils.subtitleStyle),

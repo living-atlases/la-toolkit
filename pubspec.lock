@@ -269,6 +269,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -304,6 +311,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  fl_chart:
+    dependency: "direct main"
+    description:
+      name: fl_chart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.35.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -790,11 +804,9 @@ packages:
   responsive_grid:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "22ee88e"
-      resolved-ref: "22ee88eedca76cd70c0b9bacf7f506fd69ee20a6"
-      url: "git://github.com/mohamed-selim-a/ResponsiveGrid_Flutter.git"
-    source: git
+      name: responsive_grid
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "2.0.0"
   rflutter_alert:
     dependency: "direct main"
@@ -955,20 +967,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  syncfusion_flutter_charts:
-    dependency: "direct main"
-    description:
-      name: syncfusion_flutter_charts
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "19.1.54+1"
-  syncfusion_flutter_core:
-    dependency: transitive
-    description:
-      name: syncfusion_flutter_core
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "19.1.54+1"
   term_glyph:
     dependency: transitive
     description:

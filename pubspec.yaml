@@ -43,10 +43,7 @@ dependencies:
   url_launcher: ^6.0.2
   flutter_markdown: ^0.6.1
   timelines: ^0.1.0
-  responsive_grid: # ^1.2.1+1
-    git:
-      url: git://github.com/mohamed-selim-a/ResponsiveGrid_Flutter.git
-      ref: 22ee88e
+  responsive_grid: ^2.0.0
   feedback: ^1.1.0
   flutter_advanced_switch: ^2.0.0
   # Used for service selection (for instance in service deploy)
@@ -67,8 +64,6 @@ dependencies:
   # used for terms
   modal_bottom_sheet: ^2.0.0
   web_browser: ^0.5.0
-  # charts
-  syncfusion_flutter_charts: 19.1.54+1
   # bottom floating button
   flutter_speed_dial: ^3.0.5
   # listview animation
@@ -87,6 +82,8 @@ dependencies:
     git:
       url: https://github.com/Ksomething/flutter_xlider.git
       ref: 6c8fd24
+  fl_chart: ^0.35.0
+
   # icon
   mdi: ^5.0.0-nullsafety.0
   # font_awesome_flutter: ^8.11.0

@@ -54,7 +54,7 @@ class _SandboxPageState extends State<SandboxPage> {
                   DefDivider(),
                   // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
                   const SizedBox(height: 7),
-                  //
+                  Container(),
                 ],
               ),
             ],

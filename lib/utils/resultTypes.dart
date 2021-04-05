@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'StringUtils.dart';
+
 /*
 class ResultsColors {
   static final basicGraphPalette = const <Color>[
@@ -41,6 +43,11 @@ extension ParseToString on ResultType {
     return this.toString().split('.').last;
   }
 
+  String title() {
+    String toS = this.toS();
+    return StringUtils.capitalize(toS == "ok" ? "success" : toS);
+  }
+
   Color get color {
     switch (this) {
       case ResultType.changed:
@@ -57,6 +64,25 @@ extension ParseToString on ResultType {
         return Colors.grey;
       case ResultType.unreachable:
         return Colors.deepOrange;
+    }
+  }
+
+  Color get textColor {
+    switch (this) {
+      case ResultType.changed:
+        return Colors.white;
+      case ResultType.failures:
+        return Colors.black;
+      case ResultType.ignored:
+        return Colors.black;
+      case ResultType.ok:
+        return Colors.white;
+      case ResultType.rescued:
+        return Colors.white;
+      case ResultType.skipped:
+        return Colors.black;
+      case ResultType.unreachable:
+        return Colors.black;
     }
   }
 }
