@@ -78,30 +78,15 @@ class DeployTextSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> resultTexts = ResultType.values
+        .where((t) => results[t.toS()] != null && results[t.toS()] != 0)
+        .map((type) => Text("${type.toS()} (${results[type.toS()]}) ",
+            style: TextStyle(color: type.color)))
+        .toList();
+
     return Row(children: [
       Text(title == "" ? "$name: " : "$title in $name: ", style: TextStyle()),
-      if (results['changed'] > 0)
-        Text("changed (${results['changed']})",
-            style: TextStyle(color: ResultType.changed.color)),
-      if (results['changed'] > 0) Text(", "),
-      if (results['failures'] > 0)
-        Text("failures (${results['failures']})",
-            style: TextStyle(color: ResultType.failures.color)),
-      if (results['failures'] > 0) Text(", "),
-      Text("ok (${results['ok']})",
-          style: TextStyle(color: ResultType.ok.color)),
-      if (results['ignored'] > 0) Text(", "),
-      if (results['ignored'] > 0)
-        Text("ignored (${results['ignored']})",
-            style: TextStyle(color: ResultType.ignored.color)),
-      if (results['rescued'] > 0 || results['skipped'] > 0) Text(", "),
-      if (results['rescued'] > 0)
-        Text("rescued (${results['rescued']})",
-            style: TextStyle(color: ResultType.rescued.color)),
-      if (results['rescued'] > 0) Text(", "),
-      if (results['skipped'] > 0)
-        Text("skipped (${results['skipped']}) ",
-            style: TextStyle(color: ResultType.skipped.color))
+      for (Widget text in resultTexts) text
     ]);
   }
 }

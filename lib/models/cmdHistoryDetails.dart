@@ -71,28 +71,36 @@ class CmdHistoryDetails {
   List<Widget> get detailsWidgetList {
     if (_details == null) {
       _details = [];
+      Map<String, List<AnsibleError>> errors = {};
       results.forEach((result) {
-        List<String> playNames = [];
-        List<AnsibleError> errors = [];
         result['plays'].forEach((play) {
           String name = play['play']['name'];
-          if (name != 'all') playNames.add(name);
           play['tasks'].forEach((task) {
             task['hosts'].keys.forEach((host) {
-              if (task['hosts'][host]['failed'] != null &&
-                  task['hosts'][host]['failed'] == true) {
+              if (errors[host] == null) errors[host] = [];
+              if ((task['hosts'][host]['failed'] != null &&
+                      task['hosts'][host]['failed'] == true) ||
+                  (task['hosts'][host]['unreachable'] != null &&
+                      task['hosts'][host]['unreachable'] == true)) {
                 String taskName =
                     task['task'] != null ? task['task']['name'] : '';
                 String msg = task['hosts'][host] != null
                     ? task['hosts'][host]['msg']
                     : '';
-                errors.add(AnsibleError(
+                errors[host]!.add(AnsibleError(
                     host: host, playName: name, taskName: taskName, msg: msg));
               }
             });
           });
         });
-
+        result['stats'].keys.forEach((host) {
+          DeploySubResultWidget subResult = DeploySubResultWidget(
+              title: host,
+              name: host,
+              results: result['stats'][host],
+              errors: errors[host]!);
+          _details!.add(subResult);
+        });
         /* "tasks": [ { "hosts": {
 -                        "ala-install-test-2": {
 -                            "_ansible_no_log": false,
@@ -100,16 +108,19 @@ class CmdHistoryDetails {
 -                            "changed": false,
 -                            "failed": true,
 -                            },
--                            "msg" : "Error" */
+-                            "msg" : "Error"
+(...)
+               tasks": [
+                {
+                    "hosts": {
+                        "ala-install-test-1": {
+                            "action": "gather_facts",
+                            "changed": false,
+                            "msg": "Data could not be sent to remote host \"ala-install-test-1\". Make sure this host can be reached over ssh: kex_exchange_identification: Connection closed by remote host\r\n",
+                            "unreachable": true
+                        },
 
-        result['stats'].keys.forEach((key) {
-          DeploySubResultWidget subResult = DeploySubResultWidget(
-              title: playNames.join(', '),
-              name: key,
-              results: result['stats'][key],
-              errors: errors);
-          _details!.add(subResult);
-        });
+*/
       });
     }
     return _details!;
