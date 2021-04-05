@@ -74,6 +74,11 @@ void main() {
         cmd.toString(),
         equals(
             "Pre-deploy tasks (add default user, add ssh keys, add sudo permissions, setup '/etc/hosts', setup solr limits, additional deps install)"));
+    cmd.dryRun = true;
+    expect(
+        cmd.toString(),
+        equals(
+            "Dry run pre-deploy tasks (add default user, add ssh keys, add sudo permissions, setup '/etc/hosts', setup solr limits, additional deps install)"));
   });
 
   test('Test post-cmd to String', () {

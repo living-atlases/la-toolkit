@@ -5,15 +5,11 @@ import 'package:la_toolkit/models/ansibleError.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 
 class DeploySubResultWidget extends StatelessWidget {
-  final String name;
   final String title;
   final dynamic results;
   final List<AnsibleError> errors;
   DeploySubResultWidget(
-      {required this.name,
-      required this.title,
-      required this.results,
-      required this.errors});
+      {required this.title, required this.results, required this.errors});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +46,7 @@ class DeploySubResultWidget extends StatelessWidget {
       ]);
     });
     DeployTextSummary summary =
-        DeployTextSummary(title: title, name: name, results: results);
+        DeployTextSummary(title: title, results: results);
     List<Widget> columnChildren = [summary];
     if (errorsWidgets.length > 0) SizedBox(height: 10);
     if (errorsWidgets.length > 0) columnChildren.addAll(errorsWidgets);
@@ -68,12 +64,10 @@ class DeployTextSummary extends StatelessWidget {
   const DeployTextSummary({
     Key? key,
     required this.title,
-    required this.name,
     required this.results,
   }) : super(key: key);
 
   final String title;
-  final String name;
   final dynamic results;
 
   @override
@@ -85,7 +79,7 @@ class DeployTextSummary extends StatelessWidget {
         .toList();
 
     return Row(children: [
-      Text(title == "" ? "$name: " : "$title in $name: ", style: TextStyle()),
+      Text("$title: ", style: TextStyle()),
       for (Widget text in resultTexts) text
     ]);
   }

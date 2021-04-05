@@ -96,7 +96,6 @@ class CmdHistoryDetails {
         result['stats'].keys.forEach((host) {
           DeploySubResultWidget subResult = DeploySubResultWidget(
               title: host,
-              name: host,
               results: result['stats'][host],
               errors: errors[host]!);
           _details!.add(subResult);

@@ -1,5 +1,6 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 
 import 'deployCmd.dart';
 
@@ -46,7 +47,9 @@ class PostDeployCmd extends DeployCmd {
   String toString() {
     List<String> tasks = [];
     if (configurePostfix) tasks.add('configure postfix');
-    return 'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
+    String result =
+        'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
+    return dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);
   }
 
   List<String> get postTags {

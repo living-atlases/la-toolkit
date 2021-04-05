@@ -1,5 +1,6 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 
 import 'deployCmd.dart';
 
@@ -64,7 +65,9 @@ class PreDeployCmd extends DeployCmd {
     if (etcHosts) tasks.add("setup '/etc/hosts'");
     if (solrLimits) tasks.add('setup solr limits');
     if (addAdditionalDeps) tasks.add('additional deps install');
-    return 'Pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
+    String result =
+        'pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
+    return dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);
   }
 
   @override
