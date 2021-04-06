@@ -181,9 +181,10 @@ class DeployUtils {
     store.dispatch(DeployProject(
         project: project,
         cmd: cmd,
-        onStart: (ansibleCmd, logsPrefix, logsSuffix, invDir) {
+        onStart: (ansibleCmd, port, logsPrefix, logsSuffix, invDir) {
           context.hideLoaderOverlay();
-          TermDialog.show(context, title: "Ansible console", onClose: () async {
+          TermDialog.show(context, port: port, title: "Ansible console",
+              onClose: () async {
             if (!cmd.dryRun) {
               // Show the results
               CmdHistoryEntry cmdHistory = CmdHistoryEntry(

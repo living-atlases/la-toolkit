@@ -90,7 +90,7 @@ openSite () {
   printf 'Opening site'
   publicPort=2010
   if [[ $ENVIRONMENT != "release" ]]; then
-    publicProt=20100
+    publicPort=20010
   fi
   url="http://localhost:$publicPort"
   until $(curl --output /dev/null --silent --fail $url); do

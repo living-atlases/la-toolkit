@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 
+import 'ShadowIcon.dart';
+
 class StatusIcon extends StatelessWidget {
   final CmdResult type;
   final double size;
@@ -8,14 +10,6 @@ class StatusIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(size),
-        ),
-        child: SizedBox(
-            width: size,
-            height: size,
-            child: Icon(Icons.circle, size: size, color: type.iconColor)));
+    return ShadowIcon(icon: Icons.circle, size: size, color: type.iconColor);
   }
 }

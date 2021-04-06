@@ -7,7 +7,10 @@ services:
     hostname: la-toolkit
     ports:
       - "2010:2010"
-      - "2011:2011"
+      - "2011-2100:2011-2100"
+      # Internal an external ports should match in the previous range. 
+      # So don't do these kind of redirections:
+      # - "3011-3100:2011-2100"
     environment:
       # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       # Useful for having logs with local time

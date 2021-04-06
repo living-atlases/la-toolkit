@@ -14,6 +14,7 @@ part 'cmdHistoryDetails.g.dart';
 class CmdHistoryDetails {
   @JsonKey(ignore: true)
   CmdHistoryEntry? cmd;
+  int? port;
   int code;
   List<dynamic> results;
   String logs;
@@ -26,6 +27,7 @@ class CmdHistoryDetails {
 
   CmdHistoryDetails(
       {this.cmd,
+      this.port,
       required this.code,
       required this.results,
       required this.logs,
@@ -40,6 +42,7 @@ class CmdHistoryDetails {
           runtimeType == other.runtimeType &&
           code == other.code &&
           cmd == other.cmd &&
+          port == other.port &&
           results == other.results &&
           logs == other.logs &&
           fstRetrieved == other.fstRetrieved &&
@@ -155,6 +158,7 @@ class CmdHistoryDetails {
       results.hashCode ^
       logs.hashCode ^
       cmd.hashCode ^
+      port.hashCode ^
       logsColorized.hashCode ^
       fstRetrieved.hashCode;
 

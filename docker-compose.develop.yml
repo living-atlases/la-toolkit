@@ -9,8 +9,11 @@ services:
       context: .
       dockerfile: docker/u20/Dockerfile
     ports:
-      - "20100:2010"
-      - "20110:20110"
+      - "20010:2010"
+      - "20011-20100:20011-20100"
+      # Internal an external ports should match in the previous range. 
+      # So don't do these kind of redirections:
+      # - "3011-3100:2011-2100"
     environment:
       # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       # Useful for having logs with local time

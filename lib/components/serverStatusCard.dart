@@ -47,20 +47,23 @@ class ServerStatusCard extends StatelessWidget {
                 padding: EdgeInsets.all(extendedStatus ? 10 : 5),
                 child: Row(children: [
                   Column(children: [
-                    Icon(Mdi.serverNetwork,
-                        size: extendedStatus ? 40 : 30,
-                        color: server.isReady()
-                            ? LAColorTheme.up
-                            : LAColorTheme.down),
-                    if (extendedStatus)
-                      Tooltip(
-                          message: server.isReady()
-                              ? "Open a terminal in ${server.name}"
-                              : "",
-                          child: IconButton(
-                            icon: Icon(Mdi.console, color: Colors.lightGreen),
-                            onPressed: server.isReady() ? () => onTerm() : null,
-                          ))
+                    Tooltip(
+                        message: "Open a terminal in ${server.name}",
+                        child: ElevatedButton(
+                          child: Icon(
+                            Mdi.console,
+                            color: statusUpDownColor(),
+                            size: 36,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              elevation: 10,
+                              shadowColor: Colors.green,
+                              minimumSize: Size(0, 0),
+                              padding: EdgeInsets.fromLTRB(1, 1, 1, 0),
+                              enableFeedback: true),
+                          onPressed: () => onTerm(),
+                        ))
                   ]),
                   const SizedBox(width: 20),
                   Column(
@@ -100,6 +103,10 @@ class ServerStatusCard extends StatelessWidget {
                   if (extendedStatus) const SizedBox(width: 10),
                   if (extendedStatus) DepsPanel(deps),
                 ]))));
+  }
+
+  Color statusUpDownColor() {
+    return server.isReady() ? LAColorTheme.up : LAColorTheme.down;
   }
 }
 

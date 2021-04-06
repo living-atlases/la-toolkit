@@ -188,12 +188,12 @@ class Api {
   }
 
   static Future<void> term(
-      {required VoidCallback onStart,
+      {required Function(String cmd, int port) onStart,
       required ErrorCallback onError,
       String? server,
       String? projectUuid}) async {
     if (AppUtils.isDemo()) {
-      onStart();
+      onStart("", 2011);
       return;
     }
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/term");
@@ -203,15 +203,18 @@ class Api {
     }
     http
         .post(url, headers: {'Content-type': 'application/json'}, body: body)
-        .then((response) => response.statusCode == 200
-            ? onStart()
-            : onError(response.statusCode))
-        .catchError((error) => {print(error)});
+        .then((response) {
+      if (response.statusCode == 200) {
+        Map<String, dynamic> l = json.decode(response.body);
+        onStart(l['cmd'], l['port']);
+      } else
+        onError(response.statusCode);
+    });
   }
 
   static Future<void> termLogs(
       {required CmdHistoryEntry cmd,
-      required VoidCallback onStart,
+      required Function(String cmd, int port) onStart,
       required ErrorCallback onError}) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/term-logs");
@@ -220,10 +223,13 @@ class Api {
             headers: {'Content-type': 'application/json'},
             body: utf8.encode(json.encode(
                 {'logsPrefix': cmd.logsPrefix, 'logsSuffix': cmd.logsSuffix})))
-        .then((response) => response.statusCode == 200
-            ? onStart()
-            : onError(response.statusCode))
-        .catchError((error) => {print(error)});
+        .then((response) {
+      if (response.statusCode == 200) {
+        Map<String, dynamic> l = json.decode(response.body);
+        onStart(l['cmd'], l['port']);
+      } else
+        onError(response.statusCode);
+    });
   }
 
   static Future<void> ansiblew(DeployProject action) async {
@@ -241,7 +247,8 @@ class Api {
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
-        action.onStart(l['cmd'], l['logsPrefix'], l['logsSuffix'], l['invDir']);
+        action.onStart(
+            l['cmd'], l['port'], l['logsPrefix'], l['logsSuffix'], l['invDir']);
       } else
         action.onError(response.statusCode);
     }).catchError((error) {

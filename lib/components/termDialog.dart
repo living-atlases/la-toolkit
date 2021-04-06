@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -12,9 +11,9 @@ import '../laTheme.dart';
 import '../notInDemo.dart';
 
 class TermDialog {
-  static final String initialUrl = 'http://localhost:${env['TTYD_PORT']}/';
-
-  static show(context, {title: 'Console', VoidCallback? onClose}) async {
+  static show(context,
+      {title: 'Console', required int port, VoidCallback? onClose}) async {
+    print("${getInitialUrl(port)}");
     await showFloatingModalBottomSheet(
         // This can be added to the custom modal
         // expand: false,
@@ -44,13 +43,15 @@ class TermDialog {
                     ),
                   ],
                 ),
-                body: termArea(),
+                body: termArea(port),
               ),
             ));
     if (onClose != null) onClose();
   }
 
-  static SafeArea termArea() {
+  static String getInitialUrl(int port) => 'http://localhost:$port/';
+
+  static SafeArea termArea(int port) {
     return SafeArea(
         bottom: false,
         child: Container(
@@ -58,7 +59,7 @@ class TermDialog {
           padding: EdgeInsets.fromLTRB(3, 0, 8, 0),
           child: !AppUtils.isDemo()
               ? WebBrowser(
-                  initialUrl: initialUrl,
+                  initialUrl: getInitialUrl(port),
                   interactionSettings: WebBrowserInteractionSettings(
                       topBar: null, bottomBar: null),
                   javascriptEnabled: true,
@@ -94,16 +95,20 @@ class TermDialog {
   }
 
   // Opens a bash or a ssh on server
-  static void openTerm(BuildContext context, [String? projectUuid, String? server]) {
+  static void openTerm(BuildContext context,
+      [String? projectUuid, String? server]) {
     context.showLoaderOverlay();
-    Api.term(onStart: () {
-      context.hideLoaderOverlay();
-      TermDialog.show(context);
-    }, onError: (error) {
-      context.hideLoaderOverlay();
-      UiUtils.termErrorAlert(context, error);
-    }, projectUuid: projectUuid, server: server
-    );
+    Api.term(
+        onStart: (cmd, port) {
+          context.hideLoaderOverlay();
+          TermDialog.show(context, port: port);
+        },
+        onError: (error) {
+          context.hideLoaderOverlay();
+          UiUtils.termErrorAlert(context, error);
+        },
+        projectUuid: projectUuid,
+        server: server);
   }
 }
 

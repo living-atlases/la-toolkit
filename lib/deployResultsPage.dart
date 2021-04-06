@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
@@ -43,12 +44,12 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
             });
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {
-        var cmdHistoryDetails = vm.project.lastCmdDetails;
+        CmdHistoryDetails? cmdHistoryDetails = vm.project.lastCmdDetails;
         if (cmdHistoryDetails != null) {
           List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
           bool failed = cmdHistoryDetails.failed;
           CmdResult result = cmdHistoryDetails.result;
-          print(result);
+          // print(result);
           var nothingDone = !failed && cmdHistoryDetails.nothingDone;
           var noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
           return Scaffold(
@@ -140,7 +141,8 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                               Container(
                                   height: 600,
                                   width: 1000,
-                                  child: TermDialog.termArea()),
+                                  child: TermDialog.termArea(
+                                      cmdHistoryDetails.port!)),
                               TipsCard(text: """## Tips with the logs
 This logs are located in the file `logs/${cmdHistoryDetails.cmd!.logsPrefix}-${cmdHistoryDetails.cmd!.logsSuffix}.log`.
 
