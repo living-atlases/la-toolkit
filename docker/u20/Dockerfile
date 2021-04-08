@@ -54,6 +54,7 @@ RUN mkdir -p /home/ubuntu/.ssh/assh.d && \
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/moul/assh.git'
 # For non interactive shell cmds
 RUN echo 'export GOPATH=$HOME/go' >> /home/ubuntu/.profile
+RUN echo 'export GOPATH=$HOME/go' >> /home/ubuntu/.bashrc
 RUN echo 'export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"' >> /home/ubuntu/.profile
 RUN echo 'export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"' >> /home/ubuntu/.bashrc
 RUN echo 'alias ssh="assh wrapper ssh --"' >> /home/ubuntu/.profile
@@ -115,7 +116,7 @@ RUN su - ubuntu -c 'git clone --depth 1 --branch v2.0.6 https://github.com/Atlas
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-RUN echo "2021033101"
+RUN echo "2021040601"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
