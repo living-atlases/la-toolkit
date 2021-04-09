@@ -4,9 +4,9 @@ import 'package:la_toolkit/components/serversStatusPanel.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:mdi/mdi.dart';
 import 'package:tuple/tuple.dart';
 
-import 'components/countdownWidget.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/servicesStatusPanel.dart';
@@ -29,10 +29,10 @@ class PortalStatusPage extends StatelessWidget {
                 store.state.currentProject.serverServicesToMonitor(),
             loading: store.state.loading,
             checkServices: (hostsServicesChecks) {
-              store.dispatch(TestServicesProject(
-                  store.state.currentProject, hostsServicesChecks, () {
-                //store.dispatch(
-                //   TestConnectivityProject(store.state.currentProject, () {}));
+              store.dispatch(
+                  TestConnectivityProject(store.state.currentProject, () {
+                store.dispatch(TestServicesProject(
+                    store.state.currentProject, hostsServicesChecks, () {}));
               }));
             });
       },
@@ -58,7 +58,26 @@ class PortalStatusPage extends StatelessWidget {
                           backgroundColor: LAColorTheme.laPaletteAccent,
                         )
                       : Container()),
-              actions: []),
+              actions: [
+                IconButton(
+                  icon: Tooltip(
+                      child: Icon(Icons.pause, color: Colors.white),
+                      message: "Pause to check services"),
+                  onPressed: () {
+                    //
+                  },
+                ),
+                Container(
+                    margin: const EdgeInsets.only(right: 10.0),
+                    child: IconButton(
+                      icon: Tooltip(
+                          child: Icon(Mdi.reload, color: Colors.white),
+                          message: "Recheck the status of the portal"),
+                      onPressed: () {
+                        vm.checkServices(vm.serverServicesToMonitor.item2);
+                      },
+                    ))
+              ]),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           body: ScrollPanel(
@@ -88,9 +107,11 @@ class PortalStatusPage extends StatelessWidget {
                   )
                 ],
               )),
-          floatingActionButton: CountDownWidget(
+          /* floatingActionButton: ReCheckBtns(
+              () => vm.checkServices(vm.serverServicesToMonitor.item2)), */
+          /* floatingActionButton:  CountDownWidget(
               onReload: () =>
-                  vm.checkServices(vm.serverServicesToMonitor.item2)),
+                  vm.checkServices(vm.serverServicesToMonitor.item2)), */
         );
       },
     );

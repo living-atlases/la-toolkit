@@ -273,3 +273,9 @@ class OnAppPackageInfo extends AppActions {
   PackageInfo packageInfo;
   OnAppPackageInfo(this.packageInfo);
 }
+
+class OnTestServicesResults extends AppActions {
+  Map<String, dynamic> results;
+
+  OnTestServicesResults(this.results);
+}

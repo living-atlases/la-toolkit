@@ -56,6 +56,7 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, SaveDeployCmd>(_saveDeployCmd),
   new TypedReducer<AppState, DeleteLog>(_onDeleteLog),
   new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
+  new TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
 ]);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
@@ -345,4 +346,11 @@ AppState _onAppPackageInfo(AppState state, OnAppPackageInfo action) {
           pkgInfo: action.packageInfo,
           backendVersion: action.packageInfo.version)
       : state.copyWith(pkgInfo: action.packageInfo);
+}
+
+AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
+  LAProject currentProject = state.currentProject;
+  Map<String, dynamic> results = action.results;
+  for (String serverName in results.keys) {}
+  return state;
 }

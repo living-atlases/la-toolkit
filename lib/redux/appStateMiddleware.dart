@@ -176,7 +176,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       });
     }
     if (action is TestServicesProject) {
-      await Api.checkHostServices(action.hostsServicesChecks);
+      Map<String, dynamic> results =
+          await Api.checkHostServices(action.hostsServicesChecks);
+      store.dispatch(OnTestServicesResults(results));
     }
     if (action is OnSshKeysScan) {
       scanSshKeys(store, action.onKeysScanned);
@@ -288,7 +290,6 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             'Not saving configuration because the load of the saved configuration failed');
       } else {
         print("Saving conf in server side");
-        print(state);
         Api.saveConf(state);
       }
     }
