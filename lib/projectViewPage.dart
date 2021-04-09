@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/alaInstallSelector.dart';
@@ -107,15 +106,6 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           print("Building ProjectViewPage $_scaffoldKey");
           final LAProject project = vm.project;
-          final cron = Cron();
-          const minutes = 10;
-          cron.schedule(Schedule.parse('*/$minutes * * * *'), () async {
-            if (project.isCreated && !AppUtils.isDemo()) {
-              print(
-                  "Testing connectivity with each server $minutes min --------------");
-              vm.onTestConnProject(project, true);
-            }
-          });
           List<Tool> tools = [
             Tool(
                 icon: const Icon(Icons.edit),
