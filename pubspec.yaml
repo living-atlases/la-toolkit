@@ -109,6 +109,7 @@ dependencies:
   flutter_dotenv: ^4.0.0-nullsafety.0 # ^3.1.0
   package_info_plus: ^1.0.0
   tuple: ^2.0.0
+  intl: ^0.17.0
 
   cron: ^0.3.0
   universal_html: ^2.0.4
