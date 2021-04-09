@@ -351,9 +351,6 @@ class Api {
         })));
     if (response.statusCode == 200) {
       Map<String, dynamic> l = json.decode(response.body);
-      l.keys.forEach((element) {
-        // print("out: ${l[element]['out']}");
-      });
       return l;
     } else {
       return {};
