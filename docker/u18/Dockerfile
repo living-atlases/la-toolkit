@@ -130,6 +130,10 @@ RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
 # bash command with echo to show to the users
 COPY docker/echo-bash.sh /usr/local/bin/echo-bash
 RUN chmod +x /usr/local/bin/echo-bash
+# copy nagios check_by_ssh (modified version without local host/IP check relaying on ssh config)
+# https://github.com/living-atlases/nagios-plugins
+COPY docker/check_by_ssh /usr/local/bin/check_by_ssh
+RUN chmod +x /usr/local/bin/check_by_ssh
 
 # The year of ALA Portal launch ;-)
 EXPOSE 2010
