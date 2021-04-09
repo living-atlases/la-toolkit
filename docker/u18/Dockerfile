@@ -116,12 +116,12 @@ RUN su - ubuntu -c 'git clone --depth 1 --branch v2.0.6 https://github.com/Atlas
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-RUN echo "2021040601"
+RUN echo "2021040901"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 # la-toolkit frontend
-RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.0.23/flutter-web-1.0.23.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
+RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.0.24/flutter-web-1.0.24.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
 # RUN echo "2021032402"
 # COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
