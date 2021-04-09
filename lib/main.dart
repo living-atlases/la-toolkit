@@ -1,6 +1,5 @@
 import 'package:beamer/beamer.dart';
 import 'package:cron/cron.dart';
-import 'package:feedback/feedback.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
@@ -63,8 +62,8 @@ Future<void> main() async {
     store.dispatch(OnFetchSoftwareDepsState());
   });
 
-  // runApp(MyApp(store: store));
-  runApp(BetterFeedback(
+  runApp(MyApp(store: store));
+  /* runApp(BetterFeedback(
     // key: _mainKey,
     child: MyApp(store: store),
     /*  onFeedback: (
@@ -79,7 +78,7 @@ Future<void> main() async {
       alertFeedbackFunction(context, feedbackText, feedbackScreenshot);
       return;
     }, */
-  ));
+  )); */
 
   if (initialState.failedLoad) {
     store.dispatch(OnFetchStateFailed());
