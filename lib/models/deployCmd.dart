@@ -6,6 +6,8 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 
 part 'deployCmd.g.dart';
 
+// Typical ansible cmd
+
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class DeployCmd {
