@@ -30,12 +30,35 @@ part 'laProject.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAProject {
+  // Basic -----
   String uuid;
   String longName;
   String shortName;
   String? dirName;
   String domain;
   bool useSSL;
+  bool isHub;
+
+  // Additional -----
+  String theme;
+  LALatLng mapBoundsFstPoint;
+  LALatLng mapBoundsSndPoint;
+  double? mapZoom;
+  String additionalVariables;
+
+  // Software -----
+  String? alaInstallRelease;
+  String? generatorRelease;
+
+  // Status -----
+  @JsonKey(ignore: true)
+  LAProjectStatus status;
+  bool isCreated;
+  bool fstDeployed;
+  bool advancedEdit;
+  bool advancedTune;
+
+  // Relations -----
   List<LAServer> servers;
   // mapped by uuid
   Map<String, LAServer> serversMap;
@@ -43,24 +66,13 @@ class LAProject {
   Map<String, LAService> services;
   // Mapped by variable name
   Map<String, LAVariable> variables;
-  String additionalVariables;
   Map<String, List<String>> serverServices;
-  @JsonKey(ignore: true)
-  bool isCreated;
-  bool fstDeployed;
-  bool advancedEdit;
-  bool advancedTune;
-  LAProjectStatus status;
-  String theme;
-  String? alaInstallRelease;
-  String? generatorRelease;
-  LALatLng mapBoundsFstPoint;
-  LALatLng mapBoundsSndPoint;
-  double? mapZoom;
+  List<CmdHistoryEntry> cmdHistory;
+
+  // Logs history -----
   CmdHistoryEntry? lastCmdEntry;
   @JsonKey(ignore: true)
   CmdHistoryDetails? lastCmdDetails;
-  List<CmdHistoryEntry> cmdHistory;
 
   LAProject(
       {String? uuid,
@@ -70,6 +82,7 @@ class LAProject {
       this.dirName = "",
       this.useSSL = true,
       this.isCreated = false,
+      this.isHub = false,
       bool? fstDeployed,
       List<LAServer>? servers,
       Map<String, LAService>? services,
@@ -264,7 +277,7 @@ class LAProject {
         .map((entry) => '${serversMap[entry.key]!.name} has ${entry.value}')
         .toList()
         .join(', ');
-    return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, allWServReady: ___${allServersWithServicesReady()}___
+    return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, hub: $isHub, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.inhCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
@@ -439,6 +452,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
               .equals(serverServices, other.serverServices) &&
           additionalVariables == other.additionalVariables &&
           isCreated == other.isCreated &&
+          isHub == other.isHub &&
           fstDeployed == other.fstDeployed &&
           advancedEdit == other.advancedEdit &&
           advancedTune == other.advancedTune &&
@@ -465,6 +479,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       DeepCollectionEquality.unordered().hash(variables) ^
       DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
+      isHub.hashCode ^
       fstDeployed.hashCode ^
       advancedEdit.hashCode ^
       advancedTune.hashCode ^

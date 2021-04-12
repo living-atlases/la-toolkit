@@ -30,12 +30,17 @@ extension ParseToString on ServiceStatus {
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAService {
+  // Basic -----
   String uuid;
   String nameInt;
-  String iniPath;
   bool use;
+
+  // Urs related -----
   bool usesSubdomain;
+  String iniPath;
   String suburl;
+
+  // Status -----
   ServiceStatus status;
 
   LAService(

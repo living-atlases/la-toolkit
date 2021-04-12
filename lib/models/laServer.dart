@@ -12,17 +12,25 @@ part 'laServer.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServer {
+  // Basic
   String uuid;
   String name;
+  List<String> aliases;
+
+  // Connectivity
   String ip;
   int sshPort;
   String? sshUser;
-  List<String> aliases;
   SshKey? sshKey;
+  // List of proxy jumps (assh allows multi proxyjumps)
   List<String> gateways;
+
+  // Status
   ServiceStatus reachable;
   ServiceStatus sshReachable;
   ServiceStatus sudoEnabled;
+
+  // Facts
   String osName;
   String osVersion;
 

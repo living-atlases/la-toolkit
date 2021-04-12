@@ -11,9 +11,12 @@ enum LAVariableStatus { deployed, undeployed }
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAVariable {
+  // Basic
   String nameInt;
   LAServiceName service;
   Object? value;
+
+  // Status
   LAVariableStatus status = LAVariableStatus.undeployed;
 
   LAVariable({required this.nameInt, required this.service, this.value});
