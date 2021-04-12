@@ -106,6 +106,8 @@ RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
 RUN su - ubuntu -c 'npm install -g yo'
 RUN su - ubuntu -c 'npm install -g sails'
 RUN su - ubuntu -c 'npm install -g forever'
+RUN su - ubuntu -c 'npm install -g db-migrate'
+RUN su - ubuntu -c 'npm install -g db-migrate-mongodb'
 RUN echo "2021032402"
 RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 
