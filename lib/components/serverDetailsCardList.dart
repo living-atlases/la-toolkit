@@ -152,8 +152,8 @@ class ServersDetailsCardList extends StatelessWidget {
                                         focusNode: null,
                                         onChanged: (value) {
                                           _project.servers.map((current) {
-                                            if (_project.servers[index].uuid ==
-                                                current.uuid) {
+                                            if (_project.servers[index].id ==
+                                                current.id) {
                                               current.ip = value;
                                               _project.upsertByName(current);
                                             }

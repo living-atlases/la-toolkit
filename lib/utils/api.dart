@@ -38,7 +38,7 @@ class Api {
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({
           'name': project.shortName,
-          'uuid': project.uuid,
+          'id': project.id,
           'servers': servers,
           'user': user.toString()
         })));
@@ -109,7 +109,7 @@ class Api {
 
   static Future<void> saveConf(AppState state) async {
     Map map = {
-      for (LAProject item in state.projects) item.uuid: item.toGeneratorJson()
+      for (LAProject item in state.projects) item.id: item.toGeneratorJson()
     };
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/save-conf");
@@ -173,10 +173,10 @@ class Api {
   }
 
   static Future<void> regenerateInv(
-      {required String uuid, required Function(String) onError}) async {
+      {required String id, required Function(String) onError}) async {
     if (AppUtils.isDemo()) return;
     const userError = 'Error generating your inventories';
-    Uri url = Uri.http(env['BACKEND']!, "/api/v1/gen/$uuid/false");
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/gen/$id/false");
     http
         .get(url)
         .then(
@@ -191,15 +191,15 @@ class Api {
       {required Function(String cmd, int port) onStart,
       required ErrorCallback onError,
       String? server,
-      String? projectUuid}) async {
+      String? projectId}) async {
     if (AppUtils.isDemo()) {
       onStart("", 2011);
       return;
     }
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/term");
     Object? body;
-    if (server != null && projectUuid != null) {
-      body = utf8.encode(json.encode({'uuid': projectUuid, 'server': server}));
+    if (server != null && projectId != null) {
+      body = utf8.encode(json.encode({'id': projectId, 'server': server}));
     }
     http
         .post(url, headers: {'Content-type': 'application/json'}, body: body)
@@ -259,7 +259,7 @@ class Api {
 
   static dynamic cmdToObj(DeployProject action) {
     Object cmd = {
-      'uuid': action.project.uuid,
+      'id': action.project.id,
       'shortName': action.project.shortName,
       'dirName': action.project.dirName,
       'deployServices': action.cmd.deployServices,
@@ -289,12 +289,12 @@ class Api {
   }
 
   static Future<String?> checkDirName(
-      {required String dirName, required String uuid}) async {
+      {required String dirName, required String id}) async {
     if (AppUtils.isDemo()) return null;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/check-dir-name");
     Response response = await http.post(url,
         headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({'dirName': dirName, 'uuid': uuid})));
+        body: utf8.encode(json.encode({'dirName': dirName, 'id': id})));
     if (response.statusCode == 200) {
       return json.decode(response.body)['dirName'];
     }

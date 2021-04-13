@@ -13,6 +13,7 @@ extension CmdHistoryDetailsCopyWith on CmdHistoryDetails {
     bool? fstRetrieved,
     String? logs,
     String? logsColorized,
+    int? port,
     List<dynamic>? results,
   }) {
     return CmdHistoryDetails(
@@ -21,6 +22,7 @@ extension CmdHistoryDetailsCopyWith on CmdHistoryDetails {
       fstRetrieved: fstRetrieved ?? this.fstRetrieved,
       logs: logs ?? this.logs,
       logsColorized: logsColorized ?? this.logsColorized,
+      port: port ?? this.port,
       results: results ?? this.results,
     );
   }
@@ -32,6 +34,7 @@ extension CmdHistoryDetailsCopyWith on CmdHistoryDetails {
 
 CmdHistoryDetails _$CmdHistoryDetailsFromJson(Map<String, dynamic> json) {
   return CmdHistoryDetails(
+    port: json['port'] as int?,
     code: json['code'] as int,
     results: json['results'] as List<dynamic>,
     logs: json['logs'] as String,
@@ -42,6 +45,7 @@ CmdHistoryDetails _$CmdHistoryDetailsFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$CmdHistoryDetailsToJson(CmdHistoryDetails instance) =>
     <String, dynamic>{
+      'port': instance.port,
       'code': instance.code,
       'results': instance.results,
       'logs': instance.logs,

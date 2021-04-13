@@ -3,7 +3,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/sshKey.dart';
-import 'package:uuid/uuid.dart';
+import 'package:objectid/objectid.dart';
 
 import 'laService.dart';
 
@@ -13,7 +13,7 @@ part 'laServer.g.dart';
 @CopyWith()
 class LAServer {
   // Basic
-  String uuid;
+  String id;
   String name;
   List<String> aliases;
 
@@ -35,7 +35,7 @@ class LAServer {
   String osVersion;
 
   LAServer(
-      {String? uuid,
+      {String? id,
       required this.name,
       String? ip,
       this.sshPort: 22,
@@ -48,7 +48,7 @@ class LAServer {
       this.sudoEnabled: ServiceStatus.unknown,
       this.osName = "",
       this.osVersion = ""})
-      : uuid = uuid ?? Uuid().v4(),
+      : id = id ?? new ObjectId().toString(),
         this.aliases = aliases ?? [],
         this.gateways = gateways ?? [],
         this.ip = ip ?? "";
@@ -63,7 +63,7 @@ class LAServer {
       other is LAServer &&
           runtimeType == other.runtimeType &&
           name == other.name &&
-          uuid == other.uuid &&
+          id == other.id &&
           ip == other.ip &&
           sshPort == other.sshPort &&
           sshUser == other.sshUser &&
@@ -79,7 +79,7 @@ class LAServer {
   @override
   int get hashCode =>
       name.hashCode ^
-      uuid.hashCode ^
+      id.hashCode ^
       ip.hashCode ^
       sshPort.hashCode ^
       sshUser.hashCode ^
@@ -100,13 +100,13 @@ class LAServer {
 
   @override
   String toString() {
-    return '''$name (${uuid.substring(0, 8)}...)${ip.length > 0 ? ', ' + ip : ''} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}''';
+    return '''$name (${id.substring(0, 8)}...)${ip.length > 0 ? ', ' + ip : ''} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}''';
   }
 
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {
-    if (servers.map((s) => s.uuid).toList().contains(laServer.uuid)) {
+    if (servers.map((s) => s.id).toList().contains(laServer.id)) {
       servers = servers
-          .map((current) => current.uuid == laServer.uuid ? laServer : current)
+          .map((current) => current.id == laServer.id ? laServer : current)
           .toList();
     } else {
       servers.add(laServer);
@@ -119,8 +119,8 @@ class LAServer {
     if (servers.map((s) => s.name).toList().contains(laServer.name)) {
       servers = servers.map((current) {
         if (current.name == laServer.name) {
-          // set the same previous uuid;
-          laServer.uuid = current.uuid;
+          // set the same previous id;
+          laServer.id = current.id;
           return laServer;
         } else
           return current;

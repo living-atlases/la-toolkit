@@ -5,7 +5,7 @@ import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
-import 'package:uuid/uuid.dart';
+import 'package:objectid/objectid.dart';
 
 part 'cmdHistoryEntry.g.dart';
 
@@ -35,7 +35,7 @@ extension CmdResultToIconData on CmdResult {
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class CmdHistoryEntry {
-  String uuid;
+  String id;
   String logsPrefix;
   String logsSuffix;
   String cmd;
@@ -48,7 +48,7 @@ class CmdHistoryEntry {
   CmdResult result;
 
   CmdHistoryEntry(
-      {String? uuid,
+      {String? id,
       required this.logsPrefix,
       required this.logsSuffix,
       String? invDir,
@@ -58,7 +58,7 @@ class CmdHistoryEntry {
       this.postDeployCmd,
       DateTime? date,
       this.result: CmdResult.unknown})
-      : uuid = uuid ?? Uuid().v4(),
+      : id = id ?? new ObjectId().toString(),
         invDir = invDir ?? "",
         this.date = date ?? DateTime.now();
 
@@ -81,7 +81,7 @@ class CmdHistoryEntry {
       identical(this, other) ||
       other is CmdHistoryEntry &&
           runtimeType == other.runtimeType &&
-          uuid == other.uuid &&
+          id == other.id &&
           logsPrefix == other.logsPrefix &&
           logsSuffix == other.logsSuffix &&
           cmd == other.cmd &&
@@ -94,7 +94,7 @@ class CmdHistoryEntry {
 
   @override
   int get hashCode =>
-      uuid.hashCode ^
+      id.hashCode ^
       invDir.hashCode ^
       logsPrefix.hashCode ^
       logsSuffix.hashCode ^

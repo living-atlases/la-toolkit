@@ -4,7 +4,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
-import 'package:uuid/uuid.dart';
+import 'package:objectid/objectid.dart';
 
 part 'laService.g.dart';
 
@@ -31,7 +31,7 @@ extension ParseToString on ServiceStatus {
 @CopyWith()
 class LAService {
   // Basic -----
-  String uuid;
+  String id;
   String nameInt;
   bool use;
 
@@ -44,18 +44,18 @@ class LAService {
   ServiceStatus status;
 
   LAService(
-      {String? uuid,
+      {String? id,
       required this.nameInt,
       required this.iniPath,
       required this.use,
       required this.usesSubdomain,
       ServiceStatus? status,
       required this.suburl})
-      : uuid = uuid ?? Uuid().v4(),
+      : id = id ?? new ObjectId().toString(),
         status = status ?? ServiceStatus.unknown;
 
   LAService.fromDesc(LAServiceDesc desc)
-      : uuid = Uuid().v4(),
+      : id = new ObjectId().toString(),
         nameInt = desc.nameInt,
         iniPath = desc.path,
         use = !desc.optional ? true : desc.initUse,
@@ -93,7 +93,7 @@ class LAService {
           nameInt == other.nameInt &&
           iniPath == other.iniPath &&
           use == other.use &&
-          uuid == other.uuid &&
+          id == other.id &&
           status == other.status &&
           usesSubdomain == other.usesSubdomain &&
           suburl == other.suburl;
@@ -104,7 +104,7 @@ class LAService {
       iniPath.hashCode ^
       use.hashCode ^
       usesSubdomain.hashCode ^
-      uuid.hashCode ^
+      id.hashCode ^
       status.hashCode ^
       suburl.hashCode;
 }

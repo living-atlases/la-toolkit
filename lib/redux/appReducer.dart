@@ -114,7 +114,7 @@ AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
   List<dynamic> projects = json['projects'];
   List<LAProject> newProjects = List<LAProject>.empty(growable: true);
   projects.forEach((pJson) {
-    pJson['uuid'] = null;
+    pJson['id'] = null;
     LAProject newProject = LAProject.fromJson(pJson);
     newProjects.add(newProject);
   });
@@ -166,8 +166,8 @@ AppState _openProjectTools(AppState state, OpenProjectTools action) {
 
 AppState _generateInvProject(AppState state, GenerateInvProject action) {
   if (AppUtils.isDemo()) return state;
-  String uuid = action.project.uuid;
-  String url = "http://${env['BACKEND']}/api/v1/gen/$uuid/true";
+  String id = action.project.id;
+  String url = "http://${env['BACKEND']}/api/v1/gen/$id/true";
   html.AnchorElement anchorElement = new html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();
@@ -180,7 +180,7 @@ AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
 
 AppState _addProject(AppState state, AddProject action) {
   state.projects.forEach((project) {
-    if (project.uuid == action.project.uuid)
+    if (project.id == action.project.id)
       throw ("Trying to add an existing project.");
     return;
   });
@@ -196,7 +196,7 @@ AppState _delProject(AppState state, DelProject action) {
   return state.copyWith(
       currentProject: LAProject(),
       projects: new List<LAProject>.from(state.projects)
-        ..removeWhere((item) => item.uuid == action.project.uuid));
+        ..removeWhere((item) => item.id == action.project.id));
 }
 
 AppState _updateProject(AppState state, UpdateProject action) {
@@ -204,7 +204,7 @@ AppState _updateProject(AppState state, UpdateProject action) {
       currentProject: action.project,
       projects: state.projects
           .map((project) =>
-              project.uuid == action.project.uuid ? action.project : project)
+              project.id == action.project.id ? action.project : project)
           .toList());
 }
 
@@ -251,7 +251,7 @@ AppState _onTestConnectivityResults(
       loading: false,
       projects: state.projects
           .map((project) =>
-              project.uuid == currentProject.uuid ? currentProject : project)
+              project.id == currentProject.id ? currentProject : project)
           .toList());
 }
 
@@ -288,7 +288,7 @@ AppState _showDeployProjectResults(
     currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
   } else {
     int index = currentProject.cmdHistory
-        .indexWhere((cur) => cur.uuid == action.cmdHistoryEntry.uuid);
+        .indexWhere((cur) => cur.id == action.cmdHistoryEntry.id);
     if (index != -1) {
       currentProject.cmdHistory
           .replaceRange(index, index + 1, [action.cmdHistoryEntry]);
@@ -302,7 +302,7 @@ AppState _showDeployProjectResults(
 
 List<LAProject> replaceProject(AppState state, LAProject currentProject) {
   List<LAProject> projects = new List<LAProject>.from(state.projects);
-  int index = projects.indexWhere((cur) => cur.uuid == currentProject.uuid);
+  int index = projects.indexWhere((cur) => cur.id == currentProject.id);
   projects.replaceRange(index, index + 1, [currentProject]);
   return projects;
 }
@@ -335,7 +335,7 @@ AppState _saveDeployCmd(AppState state, SaveDeployCmd action) {
 AppState _onDeleteLog(AppState state, DeleteLog action) {
   LAProject p = state.currentProject;
   p.cmdHistory = new List<CmdHistoryEntry>.from(p.cmdHistory)
-    ..removeWhere((cmd) => cmd.uuid == action.cmd.uuid);
+    ..removeWhere((cmd) => cmd.id == action.cmd.id);
   List<LAProject> projects = replaceProject(state, p);
   return state.copyWith(currentProject: p, projects: projects);
 }

@@ -91,7 +91,8 @@ dependencies:
   # data
   json_annotation: ^4.0.1
   copy_with_extension: ^2.0.0
-  uuid: ^3.0.2
+  # uuid: ^3.0.2
+  objectid: 2.0.0
   http: ^0.13.1
 
   # Remove this in the future?

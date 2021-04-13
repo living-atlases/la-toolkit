@@ -185,7 +185,7 @@ class ProjectCard extends StatelessWidget {
                                         crossAxisAlignment:
                                             WrapCrossAlignment.start,
                                         children: [
-                                          LAProjectTimeline(uuid: project.uuid),
+                                          LAProjectTimeline(id: project.id),
                                           // Text('Configured: '),
                                           /* LinearPercentIndicator(
                                           width: 300,

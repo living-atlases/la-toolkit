@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/intl_browser.dart';
+// import 'package:intl/intl.dart';
+
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
@@ -240,7 +240,7 @@ class DeployUtils {
         });
   }
 }
-
+/*
 class LADateUtils {
   static Future<String> now() async {
     final DateTime now = DateTime.now();
@@ -249,4 +249,4 @@ class LADateUtils {
     // DateFormat('yyyy-MM-dd H:mm:ss a', locale);
     return formatter.format(now);
   }
-}
+} */

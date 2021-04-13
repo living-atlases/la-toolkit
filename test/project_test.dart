@@ -110,14 +110,14 @@ void main() {
   test('Test step 1 of creation, valid servers-service assignment and equality',
       () {
     LAProject testProject = LAProject(
-        uuid: "0",
+        id: "0",
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
         domain: "l-a.site",
         alaInstallRelease: "",
         generatorRelease: "");
     LAProject testProjectOther = LAProject(
-        uuid: "0",
+        id: "0",
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
         domain: "l-a.site",
@@ -299,32 +299,29 @@ void main() {
     p.assign(vm1, [collectory, bie, bieIndex, lists]);
     LAServer vm1Bis =
         LAServer(name: "vm1", ip: "10.0.0.1", sshUser: "john", sshPort: 22001);
-    expect(p.getServerServices(serverUuid: vm1.uuid).contains(collectory),
+    expect(p.getServerServices(serverId: vm1.id).contains(collectory),
         equals(true));
     p.upsertByName(vm1Bis);
 
-    expect(p.getServerServices(serverUuid: vm1.uuid).contains(collectory),
+    expect(p.getServerServices(serverId: vm1.id).contains(collectory),
         equals(true));
-    expect(
-        p.getServerServices(serverUuid: vm1.uuid).contains(bie), equals(true));
-    expect(p.getServerServices(serverUuid: vm1.uuid).contains(lists),
-        equals(true));
+    expect(p.getServerServices(serverId: vm1.id).contains(bie), equals(true));
+    expect(p.getServerServices(serverId: vm1.id).contains(lists), equals(true));
     var vm1Updated =
-        p.servers.where((element) => element.uuid == vm1.uuid).toList()[0];
+        p.servers.where((element) => element.id == vm1.id).toList()[0];
     expect(vm1Updated.sshUser == "john" && vm1Updated.sshPort == 22001,
         equals(true));
     p.serviceInUse(bie, false);
     expect(p.getService(bie).use, equals(false));
     expect(p.getService(bieIndex).use, equals(false));
     expect(p.getService(lists).use, equals(false));
-    expect(p.getServerServices(serverUuid: vm1.uuid).contains(collectory),
+    expect(p.getServerServices(serverId: vm1.id).contains(collectory),
         equals(true));
+    expect(p.getServerServices(serverId: vm1.id).contains(bie), equals(false));
+    expect(p.getServerServices(serverId: vm1.id).contains(bieIndex),
+        equals(false));
     expect(
-        p.getServerServices(serverUuid: vm1.uuid).contains(bie), equals(false));
-    expect(p.getServerServices(serverUuid: vm1.uuid).contains(bieIndex),
-        equals(false));
-    expect(p.getServerServices(serverUuid: vm1.uuid).contains(lists),
-        equals(false));
+        p.getServerServices(serverId: vm1.id).contains(lists), equals(false));
     p.serviceInUse(bie, true);
     expect(p.getService(bie).use, equals(true));
     expect(p.getService(bieIndex).use, equals(true));
@@ -668,9 +665,9 @@ void main() {
     expect(p.getServicesNameListNotInUse().contains(alerts), equals(true));
     expect(p.getServicesNameListInUse().contains(alerts), equals(false));
     p.servers.forEach((server) {
-      expect(p.getServerServicesForTest()[server.uuid]!.contains(doi),
+      expect(p.getServerServicesForTest()[server.id]!.contains(doi),
           equals(false));
-      expect(p.getServerServicesForTest()[server.uuid]!.contains(alerts),
+      expect(p.getServerServicesForTest()[server.id]!.contains(alerts),
           equals(false));
     });
     expect(

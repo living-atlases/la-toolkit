@@ -18,9 +18,9 @@ const _iconsVerticalPadding = 4.0;
 class LAProjectTimeline extends StatelessWidget {
   final int size = LAProjectStatus.values.length;
 
-  final String uuid;
+  final String id;
 
-  LAProjectTimeline({required this.uuid});
+  LAProjectTimeline({required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class LAProjectTimeline extends StatelessWidget {
         distinct: true,
         converter: (store) {
           List<LAProject> ourProjects = store.state.projects
-              .where((element) => element.uuid == uuid)
+              .where((element) => element.id == id)
               .toList();
           return _LAProjectTimelineViewModel(
             status: ourProjects.length > 0

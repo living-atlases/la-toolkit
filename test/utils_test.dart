@@ -1,8 +1,8 @@
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:objectid/objectid.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 void main() {
   test('Capitalize strings', () {
@@ -86,9 +86,9 @@ void main() {
       '議さだや設9売サコヱ助送首し康美イヤエテ決竹ハキ約泣ヘハ式追だじけ',
     ];
     shortNames.forEach((shortName) {
-      String uuid = Uuid().v4();
+      String uuid = new ObjectId().toString();
       String dirName =
-          StringUtils.suggestDirName(shortName: shortName, uuid: uuid);
+          StringUtils.suggestDirName(shortName: shortName, id: uuid);
       // print("$shortName: $dirName");
       expect(dirName.length >= 2, equals(true));
     });
@@ -101,9 +101,8 @@ void main() {
       ['ALA', 'ala']
     ];
     pairs.forEach((pair) {
-      String uuid = Uuid().v4();
-      String dirName =
-          StringUtils.suggestDirName(shortName: pair[0], uuid: uuid);
+      String uuid = new ObjectId().toString();
+      String dirName = StringUtils.suggestDirName(shortName: pair[0], id: uuid);
       print("${pair[0]}: $dirName");
       expect(dirName.length >= 2, equals(true));
       expect(dirName == pair[1], equals(true));

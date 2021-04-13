@@ -226,7 +226,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                       child: Column(children: [
                         Container(
                             padding: EdgeInsets.only(top: 80, bottom: 50),
-                            child: LAProjectTimeline(uuid: project.uuid)),
+                            child: LAProjectTimeline(id: project.id)),
                         // Disabled for now
                         // ServicesChipPanel(),
                         Row(

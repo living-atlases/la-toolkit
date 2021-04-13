@@ -194,7 +194,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       String? currentDirName = action.project.dirName;
       currentDirName ??= action.project.suggestDirName();
       String? checkedDirName = await Api.checkDirName(
-          dirName: currentDirName, uuid: action.project.uuid);
+          dirName: currentDirName, id: action.project.id);
       if (checkedDirName == null) {
         store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
             "Failed to prepare your configuration (in details, the dirName to store it)")));
@@ -204,8 +204,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               action.project.copyWith(dirName: checkedDirName);
           store.dispatch(UpdateProject(updatedProject));
         }
-        await Api.regenerateInv(
-            uuid: action.project.uuid, onError: action.onError);
+        await Api.regenerateInv(id: action.project.id, onError: action.onError);
         if (action.deployCmd.runtimeType != PreDeployCmd &&
             action.deployCmd.runtimeType != PostDeployCmd) {
           await Api.alaInstallSelect(
@@ -232,7 +231,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       CmdHistoryDetails? lastCmdDet = store.state.currentProject.lastCmdDetails;
       if (lastCmdDet != null &&
           lastCmdDet.cmd != null &&
-          lastCmdDet.cmd!.uuid == action.cmdHistoryEntry.uuid) {
+          lastCmdDet.cmd!.id == action.cmdHistoryEntry.id) {
         // Don't load results again we have this already
       } else {
         lastCmdDet = await Api.getAnsiblewResults(

@@ -11,25 +11,25 @@ extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
     String? cmd,
     DateTime? date,
     DeployCmd? deployCmd,
+    String? id,
     String? invDir,
     String? logsPrefix,
     String? logsSuffix,
     PostDeployCmd? postDeployCmd,
     PreDeployCmd? preDeployCmd,
     CmdResult? result,
-    String? uuid,
   }) {
     return CmdHistoryEntry(
       cmd: cmd ?? this.cmd,
       date: date ?? this.date,
       deployCmd: deployCmd ?? this.deployCmd,
+      id: id ?? this.id,
       invDir: invDir ?? this.invDir,
       logsPrefix: logsPrefix ?? this.logsPrefix,
       logsSuffix: logsSuffix ?? this.logsSuffix,
       postDeployCmd: postDeployCmd ?? this.postDeployCmd,
       preDeployCmd: preDeployCmd ?? this.preDeployCmd,
       result: result ?? this.result,
-      uuid: uuid ?? this.uuid,
     );
   }
 }
@@ -40,7 +40,7 @@ extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
 
 CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) {
   return CmdHistoryEntry(
-    uuid: json['uuid'] as String?,
+    id: json['id'] as String?,
     logsPrefix: json['logsPrefix'] as String,
     logsSuffix: json['logsSuffix'] as String,
     invDir: json['invDir'] as String?,
@@ -59,7 +59,7 @@ CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
     <String, dynamic>{
-      'uuid': instance.uuid,
+      'id': instance.id,
       'logsPrefix': instance.logsPrefix,
       'logsSuffix': instance.logsSuffix,
       'cmd': instance.cmd,

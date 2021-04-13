@@ -17,7 +17,9 @@ extension LAProjectCopyWith on LAProject {
     String? domain,
     bool? fstDeployed,
     String? generatorRelease,
+    String? id,
     bool? isCreated,
+    bool? isHub,
     CmdHistoryDetails? lastCmdDetails,
     CmdHistoryEntry? lastCmdEntry,
     String? longName,
@@ -32,7 +34,6 @@ extension LAProjectCopyWith on LAProject {
     LAProjectStatus? status,
     String? theme,
     bool? useSSL,
-    String? uuid,
     Map<String, LAVariable>? variables,
   }) {
     return LAProject(
@@ -45,7 +46,9 @@ extension LAProjectCopyWith on LAProject {
       domain: domain ?? this.domain,
       fstDeployed: fstDeployed ?? this.fstDeployed,
       generatorRelease: generatorRelease ?? this.generatorRelease,
+      id: id ?? this.id,
       isCreated: isCreated ?? this.isCreated,
+      isHub: isHub ?? this.isHub,
       lastCmdDetails: lastCmdDetails ?? this.lastCmdDetails,
       lastCmdEntry: lastCmdEntry ?? this.lastCmdEntry,
       longName: longName ?? this.longName,
@@ -60,7 +63,6 @@ extension LAProjectCopyWith on LAProject {
       status: status ?? this.status,
       theme: theme ?? this.theme,
       useSSL: useSSL ?? this.useSSL,
-      uuid: uuid ?? this.uuid,
       variables: variables ?? this.variables,
     );
   }
@@ -72,12 +74,14 @@ extension LAProjectCopyWith on LAProject {
 
 LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
   return LAProject(
-    uuid: json['uuid'] as String?,
+    id: json['id'] as String?,
     longName: json['longName'] as String,
     shortName: json['shortName'] as String,
     domain: json['domain'] as String,
     dirName: json['dirName'] as String?,
     useSSL: json['useSSL'] as bool,
+    isCreated: json['isCreated'] as bool,
+    isHub: json['isHub'] as bool,
     fstDeployed: json['fstDeployed'] as bool?,
     servers: (json['servers'] as List<dynamic>?)
         ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
@@ -96,7 +100,6 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
       (k, e) =>
           MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
     ),
-    status: _$enumDecode(_$LAProjectStatusEnumMap, json['status']),
     alaInstallRelease: json['alaInstallRelease'] as String?,
     generatorRelease: json['generatorRelease'] as String?,
     mapBoundsFstPoint: json['mapBoundsFstPoint'] == null
@@ -120,63 +123,29 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
-      'uuid': instance.uuid,
+      'id': instance.id,
       'longName': instance.longName,
       'shortName': instance.shortName,
       'dirName': instance.dirName,
       'domain': instance.domain,
       'useSSL': instance.useSSL,
+      'isHub': instance.isHub,
+      'theme': instance.theme,
+      'mapBoundsFstPoint': instance.mapBoundsFstPoint.toJson(),
+      'mapBoundsSndPoint': instance.mapBoundsSndPoint.toJson(),
+      'mapZoom': instance.mapZoom,
+      'additionalVariables': instance.additionalVariables,
+      'alaInstallRelease': instance.alaInstallRelease,
+      'generatorRelease': instance.generatorRelease,
+      'isCreated': instance.isCreated,
+      'fstDeployed': instance.fstDeployed,
+      'advancedEdit': instance.advancedEdit,
+      'advancedTune': instance.advancedTune,
       'servers': instance.servers.map((e) => e.toJson()).toList(),
       'serversMap': instance.serversMap.map((k, e) => MapEntry(k, e.toJson())),
       'services': instance.services.map((k, e) => MapEntry(k, e.toJson())),
       'variables': instance.variables.map((k, e) => MapEntry(k, e.toJson())),
-      'additionalVariables': instance.additionalVariables,
       'serverServices': instance.serverServices,
-      'fstDeployed': instance.fstDeployed,
-      'advancedEdit': instance.advancedEdit,
-      'advancedTune': instance.advancedTune,
-      'status': _$LAProjectStatusEnumMap[instance.status],
-      'theme': instance.theme,
-      'alaInstallRelease': instance.alaInstallRelease,
-      'generatorRelease': instance.generatorRelease,
-      'mapBoundsFstPoint': instance.mapBoundsFstPoint.toJson(),
-      'mapBoundsSndPoint': instance.mapBoundsSndPoint.toJson(),
-      'mapZoom': instance.mapZoom,
-      'lastCmdEntry': instance.lastCmdEntry?.toJson(),
       'cmdHistory': instance.cmdHistory.map((e) => e.toJson()).toList(),
+      'lastCmdEntry': instance.lastCmdEntry?.toJson(),
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-const _$LAProjectStatusEnumMap = {
-  LAProjectStatus.created: 'created',
-  LAProjectStatus.basicDefined: 'basicDefined',
-  LAProjectStatus.advancedDefined: 'advancedDefined',
-  LAProjectStatus.reachable: 'reachable',
-  LAProjectStatus.firstDeploy: 'firstDeploy',
-  LAProjectStatus.inProduction: 'inProduction',
-};

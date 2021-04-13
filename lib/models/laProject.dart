@@ -13,8 +13,8 @@ import 'package:la_toolkit/utils/casUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:objectid/objectid.dart';
 import 'package:tuple/tuple.dart';
-import 'package:uuid/uuid.dart';
 
 import 'basicService.dart';
 import 'cmdHistoryDetails.dart';
@@ -31,7 +31,7 @@ part 'laProject.g.dart';
 @CopyWith()
 class LAProject {
   // Basic -----
-  String uuid;
+  String id;
   String longName;
   String shortName;
   String? dirName;
@@ -60,7 +60,7 @@ class LAProject {
 
   // Relations -----
   List<LAServer> servers;
-  // mapped by uuid
+  // mapped by id
   Map<String, LAServer> serversMap;
   // mapped by service.nameInt
   Map<String, LAService> services;
@@ -75,7 +75,7 @@ class LAProject {
   CmdHistoryDetails? lastCmdDetails;
 
   LAProject(
-      {String? uuid,
+      {String? id,
       this.longName = "",
       this.shortName = "",
       this.domain = "",
@@ -102,7 +102,7 @@ class LAProject {
       List<CmdHistoryEntry>? cmdHistory,
       bool? advancedEdit,
       bool? advancedTune})
-      : uuid = uuid ?? Uuid().v4(),
+      : id = id ?? new ObjectId().toString(),
         servers = servers ?? [],
         serversMap = serversMap ?? {},
         // _serversNameList = _serversNameList ?? [],
@@ -118,7 +118,7 @@ class LAProject {
     if (this.serversMap.entries.length != this.servers.length) {
       // serversMap is new
       this.serversMap =
-          Map.fromIterable(this.servers, key: (e) => e.uuid, value: (e) => e);
+          Map.fromIterable(this.servers, key: (e) => e.id, value: (e) => e);
     }
     validateCreation();
   }
@@ -147,7 +147,7 @@ class LAProject {
     LAProjectStatus status = LAProjectStatus.created;
     if (serverServices.length != serversMap.entries.length ||
         servers.length != serverServices.length)
-      throw ('Servers in $longName ($uuid) are inconsistent (serverServices: ${serverServices.length} serversMap: ${serversMap.entries.length} servers: ${servers.length})');
+      throw ('Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} serversMap: ${serversMap.entries.length} servers: ${servers.length})');
 
     valid = valid &&
         LARegExp.projectNameRegexp.hasMatch(longName) &&
@@ -204,8 +204,7 @@ class LAProject {
   List<LAServer> serversWithServices() {
     return servers
         .where((s) =>
-            serverServices[s.uuid] != null &&
-            serverServices[s.uuid]!.length > 0)
+            serverServices[s.id] != null && serverServices[s.id]!.length > 0)
         .toList();
   }
 
@@ -262,7 +261,7 @@ class LAProject {
 
   List<String> getServicesNameListSelected() {
     List<String> selected = [];
-    serverServices.forEach((uuid, service) => selected.addAll(service));
+    serverServices.forEach((id, service) => selected.addAll(service));
     return selected;
   }
 
@@ -344,19 +343,19 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     LAServer upsertServer =
         servers.firstWhereOrNull((s) => s.name == laServer.name)!;
 
-    serversMap[upsertServer.uuid] = upsertServer;
+    serversMap[upsertServer.id] = upsertServer;
     _cleanServerServices(upsertServer);
   }
 
   void upsertById(LAServer laServer) {
     servers = LAServer.upsertById(servers, laServer);
-    serversMap[laServer.uuid] = laServer;
+    serversMap[laServer.id] = laServer;
     _cleanServerServices(laServer);
   }
 
   void _cleanServerServices(LAServer laServer) {
-    if (!serverServices.containsKey(laServer.uuid)) {
-      serverServices[laServer.uuid] = [];
+    if (!serverServices.containsKey(laServer.id)) {
+      serverServices[laServer.id] = [];
     }
   }
 
@@ -365,13 +364,13 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   void assign(LAServer server, List<String> assignedServices) {
-    serverServices[server.uuid] = assignedServices;
+    serverServices[server.id] = assignedServices;
   }
 
   void delete(LAServer serverToDelete) {
-    serverServices.removeWhere((key, value) => key == serverToDelete.uuid);
+    serverServices.removeWhere((key, value) => key == serverToDelete.id);
     servers.remove(serverToDelete);
-    serversMap.remove(serverToDelete.uuid);
+    serversMap.remove(serverToDelete.id);
   }
 
   String additionalVariablesDecoded() {
@@ -383,12 +382,12 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   List<String> getHostname(String service) {
     List<String> hostnames = [];
 
-    serverServices.forEach((uuid, services) {
+    serverServices.forEach((id, services) {
       services.forEach((currentService) {
         if (service == currentService) {
-          // print(uuid);
-          // print("servers map: ${serversMap[uuid]}");
-          if (serversMap[uuid] != null) hostnames.add(serversMap[uuid]!.name);
+          // print(id);
+          // print("servers map: ${serversMap[id]}");
+          if (serversMap[id] != null) hostnames.add(serversMap[id]!.name);
         }
       });
     });
@@ -398,7 +397,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   String get etcHostsVar {
     List<String> etcHostLines = [];
     serversWithServices().forEach((server) => etcHostLines.add(
-        "      ${server.ip} ${getServerServices(serverUuid: server.uuid).map((sName) => services[sName]!.url(domain)).toList().join(' ')}"));
+        "      ${server.ip} ${getServerServices(serverId: server.id).map((sName) => services[sName]!.url(domain)).toList().join(' ')}"));
     return etcHostLines.join('\n');
   }
 
@@ -438,7 +437,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       identical(this, other) ||
       other is LAProject &&
           runtimeType == other.runtimeType &&
-          uuid == other.uuid &&
+          id == other.id &&
           longName == other.longName &&
           shortName == other.shortName &&
           dirName == other.dirName &&
@@ -468,7 +467,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   @override
   int get hashCode =>
-      uuid.hashCode ^
+      id.hashCode ^
       longName.hashCode ^
       shortName.hashCode ^
       dirName.hashCode ^
@@ -504,7 +503,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
         (curSer.depends != null && curSer.depends!.toS() == serviceNameInt));
     if (!use) {
       // Remove
-      serverServices.forEach((uuid, services) {
+      serverServices.forEach((id, services) {
         services.remove(serviceNameInt);
       });
       // Disable dependents
@@ -520,7 +519,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   Map<String, dynamic> toGeneratorJson() {
     Map<String, dynamic> conf = {
-      "LA_uuid": uuid,
+      "LA_id": id,
       "LA_pkg_name": dirName,
       "LA_project_name": longName,
       "LA_project_shortname": shortName,
@@ -613,30 +612,30 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       if (useIt && hostname.length > 0) {
         LAServer s;
         if (!p.getServersNameList().contains(hostname)) {
-          // uuid is empty when is new
-          s = LAServer(uuid: Uuid().v4(), name: hostname);
+          // id is empty when is new
+          s = LAServer(id: new ObjectId().toString(), name: hostname);
           p.upsertByName(s);
         } else {
           s = p.servers.where((c) => c.name == hostname).toList()[0];
         }
-        if (!tempServerServices.containsKey(s.uuid))
-          tempServerServices[s.uuid] = List<String>.empty(growable: true);
-        tempServerServices[s.uuid]!.add(service.nameInt);
+        if (!tempServerServices.containsKey(s.id))
+          tempServerServices[s.id] = List<String>.empty(growable: true);
+        tempServerServices[s.id]!.add(service.nameInt);
       }
     });
-    p.servers.forEach(
-        (server) => p.assign(server, tempServerServices[server.uuid]!));
+    p.servers
+        .forEach((server) => p.assign(server, tempServerServices[server.id]!));
     return p;
   }
 
-  List<String> getServerServices({required String serverUuid}) {
-    if (!serverServices.containsKey(serverUuid))
-      serverServices[serverUuid] = List<String>.empty(growable: true);
-    return serverServices[serverUuid]!;
+  List<String> getServerServices({required String serverId}) {
+    if (!serverServices.containsKey(serverId))
+      serverServices[serverId] = List<String>.empty(growable: true);
+    return serverServices[serverId]!;
   }
 
-  List<LAService> getServerServicesFull({required String serverUuid}) {
-    List<String> listS = getServerServices(serverUuid: serverUuid);
+  List<LAService> getServerServicesFull({required String serverId}) {
+    List<String> listS = getServerServices(serverId: serverId);
     return services.values.where((s) => listS.contains(s.nameInt)).toList();
   }
 
@@ -645,7 +644,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   String suggestDirName() {
-    return StringUtils.suggestDirName(shortName: shortName, uuid: uuid);
+    return StringUtils.suggestDirName(shortName: shortName, id: id);
   }
 
   List<ProdServiceDesc> get prodServices {

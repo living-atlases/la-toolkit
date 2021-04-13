@@ -24,7 +24,7 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
           return _ServersStatusPanelViewModel(
             project: store.state.currentProject,
             openTerm: (project, server) =>
-                TermDialog.openTerm(context, project.uuid, server.name),
+                TermDialog.openTerm(context, project.id, server.name),
           );
         },
         builder: (BuildContext context, _ServersStatusPanelViewModel vm) {
@@ -32,8 +32,7 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
             for (var server in vm.project.serversWithServices())
               ServerStatusCard(
                 server: server,
-                services:
-                    vm.project.getServerServicesFull(serverUuid: server.uuid),
+                services: vm.project.getServerServicesFull(serverId: server.id),
                 alaInstallVersion: vm.project.alaInstallRelease!,
                 extendedStatus: widget.extendedStatus,
                 onTerm: () => vm.openTerm(vm.project, server),

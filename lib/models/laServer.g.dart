@@ -10,6 +10,7 @@ extension LAServerCopyWith on LAServer {
   LAServer copyWith({
     List<String>? aliases,
     List<String>? gateways,
+    String? id,
     String? ip,
     String? name,
     String? osName,
@@ -20,11 +21,11 @@ extension LAServerCopyWith on LAServer {
     ServiceStatus? sshReachable,
     String? sshUser,
     ServiceStatus? sudoEnabled,
-    String? uuid,
   }) {
     return LAServer(
       aliases: aliases ?? this.aliases,
       gateways: gateways ?? this.gateways,
+      id: id ?? this.id,
       ip: ip ?? this.ip,
       name: name ?? this.name,
       osName: osName ?? this.osName,
@@ -35,7 +36,6 @@ extension LAServerCopyWith on LAServer {
       sshReachable: sshReachable ?? this.sshReachable,
       sshUser: sshUser ?? this.sshUser,
       sudoEnabled: sudoEnabled ?? this.sudoEnabled,
-      uuid: uuid ?? this.uuid,
     );
   }
 }
@@ -46,7 +46,7 @@ extension LAServerCopyWith on LAServer {
 
 LAServer _$LAServerFromJson(Map<String, dynamic> json) {
   return LAServer(
-    uuid: json['uuid'] as String?,
+    id: json['id'] as String?,
     name: json['name'] as String,
     ip: json['ip'] as String?,
     sshPort: json['sshPort'] as int,
@@ -67,12 +67,12 @@ LAServer _$LAServerFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
-      'uuid': instance.uuid,
+      'id': instance.id,
       'name': instance.name,
+      'aliases': instance.aliases,
       'ip': instance.ip,
       'sshPort': instance.sshPort,
       'sshUser': instance.sshUser,
-      'aliases': instance.aliases,
       'sshKey': instance.sshKey?.toJson(),
       'gateways': instance.gateways,
       'reachable': _$ServiceStatusEnumMap[instance.reachable],
