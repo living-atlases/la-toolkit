@@ -153,7 +153,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 title: "Logs History",
                 tooltip: "Show deploy logs history",
                 enabled: project.allServersWithServicesReady() &&
-                    project.cmdHistory.length > 0,
+                    project.cmdHistoryEntries.length > 0,
                 action: () => vm.onViewLogs(project)),
             Tool(
                 icon: const Icon(Icons.house_siding),

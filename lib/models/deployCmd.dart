@@ -4,6 +4,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
+import 'cmd.dart';
+
 part 'deployCmd.g.dart';
 
 // Typical ansible cmd
@@ -20,21 +22,25 @@ class DeployCmd {
   bool continueEvenIfFails;
   bool debug;
   bool dryRun;
+  CmdType type;
 
-  DeployCmd(
-      {List<String>? deployServices,
-      List<String>? limitToServers,
-      List<String>? skipTags,
-      List<String>? tags,
-      this.advanced = false,
-      this.onlyProperties = false,
-      this.continueEvenIfFails = false,
-      this.debug = false,
-      this.dryRun = false})
-      : deployServices = deployServices ?? [],
+  DeployCmd({
+    CmdType? type,
+    List<String>? deployServices,
+    List<String>? limitToServers,
+    List<String>? skipTags,
+    List<String>? tags,
+    this.advanced = false,
+    this.onlyProperties = false,
+    this.continueEvenIfFails = false,
+    this.debug = false,
+    this.dryRun = false,
+  })  : deployServices = deployServices ?? [],
         limitToServers = limitToServers ?? [],
         skipTags = skipTags ?? [],
-        tags = tags ?? [];
+        type = type ?? CmdType.deploy,
+        tags = tags ?? []
+  /* super(type: CmdType.deploy, properties: {} )*/;
 
   @override
   bool operator ==(Object other) =>

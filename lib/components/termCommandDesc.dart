@@ -17,7 +17,7 @@ class TermCommandDesc extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String cmd = cmdHistoryDetails.cmd!.cmd;
+    String cmd = cmdHistoryDetails.cmd!.rawCmd;
     Widget? subtitle;
     const subColor = Colors.grey;
     if (cmdHistoryDetails.cmd!.invDir != "")

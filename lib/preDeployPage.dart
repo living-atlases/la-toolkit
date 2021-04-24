@@ -37,7 +37,10 @@ class _PreDeployPageState extends State<PreDeployPage> {
             },
             onDoDeployTaskSwitchs: (project, cmd) =>
                 DeployUtils.deployActionDispatch(
-                    context: context, store: store, project: project, cmd: cmd),
+                    context: context,
+                    store: store,
+                    project: project,
+                    deployCmd: cmd),
             cmd: store.state.repeatCmd.runtimeType != PreDeployCmd
                 ? PreDeployCmd()
                 : store.state.repeatCmd as PreDeployCmd);

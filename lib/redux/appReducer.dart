@@ -285,12 +285,12 @@ AppState _showDeployProjectResults(
   action.cmdHistoryEntry.result = currentProject.lastCmdDetails!.result;
   if (action.fstRetrieved) {
     // remove and just search?
-    currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
+    currentProject.cmdHistoryEntries.insert(0, action.cmdHistoryEntry);
   } else {
-    int index = currentProject.cmdHistory
+    int index = currentProject.cmdHistoryEntries
         .indexWhere((cur) => cur.id == action.cmdHistoryEntry.id);
     if (index != -1) {
-      currentProject.cmdHistory
+      currentProject.cmdHistoryEntries
           .replaceRange(index, index + 1, [action.cmdHistoryEntry]);
     }
   }
@@ -334,7 +334,7 @@ AppState _saveDeployCmd(AppState state, SaveDeployCmd action) {
 
 AppState _onDeleteLog(AppState state, DeleteLog action) {
   LAProject p = state.currentProject;
-  p.cmdHistory = new List<CmdHistoryEntry>.from(p.cmdHistory)
+  p.cmdHistoryEntries = new List<CmdHistoryEntry>.from(p.cmdHistoryEntries)
     ..removeWhere((cmd) => cmd.id == action.cmd.id);
   List<LAProject> projects = replaceProject(state, p);
   return state.copyWith(currentProject: p, projects: projects);

@@ -7,6 +7,8 @@ import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:objectid/objectid.dart';
 
+import 'cmd.dart';
+
 part 'cmdHistoryEntry.g.dart';
 
 enum CmdResult { unknown, aborted, success, failed }
@@ -38,12 +40,9 @@ class CmdHistoryEntry {
   String id;
   String logsPrefix;
   String logsSuffix;
-  String cmd;
+  String rawCmd;
   String invDir;
-  DeployCmd deployCmd;
-  // We add this in order to serialize other inherit class correctly
-  PreDeployCmd? preDeployCmd;
-  PostDeployCmd? postDeployCmd;
+  Cmd cmd;
   DateTime date;
   CmdResult result;
 
@@ -52,10 +51,8 @@ class CmdHistoryEntry {
       required this.logsPrefix,
       required this.logsSuffix,
       String? invDir,
+      required this.rawCmd,
       required this.cmd,
-      required this.deployCmd,
-      this.preDeployCmd,
-      this.postDeployCmd,
       DateTime? date,
       this.result: CmdResult.unknown})
       : id = id ?? new ObjectId().toString(),
@@ -66,14 +63,16 @@ class CmdHistoryEntry {
       _$CmdHistoryEntryFromJson(json);
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
 
-  DeployCmd get inhCmd {
-    if (preDeployCmd != null) {
-      deployCmd = preDeployCmd!;
-    }
-    if (postDeployCmd != null) {
-      deployCmd = postDeployCmd!;
-    }
-    return deployCmd;
+  DeployCmd get deployCmd {
+    DeployCmd parsedCmd;
+    if (cmd.type == CmdType.preDeploy) {
+      parsedCmd = PreDeployCmd.fromJson(cmd.properties);
+    } else if (cmd.type == CmdType.preDeploy) {
+      parsedCmd = PostDeployCmd.fromJson(cmd.properties);
+    } else /* if (cmd.type == CmdType.deploy) { */
+      parsedCmd = DeployCmd.fromJson(cmd.properties);
+    /* } */
+    return parsedCmd;
   }
 
   @override
@@ -84,10 +83,10 @@ class CmdHistoryEntry {
           id == other.id &&
           logsPrefix == other.logsPrefix &&
           logsSuffix == other.logsSuffix &&
-          cmd == other.cmd &&
-          deployCmd == other.deployCmd &&
-          preDeployCmd == other.preDeployCmd &&
-          postDeployCmd == other.postDeployCmd &&
+          rawCmd == other.rawCmd &&
+          /* deployCmd == other.deployCmd && */
+          /* preDeployCmd == other.preDeployCmd &&
+          postDeployCmd == other.postDeployCmd && */
           date == other.date &&
           invDir == other.invDir &&
           result == other.result;
@@ -98,10 +97,10 @@ class CmdHistoryEntry {
       invDir.hashCode ^
       logsPrefix.hashCode ^
       logsSuffix.hashCode ^
-      cmd.hashCode ^
-      deployCmd.hashCode ^
-      preDeployCmd.hashCode ^
-      postDeployCmd.hashCode ^
+      rawCmd.hashCode ^
+      /* deployCmd.hashCode ^ */
+      /* preDeployCmd.hashCode ^
+      postDeployCmd.hashCode ^ */
       date.hashCode ^
       result.hashCode;
 }

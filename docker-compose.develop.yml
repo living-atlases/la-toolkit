@@ -51,3 +51,13 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: la_toolkit_mongo_admin
       ME_CONFIG_MONGODB_ADMINPASSWORD: la_toolkit_changeme
+
+  # 'watchtower' upgrade automatically the la-toolkit, whenever there is a new Docker image available,
+  # but a container restart is also need to get the new image
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --no-restart

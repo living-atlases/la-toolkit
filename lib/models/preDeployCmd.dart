@@ -2,6 +2,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
+import 'cmd.dart';
 import 'deployCmd.dart';
 
 part 'preDeployCmd.g.dart';
@@ -17,7 +18,8 @@ class PreDeployCmd extends DeployCmd {
   bool addAdditionalDeps;
 
   PreDeployCmd(
-      {this.addAnsibleUser = false,
+      {CmdType? type,
+      this.addAnsibleUser = false,
       this.addSshKeys = false,
       this.giveSudo = false,
       this.etcHosts = true,
@@ -31,6 +33,7 @@ class PreDeployCmd extends DeployCmd {
       debug = false,
       dryRun = false})
       : super(
+            type: type ?? CmdType.preDeploy,
             deployServices: ['all'],
             limitToServers: limitToServers,
             skipTags: skipTags,

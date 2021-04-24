@@ -1,3 +1,5 @@
+import 'package:la_toolkit/models/cmd.dart';
+import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
@@ -84,6 +86,58 @@ void main() {
   test('Test post-cmd to String', () {
     PostDeployCmd cmd = PostDeployCmd();
     cmd.configurePostfix = true;
-    expect(cmd.toString(), equals("Post-deploy tasks (configure Postfix)"));
+    expect(cmd.toString(), equals("Post-deploy tasks (configure postfix)"));
+  });
+
+  test('Test postDeployCmd type', () {
+    PostDeployCmd cmd = PostDeployCmd();
+
+    expect(cmd.type, equals(CmdType.postDeploy));
+  });
+
+  test('Test deployCmd type', () {
+    DeployCmd cmd = DeployCmd();
+
+    expect(cmd.type, equals(CmdType.deploy));
+  });
+
+  test('cmdEntry server retrieve', () {
+    Map<String, dynamic> cmdEntry = {
+      "createdAt": 1617609595413,
+      "updatedAt": 1617609595413,
+      "id": "6084263ae185829aa740c3ad",
+      "logsPrefix": "la-test",
+      "logsSuffix": "2021-04-05_09:58:53",
+      "invDir": "la-test/la-test-pre-deploy/",
+      "rawCmd":
+          "ansible-playbook -i ../la-test-inventories/la-test-inventory.ini -i inventory.yml pre-deploy.yml --tags pre-task-solr-limits,pre-task-deps",
+      "result": "success",
+      "projectId": "6084263ae185829aa740c368",
+      "cmd": {
+        "createdAt": 1617609595413,
+        "updatedAt": 1617609595413,
+        "id": "6084263ae185829aa740c3ae",
+        "type": "preDeploy",
+        "properties": {
+          "deployServices": ["all"],
+          "limitToServers": [],
+          "skipTags": [],
+          "tags": [],
+          "advanced": false,
+          "onlyProperties": false,
+          "continueEvenIfFails": false,
+          "debug": false,
+          "dryRun": false,
+          "addAnsibleUser": false,
+          "addSshKeys": false,
+          "giveSudo": false,
+          "etcHosts": false,
+          "solrLimits": true,
+          "addAdditionalDeps": true
+        },
+        "cmdHistoryEntryId": "6084263ae185829aa740c3ad"
+      }
+    };
+    CmdHistoryEntry.fromJson(cmdEntry);
   });
 }

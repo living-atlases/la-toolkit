@@ -2,6 +2,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
+import 'cmd.dart';
 import 'deployCmd.dart';
 
 part 'postDeployCmd.g.dart';
@@ -20,7 +21,8 @@ class PostDeployCmd extends DeployCmd {
   ];
 
   PostDeployCmd(
-      {this.configurePostfix = true,
+      {CmdType? type,
+      this.configurePostfix = true,
       List<String>? limitToServers,
       List<String>? skipTags,
       List<String>? tags,
@@ -29,6 +31,7 @@ class PostDeployCmd extends DeployCmd {
       debug = false,
       dryRun = false})
       : super(
+            type: type ?? CmdType.postDeploy,
             deployServices: ['all'],
             limitToServers: limitToServers,
             skipTags: skipTags,

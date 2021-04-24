@@ -13,6 +13,7 @@ import 'package:simple_moment/simple_moment.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/statusIcon.dart';
+import 'models/cmd.dart';
 
 class LogsHistoryPage extends StatelessWidget {
   static const routeName = "logs";
@@ -25,14 +26,16 @@ class LogsHistoryPage extends StatelessWidget {
       converter: (store) {
         return _ViewModel(
             project: store.state.currentProject,
-            logsNum: store.state.currentProject.cmdHistory.length,
+            logsNum: store.state.currentProject.cmdHistoryEntries.length,
             onDeleteCmd: (log) => store.dispatch(DeleteLog(log)),
             onRepeatCmd: (project, cmdHistory) {
-              store.dispatch(DeployUtils.doDeploy(
-                  context: context,
-                  store: store,
-                  project: project,
-                  deployCmd: cmdHistory.inhCmd));
+              if (cmdHistory.cmd.type.isDeploy) {
+                store.dispatch(DeployUtils.doDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    deployCmd: cmdHistory.deployCmd));
+              }
             },
             onOpenDeployResults: (cmdHistory) {
               store.dispatch(
@@ -61,13 +64,13 @@ class LogsHistoryPage extends StatelessWidget {
                           itemBuilder:
                               (BuildContext context, int index) =>
                                   LogItem(
-                                      vm.project.cmdHistory[index],
+                                      vm.project.cmdHistoryEntries[index],
                                       () => vm.onOpenDeployResults(
-                                          vm.project.cmdHistory[index]),
+                                          vm.project.cmdHistoryEntries[index]),
                                       () => vm.onRepeatCmd(vm.project,
-                                          vm.project.cmdHistory[index]),
+                                          vm.project.cmdHistoryEntries[index]),
                                       () => vm.onDeleteCmd(
-                                          vm.project.cmdHistory[index])))
+                                          vm.project.cmdHistoryEntries[index])))
                     ]))));
       },
     );
@@ -84,7 +87,7 @@ class LogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // print(log.deployCmd.toStringClassic());
     return ListTile(
-        title: Text(log.inhCmd.toString()),
+        title: Text(log.deployCmd.toString()),
         subtitle: Text(
             "Finished status: ${log.result.toS()}, ${Moment.now().from(log.date).toString()}"),
         onTap: () => onTap(),

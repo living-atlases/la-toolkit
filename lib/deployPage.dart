@@ -41,7 +41,10 @@ class _DeployPageState extends State<DeployPage> {
             project: store.state.currentProject,
             cmd: store.state.repeatCmd,
             onDeployProject: (project, cmd) => DeployUtils.deployActionDispatch(
-                context: context, store: store, project: project, cmd: cmd),
+                context: context,
+                store: store,
+                project: project,
+                deployCmd: cmd),
             onCancel: (project) {
               store.dispatch(OpenProjectTools(project));
               BeamerCond.of(context, LAProjectViewLocation());

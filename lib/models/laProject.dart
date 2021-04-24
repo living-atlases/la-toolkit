@@ -61,13 +61,17 @@ class LAProject {
   // Relations -----
   List<LAServer> servers;
   // mapped by id
+  // @JsonKey(ignore: true)
   Map<String, LAServer> serversMap;
   // mapped by service.nameInt
+  // @JsonKey(ignore: true)
   Map<String, LAService> services;
   // Mapped by variable name
+  // @JsonKey(ignore: true)
   Map<String, LAVariable> variables;
+  // @JsonKey(ignore: true)
   Map<String, List<String>> serverServices;
-  List<CmdHistoryEntry> cmdHistory;
+  List<CmdHistoryEntry> cmdHistoryEntries;
 
   // Logs history -----
   CmdHistoryEntry? lastCmdEntry;
@@ -88,8 +92,8 @@ class LAProject {
       Map<String, LAService>? services,
       Map<String, LAServer>? serversMap,
       Map<String, LAVariable>? variables,
-      this.additionalVariables = "",
       Map<String, List<String>>? serverServices,
+      this.additionalVariables = "",
       this.status = LAProjectStatus.created,
       this.alaInstallRelease,
       this.generatorRelease,
@@ -99,19 +103,23 @@ class LAProject {
       this.mapZoom,
       this.lastCmdEntry,
       this.lastCmdDetails,
-      List<CmdHistoryEntry>? cmdHistory,
+      List<CmdHistoryEntry>? cmdHistoryEntries,
       bool? advancedEdit,
       bool? advancedTune})
       : id = id ?? new ObjectId().toString(),
         servers = servers ?? [],
         serversMap = serversMap ?? {},
         // _serversNameList = _serversNameList ?? [],
-        services = services ?? initialServices,
+        services = services ?? {},
         variables = variables ?? {},
-        serverServices = serverServices ?? {},
+        serverServices = // serverServices ?? {},
+            serverServices == null
+                ? {}
+                : serverServices.map((String key, value) =>
+                    MapEntry<String, List<String>>(key.toString(), value)),
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
-        cmdHistory = cmdHistory ?? [],
+        cmdHistoryEntries = cmdHistoryEntries ?? [],
         fstDeployed = fstDeployed ?? false,
         mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng.from(-44, 112),
         mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154) {
@@ -120,6 +128,8 @@ class LAProject {
       this.serversMap =
           Map.fromIterable(this.servers, key: (e) => e.id, value: (e) => e);
     }
+    // Migrate to serviceDeploy;
+
     validateCreation();
   }
 
@@ -278,7 +288,7 @@ class LAProject {
         .join(', ');
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, hub: $isHub, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
-lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.inhCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
+lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
 servers-services: $sToS  
 services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
@@ -286,12 +296,12 @@ services in use (${getServicesNameListInUse().length}): [${getServicesNameListIn
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
   }
 
-  static Map<String, LAService> initialServices = getInitialServices();
+  static List<LAService> initialServices = getInitialServices();
 
-  static Map<String, LAService> getInitialServices() {
-    final Map<String, LAService> services = {};
+  static List<LAService> getInitialServices() {
+    final List<LAService> services = [];
     LAServiceDesc.map.forEach((key, desc) {
-      services[key] = LAService.fromDesc(desc);
+      services.add(LAService.fromDesc(desc));
     });
     return services;
   }
@@ -462,7 +472,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           mapBoundsSndPoint == other.mapBoundsSndPoint &&
           lastCmdEntry == other.lastCmdEntry &&
           lastCmdDetails == other.lastCmdDetails &&
-          ListEquality().equals(cmdHistory, other.cmdHistory) &&
+          ListEquality().equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -489,7 +499,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       mapBoundsFstPoint.hashCode ^
       mapBoundsSndPoint.hashCode ^
       lastCmdDetails.hashCode ^
-      ListEquality().hash(cmdHistory) ^
+      ListEquality().hash(cmdHistoryEntries) ^
       mapZoom.hashCode;
 
   void serviceInUse(String serviceNameInt, bool use) {

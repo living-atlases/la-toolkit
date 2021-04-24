@@ -34,28 +34,41 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     bool failedLoad = false;
 
     String? asS;
-    if (AppUtils.isDemo()) {
-      await _initPrefs();
-      asS = _pref!.getString(key);
-    } else {
-      asS = await Api.getConf().onError((error, stackTrace) {
+    await _initPrefs();
+    asS = _pref!.getString(key);
+    List<dynamic> projects = [];
+
+    if (!AppUtils.isDemo()) {
+      // Retrieve projects from the backend
+      String stateRetrieved = "{}";
+      try {
+        stateRetrieved = await Api.getConf();
+        Map<String, dynamic> stateRetrievedJ = json.decode(stateRetrieved);
+        projects = stateRetrievedJ['projects'];
+      } catch (e) {
         failedLoad = true;
-        return "";
-      });
+      }
     }
+    /* print(projects);
+    print(projects.runtimeType); */
+
     if (asS == null || asS.isEmpty || asS == "{}") {
       appState = initialEmptyAppState(failedLoad: failedLoad);
     } else {
       try {
         Map<String, dynamic> asJ = json.decode(asS);
         // print("Load prefs: $asJ.toString()");
-        // appState = AppState.fromJson(asJ);
+        if (!AppUtils.isDemo()) {
+          asJ['projects'] = projects;
+        }
         appState = AppState.fromJson(asJ);
+        appState.failedLoad = failedLoad;
       } catch (e) {
         print("Failed to decode conf: $e");
         appState = initialEmptyAppState(failedLoad: true);
       }
     }
+
     return appState;
   }
 
@@ -76,29 +89,27 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       // ALA-INSTALL RELEASES
       Uri alaInstallReleasesApiUrl = Uri.https('api.github.com',
           '/repos/AtlasOfLivingAustralia/ala-install/releases');
-      try {
-        Response alaInstallReleasesResponse =
-            await http.get(alaInstallReleasesApiUrl);
-        if (alaInstallReleasesResponse.statusCode == 200) {
-          List<dynamic> l = jsonDecode(alaInstallReleasesResponse.body) as List;
-          List<String> alaInstallReleases = [];
-          l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
-          // Remove the old ones
-          int limitResults = 6;
-          alaInstallReleases.removeRange(
-              alaInstallReleases.length - limitResults,
-              alaInstallReleases.length);
-          alaInstallReleases.add('upstream');
-          alaInstallReleases.add('custom');
-          if (!ListEquality()
-              .equals(alaInstallReleases, store.state.alaInstallReleases))
-            store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
-          scanSshKeys(store, () => {});
-        }
-      } catch (e) {
+
+      Response alaInstallReleasesResponse =
+          await http.get(alaInstallReleasesApiUrl);
+      if (alaInstallReleasesResponse.statusCode == 200) {
+        List<dynamic> l = jsonDecode(alaInstallReleasesResponse.body) as List;
+        List<String> alaInstallReleases = [];
+        l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
+        // Remove the old ones
+        int limitResults = 6;
+        alaInstallReleases.removeRange(alaInstallReleases.length - limitResults,
+            alaInstallReleases.length);
+        alaInstallReleases.add('upstream');
+        alaInstallReleases.add('custom');
+        if (!ListEquality()
+            .equals(alaInstallReleases, store.state.alaInstallReleases))
+          store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
+        scanSshKeys(store, () => {});
+      } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
         store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
-            "Failed to fetch github ala-install releases. Are connected to Internet?")));
+            "Failed to fetch github ala-install releases. Are you connected to Internet?")));
       }
 
       // LA-TOOLKIT RELEASES
@@ -200,8 +211,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             "Failed to prepare your configuration (in details, the dirName to store it)")));
       } else {
         if (action.project.dirName != checkedDirName) {
-          LAProject updatedProject =
-              action.project.copyWith(dirName: checkedDirName);
+          LAProject updatedProject = action.project;
+          updatedProject.dirName = checkedDirName;
           store.dispatch(UpdateProject(updatedProject));
         }
         await Api.regenerateInv(id: action.project.id, onError: action.onError);
@@ -278,18 +289,17 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   }
 
   saveAppState(AppState state) async {
-    if (AppUtils.isDemo()) {
-      await _initPrefs();
-      Object toJ = state.toJson();
-      // print("Saved prefs: $toJ.toString()");
-      _pref!.setString(key, json.encode(toJ));
-    } else {
+    await _initPrefs();
+    Object toJ = state.toJson();
+    // print("Saved prefs: $toJ.toString()");
+    _pref!.setString(key, json.encode(toJ));
+    if (!AppUtils.isDemo()) {
       if (state.failedLoad) {
         print(
             'Not saving configuration because the load of the saved configuration failed');
       } else {
-        print("Saving conf in server side");
-        Api.saveConf(state);
+        // print("Saving conf in server side");
+        // Api.saveConf(state);
       }
     }
   }

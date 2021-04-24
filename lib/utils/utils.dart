@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // import 'package:intl/intl.dart';
 
 import 'package:la_toolkit/components/termDialog.dart';
+import 'package:la_toolkit/models/cmd.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -167,14 +168,14 @@ class DeployUtils {
       {required BuildContext context,
       var store,
       required LAProject project,
-      required DeployCmd cmd}) {
+      required DeployCmd deployCmd}) {
     context.showLoaderOverlay();
-    if (cmd.runtimeType == PostDeployCmd) {
+    if (deployCmd.runtimeType == PostDeployCmd) {
       // We generate again the inventories with the smtp values
       store.dispatch(PrepareDeployProject(
           project: project,
           onReady: () {},
-          deployCmd: cmd,
+          deployCmd: deployCmd,
           onError: (e) {
             context.hideLoaderOverlay();
             UiUtils.showSnackBarError(context, e);
@@ -182,18 +183,20 @@ class DeployUtils {
     }
     store.dispatch(DeployProject(
         project: project,
-        cmd: cmd,
+        cmd: deployCmd,
         onStart: (ansibleCmd, port, logsPrefix, logsSuffix, invDir) {
           context.hideLoaderOverlay();
           TermDialog.show(context, port: port, title: "Ansible console",
               onClose: () async {
-            if (!cmd.dryRun) {
+            if (!deployCmd.dryRun) {
               // Show the results
               CmdHistoryEntry cmdHistory = CmdHistoryEntry(
-                  cmd: ansibleCmd,
-                  deployCmd: cmd,
-                  preDeployCmd: cmd is PreDeployCmd ? cmd : null,
-                  postDeployCmd: cmd is PostDeployCmd ? cmd : null,
+                  rawCmd: ansibleCmd,
+                  cmd:
+                      Cmd(type: deployCmd.type, properties: deployCmd.toJson()),
+                  /* deployCmd: cmd is DeployCmd ? cmd : null, */
+                  /* preDeployCmd: cmd is PreDeployCmd ? cmd : null,
+                  postDeployCmd: cmd is PostDeployCmd ? cmd : null, */
                   logsPrefix: logsPrefix,
                   logsSuffix: logsSuffix,
                   invDir: invDir);

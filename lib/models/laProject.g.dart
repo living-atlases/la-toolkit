@@ -12,7 +12,7 @@ extension LAProjectCopyWith on LAProject {
     bool? advancedEdit,
     bool? advancedTune,
     String? alaInstallRelease,
-    List<CmdHistoryEntry>? cmdHistory,
+    List<CmdHistoryEntry>? cmdHistoryEntries,
     String? dirName,
     String? domain,
     bool? fstDeployed,
@@ -41,7 +41,7 @@ extension LAProjectCopyWith on LAProject {
       advancedEdit: advancedEdit ?? this.advancedEdit,
       advancedTune: advancedTune ?? this.advancedTune,
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
-      cmdHistory: cmdHistory ?? this.cmdHistory,
+      cmdHistoryEntries: cmdHistoryEntries ?? this.cmdHistoryEntries,
       dirName: dirName ?? this.dirName,
       domain: domain ?? this.domain,
       fstDeployed: fstDeployed ?? this.fstDeployed,
@@ -95,11 +95,11 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     variables: (json['variables'] as Map<String, dynamic>?)?.map(
       (k, e) => MapEntry(k, LAVariable.fromJson(e as Map<String, dynamic>)),
     ),
-    additionalVariables: json['additionalVariables'] as String,
     serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
       (k, e) =>
           MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
     ),
+    additionalVariables: json['additionalVariables'] as String,
     alaInstallRelease: json['alaInstallRelease'] as String?,
     generatorRelease: json['generatorRelease'] as String?,
     mapBoundsFstPoint: json['mapBoundsFstPoint'] == null
@@ -114,7 +114,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
         ? null
         : CmdHistoryEntry.fromJson(
             json['lastCmdEntry'] as Map<String, dynamic>),
-    cmdHistory: (json['cmdHistory'] as List<dynamic>?)
+    cmdHistoryEntries: (json['cmdHistoryEntries'] as List<dynamic>?)
         ?.map((e) => CmdHistoryEntry.fromJson(e as Map<String, dynamic>))
         .toList(),
     advancedEdit: json['advancedEdit'] as bool?,
@@ -146,6 +146,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'services': instance.services.map((k, e) => MapEntry(k, e.toJson())),
       'variables': instance.variables.map((k, e) => MapEntry(k, e.toJson())),
       'serverServices': instance.serverServices,
-      'cmdHistory': instance.cmdHistory.map((e) => e.toJson()).toList(),
+      'cmdHistoryEntries':
+          instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),
       'lastCmdEntry': instance.lastCmdEntry?.toJson(),
     };

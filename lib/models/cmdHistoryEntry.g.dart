@@ -8,27 +8,23 @@ part of 'cmdHistoryEntry.dart';
 
 extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
   CmdHistoryEntry copyWith({
-    String? cmd,
+    Cmd? cmd,
     DateTime? date,
-    DeployCmd? deployCmd,
     String? id,
     String? invDir,
     String? logsPrefix,
     String? logsSuffix,
-    PostDeployCmd? postDeployCmd,
-    PreDeployCmd? preDeployCmd,
+    String? rawCmd,
     CmdResult? result,
   }) {
     return CmdHistoryEntry(
       cmd: cmd ?? this.cmd,
       date: date ?? this.date,
-      deployCmd: deployCmd ?? this.deployCmd,
       id: id ?? this.id,
       invDir: invDir ?? this.invDir,
       logsPrefix: logsPrefix ?? this.logsPrefix,
       logsSuffix: logsSuffix ?? this.logsSuffix,
-      postDeployCmd: postDeployCmd ?? this.postDeployCmd,
-      preDeployCmd: preDeployCmd ?? this.preDeployCmd,
+      rawCmd: rawCmd ?? this.rawCmd,
       result: result ?? this.result,
     );
   }
@@ -44,14 +40,8 @@ CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) {
     logsPrefix: json['logsPrefix'] as String,
     logsSuffix: json['logsSuffix'] as String,
     invDir: json['invDir'] as String?,
-    cmd: json['cmd'] as String,
-    deployCmd: DeployCmd.fromJson(json['deployCmd'] as Map<String, dynamic>),
-    preDeployCmd: json['preDeployCmd'] == null
-        ? null
-        : PreDeployCmd.fromJson(json['preDeployCmd'] as Map<String, dynamic>),
-    postDeployCmd: json['postDeployCmd'] == null
-        ? null
-        : PostDeployCmd.fromJson(json['postDeployCmd'] as Map<String, dynamic>),
+    rawCmd: json['rawCmd'] as String,
+    cmd: Cmd.fromJson(json['cmd'] as Map<String, dynamic>),
     date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
     result: _$enumDecode(_$CmdResultEnumMap, json['result']),
   );
@@ -62,11 +52,9 @@ Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
       'id': instance.id,
       'logsPrefix': instance.logsPrefix,
       'logsSuffix': instance.logsSuffix,
-      'cmd': instance.cmd,
+      'rawCmd': instance.rawCmd,
       'invDir': instance.invDir,
-      'deployCmd': instance.deployCmd.toJson(),
-      'preDeployCmd': instance.preDeployCmd?.toJson(),
-      'postDeployCmd': instance.postDeployCmd?.toJson(),
+      'cmd': instance.cmd.toJson(),
       'date': instance.date.toIso8601String(),
       'result': _$CmdResultEnumMap[instance.result],
     };
