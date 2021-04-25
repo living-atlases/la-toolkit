@@ -38,9 +38,9 @@ class PortalStatusPage extends StatelessWidget {
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
         /*if (vm.loading)
-          context.showLoaderOverlay();
+          context.loaderOverlay.show();
         else
-          context.hideLoaderOverlay(); */
+          context.loaderOverlay.hide(); */
         print("Building PortalStatus $_scaffoldKey");
         return Scaffold(
           key: _scaffoldKey,

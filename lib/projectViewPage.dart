@@ -96,7 +96,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 BeamerCond.of(context, PortalStatusLocation());
               },
               onTestConnProject: (project, silence) {
-                if (!silence) context.showLoaderOverlay();
+                if (!silence) context.loaderOverlay.show();
                 store.dispatch(TestConnectivityProject(project, () {
                   if (!silence)
                     _showServersStatus(context, store.state.currentProject);
@@ -258,7 +258,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
 
   void _showServersStatus(BuildContext context, LAProject currentProject) {
     bool allReady = currentProject.allServersWithServicesReady();
-    context.hideLoaderOverlay();
+    context.loaderOverlay.hide();
     Alert(
         context: context,
         closeIcon: Icon(Icons.close),

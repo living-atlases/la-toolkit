@@ -144,11 +144,11 @@ class DeployUtils {
       required var store,
       required LAProject project,
       required DeployCmd deployCmd}) {
-    context.showLoaderOverlay();
+    context.loaderOverlay.show();
     store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           if (deployCmd is PreDeployCmd) {
             BeamerCond.of(context, PreDeployLocation());
           } else if (deployCmd is PostDeployCmd) {
@@ -159,7 +159,7 @@ class DeployUtils {
         },
         deployCmd: deployCmd,
         onError: (e) {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           UiUtils.showSnackBarError(context, e);
         }));
   }
@@ -169,7 +169,7 @@ class DeployUtils {
       var store,
       required LAProject project,
       required DeployCmd deployCmd}) {
-    context.showLoaderOverlay();
+    context.loaderOverlay.show();
     if (deployCmd.runtimeType == PostDeployCmd) {
       // We generate again the inventories with the smtp values
       store.dispatch(PrepareDeployProject(
@@ -177,7 +177,7 @@ class DeployUtils {
           onReady: () {},
           deployCmd: deployCmd,
           onError: (e) {
-            context.hideLoaderOverlay();
+            context.loaderOverlay.hide();
             UiUtils.showSnackBarError(context, e);
           }));
     }
@@ -185,7 +185,7 @@ class DeployUtils {
         project: project,
         cmd: deployCmd,
         onStart: (ansibleCmd, port, logsPrefix, logsSuffix, invDir) {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           TermDialog.show(context, port: port, title: "Ansible console",
               onClose: () async {
             if (!deployCmd.dryRun) {
@@ -203,11 +203,11 @@ class DeployUtils {
               store.dispatch(
                   DeployUtils.getCmdResults(context, cmdHistory, true));
             }
-            // context.hideLoaderOverlay();
+            // context.loaderOverlay.hide();
           });
         },
         onError: (error) {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               action: SnackBarAction(
                 label: 'OK',
@@ -222,16 +222,16 @@ class DeployUtils {
 
   static AppActions getCmdResults(
       BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
-    context.showLoaderOverlay();
+    context.loaderOverlay.show();
     return GetDeployProjectResults(
         cmdHistoryEntry: cmdHistory,
         fstRetrieved: fstRetrieved,
         onReady: () {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           BeamerCond.of(context, DeployResultsLocation());
         },
         onFailed: () {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('There was some problem retrieving the results'),
             duration: Duration(days: 365),

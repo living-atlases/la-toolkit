@@ -97,14 +97,15 @@ class TermDialog {
   // Opens a bash or a ssh on server
   static void openTerm(BuildContext context,
       [String? projectId, String? server]) {
-    context.showLoaderOverlay();
+    // context.loaderOverlay.show();
+    context.loaderOverlay.show();
     Api.term(
         onStart: (cmd, port) {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           TermDialog.show(context, port: port);
         },
         onError: (error) {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           UiUtils.termErrorAlert(context, error);
         },
         projectId: projectId,

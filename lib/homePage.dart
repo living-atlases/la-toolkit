@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
               state: store.state,
               onImportProject: (yoRc) {
                 store.dispatch(ImportProject(yoRcJson: yoRc));
-                context.hideLoaderOverlay();
+                context.loaderOverlay.hide();
                 BeamerCond.of(context, LAProjectEditLocation());
               },
               onAddProject: () {
@@ -72,11 +72,11 @@ class _HomePageState extends State<HomePage> {
               onAppPackageInfo: (pkgInfo) =>
                   store.dispatch(OnAppPackageInfo(pkgInfo)),
               onAddTemplates: (templates) {
-                context.showLoaderOverlay();
+                context.loaderOverlay.show();
                 store.dispatch(AddTemplateProjects(
                     templates: templates,
                     onAdded: (num) {
-                      context.hideLoaderOverlay();
+                      context.loaderOverlay.hide();
                       /* ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('Added $num sample LA Projects'),
                       )); */
@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
           child: Text('OK'),
           onPressed: () async {
             try {
-              context.showLoaderOverlay();
+              context.loaderOverlay.show();
               String? yoRcJson = await FileUtils.getYoRcJson();
               if (yoRcJson != null)
                 vm.onImportProject(yoRcJson);
@@ -253,7 +253,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onFinish(BuildContext context, bool withError) {
-    context.hideLoaderOverlay();
+    context.loaderOverlay.hide();
     Navigator.pop(context);
     if (withError) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

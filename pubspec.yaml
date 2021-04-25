@@ -60,7 +60,7 @@ dependencies:
   # xterm: ^1.1.1+1
   clipboard: ^0.1.3
   # loading spinner
-  loader_overlay: ^2.0.0
+  loader_overlay: ^2.0.1
   # used for terms
   modal_bottom_sheet: ^2.0.0
   web_browser: ^0.5.0
@@ -94,6 +94,8 @@ dependencies:
   # uuid: ^3.0.2
   objectid: 2.0.0
   http: ^0.13.1
+  # flutter_data: ^0.7.0
+
 
   # Remove this in the future?
   shared_preferences: ^2.0.5
@@ -105,6 +107,8 @@ dependencies:
   # state
   flutter_redux: ^0.8.2
   redux_logging: ^0.5.0
+#  redux_persist: ^0.9.0
+#  redux_persist_flutter: ^0.9.0
 
   # utils
   flutter_dotenv: ^4.0.0-nullsafety.0 # ^3.1.0
@@ -119,8 +123,9 @@ dependencies:
   # flutter_map: ^0.12.0
   flutter_map:
     git:
-      url: git://github.com/escamoteur/flutter_map.git
-      ref: nullsafety
+      url: https://github.com/fleaflet/flutter_map
+      ref: issues/829-nullsafety
+
   # https://github.com/porn/area/pull/2
   area: # ^1.0.0
     git:
