@@ -9,7 +9,7 @@ part of 'cmdHistoryEntry.dart';
 extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
   CmdHistoryEntry copyWith({
     Cmd? cmd,
-    DateTime? date,
+    int? createdAt,
     String? desc,
     String? id,
     String? invDir,
@@ -20,7 +20,7 @@ extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
   }) {
     return CmdHistoryEntry(
       cmd: cmd ?? this.cmd,
-      date: date ?? this.date,
+      createdAt: createdAt ?? this.createdAt,
       desc: desc ?? this.desc,
       id: id ?? this.id,
       invDir: invDir ?? this.invDir,
@@ -45,7 +45,7 @@ CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) {
     invDir: json['invDir'] as String?,
     rawCmd: json['rawCmd'] as String,
     cmd: Cmd.fromJson(json['cmd'] as Map<String, dynamic>),
-    date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
+    createdAt: json['createdAt'] as int?,
     result: _$enumDecode(_$CmdResultEnumMap, json['result']),
   );
 }
@@ -59,8 +59,8 @@ Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
       'rawCmd': instance.rawCmd,
       'invDir': instance.invDir,
       'cmd': instance.cmd.toJson(),
-      'date': instance.date.toIso8601String(),
       'result': _$CmdResultEnumMap[instance.result],
+      'createdAt': instance.createdAt,
     };
 
 K _$enumDecode<K, V>(

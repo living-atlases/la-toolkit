@@ -44,8 +44,10 @@ class CmdHistoryEntry {
   String rawCmd;
   String invDir;
   Cmd cmd;
+  @JsonKey(ignore: true)
   DateTime date;
   CmdResult result;
+  int createdAt;
 
   CmdHistoryEntry(
       {String? id,
@@ -55,11 +57,14 @@ class CmdHistoryEntry {
       String? invDir,
       required this.rawCmd,
       required this.cmd,
-      DateTime? date,
+      int? createdAt,
       this.result: CmdResult.unknown})
       : id = id ?? new ObjectId().toString(),
         invDir = invDir ?? "",
-        this.date = date ?? DateTime.now();
+        createdAt = createdAt ?? DateTime.now().millisecond,
+        this.date = createdAt != null
+            ? DateTime.fromMillisecondsSinceEpoch(createdAt)
+            : DateTime.now();
 
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryEntryFromJson(json);

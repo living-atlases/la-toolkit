@@ -87,7 +87,7 @@ class LogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // print(log.deployCmd.toStringClassic());
     return ListTile(
-        title: Text(log.deployCmd.desc),
+        title: Text(log.desc ?? log.deployCmd.desc),
         subtitle: Text(
             "Finished status: ${log.result.toS()}, ${Moment.now().from(log.date).toString()}"),
         onTap: () => onTap(),
