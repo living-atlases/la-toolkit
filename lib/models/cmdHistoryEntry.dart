@@ -53,7 +53,7 @@ class CmdHistoryEntry {
       {String? id,
       required this.logsPrefix,
       required this.logsSuffix,
-      String? desc,
+      required this.desc,
       String? invDir,
       required this.rawCmd,
       required this.cmd,

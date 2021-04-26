@@ -192,6 +192,7 @@ class DeployUtils {
               // Show the results
               CmdHistoryEntry cmdHistory = CmdHistoryEntry(
                   rawCmd: ansibleCmd,
+                  desc: deployCmd.desc,
                   cmd:
                       Cmd(type: deployCmd.type, properties: deployCmd.toJson()),
                   /* deployCmd: cmd is DeployCmd ? cmd : null, */

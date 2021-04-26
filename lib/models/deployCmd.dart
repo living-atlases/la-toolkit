@@ -73,6 +73,7 @@ class DeployCmd {
     return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun}';
   }
 
+  @override
   String get desc {
     bool isAll = ListEquality().equals(deployServices, ['all']);
     String services = 'deploy of';
