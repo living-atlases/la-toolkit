@@ -60,7 +60,7 @@ class PreDeployCmd extends DeployCmd {
   }
 
   @override
-  String toString() {
+  String get desc {
     List<String> tasks = [];
     if (addAnsibleUser) tasks.add('add default user');
     if (addSshKeys) tasks.add('add ssh keys');

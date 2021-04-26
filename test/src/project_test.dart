@@ -125,7 +125,8 @@ void main() {
         generatorRelease: "");
 
     expect(
-        MapEquality().equals(testProject.services, testProjectOther.services),
+        MapEquality()
+            .equals(testProject.servicesMap, testProjectOther.servicesMap),
         equals(true));
     expect(
         MapEquality().equals(testProject.getServerServicesForTest(),
@@ -138,7 +139,8 @@ void main() {
     expect(ListEquality().equals(testProject.servers, testProjectOther.servers),
         equals(true));
     expect(
-        MapEquality().equals(testProject.variables, testProjectOther.variables),
+        MapEquality()
+            .equals(testProject.variablesMap, testProjectOther.variablesMap),
         equals(true));
     expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
     expect(testProject == testProjectOther, equals(true));
@@ -154,7 +156,9 @@ void main() {
     expect(testProject.servers.length, equals(1));
     expect(testProjectCopy.getServerServicesForTest().length, equals(1));
     expect(testProjectCopy.servers.length, equals(1));
-    expect(MapEquality().equals(testProject.services, testProjectCopy.services),
+    expect(
+        MapEquality()
+            .equals(testProject.servicesMap, testProjectCopy.servicesMap),
         equals(true));
     expect(
         DeepCollectionEquality.unordered().equals(
@@ -207,18 +211,10 @@ void main() {
     expect(testProject.getHostname(LAServiceName.regions.toS()).length == 0,
         equals(true));
 
-    testProject.assign(vm1, [
-      LAServiceName.ala_hub.toS(),
-      LAServiceName.regions.toS(),
-      bie,
-      LAServiceName.branding.toS()
-    ]);
+    testProject
+        .assign(vm1, [alaHub, regions, bie, LAServiceName.branding.toS()]);
 
-    testProject.assign(vm2, [
-      LAServiceName.collectory.toS(),
-      LAServiceName.bie_index.toS(),
-      LAServiceName.biocache_service.toS()
-    ]);
+    testProject.assign(vm2, [collectory, bieIndex, biocacheService]);
 
     testProject.assign(
         vm3, [LAServiceName.solr.toS(), LAServiceName.logger.toS(), lists]);
@@ -246,12 +242,23 @@ void main() {
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(4));
     // no ssh keys
-    expect(testProject.validateCreation(), equals(false));
+    expect(testProject.validateCreation(debug: true), equals(false));
     vm1.sshKey = SshKey(name: "k1", desc: "", encrypted: false);
     vm2.sshKey = SshKey(name: "k2", desc: "", encrypted: false);
     vm3.sshKey = SshKey(name: "k3", desc: "", encrypted: false);
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
-    expect(testProject.validateCreation(), equals(true));
+    expect(testProject.getServicesNameListInUse().length > 0, equals(true));
+
+    print(testProject.getServicesNameListInUse().length);
+    print(testProject.getServicesNameListSelected().length);
+    expect(
+        testProject.getServicesNameListInUse().length ==
+            testProject.getServicesNameListSelected().length,
+        equals(true));
+    testProject.getServicesNameListInUse().forEach((service) {
+      expect(testProject.getHostname(service).isNotEmpty, equals(true));
+    });
+    expect(testProject.validateCreation(debug: true), equals(true));
     expect(
         testProject.servers.where((element) => element.name == "vm2").first.ip,
         equals("10.0.0.2"));

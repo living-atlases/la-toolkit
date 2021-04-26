@@ -66,10 +66,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
   Map<String, LAServer> serversMap;
   // mapped by service.nameInt
   // @JsonKey(ignore: true)
-  Map<String, LAService> services;
+  Map<String, LAService> servicesMap;
   // Mapped by variable name
   // @JsonKey(ignore: true)
-  Map<String, LAVariable> variables;
+  Map<String, LAVariable> variablesMap;
   // @JsonKey(ignore: true)
   Map<String, List<String>> serverServices;
   List<CmdHistoryEntry> cmdHistoryEntries;
@@ -90,9 +90,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
       this.isHub = false,
       bool? fstDeployed,
       List<LAServer>? servers,
-      Map<String, LAService>? services,
+      Map<String, LAService>? servicesMap,
       Map<String, LAServer>? serversMap,
-      Map<String, LAVariable>? variables,
+      Map<String, LAVariable>? variablesMap,
       Map<String, List<String>>? serverServices,
       this.additionalVariables = "",
       this.status = LAProjectStatus.created,
@@ -111,8 +111,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
         servers = servers ?? [],
         serversMap = serversMap ?? {},
         // _serversNameList = _serversNameList ?? [],
-        services = services ?? {},
-        variables = variables ?? {},
+        servicesMap = servicesMap ?? initialServices,
+        variablesMap = variablesMap ?? {},
         serverServices = // serverServices ?? {},
             serverServices == null
                 ? {}
@@ -257,14 +257,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   List<String> getServicesNameListInUse() {
-    return services.values
+    return servicesMap.values
         .where((service) => service.use)
         .map((service) => service.nameInt)
         .toList();
   }
 
   List<String> getServicesNameListNotInUse() {
-    return services.values
+    return servicesMap.values
         .where((service) => !service.use)
         .map((service) => service.nameInt)
         .toList();
@@ -297,12 +297,12 @@ services in use (${getServicesNameListInUse().length}): [${getServicesNameListIn
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
   }
 
-  static List<LAService> initialServices = getInitialServices();
+  static Map<String, LAService> initialServices = getInitialServices();
 
-  static List<LAService> getInitialServices() {
-    final List<LAService> services = [];
+  static Map<String, LAService> getInitialServices() {
+    final Map<String, LAService> services = {};
     LAServiceDesc.map.forEach((key, desc) {
-      services.add(LAService.fromDesc(desc));
+      services[key] = LAService.fromDesc(desc);
     });
     return services;
   }
@@ -314,18 +314,18 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   LAService getService(String nameInt) {
     // getDepends can be null so the getService returns also null. Find a better way to do this
     // if (nameInt == null) return null;
-    LAService? curService = services[nameInt];
+    LAService? curService = servicesMap[nameInt];
     if (curService == null)
-      services[nameInt] =
+      servicesMap[nameInt] =
           curService = LAService.fromDesc(LAServiceDesc.get(nameInt));
     return curService;
   }
 
   LAVariable getVariable(String nameInt) {
-    if (variables[nameInt] == null) {
-      variables[nameInt] = LAVariable.fromDesc(LAVariableDesc.get(nameInt));
+    if (variablesMap[nameInt] == null) {
+      variablesMap[nameInt] = LAVariable.fromDesc(LAVariableDesc.get(nameInt));
     }
-    return variables[nameInt]!;
+    return variablesMap[nameInt]!;
   }
 
   Object? getVariableValue(String nameInt) {
@@ -342,7 +342,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   void setVariable(LAVariableDesc variableDesc, Object value) {
     LAVariable cur = getVariable(variableDesc.nameInt);
     cur.value = value;
-    variables[variableDesc.nameInt] = cur;
+    variablesMap[variableDesc.nameInt] = cur;
   }
 
   List<String> getServicesNameListInServer(String serverName) {
@@ -408,7 +408,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   String get etcHostsVar {
     List<String> etcHostLines = [];
     serversWithServices().forEach((server) => etcHostLines.add(
-        "      ${server.ip} ${getServerServices(serverId: server.id).map((sName) => services[sName]!.url(domain)).toList().join(' ')}"));
+        "      ${server.ip} ${getServerServices(serverId: server.id).map((sName) => servicesMap[sName]!.url(domain)).toList().join(' ')}"));
     return etcHostLines.join('\n');
   }
 
@@ -455,9 +455,10 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           domain == other.domain &&
           useSSL == other.useSSL &&
           DeepCollectionEquality.unordered().equals(servers, other.servers) &&
-          DeepCollectionEquality.unordered().equals(services, other.services) &&
           DeepCollectionEquality.unordered()
-              .equals(variables, other.variables) &&
+              .equals(servicesMap, other.servicesMap) &&
+          DeepCollectionEquality.unordered()
+              .equals(variablesMap, other.variablesMap) &&
           DeepCollectionEquality.unordered()
               .equals(serverServices, other.serverServices) &&
           additionalVariables == other.additionalVariables &&
@@ -485,8 +486,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       domain.hashCode ^
       useSSL.hashCode ^
       DeepCollectionEquality.unordered().hash(servers) ^
-      DeepCollectionEquality.unordered().hash(services) ^
-      DeepCollectionEquality.unordered().hash(variables) ^
+      DeepCollectionEquality.unordered().hash(servicesMap) ^
+      DeepCollectionEquality.unordered().hash(variablesMap) ^
       DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
       isHub.hashCode ^
@@ -504,10 +505,10 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       mapZoom.hashCode;
 
   void serviceInUse(String serviceNameInt, bool use) {
-    if (!services.keys.contains(serviceNameInt))
-      services[serviceNameInt] ??=
+    if (!servicesMap.keys.contains(serviceNameInt))
+      servicesMap[serviceNameInt] ??=
           LAService.fromDesc(LAServiceDesc.map[serviceNameInt]!);
-    LAService service = services[serviceNameInt]!;
+    LAService service = servicesMap[serviceNameInt]!;
 
     service.use = use;
     Iterable<LAServiceDesc> depends = LAServiceDesc.map.values.where((curSer) =>
@@ -552,7 +553,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     if (additionalVariables != "") {
       conf["LA_additionalVariables"] = additionalVariables;
     }
-    services.forEach((key, service) {
+    servicesMap.forEach((key, service) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
       conf["LA_${service.nameInt}_hostname"] =
@@ -563,7 +564,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       conf["LA_${service.nameInt}_path"] = service.path;
     });
 
-    variables.forEach((key, variable) {
+    variablesMap.forEach((key, variable) {
       conf["LA_variable_${variable.nameInt}"] = variable.value;
     });
     return conf;
@@ -582,7 +583,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
         shortName: yoRc['LA_project_shortname'],
         domain: yoRc["LA_domain"],
         useSSL: yoRc["LA_enable_ssl"],
-        services: {});
+        servicesMap: {});
     String domain = p.domain;
     Map<String, List<String>> tempServerServices = {};
 
@@ -647,7 +648,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   List<LAService> getServerServicesFull({required String serverId}) {
     List<String> listS = getServerServices(serverId: serverId);
-    return services.values.where((s) => listS.contains(s.nameInt)).toList();
+    return servicesMap.values.where((s) => listS.contains(s.nameInt)).toList();
   }
 
   Map<String, List<String>> getServerServicesForTest() {

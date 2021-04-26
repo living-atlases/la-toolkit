@@ -49,8 +49,6 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         failedLoad = true;
       }
     }
-    /* print(projects);
-    print(projects.runtimeType); */
 
     if (asS == null || asS.isEmpty || asS == "{}") {
       appState = initialEmptyAppState(failedLoad: failedLoad);

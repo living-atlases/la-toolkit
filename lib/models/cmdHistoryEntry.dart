@@ -38,6 +38,7 @@ extension CmdResultToIconData on CmdResult {
 @CopyWith()
 class CmdHistoryEntry {
   String id;
+  String? desc;
   String logsPrefix;
   String logsSuffix;
   String rawCmd;
@@ -50,6 +51,7 @@ class CmdHistoryEntry {
       {String? id,
       required this.logsPrefix,
       required this.logsSuffix,
+      String? desc,
       String? invDir,
       required this.rawCmd,
       required this.cmd,
@@ -84,11 +86,9 @@ class CmdHistoryEntry {
           logsPrefix == other.logsPrefix &&
           logsSuffix == other.logsSuffix &&
           rawCmd == other.rawCmd &&
-          /* deployCmd == other.deployCmd && */
-          /* preDeployCmd == other.preDeployCmd &&
-          postDeployCmd == other.postDeployCmd && */
           date == other.date &&
           invDir == other.invDir &&
+          desc == other.desc &&
           result == other.result;
 
   @override
@@ -97,10 +97,8 @@ class CmdHistoryEntry {
       invDir.hashCode ^
       logsPrefix.hashCode ^
       logsSuffix.hashCode ^
+      desc.hashCode ^
       rawCmd.hashCode ^
-      /* deployCmd.hashCode ^ */
-      /* preDeployCmd.hashCode ^
-      postDeployCmd.hashCode ^ */
       date.hashCode ^
       result.hashCode;
 }

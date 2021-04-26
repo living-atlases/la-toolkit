@@ -29,12 +29,12 @@ extension LAProjectCopyWith on LAProject {
     Map<String, List<String>>? serverServices,
     List<LAServer>? servers,
     Map<String, LAServer>? serversMap,
-    Map<String, LAService>? services,
+    Map<String, LAService>? servicesMap,
     String? shortName,
     LAProjectStatus? status,
     String? theme,
     bool? useSSL,
-    Map<String, LAVariable>? variables,
+    Map<String, LAVariable>? variablesMap,
   }) {
     return LAProject(
       additionalVariables: additionalVariables ?? this.additionalVariables,
@@ -58,12 +58,12 @@ extension LAProjectCopyWith on LAProject {
       serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
       serversMap: serversMap ?? this.serversMap,
-      services: services ?? this.services,
+      servicesMap: servicesMap ?? this.servicesMap,
       shortName: shortName ?? this.shortName,
       status: status ?? this.status,
       theme: theme ?? this.theme,
       useSSL: useSSL ?? this.useSSL,
-      variables: variables ?? this.variables,
+      variablesMap: variablesMap ?? this.variablesMap,
     );
   }
 }
@@ -86,13 +86,13 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     servers: (json['servers'] as List<dynamic>?)
         ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
         .toList(),
-    services: (json['services'] as Map<String, dynamic>?)?.map(
+    servicesMap: (json['servicesMap'] as Map<String, dynamic>?)?.map(
       (k, e) => MapEntry(k, LAService.fromJson(e as Map<String, dynamic>)),
     ),
     serversMap: (json['serversMap'] as Map<String, dynamic>?)?.map(
       (k, e) => MapEntry(k, LAServer.fromJson(e as Map<String, dynamic>)),
     ),
-    variables: (json['variables'] as Map<String, dynamic>?)?.map(
+    variablesMap: (json['variablesMap'] as Map<String, dynamic>?)?.map(
       (k, e) => MapEntry(k, LAVariable.fromJson(e as Map<String, dynamic>)),
     ),
     serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
@@ -143,8 +143,10 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'advancedTune': instance.advancedTune,
       'servers': instance.servers.map((e) => e.toJson()).toList(),
       'serversMap': instance.serversMap.map((k, e) => MapEntry(k, e.toJson())),
-      'services': instance.services.map((k, e) => MapEntry(k, e.toJson())),
-      'variables': instance.variables.map((k, e) => MapEntry(k, e.toJson())),
+      'servicesMap':
+          instance.servicesMap.map((k, e) => MapEntry(k, e.toJson())),
+      'variablesMap':
+          instance.variablesMap.map((k, e) => MapEntry(k, e.toJson())),
       'serverServices': instance.serverServices,
       'cmdHistoryEntries':
           instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),

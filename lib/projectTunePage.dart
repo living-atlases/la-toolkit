@@ -205,7 +205,7 @@ ${_doLine()}
                                         
                                                                                                                                                                       
 ''' +
-        currentProject.services.values.map((service) {
+        currentProject.servicesMap.values.map((service) {
           String name = service.nameInt;
           LAServiceDesc serviceDesc = LAServiceDesc.map[name]!;
           final String title =
