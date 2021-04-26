@@ -13,7 +13,7 @@ import 'package:universal_html/html.dart' as html;
 import '../models/appState.dart';
 import 'actions.dart';
 
-final appReducer = combineReducers<AppState>([
+List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
   new TypedReducer<AppState, OnFetchSoftwareDepsState>(_onFetchState),
   new TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
@@ -57,7 +57,8 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, DeleteLog>(_onDeleteLog),
   new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
   new TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
-]);
+];
+final appReducer = combineReducers<AppState>(basic);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
   return state.copyWith(firstUsage: false);

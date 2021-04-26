@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
+import 'package:la_toolkit/models/isJsonSerializable.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
@@ -29,7 +30,7 @@ part 'laProject.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class LAProject {
+class LAProject implements IsJsonSerializable<LAProject> {
   // Basic -----
   String id;
   String longName;
@@ -738,4 +739,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   Map<String, LAServiceDepsDesc> getDeps() =>
       LAServiceDepsDesc.getDeps(alaInstallRelease);
+
+  @override
+  LAProject fromJson(Map<String, dynamic> json) {
+    return LAProject.fromJson(json);
+  }
 }
