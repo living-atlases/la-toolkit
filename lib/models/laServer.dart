@@ -5,13 +5,14 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:objectid/objectid.dart';
 
+import 'isJsonSerializable.dart';
 import 'laService.dart';
 
 part 'laServer.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class LAServer {
+class LAServer implements IsJsonSerializable<LAServer> {
   // Basic
   String id;
   String name;
@@ -130,4 +131,7 @@ class LAServer {
     }
     return servers;
   }
+
+  @override
+  LAServer fromJson(Map<String, dynamic> json) => LAServer.fromJson(json);
 }

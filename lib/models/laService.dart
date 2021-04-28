@@ -6,6 +6,8 @@ import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:objectid/objectid.dart';
 
+import 'isJsonSerializable.dart';
+
 part 'laService.g.dart';
 
 enum ServiceStatus { unknown, success, failed }
@@ -29,7 +31,7 @@ extension ParseToString on ServiceStatus {
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class LAService {
+class LAService implements IsJsonSerializable<LAService> {
   // Basic -----
   String id;
   String nameInt;
@@ -107,4 +109,7 @@ class LAService {
       id.hashCode ^
       status.hashCode ^
       suburl.hashCode;
+
+  @override
+  LAService fromJson(Map<String, dynamic> json) => LAService.fromJson(json);
 }

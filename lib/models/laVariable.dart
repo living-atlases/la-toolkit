@@ -1,7 +1,9 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:objectid/objectid.dart';
 
+import 'isJsonSerializable.dart';
 import 'laVariableDesc.dart';
 
 part 'laVariable.g.dart';
@@ -10,8 +12,9 @@ enum LAVariableStatus { deployed, undeployed }
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class LAVariable {
+class LAVariable implements IsJsonSerializable<LAVariable> {
   // Basic
+  String id;
   String nameInt;
   LAServiceName service;
   Object? value;
@@ -19,10 +22,13 @@ class LAVariable {
   // Status
   LAVariableStatus status = LAVariableStatus.undeployed;
 
-  LAVariable({required this.nameInt, required this.service, this.value});
+  LAVariable(
+      {String? id, required this.nameInt, required this.service, this.value})
+      : id = id ?? new ObjectId().toString();
 
   LAVariable.fromDesc(LAVariableDesc desc)
-      : nameInt = desc.nameInt,
+      : id = new ObjectId().toString(),
+        nameInt = desc.nameInt,
         service = desc.service,
         status = LAVariableStatus.undeployed;
 
@@ -31,20 +37,28 @@ class LAVariable {
   Map<String, dynamic> toJson() => _$LAVariableToJson(this);
 
   @override
-  String toString() =>
-      'LAVariable {name: $nameInt, service: $service, value: $value, status: $status';
-
-  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LAVariable &&
           runtimeType == other.runtimeType &&
+          id == other.id &&
           nameInt == other.nameInt &&
           service == other.service &&
-          status == other.status &&
-          value == other.value;
+          value == other.value &&
+          status == other.status;
 
   @override
   int get hashCode =>
-      nameInt.hashCode ^ value.hashCode ^ service.hashCode ^ status.hashCode;
+      id.hashCode ^
+      nameInt.hashCode ^
+      service.hashCode ^
+      value.hashCode ^
+      status.hashCode;
+
+  @override
+  String toString() =>
+      'LAVariable {name: $nameInt, service: $service, value: $value, status: $status';
+
+  @override
+  LAVariable fromJson(Map<String, dynamic> json) => LAVariable.fromJson(json);
 }

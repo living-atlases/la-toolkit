@@ -22,10 +22,7 @@ import 'package:version/version.dart';
 
 import 'appActions.dart';
 import 'entityActions.dart';
-import 'entityApi.dart';
-
-EntityApi<CmdHistoryEntry> cmdHistoryEntryApi =
-    EntityApi<CmdHistoryEntry>('cmdHistoryEntry');
+import 'entityApis.dart';
 
 class AppStateMiddleware implements MiddlewareClass<AppState> {
   final String key = "laTool20210418";
@@ -273,7 +270,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     if (action is RequestUpdateOneProps<CmdHistoryEntry>) {
-      cmdHistoryEntryApi.update(action.id, action.props);
+      EntityApis.cmdHistoryEntryApi.update(action.id, action.props);
     }
     next(action);
   }

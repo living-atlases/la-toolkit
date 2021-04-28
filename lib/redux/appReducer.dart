@@ -6,17 +6,14 @@ import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/projectEditPage.dart';
-import 'package:la_toolkit/redux/entityApi.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
 
 import '../models/appState.dart';
 import 'actions.dart';
+import 'entityApis.dart';
 import 'entityReducer.dart';
-
-EntityApi<CmdHistoryEntry> cmdHistoryEntryApi =
-    EntityApi<CmdHistoryEntry>('cmdHistoryEntry');
 
 List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
@@ -294,7 +291,7 @@ AppState _showDeployProjectResults(
   action.cmdHistoryEntry.result = result;
   if (action.fstRetrieved) {
     // remove and just search?
-    cmdHistoryEntryApi
+    EntityApis.cmdHistoryEntryApi
         .update(action.cmdHistoryEntry.id, {'result': result.toS()});
     currentProject.cmdHistoryEntries.insert(0, action.cmdHistoryEntry);
   } else {

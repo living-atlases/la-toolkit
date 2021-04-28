@@ -9,6 +9,7 @@ part of 'laServiceDeploy.dart';
 extension LAServiceDeployCopyWith on LAServiceDeploy {
   LAServiceDeploy copyWith({
     String? additionalVariables,
+    String? id,
     LAProject? project,
     LAServer? server,
     LAService? service,
@@ -16,6 +17,7 @@ extension LAServiceDeployCopyWith on LAServiceDeploy {
   }) {
     return LAServiceDeploy(
       additionalVariables: additionalVariables ?? this.additionalVariables,
+      id: id ?? this.id,
       project: project ?? this.project,
       server: server ?? this.server,
       service: service ?? this.service,
@@ -30,6 +32,7 @@ extension LAServiceDeployCopyWith on LAServiceDeploy {
 
 LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) {
   return LAServiceDeploy(
+    id: json['id'] as String?,
     service: LAService.fromJson(json['service'] as Map<String, dynamic>),
     server: LAServer.fromJson(json['server'] as Map<String, dynamic>),
     additionalVariables: json['additionalVariables'] as String,
@@ -40,6 +43,7 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'service': instance.service.toJson(),
       'server': instance.server.toJson(),
       'project': instance.project.toJson(),

@@ -742,7 +742,5 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       LAServiceDepsDesc.getDeps(alaInstallRelease);
 
   @override
-  LAProject fromJson(Map<String, dynamic> json) {
-    return LAProject.fromJson(json);
-  }
+  LAProject fromJson(Map<String, dynamic> json) => LAProject.fromJson(json);
 }

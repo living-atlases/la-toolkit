@@ -8,10 +8,12 @@ part of 'cmd.dart';
 
 extension CmdCopyWith on Cmd {
   Cmd copyWith({
+    String? id,
     Map<String, dynamic>? properties,
     CmdType? type,
   }) {
     return Cmd(
+      id: id ?? this.id,
       properties: properties ?? this.properties,
       type: type ?? this.type,
     );
@@ -24,12 +26,14 @@ extension CmdCopyWith on Cmd {
 
 Cmd _$CmdFromJson(Map<String, dynamic> json) {
   return Cmd(
+    id: json['id'] as String?,
     type: _$enumDecode(_$CmdTypeEnumMap, json['type']),
     properties: json['properties'] as Map<String, dynamic>,
   );
 }
 
 Map<String, dynamic> _$CmdToJson(Cmd instance) => <String, dynamic>{
+      'id': instance.id,
       'type': _$CmdTypeEnumMap[instance.type],
       'properties': instance.properties,
     };
