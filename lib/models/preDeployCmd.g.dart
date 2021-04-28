@@ -21,7 +21,6 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
     List<String>? skipTags,
     bool? solrLimits,
     List<String>? tags,
-    CmdType? type,
   }) {
     return PreDeployCmd(
       addAdditionalDeps: addAdditionalDeps ?? this.addAdditionalDeps,
@@ -37,7 +36,6 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
       skipTags: skipTags ?? this.skipTags,
       solrLimits: solrLimits ?? this.solrLimits,
       tags: tags ?? this.tags,
-      type: type ?? this.type,
     );
   }
 }
@@ -48,7 +46,6 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
 
 PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) {
   return PreDeployCmd(
-    type: _$enumDecodeNullable(_$CmdTypeEnumMap, json['type']),
     addAnsibleUser: json['addAnsibleUser'] as bool,
     addSshKeys: json['addSshKeys'] as bool,
     giveSudo: json['giveSudo'] as bool,
@@ -77,63 +74,16 @@ Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) =>
       'deployServices': instance.deployServices,
       'limitToServers': instance.limitToServers,
       'skipTags': instance.skipTags,
-      'tags': instance.tags,
       'advanced': instance.advanced,
       'onlyProperties': instance.onlyProperties,
       'continueEvenIfFails': instance.continueEvenIfFails,
       'debug': instance.debug,
       'dryRun': instance.dryRun,
-      'type': _$CmdTypeEnumMap[instance.type],
       'addAnsibleUser': instance.addAnsibleUser,
       'addSshKeys': instance.addSshKeys,
       'giveSudo': instance.giveSudo,
       'etcHosts': instance.etcHosts,
       'solrLimits': instance.solrLimits,
       'addAdditionalDeps': instance.addAdditionalDeps,
+      'tags': instance.tags,
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-K? _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
-  dynamic source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
-}
-
-const _$CmdTypeEnumMap = {
-  CmdType.ansible: 'ansible',
-  CmdType.deploy: 'deploy',
-  CmdType.preDeploy: 'preDeploy',
-  CmdType.postDeploy: 'postDeploy',
-  CmdType.laPipelines: 'laPipelines',
-  CmdType.bash: 'bash',
-};

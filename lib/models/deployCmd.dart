@@ -4,8 +4,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
-import 'cmd.dart';
-
 part 'deployCmd.g.dart';
 
 // Typical ansible cmd
@@ -22,10 +20,8 @@ class DeployCmd {
   bool continueEvenIfFails;
   bool debug;
   bool dryRun;
-  CmdType type;
 
   DeployCmd({
-    CmdType? type,
     List<String>? deployServices,
     List<String>? limitToServers,
     List<String>? skipTags,
@@ -38,7 +34,6 @@ class DeployCmd {
   })  : deployServices = deployServices ?? [],
         limitToServers = limitToServers ?? [],
         skipTags = skipTags ?? [],
-        type = type ?? CmdType.deploy,
         tags = tags ?? []
   /* super(type: CmdType.deploy, properties: {} )*/;
 
@@ -73,7 +68,6 @@ class DeployCmd {
     return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun}';
   }
 
-  @override
   String get desc {
     bool isAll = ListEquality().equals(deployServices, ['all']);
     String services = 'deploy of';

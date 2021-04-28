@@ -8,6 +8,7 @@ import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:objectid/objectid.dart';
 
 import 'cmd.dart';
+import 'isJsonSerializable.dart';
 
 part 'cmdHistoryEntry.g.dart';
 
@@ -36,7 +37,7 @@ extension CmdResultToIconData on CmdResult {
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class CmdHistoryEntry {
+class CmdHistoryEntry implements IsJsonSerializable {
   String id;
   String? desc;
   String logsPrefix;
@@ -48,6 +49,8 @@ class CmdHistoryEntry {
   DateTime date;
   CmdResult result;
   int createdAt;
+  @JsonKey(ignore: true)
+  DeployCmd? parsedCmd;
 
   CmdHistoryEntry(
       {String? id,
@@ -64,21 +67,23 @@ class CmdHistoryEntry {
         createdAt = createdAt ?? DateTime.now().millisecond,
         this.date = createdAt != null
             ? DateTime.fromMillisecondsSinceEpoch(createdAt)
-            : DateTime.now();
+            : DateTime.now() {
+    if (cmd.type.isDeploy) {
+      if (cmd.type == CmdType.preDeploy) {
+        parsedCmd = PreDeployCmd.fromJson(cmd.properties);
+      } else if (cmd.type == CmdType.postDeploy) {
+        parsedCmd = PostDeployCmd.fromJson(cmd.properties);
+      } else
+        /* if (cmd.type == CmdType.deploy) { */
+        parsedCmd = DeployCmd.fromJson(cmd.properties);
+    }
+  }
 
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryEntryFromJson(json);
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
 
-  DeployCmd get deployCmd {
-    DeployCmd parsedCmd;
-    if (cmd.type == CmdType.preDeploy) {
-      parsedCmd = PreDeployCmd.fromJson(cmd.properties);
-    } else if (cmd.type == CmdType.preDeploy) {
-      parsedCmd = PostDeployCmd.fromJson(cmd.properties);
-    } else /* if (cmd.type == CmdType.deploy) { */
-      parsedCmd = DeployCmd.fromJson(cmd.properties);
-    /* } */
+  DeployCmd? get deployCmd {
     return parsedCmd;
   }
 
@@ -91,6 +96,7 @@ class CmdHistoryEntry {
           logsPrefix == other.logsPrefix &&
           logsSuffix == other.logsSuffix &&
           rawCmd == other.rawCmd &&
+          cmd == other.cmd &&
           date == other.date &&
           invDir == other.invDir &&
           desc == other.desc &&
@@ -105,5 +111,11 @@ class CmdHistoryEntry {
       desc.hashCode ^
       rawCmd.hashCode ^
       date.hashCode ^
+      cmd.hashCode ^
       result.hashCode;
+
+  @override
+  fromJson(Map<String, dynamic> json) {
+    return CmdHistoryEntry.fromJson(json);
+  }
 }

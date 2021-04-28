@@ -5,7 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // import 'package:intl/intl.dart';
 
 import 'package:la_toolkit/components/termDialog.dart';
-import 'package:la_toolkit/models/cmd.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -184,25 +183,14 @@ class DeployUtils {
     store.dispatch(DeployProject(
         project: project,
         cmd: deployCmd,
-        onStart: (ansibleCmd, port, logsPrefix, logsSuffix, invDir) {
+        onStart: (cmdEntry, port) {
           context.loaderOverlay.hide();
           TermDialog.show(context, port: port, title: "Ansible console",
               onClose: () async {
             if (!deployCmd.dryRun) {
               // Show the results
-              CmdHistoryEntry cmdHistory = CmdHistoryEntry(
-                  rawCmd: ansibleCmd,
-                  desc: deployCmd.desc,
-                  cmd:
-                      Cmd(type: deployCmd.type, properties: deployCmd.toJson()),
-                  /* deployCmd: cmd is DeployCmd ? cmd : null, */
-                  /* preDeployCmd: cmd is PreDeployCmd ? cmd : null,
-                  postDeployCmd: cmd is PostDeployCmd ? cmd : null, */
-                  logsPrefix: logsPrefix,
-                  logsSuffix: logsSuffix,
-                  invDir: invDir);
-              store.dispatch(
-                  DeployUtils.getCmdResults(context, cmdHistory, true));
+              store
+                  .dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
             }
             // context.loaderOverlay.hide();
           });

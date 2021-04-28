@@ -2,7 +2,6 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
-import 'cmd.dart';
 import 'deployCmd.dart';
 
 part 'postDeployCmd.g.dart';
@@ -21,8 +20,7 @@ class PostDeployCmd extends DeployCmd {
   ];
 
   PostDeployCmd(
-      {CmdType? type,
-      this.configurePostfix = true,
+      {this.configurePostfix = true,
       List<String>? limitToServers,
       List<String>? skipTags,
       List<String>? tags,
@@ -31,7 +29,6 @@ class PostDeployCmd extends DeployCmd {
       debug = false,
       dryRun = false})
       : super(
-            type: type ?? CmdType.postDeploy,
             deployServices: ['all'],
             limitToServers: limitToServers,
             skipTags: skipTags,
@@ -55,7 +52,11 @@ class PostDeployCmd extends DeployCmd {
     return dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);
   }
 
-  List<String> get postTags {
+  @override
+  List<String> get services => [];
+
+  @override
+  List<String> get tags {
     List<String> tags = [];
     if (configurePostfix) tags.add("post-task-postfix");
     return tags;

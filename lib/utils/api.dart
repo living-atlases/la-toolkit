@@ -9,8 +9,6 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/hostServicesChecks.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/postDeployCmd.dart';
-import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -235,20 +233,29 @@ class Api {
   static Future<void> ansiblew(DeployProject action) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/ansiblew");
-    Object cmd = cmdToObj(action);
-    doCmd(url, cmd, action);
+    doCmd(
+        url: url,
+        projectId: action.project.id,
+        desc: action.cmd.desc,
+        cmd: action.cmd.toJson(),
+        action: action);
   }
 
-  static void doCmd(Uri url, Object cmd, DeployProject action) {
+  static void doCmd(
+      {required Uri url,
+      required String projectId,
+      required String desc,
+      required Map<String, dynamic> cmd,
+      required DeployProject action}) {
     http
         .post(url,
             headers: {'Content-type': 'application/json'},
-            body: utf8.encode(json.encode({'cmd': cmd})))
+            body: utf8.encode(
+                json.encode({'id': projectId, 'desc': desc, 'cmd': cmd})))
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
-        action.onStart(
-            l['cmd'], l['port'], l['logsPrefix'], l['logsSuffix'], l['invDir']);
+        action.onStart(CmdHistoryEntry.fromJson(l['cmdEntry']), l['port']);
       } else
         action.onError(response.statusCode);
     }).catchError((error) {
@@ -256,7 +263,7 @@ class Api {
       action.onError(error);
     });
   }
-
+/*
   static dynamic cmdToObj(DeployProject action) {
     Object cmd = {
       'id': action.project.id,
@@ -272,7 +279,7 @@ class Api {
       'dryRun': action.cmd.dryRun
     };
     return cmd;
-  }
+  } */
 
   static Future<CmdHistoryDetails?> getAnsiblewResults(
       {required String logsPrefix, required String logsSuffix}) async {
@@ -315,30 +322,41 @@ class Api {
   static Future<void> preDeploy(DeployProject action) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/pre-deploy");
-    var cmd = cmdToObj(action);
+    /* Map<String, dynamic> cmd = action.cmd.toJson();
     cmd['tags'] = (action.cmd as PreDeployCmd).preTags;
-    cmd['services'] = [];
-    doCmd(url, cmd, action);
+    cmd['services'] = []; */
+    doCmd(
+        url: url,
+        projectId: action.project.id,
+        desc: action.cmd.desc,
+        cmd: action.cmd.toJson(),
+        action: action);
   }
 
   static Future<void> postDeploy(DeployProject action) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/post-deploy");
-    var cmd = cmdToObj(action);
-    cmd['services'] = [];
+    /*var cmd = cmdToObj(action);
+     cmd['services'] = [];
     var postDeployCmd = action.cmd as PostDeployCmd;
     cmd['tags'] = postDeployCmd.postTags;
     if (postDeployCmd.configurePostfix) {
       PostDeployCmd.postDeployVariables.forEach((varName) {
         setCmdVar(action.project, cmd, varName);
       });
-    }
-    doCmd(url, cmd, action);
-  }
+    } */
 
+    doCmd(
+        url: url,
+        projectId: action.project.id,
+        desc: action.cmd.desc,
+        cmd: action.cmd.toJson(),
+        action: action);
+  }
+/*
   static void setCmdVar(LAProject project, cmd, String varName) {
     cmd[varName] = project.getVariableValue(varName)!.toString();
-  }
+  } */
 
   static Future<Map<String, dynamic>> checkHostServices(
       HostsServicesChecks hostsServicesChecks) async {

@@ -8,6 +8,7 @@ import 'package:http/http.dart';
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
+import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
@@ -20,6 +21,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
 import 'appActions.dart';
+import 'entityActions.dart';
+import 'entityApi.dart';
+
+EntityApi<CmdHistoryEntry> cmdHistoryEntryApi =
+    EntityApi<CmdHistoryEntry>('cmdHistoryEntry');
 
 class AppStateMiddleware implements MiddlewareClass<AppState> {
   final String key = "laTool20210418";
@@ -232,7 +238,6 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         Api.preDeploy(action);
       } else if (action.cmd.runtimeType == PostDeployCmd) {
         Api.postDeploy(action);
-        // action.onError("This is under development");
       } else
         Api.ansiblew(action);
     }
@@ -257,17 +262,18 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               store.dispatch(ShowDeployProjectResults(
                   action.cmdHistoryEntry, action.fstRetrieved, lastCmdDet));
               action.onReady();
-              // TermDialog.show(context);
             },
             onError: (error) {
               store.dispatch(OnShowDeployProjectResultsFailed());
               action.onFailed();
-              /* UiUtils.termErrorAlert(context, error); */
             });
       } else {
         store.dispatch(OnShowDeployProjectResultsFailed());
         action.onFailed();
       }
+    }
+    if (action is RequestUpdateOneProps<CmdHistoryEntry>) {
+      cmdHistoryEntryApi.update(action.id, action.props);
     }
     next(action);
   }
@@ -288,7 +294,12 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
   saveAppState(AppState state) async {
     await _initPrefs();
-    Object toJ = state.toJson();
+
+    Map<String, dynamic> toJ = state.toJson();
+    if (!AppUtils.isDemo()) {
+      // Do not persist projects in users local storage
+      toJ.remove('projects');
+    }
     // print("Saved prefs: $toJ.toString()");
     _pref!.setString(key, json.encode(toJ));
     if (!AppUtils.isDemo()) {

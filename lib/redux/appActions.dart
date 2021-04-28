@@ -138,8 +138,7 @@ class SaveDeployCmd extends AppActions {
 class DeployProject extends AppActions {
   LAProject project;
   DeployCmd cmd;
-  Function(String cmd, int port, String logsPrefix, String logsSuffix,
-      String invDir) onStart;
+  Function(CmdHistoryEntry cmd, int port) onStart;
   ErrorCallback onError;
 
   DeployProject(

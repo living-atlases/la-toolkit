@@ -6,12 +6,17 @@ import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/projectEditPage.dart';
+import 'package:la_toolkit/redux/entityApi.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
 
 import '../models/appState.dart';
 import 'actions.dart';
+import 'entityReducer.dart';
+
+EntityApi<CmdHistoryEntry> cmdHistoryEntryApi =
+    EntityApi<CmdHistoryEntry>('cmdHistoryEntry');
 
 List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
@@ -58,7 +63,9 @@ List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
   new TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
 ];
-final appReducer = combineReducers<AppState>(basic);
+
+final appReducer =
+    combineReducers<AppState>(basic + EntityReducer<LAProject>().appReducer);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
   return state.copyWith(firstUsage: false);
@@ -283,9 +290,12 @@ AppState _showDeployProjectResults(
   currentProject.lastCmdDetails = action.results;
   bool fstDeployed = currentProject.lastCmdDetails!.numFailures() != null;
   currentProject.fstDeployed = currentProject.fstDeployed || fstDeployed;
-  action.cmdHistoryEntry.result = currentProject.lastCmdDetails!.result;
+  CmdResult result = currentProject.lastCmdDetails!.result;
+  action.cmdHistoryEntry.result = result;
   if (action.fstRetrieved) {
     // remove and just search?
+    cmdHistoryEntryApi
+        .update(action.cmdHistoryEntry.id, {'result': result.toS()});
     currentProject.cmdHistoryEntries.insert(0, action.cmdHistoryEntry);
   } else {
     int index = currentProject.cmdHistoryEntries

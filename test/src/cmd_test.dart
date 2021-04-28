@@ -88,20 +88,8 @@ void main() {
     expect(cmd.desc, equals("Post-deploy tasks (configure postfix)"));
   });
 
-  test('Test postDeployCmd type', () {
-    PostDeployCmd cmd = PostDeployCmd();
-
-    expect(cmd.type, equals(CmdType.postDeploy));
-  });
-
-  test('Test deployCmd type', () {
-    DeployCmd cmd = DeployCmd();
-
-    expect(cmd.type, equals(CmdType.deploy));
-  });
-
   test('cmdEntry server retrieve', () {
-    Map<String, dynamic> cmdEntry = {
+    Map<String, dynamic> cmdEntryJ = {
       "createdAt": 1617609595413,
       "updatedAt": 1617609595413,
       "id": "6084263ae185829aa740c3ad",
@@ -119,7 +107,7 @@ void main() {
         "type": "preDeploy",
         "properties": {
           "deployServices": ["all"],
-          "limitToServers": [],
+          "limitToServers": ["ala-install-test-1"],
           "skipTags": [],
           "tags": [],
           "advanced": false,
@@ -137,6 +125,11 @@ void main() {
         "cmdHistoryEntryId": "6084263ae185829aa740c3ad"
       }
     };
-    CmdHistoryEntry.fromJson(cmdEntry);
+    CmdHistoryEntry cmdEntry = CmdHistoryEntry.fromJson(cmdEntryJ);
+    expect(cmdEntry.cmd.type, equals(CmdType.preDeploy));
+    expect(
+        cmdEntry.deployCmd!.desc,
+        equals(
+            "Pre-deploy tasks (setup solr limits, additional deps install in ala-install-test-1)"));
   });
 }

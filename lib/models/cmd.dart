@@ -22,12 +22,21 @@ extension ParseToString on CmdType {
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class Cmd {
-  // @JsonKey(name: 'type')
   final CmdType type;
-  // @JsonKey(name: 'properties')
   final Map<String, dynamic> properties;
 
   Cmd({required this.type, required this.properties});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Cmd &&
+          runtimeType == other.runtimeType &&
+          type == other.type &&
+          properties == other.properties;
+
+  @override
+  int get hashCode => type.hashCode ^ properties.hashCode;
 
   String getTitle() => "${StringUtils.capitalize(type.toS())} Results";
 

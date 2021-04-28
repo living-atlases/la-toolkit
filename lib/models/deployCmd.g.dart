@@ -17,7 +17,6 @@ extension DeployCmdCopyWith on DeployCmd {
     bool? onlyProperties,
     List<String>? skipTags,
     List<String>? tags,
-    CmdType? type,
   }) {
     return DeployCmd(
       advanced: advanced ?? this.advanced,
@@ -29,7 +28,6 @@ extension DeployCmdCopyWith on DeployCmd {
       onlyProperties: onlyProperties ?? this.onlyProperties,
       skipTags: skipTags ?? this.skipTags,
       tags: tags ?? this.tags,
-      type: type ?? this.type,
     );
   }
 }
@@ -40,7 +38,6 @@ extension DeployCmdCopyWith on DeployCmd {
 
 DeployCmd _$DeployCmdFromJson(Map<String, dynamic> json) {
   return DeployCmd(
-    type: _$enumDecodeNullable(_$CmdTypeEnumMap, json['type']),
     deployServices: (json['deployServices'] as List<dynamic>?)
         ?.map((e) => e as String)
         .toList(),
@@ -68,51 +65,4 @@ Map<String, dynamic> _$DeployCmdToJson(DeployCmd instance) => <String, dynamic>{
       'continueEvenIfFails': instance.continueEvenIfFails,
       'debug': instance.debug,
       'dryRun': instance.dryRun,
-      'type': _$CmdTypeEnumMap[instance.type],
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-K? _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
-  dynamic source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
-}
-
-const _$CmdTypeEnumMap = {
-  CmdType.ansible: 'ansible',
-  CmdType.deploy: 'deploy',
-  CmdType.preDeploy: 'preDeploy',
-  CmdType.postDeploy: 'postDeploy',
-  CmdType.laPipelines: 'laPipelines',
-  CmdType.bash: 'bash',
-};

@@ -28,12 +28,12 @@ class EntityApi<T extends IsJsonSerializable> {
   }
 
   Future<Map<String, dynamic>> update<T extends IsJsonSerializable>(
-      T entity, String id) async {
+      String id, Map<String, dynamic> toUpdate) async {
     Uri url = baseUri(id);
     try {
       Response response = await http.patch(url,
           headers: {'Content-type': 'application/json'},
-          body: utf8.encode(json.encode(entity.toJson())));
+          body: utf8.encode(json.encode(toUpdate)));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
@@ -76,8 +76,27 @@ class EntityApi<T extends IsJsonSerializable> {
     }
   }
 
-  Uri baseUri<T>([String id = "", Map<String, dynamic>? queryParameters]) =>
-      Uri.http(env['BACKEND']!, "/$model${id != "" ? '/' + id : ''}",
+  Future<Map<String, dynamic>> addTo<T extends IsJsonSerializable>(
+      {required String id,
+      required String association,
+      required String fk}) async {
+    // employee/7/involvedInPurchases/47
+    String path = "$id/$association/$fk";
+    Uri url = baseUri(path);
+    try {
+      Response response = await http.put(url);
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw "Failed to associate entity (${response.reasonPhrase})";
+      }
+    } catch (e) {
+      throw "Failed to associate entity ($e)";
+    }
+  }
+
+  Uri baseUri<T>([String path = "", Map<String, dynamic>? queryParameters]) =>
+      Uri.http(env['BACKEND']!, "/$model${path != "" ? '/' + path : ''}",
           queryParameters);
 
 /*

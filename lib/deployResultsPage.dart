@@ -15,6 +15,7 @@ import 'components/scrollPanel.dart';
 import 'components/termCommandDesc.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
+import 'models/cmd.dart';
 import 'models/cmdHistoryEntry.dart';
 
 class DeployResultsPage extends StatefulWidget {
@@ -49,15 +50,22 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
           List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
           bool failed = cmdHistoryDetails.failed;
           CmdResult result = cmdHistoryDetails.result;
+          CmdHistoryEntry cmdEntry = cmdHistoryDetails.cmd!;
           // print(result);
           var nothingDone = !failed && cmdHistoryDetails.nothingDone;
           var noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
+          String title = cmdEntry.cmd.type.isDeploy
+              ? cmdHistoryDetails.cmd!.deployCmd!.getTitle()
+              : "TODO FIXME";
+          String desc = cmdEntry.cmd.type.isDeploy
+              ? cmdHistoryDetails.cmd!.deployCmd!.desc
+              : "TODO FIXME";
           return Scaffold(
               key: _scaffoldKey,
               appBar: LAAppBar(
                   context: context,
                   titleIcon: Icons.analytics_outlined,
-                  title: cmdHistoryDetails.cmd!.deployCmd.getTitle(),
+                  title: title,
                   showLaIcon: false,
                   showBack: true,
                   actions: [
@@ -81,8 +89,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const SizedBox(height: 20),
-                              Text(cmdHistoryDetails.cmd!.deployCmd.toString(),
-                                  style: UiUtils.cmdTitleStyle),
+                              Text(desc, style: UiUtils.cmdTitleStyle),
                               const SizedBox(height: 20),
                               Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -115,6 +122,8 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                         style: UiUtils.titleStyle)
                                   ]),
                               const SizedBox(height: 20),
+                              const Text('Tasks summary:',
+                                  style: UiUtils.subtitleStyle),
                               Container(
                                   width: 400,
                                   height: 300,
