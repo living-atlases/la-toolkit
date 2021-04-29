@@ -8,7 +8,7 @@ import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
-import 'components/hostSelector.dart';
+import 'components/hostsSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'models/deployCmd.dart';
@@ -139,13 +139,14 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                   vm.onSaveDeployCmd(cmd);
                                 }),
                             const SizedBox(height: 20),
-                            HostSelector(
+                            HostsSelector(
+                                selectorKey: GlobalKey<FormFieldState>(),
                                 title: "Do the pre-deploy in servers:",
                                 modalTitle:
                                     "Choose some servers if you want to limit the pre-deploy to them",
-                                emptyPlaceholder: "All servers",
+                                placeHolder: "All servers",
                                 initialValue: cmd.limitToServers,
-                                serverList: vm.project
+                                hosts: vm.project
                                     .serversWithServices()
                                     .map((e) => e.name)
                                     .toList(),

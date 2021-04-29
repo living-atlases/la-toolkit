@@ -7,10 +7,9 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
-import 'package:smart_select/smart_select.dart';
 
 import 'components/deployBtn.dart';
-import 'components/hostSelector.dart';
+import 'components/hostsSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/servicesChipPanel.dart';
@@ -26,10 +25,6 @@ class DeployPage extends StatefulWidget {
 
 class _DeployPageState extends State<DeployPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<S2MultiState<String>> _skipTagsKey =
-      GlobalKey<S2MultiState<String>>();
-  final GlobalKey<S2MultiState<String>> _selectTagsKey =
-      GlobalKey<S2MultiState<String>>();
   // TODO do something with --skip-tags nameindex
 
   @override
@@ -93,13 +88,14 @@ class _DeployPageState extends State<DeployPage> {
                                       vm.project.getServicesNameListSelected(),
                                   onChange: (s) =>
                                       setState(() => cmd.deployServices = s)),
-                              HostSelector(
+                              HostsSelector(
+                                  selectorKey: GlobalKey<FormFieldState>(),
                                   title: "Deploy to servers:",
                                   modalTitle:
                                       "Choose some servers if you want to limit the deploy to them",
-                                  emptyPlaceholder: "All servers",
+                                  placeHolder: "All servers",
                                   initialValue: cmd.limitToServers,
-                                  serverList: vm.project
+                                  hosts: vm.project
                                       .serversWithServices()
                                       .map((e) => e.name)
                                       .toList(),
@@ -127,7 +123,7 @@ class _DeployPageState extends State<DeployPage> {
                                   title: "Skip tags:",
                                   placeHolder: "None",
                                   modalTitle:
-                                      "Select the tags you want to skip",
+                                      "Select the tags you want to skip:",
                                   onChange: (skipTags) =>
                                       setState(() => cmd.skipTags = skipTags)),
                               TipsCard(
