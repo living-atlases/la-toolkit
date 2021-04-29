@@ -108,19 +108,19 @@ class _DeployPageState extends State<DeployPage> {
                                       cmd.limitToServers = limitToServers)),
                               TagsSelector(
                                   initialValue: cmd.tags,
-                                  selectorKey: _selectTagsKey,
+                                  selectorKey: GlobalKey<FormFieldState>(),
                                   tags: TagsConstants.getTagsFor(
                                       vm.project.alaInstallRelease),
                                   icon: Mdi.tagPlusOutline,
                                   title: "Tags:",
                                   placeHolder: "All",
                                   modalTitle:
-                                      "Select the tags you want to limit to",
+                                      "Select the tags you want to limit to:",
                                   onChange: (tags) =>
                                       setState(() => cmd.tags = tags)),
                               TagsSelector(
                                   initialValue: cmd.skipTags,
-                                  selectorKey: _skipTagsKey,
+                                  selectorKey: GlobalKey<FormFieldState>(),
                                   tags: TagsConstants.getTagsFor(
                                       vm.project.alaInstallRelease),
                                   icon: Mdi.tagOffOutline,
