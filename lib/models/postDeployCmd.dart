@@ -53,9 +53,6 @@ class PostDeployCmd extends DeployCmd {
   }
 
   @override
-  List<String> get services => [];
-
-  @override
   List<String> get tags {
     List<String> tags = [];
     if (configurePostfix) tags.add("post-task-postfix");
