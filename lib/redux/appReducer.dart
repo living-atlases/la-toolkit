@@ -357,8 +357,8 @@ AppState _onAppPackageInfo(AppState state, OnAppPackageInfo action) {
 }
 
 AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
-  LAProject currentProject = state.currentProject;
+  /* LAProject currentProject = state.currentProject;
   Map<String, dynamic> results = action.results;
-  for (String serverName in results.keys) {}
+  for (String serverName in results.keys) {} */
   return state;
 }
