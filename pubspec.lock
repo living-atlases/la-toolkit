@@ -139,10 +139,12 @@ packages:
   chips_choice:
     dependency: "direct main"
     description:
-      name: chips_choice
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
+      path: "."
+      ref: HEAD
+      resolved-ref: "25bdf852d0e3ab2a3ad74f84933352814c8e0288"
+      url: "https://github.com/vjrj/flutter_chips_choice.git"
+    source: git
+    version: "3.0.0"
   circular_countdown_timer:
     dependency: "direct main"
     description:

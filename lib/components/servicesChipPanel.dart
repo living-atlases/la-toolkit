@@ -109,7 +109,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                       choiceBuilder: (item) {
                         if (item.value == 'all')
                           return CustomChip(
-                              label: item.label,
+                              label: item.label!,
                               width: double.infinity,
                               height: 40,
                               // color: Colors.redAccent,
