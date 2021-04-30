@@ -127,7 +127,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if (this.serversMap.entries.length != this.servers.length) {
       // serversMap is new
       this.serversMap =
-          Map.fromIterable(this.servers, key: (e) => e.id, value: (e) => e);
+          Map.fromIterable(this.servers, key: (e) => e.name, value: (e) => e);
     }
     // Migrate to serviceDeploy;
 

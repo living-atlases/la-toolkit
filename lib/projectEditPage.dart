@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/brandingSelector.dart';
 import 'package:la_toolkit/components/serverCardList.dart';
 import 'package:la_toolkit/components/serverDetailsCardList.dart';
-import 'package:la_toolkit/components/themeSelector.dart';
 import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -197,7 +197,10 @@ class LAProjectEditPage extends StatelessWidget {
                           vm.onSaveCurrentProject(_project);
                         }),
                     SizedBox(height: 20),
-                    ThemeSelector()
+                    BrandingTile(
+                        initialValue: _project.theme,
+                        onChange: (String newTheme) =>
+                            _project.theme = newTheme)
                   ],
                 ),
               ));
