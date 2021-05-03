@@ -139,8 +139,8 @@ void main() {
     expect(ListEquality().equals(testProject.servers, testProjectOther.servers),
         equals(true));
     expect(
-        MapEquality()
-            .equals(testProject.variablesMap, testProjectOther.variablesMap),
+        ListEquality()
+            .equals(testProject.variables, testProjectOther.variables),
         equals(true));
     expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
     expect(testProject == testProjectOther, equals(true));
@@ -678,9 +678,7 @@ void main() {
           equals(false));
     });
     expect(
-        p.getServerServicesForTest().length == p.serversMap.entries.length &&
-            p.servers.length == p.getServerServicesForTest().length,
-        equals(true));
+        p.servers.length == p.getServerServicesForTest().length, equals(true));
     expect(p.getService(collectory).suburl, equals('collectory'));
     expect(p.prodServices.length > 0, equals(true));
   });

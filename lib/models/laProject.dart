@@ -61,58 +61,51 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
   // Relations -----
   List<LAServer> servers;
-  // mapped by id
-  // @JsonKey(ignore: true)
-  Map<String, LAServer> serversMap;
   // mapped by service.nameInt
   // @JsonKey(ignore: true)
   Map<String, LAService> servicesMap;
-  // Mapped by variable name
-  // @JsonKey(ignore: true)
-  Map<String, LAVariable> variablesMap;
   // @JsonKey(ignore: true)
   Map<String, List<String>> serverServices;
   List<CmdHistoryEntry> cmdHistoryEntries;
+  List<LAVariable> variables;
 
   // Logs history -----
   CmdHistoryEntry? lastCmdEntry;
   @JsonKey(ignore: true)
   CmdHistoryDetails? lastCmdDetails;
 
-  LAProject(
-      {String? id,
-      this.longName = "",
-      this.shortName = "",
-      this.domain = "",
-      this.dirName = "",
-      this.useSSL = true,
-      this.isCreated = false,
-      this.isHub = false,
-      bool? fstDeployed,
-      List<LAServer>? servers,
-      Map<String, LAService>? servicesMap,
-      Map<String, LAServer>? serversMap,
-      Map<String, LAVariable>? variablesMap,
-      Map<String, List<String>>? serverServices,
-      this.additionalVariables = "",
-      this.status = LAProjectStatus.created,
-      this.alaInstallRelease,
-      this.generatorRelease,
-      LALatLng? mapBoundsFstPoint,
-      LALatLng? mapBoundsSndPoint,
-      this.theme = "clean",
-      this.mapZoom,
-      this.lastCmdEntry,
-      this.lastCmdDetails,
-      List<CmdHistoryEntry>? cmdHistoryEntries,
-      bool? advancedEdit,
-      bool? advancedTune})
-      : id = id ?? new ObjectId().toString(),
+  LAProject({
+    String? id,
+    this.longName = "",
+    this.shortName = "",
+    this.domain = "",
+    this.dirName = "",
+    this.useSSL = true,
+    this.isCreated = false,
+    this.isHub = false,
+    bool? fstDeployed,
+    this.additionalVariables = "",
+    this.status = LAProjectStatus.created,
+    this.alaInstallRelease,
+    this.generatorRelease,
+    LALatLng? mapBoundsFstPoint,
+    LALatLng? mapBoundsSndPoint,
+    this.theme = "clean",
+    this.mapZoom,
+    this.lastCmdEntry,
+    this.lastCmdDetails,
+    bool? advancedEdit,
+    bool? advancedTune,
+    List<LAVariable>? variables,
+    List<CmdHistoryEntry>? cmdHistoryEntries,
+    List<LAServer>? servers,
+    Map<String, LAService>? servicesMap,
+    Map<String, List<String>>? serverServices,
+  })  : id = id ?? new ObjectId().toString(),
         servers = servers ?? [],
-        serversMap = serversMap ?? {},
+        variables = variables ?? [],
         // _serversNameList = _serversNameList ?? [],
         servicesMap = servicesMap ?? initialServices,
-        variablesMap = variablesMap ?? {},
         serverServices = // serverServices ?? {},
             serverServices == null
                 ? {}
@@ -124,13 +117,6 @@ class LAProject implements IsJsonSerializable<LAProject> {
         fstDeployed = fstDeployed ?? false,
         mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng.from(-44, 112),
         mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154) {
-    if (this.serversMap.entries.length != this.servers.length) {
-      // serversMap is new
-      this.serversMap =
-          Map.fromIterable(this.servers, key: (e) => e.name, value: (e) => e);
-    }
-    // Migrate to serviceDeploy;
-
     validateCreation();
   }
 
@@ -156,9 +142,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
   bool validateCreation({debug: false}) {
     bool valid = true;
     LAProjectStatus status = LAProjectStatus.created;
-    if (serverServices.length != serversMap.entries.length ||
-        servers.length != serverServices.length)
-      throw ('Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} serversMap: ${serversMap.entries.length} servers: ${servers.length})');
+    if (servers.length != serverServices.length)
+      throw ('Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length})');
 
     valid = valid &&
         LARegExp.projectNameRegexp.hasMatch(longName) &&
@@ -284,14 +269,15 @@ class LAProject implements IsJsonSerializable<LAProject> {
   @override
   String toString() {
     String sToS = serverServices.entries
-        .map((entry) => '${serversMap[entry.key]!.name} has ${entry.value}')
+        .map((entry) =>
+            '${servers.firstWhere((server) => server.id == entry.key).name} has ${entry.value}')
         .toList()
         .join(', ');
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, hub: $isHub, allWServReady: ___${allServersWithServicesReady()}___
-isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease 
+isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
-servers-services: $sToS  
+servers-services: $sToS
 services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
 services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().join(', ')}]
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
@@ -322,10 +308,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   LAVariable getVariable(String nameInt) {
-    if (variablesMap[nameInt] == null) {
-      variablesMap[nameInt] = LAVariable.fromDesc(LAVariableDesc.get(nameInt));
-    }
-    return variablesMap[nameInt]!;
+    LAVariable laVar = variables.firstWhere((v) => v.nameInt == nameInt,
+        orElse: () => LAVariable.fromDesc(LAVariableDesc.get(nameInt)));
+    return laVar;
   }
 
   Object? getVariableValue(String nameInt) {
@@ -342,7 +327,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   void setVariable(LAVariableDesc variableDesc, Object value) {
     LAVariable cur = getVariable(variableDesc.nameInt);
     cur.value = value;
-    variablesMap[variableDesc.nameInt] = cur;
+    variables.removeWhere((v) => v.nameInt == variableDesc.nameInt);
+    variables.add(cur);
   }
 
   List<String> getServicesNameListInServer(String serverName) {
@@ -353,14 +339,11 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     servers = LAServer.upsertByName(servers, laServer);
     LAServer upsertServer =
         servers.firstWhereOrNull((s) => s.name == laServer.name)!;
-
-    serversMap[upsertServer.id] = upsertServer;
     _cleanServerServices(upsertServer);
   }
 
   void upsertById(LAServer laServer) {
     servers = LAServer.upsertById(servers, laServer);
-    serversMap[laServer.id] = laServer;
     _cleanServerServices(laServer);
   }
 
@@ -381,7 +364,6 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   void delete(LAServer serverToDelete) {
     serverServices.removeWhere((key, value) => key == serverToDelete.id);
     servers.remove(serverToDelete);
-    serversMap.remove(serverToDelete.id);
   }
 
   String additionalVariablesDecoded() {
@@ -396,9 +378,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     serverServices.forEach((id, services) {
       services.forEach((currentService) {
         if (service == currentService) {
-          // print(id);
-          // print("servers map: ${serversMap[id]}");
-          if (serversMap[id] != null) hostnames.add(serversMap[id]!.name);
+          LAServer server = servers.firstWhere((s) => s.id == id);
+          hostnames.add(server.name);
         }
       });
     });
@@ -442,67 +423,6 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     mapBoundsSndPoint = LALatLng.from(sndPoint.latitude, sndPoint.longitude);
     mapZoom = zoom;
   }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is LAProject &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          longName == other.longName &&
-          shortName == other.shortName &&
-          dirName == other.dirName &&
-          domain == other.domain &&
-          useSSL == other.useSSL &&
-          DeepCollectionEquality.unordered().equals(servers, other.servers) &&
-          DeepCollectionEquality.unordered()
-              .equals(servicesMap, other.servicesMap) &&
-          DeepCollectionEquality.unordered()
-              .equals(variablesMap, other.variablesMap) &&
-          DeepCollectionEquality.unordered()
-              .equals(serverServices, other.serverServices) &&
-          additionalVariables == other.additionalVariables &&
-          isCreated == other.isCreated &&
-          isHub == other.isHub &&
-          fstDeployed == other.fstDeployed &&
-          advancedEdit == other.advancedEdit &&
-          advancedTune == other.advancedTune &&
-          status == other.status &&
-          alaInstallRelease == other.alaInstallRelease &&
-          generatorRelease == other.generatorRelease &&
-          mapBoundsFstPoint == other.mapBoundsFstPoint &&
-          mapBoundsSndPoint == other.mapBoundsSndPoint &&
-          lastCmdEntry == other.lastCmdEntry &&
-          lastCmdDetails == other.lastCmdDetails &&
-          ListEquality().equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
-          mapZoom == other.mapZoom;
-
-  @override
-  int get hashCode =>
-      id.hashCode ^
-      longName.hashCode ^
-      shortName.hashCode ^
-      dirName.hashCode ^
-      domain.hashCode ^
-      useSSL.hashCode ^
-      DeepCollectionEquality.unordered().hash(servers) ^
-      DeepCollectionEquality.unordered().hash(servicesMap) ^
-      DeepCollectionEquality.unordered().hash(variablesMap) ^
-      DeepCollectionEquality.unordered().hash(serverServices) ^
-      isCreated.hashCode ^
-      isHub.hashCode ^
-      fstDeployed.hashCode ^
-      advancedEdit.hashCode ^
-      advancedTune.hashCode ^
-      additionalVariables.hashCode ^
-      status.hashCode ^
-      alaInstallRelease.hashCode ^
-      generatorRelease.hashCode ^
-      mapBoundsFstPoint.hashCode ^
-      mapBoundsSndPoint.hashCode ^
-      lastCmdDetails.hashCode ^
-      ListEquality().hash(cmdHistoryEntries) ^
-      mapZoom.hashCode;
 
   void serviceInUse(String serviceNameInt, bool use) {
     if (!servicesMap.keys.contains(serviceNameInt))
@@ -564,7 +484,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       conf["LA_${service.nameInt}_path"] = service.path;
     });
 
-    variablesMap.forEach((key, variable) {
+    variables.forEach((variable) {
       conf["LA_variable_${variable.nameInt}"] = variable.value;
     });
     return conf;
@@ -743,4 +663,64 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   @override
   LAProject fromJson(Map<String, dynamic> json) => LAProject.fromJson(json);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LAProject &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          longName == other.longName &&
+          shortName == other.shortName &&
+          dirName == other.dirName &&
+          domain == other.domain &&
+          useSSL == other.useSSL &&
+          DeepCollectionEquality.unordered().equals(servers, other.servers) &&
+          DeepCollectionEquality.unordered()
+              .equals(servicesMap, other.servicesMap) &&
+          DeepCollectionEquality.unordered()
+              .equals(serverServices, other.serverServices) &&
+          additionalVariables == other.additionalVariables &&
+          isCreated == other.isCreated &&
+          isHub == other.isHub &&
+          fstDeployed == other.fstDeployed &&
+          advancedEdit == other.advancedEdit &&
+          advancedTune == other.advancedTune &&
+          status == other.status &&
+          alaInstallRelease == other.alaInstallRelease &&
+          generatorRelease == other.generatorRelease &&
+          mapBoundsFstPoint == other.mapBoundsFstPoint &&
+          mapBoundsSndPoint == other.mapBoundsSndPoint &&
+          lastCmdEntry == other.lastCmdEntry &&
+          lastCmdDetails == other.lastCmdDetails &&
+          ListEquality().equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
+          ListEquality().equals(variables, other.variables) &&
+          mapZoom == other.mapZoom;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      longName.hashCode ^
+      shortName.hashCode ^
+      dirName.hashCode ^
+      domain.hashCode ^
+      useSSL.hashCode ^
+      DeepCollectionEquality.unordered().hash(servers) ^
+      DeepCollectionEquality.unordered().hash(servicesMap) ^
+      DeepCollectionEquality.unordered().hash(serverServices) ^
+      isCreated.hashCode ^
+      isHub.hashCode ^
+      fstDeployed.hashCode ^
+      advancedEdit.hashCode ^
+      advancedTune.hashCode ^
+      additionalVariables.hashCode ^
+      status.hashCode ^
+      alaInstallRelease.hashCode ^
+      generatorRelease.hashCode ^
+      mapBoundsFstPoint.hashCode ^
+      mapBoundsSndPoint.hashCode ^
+      lastCmdDetails.hashCode ^
+      ListEquality().hash(cmdHistoryEntries) ^
+      ListEquality().hash(variables) ^
+      mapZoom.hashCode;
 }
