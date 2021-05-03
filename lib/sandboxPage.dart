@@ -4,6 +4,7 @@ import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'components/defDivider.dart';
+import 'components/selectorPlayground.dart';
 import 'models/appState.dart';
 
 class SandboxPage extends StatefulWidget {
@@ -53,6 +54,7 @@ class _SandboxPageState extends State<SandboxPage> {
                   const SizedBox(height: 7),
                   DefDivider(),
                   // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
+                  BrandingSelector(),
                   const SizedBox(height: 7),
                   Container(),
                 ],

@@ -20,7 +20,7 @@ import 'components/laAppBar.dart';
 import 'components/lintProject.dart';
 import 'components/scrollPanel.dart';
 import 'components/serviceWidget.dart';
-import 'components/servicesInServerChooser.dart';
+import 'components/servicesInServerSelector.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
@@ -325,9 +325,9 @@ If you are unsure type something like "server1, server2, server3".
               // subtitle: const Text("Compatibilities"),
               content: Column(
                   children: (_project.numServers() > 0)
-                      ? _project.servers
-                          .map((s) => ServicesInServerChooser(server: s))
-                          .toList()
+                      ? (_project.servers
+                          .map((s) => ServicesInServerSelector(server: s))
+                          .toList())
                       : [
                           Container(
                               child: const Text(

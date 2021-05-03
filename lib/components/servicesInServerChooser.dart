@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/choiceEmptyPanel.dart';
@@ -168,3 +168,4 @@ class _ServicesInServerChooserViewModel {
   @override
   int get hashCode => currentProject.hashCode ^ onAddServicesToServer.hashCode;
 }
+*/
