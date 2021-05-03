@@ -52,8 +52,6 @@ dependencies:
     # path: ../flutter_chips_choice
     git:
       url: https://github.com/vjrj/flutter_chips_choice.git
-  # Used by server service selection
-  smart_select: ^4.3.2
   percent_indicator: ^3.3.0-nullsafety.1
   rflutter_alert: ^2.0.2
   # xterm: ^1.1.1+1
@@ -70,7 +68,7 @@ dependencies:
   # date
   simple_moment: ^1.1.0
   # navigation
-  beamer: 1.0.0-nullsafety.7
+  beamer: ^1.0.0-pre.2.1
   # version comparison
   version: ^2.0.0
   # dart.dev more advanced:
@@ -81,7 +79,8 @@ dependencies:
     git:
       url: https://github.com/Ksomething/flutter_xlider.git
       ref: 6c8fd24
-  fl_chart: ^0.35.0
+  fl_chart: ^0.36.0
+  multi_select_flutter: ^4.0.0
 
   # icon
   mdi: ^5.0.0-nullsafety.0
@@ -124,17 +123,15 @@ dependencies:
     git:
       url: https://github.com/fleaflet/flutter_map
       ref: issues/829-nullsafety
-
   # https://github.com/porn/area/pull/2
   area: # ^1.0.0
     git:
        url: https://github.com/DirkoOdendaal/area.git
        ref: feature/migrate-to-null-safety-dart-2.12
   latlong2: ^0.8.0
-  multi_select_flutter: ^4.0.0
 
 dev_dependencies:
-  build_runner: ^1.11.1
+  build_runner: ^2.0.1
   json_serializable: ^4.1.0
   copy_with_extension_gen: ^2.0.1
   test: ^1.16.5
