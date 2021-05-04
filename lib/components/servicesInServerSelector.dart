@@ -118,7 +118,7 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                               });
                               return incompatible.length == 0
                                   ? ""
-                                  : "Services: ${incompatible.join(', ')} cannot installed together.";
+                                  : "Services: ${incompatible.join(', ')} can't be installed together.";
                             }
                             return null;
                           },
