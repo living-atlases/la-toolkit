@@ -27,30 +27,31 @@ class GenericTextFormField extends StatefulWidget {
   final bool monoSpaceFont;
   final bool deployed;
   final bool obscureText;
+  final EdgeInsets? contentPadding;
 
-  GenericTextFormField({
-    this.label,
-    this.hint,
-    this.hintStyle,
-    required this.initialValue,
-    this.prefixText,
-    this.wikipage,
-    this.regexp,
-    required this.error,
-    required this.onChanged,
-    this.isDense = false,
-    this.isCollapsed = false,
-    this.focusNode,
-    this.minLines,
-    this.maxLines = 1,
-    this.fillColor,
-    this.allowEmpty = false,
-    this.enabledBorder = false,
-    this.monoSpaceFont = false,
-    this.obscureText = false,
-    this.keyboardType,
-    this.deployed = false,
-  });
+  GenericTextFormField(
+      {this.label,
+      this.hint,
+      this.hintStyle,
+      required this.initialValue,
+      this.prefixText,
+      this.wikipage,
+      this.regexp,
+      required this.error,
+      required this.onChanged,
+      this.isDense = false,
+      this.isCollapsed = false,
+      this.focusNode,
+      this.minLines,
+      this.maxLines = 1,
+      this.fillColor,
+      this.allowEmpty = false,
+      this.enabledBorder = false,
+      this.monoSpaceFont = false,
+      this.obscureText = false,
+      this.keyboardType,
+      this.deployed = false,
+      this.contentPadding});
 
   @override
   _GenericTextFormFieldState createState() => _GenericTextFormFieldState();
@@ -79,6 +80,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
     final decoration = InputDecoration(
         fillColor: widget.fillColor,
         labelText: widget.label,
@@ -86,7 +88,11 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
         isCollapsed: widget.isCollapsed,
         isDense: widget.isDense,
         labelStyle: widget.hintStyle ?? null,
+        hintStyle: TextStyle(
+          height: 1.5, // sets the distance between label and input
+        ),
         prefixText: widget.prefixText,
+        contentPadding: widget.contentPadding, // ?? EdgeInsets.only(top: 2),
         filled: widget.fillColor != null,
         suffixIcon: widget.wikipage == null
             ? widget.obscureText
