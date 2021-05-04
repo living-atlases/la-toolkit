@@ -125,8 +125,7 @@ void main() {
         generatorRelease: "");
 
     expect(
-        MapEquality()
-            .equals(testProject.servicesMap, testProjectOther.servicesMap),
+        ListEquality().equals(testProject.services, testProjectOther.services),
         equals(true));
     expect(
         MapEquality().equals(testProject.getServerServicesForTest(),
@@ -157,8 +156,7 @@ void main() {
     expect(testProjectCopy.getServerServicesForTest().length, equals(1));
     expect(testProjectCopy.servers.length, equals(1));
     expect(
-        MapEquality()
-            .equals(testProject.servicesMap, testProjectCopy.servicesMap),
+        ListEquality().equals(testProject.services, testProjectCopy.services),
         equals(true));
     expect(
         DeepCollectionEquality.unordered().equals(
@@ -249,8 +247,8 @@ void main() {
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
     expect(testProject.getServicesNameListInUse().length > 0, equals(true));
 
-    print(testProject.getServicesNameListInUse().length);
-    print(testProject.getServicesNameListSelected().length);
+//    print(testProject.getServicesNameListInUse().length);
+    //   print(testProject.getServicesNameListSelected().length);
     expect(
         testProject.getServicesNameListInUse().length ==
             testProject.getServicesNameListSelected().length,
@@ -329,7 +327,13 @@ void main() {
         equals(false));
     expect(
         p.getServerServices(serverId: vm1.id).contains(lists), equals(false));
+    int numServices = p.getServersNameList().length;
     p.serviceInUse(bie, true);
+    p.serviceInUse(bie, false);
+    p.serviceInUse(bie, true);
+    p.getService(bie).usesSubdomain = false;
+    p.getService(bie).usesSubdomain = true;
+    expect(numServices == p.getServersNameList().length, equals(true));
     expect(p.getService(bie).use, equals(true));
     expect(p.getService(bieIndex).use, equals(true));
     expect(p.allServicesAssignedToServers(), equals(false));
@@ -612,7 +616,7 @@ void main() {
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
     LAServiceDesc.list.forEach((service) {
-      // print("${service.nameInt}");
+      //   print("${service.nameInt}");
       expect(p.getService(service.nameInt).use, equals(true));
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));

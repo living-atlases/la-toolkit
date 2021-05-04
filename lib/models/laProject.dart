@@ -61,10 +61,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
   // Relations -----
   List<LAServer> servers;
-  // mapped by service.nameInt
-  // @JsonKey(ignore: true)
-  Map<String, LAService> servicesMap;
-  // @JsonKey(ignore: true)
+  List<LAService> services;
   Map<String, List<String>> serverServices;
   List<CmdHistoryEntry> cmdHistoryEntries;
   List<LAVariable> variables;
@@ -99,18 +96,19 @@ class LAProject implements IsJsonSerializable<LAProject> {
     List<LAVariable>? variables,
     List<CmdHistoryEntry>? cmdHistoryEntries,
     List<LAServer>? servers,
-    Map<String, LAService>? servicesMap,
+    List<LAService>? services,
     Map<String, List<String>>? serverServices,
   })  : id = id ?? new ObjectId().toString(),
         servers = servers ?? [],
+        services = services ?? initialServices,
         variables = variables ?? [],
         // _serversNameList = _serversNameList ?? [],
-        servicesMap = servicesMap ?? initialServices,
-        serverServices = // serverServices ?? {},
-            serverServices == null
+
+        serverServices = serverServices ?? {},
+        /* serverServices == null
                 ? {}
                 : serverServices.map((String key, value) =>
-                    MapEntry<String, List<String>>(key.toString(), value)),
+                    MapEntry<String, List<String>>(key.toString(), value)), */
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
         cmdHistoryEntries = cmdHistoryEntries ?? [],
@@ -191,6 +189,12 @@ class LAProject implements IsJsonSerializable<LAProject> {
     bool ok = getServicesNameListInUse().length > 0 &&
         getServicesNameListInUse().length ==
             getServicesNameListSelected().length;
+    if (!ok) {
+      print(
+          "Not the same services  in use ${getServicesNameListInUse().length} as selected ${getServicesNameListSelected().length}");
+      print(
+          "Services unassigned: ${getServicesNameListInUse().where((s) => !getServicesNameListSelected().contains(s)).toList().join(',')}");
+    }
     getServicesNameListInUse().forEach((service) {
       ok && getHostname(service).isNotEmpty;
     });
@@ -242,14 +246,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   List<String> getServicesNameListInUse() {
-    return servicesMap.values
+    return services
         .where((service) => service.use)
         .map((service) => service.nameInt)
         .toList();
   }
 
   List<String> getServicesNameListNotInUse() {
-    return servicesMap.values
+    return services
         .where((service) => !service.use)
         .map((service) => service.nameInt)
         .toList();
@@ -283,12 +287,12 @@ services in use (${getServicesNameListInUse().length}): [${getServicesNameListIn
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
   }
 
-  static Map<String, LAService> initialServices = getInitialServices();
+  static List<LAService> initialServices = getInitialServices();
 
-  static Map<String, LAService> getInitialServices() {
-    final Map<String, LAService> services = {};
+  static List<LAService> getInitialServices() {
+    final List<LAService> services = [];
     LAServiceDesc.map.forEach((key, desc) {
-      services[key] = LAService.fromDesc(desc);
+      services.add(LAService.fromDesc(desc));
     });
     return services;
   }
@@ -298,12 +302,12 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   LAService getService(String nameInt) {
-    // getDepends can be null so the getService returns also null. Find a better way to do this
-    // if (nameInt == null) return null;
-    LAService? curService = servicesMap[nameInt];
-    if (curService == null)
-      servicesMap[nameInt] =
-          curService = LAService.fromDesc(LAServiceDesc.get(nameInt));
+    LAService curService =
+        services.firstWhere((s) => s.nameInt == nameInt, orElse: () {
+      LAService newService = LAService.fromDesc(LAServiceDesc.get(nameInt));
+      services.add(newService);
+      return newService;
+    });
     return curService;
   }
 
@@ -389,7 +393,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   String get etcHostsVar {
     List<String> etcHostLines = [];
     serversWithServices().forEach((server) => etcHostLines.add(
-        "      ${server.ip} ${getServerServices(serverId: server.id).map((sName) => servicesMap[sName]!.url(domain)).toList().join(' ')}"));
+        "      ${server.ip} ${getServerServices(serverId: server.id).map((sName) => services.firstWhere((s) => s.nameInt == sName).url(domain)).toList().join(' ')}"));
     return etcHostLines.join('\n');
   }
 
@@ -425,12 +429,10 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   void serviceInUse(String serviceNameInt, bool use) {
-    if (!servicesMap.keys.contains(serviceNameInt))
-      servicesMap[serviceNameInt] ??=
-          LAService.fromDesc(LAServiceDesc.map[serviceNameInt]!);
-    LAService service = servicesMap[serviceNameInt]!;
-
+    LAService service = getService(serviceNameInt);
     service.use = use;
+    updateService(service);
+
     Iterable<LAServiceDesc> depends = LAServiceDesc.map.values.where((curSer) =>
         (curSer.depends != null && curSer.depends!.toS() == serviceNameInt));
     if (!use) {
@@ -473,7 +475,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     if (additionalVariables != "") {
       conf["LA_additionalVariables"] = additionalVariables;
     }
-    servicesMap.forEach((key, service) {
+    services.forEach((service) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
       conf["LA_${service.nameInt}_hostname"] =
@@ -503,7 +505,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
         shortName: yoRc['LA_project_shortname'],
         domain: yoRc["LA_domain"],
         useSSL: yoRc["LA_enable_ssl"],
-        servicesMap: {});
+        services: []);
     String domain = p.domain;
     Map<String, List<String>> tempServerServices = {};
 
@@ -568,7 +570,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   List<LAService> getServerServicesFull({required String serverId}) {
     List<String> listS = getServerServices(serverId: serverId);
-    return servicesMap.values.where((s) => listS.contains(s.nameInt)).toList();
+    return services.where((s) => listS.contains(s.nameInt)).toList();
   }
 
   Map<String, List<String>> getServerServicesForTest() {
@@ -675,9 +677,6 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           dirName == other.dirName &&
           domain == other.domain &&
           useSSL == other.useSSL &&
-          DeepCollectionEquality.unordered().equals(servers, other.servers) &&
-          DeepCollectionEquality.unordered()
-              .equals(servicesMap, other.servicesMap) &&
           DeepCollectionEquality.unordered()
               .equals(serverServices, other.serverServices) &&
           additionalVariables == other.additionalVariables &&
@@ -694,6 +693,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           lastCmdEntry == other.lastCmdEntry &&
           lastCmdDetails == other.lastCmdDetails &&
           ListEquality().equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
+          ListEquality().equals(servers, other.servers) &&
+          ListEquality().equals(services, other.services) &&
           ListEquality().equals(variables, other.variables) &&
           mapZoom == other.mapZoom;
 
@@ -705,8 +706,6 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       dirName.hashCode ^
       domain.hashCode ^
       useSSL.hashCode ^
-      DeepCollectionEquality.unordered().hash(servers) ^
-      DeepCollectionEquality.unordered().hash(servicesMap) ^
       DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
       isHub.hashCode ^
@@ -721,6 +720,16 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       mapBoundsSndPoint.hashCode ^
       lastCmdDetails.hashCode ^
       ListEquality().hash(cmdHistoryEntries) ^
+      ListEquality().hash(servers) ^
+      ListEquality().hash(services) ^
       ListEquality().hash(variables) ^
       mapZoom.hashCode;
+
+  void updateService(LAService service) {
+    String serviceNameInt = service.nameInt;
+    int serviceInUse = getServicesNameListInUse().length;
+    int i = services.indexWhere((s) => s.nameInt == serviceNameInt);
+    services.replaceRange(i, i + 1, [service]);
+    assert(serviceInUse == getServicesNameListInUse().length);
+  }
 }

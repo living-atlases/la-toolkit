@@ -214,9 +214,10 @@ AppState _updateProject(AppState state, UpdateProject action) {
 }
 
 AppState _editService(AppState state, EditService action) {
-  LAProject currentProject = state.currentProject;
-  currentProject.servicesMap[action.service.nameInt] = action.service;
-  return state.copyWith(currentProject: currentProject);
+  LAProject cProj = state.currentProject;
+  cProj.updateService(action.service);
+
+  return state.copyWith(currentProject: cProj);
 }
 
 AppState _testConnectivityProject(

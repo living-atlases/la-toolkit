@@ -28,7 +28,7 @@ extension LAProjectCopyWith on LAProject {
     double? mapZoom,
     Map<String, List<String>>? serverServices,
     List<LAServer>? servers,
-    Map<String, LAService>? servicesMap,
+    List<LAService>? services,
     String? shortName,
     LAProjectStatus? status,
     String? theme,
@@ -56,7 +56,7 @@ extension LAProjectCopyWith on LAProject {
       mapZoom: mapZoom ?? this.mapZoom,
       serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
-      servicesMap: servicesMap ?? this.servicesMap,
+      services: services ?? this.services,
       shortName: shortName ?? this.shortName,
       status: status ?? this.status,
       theme: theme ?? this.theme,
@@ -107,9 +107,9 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     servers: (json['servers'] as List<dynamic>?)
         ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
         .toList(),
-    servicesMap: (json['servicesMap'] as Map<String, dynamic>?)?.map(
-      (k, e) => MapEntry(k, LAService.fromJson(e as Map<String, dynamic>)),
-    ),
+    services: (json['services'] as List<dynamic>?)
+        ?.map((e) => LAService.fromJson(e as Map<String, dynamic>))
+        .toList(),
     serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
       (k, e) =>
           MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
@@ -137,8 +137,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'advancedEdit': instance.advancedEdit,
       'advancedTune': instance.advancedTune,
       'servers': instance.servers.map((e) => e.toJson()).toList(),
-      'servicesMap':
-          instance.servicesMap.map((k, e) => MapEntry(k, e.toJson())),
+      'services': instance.services.map((e) => e.toJson()).toList(),
       'serverServices': instance.serverServices,
       'cmdHistoryEntries':
           instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),
