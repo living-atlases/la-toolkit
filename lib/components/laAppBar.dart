@@ -34,7 +34,12 @@ class LAAppBar extends AppBar {
               },
             ),*/
             toolbarHeight: kToolbarHeight * 1.2,
-            actions: actions ?? List<Widget>.empty(growable: true),
+            actions: actions == null
+                ? List<Widget>.empty(growable: true)
+                : actions +
+                    <Widget>[
+                      Container(margin: const EdgeInsets.only(right: 20.0))
+                    ],
             leading: leading,
             bottom: bottom,
             title: SizedBox(
