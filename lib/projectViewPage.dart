@@ -135,7 +135,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.foundation),
                 title: "Pre-Deploy Tasks",
-                enabled: project.allServersWithServicesReady(),
+                enabled:
+                    project.isCreated && project.allServersWithServicesReady(),
                 action: () => vm.onPreDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.format_paint),
@@ -146,25 +147,28 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 title: "Deploy",
                 tooltip: "Install/update your LA Portal or some services",
                 grid: 12,
-                enabled: project.allServersWithServicesReady(),
+                enabled:
+                    project.isCreated && project.allServersWithServicesReady(),
                 action: () => vm.onDeployProject(project)),
             Tool(
                 icon: const Icon(Icons.receipt_long),
                 title: "Logs History",
                 tooltip: "Show deploy logs history",
-                enabled: project.allServersWithServicesReady() &&
+                enabled: project.isCreated &&
+                    project.allServersWithServicesReady() &&
                     project.cmdHistoryEntries.length > 0,
                 action: () => vm.onViewLogs(project)),
             Tool(
                 icon: const Icon(Icons.house_siding),
                 title: "Post-Deploy Tasks",
-                enabled: project.fstDeployed,
+                enabled: project.isCreated && project.fstDeployed,
                 action: () => vm.onPostDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.fact_check),
                 title: "Portal Status",
                 tooltip: "Check your portal servers and services status",
-                enabled: project.allServersWithServicesReady(),
+                enabled:
+                    project.isCreated && project.allServersWithServicesReady(),
                 action: () => vm.onPortalStatus(vm.project)),
             /* Tool(
                 icon: const Icon(Icons.pie_chart),
