@@ -137,6 +137,7 @@ class ServersDetailsCardList extends StatelessWidget {
                                   SizedBox(width: 10),
                                   HelpIcon(
                                       wikipage: "SSH-for-Beginners#ssh-keys"),
+                                  SizedBox(width: 10),
                                   Flexible(
                                     child: GenericTextFormField(
                                         // IP
@@ -168,20 +169,24 @@ class ServersDetailsCardList extends StatelessWidget {
                                     "SSH-for-Beginners#public-and-private-ip-addresses"),
                           ),
                           Padding(
-                              padding: EdgeInsets.all(16.0),
+                              padding: EdgeInsets.fromLTRB(16, 0, 16, 20),
                               child: Container(
-                                height: _project.advancedEdit ? 180 : 0,
+                                //height: _project.advancedEdit ? 180 : 0,
                                 child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                        CrossAxisAlignment.center,
                                     children: [
                                       /* SizedBox(height: 10),
                                       Text("Advanced optional settings:",
                                           style: TextStyle(fontSize: 16)),*/
-                                      SizedBox(height: 10),
+                                      // SizedBox(height: 10),
                                       if (_project.advancedEdit)
                                         Flexible(
                                           child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
                                               children: [
