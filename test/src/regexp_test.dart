@@ -57,7 +57,7 @@ void main() {
     var string = 'vm org';
     expect(LARegExp.hostnameRegexp.hasMatch(string), equals(false));
   });
-  test('muilt hostname regexp should not allow non letters', () {
+  test('multi hostname regexp should not allow non letters', () {
     List<String> names = ['vm org', 'vm1, vm2', 'vm1,vm2'];
     names.forEach((name) {
       expect(LARegExp.multiHostnameRegexp.hasMatch(name), equals(true));
@@ -256,6 +256,33 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
     });
     invalid.forEach((current) {
       expect(LARegExp.portNumber.hasMatch(current), equals(false));
+    });
+  });
+
+  test('test subdomains', () {
+    List<String> subdomains = [
+      'aa',
+      'a-b',
+      'a_b',
+      'a.b',
+    ];
+    subdomains.forEach((sub) {
+      expect(LARegExp.subdomain.hasMatch(sub), equals(true));
+    });
+  });
+
+  test('test invalid subdomains', () {
+    List<String> subdomains = [
+      'a*b',
+      'a b',
+      'a\b',
+    ];
+    subdomains.forEach((sub) {
+      // print("Testing $sub");
+      expect(
+        LARegExp.subdomain.hasMatch(sub),
+        equals(false),
+      );
     });
   });
 }
