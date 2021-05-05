@@ -82,7 +82,7 @@ class LAService implements IsJsonSerializable<LAService> {
   @override
   String toString() {
     if (use)
-      return 'LAService{name: $nameInt';
+      return 'LAService ($nameInt)';
     else
       return "not used";
   }

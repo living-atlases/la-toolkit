@@ -28,6 +28,7 @@ extension LAProjectCopyWith on LAProject {
     double? mapZoom,
     Map<String, List<String>>? serverServices,
     List<LAServer>? servers,
+    List<LAServiceDeploy>? serviceDeploys,
     List<LAService>? services,
     String? shortName,
     LAProjectStatus? status,
@@ -56,6 +57,7 @@ extension LAProjectCopyWith on LAProject {
       mapZoom: mapZoom ?? this.mapZoom,
       serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
+      serviceDeploys: serviceDeploys ?? this.serviceDeploys,
       services: services ?? this.services,
       shortName: shortName ?? this.shortName,
       status: status ?? this.status,
@@ -110,6 +112,9 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     services: (json['services'] as List<dynamic>?)
         ?.map((e) => LAService.fromJson(e as Map<String, dynamic>))
         .toList(),
+    serviceDeploys: (json['serviceDeploys'] as List<dynamic>?)
+        ?.map((e) => LAServiceDeploy.fromJson(e as Map<String, dynamic>))
+        .toList(),
     serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
       (k, e) =>
           MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
@@ -141,6 +146,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'serverServices': instance.serverServices,
       'cmdHistoryEntries':
           instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),
+      'serviceDeploys': instance.serviceDeploys.map((e) => e.toJson()).toList(),
       'variables': instance.variables.map((e) => e.toJson()).toList(),
       'lastCmdEntry': instance.lastCmdEntry?.toJson(),
     };

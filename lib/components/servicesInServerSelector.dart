@@ -46,7 +46,7 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
           .getServicesNameListInUse()
           .where((nameInt) => servicesInServer.contains(nameInt)
               ? true
-              : _project.getServicesNameListSelected().contains(nameInt)
+              : _project.getServicesAssignedToServers().contains(nameInt)
                   ? false
                   : true)
           .toList();

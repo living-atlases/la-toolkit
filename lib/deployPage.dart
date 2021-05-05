@@ -85,7 +85,7 @@ class _DeployPageState extends State<DeployPage> {
                               ServicesChipPanel(
                                   initialValue: cmd.deployServices,
                                   services:
-                                      vm.project.getServicesNameListSelected(),
+                                      vm.project.getServicesAssignedToServers(),
                                   onChange: (s) =>
                                       setState(() => cmd.deployServices = s)),
                               HostsSelector(

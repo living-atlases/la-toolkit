@@ -22,6 +22,7 @@ import 'cmdHistoryDetails.dart';
 import 'hostServicesChecks.dart';
 import 'laServer.dart';
 import 'laService.dart';
+import 'laServiceDeploy.dart';
 import 'laServiceDepsDesc.dart';
 import 'laVariable.dart';
 import 'laVariableDesc.dart';
@@ -62,8 +63,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
   // Relations -----
   List<LAServer> servers;
   List<LAService> services;
+  // Mapped by server.id
   Map<String, List<String>> serverServices;
   List<CmdHistoryEntry> cmdHistoryEntries;
+  List<LAServiceDeploy> serviceDeploys;
   List<LAVariable> variables;
 
   // Logs history -----
@@ -97,10 +100,12 @@ class LAProject implements IsJsonSerializable<LAProject> {
     List<CmdHistoryEntry>? cmdHistoryEntries,
     List<LAServer>? servers,
     List<LAService>? services,
+    List<LAServiceDeploy>? serviceDeploys,
     Map<String, List<String>>? serverServices,
   })  : id = id ?? new ObjectId().toString(),
         servers = servers ?? [],
         services = services ?? initialServices,
+        serviceDeploys = serviceDeploys ?? [],
         variables = variables ?? [],
         // _serversNameList = _serversNameList ?? [],
 
@@ -185,15 +190,15 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return valid;
   }
 
-  bool allServicesAssignedToServers() {
+  bool allServicesAssignedToServers({debug: false}) {
     bool ok = getServicesNameListInUse().length > 0 &&
         getServicesNameListInUse().length ==
-            getServicesNameListSelected().length;
-    if (!ok) {
+            getServicesAssignedToServers().length;
+    if (!ok && debug) {
       print(
-          "Not the same services  in use ${getServicesNameListInUse().length} as selected ${getServicesNameListSelected().length}");
+          "Not the same services in use ${getServicesNameListInUse().length} as assigned to servers ${getServicesAssignedToServers().length}");
       print(
-          "Services unassigned: ${getServicesNameListInUse().where((s) => !getServicesNameListSelected().contains(s)).toList().join(',')}");
+          "Services unassigned: ${getServicesNameListInUse().where((s) => !getServicesAssignedToServers().contains(s)).toList().join(',')}");
     }
     getServicesNameListInUse().forEach((service) {
       ok && getHostname(service).isNotEmpty;
@@ -259,7 +264,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         .toList();
   }
 
-  List<String> getServicesNameListSelected() {
+  List<String> getServicesAssignedToServers() {
     List<String> selected = [];
     serverServices.forEach((id, service) => selected.addAll(service));
     return selected;
@@ -282,7 +287,7 @@ isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
 servers-services: $sToS
-services selected (${getServicesNameListSelected().length}): [${getServicesNameListSelected().join(', ')}]
+services selected (${getServicesAssignedToServers().length}): [${getServicesAssignedToServers().join(', ')}]
 services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().join(', ')}]
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
   }
@@ -363,6 +368,27 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   void assign(LAServer server, List<String> assignedServices) {
     serverServices[server.id] = assignedServices;
+    List serviceIds = [];
+    assignedServices.forEach((sN) {
+      LAService service = services.firstWhere((s) => s.nameInt == sN);
+      serviceIds.add(service.id);
+      serviceDeploys.firstWhere(
+          (sD) =>
+              sD.projectId == id &&
+              sD.serverId == server.id &&
+              sD.serviceId == service.id, orElse: () {
+        LAServiceDeploy newSd = LAServiceDeploy(
+            projectId: id, serverId: server.id, serviceId: service.id);
+        serviceDeploys.add(newSd);
+        return newSd;
+      });
+    });
+
+    // Remove previous deploys
+    serviceDeploys.removeWhere((sD) =>
+        sD.projectId == id &&
+        sD.serverId == server.id &&
+        !serviceIds.contains(sD.serviceId));
   }
 
   void delete(LAServer serverToDelete) {
@@ -440,6 +466,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       serverServices.forEach((id, services) {
         services.remove(serviceNameInt);
       });
+      serviceDeploys.removeWhere(
+          (sd) => sd.projectId == id && sd.serviceId == service.id);
       // Disable dependents
       depends.forEach((serviceDesc) => serviceInUse(serviceDesc.nameInt, use));
     } else {
@@ -666,6 +694,15 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   @override
   LAProject fromJson(Map<String, dynamic> json) => LAProject.fromJson(json);
 
+  void updateService(LAService service) {
+    String serviceNameInt = service.nameInt;
+    int serviceInUse = getServicesNameListInUse().length;
+    int i = services.indexWhere((s) => s.nameInt == serviceNameInt);
+    services.replaceRange(i, i + 1, [service]);
+    assert(serviceInUse == getServicesNameListInUse().length);
+    // assert(getServicesNameListInUse().length == serviceDeploys.length);
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -696,6 +733,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           ListEquality().equals(servers, other.servers) &&
           ListEquality().equals(services, other.services) &&
           ListEquality().equals(variables, other.variables) &&
+          ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -723,13 +761,6 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       ListEquality().hash(servers) ^
       ListEquality().hash(services) ^
       ListEquality().hash(variables) ^
+      ListEquality().hash(serviceDeploys) ^
       mapZoom.hashCode;
-
-  void updateService(LAService service) {
-    String serviceNameInt = service.nameInt;
-    int serviceInUse = getServicesNameListInUse().length;
-    int i = services.indexWhere((s) => s.nameInt == serviceNameInt);
-    services.replaceRange(i, i + 1, [service]);
-    assert(serviceInUse == getServicesNameListInUse().length);
-  }
 }

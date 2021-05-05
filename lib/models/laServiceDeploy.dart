@@ -3,8 +3,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
 import 'isJsonSerializable.dart';
-import 'laProject.dart';
-import 'laServer.dart';
 import 'laService.dart';
 
 part 'laServiceDeploy.g.dart';
@@ -13,18 +11,18 @@ part 'laServiceDeploy.g.dart';
 @CopyWith()
 class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
   String id;
-  LAService service;
-  LAServer server;
-  LAProject project;
+  String serviceId;
+  String serverId;
+  String projectId;
   String additionalVariables;
   ServiceStatus status;
 
   LAServiceDeploy(
       {String? id,
-      required this.service,
-      required this.server,
+      required this.serviceId,
+      required this.serverId,
       this.additionalVariables = "",
-      required this.project,
+      required this.projectId,
       ServiceStatus? status})
       : id = id ?? new ObjectId().toString(),
         status = status ?? ServiceStatus.unknown;
@@ -44,18 +42,23 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       other is LAServiceDeploy &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          service == other.service &&
-          server == other.server &&
-          project == other.project &&
+          serviceId == other.serviceId &&
+          serverId == other.serverId &&
+          projectId == other.projectId &&
           additionalVariables == other.additionalVariables &&
           status == other.status;
 
   @override
   int get hashCode =>
       id.hashCode ^
-      service.hashCode ^
-      server.hashCode ^
-      project.hashCode ^
+      serviceId.hashCode ^
+      serverId.hashCode ^
+      projectId.hashCode ^
       additionalVariables.hashCode ^
       status.hashCode;
+
+  @override
+  String toString() {
+    return 'LAServiceDeploy{id: $id, serviceId: $serviceId, serverId: $serverId, projectId: $projectId}\n';
+  }
 }

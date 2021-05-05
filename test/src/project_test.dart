@@ -251,7 +251,7 @@ void main() {
     //   print(testProject.getServicesNameListSelected().length);
     expect(
         testProject.getServicesNameListInUse().length ==
-            testProject.getServicesNameListSelected().length,
+            testProject.getServicesAssignedToServers().length,
         equals(true));
     testProject.getServicesNameListInUse().forEach((service) {
       expect(testProject.getHostname(service).isNotEmpty, equals(true));
@@ -292,7 +292,10 @@ void main() {
   test('Test disable of services', () {
     var p = LAProject();
     p.domain = "l-a.site";
+
     p.serviceInUse(bie, true);
+    expect(p.getServicesNameListInUse().length, equals(16));
+
     p.serviceInUse(lists, true);
     expect(p.getService(bie).use, equals(true));
     expect(p.getService(lists).use, equals(true));
@@ -302,6 +305,9 @@ void main() {
     LAServer vm1 = LAServer(name: "vm1");
     p.upsertByName(vm1);
     p.assign(vm1, [collectory, bie, bieIndex, lists]);
+    expect(p.getServicesAssignedToServers().length, equals(4));
+    expect(p.serviceDeploys.length,
+        equals(p.getServicesAssignedToServers().length));
     LAServer vm1Bis =
         LAServer(name: "vm1", ip: "10.0.0.1", sshUser: "john", sshPort: 22001);
     expect(p.getServerServices(serverId: vm1.id).contains(collectory),
@@ -331,26 +337,38 @@ void main() {
     p.serviceInUse(bie, true);
     p.serviceInUse(bie, false);
     p.serviceInUse(bie, true);
+    expect(p.serviceDeploys.length,
+        equals(p.getServicesAssignedToServers().length));
     p.getService(bie).usesSubdomain = false;
     p.getService(bie).usesSubdomain = true;
     expect(numServices == p.getServersNameList().length, equals(true));
     expect(p.getService(bie).use, equals(true));
     expect(p.getService(bieIndex).use, equals(true));
     expect(p.allServicesAssignedToServers(), equals(false));
+    expect(p.serviceDeploys.length,
+        equals(p.getServicesAssignedToServers().length));
     p.assign(vm1, [bie]);
+    /* print(p.getServicesAssignedToServers());
+    print(p.serviceDeploys);
+    p.serviceDeploys.forEach(
+        (sd) => print(p.services.firstWhere((s) => s.id == sd.serviceId))); */
+    expect(p.serviceDeploys.length,
+        equals(p.getServicesAssignedToServers().length));
     expect(p.allServicesAssignedToServers(), equals(false));
     p.getServicesNameListInUse().contains(bie);
     p.getServicesNameListInUse().contains(bieIndex);
-    expect(p.getServicesNameListSelected().contains(bie), equals(true));
-    expect(p.getServicesNameListSelected().contains(bieIndex), equals(false));
+    expect(p.getServicesAssignedToServers().contains(bie), equals(true));
+    expect(p.getServicesAssignedToServers().contains(bieIndex), equals(false));
     p.assign(vm1, [bie, bieIndex]);
-    expect(p.getServicesNameListSelected().contains(bie), equals(true));
-    expect(p.getServicesNameListSelected().contains(bieIndex), equals(true));
+    expect(p.getServicesAssignedToServers().contains(bie), equals(true));
+    expect(p.getServicesAssignedToServers().contains(bieIndex), equals(true));
     expect(p.getHostname(bieIndex), equals(['vm1']));
     expect(p.getHostname(bie), equals(['vm1']));
     p.getService(bie).iniPath = "/species";
     expect(p.etcHostsVar,
         equals('      10.0.0.1 species.l-a.site species-ws.l-a.site'));
+    expect(p.serviceDeploys.length,
+        equals(p.getServicesAssignedToServers().length));
   });
 
   test('Import yo-rc.json', () {
