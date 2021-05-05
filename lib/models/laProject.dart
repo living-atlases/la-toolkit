@@ -697,10 +697,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   void updateService(LAService service) {
     String serviceNameInt = service.nameInt;
     int serviceInUse = getServicesNameListInUse().length;
-    int i = services.indexWhere((s) => s.nameInt == serviceNameInt);
-    services.replaceRange(i, i + 1, [service]);
+    services =
+        services.map((s) => s.nameInt == serviceNameInt ? service : s).toList();
     assert(serviceInUse == getServicesNameListInUse().length);
-    // assert(getServicesNameListInUse().length == serviceDeploys.length);
   }
 
   @override
