@@ -64,7 +64,7 @@ void main() {
         domain: "l-a.site",
         alaInstallRelease: "",
         generatorRelease: "");
-    testProject.upsertByName(LAServer(name: "vm1"));
+    testProject.upsertByName(LAServer(name: "vm1", projectId: testProject.id));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(1));
     expect(testProject.validateCreation(), equals(false));
@@ -78,9 +78,11 @@ void main() {
         domain: "l-a.site",
         alaInstallRelease: "",
         generatorRelease: "");
-    testProject.upsertByName(LAServer(name: "vm1"));
-    testProject.upsertByName(LAServer(name: "vm2", ip: "10.0.0.1"));
-    testProject.upsertByName(LAServer(name: "vm2", ip: "10.0.0.2"));
+    testProject.upsertByName(LAServer(name: "vm1", projectId: testProject.id));
+    testProject.upsertByName(
+        LAServer(name: "vm2", ip: "10.0.0.1", projectId: testProject.id));
+    testProject.upsertByName(
+        LAServer(name: "vm2", ip: "10.0.0.2", projectId: testProject.id));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(2));
     expect(testProject.validateCreation(), equals(false));
@@ -91,18 +93,18 @@ void main() {
   });
 
   test('Servers equals', () {
-    LAServer vm1 = LAServer(name: 'vm2', ip: '10.0.0.1');
-    LAServer vm1bis = vm1.copyWith(ip: '10.0.0.1');
+    LAServer vm1 = LAServer(name: 'vm2', ip: '10.0.0.1', projectId: "1");
+    LAServer vm1bis = vm1.copyWith(ip: '10.0.0.1', projectId: "1");
     expect(vm1 == vm1bis, equals(true));
   });
 
   test('Servers not equals', () {
-    LAServer vm1 = LAServer(name: 'vm1');
-    LAServer vm1bis = LAServer(name: 'vm2');
+    LAServer vm1 = LAServer(name: 'vm1', projectId: "1");
+    LAServer vm1bis = LAServer(name: 'vm2', projectId: "1");
     expect(vm1 == vm1bis, equals(false));
-    vm1 = LAServer(name: 'vm1');
-    vm1bis = LAServer(name: 'vm1', aliases: ['collections']);
-    var vm1bisBis = LAServer(name: 'vm1', sshPort: 22001);
+    vm1 = LAServer(name: 'vm1', projectId: "1");
+    vm1bis = LAServer(name: 'vm1', aliases: ['collections'], projectId: "1");
+    var vm1bisBis = LAServer(name: 'vm1', sshPort: 22001, projectId: "1");
     expect(vm1 == vm1bis, equals(false));
     expect(vm1 == vm1bisBis, equals(false));
   });
@@ -110,19 +112,13 @@ void main() {
   test('Test step 1 of creation, valid servers-service assignment and equality',
       () {
     LAProject testProject = LAProject(
-        id: "0",
+        //id: "0",
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
         domain: "l-a.site",
         alaInstallRelease: "",
         generatorRelease: "");
-    LAProject testProjectOther = LAProject(
-        id: "0",
-        longName: "Living Atlas of Wakanda",
-        shortName: "LAW",
-        domain: "l-a.site",
-        alaInstallRelease: "",
-        generatorRelease: "");
+    LAProject testProjectOther = testProject.copyWith();
 
     expect(
         ListEquality().equals(testProject.services, testProjectOther.services),
@@ -143,10 +139,14 @@ void main() {
         equals(true));
     expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
     expect(testProject == testProjectOther, equals(true));
-    LAServer vm1 = LAServer(name: "vm1", ip: "10.0.0.1");
-    LAServer vm2 = LAServer(name: "vm2", ip: "10.0.0.2");
-    LAServer vm3 = LAServer(name: "vm3", ip: "10.0.0.3");
-    LAServer vm4 = LAServer(name: "vm4", ip: "10.0.0.4");
+    LAServer vm1 =
+        LAServer(name: "vm1", ip: "10.0.0.1", projectId: testProject.id);
+    LAServer vm2 =
+        LAServer(name: "vm2", ip: "10.0.0.2", projectId: testProject.id);
+    LAServer vm3 =
+        LAServer(name: "vm3", ip: "10.0.0.3", projectId: testProject.id);
+    LAServer vm4 =
+        LAServer(name: "vm4", ip: "10.0.0.4", projectId: testProject.id);
     LAProject testProjectCopy =
         testProject.copyWith(servers: [], serverServices: {});
     testProject.upsertByName(vm1);
@@ -302,14 +302,18 @@ void main() {
     var pBis = p.copyWith();
 
     expect(p == pBis, equals(true));
-    LAServer vm1 = LAServer(name: "vm1");
+    LAServer vm1 = LAServer(name: "vm1", projectId: p.id);
     p.upsertByName(vm1);
     p.assign(vm1, [collectory, bie, bieIndex, lists]);
     expect(p.getServicesAssignedToServers().length, equals(4));
     expect(p.serviceDeploys.length,
         equals(p.getServicesAssignedToServers().length));
-    LAServer vm1Bis =
-        LAServer(name: "vm1", ip: "10.0.0.1", sshUser: "john", sshPort: 22001);
+    LAServer vm1Bis = LAServer(
+        name: "vm1",
+        ip: "10.0.0.1",
+        sshUser: "john",
+        sshPort: 22001,
+        projectId: p.id);
     expect(p.getServerServices(serverId: vm1.id).contains(collectory),
         equals(true));
     p.upsertByName(vm1Bis);

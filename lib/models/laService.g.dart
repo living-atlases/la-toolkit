@@ -11,6 +11,7 @@ extension LAServiceCopyWith on LAService {
     String? id,
     String? iniPath,
     String? nameInt,
+    String? projectId,
     ServiceStatus? status,
     String? suburl,
     bool? use,
@@ -20,6 +21,7 @@ extension LAServiceCopyWith on LAService {
       id: id ?? this.id,
       iniPath: iniPath ?? this.iniPath,
       nameInt: nameInt ?? this.nameInt,
+      projectId: projectId ?? this.projectId,
       status: status ?? this.status,
       suburl: suburl ?? this.suburl,
       use: use ?? this.use,
@@ -41,6 +43,7 @@ LAService _$LAServiceFromJson(Map<String, dynamic> json) {
     usesSubdomain: json['usesSubdomain'] as bool,
     status: _$enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
     suburl: json['suburl'] as String,
+    projectId: json['projectId'] as String,
   );
 }
 
@@ -52,6 +55,7 @@ Map<String, dynamic> _$LAServiceToJson(LAService instance) => <String, dynamic>{
       'iniPath': instance.iniPath,
       'suburl': instance.suburl,
       'status': _$ServiceStatusEnumMap[instance.status],
+      'projectId': instance.projectId,
     };
 
 K _$enumDecode<K, V>(

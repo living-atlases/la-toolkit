@@ -35,6 +35,9 @@ class LAServer implements IsJsonSerializable<LAServer> {
   String osName;
   String osVersion;
 
+  // Relations
+  String projectId;
+
   LAServer(
       {String? id,
       required this.name,
@@ -48,7 +51,8 @@ class LAServer implements IsJsonSerializable<LAServer> {
       this.sshReachable: ServiceStatus.unknown,
       this.sudoEnabled: ServiceStatus.unknown,
       this.osName = "",
-      this.osVersion = ""})
+      this.osVersion = "",
+      required this.projectId})
       : id = id ?? new ObjectId().toString(),
         this.aliases = aliases ?? [],
         this.gateways = gateways ?? [],
@@ -75,6 +79,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
           osVersion == other.osVersion &&
           reachable == other.reachable &&
           sshReachable == other.sshReachable &&
+          projectId == other.projectId &&
           sudoEnabled == other.sudoEnabled;
 
   @override
@@ -91,6 +96,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
       osVersion.hashCode ^
       reachable.hashCode ^
       sshReachable.hashCode ^
+      projectId.hashCode ^
       sudoEnabled.hashCode;
 
   bool isReady() {

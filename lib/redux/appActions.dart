@@ -69,10 +69,26 @@ class AddProject extends AppActions {
   AddProject(this.project);
 }
 
+class OnProjectAdded extends AppActions {
+  Map<String, dynamic> projectJson;
+
+  OnProjectAdded(this.projectJson);
+}
+
 class DelProject extends AppActions {
   LAProject project;
 
   DelProject(this.project);
+}
+
+class OnProjectDeleted extends AppActions {
+  LAProject project;
+  OnProjectDeleted(this.project);
+}
+
+class OnProjectUpdated extends AppActions {
+  Map<String, dynamic> projectJson;
+  OnProjectUpdated(this.projectJson);
 }
 
 class OpenProject extends AppActions {

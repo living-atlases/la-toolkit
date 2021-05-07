@@ -104,7 +104,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     Map<String, List<String>>? serverServices,
   })  : id = id ?? new ObjectId().toString(),
         servers = servers ?? [],
-        services = services ?? initialServices,
+        services = services ?? getInitialServices(),
         serviceDeploys = serviceDeploys ?? [],
         variables = variables ?? [],
         // _serversNameList = _serversNameList ?? [],
@@ -120,6 +120,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
         fstDeployed = fstDeployed ?? false,
         mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng.from(-44, 112),
         mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154) {
+    this.services = this.services.map((s) {
+      s.projectId = this.id;
+      return s;
+    }).toList();
     validateCreation();
   }
 
@@ -292,12 +296,12 @@ services in use (${getServicesNameListInUse().length}): [${getServicesNameListIn
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
   }
 
-  static List<LAService> initialServices = getInitialServices();
+  //static List<LAService> initialServices = getInitialServices(id);
 
   static List<LAService> getInitialServices() {
     final List<LAService> services = [];
     LAServiceDesc.map.forEach((key, desc) {
-      services.add(LAService.fromDesc(desc));
+      services.add(LAService.fromDesc(desc, ""));
     });
     return services;
   }
@@ -309,7 +313,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   LAService getService(String nameInt) {
     LAService curService =
         services.firstWhere((s) => s.nameInt == nameInt, orElse: () {
-      LAService newService = LAService.fromDesc(LAServiceDesc.get(nameInt));
+      LAService newService = LAService.fromDesc(LAServiceDesc.get(nameInt), id);
       services.add(newService);
       return newService;
     });
@@ -318,7 +322,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   LAVariable getVariable(String nameInt) {
     LAVariable laVar = variables.firstWhere((v) => v.nameInt == nameInt,
-        orElse: () => LAVariable.fromDesc(LAVariableDesc.get(nameInt)));
+        orElse: () => LAVariable.fromDesc(LAVariableDesc.get(nameInt), id));
     return laVar;
   }
 
@@ -575,7 +579,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
         LAServer s;
         if (!p.getServersNameList().contains(hostname)) {
           // id is empty when is new
-          s = LAServer(id: new ObjectId().toString(), name: hostname);
+          s = LAServer(
+              id: new ObjectId().toString(), name: hostname, projectId: p.id);
           p.upsertByName(s);
         } else {
           s = p.servers.where((c) => c.name == hostname).toList()[0];

@@ -45,6 +45,9 @@ class LAService implements IsJsonSerializable<LAService> {
   // Status -----
   ServiceStatus status;
 
+  // Relations ----
+  String projectId;
+
   LAService(
       {String? id,
       required this.nameInt,
@@ -52,17 +55,19 @@ class LAService implements IsJsonSerializable<LAService> {
       required this.use,
       required this.usesSubdomain,
       ServiceStatus? status,
-      required this.suburl})
+      required this.suburl,
+      required this.projectId})
       : id = id ?? new ObjectId().toString(),
         status = status ?? ServiceStatus.unknown;
 
-  LAService.fromDesc(LAServiceDesc desc)
+  LAService.fromDesc(LAServiceDesc desc, String projectId)
       : id = new ObjectId().toString(),
         nameInt = desc.nameInt,
         iniPath = desc.path,
         use = !desc.optional ? true : desc.initUse,
         usesSubdomain = true,
         this.status = ServiceStatus.unknown,
+        projectId = projectId,
         suburl = desc.name;
 
   String get path => usesSubdomain
@@ -82,7 +87,7 @@ class LAService implements IsJsonSerializable<LAService> {
   @override
   String toString() {
     if (use)
-      return 'LAService ($nameInt)';
+      return 'LAService ($nameInt, project: (${projectId.length > 8 ? projectId.substring(0, 8) : ""}))';
     else
       return "not used";
   }
@@ -98,6 +103,7 @@ class LAService implements IsJsonSerializable<LAService> {
           id == other.id &&
           status == other.status &&
           usesSubdomain == other.usesSubdomain &&
+          projectId == other.projectId &&
           suburl == other.suburl;
 
   @override
@@ -108,6 +114,7 @@ class LAService implements IsJsonSerializable<LAService> {
       usesSubdomain.hashCode ^
       id.hashCode ^
       status.hashCode ^
+      projectId.hashCode ^
       suburl.hashCode;
 
   @override

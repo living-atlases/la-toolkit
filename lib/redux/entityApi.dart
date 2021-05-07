@@ -95,6 +95,23 @@ class EntityApi<T extends IsJsonSerializable> {
     }
   }
 
+  Future<Map<String, dynamic>> delete<T extends IsJsonSerializable>(
+      {required String id}) async {
+    // DELETE /:model/:id
+    String path = "$id";
+    Uri url = baseUri(path);
+    try {
+      Response response = await http.delete(url);
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw "Failed to delete entity (${response.reasonPhrase})";
+      }
+    } catch (e) {
+      throw "Failed to delete entity ($e)";
+    }
+  }
+
   Uri baseUri<T>([String path = "", Map<String, dynamic>? queryParameters]) =>
       Uri.http(env['BACKEND']!, "/$model${path != "" ? '/' + path : ''}",
           queryParameters);
@@ -102,12 +119,12 @@ class EntityApi<T extends IsJsonSerializable> {
 /*
 -- create
 -- find
-addTo
-destroy
+-- addTo
+-- destroy
+-- update
 findOne
 populateWhere
 removeFrom
 replace
--- update
 */
 }

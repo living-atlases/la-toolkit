@@ -103,7 +103,8 @@ void main() {
     pairs.forEach((pair) {
       String uuid = new ObjectId().toString();
       String dirName = StringUtils.suggestDirName(shortName: pair[0], id: uuid);
-      print("${pair[0]}: $dirName");
+      // Uncomment to get a list of vars
+      // print("${pair[0]}: $dirName");
       expect(dirName.length >= 2, equals(true));
       expect(dirName == pair[1], equals(true));
     });

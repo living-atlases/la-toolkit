@@ -374,4 +374,51 @@ class Api {
       return {};
     }
   }
+
+  static Future<Map<String, dynamic>> addProject(
+      {required LAProject project}) async {
+    if (AppUtils.isDemo()) return {};
+    return await addOrUpdateProject(project, "add");
+  }
+
+  static Future<Map<String, dynamic>> updateProject(
+      {required LAProject project}) async {
+    if (AppUtils.isDemo()) return {};
+
+    return await addOrUpdateProject(project, "update");
+  }
+
+  static Future<Map<String, dynamic>> addOrUpdateProject(
+      LAProject project, String op) async {
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/$op-project");
+    Map<String, dynamic> projectJ = project.toJson();
+    Map<String, dynamic> projectGenJson = project.toGeneratorJson();
+    projectJ['genConf'] = projectGenJson;
+    Map<String, dynamic> body = {'project': projectJ};
+
+    Response response = await (op == "add" ? http.post : http.patch)(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(body)));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw "Failed to $op project";
+    }
+  }
+
+  static Future<void> deleteProject({required LAProject project}) async {
+    if (AppUtils.isDemo()) return;
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/delete-project");
+
+    Map<String, dynamic> body = {'id': project.id};
+
+    Response response = await http.delete(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(body)));
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      throw "Failed to delete project";
+    }
+  }
 }

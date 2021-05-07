@@ -15,6 +15,7 @@ extension LAServerCopyWith on LAServer {
     String? name,
     String? osName,
     String? osVersion,
+    String? projectId,
     ServiceStatus? reachable,
     SshKey? sshKey,
     int? sshPort,
@@ -30,6 +31,7 @@ extension LAServerCopyWith on LAServer {
       name: name ?? this.name,
       osName: osName ?? this.osName,
       osVersion: osVersion ?? this.osVersion,
+      projectId: projectId ?? this.projectId,
       reachable: reachable ?? this.reachable,
       sshKey: sshKey ?? this.sshKey,
       sshPort: sshPort ?? this.sshPort,
@@ -63,6 +65,7 @@ LAServer _$LAServerFromJson(Map<String, dynamic> json) {
     sudoEnabled: _$enumDecode(_$ServiceStatusEnumMap, json['sudoEnabled']),
     osName: json['osName'] as String,
     osVersion: json['osVersion'] as String,
+    projectId: json['projectId'] as String,
   );
 }
 
@@ -80,6 +83,7 @@ Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
       'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled],
       'osName': instance.osName,
       'osVersion': instance.osVersion,
+      'projectId': instance.projectId,
     };
 
 K _$enumDecode<K, V>(

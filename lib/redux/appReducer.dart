@@ -31,7 +31,6 @@ List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, ImportProject>(_importProject),
   new TypedReducer<AppState, AddTemplateProjects>(_addTemplateProjects),
-  new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
   new TypedReducer<AppState, GotoStepEditProject>(_gotoStepEditProject),
   new TypedReducer<AppState, NextStepEditProject>(_nextStepEditProject),
@@ -41,8 +40,9 @@ List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
   new TypedReducer<AppState, EditService>(_editService),
   new TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
-  new TypedReducer<AppState, DelProject>(_delProject),
-  new TypedReducer<AppState, UpdateProject>(_updateProject),
+  new TypedReducer<AppState, OnProjectAdded>(_onProjectAdded),
+  new TypedReducer<AppState, OnProjectUpdated>(_onProjectUpdated),
+  new TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
   new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
   new TypedReducer<AppState, OnTestConnectivityResults>(
       _onTestConnectivityResults),
@@ -115,18 +115,7 @@ AppState _importProject(AppState state, ImportProject action) {
 }
 
 AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
-  Map<String, dynamic> json = action.templates;
-  List<dynamic> projects = json['projects'];
-  List<LAProject> newProjects = List<LAProject>.empty(growable: true);
-  projects.forEach((pJson) {
-    pJson['id'] = null;
-    LAProject newProject = LAProject.fromJson(pJson);
-    newProjects.add(newProject);
-  });
-  action.onAdded(projects.length);
-  return state.copyWith(
-      projects: new List<LAProject>.from(state.projects)
-        ..insertAll(0, newProjects));
+  return state;
 }
 
 AppState _openProject(AppState state, OpenProject action) {
@@ -183,33 +172,31 @@ AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
   return state.copyWith(currentProject: action.project);
 }
 
-AppState _addProject(AppState state, AddProject action) {
+AppState _onProjectAdded(AppState state, OnProjectAdded action) {
+  LAProject newP = LAProject.fromJson(action.projectJson);
   state.projects.forEach((project) {
-    if (project.id == action.project.id)
-      throw ("Trying to add an existing project.");
+    if (project.id == newP.id) throw ("Trying to add an existing project.");
     return;
   });
-  action.project.dirName = action.project.suggestDirName();
   return state.copyWith(
-      currentProject: action.project,
+      currentProject: newP,
       status: LAProjectViewStatus.view,
-      projects: new List<LAProject>.from(state.projects)
-        ..insert(0, action.project));
+      projects: new List<LAProject>.from(state.projects)..insert(0, newP));
 }
 
-AppState _delProject(AppState state, DelProject action) {
+AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
   return state.copyWith(
       currentProject: LAProject(),
       projects: new List<LAProject>.from(state.projects)
         ..removeWhere((item) => item.id == action.project.id));
 }
 
-AppState _updateProject(AppState state, UpdateProject action) {
+AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
+  LAProject updatedP = LAProject.fromJson(action.projectJson);
   return state.copyWith(
-      currentProject: action.project,
+      currentProject: updatedP,
       projects: state.projects
-          .map((project) =>
-              project.id == action.project.id ? action.project : project)
+          .map((project) => project.id == updatedP.id ? updatedP : project)
           .toList());
 }
 

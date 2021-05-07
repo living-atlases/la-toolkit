@@ -18,19 +18,25 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
   String nameInt;
   LAServiceName service;
   Object? value;
+  String projectId;
 
   // Status
   LAVariableStatus status = LAVariableStatus.undeployed;
 
   LAVariable(
-      {String? id, required this.nameInt, required this.service, this.value})
+      {String? id,
+      required this.nameInt,
+      required this.service,
+      this.value,
+      required this.projectId})
       : id = id ?? new ObjectId().toString();
 
-  LAVariable.fromDesc(LAVariableDesc desc)
+  LAVariable.fromDesc(LAVariableDesc desc, String projectId)
       : id = new ObjectId().toString(),
         nameInt = desc.nameInt,
         service = desc.service,
-        status = LAVariableStatus.undeployed;
+        status = LAVariableStatus.undeployed,
+        projectId = projectId;
 
   factory LAVariable.fromJson(Map<String, dynamic> json) =>
       _$LAVariableFromJson(json);
@@ -45,6 +51,7 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
           nameInt == other.nameInt &&
           service == other.service &&
           value == other.value &&
+          projectId == other.projectId &&
           status == other.status;
 
   @override
@@ -53,6 +60,7 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
       nameInt.hashCode ^
       service.hashCode ^
       value.hashCode ^
+      projectId.hashCode ^
       status.hashCode;
 
   @override

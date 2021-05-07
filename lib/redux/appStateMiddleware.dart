@@ -131,7 +131,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               print("$backendVersion < $lastLAToolkitVersion");
               store.dispatch(ShowSnackBar(AppSnackBarMessage(
                   "There is a new version the LA-Toolkit available. Please upgrade this toolkit.",
-                  Duration(seconds: 10),
+                  Duration(seconds: 5),
                   SnackBarAction(
                       label: "MORE INFO",
                       onPressed: () async {
@@ -174,10 +174,56 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     if (action is AddProject) {
-      genSshConf(action.project);
+      try {
+        action.project.dirName = action.project.suggestDirName();
+        Map<String, dynamic> newP =
+            await Api.addProject(project: action.project);
+        store.dispatch(OnProjectAdded(newP));
+        genSshConf(action.project);
+      } catch (e) {
+        store.dispatch(
+            ShowSnackBar(AppSnackBarMessage.ok("Failed to save project ($e)")));
+      }
+    }
+    if (action is AddTemplateProjects) {
+      Map<String, dynamic> json = action.templates;
+      List<dynamic> projects = json['projects'];
+
+      projects.forEach((pJson) async {
+        try {
+          pJson['id'] = null;
+          print(pJson);
+          LAProject newProject = LAProject.fromJson(pJson);
+          print(newProject);
+          Map<String, dynamic> pPersisted =
+              await Api.addProject(project: newProject);
+          store.dispatch(OnProjectAdded(pPersisted));
+        } catch (e) {
+          print(e);
+          /*   store.dispatch(ShowSnackBar(
+              AppSnackBarMessage.ok("Failed to add project ($e)"))); */
+        }
+      });
+    }
+    if (action is DelProject) {
+      try {
+        await Api.deleteProject(project: action.project);
+        store.dispatch(OnProjectDeleted(action.project));
+      } catch (e) {
+        store.dispatch(ShowSnackBar(
+            AppSnackBarMessage.ok("Failed to delete project ($e)")));
+      }
     }
     if (action is UpdateProject) {
-      genSshConf(action.project);
+      try {
+        Map<String, dynamic> pUpdated =
+            await Api.updateProject(project: action.project);
+        store.dispatch(OnProjectUpdated(pUpdated));
+        genSshConf(action.project);
+      } catch (e) {
+        store.dispatch(
+            ShowSnackBar(AppSnackBarMessage.ok("Failed to update project")));
+      }
     }
     if (action is TestConnectivityProject) {
       LAProject project = action.project;
