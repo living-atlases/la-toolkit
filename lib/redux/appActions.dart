@@ -58,9 +58,8 @@ class ImportProject extends AppActions {
 }
 
 class AddTemplateProjects extends AppActions {
-  Map<String, dynamic> templates;
   Function(int) onAdded;
-  AddTemplateProjects({required this.templates, required this.onAdded});
+  AddTemplateProjects({required this.onAdded});
 }
 
 class AddProject extends AppActions {

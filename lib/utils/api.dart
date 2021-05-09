@@ -377,7 +377,7 @@ class Api {
 
   static Future<Map<String, dynamic>> addProject(
       {required LAProject project}) async {
-    if (AppUtils.isDemo()) return {};
+    if (AppUtils.isDemo()) return project.toJson();
     return await addOrUpdateProject(project, "add");
   }
 

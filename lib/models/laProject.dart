@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/isJsonSerializable.dart';
@@ -281,16 +282,16 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
   @override
   String toString() {
-    String sToS = serverServices.entries
+    /*  String sToS = serverServices.entries
         .map((entry) =>
             '${servers.firstWhere((server) => server.id == entry.key).name} has ${entry.value}')
         .toList()
-        .join(', ');
+        .join(', '); */
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, hub: $isHub, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
-servers-services: $sToS
+servers-services: sToS
 services selected (${getServicesAssignedToServers().length}): [${getServicesAssignedToServers().join(', ')}]
 services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().join(', ')}]
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
@@ -705,6 +706,27 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     services =
         services.map((s) => s.nameInt == serviceNameInt ? service : s).toList();
     assert(serviceInUse == getServicesNameListInUse().length);
+  }
+
+  static Future<List<LAProject>> importTemplates(String file) async {
+    // https://flutter.dev/docs/development/ui/assets-and-images#loading-text-assets
+
+    List<LAProject> list = [];
+    String templatesS = await rootBundle.loadString(file);
+    Map<String, dynamic> templates = jsonDecode(templatesS);
+    List<dynamic>? projectsJ = templates['projects'];
+    if (projectsJ != null) {
+      projectsJ.forEach((pJson) {
+        pJson['id'] = null;
+        pJson['variables'] =
+            (pJson['variables'] as Map<String, dynamic>).values.toList();
+        pJson['services'] =
+            (pJson['services'] as Map<String, dynamic>).values.toList();
+        LAProject p = LAProject.fromJson(pJson);
+        list.add(p);
+      });
+    }
+    return list;
   }
 
   @override

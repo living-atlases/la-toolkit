@@ -186,24 +186,21 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     if (action is AddTemplateProjects) {
-      Map<String, dynamic> json = action.templates;
-      List<dynamic> projects = json['projects'];
-
-      projects.forEach((pJson) async {
+      List<LAProject> projects = await LAProject.importTemplates(
+          AssetsUtils.pathWorkaround('la-toolkit-templates.json'));
+      projects.forEach((p) async {
         try {
-          pJson['id'] = null;
-          print(pJson);
-          LAProject newProject = LAProject.fromJson(pJson);
-          print(newProject);
-          Map<String, dynamic> pPersisted =
-              await Api.addProject(project: newProject);
-          store.dispatch(OnProjectAdded(pPersisted));
+          print(p);
+
+          // Map<String, dynamic> pPersisted = await Api.addProject(project: p);
+          // store.dispatch(OnProjectAdded(pPersisted));
         } catch (e) {
           print(e);
-          /*   store.dispatch(ShowSnackBar(
+          /* store.dispatch(ShowSnackBar(
               AppSnackBarMessage.ok("Failed to add project ($e)"))); */
         }
       });
+      action.onAdded(projects.length);
     }
     if (action is DelProject) {
       try {

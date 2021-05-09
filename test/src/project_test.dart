@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
@@ -6,7 +7,6 @@ import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:test/test.dart';
 
 void main() {
   final lists = LAServiceName.species_lists.toS();
@@ -24,6 +24,7 @@ void main() {
   final cas = LAServiceName.cas.toS();
   // final dashboard = LAServiceName.dashboard.toS();
   final doi = LAServiceName.doi.toS();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   test('Test step 0 of creation, longname', () {
     LAProject testProject = LAProject(longName: "");
@@ -707,6 +708,8 @@ void main() {
         p.servers.length == p.getServerServicesForTest().length, equals(true));
     expect(p.getService(collectory).suburl, equals('collectory'));
     expect(p.prodServices.length > 0, equals(true));
+    expect(p.serverServices.length > 0, equals(true));
+    expect(p.serviceDeploys.length > 0, equals(true));
   });
 
   test('Test empty project creation toString should not fail', () {
@@ -722,5 +725,19 @@ void main() {
 
     expect(testProject.getVariableValue("ansible_user"), equals("ubuntu"));
     expect(testProject.getVariable("ansible_user").value, equals("ubuntu"));
+  });
+
+  test('Template import', () async {
+    List<LAProject> templates = await LAProject.importTemplates(
+        "../../assets/la-toolkit-templates.json");
+    expect(templates.length, equals(5));
+    templates.forEach((LAProject p) {
+      expect(p.servers.length > 0, equals(true));
+      expect(p.services.length > 0, equals(true));
+      expect(p.variables.length > 0, equals(true));
+      expect(p.serverServices.length > 0, equals(true));
+      expect(p.serviceDeploys.length > 0, equals(true));
+      expect(p.toString().length > 0, equals(true));
+    });
   });
 }

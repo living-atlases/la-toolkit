@@ -1,15 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/projectsListPage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/fileUtils.dart';
-import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -71,16 +67,14 @@ class _HomePageState extends State<HomePage> {
               },
               onAppPackageInfo: (pkgInfo) =>
                   store.dispatch(OnAppPackageInfo(pkgInfo)),
-              onAddTemplates: (templates) {
+              onAddTemplates: () {
                 context.loaderOverlay.show();
-                store.dispatch(AddTemplateProjects(
-                    templates: templates,
-                    onAdded: (num) {
-                      context.loaderOverlay.hide();
-                      /* ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                store.dispatch(AddTemplateProjects(onAdded: (num) {
+                  context.loaderOverlay.hide();
+                  /* ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('Added $num sample LA Projects'),
                       )); */
-                    }));
+                }));
               });
         },
         builder: (BuildContext context, _HomePageViewModel vm) {
@@ -171,12 +165,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Add some sample LA projects',
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () async {
-              // https://flutter.dev/docs/development/ui/assets-and-images#loading-text-assets
-
-              String templatesS = await rootBundle.loadString(
-                  AssetsUtils.pathWorkaround('la-toolkit-templates.json'));
-              Map<String, dynamic> templates = jsonDecode(templatesS);
-              vm.onAddTemplates(templates);
+              vm.onAddTemplates();
             },
             // onLongPress: () => print('FIRST CHILD LONG PRESS'),
           ),
@@ -269,7 +258,7 @@ class _HomePageViewModel {
   final void Function() onAddProject;
   final void Function(String) onImportProject;
   final void Function(PackageInfo) onAppPackageInfo;
-  final void Function(Map<String, dynamic>) onAddTemplates;
+  final void Function() onAddTemplates;
 
   _HomePageViewModel({
     required this.state,
