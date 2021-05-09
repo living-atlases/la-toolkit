@@ -41,7 +41,7 @@ services:
       LA_PASS: la_toolkit_changeme
     volumes:
       - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
-     # - ./la-toolkit-data/mongo:/data/db
+      - ./la-toolkit-data/mongo:/data/db
 
   mongo-express:
     image: mongo-express
