@@ -734,10 +734,13 @@ void main() {
     templates.forEach((LAProject p) {
       expect(p.servers.length > 0, equals(true));
       expect(p.services.length > 0, equals(true));
-      expect(p.variables.length > 0, equals(true));
       expect(p.serverServices.length > 0, equals(true));
       expect(p.serviceDeploys.length > 0, equals(true));
       expect(p.toString().length > 0, equals(true));
+      expect(p.variables.length > 0, equals(true));
+      if (p.shortName != 'ALA')
+        // The default value
+        expect(p.mapBoundsFstPoint.latitude != -44, equals(true));
     });
   });
 }

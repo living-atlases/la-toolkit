@@ -532,7 +532,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   factory LAProject.fromObject(Map<String, dynamic> yoRc, {debug: false}) {
-    Function a = (tag) => yoRc["LA_$tag"];
+    Function a = (String tag) => yoRc["LA_$tag"];
     LAProject p = LAProject(
         longName: yoRc['LA_project_name'],
         shortName: yoRc['LA_project_shortname'],
@@ -593,6 +593,23 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     });
     p.servers
         .forEach((server) => p.assign(server, tempServerServices[server.id]!));
+
+    // Other variables
+    LAVariableDesc.map.forEach((String name, LAVariableDesc laVar) {
+      String? varInGenJson = a("variable_$name");
+      if (varInGenJson != null) p.setVariable(laVar, varInGenJson);
+    });
+    p.additionalVariables = a("additionalVariables") ?? "";
+    String? regionsMap = a("regions_map_bounds");
+    if (regionsMap != null) {
+      List<dynamic> bboxD = json.decode(regionsMap);
+      List<String> bbox = bboxD.map((item) => item.toString()).toList();
+      p.mapBoundsFstPoint = LALatLng(
+          latitude: double.parse(bbox[0]), longitude: double.parse(bbox[1]));
+      p.mapBoundsSndPoint = LALatLng(
+          latitude: double.parse(bbox[2]), longitude: double.parse(bbox[3]));
+    }
+    // TODO mapzoom
     return p;
   }
 
@@ -713,19 +730,16 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
     List<LAProject> list = [];
     String templatesS = await rootBundle.loadString(file);
-    Map<String, dynamic> templates = jsonDecode(templatesS);
-    List<dynamic>? projectsJ = templates['projects'];
-    if (projectsJ != null) {
-      projectsJ.forEach((pJson) {
-        pJson['id'] = null;
-        pJson['variables'] =
-            (pJson['variables'] as Map<String, dynamic>).values.toList();
-        pJson['services'] =
-            (pJson['services'] as Map<String, dynamic>).values.toList();
-        LAProject p = LAProject.fromJson(pJson);
-        list.add(p);
-      });
-    }
+    List<dynamic> projectsJ = jsonDecode(templatesS);
+
+    projectsJ.forEach((genJson) {
+      Map<String, dynamic> pJson =
+          genJson['generator-living-atlas']['promptValues'];
+      pJson['LA_id'] = null;
+      LAProject p = LAProject.fromObject(pJson);
+      list.add(p);
+    });
+
     return list;
   }
 

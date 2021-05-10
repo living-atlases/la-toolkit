@@ -1,2695 +1,467 @@
-{
-  "projects": [
-    {
-      "uuid": "e75565b3-04e7-40a7-acc7-8d2ca6dd86aa",
-      "longName": "Atlas of Living Australia",
-      "shortName": "ALA",
-      "domain": "ala.org.au",
-      "useSSL": true,
-      "servers": [
-        {
-          "uuid": "30f8b469-7ece-4f36-ae86-ad041cff174f",
-          "name": "cloud-vm-01",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "367da048-a9b8-4768-a9e6-ad4e4f6a6961",
-          "name": "cloud-vm-02",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "57712919-9e40-4b6c-88c2-7b69cb4b67ba",
-          "name": "cloud-vm-03",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "e1466cde-5465-49a3-9e72-458c46ba176c",
-          "name": "cloud-vm-04",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "99ed4e75-09b6-4595-9328-8fe935f3a941",
-          "name": "cloud-vm-05",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "e9e1890b-948c-4507-ac6a-ae4c7d78a4ba",
-          "name": "cloud-vm-06",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "e7dba175-9e48-49d7-9761-a01c4962e17f",
-          "name": "cloud-vm-07",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "8753c243-6ec1-4369-95b4-97490de64fc4",
-          "name": "cloud-vm-08",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "6b6243b7-7a0f-4cf4-82c7-e27ad965ec9a",
-          "name": "cloud-vm-09",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "b643f549-80a0-44a2-82ca-e3dfba7606f3",
-          "name": "cloud-vm-10",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "575d6616-c7fd-4592-9591-1c68b620608a",
-          "name": "cloud-vm-11",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "1a378c04-cd39-4126-9111-7b982eb2d722",
-          "name": "cloud-vm-12",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "ee30d145-7db1-42ff-ab13-af982d0db28d",
-          "name": "cloud-vm-15",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "05d9d91e-9432-4e93-a370-e7ab90f13b64",
-          "name": "cloud-vm-13",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "75028e48-cf9c-4d2f-9ff7-8417dc66897f",
-          "name": "cloud-vm-14",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "eaa4fcef-61ef-4c4a-ace5-e0750cd8722d",
-          "name": "cloud-vm-17",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      ],
-      "serversMap": {
-        "30f8b469-7ece-4f36-ae86-ad041cff174f": {
-          "uuid": "30f8b469-7ece-4f36-ae86-ad041cff174f",
-          "name": "cloud-vm-01",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "367da048-a9b8-4768-a9e6-ad4e4f6a6961": {
-          "uuid": "367da048-a9b8-4768-a9e6-ad4e4f6a6961",
-          "name": "cloud-vm-02",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "57712919-9e40-4b6c-88c2-7b69cb4b67ba": {
-          "uuid": "57712919-9e40-4b6c-88c2-7b69cb4b67ba",
-          "name": "cloud-vm-03",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "e1466cde-5465-49a3-9e72-458c46ba176c": {
-          "uuid": "e1466cde-5465-49a3-9e72-458c46ba176c",
-          "name": "cloud-vm-04",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "99ed4e75-09b6-4595-9328-8fe935f3a941": {
-          "uuid": "99ed4e75-09b6-4595-9328-8fe935f3a941",
-          "name": "cloud-vm-05",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "e9e1890b-948c-4507-ac6a-ae4c7d78a4ba": {
-          "uuid": "e9e1890b-948c-4507-ac6a-ae4c7d78a4ba",
-          "name": "cloud-vm-06",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "e7dba175-9e48-49d7-9761-a01c4962e17f": {
-          "uuid": "e7dba175-9e48-49d7-9761-a01c4962e17f",
-          "name": "cloud-vm-07",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "8753c243-6ec1-4369-95b4-97490de64fc4": {
-          "uuid": "8753c243-6ec1-4369-95b4-97490de64fc4",
-          "name": "cloud-vm-08",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "6b6243b7-7a0f-4cf4-82c7-e27ad965ec9a": {
-          "uuid": "6b6243b7-7a0f-4cf4-82c7-e27ad965ec9a",
-          "name": "cloud-vm-09",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "b643f549-80a0-44a2-82ca-e3dfba7606f3": {
-          "uuid": "b643f549-80a0-44a2-82ca-e3dfba7606f3",
-          "name": "cloud-vm-10",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "575d6616-c7fd-4592-9591-1c68b620608a": {
-          "uuid": "575d6616-c7fd-4592-9591-1c68b620608a",
-          "name": "cloud-vm-11",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "1a378c04-cd39-4126-9111-7b982eb2d722": {
-          "uuid": "1a378c04-cd39-4126-9111-7b982eb2d722",
-          "name": "cloud-vm-12",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "ee30d145-7db1-42ff-ab13-af982d0db28d": {
-          "uuid": "ee30d145-7db1-42ff-ab13-af982d0db28d",
-          "name": "cloud-vm-15",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "05d9d91e-9432-4e93-a370-e7ab90f13b64": {
-          "uuid": "05d9d91e-9432-4e93-a370-e7ab90f13b64",
-          "name": "cloud-vm-13",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "75028e48-cf9c-4d2f-9ff7-8417dc66897f": {
-          "uuid": "75028e48-cf9c-4d2f-9ff7-8417dc66897f",
-          "name": "cloud-vm-14",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "eaa4fcef-61ef-4c4a-ace5-e0750cd8722d": {
-          "uuid": "eaa4fcef-61ef-4c4a-ace5-e0750cd8722d",
-          "name": "cloud-vm-17",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
+[
+  {
+    "generator-living-atlas": {
+      "promptValues": {
+        "LA_project_name": "Atlas of Living Australia",
+        "LA_project_shortname": "ALA",
+        "LA_pkg_name": "ala",
+        "LA_domain": "ala.org.au",
+        "LA_use_species": true,
+        "LA_use_spatial": true,
+        "LA_use_regions": true,
+        "LA_use_species_lists": true,
+        "LA_use_CAS": true,
+        "LA_use_images": true,
+        "LA_use_alerts": true,
+        "LA_use_doi": true,
+        "LA_use_webapi": false,
+        "LA_use_dashboard": true,
+        "LA_enable_ssl": true,
+        "LA_use_git": true,
+        "LA_generate_branding": true,
+        "LA_cas_hostname": "cloud-vm-11",
+        "LA_cas_url": "auth.ala.org.au",
+        "LA_spatial_hostname": "cloud-vm-12",
+        "LA_spatial_url": "spatial.ala.org.au",
+        "LA_collectory_uses_subdomain": true,
+        "LA_collectory_hostname": "cloud-vm-01",
+        "LA_collectory_url": "collections.ala.org.au",
+        "LA_collectory_path": "/",
+        "LA_ala_hub_uses_subdomain": true,
+        "LA_ala_hub_hostname": "cloud-vm-02",
+        "LA_ala_hub_url": "biocache.ala.org.au",
+        "LA_ala_hub_path": "/",
+        "LA_biocache_service_uses_subdomain": true,
+        "LA_biocache_service_hostname": "cloud-vm-03",
+        "LA_biocache_service_url": "biocache-ws.ala.org.au",
+        "LA_biocache_service_path": "/ws",
+        "LA_ala_bie_uses_subdomain": true,
+        "LA_ala_bie_hostname": "cloud-vm-04",
+        "LA_ala_bie_url": "bie.ala.org.au",
+        "LA_ala_bie_path": "/",
+        "LA_bie_index_uses_subdomain": true,
+        "LA_bie_index_hostname": "cloud-vm-05",
+        "LA_bie_index_url": "bie-ws.ala.org.au",
+        "LA_bie_index_path": "/ws",
+        "LA_images_uses_subdomain": true,
+        "LA_images_hostname": "cloud-vm-06",
+        "LA_images_url": "images.ala.org.au",
+        "LA_images_path": "/",
+        "LA_lists_uses_subdomain": true,
+        "LA_lists_hostname": "cloud-vm-07",
+        "LA_lists_url": "lists.ala.org.au",
+        "LA_lists_path": "/",
+        "LA_regions_uses_subdomain": true,
+        "LA_regions_hostname": "cloud-vm-08",
+        "LA_regions_url": "regions.ala.org.au",
+        "LA_regions_path": "/",
+        "LA_logger_uses_subdomain": true,
+        "LA_logger_hostname": "cloud-vm-09",
+        "LA_logger_url": "logger.ala.org.au",
+        "LA_logger_path": "/",
+        "LA_solr_uses_subdomain": true,
+        "LA_solr_hostname": "cloud-vm-10",
+        "LA_solr_url": "index.ala.org.au",
+        "LA_solr_path": "/",
+        "LA_biocache_backend_hostname": "cloud-vm-17",
+        "LA_main_hostname": "cloud-vm-16",
+        "LA_webapi_uses_subdomain": true,
+        "LA_webapi_hostname": "",
+        "LA_webapi_url": "",
+        "LA_webapi_path": "",
+        "LA_dashboard_uses_subdomain": true,
+        "LA_dashboard_hostname": "cloud-vm-15",
+        "LA_dashboard_path": "/",
+        "LA_dashboard_url": "dashboard.ala.org.au",
+        "LA_alerts_uses_subdomain": true,
+        "LA_alerts_hostname": "cloud-vm-13",
+        "LA_alerts_path": "/",
+        "LA_alerts_url": "alerts.ala.org.au",
+        "LA_doi_uses_subdomain": true,
+        "LA_doi_hostname": "cloud-vm-14",
+        "LA_doi_path": "/",
+        "LA_doi_url": "doi.ala.org.au",
+        "LA_collectory_map_centreMapLat": -26.5,
+        "LA_collectory_map_centreMapLng": 133,
+        "LA_spatial_map_lan": -26.5,
+        "LA_spatial_map_lng": 133,
+        "LA_regions_map_bounds": "[-44, 112, -9, 154]",
+        "LA_spatial_map_bbox": "[-44, 112, -9, 154]",
+        "LA_spatial_map_areaSqKm": 12147183.349007064,
+        "LA_variable_orgCountry": "Australia",
+        "LA_variable_favicon_url": "https://www.ala.org.au/app/uploads/2019/01/cropped-favicon-32x32.png"
       },
-      "services": {
-        "collectory": {
-          "nameInt": "collectory",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "collections"
-        },
-        "ala_hub": {
-          "nameInt": "ala_hub",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "biocache"
-        },
-        "biocache_service": {
-          "nameInt": "biocache_service",
-          "iniPath": "ws",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "biocache-ws"
-        },
-        "ala_bie": {
-          "nameInt": "ala_bie",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "bie"
-        },
-        "bie_index": {
-          "nameInt": "bie_index",
-          "iniPath": "ws",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "bie-ws"
-        },
-        "images": {
-          "nameInt": "images",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "images"
-        },
-        "species_lists": {
-          "nameInt": "species_lists",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "lists"
-        },
-        "regions": {
-          "nameInt": "regions",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "regions"
-        },
-        "logger": {
-          "nameInt": "logger",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "logger"
-        },
-        "solr": {
-          "nameInt": "solr",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "index"
-        },
-        "cas": {
-          "nameInt": "cas",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "auth"
-        },
-        "spatial": {
-          "nameInt": "spatial",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "spatial"
-        },
-        "webapi": {
-          "nameInt": "webapi",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "dashboard": {
-          "nameInt": "dashboard",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "dashboard"
-        },
-        "alerts": {
-          "nameInt": "alerts",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "alerts"
-        },
-        "doi": {
-          "nameInt": "doi",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "doi"
-        },
-        "biocache_backend": {
-          "nameInt": "biocache_backend",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "cloud-vm-17"
-        },
-        "branding": {
-          "nameInt": "branding",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "biocache_cli": {
-          "nameInt": "biocache_cli",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "nameindexer": {
-          "nameInt": "nameindexer",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        }
-      },
-      "variables": {
-        "pac4j_cookie_signing_key": {
-          "nameInt": "pac4j_cookie_signing_key",
-          "service": "cas",
-          "value": "jgpZws1P1VZYo66xyrfM4A86uKi7Wm4F2uKEUKwxpwxVxAAvBaYDavbWyDbeKA6uXllRpRxW0xZies-qO1my3g",
-          "status": "undeployed"
-        },
-        "pac4j_cookie_encryption_key": {
-          "nameInt": "pac4j_cookie_encryption_key",
-          "service": "cas",
-          "value": "Z2Daj89eooVheij8SGcHDBJhr1tWKyw3EVhxK7in7Ac",
-          "status": "undeployed"
-        },
-        "cas_webflow_signing_key": {
-          "nameInt": "cas_webflow_signing_key",
-          "service": "cas",
-          "value": "l7b-LZ2cJbLZTJZC7Ikrs_MleDf0wydvXPHj3R_tWfqvoyBJBrBdk1ilHoDaBglDsgcgp8D0ASUcv-DTH7Ke3A",
-          "status": "undeployed"
-        },
-        "cas_webflow_encryption_key": {
-          "nameInt": "cas_webflow_encryption_key",
-          "service": "cas",
-          "value": "JKEnCSab0aMTlqXo1XN9qA",
-          "status": "undeployed"
-        },
-        "map_zone_name": {
-          "nameInt": "map_zone_name",
-          "service": "all",
-          "value": "Australia",
-          "status": "undeployed"
-        },
-        "favicon_url": {
-          "nameInt": "favicon_url",
-          "service": "all",
-          "value": "https://www.ala.org.au/app/uploads/2019/01/cropped-favicon-32x32.png",
-          "status": "undeployed"
-        }
-      },
-      "additionalVariables": "",
-      "serverServices": {
-        "30f8b469-7ece-4f36-ae86-ad041cff174f": [
-          "collectory"
-        ],
-        "367da048-a9b8-4768-a9e6-ad4e4f6a6961": [
-          "ala_hub"
-        ],
-        "57712919-9e40-4b6c-88c2-7b69cb4b67ba": [
-          "biocache_service"
-        ],
-        "e1466cde-5465-49a3-9e72-458c46ba176c": [
-          "ala_bie"
-        ],
-        "99ed4e75-09b6-4595-9328-8fe935f3a941": [
-          "bie_index"
-        ],
-        "e9e1890b-948c-4507-ac6a-ae4c7d78a4ba": [
-          "images"
-        ],
-        "e7dba175-9e48-49d7-9761-a01c4962e17f": [
-          "species_lists"
-        ],
-        "8753c243-6ec1-4369-95b4-97490de64fc4": [
-          "regions"
-        ],
-        "6b6243b7-7a0f-4cf4-82c7-e27ad965ec9a": [
-          "logger"
-        ],
-        "b643f549-80a0-44a2-82ca-e3dfba7606f3": [
-          "solr"
-        ],
-        "575d6616-c7fd-4592-9591-1c68b620608a": [
-          "cas"
-        ],
-        "1a378c04-cd39-4126-9111-7b982eb2d722": [
-          "spatial"
-        ],
-        "ee30d145-7db1-42ff-ab13-af982d0db28d": [
-          "dashboard"
-        ],
-        "05d9d91e-9432-4e93-a370-e7ab90f13b64": [
-          "alerts"
-        ],
-        "75028e48-cf9c-4d2f-9ff7-8417dc66897f": [
-          "doi"
-        ],
-        "eaa4fcef-61ef-4c4a-ace5-e0750cd8722d": [
-          "biocache_backend"
-        ]
-      },
-      "advancedEdit": false,
-      "advancedTune": false,
-      "status": "basicDefined",
-      "theme": "custom",
-      "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.35",
-      "mapBoundsFstPoint": {
-        "latitude": -44,
-        "longitude": 112
-      },
-      "mapBoundsSndPoint": {
-        "latitude": -9,
-        "longitude": 154
-      },
-      "mapZoom": 3.684255836941924,
-      "lastDeploymentResults": []
-    },
-    {
-      "uuid": "e8331b4e-f446-4e03-8f8a-4e9047cc86c0",
-      "longName": "Biodiversitäts-Atlas Österreich",
-      "shortName": "Biodiversitäts-Atlas Österreich",
-      "domain": "biodiversityatlas.at",
-      "useSSL": true,
-      "servers": [
-        {
-          "uuid": "4b53a051-90bd-4ade-bf9f-fd458662064b",
-          "name": "core.biodiversityatlas.at",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "84aeae35-f690-4af8-be2b-0a33606d1f09",
-          "name": "spatial.biodiversityatlas.at",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      ],
-      "serversMap": {
-        "4b53a051-90bd-4ade-bf9f-fd458662064b": {
-          "uuid": "4b53a051-90bd-4ade-bf9f-fd458662064b",
-          "name": "core.biodiversityatlas.at",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "84aeae35-f690-4af8-be2b-0a33606d1f09": {
-          "uuid": "84aeae35-f690-4af8-be2b-0a33606d1f09",
-          "name": "spatial.biodiversityatlas.at",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      },
-      "services": {
-        "collectory": {
-          "nameInt": "collectory",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "collectory"
-        },
-        "ala_hub": {
-          "nameInt": "ala_hub",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "biocache"
-        },
-        "biocache_service": {
-          "nameInt": "biocache_service",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "biocache-ws"
-        },
-        "ala_bie": {
-          "nameInt": "ala_bie",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "bie"
-        },
-        "bie_index": {
-          "nameInt": "bie_index",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "bie-ws"
-        },
-        "images": {
-          "nameInt": "images",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "images"
-        },
-        "species_lists": {
-          "nameInt": "species_lists",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "lists"
-        },
-        "regions": {
-          "nameInt": "regions",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "regions"
-        },
-        "logger": {
-          "nameInt": "logger",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "logger"
-        },
-        "solr": {
-          "nameInt": "solr",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "solr"
-        },
-        "cas": {
-          "nameInt": "cas",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "auth"
-        },
-        "spatial": {
-          "nameInt": "spatial",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "spatial"
-        },
-        "webapi": {
-          "nameInt": "webapi",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "dashboard": {
-          "nameInt": "dashboard",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "dashboard"
-        },
-        "alerts": {
-          "nameInt": "alerts",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "alerts"
-        },
-        "doi": {
-          "nameInt": "doi",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "doi"
-        },
-        "biocache_backend": {
-          "nameInt": "biocache_backend",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "core"
-        },
-        "branding": {
-          "nameInt": "branding",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "biocache_cli": {
-          "nameInt": "biocache_cli",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "nameindexer": {
-          "nameInt": "nameindexer",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        }
-      },
-      "variables": {
-        "pac4j_cookie_signing_key": {
-          "nameInt": "pac4j_cookie_signing_key",
-          "service": "cas",
-          "value": "OaCOS5jh2M-wSjWImxw0U6dV6jnRgW1-cc01UpNB40uPxRm8IShBnLZEs8LBtxo_jAhgdSiPeOPNggLvmEh4Vg",
-          "status": "undeployed"
-        },
-        "pac4j_cookie_encryption_key": {
-          "nameInt": "pac4j_cookie_encryption_key",
-          "service": "cas",
-          "value": "DhX8KP4nG8aURPjX_nkPUJta63F4A6bAMJwJ_Gvje6g",
-          "status": "undeployed"
-        },
-        "cas_webflow_signing_key": {
-          "nameInt": "cas_webflow_signing_key",
-          "service": "cas",
-          "value": "e2jPKpAfLlC30CrQwH16ABseazAowN91wy7jz7jwgfCp5dfRqx-dFvMHyExJMcx1pnncuedQsmIox2elxDe8Cg",
-          "status": "undeployed"
-        },
-        "cas_webflow_encryption_key": {
-          "nameInt": "cas_webflow_encryption_key",
-          "service": "cas",
-          "value": "BWRY8_grOPllLLHe1j-b4Q",
-          "status": "undeployed"
-        },
-        "map_zone_name": {
-          "nameInt": "map_zone_name",
-          "service": "all",
-          "value": "Austria",
-          "status": "undeployed"
-        },
-        "favicon_url": {
-          "nameInt": "favicon_url",
-          "service": "all",
-          "value": "https://www.gbif.org/favicon.ico",
-          "status": "undeployed"
-        }
-      },
-      "additionalVariables": "",
-      "serverServices": {
-        "4b53a051-90bd-4ade-bf9f-fd458662064b": [
-          "collectory",
-          "ala_hub",
-          "biocache_service",
-          "ala_bie",
-          "bie_index",
-          "images",
-          "species_lists",
-          "regions",
-          "logger",
-          "solr",
-          "dashboard",
-          "biocache_backend"
-        ],
-        "84aeae35-f690-4af8-be2b-0a33606d1f09": [
-          "cas",
-          "spatial"
-        ]
-      },
-      "advancedEdit": false,
-      "advancedTune": false,
-      "status": "basicDefined",
-      "theme": "custom",
-      "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.35",
-      "mapBoundsFstPoint": {
-        "latitude": 49.19955563408631,
-        "longitude": 9.052745931952636
-      },
-      "mapBoundsSndPoint": {
-        "latitude": 46.27036348705896,
-        "longitude": 17.33482803254438
-      },
-      "mapZoom": 6.997914769303923,
-      "lastDeploymentResults": []
-    },
-    {
-      "uuid": "f6031669-09c7-4614-8ad0-7e54de5042d3",
-      "longName": "Canadensys",
-      "shortName": "Canadensys",
-      "domain": "canadensys.net",
-      "useSSL": true,
-      "servers": [
-        {
-          "uuid": "5613af8e-9f0d-4fa2-b559-f2628db06fbd",
-          "name": "vm-027",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "75596d17-8e59-47ad-a314-5932ac842419",
-          "name": "vm-014",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "76705845-b80d-40b9-9cc8-ebb30c0a528c",
-          "name": "vm-023",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "d448ae8e-47ec-4239-b442-72a08dd8e066",
-          "name": "vm-000",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "733aa410-a9f6-4813-939d-917702eecb37",
-          "name": "vm-013",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "47d10d51-b05a-4a89-af39-d5c5a044ecce",
-          "name": "vm-007",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "9ebd5182-cf67-446a-ac85-434f3a7d5480",
-          "name": "vm-021",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "5318f70f-a22f-4f53-98de-29f63266d5cb",
-          "name": "vm-029",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "3c047c1a-2094-4fc9-9b8a-256b389769db",
-          "name": "vm-022",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "f68eda5a-7c41-4866-a3cd-222bd766241b",
-          "name": "vm-025",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "b84cd689-cacd-4f0f-a8b7-3c17bef31288",
-          "name": "vm-006",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "a62ab7a3-ca5f-41ec-98ed-ca03a89aca3e",
-          "name": "vm-018",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      ],
-      "serversMap": {
-        "5613af8e-9f0d-4fa2-b559-f2628db06fbd": {
-          "uuid": "5613af8e-9f0d-4fa2-b559-f2628db06fbd",
-          "name": "vm-027",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "75596d17-8e59-47ad-a314-5932ac842419": {
-          "uuid": "75596d17-8e59-47ad-a314-5932ac842419",
-          "name": "vm-014",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "76705845-b80d-40b9-9cc8-ebb30c0a528c": {
-          "uuid": "76705845-b80d-40b9-9cc8-ebb30c0a528c",
-          "name": "vm-023",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "d448ae8e-47ec-4239-b442-72a08dd8e066": {
-          "uuid": "d448ae8e-47ec-4239-b442-72a08dd8e066",
-          "name": "vm-000",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "733aa410-a9f6-4813-939d-917702eecb37": {
-          "uuid": "733aa410-a9f6-4813-939d-917702eecb37",
-          "name": "vm-013",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "47d10d51-b05a-4a89-af39-d5c5a044ecce": {
-          "uuid": "47d10d51-b05a-4a89-af39-d5c5a044ecce",
-          "name": "vm-007",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "9ebd5182-cf67-446a-ac85-434f3a7d5480": {
-          "uuid": "9ebd5182-cf67-446a-ac85-434f3a7d5480",
-          "name": "vm-021",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "5318f70f-a22f-4f53-98de-29f63266d5cb": {
-          "uuid": "5318f70f-a22f-4f53-98de-29f63266d5cb",
-          "name": "vm-029",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "3c047c1a-2094-4fc9-9b8a-256b389769db": {
-          "uuid": "3c047c1a-2094-4fc9-9b8a-256b389769db",
-          "name": "vm-022",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "f68eda5a-7c41-4866-a3cd-222bd766241b": {
-          "uuid": "f68eda5a-7c41-4866-a3cd-222bd766241b",
-          "name": "vm-025",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "b84cd689-cacd-4f0f-a8b7-3c17bef31288": {
-          "uuid": "b84cd689-cacd-4f0f-a8b7-3c17bef31288",
-          "name": "vm-006",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "a62ab7a3-ca5f-41ec-98ed-ca03a89aca3e": {
-          "uuid": "a62ab7a3-ca5f-41ec-98ed-ca03a89aca3e",
-          "name": "vm-018",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      },
-      "services": {
-        "collectory": {
-          "nameInt": "collectory",
-          "iniPath": "collections",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "data"
-        },
-        "ala_hub": {
-          "nameInt": "ala_hub",
-          "iniPath": "explorer",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "data"
-        },
-        "biocache_service": {
-          "nameInt": "biocache_service",
-          "iniPath": "explorer-ws",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "data"
-        },
-        "ala_bie": {
-          "nameInt": "ala_bie",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "species"
-        },
-        "bie_index": {
-          "nameInt": "bie_index",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "species-ws"
-        },
-        "images": {
-          "nameInt": "images",
-          "iniPath": "images",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "data"
-        },
-        "species_lists": {
-          "nameInt": "species_lists",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "lists"
-        },
-        "regions": {
-          "nameInt": "regions",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "regions"
-        },
-        "logger": {
-          "nameInt": "logger",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "logger"
-        },
-        "solr": {
-          "nameInt": "solr",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "index"
-        },
-        "cas": {
-          "nameInt": "cas",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "auth"
-        },
-        "spatial": {
-          "nameInt": "spatial",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "spatial"
-        },
-        "webapi": {
-          "nameInt": "webapi",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "dashboard": {
-          "nameInt": "dashboard",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "dashboard"
-        },
-        "alerts": {
-          "nameInt": "alerts",
-          "iniPath": "alerts",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "data"
-        },
-        "doi": {
-          "nameInt": "doi",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "doi"
-        },
-        "biocache_backend": {
-          "nameInt": "biocache_backend",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "vm-018"
-        },
-        "branding": {
-          "nameInt": "branding",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "biocache_cli": {
-          "nameInt": "biocache_cli",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "nameindexer": {
-          "nameInt": "nameindexer",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        }
-      },
-      "variables": {
-        "pac4j_cookie_signing_key": {
-          "nameInt": "pac4j_cookie_signing_key",
-          "service": "cas",
-          "value": "dYCj6M9ywhxy2lgrvgIL3azo9-BN1iow37kFmqXENhHbWVolvok240tCktNVgU8L9x4PrM54MUvU2RqrBd72Bw",
-          "status": "undeployed"
-        },
-        "pac4j_cookie_encryption_key": {
-          "nameInt": "pac4j_cookie_encryption_key",
-          "service": "cas",
-          "value": "E3mgxFhsuvkYxpxO6ibyUoxWVExBM_4Y5aIVm2Ccwng",
-          "status": "undeployed"
-        },
-        "cas_webflow_signing_key": {
-          "nameInt": "cas_webflow_signing_key",
-          "service": "cas",
-          "value": "N6NStJRjXIKhCkLIzrQ3Y759rhynLdnNZ_5CN3j8bn-sl-BkuiG2-O6cmct6ywlzvt8j47DMPm3MW_wXPFIQzQ",
-          "status": "undeployed"
-        },
-        "cas_webflow_encryption_key": {
-          "nameInt": "cas_webflow_encryption_key",
-          "service": "cas",
-          "value": "dxpFu_x6Yh9DK9WLgYWljw",
-          "status": "undeployed"
-        },
-        "favicon_url": {
-          "nameInt": "favicon_url",
-          "service": "all",
-          "value": "https://layout.canadensys.net/common/images/favicon.ico",
-          "status": "undeployed"
-        },
-        "map_zone_name": {
-          "nameInt": "map_zone_name",
-          "service": "all",
-          "value": "Canada",
-          "status": "undeployed"
-        }
-      },
-      "additionalVariables": "",
-      "serverServices": {
-        "5613af8e-9f0d-4fa2-b559-f2628db06fbd": [
-          "collectory"
-        ],
-        "75596d17-8e59-47ad-a314-5932ac842419": [
-          "ala_hub"
-        ],
-        "76705845-b80d-40b9-9cc8-ebb30c0a528c": [
-          "biocache_service"
-        ],
-        "d448ae8e-47ec-4239-b442-72a08dd8e066": [
-          "ala_bie",
-          "bie_index"
-        ],
-        "733aa410-a9f6-4813-939d-917702eecb37": [
-          "images"
-        ],
-        "47d10d51-b05a-4a89-af39-d5c5a044ecce": [
-          "logger"
-        ],
-        "9ebd5182-cf67-446a-ac85-434f3a7d5480": [
-          "solr"
-        ],
-        "5318f70f-a22f-4f53-98de-29f63266d5cb": [
-          "cas"
-        ],
-        "3c047c1a-2094-4fc9-9b8a-256b389769db": [
-          "spatial"
-        ],
-        "f68eda5a-7c41-4866-a3cd-222bd766241b": [
-          "dashboard"
-        ],
-        "b84cd689-cacd-4f0f-a8b7-3c17bef31288": [
-          "alerts"
-        ],
-        "a62ab7a3-ca5f-41ec-98ed-ca03a89aca3e": [
-          "biocache_backend"
-        ]
-      },
-      "advancedEdit": false,
-      "advancedTune": false,
-      "status": "basicDefined",
-      "theme": "custom",
-      "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.35",
-      "mapBoundsFstPoint": {
-        "latitude": 83.56578781211654,
-        "longitude": -151.8203125
-      },
-      "mapBoundsSndPoint": {
-        "latitude": 39.310394124020334,
-        "longitude":-49.692126044801036
-      },
-      "mapZoom": 2.1670137608245583,
-      "lastDeploymentResults": []
-    },
-    {
-      "uuid": "d829d683-7b9e-4a1a-9ec5-c5d9466fbcc5",
-      "longName": "Portal de Datos de GBIF.ES",
-      "shortName": "GBIF.ES",
-      "domain": "gbif.es",
-      "useSSL": true,
-      "servers": [
-        {
-          "uuid": "bfcee197-eaab-4c9e-b1a1-a2f01c35754b",
-          "name": "colecciones.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "c32c6691-e4a2-4963-8757-f8477ece4775",
-          "name": "registros.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "56ffeb5c-dd15-4be1-a123-e9fc53e32e93",
-          "name": "registros-ws.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "6585a650-f651-4041-b0cd-00fb930afab7",
-          "name": "especies.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "51b76a1f-746e-435f-b225-184446670670",
-          "name": "especies-ws.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "9527e742-0176-425d-8a9c-61c93a70477c",
-          "name": "imagenes.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "e4bd27de-e685-40cf-b399-559eecf2c1f7",
-          "name": "listas.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "bd2ed859-0639-4c0c-a5f1-7b685b239204",
-          "name": "regiones.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "9ea8f32c-41c0-4a29-aac7-51712c8bc294",
-          "name": "logger.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "73a9e59f-4483-4d37-a12a-cde99fe15e74",
-          "name": "index.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "74bba66f-361b-47ec-bc0d-ae08de97b0fb",
-          "name": "auth.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "ca1ee755-2cf7-4c02-b3ac-2de9d2a2ffe5",
-          "name": "espacial.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "016a22b6-367a-4edb-a895-c0629acf9f48",
-          "name": "api.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "1ce3639b-2833-4c72-8185-cda95956f7d1",
-          "name": "dashboard.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "19a122ba-0776-4fd6-a96a-d28824581219",
-          "name": "alertas.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "4efde61b-2f4e-4b6d-a7b5-c4de6ef7e2eb",
-          "name": "doi.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "ff8667fd-cf4c-4346-bb05-3bcbbfd8a41f",
-          "name": "biocache-store-0.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      ],
-      "serversMap": {
-        "bfcee197-eaab-4c9e-b1a1-a2f01c35754b": {
-          "uuid": "bfcee197-eaab-4c9e-b1a1-a2f01c35754b",
-          "name": "colecciones.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "c32c6691-e4a2-4963-8757-f8477ece4775": {
-          "uuid": "c32c6691-e4a2-4963-8757-f8477ece4775",
-          "name": "registros.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "56ffeb5c-dd15-4be1-a123-e9fc53e32e93": {
-          "uuid": "56ffeb5c-dd15-4be1-a123-e9fc53e32e93",
-          "name": "registros-ws.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "6585a650-f651-4041-b0cd-00fb930afab7": {
-          "uuid": "6585a650-f651-4041-b0cd-00fb930afab7",
-          "name": "especies.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "51b76a1f-746e-435f-b225-184446670670": {
-          "uuid": "51b76a1f-746e-435f-b225-184446670670",
-          "name": "especies-ws.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "9527e742-0176-425d-8a9c-61c93a70477c": {
-          "uuid": "9527e742-0176-425d-8a9c-61c93a70477c",
-          "name": "imagenes.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "e4bd27de-e685-40cf-b399-559eecf2c1f7": {
-          "uuid": "e4bd27de-e685-40cf-b399-559eecf2c1f7",
-          "name": "listas.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "bd2ed859-0639-4c0c-a5f1-7b685b239204": {
-          "uuid": "bd2ed859-0639-4c0c-a5f1-7b685b239204",
-          "name": "regiones.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "9ea8f32c-41c0-4a29-aac7-51712c8bc294": {
-          "uuid": "9ea8f32c-41c0-4a29-aac7-51712c8bc294",
-          "name": "logger.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "73a9e59f-4483-4d37-a12a-cde99fe15e74": {
-          "uuid": "73a9e59f-4483-4d37-a12a-cde99fe15e74",
-          "name": "index.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "74bba66f-361b-47ec-bc0d-ae08de97b0fb": {
-          "uuid": "74bba66f-361b-47ec-bc0d-ae08de97b0fb",
-          "name": "auth.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "ca1ee755-2cf7-4c02-b3ac-2de9d2a2ffe5": {
-          "uuid": "ca1ee755-2cf7-4c02-b3ac-2de9d2a2ffe5",
-          "name": "espacial.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "016a22b6-367a-4edb-a895-c0629acf9f48": {
-          "uuid": "016a22b6-367a-4edb-a895-c0629acf9f48",
-          "name": "api.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "1ce3639b-2833-4c72-8185-cda95956f7d1": {
-          "uuid": "1ce3639b-2833-4c72-8185-cda95956f7d1",
-          "name": "dashboard.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "19a122ba-0776-4fd6-a96a-d28824581219": {
-          "uuid": "19a122ba-0776-4fd6-a96a-d28824581219",
-          "name": "alertas.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "4efde61b-2f4e-4b6d-a7b5-c4de6ef7e2eb": {
-          "uuid": "4efde61b-2f4e-4b6d-a7b5-c4de6ef7e2eb",
-          "name": "doi.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "ff8667fd-cf4c-4346-bb05-3bcbbfd8a41f": {
-          "uuid": "ff8667fd-cf4c-4346-bb05-3bcbbfd8a41f",
-          "name": "biocache-store-0.gbif.es",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      },
-      "services": {
-        "collectory": {
-          "nameInt": "collectory",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "colecciones"
-        },
-        "ala_hub": {
-          "nameInt": "ala_hub",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "registros"
-        },
-        "biocache_service": {
-          "nameInt": "biocache_service",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "registros-ws"
-        },
-        "ala_bie": {
-          "nameInt": "ala_bie",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "especies"
-        },
-        "bie_index": {
-          "nameInt": "bie_index",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "especies-ws"
-        },
-        "images": {
-          "nameInt": "images",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "imagenes"
-        },
-        "species_lists": {
-          "nameInt": "species_lists",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "listas"
-        },
-        "regions": {
-          "nameInt": "regions",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "regiones"
-        },
-        "logger": {
-          "nameInt": "logger",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "logger"
-        },
-        "solr": {
-          "nameInt": "solr",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "index"
-        },
-        "cas": {
-          "nameInt": "cas",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "auth"
-        },
-        "spatial": {
-          "nameInt": "spatial",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "espacial"
-        },
-        "webapi": {
-          "nameInt": "webapi",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "api"
-        },
-        "dashboard": {
-          "nameInt": "dashboard",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "dashboard"
-        },
-        "alerts": {
-          "nameInt": "alerts",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "alertas"
-        },
-        "doi": {
-          "nameInt": "doi",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "doi"
-        },
-        "biocache_backend": {
-          "nameInt": "biocache_backend",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "biocache-store-0"
-        },
-        "branding": {
-          "nameInt": "branding",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "biocache_cli": {
-          "nameInt": "biocache_cli",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "nameindexer": {
-          "nameInt": "nameindexer",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        }
-      },
-      "variables": {
-        "pac4j_cookie_signing_key": {
-          "nameInt": "pac4j_cookie_signing_key",
-          "service": "cas",
-          "value": "ZSL9fTLvGSd7PoX0EZAbiOyX5_XJUrjU0CxBU45wMhqojPR5QdZRH4K_ON5keCMYxmyD7ZgWbyaYsTcXBIcalg",
-          "status": "undeployed"
-        },
-        "pac4j_cookie_encryption_key": {
-          "nameInt": "pac4j_cookie_encryption_key",
-          "service": "cas",
-          "value": "ZER_icg9oXBpKTFrVKl2wFfaeLg17R-a-mvYGr68yNs",
-          "status": "undeployed"
-        },
-        "cas_webflow_signing_key": {
-          "nameInt": "cas_webflow_signing_key",
-          "service": "cas",
-          "value": "vZMZoa-YBe5sdBOZTkW9fsL1b_YGKqedhSyY1aDg49eaw9Zdwed8OuynoMjF3csQFI_6i9xXWypfRgf79foXAA",
-          "status": "undeployed"
-        },
-        "cas_webflow_encryption_key": {
-          "nameInt": "cas_webflow_encryption_key",
-          "service": "cas",
-          "value": "An5bbOP630BvAiLx4enu-Q",
-          "status": "undeployed"
-        },
-        "map_zone_name": {
-          "nameInt": "map_zone_name",
-          "service": "all",
-          "value": "España",
-          "status": "undeployed"
-        },
-        "favicon_url": {
-          "nameInt": "favicon_url",
-          "service": "all",
-          "value": "https://www.gbif.es/wp-content/uploads/2017/05/favicon-gbif.png",
-          "status": "undeployed"
-        }
-      },
-      "additionalVariables": "",
-      "serverServices": {
-        "bfcee197-eaab-4c9e-b1a1-a2f01c35754b": [
-          "collectory"
-        ],
-        "c32c6691-e4a2-4963-8757-f8477ece4775": [
-          "ala_hub"
-        ],
-        "56ffeb5c-dd15-4be1-a123-e9fc53e32e93": [
-          "biocache_service"
-        ],
-        "6585a650-f651-4041-b0cd-00fb930afab7": [
-          "ala_bie"
-        ],
-        "51b76a1f-746e-435f-b225-184446670670": [
-          "bie_index"
-        ],
-        "9527e742-0176-425d-8a9c-61c93a70477c": [
-          "images"
-        ],
-        "e4bd27de-e685-40cf-b399-559eecf2c1f7": [
-          "species_lists"
-        ],
-        "bd2ed859-0639-4c0c-a5f1-7b685b239204": [
-          "regions"
-        ],
-        "9ea8f32c-41c0-4a29-aac7-51712c8bc294": [
-          "logger"
-        ],
-        "73a9e59f-4483-4d37-a12a-cde99fe15e74": [
-          "solr"
-        ],
-        "74bba66f-361b-47ec-bc0d-ae08de97b0fb": [
-          "cas"
-        ],
-        "ca1ee755-2cf7-4c02-b3ac-2de9d2a2ffe5": [
-          "spatial"
-        ],
-        "016a22b6-367a-4edb-a895-c0629acf9f48": [
-          "webapi"
-        ],
-        "1ce3639b-2833-4c72-8185-cda95956f7d1": [
-          "dashboard"
-        ],
-        "19a122ba-0776-4fd6-a96a-d28824581219": [
-          "alerts"
-        ],
-        "4efde61b-2f4e-4b6d-a7b5-c4de6ef7e2eb": [
-          "doi"
-        ],
-        "ff8667fd-cf4c-4346-bb05-3bcbbfd8a41f": [
-          "biocache_backend"
-        ]
-      },
-      "advancedEdit": false,
-      "advancedTune": false,
-      "status": "basicDefined",
-      "theme": "clean",
-      "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.35",
-      "mapBoundsFstPoint": {
-        "latitude": 44.81743010006506,
-        "longitude": -19.101222431053316
-      },
-      "mapBoundsSndPoint": {
-        "latitude": 26.743042624493725,
-        "longitude": 5.148250775991666
-      },
-      "mapZoom": 4.583159536905647,
-      "lastDeploymentResults": []
-    },
-    {
-      "uuid": "32713c29-5a38-4b06-94df-6e64969e7857",
-      "longName": "Vermont Atlas of Life",
-      "shortName": "VT Atlas of Life",
-      "domain": "vtatlasoflife.org",
-      "useSSL": true,
-      "servers": [
-        {
-          "uuid": "7c2970a2-18cb-4721-b588-b6b02ff18fea",
-          "name": "server1.compute.amazonaws.com",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        {
-          "uuid": "6797c166-0fbf-46d1-958a-e31f227a28af",
-          "name": "server2.compute.amazonaws.com",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      ],
-      "serversMap": {
-        "7c2970a2-18cb-4721-b588-b6b02ff18fea": {
-          "uuid": "7c2970a2-18cb-4721-b588-b6b02ff18fea",
-          "name": "server1.compute.amazonaws.com",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        },
-        "6797c166-0fbf-46d1-958a-e31f227a28af": {
-          "uuid": "6797c166-0fbf-46d1-958a-e31f227a28af",
-          "name": "server2.compute.amazonaws.com",
-          "ip": "",
-          "sshPort": 22,
-          "sshUser": null,
-          "aliases": [],
-          "sshKey": null,
-          "gateways": [],
-          "reachable": "unknown",
-          "sshReachable": "unknown",
-          "sudoEnabled": "unknown",
-          "osName": "",
-          "osVersion": ""
-        }
-      },
-      "services": {
-        "collectory": {
-          "nameInt": "collectory",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "collectory"
-        },
-        "ala_hub": {
-          "nameInt": "ala_hub",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "biocache"
-        },
-        "biocache_service": {
-          "nameInt": "biocache_service",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "biocache-ws"
-        },
-        "ala_bie": {
-          "nameInt": "ala_bie",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "bie"
-        },
-        "bie_index": {
-          "nameInt": "bie_index",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "bie-ws"
-        },
-        "images": {
-          "nameInt": "images",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "images"
-        },
-        "species_lists": {
-          "nameInt": "species_lists",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "lists"
-        },
-        "regions": {
-          "nameInt": "regions",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "regions"
-        },
-        "logger": {
-          "nameInt": "logger",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "logger"
-        },
-        "solr": {
-          "nameInt": "solr",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "index"
-        },
-        "cas": {
-          "nameInt": "cas",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "auth"
-        },
-        "spatial": {
-          "nameInt": "spatial",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "spatial"
-        },
-        "webapi": {
-          "nameInt": "webapi",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "dashboard": {
-          "nameInt": "dashboard",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "dashboard"
-        },
-        "alerts": {
-          "nameInt": "alerts",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "alerts"
-        },
-        "doi": {
-          "nameInt": "doi",
-          "iniPath": "",
-          "use": false,
-          "usesSubdomain": true,
-          "suburl": "doi"
-        },
-        "biocache_backend": {
-          "nameInt": "biocache_backend",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": "core"
-        },
-        "branding": {
-          "nameInt": "branding",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "biocache_cli": {
-          "nameInt": "biocache_cli",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        },
-        "nameindexer": {
-          "nameInt": "nameindexer",
-          "iniPath": "",
-          "use": true,
-          "usesSubdomain": true,
-          "suburl": ""
-        }
-      },
-      "variables": {
-        "pac4j_cookie_signing_key": {
-          "nameInt": "pac4j_cookie_signing_key",
-          "service": "cas",
-          "value": "DJjUF-ocQqq9qs22daHmEcq8Osihz3fmIuv2nG_VI1MOtTLjowtO9sRw5Ic-iEZGNwNrAMNxTo7wxqGxUMjm_A",
-          "status": "undeployed"
-        },
-        "pac4j_cookie_encryption_key": {
-          "nameInt": "pac4j_cookie_encryption_key",
-          "service": "cas",
-          "value": "cIhz3FzcBfLTJBOKRRTpt-CJDYxZ09WDexFk8EEiehQ",
-          "status": "undeployed"
-        },
-        "cas_webflow_signing_key": {
-          "nameInt": "cas_webflow_signing_key",
-          "service": "cas",
-          "value": "avZJUod02BjzTYIjsClnKRpzQiU4-JHjvrk1JaYvOJFZnRrGVb5AzmMSEqsN4H0rp4uRl5owwtXQeTSUMYK3sA",
-          "status": "undeployed"
-        },
-        "cas_webflow_encryption_key": {
-          "nameInt": "cas_webflow_encryption_key",
-          "service": "cas",
-          "value": "HrQhMrmFamLeBdfygbeQXw",
-          "status": "undeployed"
-        },
-        "map_zone_name": {
-          "nameInt": "map_zone_name",
-          "service": "all",
-          "value": "Vermont",
-          "status": "undeployed"
-        },
-        "favicon_url": {
-          "nameInt": "favicon_url",
-          "service": "all",
-          "value": "https://vtatlasoflife.org/favicon.ico",
-          "status": "undeployed"
-        }
-      },
-      "additionalVariables": "",
-      "serverServices": {
-        "7c2970a2-18cb-4721-b588-b6b02ff18fea": [
-          "collectory",
-          "ala_hub",
-          "biocache_service",
-          "ala_bie",
-          "bie_index",
-          "images",
-          "species_lists",
-          "regions",
-          "logger",
-          "solr",
-          "biocache_backend"
-        ],
-        "6797c166-0fbf-46d1-958a-e31f227a28af": [
-          "cas",
-          "spatial"
-        ]
-      },
-      "advancedEdit": false,
-      "advancedTune": false,
-      "status": "basicDefined",
-      "theme": "clean",
-      "alaInstallRelease": "v2.0.5",
-      "generatorRelease": "1.1.35",
-      "mapBoundsFstPoint": {
-        "latitude": 45.20135257494316,
-        "longitude": -74.46010353310328
-      },
-      "mapBoundsSndPoint": {
-        "latitude": 42.238244979905616,
-        "longitude": -71.58370151327317
-      },
-      "mapZoom": 6.808881604103011,
-      "lastDeploymentResults": []
+      "firstRun": false
     }
-  ]
-}
+  },
+  {
+    "generator-living-atlas": {
+      "promptValues": {
+        "LA_project_name": "Biodiversitäts-Atlas Österreich",
+        "LA_project_shortname": "Biodiversitäts-Atlas Österreich",
+        "LA_pkg_name": "biodiversitts-atlassterreich",
+        "LA_domain": "biodiversityatlas.at",
+        "LA_use_species": true,
+        "LA_use_spatial": true,
+        "LA_use_regions": true,
+        "LA_use_species_lists": true,
+        "LA_use_CAS": true,
+        "LA_use_images": true,
+        "LA_use_alerts": false,
+        "LA_use_doi": false,
+        "LA_use_webapi": false,
+        "LA_use_dashboard": false,
+        "LA_enable_ssl": true,
+        "LA_use_git": true,
+        "LA_generate_branding": true,
+        "LA_cas_hostname": "spatial.biodiversityatlas.at",
+        "LA_cas_url": "auth.biodiversityatlas.at",
+        "LA_spatial_hostname": "spatial.biodiversityatlas.at",
+        "LA_spatial_url": "spatial.biodiversityatlas.at",
+        "LA_collectory_uses_subdomain": true,
+        "LA_collectory_hostname": "core.biodiversityatlas.at",
+        "LA_collectory_url": "collectory.biodiversityatlas.at",
+        "LA_collectory_path": "/",
+        "LA_ala_hub_uses_subdomain": true,
+        "LA_ala_hub_hostname": "core.biodiversityatlas.at",
+        "LA_ala_hub_url": "biocache.biodiversityatlas.at",
+        "LA_ala_hub_path": "/",
+        "LA_biocache_service_uses_subdomain": true,
+        "LA_biocache_service_hostname": "core.biodiversityatlas.at",
+        "LA_biocache_service_url": "biocache-ws.biodiversityatlas.at",
+        "LA_biocache_service_path": "/",
+        "LA_ala_bie_uses_subdomain": true,
+        "LA_ala_bie_hostname": "core.biodiversityatlas.at",
+        "LA_ala_bie_url": "bie.biodiversityatlas.at",
+        "LA_ala_bie_path": "/",
+        "LA_bie_index_uses_subdomain": true,
+        "LA_bie_index_hostname": "core.biodiversityatlas.at",
+        "LA_bie_index_url": "bie-ws.biodiversityatlas.at",
+        "LA_bie_index_path": "/",
+        "LA_images_uses_subdomain": true,
+        "LA_images_hostname": "core.biodiversityatlas.at",
+        "LA_images_url": "images.biodiversityatlas.at",
+        "LA_images_path": "/",
+        "LA_lists_uses_subdomain": true,
+        "LA_lists_hostname": "core.biodiversityatlas.at",
+        "LA_lists_url": "lists.biodiversityatlas.at",
+        "LA_lists_path": "/",
+        "LA_regions_uses_subdomain": true,
+        "LA_regions_hostname": "core.biodiversityatlas.at",
+        "LA_regions_url": "regions.biodiversityatlas.at",
+        "LA_regions_path": "/",
+        "LA_logger_uses_subdomain": true,
+        "LA_logger_hostname": "core.biodiversityatlas.at",
+        "LA_logger_url": "logger.biodiversityatlas.at",
+        "LA_logger_path": "/",
+        "LA_solr_uses_subdomain": true,
+        "LA_solr_hostname": "core.biodiversityatlas.at",
+        "LA_solr_url": "solr.biodiversityatlas.at",
+        "LA_solr_path": "/",
+        "LA_biocache_backend_hostname": "core.biodiversityatlas.at",
+        "LA_main_hostname": "core.biodiversityatlas.at",
+        "LA_webapi_uses_subdomain": true,
+        "LA_webapi_hostname": "",
+        "LA_webapi_url": "",
+        "LA_webapi_path": "",
+        "LA_dashboard_uses_subdomain": true,
+        "LA_dashboard_hostname": "core.biodiversityatlas.at",
+        "LA_dashboard_path": "/",
+        "LA_dashboard_url": "dashboard.biodiversityatlas.at",
+        "LA_alerts_uses_subdomain": true,
+        "LA_alerts_hostname": "core.biodiversityatlas.at",
+        "LA_alerts_path": "/",
+        "LA_alerts_url": "alerts.biodiversityatlas.at",
+        "LA_doi_uses_subdomain": true,
+        "LA_doi_hostname": "core.biodiversityatlas.at",
+        "LA_doi_path": "/",
+        "LA_doi_url": "doi.biodiversityatlas.at",
+        "LA_collectory_map_centreMapLat": 47.73008050460216,
+        "LA_collectory_map_centreMapLng": 13.375513160974748,
+        "LA_spatial_map_lan": 47.73008050460216,
+        "LA_spatial_map_lng": 13.375513160974748,
+        "LA_regions_map_bounds": "[46.32644078092819, 9.301341599348628, 49.13372022827612, 17.449684722600868]",
+        "LA_spatial_map_bbox": "[46.32644078092819, 9.301341599348628, 49.13372022827612, 17.449684722600868]",
+        "LA_spatial_map_areaSqKm": 275542.3109307922,
+        "LA_variable_favicon_url": "https://www.gbif.org/favicon.ico",
+        "LA_variable_map_zone_name": "Austria"
+      },
+      "firstRun": false
+    }
+  },
+  {
+    "generator-living-atlas": {
+      "promptValues": {
+        "LA_project_name": "Canadensys",
+        "LA_project_shortname": "Canadensys",
+        "LA_pkg_name": "canadensys",
+        "LA_domain": "canadensys.net",
+        "LA_use_species": false,
+        "LA_use_spatial": true,
+        "LA_use_regions": false,
+        "LA_use_species_lists": false,
+        "LA_use_CAS": true,
+        "LA_use_images": true,
+        "LA_use_alerts": true,
+        "LA_use_doi": false,
+        "LA_use_webapi": false,
+        "LA_use_dashboard": true,
+        "LA_enable_ssl": true,
+        "LA_use_git": true,
+        "LA_generate_branding": true,
+        "LA_cas_hostname": "vm-029",
+        "LA_cas_url": "auth.canadensys.net",
+        "LA_spatial_hostname": "vm-022",
+        "LA_spatial_url": "spatial.canadensys.net",
+        "LA_collectory_uses_subdomain": true,
+        "LA_collectory_hostname": "vm-027",
+        "LA_collectory_url": "data.canadensys.net",
+        "LA_collectory_path": "/collections",
+        "LA_ala_hub_uses_subdomain": true,
+        "LA_ala_hub_hostname": "vm-014",
+        "LA_ala_hub_url": "data.canadensys.net",
+        "LA_ala_hub_path": "/explorer",
+        "LA_biocache_service_uses_subdomain": true,
+        "LA_biocache_service_hostname": "vm-023",
+        "LA_biocache_service_url": "data.canadensys.net",
+        "LA_biocache_service_path": "/explorer-ws",
+        "LA_ala_bie_uses_subdomain": true,
+        "LA_ala_bie_hostname": "vm-000",
+        "LA_ala_bie_url": "species.canadensys.net",
+        "LA_ala_bie_path": "/",
+        "LA_bie_index_uses_subdomain": true,
+        "LA_bie_index_hostname": "vm-000",
+        "LA_bie_index_url": "species-ws.canadensys.net",
+        "LA_bie_index_path": "/",
+        "LA_images_uses_subdomain": true,
+        "LA_images_hostname": "vm-013",
+        "LA_images_url": "data.canadensys.net",
+        "LA_images_path": "/images",
+        "LA_lists_uses_subdomain": true,
+        "LA_lists_hostname": "vm-000",
+        "LA_lists_url": "lists.canadensys.net",
+        "LA_lists_path": "/",
+        "LA_regions_uses_subdomain": true,
+        "LA_regions_hostname": "vm-000",
+        "LA_regions_url": "regions.canadensys.net",
+        "LA_regions_path": "/",
+        "LA_logger_uses_subdomain": true,
+        "LA_logger_hostname": "vm-007",
+        "LA_logger_url": "logger.canadensys.net",
+        "LA_logger_path": "/",
+        "LA_solr_uses_subdomain": true,
+        "LA_solr_hostname": "vm-021",
+        "LA_solr_url": "index.canadensys.net",
+        "LA_solr_path": "/",
+        "LA_biocache_backend_hostname": "vm-018",
+        "LA_main_hostname": "vm-004",
+        "LA_webapi_uses_subdomain": true,
+        "LA_webapi_hostname": "",
+        "LA_webapi_url": "",
+        "LA_webapi_path": "",
+        "LA_dashboard_uses_subdomain": true,
+        "LA_dashboard_hostname": "vm-025",
+        "LA_dashboard_path": "/",
+        "LA_dashboard_url": "dashboard.canadensys.net",
+        "LA_alerts_uses_subdomain": true,
+        "LA_alerts_hostname": "vm-006",
+        "LA_alerts_path": "/alerts",
+        "LA_alerts_url": "data.canadensys.net",
+        "LA_doi_uses_subdomain": true,
+        "LA_doi_hostname": "vm-000",
+        "LA_doi_path": "/",
+        "LA_doi_url": "doi.canadensys.net",
+        "LA_collectory_map_centreMapLat": 57.2832486454767,
+        "LA_collectory_map_centreMapLng": -99.58590710320254,
+        "LA_spatial_map_lan": 57.2832486454767,
+        "LA_spatial_map_lng": -99.58590710320254,
+        "LA_regions_map_bounds": "[75.61475674718541, -51.7186892064051, 38.95174054376798, -147.453125]",
+        "LA_spatial_map_bbox": "[75.61475674718541, -51.7186892064051, 38.95174054376798, -147.453125]",
+        "LA_spatial_map_areaSqKm": 6429407.8295456525,
+        "LA_variable_orgCountry": "Canada",
+        "LA_variable_favicon_url": "https://layout.canadensys.net/common/images/favicon.ico"
+      },
+      "firstRun": false
+    }
+  },
+  {
+    "generator-living-atlas": {
+      "promptValues": {
+        "LA_project_name": "Portal de Datos de GBIF.ES",
+        "LA_project_shortname": "GBIF.ES",
+        "LA_pkg_name": "gbif-es",
+        "LA_domain": "gbif.es",
+        "LA_use_spatial": true,
+        "LA_use_regions": true,
+        "LA_use_species_lists": true,
+        "LA_use_CAS": true,
+        "LA_enable_ssl": true,
+        "LA_cas_hostname": "auth.gbif.es",
+        "LA_spatial_hostname": "espacial.gbif.es",
+        "LA_collectory_uses_subdomain": true,
+        "LA_collectory_hostname": "colecciones.gbif.es",
+        "LA_collectory_url": "colecciones.gbif.es",
+        "LA_collectory_path": "/",
+        "LA_ala_hub_uses_subdomain": true,
+        "LA_ala_hub_hostname": "registros.gbif.es",
+        "LA_ala_hub_url": "registros.gbif.es",
+        "LA_ala_hub_path": "/",
+        "LA_biocache_service_uses_subdomain": true,
+        "LA_biocache_service_hostname": "registros-ws.gbif.es",
+        "LA_biocache_service_url": "registros-ws.gbif.es",
+        "LA_biocache_service_path": "/",
+        "LA_ala_bie_uses_subdomain": true,
+        "LA_ala_bie_hostname": "especies.gbif.es",
+        "LA_ala_bie_url": "especies.gbif.es",
+        "LA_ala_bie_path": "/",
+        "LA_bie_index_uses_subdomain": true,
+        "LA_bie_index_hostname": "especies-ws.gbif.es",
+        "LA_bie_index_url": "especies-ws.gbif.es",
+        "LA_bie_index_path": "/",
+        "LA_images_uses_subdomain": true,
+        "LA_images_hostname": "imagenes.gbif.es",
+        "LA_images_url": "imagenes.gbif.es",
+        "LA_images_path": "/",
+        "LA_lists_uses_subdomain": true,
+        "LA_lists_hostname": "listas.gbif.es",
+        "LA_lists_url": "listas.gbif.es",
+        "LA_lists_path": "/",
+        "LA_regions_uses_subdomain": true,
+        "LA_regions_hostname": "regiones.gbif.es",
+        "LA_regions_url": "regiones.gbif.es",
+        "LA_regions_path": "/",
+        "LA_logger_uses_subdomain": true,
+        "LA_logger_hostname": "logger.gbif.es",
+        "LA_logger_url": "logger.gbif.es",
+        "LA_logger_path": "/",
+        "LA_solr_uses_subdomain": true,
+        "LA_solr_hostname": "index.gbif.es",
+        "LA_solr_url": "index.gbif.es",
+        "LA_solr_path": "/",
+        "LA_biocache_backend_hostname": "biocache-store-0.gbif.es",
+        "LA_use_git": true,
+        "check-ssl": "",
+        "LA_use_webapi": true,
+        "LA_webapi_uses_subdomain": true,
+        "LA_webapi_hostname": "api.gbif.es",
+        "LA_webapi_url": "api.gbif.es",
+        "LA_webapi_path": "/",
+        "LA_use_dashboard": true,
+        "LA_dashboard_uses_subdomain": true,
+        "LA_dashboard_hostname": "dashboard.gbif.es",
+        "LA_dashboard_path": "/",
+        "LA_use_alerts": true,
+        "LA_use_doi": true,
+        "LA_alerts_uses_subdomain": true,
+        "LA_alerts_hostname": "alertas.gbif.es",
+        "LA_alerts_path": "/",
+        "LA_doi_uses_subdomain": true,
+        "LA_doi_hostname": "doi.gbif.es",
+        "LA_doi_path": "/",
+        "LA_collectory_map_centreMapLat": 35.63588407744836,
+        "LA_collectory_map_centreMapLng": -6.940849191032836,
+        "LA_spatial_map_lan": 35.63588407744836,
+        "LA_spatial_map_lng": -6.940849191032836,
+        "LA_regions_map_bounds": "[27.100688528518386, -19.141826923076913, 44.17107962637834, 5.260128541011242]",
+        "LA_spatial_map_bbox": "[27.100688528518386, -19.141826923076913, 44.17107962637834, 5.260128541011242]",
+        "LA_spatial_map_areaSqKm": 5085442.908761554,
+        "LA_variable_orgCountry": "España",
+        "LA_variable_favicon_url": "https://www.gbif.es/wp-content/uploads/2017/05/favicon-gbif.png"
+      },
+      "firstRun": false
+    }
+  },
+  {
+    "generator-living-atlas": {
+      "promptValues": {
+        "LA_project_name": "Vermont Atlas of Life",
+        "LA_project_shortname": "VT Atlas of Life",
+        "LA_pkg_name": "vtatlasoflife",
+        "LA_domain": "vtatlasoflife.org",
+        "LA_use_species": true,
+        "LA_use_spatial": true,
+        "LA_use_regions": true,
+        "LA_use_species_lists": true,
+        "LA_use_CAS": true,
+        "LA_use_images": true,
+        "LA_use_alerts": false,
+        "LA_use_doi": false,
+        "LA_use_webapi": false,
+        "LA_use_dashboard": false,
+        "LA_enable_ssl": true,
+        "LA_use_git": true,
+        "LA_generate_branding": true,
+        "LA_cas_hostname": "server2.compute.amazonaws.com.",
+        "LA_cas_url": "auth.vtatlasoflife.org",
+        "LA_spatial_hostname": "server2.compute.amazonaws.com.",
+        "LA_spatial_url": "spatial.vtatlasoflife.org",
+        "LA_collectory_uses_subdomain": true,
+        "LA_collectory_hostname": "server1.compute.amazonaws.com",
+        "LA_collectory_url": "collectory.vtatlasoflife.org",
+        "LA_collectory_path": "/",
+        "LA_ala_hub_uses_subdomain": true,
+        "LA_ala_hub_hostname": "server1.compute.amazonaws.com",
+        "LA_ala_hub_url": "biocache.vtatlasoflife.org",
+        "LA_ala_hub_path": "/",
+        "LA_biocache_service_uses_subdomain": true,
+        "LA_biocache_service_hostname": "server1.compute.amazonaws.com",
+        "LA_biocache_service_url": "biocache-ws.vtatlasoflife.org",
+        "LA_biocache_service_path": "/",
+        "LA_ala_bie_uses_subdomain": true,
+        "LA_ala_bie_hostname": "server1.compute.amazonaws.com",
+        "LA_ala_bie_url": "bie.vtatlasoflife.org",
+        "LA_ala_bie_path": "/",
+        "LA_bie_index_uses_subdomain": true,
+        "LA_bie_index_hostname": "server1.compute.amazonaws.com",
+        "LA_bie_index_url": "bie-ws.vtatlasoflife.org",
+        "LA_bie_index_path": "/",
+        "LA_images_uses_subdomain": true,
+        "LA_images_hostname": "server1.compute.amazonaws.com",
+        "LA_images_url": "images.vtatlasoflife.org",
+        "LA_images_path": "/",
+        "LA_lists_uses_subdomain": true,
+        "LA_lists_hostname": "server1.compute.amazonaws.com",
+        "LA_lists_url": "lists.vtatlasoflife.org",
+        "LA_lists_path": "/",
+        "LA_regions_uses_subdomain": true,
+        "LA_regions_hostname": "server1.compute.amazonaws.com",
+        "LA_regions_url": "regions.vtatlasoflife.org",
+        "LA_regions_path": "/",
+        "LA_logger_uses_subdomain": true,
+        "LA_logger_hostname": "server1.compute.amazonaws.com",
+        "LA_logger_url": "logger.vtatlasoflife.org",
+        "LA_logger_path": "/",
+        "LA_solr_uses_subdomain": true,
+        "LA_solr_hostname": "server1.compute.amazonaws.com",
+        "LA_solr_url": "index.vtatlasoflife.org",
+        "LA_solr_path": "/",
+        "LA_biocache_backend_hostname": "server1.compute.amazonaws.com",
+        "LA_main_hostname": "server1.compute.amazonaws.com",
+        "LA_webapi_uses_subdomain": true,
+        "LA_webapi_hostname": "",
+        "LA_webapi_url": "",
+        "LA_webapi_path": "",
+        "LA_dashboard_uses_subdomain": true,
+        "LA_dashboard_hostname": "server1.compute.amazonaws.com",
+        "LA_dashboard_path": "/",
+        "LA_dashboard_url": "dashboard.vtatlasoflife.org",
+        "LA_alerts_uses_subdomain": true,
+        "LA_alerts_hostname": "server1.compute.amazonaws.com",
+        "LA_alerts_path": "/",
+        "LA_alerts_url": "alerts.vtatlasoflife.org",
+        "LA_doi_uses_subdomain": true,
+        "LA_doi_hostname": "server1.compute.amazonaws.com",
+        "LA_doi_path": "/",
+        "LA_doi_url": "doi.vtatlasoflife.org",
+        "LA_spatial_map_lan": 43.85135165821555,
+        "LA_spatial_map_lng": -72.49878777037611,
+        "LA_regions_map_bounds": "[45.4680968355087, -71.17031681418621, 42.234606480922395, -73.82725872656603]",
+        "LA_spatial_map_bbox": "[45.4680968355087, -71.17031681418621, 42.234606480922395, -73.82725872656603]",
+        "LA_spatial_map_areaSqKm": 32013.125973177783,
+        "LA_variable_orgCountry": "Vermont",
+        "LA_variable_favicon_url": "https://vtatlasoflife.org/favicon.ico"
+      },
+      "firstRun": false
+    }
+  }
+]
