@@ -43,11 +43,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
     if (!AppUtils.isDemo()) {
       // Retrieve projects from the backend
-      String stateRetrieved = "{}";
       try {
-        stateRetrieved = await Api.getConf();
-        Map<String, dynamic> stateRetrievedJ = json.decode(stateRetrieved);
-        projects = stateRetrievedJ['projects'];
+        projects = await Api.getConf();
       } catch (e) {
         failedLoad = true;
       }
@@ -176,9 +173,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is AddProject) {
       try {
         action.project.dirName = action.project.suggestDirName();
-        Map<String, dynamic> newP =
-            await Api.addProject(project: action.project);
-        store.dispatch(OnProjectAdded(newP));
+        List<dynamic> projects = await Api.addProject(project: action.project);
+        store.dispatch(OnProjectsAdded(projects));
         genSshConf(action.project);
       } catch (e) {
         store.dispatch(
@@ -188,16 +184,22 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is AddTemplateProjects) {
       List<LAProject> projects = await LAProject.importTemplates(
           AssetsUtils.pathWorkaround('la-toolkit-templates.json'));
-      projects.reversed.forEach((p) async {
-        try {
-          Map<String, dynamic> pPersisted = await Api.addProject(project: p);
-          store.dispatch(OnProjectAdded(pPersisted));
-        } catch (e) {
-          store.dispatch(ShowSnackBar(
-              AppSnackBarMessage.ok("Failed to add project ($e)")));
+      try {
+        if (!AppUtils.isDemo()) {
+          List<dynamic> projectsAdded =
+              await Api.addProjects(projects.reversed.toList());
+          store.dispatch(OnProjectsAdded(projectsAdded));
+          action.onAdded(projectsAdded.length);
+        } else {
+          // We just add to the store
+          store.dispatch(OnDemoAddProjects(projects));
+          action.onAdded(projects.length);
         }
-      });
-      action.onAdded(projects.length);
+        // store.dispatch(OnProjectAdded(projects));
+      } catch (e) {
+        store.dispatch(
+            ShowSnackBar(AppSnackBarMessage.ok("Failed to add projects ($e)")));
+      }
     }
     if (action is DelProject) {
       try {
@@ -210,14 +212,18 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is UpdateProject) {
       try {
-        Map<String, dynamic> pUpdated =
+        List<dynamic> projects =
             await Api.updateProject(project: action.project);
-        store.dispatch(OnProjectUpdated(pUpdated));
+        store.dispatch(OnProjectUpdated(projects));
         genSshConf(action.project);
       } catch (e) {
         store.dispatch(
             ShowSnackBar(AppSnackBarMessage.ok("Failed to update project")));
       }
+    }
+    if (action is ProjectsReload) {
+      List<dynamic> projects = await Api.getConf();
+      store.dispatch(OnProjectsReload(projects));
     }
     if (action is TestConnectivityProject) {
       LAProject project = action.project;
@@ -243,31 +249,39 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           .then((_) => scanSshKeys(store, () => {}));
     }
     if (action is PrepareDeployProject) {
-      String? currentDirName = action.project.dirName;
-      currentDirName ??= action.project.suggestDirName();
-      String? checkedDirName = await Api.checkDirName(
-          dirName: currentDirName, id: action.project.id);
-      if (checkedDirName == null) {
-        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
-            "Failed to prepare your configuration (in details, the dirName to store it)")));
-      } else {
-        if (action.project.dirName != checkedDirName) {
-          LAProject updatedProject = action.project;
-          updatedProject.dirName = checkedDirName;
-          store.dispatch(UpdateProject(updatedProject));
-        }
-        await Api.regenerateInv(id: action.project.id, onError: action.onError);
-        if (action.deployCmd.runtimeType != PreDeployCmd &&
-            action.deployCmd.runtimeType != PostDeployCmd) {
-          await Api.alaInstallSelect(
-                  action.project.alaInstallRelease!, action.onError)
-              .then((_) => scanSshKeys(store, () => {}));
-          await Api.generatorSelect(
-                  action.project.generatorRelease!, action.onError)
-              .then((_) => action.onReady());
+      try {
+        String? currentDirName = action.project.dirName;
+        currentDirName ??= action.project.suggestDirName();
+        String? checkedDirName = await Api.checkDirName(
+            dirName: currentDirName, id: action.project.id);
+        if (checkedDirName == null) {
+          store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+              "Failed to prepare your configuration (in details, the dirName to store it)")));
         } else {
+          if (action.project.dirName != checkedDirName) {
+            LAProject updatedProject = action.project;
+            updatedProject.dirName = checkedDirName;
+            store.dispatch(UpdateProject(updatedProject));
+          }
+
+          if (action.deployCmd.runtimeType != PreDeployCmd &&
+              action.deployCmd.runtimeType != PostDeployCmd) {
+            await Api.alaInstallSelect(
+                    action.project.alaInstallRelease!, action.onError)
+                .then((_) => scanSshKeys(store, () => {}));
+            await Api.generatorSelect(
+                    action.project.generatorRelease!, action.onError)
+                .then((_) => action.onReady());
+            await Api.regenerateInv(
+                id: action.project.id, onError: action.onError);
+          }
+          await Api.regenerateInv(
+              id: action.project.id, onError: action.onError);
           action.onReady();
         }
+      } catch (e) {
+        action.onError(
+            'Something was wrong trying to prepare the deploy, check the server logs');
       }
     }
     if (action is DeployProject) {

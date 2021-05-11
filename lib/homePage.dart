@@ -6,6 +6,7 @@ import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:la_toolkit/projectsListPage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/fileUtils.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -67,6 +68,7 @@ class _HomePageState extends State<HomePage> {
               },
               onAppPackageInfo: (pkgInfo) =>
                   store.dispatch(OnAppPackageInfo(pkgInfo)),
+              projectsReload: () => store.dispatch(ProjectsReload()),
               onAddTemplates: () {
                 context.loaderOverlay.show();
                 store.dispatch(AddTemplateProjects(onAdded: (num) {
@@ -95,7 +97,20 @@ class _HomePageState extends State<HomePage> {
                   // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
                   // App bar with floating: true, pinned: true, snap: false:
                   appBar: LAAppBar(
-                      context: context, title: MyApp.appName, showLaIcon: true),
+                      context: context,
+                      title: MyApp.appName,
+                      showLaIcon: true,
+                      actions: [
+                        if (AppUtils.isDev())
+                          IconButton(
+                            icon: Tooltip(
+                                child: Icon(Icons.refresh, color: Colors.white),
+                                message: "Refresh projects"),
+                            onPressed: () {
+                              vm.projectsReload();
+                            },
+                          )
+                      ]),
                   body: AppSnackBar(LAProjectsList()),
                   floatingActionButton:
                       /*
@@ -147,11 +162,8 @@ class _HomePageState extends State<HomePage> {
         // onClose: () => print('DIAL CLOSED'),
         tooltip: 'More options',
         heroTag: 'speed-dial-more-tag',
-        backgroundColor: vm.state.projects.length > 0
-            ? LAColorTheme.laPalette
-            : Colors.white,
-        foregroundColor:
-            vm.state.projects.length > 0 ? Colors.white : Colors.black,
+        backgroundColor: LAColorTheme.laPalette,
+        foregroundColor: Colors.white,
         elevation: 8.0,
         shape: CircleBorder(),
         // orientation: SpeedDialOrientation.Up,
@@ -259,14 +271,15 @@ class _HomePageViewModel {
   final void Function(String) onImportProject;
   final void Function(PackageInfo) onAppPackageInfo;
   final void Function() onAddTemplates;
+  final void Function() projectsReload;
 
-  _HomePageViewModel({
-    required this.state,
-    required this.onAddProject,
-    required this.onImportProject,
-    required this.onAddTemplates,
-    required this.onAppPackageInfo,
-  });
+  _HomePageViewModel(
+      {required this.state,
+      required this.onAddProject,
+      required this.onImportProject,
+      required this.onAddTemplates,
+      required this.onAppPackageInfo,
+      required this.projectsReload});
 
   @override
   bool operator ==(Object other) =>
@@ -287,6 +300,4 @@ class _HomePageViewModel {
       // status.hashCode ^
       // currentStep.hashCode ^
       state.projects.hashCode;
-  // alaInstallReleases.hashCode;
-
 }

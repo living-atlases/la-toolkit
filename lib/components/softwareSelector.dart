@@ -32,7 +32,8 @@ Choose the latest release to update your portal.
           child: Text(element.replaceFirst(RegExp(r'^v'), '')),
           value: element);
     });
-    bool outDated = versions.length > 0 &&
+    bool outDated = initialValue != null &&
+        versions.length > 0 &&
         versions.first != initialValue &&
         (initialValue != 'custom' || initialValue != 'upstream');
     List<DropdownMenuItem<String>> items = releases.values.toList();

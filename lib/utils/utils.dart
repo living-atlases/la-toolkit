@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit/components/LoadingTextOverlay.dart';
 // import 'package:intl/intl.dart';
 
 import 'package:la_toolkit/components/termDialog.dart';
@@ -143,7 +144,7 @@ class DeployUtils {
       required var store,
       required LAProject project,
       required DeployCmd deployCmd}) {
-    context.loaderOverlay.show();
+    context.loaderOverlay.show(widget: const LoadingTextOverlay());
     store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {

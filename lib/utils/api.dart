@@ -128,16 +128,21 @@ class Api {
     }
   }
 
-  static Future<String> getConf() async {
-    if (AppUtils.isDemo()) return "";
+  static Future<List<dynamic>> getConf() async {
+    if (AppUtils.isDemo()) return [];
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/get-conf");
 
     Response response = await http.get(url);
     if (response.statusCode == 200) {
-      return response.body;
+      return retrieveProjectList(response);
     } else {
       throw "Failed to load configuration";
     }
+  }
+
+  static List<dynamic> retrieveProjectList(http.Response response) {
+    Map<String, dynamic> stateRetrievedJ = json.decode(response.body);
+    return stateRetrievedJ['projects'];
   }
 
   static Future<void> alaInstallSelect(
@@ -263,23 +268,6 @@ class Api {
       action.onError(error);
     });
   }
-/*
-  static dynamic cmdToObj(DeployProject action) {
-    Object cmd = {
-      'id': action.project.id,
-      'shortName': action.project.shortName,
-      'dirName': action.project.dirName,
-      'deployServices': action.cmd.deployServices,
-      'limitToServers': action.cmd.limitToServers,
-      'tags': action.cmd.tags,
-      'skipTags': action.cmd.skipTags,
-      'onlyProperties': action.cmd.onlyProperties,
-      'continueEvenIfFails': action.cmd.continueEvenIfFails,
-      'debug': action.cmd.debug,
-      'dryRun': action.cmd.dryRun
-    };
-    return cmd;
-  } */
 
   static Future<CmdHistoryDetails?> getAnsiblewResults(
       {required String logsPrefix, required String logsSuffix}) async {
@@ -322,9 +310,6 @@ class Api {
   static Future<void> preDeploy(DeployProject action) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/pre-deploy");
-    /* Map<String, dynamic> cmd = action.cmd.toJson();
-    cmd['tags'] = (action.cmd as PreDeployCmd).preTags;
-    cmd['services'] = []; */
     doCmd(
         url: url,
         projectId: action.project.id,
@@ -336,16 +321,6 @@ class Api {
   static Future<void> postDeploy(DeployProject action) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/post-deploy");
-    /*var cmd = cmdToObj(action);
-     cmd['services'] = [];
-    var postDeployCmd = action.cmd as PostDeployCmd;
-    cmd['tags'] = postDeployCmd.postTags;
-    if (postDeployCmd.configurePostfix) {
-      PostDeployCmd.postDeployVariables.forEach((varName) {
-        setCmdVar(action.project, cmd, varName);
-      });
-    } */
-
     doCmd(
         url: url,
         projectId: action.project.id,
@@ -353,10 +328,6 @@ class Api {
         cmd: action.cmd.toJson(),
         action: action);
   }
-/*
-  static void setCmdVar(LAProject project, cmd, String varName) {
-    cmd[varName] = project.getVariableValue(varName)!.toString();
-  } */
 
   static Future<Map<String, dynamic>> checkHostServices(
       HostsServicesChecks hostsServicesChecks) async {
@@ -375,35 +346,57 @@ class Api {
     }
   }
 
-  static Future<Map<String, dynamic>> addProject(
-      {required LAProject project}) async {
-    if (AppUtils.isDemo()) return project.toJson();
+  static Future<List<dynamic>> addProject({required LAProject project}) async {
     return await addOrUpdateProject(project, "add");
   }
 
-  static Future<Map<String, dynamic>> updateProject(
+  static Future<List<dynamic>> updateProject(
       {required LAProject project}) async {
-    if (AppUtils.isDemo()) return {};
-
     return await addOrUpdateProject(project, "update");
   }
 
-  static Future<Map<String, dynamic>> addOrUpdateProject(
+  static Future<List<dynamic>> addOrUpdateProject(
       LAProject project, String op) async {
+    if (AppUtils.isDemo()) return [project.toJson()];
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/$op-project");
-    Map<String, dynamic> projectJ = project.toJson();
-    Map<String, dynamic> projectGenJson = project.toGeneratorJson();
-    projectJ['genConf'] = projectGenJson;
+    Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
     Map<String, dynamic> body = {'project': projectJ};
 
     Response response = await (op == "add" ? http.post : http.patch)(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode(body)));
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return retrieveProjectList(response);
     } else {
       throw "Failed to $op project";
     }
+  }
+
+  static Future<List<dynamic>> addProjects(List<LAProject> projects) async {
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/add-projects");
+
+    List<dynamic> projectsJ = [];
+    projects.forEach((project) {
+      Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
+      projectsJ.add(projectJ);
+    });
+    Map<String, dynamic> body = {'projects': projectsJ};
+
+    Response response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(body)));
+    if (response.statusCode == 200) {
+      return retrieveProjectList(response);
+    } else {
+      throw "Failed to add projects";
+    }
+  }
+
+  static Map<String, dynamic> projectJsonWithGenConf(LAProject project) {
+    Map<String, dynamic> projectJ = project.toJson();
+    Map<String, dynamic> projectGenJson = project.toGeneratorJson();
+    projectJ['genConf'] = projectGenJson;
+    return projectJ;
   }
 
   static Future<void> deleteProject({required LAProject project}) async {

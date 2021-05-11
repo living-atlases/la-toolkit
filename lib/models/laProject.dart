@@ -596,7 +596,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
     // Other variables
     LAVariableDesc.map.forEach((String name, LAVariableDesc laVar) {
-      String? varInGenJson = a("variable_$name");
+      var varInGenJson = a("variable_$name");
       if (varInGenJson != null) p.setVariable(laVar, varInGenJson);
     });
     p.additionalVariables = a("additionalVariables") ?? "";

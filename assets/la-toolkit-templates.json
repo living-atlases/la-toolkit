@@ -89,6 +89,7 @@
         "LA_spatial_map_bbox": "[-44, 112, -9, 154]",
         "LA_spatial_map_areaSqKm": 12147183.349007064,
         "LA_variable_orgCountry": "Australia",
+        "LA_variable_map_zone_name": "Australia",
         "LA_variable_favicon_url": "https://www.ala.org.au/app/uploads/2019/01/cropped-favicon-32x32.png"
       },
       "firstRun": false
@@ -279,6 +280,7 @@
         "LA_spatial_map_bbox": "[75.61475674718541, -51.7186892064051, 38.95174054376798, -147.453125]",
         "LA_spatial_map_areaSqKm": 6429407.8295456525,
         "LA_variable_orgCountry": "Canada",
+        "LA_variable_map_zone_name": "Canada",
         "LA_variable_favicon_url": "https://layout.canadensys.net/common/images/favicon.ico"
       },
       "firstRun": false
@@ -366,6 +368,7 @@
         "LA_spatial_map_bbox": "[27.100688528518386, -19.141826923076913, 44.17107962637834, 5.260128541011242]",
         "LA_spatial_map_areaSqKm": 5085442.908761554,
         "LA_variable_orgCountry": "España",
+        "LA_variable_map_zone_name": "España",
         "LA_variable_favicon_url": "https://www.gbif.es/wp-content/uploads/2017/05/favicon-gbif.png"
       },
       "firstRun": false
@@ -459,6 +462,7 @@
         "LA_spatial_map_bbox": "[45.4680968355087, -71.17031681418621, 42.234606480922395, -73.82725872656603]",
         "LA_spatial_map_areaSqKm": 32013.125973177783,
         "LA_variable_orgCountry": "Vermont",
+        "LA_variable_map_zone_name": "Vermont",
         "LA_variable_favicon_url": "https://vtatlasoflife.org/favicon.ico"
       },
       "firstRun": false

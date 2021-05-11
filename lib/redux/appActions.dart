@@ -68,10 +68,16 @@ class AddProject extends AppActions {
   AddProject(this.project);
 }
 
-class OnProjectAdded extends AppActions {
-  Map<String, dynamic> projectJson;
+class OnDemoAddProjects extends AppActions {
+  List<LAProject> projects;
 
-  OnProjectAdded(this.projectJson);
+  OnDemoAddProjects(this.projects);
+}
+
+class OnProjectsAdded extends AppActions {
+  List<dynamic> projectsJson;
+
+  OnProjectsAdded(this.projectsJson);
 }
 
 class DelProject extends AppActions {
@@ -86,8 +92,18 @@ class OnProjectDeleted extends AppActions {
 }
 
 class OnProjectUpdated extends AppActions {
-  Map<String, dynamic> projectJson;
-  OnProjectUpdated(this.projectJson);
+  List<dynamic> projectsJson;
+  OnProjectUpdated(this.projectsJson);
+}
+
+class ProjectsReload extends AppActions {
+  ProjectsReload();
+}
+
+class OnProjectsReload extends AppActions {
+  List<dynamic> projectsJson;
+
+  OnProjectsReload(this.projectsJson);
 }
 
 class OpenProject extends AppActions {
