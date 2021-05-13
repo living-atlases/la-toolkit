@@ -20,12 +20,12 @@ services:
       # Useful for having logs with local time
       TZ: "Europe/Copenhagen"
     volumes:
-      # mkdir -p ./la-toolkit-data/config/ ./la-toolkit-data/logs/ ./la-toolkit-data/ssh/
-      - ./la-toolkit-data/config/:/home/ubuntu/ansible/la-inventories/:rw
-      - ./la-toolkit-data/logs/:/home/ubuntu/ansible/logs/:rw
-      - ./la-toolkit-data/ssh:/home/ubuntu/.ssh/:rw
+      # mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/
+      - /data/la-toolkit/config/:/home/ubuntu/ansible/la-inventories/:rw
+      - /data/la-toolkit/logs/:/home/ubuntu/ansible/logs/:rw
+      - /data/la-toolkit/ssh:/home/ubuntu/.ssh/:rw
       # For 'custom' ala-install
-      # - ./la-toolkit-data/ala-install:/home/ubuntu/ansible/ala-install/:rw
+      # - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
 
   mongo:
     image: mongo:4
@@ -41,7 +41,7 @@ services:
       LA_PASS: la_toolkit_changeme
     volumes:
       - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
-      - ./la-toolkit-data/mongo:/data/db
+      - /data/la-toolkit/mongo:/data/db
 
   mongo-express:
     image: mongo-express
