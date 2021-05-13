@@ -75,10 +75,10 @@ dependencies:
   pub_semver: ^2.0.0
   badges: 2.0.0-nullsafety.1
   circular_countdown_timer: ^0.2.0
-  flutter_xlider:
-    git:
-      url: https://github.com/Ksomething/flutter_xlider.git
-      ref: 6c8fd24
+  #flutter_xlider:
+  #  git:
+  #    url: https://github.com/Ksomething/flutter_xlider.git
+  #    ref: 6c8fd24
   fl_chart: ^0.36.0
   multi_select_flutter: ^4.0.0
 
