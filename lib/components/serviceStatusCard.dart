@@ -17,6 +17,7 @@ class ServiceStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double iconDefSize = 18;
 
+    // print(service.serviceDeploys);
     return IntrinsicWidth(
         child: Card(
             elevation: CardConstants.defaultElevation,
@@ -37,6 +38,7 @@ class ServiceStatusCard extends StatelessWidget {
                       Text(service.subtitle, style: subtitle),
                     ],
                   ),
+                  SizedBox(width: 5),
                   ServiceSmallLinks(service: service, iconDefSize: iconDefSize),
                 ]))));
   }

@@ -635,11 +635,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   List<ProdServiceDesc> get prodServices {
     List<ProdServiceDesc> allServices = [];
     Map<String, LAServiceDepsDesc> depsDesc = getDeps();
-    getServicesNameListInUse()
-        /* .where((nameInt) =>
-            !LAServiceDesc.get(nameInt).withoutUrl &&
-            nameInt != LAServiceName.branding.toS()) */
-        .forEach((nameInt) {
+    getServicesNameListInUse().forEach((nameInt) {
       LAServiceDesc desc = LAServiceDesc.get(nameInt);
       LAService service = getService(nameInt);
       String url = getService(nameInt).fullUrl(useSSL, domain);
@@ -650,12 +646,13 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       String tooltip = name != "Index"
           ? serviceTooltip(name)
           : "This is protected by default, see our wiki for more info";
-      // LAService service = getService(nameInt);
 
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
       List<BasicService>? deps;
       if (mainDeps != null) deps = getDeps()[nameInt]!.serviceDepends;
       List<String> hostnames = getHostname(nameInt);
+      List<LAServiceDeploy> sd =
+          serviceDeploys.where((sd) => sd.serviceId == service.id).toList();
       if (nameInt != LAServiceName.cas.toS())
         allServices.add(ProdServiceDesc(
             name: name,
@@ -663,12 +660,12 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
             deps: deps,
             tooltip: tooltip,
             subtitle: hostnames.join(', '),
-            hostnames: hostnames,
+            serviceDeploys: sd,
             icon: desc.icon,
             url: url,
             admin: desc.admin,
             alaAdmin: desc.alaAdmin,
-            status: service.status,
+            status: sd.length > 0 ? sd[0].status : ServiceStatus.unknown,
             help: help));
       // This is for userdetails, apikeys, etc
       desc.subServices.forEach((sub) => allServices.add(ProdServiceDesc(
@@ -678,7 +675,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
             deps: deps,
             tooltip: serviceTooltip(name),
             subtitle: hostnames.join(', '),
-            hostnames: hostnames,
+            serviceDeploys: sd,
             icon: sub.icon,
             url: url + sub.path,
             admin: sub.admin,
@@ -695,10 +692,10 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       List<ProdServiceDesc> prodServices) {
     HostsServicesChecks hostsChecks = HostsServicesChecks();
     prodServices.forEach((service) {
-      service.hostnames.forEach((server) {
-        hostsChecks.setUrls(server, service.urls);
+      service.serviceDeploys.forEach((sd) {
+        hostsChecks.setUrls(sd.id, service.urls);
         service.deps!.forEach((dep) {
-          hostsChecks.add(server, service.deps);
+          hostsChecks.add(sd.id, service.deps);
         });
       });
     });

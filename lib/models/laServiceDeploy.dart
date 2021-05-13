@@ -16,6 +16,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
   String projectId;
   String additionalVariables;
   ServiceStatus status;
+  int? checkedAt;
 
   LAServiceDeploy(
       {String? id,
@@ -23,6 +24,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       required this.serverId,
       this.additionalVariables = "",
       required this.projectId,
+      this.checkedAt,
       ServiceStatus? status})
       : id = id ?? new ObjectId().toString(),
         status = status ?? ServiceStatus.unknown;
@@ -46,6 +48,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
           serverId == other.serverId &&
           projectId == other.projectId &&
           additionalVariables == other.additionalVariables &&
+          checkedAt == other.checkedAt &&
           status == other.status;
 
   @override
@@ -54,11 +57,12 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       serviceId.hashCode ^
       serverId.hashCode ^
       projectId.hashCode ^
+      checkedAt.hashCode ^
       additionalVariables.hashCode ^
       status.hashCode;
 
   @override
   String toString() {
-    return 'LAServiceDeploy{id: $id, serviceId: $serviceId, serverId: $serverId, projectId: $projectId}\n';
+    return 'LAServiceDeploy{id: $id, status: $status, serviceId: $serviceId, serverId: $serverId, projectId: $projectId, checkedAt: $checkedAt}';
   }
 }

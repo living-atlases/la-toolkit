@@ -9,6 +9,7 @@ part 'hostServicesChecks.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class HostsServicesChecks {
+  // ServiceDeploy Id to check
   Map<String, HostServicesChecks> map = {};
   HostsServicesChecks();
 
@@ -16,13 +17,13 @@ class HostsServicesChecks {
       _$HostsServicesChecksFromJson(json);
   Map<String, dynamic> toJson() => _$HostsServicesChecksToJson(this);
 
-  void setUrls(String server, List<String> urls) {
-    HostServicesChecks hostServices = _getServer(server);
+  void setUrls(String sdId, List<String> urls) {
+    HostServicesChecks hostServices = _getServiceDeploy(sdId);
     hostServices.setUrls(urls);
   }
 
-  void add(String server, List<BasicService>? deps) {
-    HostServicesChecks hostServices = _getServer(server);
+  void add(String sdId, List<BasicService>? deps) {
+    HostServicesChecks hostServices = _getServiceDeploy(sdId);
     if (deps != null) {
       deps.forEach((dep) {
         hostServices.tcpPorts.addAll(dep.tcp);
@@ -34,13 +35,13 @@ class HostsServicesChecks {
     }
   }
 
-  HostServicesChecks _getServer(String server) {
+  HostServicesChecks _getServiceDeploy(String sdId) {
     HostServicesChecks hostServices;
-    if (!map.containsKey(server)) {
+    if (!map.containsKey(sdId)) {
       hostServices = HostServicesChecks();
-      map[server] = hostServices;
+      map[sdId] = hostServices;
     } else {
-      hostServices = map[server]!;
+      hostServices = map[sdId]!;
     }
     return hostServices;
   }

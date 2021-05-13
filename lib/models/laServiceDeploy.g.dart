@@ -9,6 +9,7 @@ part of 'laServiceDeploy.dart';
 extension LAServiceDeployCopyWith on LAServiceDeploy {
   LAServiceDeploy copyWith({
     String? additionalVariables,
+    int? checkedAt,
     String? id,
     String? projectId,
     String? serverId,
@@ -17,6 +18,7 @@ extension LAServiceDeployCopyWith on LAServiceDeploy {
   }) {
     return LAServiceDeploy(
       additionalVariables: additionalVariables ?? this.additionalVariables,
+      checkedAt: checkedAt ?? this.checkedAt,
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       serverId: serverId ?? this.serverId,
@@ -37,6 +39,7 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) {
     serverId: json['serverId'] as String,
     additionalVariables: json['additionalVariables'] as String,
     projectId: json['projectId'] as String,
+    checkedAt: json['checkedAt'] as int?,
     status: _$enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
   );
 }
@@ -49,6 +52,7 @@ Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) =>
       'projectId': instance.projectId,
       'additionalVariables': instance.additionalVariables,
       'status': _$ServiceStatusEnumMap[instance.status],
+      'checkedAt': instance.checkedAt,
     };
 
 K _$enumDecode<K, V>(

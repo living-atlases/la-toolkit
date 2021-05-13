@@ -5,6 +5,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/laServiceDeploy.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
@@ -369,8 +370,23 @@ AppState _onAppPackageInfo(AppState state, OnAppPackageInfo action) {
 }
 
 AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
-  /* LAProject currentProject = state.currentProject;
-  Map<String, dynamic> results = action.results;
-  for (String serverName in results.keys) {} */
+  LAProject currentProject = state.currentProject;
+  Map<String, dynamic> response = action.results;
+  String pId = response['projectId'];
+  // List<dynamic> results = response['results'];
+  List<dynamic> sdsJ = response['serviceDeploys'];
+  List<LAServiceDeploy> sds = [];
+  sdsJ.forEach((sdJ) {
+    LAServiceDeploy sd = LAServiceDeploy.fromJson(sdJ);
+    sds.add(sd);
+    print(sdJ);
+  });
+  if (currentProject.id == pId) {
+    currentProject.serviceDeploys = sds;
+    return state.copyWith(
+        currentProject: currentProject,
+        projects: replaceProject(state, currentProject));
+  }
+  // for (String serverName in response.keys) {}
   return state;
 }
