@@ -125,6 +125,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
       s.projectId = this.id;
       return s;
     }).toList();
+    if ((dirName == null || dirName!.length == 0) && shortName.length > 0) {
+      dirName = suggestDirName();
+    }
     validateCreation();
   }
 
@@ -192,6 +195,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         this.status.value < status.value) setProjectStatus(status);
     // Only update status if is better
     if (status.value > this.status.value) setProjectStatus(status);
+    if (debug) print("Valid at end: ${valid ? 'yes' : 'no'}");
     return valid;
   }
 
@@ -238,6 +242,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
     bool allReady = true && serversWithServices().length > 0;
     serversWithServices().forEach((s) {
       allReady = allReady && s.isReady();
+    });
+    return allReady;
+  }
+
+  bool allServersWithSshReady() {
+    bool allReady = true && serversWithServices().length > 0;
+    serversWithServices().forEach((s) {
+      allReady = allReady && s.isSshReady();
     });
     return allReady;
   }
@@ -609,6 +621,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       p.mapBoundsSndPoint = LALatLng(
           latitude: double.parse(bbox[2]), longitude: double.parse(bbox[3]));
     }
+    if (p.dirName == null || p.dirName!.length == 0)
+      p.dirName = p.suggestDirName();
     // TODO mapzoom
     return p;
   }
@@ -693,9 +707,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
     HostsServicesChecks hostsChecks = HostsServicesChecks();
     prodServices.forEach((service) {
       service.serviceDeploys.forEach((sd) {
-        hostsChecks.setUrls(sd.id, service.urls);
+        hostsChecks.setUrls(sd, service.urls);
         service.deps!.forEach((dep) {
-          hostsChecks.add(sd.id, service.deps);
+          hostsChecks.add(sd, service.deps);
         });
       });
     });

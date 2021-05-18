@@ -26,19 +26,20 @@ class Api {
     }
   }
 
-  static void genSshConf(LAProject project) async {
+  static Future<void> genSshConf(LAProject project,
+      [bool forceRoot = false]) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/gen-ssh-conf");
     List<Map<String, dynamic>> servers = project.toJson()['servers'];
     String user = project.getVariableValue("ansible_user")!.toString();
-    print(user);
+    // print(user);
     Response response = await http.post(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({
           'name': project.shortName,
           'id': project.id,
           'servers': servers,
-          'user': user.toString()
+          'user': forceRoot ? 'root' : user.toString()
         })));
     if (response.statusCode == 200) {}
     // errors.dart:187 Uncaught (in promise) Error: Expected a value of type 'Map<String, dynamic>', but got one of type 'List<Map<String, dynamic>>'

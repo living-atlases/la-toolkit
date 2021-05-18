@@ -254,8 +254,8 @@ AppState _onTestConnectivityResults(
     server.reachable = serviceStatus(action.results[serverName]['ping']);
     server.sshReachable = serviceStatus(action.results[serverName]['ssh']);
     server.sudoEnabled = serviceStatus(action.results[serverName]['sudo']);
-    server.osName = action.results[serverName]['os']['name'];
-    server.osVersion = action.results[serverName]['os']['version'];
+    server.osName = action.results[serverName]['os']['name'] ?? "";
+    server.osVersion = action.results[serverName]['os']['version'] ?? "";
     currentProject.upsertByName(server);
   }
   if (currentProject.allServersWithServicesReady() &&
@@ -308,12 +308,10 @@ AppState _showDeployProjectResults(
         .update(action.cmdHistoryEntry.id, {'result': result.toS()});
     currentProject.cmdHistoryEntries.insert(0, action.cmdHistoryEntry);
   } else {
-    int index = currentProject.cmdHistoryEntries
-        .indexWhere((cur) => cur.id == action.cmdHistoryEntry.id);
-    if (index != -1) {
-      currentProject.cmdHistoryEntries
-          .replaceRange(index, index + 1, [action.cmdHistoryEntry]);
-    }
+    currentProject.cmdHistoryEntries = currentProject.cmdHistoryEntries
+        .map((che) =>
+            che.id == action.cmdHistoryEntry.id ? action.cmdHistoryEntry : che)
+        .toList();
   }
   List<LAProject> projects = replaceProject(state, currentProject);
   return state.copyWith(

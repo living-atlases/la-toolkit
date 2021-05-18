@@ -175,7 +175,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         action.project.dirName = action.project.suggestDirName();
         List<dynamic> projects = await Api.addProject(project: action.project);
         store.dispatch(OnProjectsAdded(projects));
-        genSshConf(action.project);
+        await genSshConf(action.project);
       } catch (e) {
         store.dispatch(
             ShowSnackBar(AppSnackBarMessage.ok("Failed to save project ($e)")));
@@ -215,7 +215,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         List<dynamic> projects =
             await Api.updateProject(project: action.project);
         store.dispatch(OnProjectUpdated(projects));
-        genSshConf(action.project);
+        await genSshConf(action.project);
       } catch (e) {
         store.dispatch(
             ShowSnackBar(AppSnackBarMessage.ok("Failed to update project")));
@@ -227,7 +227,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is TestConnectivityProject) {
       LAProject project = action.project;
-      genSshConf(project);
+      await genSshConf(project);
       Api.testConnectivity(project.serversWithServices()).then((results) {
         store.dispatch(OnTestConnectivityResults(results));
         action.onServersStatusReady();
@@ -286,6 +286,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is DeployProject) {
       if (action.cmd.runtimeType == PreDeployCmd) {
+        await genSshConf(
+            action.project, (action.cmd as PreDeployCmd).rootBecome);
         Api.preDeploy(action);
       } else if (action.cmd.runtimeType == PostDeployCmd) {
         Api.postDeploy(action);
@@ -337,9 +339,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     });
   }
 
-  genSshConf(LAProject project) {
+  genSshConf(LAProject project, [bool forceRoot = false]) async {
     if (project.isCreated) {
-      Api.genSshConf(project);
+      await Api.genSshConf(project, forceRoot);
     }
   }
 

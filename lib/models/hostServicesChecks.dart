@@ -5,27 +5,71 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/basicService.dart';
 
+import 'hostServiceCheck.dart';
+import 'laServiceDeploy.dart';
+
 part 'hostServicesChecks.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class HostsServicesChecks {
   // ServiceDeploy Id to check
   Map<String, HostServicesChecks> map = {};
+  Map<String, List<HostServiceCheck>> checks = {};
   HostsServicesChecks();
 
   factory HostsServicesChecks.fromJson(Map<String, dynamic> json) =>
       _$HostsServicesChecksFromJson(json);
   Map<String, dynamic> toJson() => _$HostsServicesChecksToJson(this);
 
-  void setUrls(String sdId, List<String> urls) {
-    HostServicesChecks hostServices = _getServiceDeploy(sdId);
+  void setUrls(LAServiceDeploy sd, List<String> urls) {
+    HostServicesChecks hostServices = _getServiceDeploy(sd.serverId);
     hostServices.setUrls(urls);
   }
 
-  void add(String sdId, List<BasicService>? deps) {
-    HostServicesChecks hostServices = _getServiceDeploy(sdId);
+  void add(LAServiceDeploy sd, List<BasicService>? deps) {
+    HostServicesChecks hostServices = _getServiceDeploy(sd.serverId);
+    List<HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
     if (deps != null) {
       deps.forEach((dep) {
+        dep.tcp.forEach((tcp) {
+          HostServiceCheck ch = hChecks.firstWhere(
+              (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
+              orElse: () {
+            var ch = HostServiceCheck(type: ServiceCheckType.tcp, args: "$tcp");
+            hChecks.add(ch);
+            return ch;
+          });
+          ch.serviceDeploys.add(sd.id);
+          ch.services.add(sd.serviceId);
+          hChecks = hChecks.map((c) => c.id == ch.id ? ch : c).toList();
+        });
+        dep.udp.forEach((udp) {
+          HostServiceCheck ch = hChecks.firstWhere(
+              (ch) => ch.type == ServiceCheckType.udp && ch.args == "$udp",
+              orElse: () {
+            var ch = HostServiceCheck(type: ServiceCheckType.udp, args: "$udp");
+            hChecks.add(ch);
+            return ch;
+          });
+          ch.serviceDeploys.add(sd.id);
+          ch.services.add(sd.serviceId);
+          hChecks = hChecks.map((c) => c.id == ch.id ? ch : c).toList();
+        });
+        if (dep.name != Java.v8.name && dep.name != PostGis.v2_4.name) {
+          HostServiceCheck ch = hChecks.firstWhere(
+              (ch) => ch.type == ServiceCheckType.other && ch.args == dep.name,
+              orElse: () {
+            var ch =
+                HostServiceCheck(type: ServiceCheckType.other, args: dep.name);
+            hChecks.add(ch);
+            return ch;
+          });
+          ch.serviceDeploys.add(sd.id);
+          ch.services.add(sd.serviceId);
+          hChecks = hChecks.map((c) => c.id == ch.id ? ch : c).toList();
+        }
+        checks[sd.serverId] = hChecks;
+
         hostServices.tcpPorts.addAll(dep.tcp);
         hostServices.udpPorts.addAll(dep.udp);
         if (dep.name != Java.v8.name && dep.name != PostGis.v2_4.name) {
@@ -33,6 +77,10 @@ class HostsServicesChecks {
         }
       });
     }
+  }
+
+  List<HostServiceCheck> _getServiceCheck(String server) {
+    return checks.putIfAbsent(server, () => []);
   }
 
   HostServicesChecks _getServiceDeploy(String sdId) {

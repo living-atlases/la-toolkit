@@ -15,7 +15,6 @@ import 'package:mdi/mdi.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import 'components/appSnackBarMessage.dart';
 import 'components/generatorSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
@@ -90,8 +89,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               onGenInvProject: (project) =>
                   store.dispatch(GenerateInvProject(project)),
               onPortalStatus: (project) {
-                store.dispatch(
-                    ShowSnackBar(AppSnackBarMessage("Under development")));
+                /* store.dispatch(
+                    ShowSnackBar(AppSnackBarMessage("Under development"))); */
                 store.dispatch(TestConnectivityProject(project, () {}));
                 BeamerCond.of(context, PortalStatusLocation());
               },
@@ -135,8 +134,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.foundation),
                 title: "Pre-Deploy Tasks",
-                enabled:
-                    project.isCreated && project.allServersWithServicesReady(),
+                enabled: project.isCreated &&
+                        project.allServersWithServicesReady() ||
+                    project.allServersWithSshReady(),
                 action: () => vm.onPreDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.format_paint),

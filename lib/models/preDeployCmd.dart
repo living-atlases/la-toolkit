@@ -15,6 +15,7 @@ class PreDeployCmd extends DeployCmd {
   bool etcHosts;
   bool solrLimits;
   bool addAdditionalDeps;
+  bool rootBecome;
 
   PreDeployCmd(
       {this.addAnsibleUser = false,
@@ -23,6 +24,7 @@ class PreDeployCmd extends DeployCmd {
       this.etcHosts = true,
       this.solrLimits = true,
       this.addAdditionalDeps = true,
+      this.rootBecome = false,
       List<String>? limitToServers,
       List<String>? skipTags,
       List<String>? tags,
@@ -66,6 +68,7 @@ class PreDeployCmd extends DeployCmd {
     if (etcHosts) tasks.add("setup '/etc/hosts'");
     if (solrLimits) tasks.add('setup solr limits');
     if (addAdditionalDeps) tasks.add('additional deps install');
+    if (rootBecome) tasks.add('as root');
     String result =
         'pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
     return dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);

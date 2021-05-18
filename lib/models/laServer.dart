@@ -105,6 +105,11 @@ class LAServer implements IsJsonSerializable<LAServer> {
         this.sudoEnabled == ServiceStatus.success;
   }
 
+  bool isSshReady() {
+    return this.reachable == ServiceStatus.success &&
+        this.sshReachable == ServiceStatus.success;
+  }
+
   @override
   String toString() {
     return '''$name (${id.substring(0, 8)}...)${ip.length > 0 ? ', ' + ip : ''} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}''';

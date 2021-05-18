@@ -18,6 +18,7 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
     bool? etcHosts,
     bool? giveSudo,
     List<String>? limitToServers,
+    bool? rootBecome,
     List<String>? skipTags,
     bool? solrLimits,
     List<String>? tags,
@@ -33,6 +34,7 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
       etcHosts: etcHosts ?? this.etcHosts,
       giveSudo: giveSudo ?? this.giveSudo,
       limitToServers: limitToServers ?? this.limitToServers,
+      rootBecome: rootBecome ?? this.rootBecome,
       skipTags: skipTags ?? this.skipTags,
       solrLimits: solrLimits ?? this.solrLimits,
       tags: tags ?? this.tags,
@@ -52,6 +54,7 @@ PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) {
     etcHosts: json['etcHosts'] as bool,
     solrLimits: json['solrLimits'] as bool,
     addAdditionalDeps: json['addAdditionalDeps'] as bool,
+    rootBecome: json['rootBecome'] as bool,
     limitToServers: (json['limitToServers'] as List<dynamic>?)
         ?.map((e) => e as String)
         .toList(),
@@ -85,5 +88,6 @@ Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) =>
       'etcHosts': instance.etcHosts,
       'solrLimits': instance.solrLimits,
       'addAdditionalDeps': instance.addAdditionalDeps,
+      'rootBecome': instance.rootBecome,
       'tags': instance.tags,
     };

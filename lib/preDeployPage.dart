@@ -138,6 +138,13 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                   cmd.addAdditionalDeps = newValue;
                                   vm.onSaveDeployCmd(cmd);
                                 }),
+                            DeployTaskSwitch(
+                                title: "Try these tasks as 'root'",
+                                initialValue: cmd.rootBecome,
+                                onChanged: (newValue) {
+                                  cmd.rootBecome = newValue;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
                             const SizedBox(height: 20),
                             HostsSelector(
                                 selectorKey: GlobalKey<FormFieldState>(),

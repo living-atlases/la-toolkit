@@ -661,6 +661,7 @@ void main() {
     expect(p.shortName, equals('Canadensys'));
     expect(p.domain, equals('canadensys.net'));
     expect(p.useSSL, equals(true));
+    expect(p.dirName != null && p.dirName!.length > 0, equals(true));
     LAServiceDesc.list.forEach((service) {
       // print("${service.nameInt}");
       if (![lists, webapi, doi, bie, regions].contains(service.nameInt))
