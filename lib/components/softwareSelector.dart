@@ -1,18 +1,11 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
-class SoftwareSelector extends StatelessWidget {
+class SoftwareSelector extends StatefulWidget {
   final List<String> versions;
   final String? initialValue;
   final Function(String?) onChange;
   final String label;
-  static const String outdatedTooltip = '''
-  
-New version available. 
-Choose the latest release to update your portal.
-''';
-  static const String updatedTooltip = "This current version is up-to-date";
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   SoftwareSelector(
       {Key? key,
@@ -23,19 +16,32 @@ Choose the latest release to update your portal.
       : super(key: key);
 
   @override
+  _SoftwareSelectorState createState() => _SoftwareSelectorState();
+}
+
+class _SoftwareSelectorState extends State<SoftwareSelector> {
+  static const String outdatedTooltip = '''
+New version available. 
+Choose the latest release to update your portal.
+''';
+  static const String updatedTooltip = "This current version is up-to-date";
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
   Widget build(BuildContext context) {
     Map<String, DropdownMenuItem<String>> releases = {};
-    versions.forEach((String element) {
+    widget.versions.forEach((String element) {
       // remove dups
       releases[element] = DropdownMenuItem(
           // remove starting 'v' from git tags
           child: Text(element.replaceFirst(RegExp(r'^v'), '')),
           value: element);
     });
-    bool outDated = initialValue != null &&
-        versions.length > 0 &&
-        versions.first != initialValue &&
-        (initialValue != 'custom' || initialValue != 'upstream');
+    bool outDated = widget.initialValue != null &&
+        widget.versions.length > 0 &&
+        (widget.versions.first != widget.initialValue &&
+            (widget.initialValue != 'custom' &&
+                widget.initialValue != 'upstream'));
     List<DropdownMenuItem<String>> items = releases.values.toList();
     DropdownButtonFormField menu = DropdownButtonFormField(
         key: _formKey,
@@ -46,17 +52,17 @@ Choose the latest release to update your portal.
         decoration: InputDecoration(
           // filled: true,
           // fillColor: Colors.grey[500],
-          labelText: label,
+          labelText: widget.label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        value: initialValue != null && initialValue!.isNotEmpty
-            ? initialValue
+        value: widget.initialValue != null && widget.initialValue!.isNotEmpty
+            ? widget.initialValue
             : items.length > 0
                 ? items[0].value
                 : "",
         items: items,
         onChanged: (value) {
-          onChange(value);
+          widget.onChange(value);
         });
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
