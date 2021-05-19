@@ -24,7 +24,7 @@ class PreDeployCmd extends DeployCmd {
       this.etcHosts = true,
       this.solrLimits = true,
       this.addAdditionalDeps = true,
-      this.rootBecome = false,
+      bool? rootBecome,
       List<String>? limitToServers,
       List<String>? skipTags,
       List<String>? tags,
@@ -32,7 +32,8 @@ class PreDeployCmd extends DeployCmd {
       continueEvenIfFails = false,
       debug = false,
       dryRun = false})
-      : super(
+      : rootBecome = rootBecome ?? false,
+        super(
             deployServices: ['all'],
             limitToServers: limitToServers,
             skipTags: skipTags,

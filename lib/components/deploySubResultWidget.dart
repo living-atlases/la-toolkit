@@ -45,9 +45,12 @@ class DeploySubResultWidget extends StatelessWidget {
             ]))
       ]);
     });
-    DeployTextSummary summary =
-        DeployTextSummary(title: title, results: results);
-    List<Widget> columnChildren = [summary];
+    List<Widget> columnChildren = [];
+    if (results.length > 0) {
+      DeployTextSummary summary =
+          DeployTextSummary(title: title, results: results);
+      columnChildren.addAll([summary]);
+    }
     if (errorsWidgets.length > 0) SizedBox(height: 10);
     if (errorsWidgets.length > 0) columnChildren.addAll(errorsWidgets);
     return Padding(

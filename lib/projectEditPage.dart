@@ -116,12 +116,10 @@ class LAProjectEditPage extends StatelessWidget {
             _project.init();
           }
           // Set default version of the project
-          if (_project.alaInstallRelease != null &&
-                  _project.alaInstallRelease!.isEmpty ||
+          if (_project.alaInstallRelease == null &&
               vm.state.alaInstallReleases.length > 0)
             _project.alaInstallRelease = vm.state.alaInstallReleases[0];
-          if (_project.generatorRelease != null &&
-                  _project.generatorRelease!.isEmpty ||
+          if (_project.generatorRelease == null &&
               vm.state.generatorReleases.length > 0)
             _project.generatorRelease = vm.state.generatorReleases[0];
           int _step = vm.state.currentStep;
@@ -247,7 +245,7 @@ class LAProjectEditPage extends StatelessWidget {
                       onFieldSubmitted: (value) =>
                           serversNameSplit(value).forEach((server) {
                         _addServer(server.trim(), _project,
-                            vm.onSaveCurrentProject(_project));
+                            (_project) => vm.onSaveCurrentProject(_project));
                       }),
                       focusNode: _focusNodes[_serversStep],
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -270,8 +268,11 @@ class LAProjectEditPage extends StatelessWidget {
                                   serversNameSplit(
                                     _serverAddController.text,
                                   ).forEach((server) {
-                                    _addServer(server, _project,
-                                        vm.onSaveCurrentProject(_project));
+                                    _addServer(
+                                        server,
+                                        _project,
+                                        (_project) =>
+                                            vm.onSaveCurrentProject(_project));
                                   });
                                 }
                               },

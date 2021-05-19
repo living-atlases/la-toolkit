@@ -64,7 +64,8 @@ class DeployCmd {
       debug.hashCode ^
       dryRun.hashCode;
 
-  String toStringClassic() {
+  @override
+  String toString() {
     return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun}';
   }
 
@@ -77,7 +78,9 @@ class DeployCmd {
       services = 'full deploy';
     else if (serviceLength <= 5) {
       List<String> servicesForHuman = deployServices
-          .map((serviceName) => LAServiceDesc.get(serviceName).name)
+          .map((serviceName) => serviceName == "lists"
+              ? LAServiceDesc.get(LAServiceName.species_lists.toS()).name
+              : LAServiceDesc.get(serviceName).name)
           .toList();
       servicesForHuman.asMap().forEach((i, value) => services += i == 0
           ? ' ' + value

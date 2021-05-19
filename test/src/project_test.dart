@@ -374,6 +374,11 @@ void main() {
         equals('      10.0.0.1 species.l-a.site species-ws.l-a.site'));
     expect(p.serviceDeploys.length,
         equals(p.getServicesAssignedToServers().length));
+    p.delete(vm1);
+    expect(p.validateCreation(), equals(false));
+    expect(p.servers.length, equals(0));
+    expect(p.serverServices.length, equals(0));
+    expect(p.serviceDeploys.length, equals(0));
   });
 
   test('Import yo-rc.json', () {

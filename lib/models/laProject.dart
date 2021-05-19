@@ -294,16 +294,20 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
   @override
   String toString() {
-    /*  String sToS = serverServices.entries
-        .map((entry) =>
-            '${servers.firstWhere((server) => server.id == entry.key).name} has ${entry.value}')
-        .toList()
-        .join(', '); */
+    String? sToS;
+    try {
+      sToS = serverServices.entries
+          .map((entry) =>
+              '${servers.firstWhere((server) => server.id == entry.key).name} has ${entry.value}')
+          .toList()
+          .join('\n');
+    } catch (e) {}
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, hub: $isHub, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
-servers-services: sToS
+servers-services: 
+${sToS ?? "Some error in serversToServices"}
 services selected (${getServicesAssignedToServers().length}): [${getServicesAssignedToServers().join(', ')}]
 services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().join(', ')}]
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
@@ -384,9 +388,15 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
   }
 
   void assign(LAServer server, List<String> assignedServices) {
-    serverServices[server.id] = assignedServices;
+    List<String> newServices = []..addAll(assignedServices);
+    // In the same server nameindexer and biocache_cli
+    if (newServices.contains(LAServiceName.biocache_backend.toS())) {
+      newServices.add(LAServiceName.nameindexer.toS());
+      newServices.add(LAServiceName.biocache_cli.toS());
+    }
+    serverServices[server.id] = newServices;
     List serviceIds = [];
-    assignedServices.forEach((sN) {
+    newServices.forEach((sN) {
       LAService service = services.firstWhere((s) => s.nameInt == sN);
       serviceIds.add(service.id);
       serviceDeploys.firstWhere(
@@ -410,7 +420,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   void delete(LAServer serverToDelete) {
     serverServices.removeWhere((key, value) => key == serverToDelete.id);
-    servers.remove(serverToDelete);
+    serviceDeploys =
+        serviceDeploys.where((sd) => sd.serverId != serverToDelete.id).toList();
+    servers = servers.where((s) => s.id != serverToDelete.id).toList();
   }
 
   String additionalVariablesDecoded() {

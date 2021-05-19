@@ -41,9 +41,9 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
     }, builder: (BuildContext context, _ServicesInServerSelectorViewModel vm) {
       String id = widget.server.id;
       LAProject _project = vm.currentProject;
-      List<String> servicesInServer = _project.getServerServices(serverId: id);
-      List<String> allServices = _project
-          .getServicesNameListInUse()
+      List<String> servicesInServer =
+          simply(_project.getServerServices(serverId: id));
+      List<String> allServices = simply(_project.getServicesNameListInUse())
           .where((nameInt) => servicesInServer.contains(nameInt)
               ? true
               : _project.getServicesAssignedToServers().contains(nameInt)
@@ -93,7 +93,7 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                               .toList(),
                           onSelectionChanged: (values) =>
                               _multiSelectKey.currentState!.validate(),
-                          onConfirm: (values) {
+                          onConfirm: (List<String> values) {
                             setState(() {
                               _selected = values;
                             });
@@ -145,6 +145,14 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                 ),
               )));
     });
+  }
+
+  List<String> simply(List<String> services) {
+    return services
+        .where((nameInt) =>
+            nameInt != LAServiceName.biocache_cli.toS() &&
+            nameInt != LAServiceName.nameindexer.toS())
+        .toList();
   }
 }
 

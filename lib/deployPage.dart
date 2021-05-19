@@ -156,23 +156,24 @@ class _DeployPageState extends State<DeployPage> {
                                         onChanged: (value) =>
                                             setState(() => cmd.debug = value))),
                               if (cmd.advanced)
-                                ListTile(
+                                /*  Not necessary now
+                              ListTile(
                                     title: const Text(
                                       'Continue even if some service deployment fails',
                                     ),
                                     trailing: Switch(
                                         value: cmd.continueEvenIfFails,
                                         onChanged: (value) => setState(() =>
-                                            cmd.continueEvenIfFails = value))),
-                              if (cmd.advanced)
-                                ListTile(
-                                    title: const Text(
-                                      'Dry run (only show the ansible command)',
-                                    ),
-                                    trailing: Switch(
-                                        value: cmd.dryRun,
-                                        onChanged: (value) => setState(
-                                            () => cmd.dryRun = value))),
+                                            cmd.continueEvenIfFails = value))), */
+                                if (cmd.advanced)
+                                  ListTile(
+                                      title: const Text(
+                                        'Dry run (only show the ansible command)',
+                                      ),
+                                      trailing: Switch(
+                                          value: cmd.dryRun,
+                                          onChanged: (value) => setState(
+                                              () => cmd.dryRun = value))),
                               TipsCard(
                                   text:
                                       "This project is generated in the '${vm.project.dirName}' directory."),

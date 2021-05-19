@@ -54,7 +54,7 @@ PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) {
     etcHosts: json['etcHosts'] as bool,
     solrLimits: json['solrLimits'] as bool,
     addAdditionalDeps: json['addAdditionalDeps'] as bool,
-    rootBecome: json['rootBecome'] as bool,
+    rootBecome: json['rootBecome'] as bool?,
     limitToServers: (json['limitToServers'] as List<dynamic>?)
         ?.map((e) => e as String)
         .toList(),

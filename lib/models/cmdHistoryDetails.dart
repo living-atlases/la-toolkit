@@ -74,10 +74,12 @@ class CmdHistoryDetails {
   List<Widget> get detailsWidgetList {
     if (_details == null) {
       _details = [];
-      Map<String, List<AnsibleError>> errors = {};
       results.forEach((result) {
+        Map<String, List<AnsibleError>> errors = {};
+        List<String> plays = [];
         result['plays'].forEach((play) {
-          String name = play['play']['name'];
+          String playName = play['play']['name'];
+          plays.add(playName);
           play['tasks'].forEach((task) {
             task['hosts'].keys.forEach((host) {
               if (errors[host] == null) errors[host] = [];
@@ -91,14 +93,17 @@ class CmdHistoryDetails {
                     ? task['hosts'][host]['msg']
                     : '';
                 errors[host]!.add(AnsibleError(
-                    host: host, playName: name, taskName: taskName, msg: msg));
+                    host: host,
+                    playName: playName,
+                    taskName: taskName,
+                    msg: msg));
               }
             });
           });
         });
         result['stats'].keys.forEach((host) {
           DeploySubResultWidget subResult = DeploySubResultWidget(
-              title: host,
+              title: "$host (${plays.join(', ')})",
               results: result['stats'][host],
               errors: errors[host]!);
           _details!.add(subResult);
