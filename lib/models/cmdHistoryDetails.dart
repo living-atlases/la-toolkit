@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -76,7 +78,7 @@ class CmdHistoryDetails {
       _details = [];
       results.forEach((result) {
         Map<String, List<AnsibleError>> errors = {};
-        List<String> plays = [];
+        HashSet<String> plays = new HashSet<String>();
         result['plays'].forEach((play) {
           String playName = play['play']['name'];
           plays.add(playName);
@@ -92,6 +94,11 @@ class CmdHistoryDetails {
                 String msg = task['hosts'][host] != null
                     ? task['hosts'][host]['msg']
                     : '';
+                if (task['hosts'][host]['results'] != null) {
+                  task['hosts'][host]['results'].forEach((r) {
+                    if (r['stderr'] != null) msg += "\n" + r['stderr'];
+                  });
+                }
                 errors[host]!.add(AnsibleError(
                     host: host,
                     playName: playName,
