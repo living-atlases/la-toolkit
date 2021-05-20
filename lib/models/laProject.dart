@@ -679,6 +679,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       List<String> hostnames = getHostname(nameInt);
       List<LAServiceDeploy> sd =
           serviceDeploys.where((sd) => sd.serviceId == service.id).toList();
+      ServiceStatus st = sd.length > 0 ? sd[0].status : ServiceStatus.unknown;
       if (nameInt != LAServiceName.cas.toS())
         allServices.add(ProdServiceDesc(
             name: name,
@@ -691,7 +692,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
             url: url,
             admin: desc.admin,
             alaAdmin: desc.alaAdmin,
-            status: sd.length > 0 ? sd[0].status : ServiceStatus.unknown,
+            status: st,
             help: help));
       // This is for userdetails, apikeys, etc
       desc.subServices.forEach((sub) => allServices.add(ProdServiceDesc(
@@ -706,7 +707,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
             url: url + sub.path,
             admin: sub.admin,
             alaAdmin: sub.alaAdmin,
-            status: service.status,
+            status: st,
+            // status: service.status,
           )));
     });
     return allServices;
