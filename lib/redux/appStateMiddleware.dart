@@ -225,13 +225,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       List<dynamic> projects = await Api.getConf();
       store.dispatch(OnProjectsReload(projects));
     }
-    if (action is TestConnectivityProject) {
+    if (action is TestConnectivityProject || action is TestServicesProject) {
       LAProject project = action.project;
       await genSshConf(project);
-      Api.testConnectivity(project.serversWithServices()).then((results) {
-        store.dispatch(OnTestConnectivityResults(results));
-        action.onServersStatusReady();
-      });
+      Map<String, dynamic> results =
+          await Api.testConnectivity(project.serversWithServices());
+      store.dispatch(OnTestConnectivityResults(results));
+      action.onServersStatusReady();
     }
     if (action is TestServicesProject) {
       Map<String, dynamic> results =

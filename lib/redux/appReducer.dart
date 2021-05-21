@@ -47,6 +47,7 @@ List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
   new TypedReducer<AppState, OnProjectsReload>(_onProjectsReload),
   new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
+  new TypedReducer<AppState, TestServicesProject>(_testServicesProject),
   new TypedReducer<AppState, OnTestConnectivityResults>(
       _onTestConnectivityResults),
   new TypedReducer<AppState, OnSshKeysScan>(_onSshKeysScan),
@@ -237,6 +238,10 @@ AppState _testConnectivityProject(
   return state.copyWith(loading: true);
 }
 
+AppState _testServicesProject(AppState state, TestServicesProject action) {
+  return state.copyWith(loading: true);
+}
+
 AppState _onTestConnectivityResults(
     AppState state, OnTestConnectivityResults action) {
   LAProject currentProject = state.currentProject;
@@ -315,6 +320,7 @@ AppState _showDeployProjectResults(
   }
   List<LAProject> projects = replaceProject(state, currentProject);
   return state.copyWith(
+      loading: false,
       currentProject: currentProject,
       projects: projects); //, repeatCmd: DeployCmd());
 }
@@ -371,20 +377,22 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   LAProject currentProject = state.currentProject;
   Map<String, dynamic> response = action.results;
   String pId = response['projectId'];
+  print(response);
   // List<dynamic> results = response['results'];
   List<dynamic> sdsJ = response['serviceDeploys'];
   List<LAServiceDeploy> sds = [];
   sdsJ.forEach((sdJ) {
     LAServiceDeploy sd = LAServiceDeploy.fromJson(sdJ);
     sds.add(sd);
-    print(sdJ);
+    // print(sdJ);
   });
   if (currentProject.id == pId) {
     currentProject.serviceDeploys = sds;
     return state.copyWith(
+        loading: false,
         currentProject: currentProject,
         projects: replaceProject(state, currentProject));
   }
   // for (String serverName in response.keys) {}
-  return state;
+  return state.copyWith(loading: false);
 }

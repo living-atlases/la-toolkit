@@ -29,11 +29,8 @@ class PortalStatusPage extends StatelessWidget {
                 store.state.currentProject.serverServicesToMonitor(),
             loading: store.state.loading,
             checkServices: (hostsServicesChecks) {
-              store.dispatch(
-                  TestConnectivityProject(store.state.currentProject, () {
-                store.dispatch(TestServicesProject(
-                    store.state.currentProject, hostsServicesChecks, () {}));
-              }));
+              store.dispatch(TestServicesProject(
+                  store.state.currentProject, hostsServicesChecks, () {}));
             });
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
