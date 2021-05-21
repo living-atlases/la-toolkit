@@ -119,4 +119,12 @@ class LAService implements IsJsonSerializable<LAService> {
 
   @override
   LAService fromJson(Map<String, dynamic> json) => LAService.fromJson(json);
+
+  static List<String> removeSimpleServices(List<String> services) {
+    return services
+        .where((nameInt) =>
+            nameInt != LAServiceName.biocache_cli.toS() &&
+            nameInt != LAServiceName.nameindexer.toS())
+        .toList();
+  }
 }

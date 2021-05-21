@@ -5,6 +5,7 @@ import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
@@ -41,15 +42,16 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
     }, builder: (BuildContext context, _ServicesInServerSelectorViewModel vm) {
       String id = widget.server.id;
       LAProject _project = vm.currentProject;
-      List<String> servicesInServer =
-          simply(_project.getServerServices(serverId: id));
-      List<String> allServices = simply(_project.getServicesNameListInUse())
-          .where((nameInt) => servicesInServer.contains(nameInt)
-              ? true
-              : _project.getServicesAssignedToServers().contains(nameInt)
-                  ? false
-                  : true)
-          .toList();
+      List<String> servicesInServer = LAService.removeSimpleServices(
+          _project.getServerServices(serverId: id));
+      List<String> allServices =
+          LAService.removeSimpleServices(_project.getServicesNameListInUse())
+              .where((nameInt) => servicesInServer.contains(nameInt)
+                  ? true
+                  : _project.getServicesAssignedToServers().contains(nameInt)
+                      ? false
+                      : true)
+              .toList();
       _selected = servicesInServer;
       return Container(
           decoration: BoxDecoration(
@@ -145,14 +147,6 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                 ),
               )));
     });
-  }
-
-  List<String> simply(List<String> services) {
-    return services
-        .where((nameInt) =>
-            nameInt != LAServiceName.biocache_cli.toS() &&
-            nameInt != LAServiceName.nameindexer.toS())
-        .toList();
   }
 }
 
