@@ -39,35 +39,19 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     String? asS;
     await _initPrefs();
     asS = _pref!.getString(key);
-    List<dynamic> projects = [];
-
-    if (!AppUtils.isDemo()) {
-      // Retrieve projects from the backend
-      try {
-        projects = await Api.getConf();
-      } catch (e) {
-        failedLoad = true;
-      }
-    }
 
     if (asS == null || asS.isEmpty || asS == "{}") {
       appState = initialEmptyAppState(failedLoad: failedLoad);
     } else {
       try {
         Map<String, dynamic> asJ = json.decode(asS);
-        // print("Load prefs: $asJ.toString()");
-        if (!AppUtils.isDemo()) {
-          asJ['projects'] = projects;
-        }
         appState = AppState.fromJson(asJ);
-        appState.failedLoad = failedLoad;
       } catch (e) {
         print("Failed to decode conf: $e");
         appState = initialEmptyAppState(failedLoad: true);
       }
     }
-
-    return appState;
+    return appState.copyWith(loading: true);
   }
 
   AppState initialEmptyAppState({bool failedLoad: false}) {
@@ -221,22 +205,22 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             ShowSnackBar(AppSnackBarMessage.ok("Failed to update project")));
       }
     }
-    if (action is ProjectsReload) {
-      List<dynamic> projects = await Api.getConf();
-      store.dispatch(OnProjectsReload(projects));
+    if (action is ProjectsLoad) {
+      Api.getConf()
+          .then((projects) => store.dispatch(OnProjectsLoad(projects)));
     }
-    if (action is TestConnectivityProject || action is TestServicesProject) {
+    if (action is TestConnectivityProject) {
       LAProject project = action.project;
       await genSshConf(project);
-      Map<String, dynamic> results =
-          await Api.testConnectivity(project.serversWithServices());
-      store.dispatch(OnTestConnectivityResults(results));
-      action.onServersStatusReady();
+      Api.testConnectivity(project.serversWithServices()).then((results) {
+        store.dispatch(OnTestConnectivityResults(results));
+        action.onServersStatusReady();
+      });
     }
     if (action is TestServicesProject) {
-      Map<String, dynamic> results =
-          await Api.checkHostServices(action.hostsServicesChecks);
-      store.dispatch(OnTestServicesResults(results));
+      Api.checkHostServices(action.hostsServicesChecks)
+          // without await to correct set appState.loading
+          .then((results) => store.dispatch(OnTestServicesResults(results)));
     }
     if (action is OnSshKeysScan) {
       scanSshKeys(store, action.onKeysScanned);

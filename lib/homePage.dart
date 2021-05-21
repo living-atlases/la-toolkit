@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
               },
               onAppPackageInfo: (pkgInfo) =>
                   store.dispatch(OnAppPackageInfo(pkgInfo)),
-              projectsReload: () => store.dispatch(ProjectsReload()),
+              projectsReload: () => store.dispatch(ProjectsLoad()),
               onAddTemplates: () {
                 context.loaderOverlay.show();
                 store.dispatch(AddTemplateProjects(onAdded: (num) {
@@ -100,6 +100,7 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       title: MyApp.appName,
                       showLaIcon: true,
+                      loading: vm.state.loading,
                       actions: [
                         if (AppUtils.isDev())
                           IconButton(

@@ -96,14 +96,14 @@ class OnProjectUpdated extends AppActions {
   OnProjectUpdated(this.projectsJson);
 }
 
-class ProjectsReload extends AppActions {
-  ProjectsReload();
+class ProjectsLoad extends AppActions {
+  ProjectsLoad();
 }
 
-class OnProjectsReload extends AppActions {
+class OnProjectsLoad extends AppActions {
   List<dynamic> projectsJson;
 
-  OnProjectsReload(this.projectsJson);
+  OnProjectsLoad(this.projectsJson);
 }
 
 class OpenProject extends AppActions {

@@ -42,7 +42,7 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
 @CopyWith()
 class AppState {
   @JsonKey(ignore: true)
-  bool failedLoad;
+  final bool failedLoad;
   final bool firstUsage;
   final LAProject currentProject;
   final LAProjectViewStatus status;
@@ -75,7 +75,7 @@ class AppState {
       DeployCmd? repeatCmd,
       this.pkgInfo,
       this.backendVersion,
-      this.loading = false,
+      bool? loading,
       List<SshKey>? sshKeys})
       : projects = projects ?? [],
         sshKeys = sshKeys ?? [],
@@ -84,6 +84,7 @@ class AppState {
         alaInstallReleases = alaInstallReleases ?? [],
         generatorReleases = generatorReleases ?? [],
         repeatCmd = repeatCmd ?? DeployCmd(),
+        loading = loading ?? false,
         appSnackBarMessages = appSnackBarMessages ?? [];
 
   factory AppState.fromJson(Map<String, dynamic> json) =>

@@ -54,6 +54,7 @@ Future<void> main() async {
       ));
     }
   });
+  store.dispatch(ProjectsLoad());
   store.dispatch(OnFetchSoftwareDepsState());
 
   final cron = Cron();

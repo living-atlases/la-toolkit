@@ -45,11 +45,13 @@ List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnProjectsAdded>(_onProjectsAdded),
   new TypedReducer<AppState, OnProjectUpdated>(_onProjectUpdated),
   new TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
-  new TypedReducer<AppState, OnProjectsReload>(_onProjectsReload),
+  new TypedReducer<AppState, ProjectsLoad>(_projectsLoad),
+  new TypedReducer<AppState, OnProjectsLoad>(_onProjectsLoad),
   new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
   new TypedReducer<AppState, TestServicesProject>(_testServicesProject),
   new TypedReducer<AppState, OnTestConnectivityResults>(
       _onTestConnectivityResults),
+  new TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
   new TypedReducer<AppState, OnSshKeysScan>(_onSshKeysScan),
   new TypedReducer<AppState, OnSshKeysScanned>(_onSshKeysScanned),
   new TypedReducer<AppState, OnAddSshKey>(_onAddSshKey),
@@ -62,7 +64,6 @@ List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, SaveDeployCmd>(_saveDeployCmd),
   new TypedReducer<AppState, DeleteLog>(_onDeleteLog),
   new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
-  new TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
 ];
 
 final appReducer =
@@ -203,12 +204,22 @@ AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
         ..removeWhere((item) => item.id == action.project.id));
 }
 
-AppState _onProjectsReload(AppState state, OnProjectsReload action) {
+AppState _projectsLoad(AppState state, ProjectsLoad action) {
+  return state.copyWith(loading: true);
+}
+
+AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
   List<LAProject> ps = [];
   action.projectsJson.forEach((pJson) {
-    ps.add(LAProject.fromJson(pJson));
+    try {
+      ps.add(LAProject.fromJson(pJson));
+    } catch (e) {
+      print("Failed to retrieve project");
+      print(pJson);
+    }
   });
-  return state.copyWith(currentProject: ps[0], projects: ps);
+
+  return state.copyWith(currentProject: ps[0], projects: ps, loading: false);
 }
 
 AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
@@ -377,7 +388,6 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   LAProject currentProject = state.currentProject;
   Map<String, dynamic> response = action.results;
   String pId = response['projectId'];
-  print(response);
   // List<dynamic> results = response['results'];
   List<dynamic> sdsJ = response['serviceDeploys'];
   List<LAServiceDeploy> sds = [];
@@ -394,5 +404,5 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
         projects: replaceProject(state, currentProject));
   }
   // for (String serverName in response.keys) {}
-  return state.copyWith(loading: false);
+  return state;
 }

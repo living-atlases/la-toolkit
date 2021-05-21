@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/serversStatusPanel.dart';
-import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:mdi/mdi.dart';
@@ -47,14 +46,7 @@ class PortalStatusPage extends StatelessWidget {
               title: "${vm.project.shortName} Portal Status",
               showLaIcon: false,
               showBack: true,
-              bottom: PreferredSize(
-                  preferredSize: Size(double.infinity, 1.0),
-                  child: vm.loading
-                      ? LinearProgressIndicator(
-                          minHeight: 6,
-                          backgroundColor: LAColorTheme.laPaletteAccent,
-                        )
-                      : Container()),
+              loading: vm.loading,
               actions: [
                 IconButton(
                   icon: Tooltip(
