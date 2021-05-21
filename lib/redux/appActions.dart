@@ -246,10 +246,8 @@ class TestConnectivityProject extends AppActions {
 class TestServicesProject extends AppActions {
   LAProject project;
   HostsServicesChecks hostsServicesChecks;
-  Function(Map<String, dynamic>) onServersStatusReady;
 
-  TestServicesProject(
-      this.project, this.hostsServicesChecks, this.onServersStatusReady);
+  TestServicesProject(this.project, this.hostsServicesChecks);
 }
 
 class OnTestConnectivityResults extends AppActions {

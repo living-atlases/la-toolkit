@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/checkResultCard.dart';
 import 'package:la_toolkit/components/serversStatusPanel.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/appActions.dart';
@@ -12,21 +16,13 @@ import 'components/servicesStatusPanel.dart';
 import 'components/textTitle.dart';
 import 'models/hostServicesChecks.dart';
 import 'models/laProject.dart';
+import 'models/laServer.dart';
+import 'models/laService.dart';
 import 'models/prodServiceDesc.dart';
 
-class PortalStatusPage extends StatefulWidget {
+class PortalStatusPage extends StatelessWidget {
   static const routeName = "status";
-
-  const PortalStatusPage({Key? key}) : super(key: key);
-
-  @override
-  _PortalStatusPageState createState() => _PortalStatusPageState();
-}
-
-class _PortalStatusPageState extends State<PortalStatusPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  Map<String, dynamic> results = {};
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +31,13 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
       converter: (store) {
         return _PortalStatusViewModel(
             project: store.state.currentProject,
+            checkResults: store.state.currentProject.checkResults,
             serverServicesToMonitor:
                 store.state.currentProject.serverServicesToMonitor(),
             loading: store.state.loading,
             checkServices: (hostsServicesChecks) {
               store.dispatch(TestServicesProject(
-                  store.state.currentProject, hostsServicesChecks,
-                  (retrievedResults) {
-                setState(() {
-                  results = retrievedResults;
-                });
-              }));
+                  store.state.currentProject, hostsServicesChecks));
             });
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
@@ -53,7 +45,24 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
           context.loaderOverlay.show();
         else
           context.loaderOverlay.hide(); */
-        print("Building PortalStatus $_scaffoldKey");
+        // print("Building PortalStatus $_scaffoldKey");
+        List<Widget> resultWidgets = [];
+        vm.checkResults.keys.forEach((String serverId) {
+          LAServer s = vm.project.servers.firstWhere((s) => s.id == serverId);
+          resultWidgets.add(TextTitle(text: s.name, separator: false));
+          vm.checkResults[serverId]!.forEach((check) {
+            ServiceStatus st = int.parse(check['code']) == 0
+                ? ServiceStatus.success
+                : ServiceStatus.failed;
+            String args = check['service'] == "check_url"
+                ? utf8.decode(base64.decode(check['args']))
+                : check['args'];
+            resultWidgets.add(CheckResultCard(
+                title: "${check['service']} $args",
+                status: st,
+                subtitle: utf8.decode(base64.decode(check['msg']))));
+          });
+        });
         return Scaffold(
           key: _scaffoldKey,
           appBar: LAAppBar(
@@ -102,10 +111,12 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                         // or similar and a sliderdesc
                         TextTitle(text: "Servers"),
                         ServersStatusPanel(
-                            extendedStatus: true, results: results),
+                            extendedStatus: true, results: vm.checkResults),
                         TextTitle(text: "Services", separator: true),
                         ServicesStatusPanel(
                             services: vm.serverServicesToMonitor.item1),
+                        TextTitle(text: "Details", separator: true),
+                        for (Widget w in resultWidgets) w
                       ])),
                   Expanded(
                     flex: 0, // 10%
@@ -126,6 +137,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
 
 class _PortalStatusViewModel {
   final LAProject project;
+  final Map<String, dynamic> checkResults;
   final Tuple2<List<ProdServiceDesc>, HostsServicesChecks>
       serverServicesToMonitor;
   final void Function(HostsServicesChecks) checkServices;
@@ -133,6 +145,7 @@ class _PortalStatusViewModel {
 
   _PortalStatusViewModel(
       {required this.project,
+      required this.checkResults,
       required this.loading,
       required this.checkServices,
       required this.serverServicesToMonitor});
@@ -143,10 +156,15 @@ class _PortalStatusViewModel {
       other is _PortalStatusViewModel &&
           runtimeType == other.runtimeType &&
           loading == other.loading &&
+          DeepCollectionEquality.unordered()
+              .equals(checkResults, other.checkResults) &&
           serverServicesToMonitor == other.serverServicesToMonitor &&
           project == other.project;
 
   @override
   int get hashCode =>
-      project.hashCode ^ loading.hashCode ^ serverServicesToMonitor.hashCode;
+      project.hashCode ^
+      loading.hashCode ^
+      serverServicesToMonitor.hashCode ^
+      DeepCollectionEquality.unordered().hash(checkResults);
 }

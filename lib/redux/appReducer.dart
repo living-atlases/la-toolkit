@@ -218,8 +218,11 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
       print(pJson);
     }
   });
-
-  return state.copyWith(currentProject: ps[0], projects: ps, loading: false);
+  LAProject currentProject = ps.firstWhere(
+      (p) => p.id == state.currentProject.id,
+      orElse: () => ps.length > 0 ? ps[0] : LAProject());
+  return state.copyWith(
+      currentProject: currentProject, projects: ps, loading: false);
 }
 
 AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
@@ -398,6 +401,7 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   });
   if (currentProject.id == pId) {
     currentProject.serviceDeploys = sds;
+    currentProject.checkResults = response['results'];
     return state.copyWith(
         loading: false,
         currentProject: currentProject,

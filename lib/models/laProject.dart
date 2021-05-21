@@ -60,6 +60,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
   bool fstDeployed;
   bool advancedEdit;
   bool advancedTune;
+  @JsonKey(ignore: true)
+  Map<String, dynamic> checkResults;
+
 
   // Relations -----
   List<LAServer> servers;
@@ -103,18 +106,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
     List<LAService>? services,
     List<LAServiceDeploy>? serviceDeploys,
     Map<String, List<String>>? serverServices,
+    Map<String, dynamic>? checkResults
   })  : id = id ?? new ObjectId().toString(),
         servers = servers ?? [],
         services = services ?? getInitialServices(),
         serviceDeploys = serviceDeploys ?? [],
         variables = variables ?? [],
-        // _serversNameList = _serversNameList ?? [],
-
+        checkResults = checkResults ?? {},
         serverServices = serverServices ?? {},
-        /* serverServices == null
-                ? {}
-                : serverServices.map((String key, value) =>
-                    MapEntry<String, List<String>>(key.toString(), value)), */
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
         cmdHistoryEntries = cmdHistoryEntries ?? [],
@@ -799,6 +798,8 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
           ListEquality().equals(services, other.services) &&
           ListEquality().equals(variables, other.variables) &&
           ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
+          DeepCollectionEquality.unordered()
+              .equals(checkResults, other.checkResults) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -827,5 +828,6 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       ListEquality().hash(services) ^
       ListEquality().hash(variables) ^
       ListEquality().hash(serviceDeploys) ^
+      DeepCollectionEquality.unordered().hash(checkResults) ^
       mapZoom.hashCode;
 }

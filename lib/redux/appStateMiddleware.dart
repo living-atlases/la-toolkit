@@ -222,7 +222,6 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           // without await to correct set appState.loading
           .then((results) {
         store.dispatch(OnTestServicesResults(results));
-        action.onServersStatusReady(results);
       });
     }
     if (action is OnSshKeysScan) {

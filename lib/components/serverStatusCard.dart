@@ -185,7 +185,6 @@ class DepsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Map<BasicService, CmdResult> depStatus = {};
-
     deps.forEach((BasicService dep) {
       int depCodeStatus = 0;
       int checks = 0;
@@ -207,7 +206,6 @@ class DepsPanel extends StatelessWidget {
       depStatus[dep] = checks == 0
           ? CmdResult.unknown
           : (depCodeStatus == 0 ? CmdResult.success : CmdResult.failed);
-      print(depStatus[dep]!.toS());
     });
 
     return Padding(
