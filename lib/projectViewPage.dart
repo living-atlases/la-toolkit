@@ -91,8 +91,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               onPortalStatus: (project) {
                 /* store.dispatch(
                     ShowSnackBar(AppSnackBarMessage("Under development"))); */
-                store.dispatch(TestServicesProject(
-                    project, project.serverServicesToMonitor().item2, () {}));
+                store.dispatch(TestServicesProject(project,
+                    project.serverServicesToMonitor().item2, (results) {}));
                 BeamerCond.of(context, PortalStatusLocation());
               },
               onTestConnProject: (project, silence) {
@@ -283,7 +283,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   : "Uuppps! It seems that some servers are not yet ready",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
           SizedBox(height: 20),
-          ServersStatusPanel(extendedStatus: false)
+          ServersStatusPanel(extendedStatus: false, results: {})
         ])),
         buttons: [
           DialogButton(

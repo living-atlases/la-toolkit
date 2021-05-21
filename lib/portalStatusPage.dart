@@ -14,9 +14,20 @@ import 'models/hostServicesChecks.dart';
 import 'models/laProject.dart';
 import 'models/prodServiceDesc.dart';
 
-class PortalStatusPage extends StatelessWidget {
+class PortalStatusPage extends StatefulWidget {
   static const routeName = "status";
+
+  const PortalStatusPage({Key? key}) : super(key: key);
+
+  @override
+  _PortalStatusPageState createState() => _PortalStatusPageState();
+}
+
+class _PortalStatusPageState extends State<PortalStatusPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Map<String, dynamic> results = {};
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _PortalStatusViewModel>(
@@ -29,7 +40,12 @@ class PortalStatusPage extends StatelessWidget {
             loading: store.state.loading,
             checkServices: (hostsServicesChecks) {
               store.dispatch(TestServicesProject(
-                  store.state.currentProject, hostsServicesChecks, () {}));
+                  store.state.currentProject, hostsServicesChecks,
+                  (retrievedResults) {
+                setState(() {
+                  results = retrievedResults;
+                });
+              }));
             });
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
@@ -85,7 +101,8 @@ class PortalStatusPage extends StatelessWidget {
                         // https://pub.dev/packages/circular_countdown_timer
                         // or similar and a sliderdesc
                         TextTitle(text: "Servers"),
-                        ServersStatusPanel(extendedStatus: true),
+                        ServersStatusPanel(
+                            extendedStatus: true, results: results),
                         TextTitle(text: "Services", separator: true),
                         ServicesStatusPanel(
                             services: vm.serverServicesToMonitor.item1),

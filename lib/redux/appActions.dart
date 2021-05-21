@@ -246,7 +246,7 @@ class TestConnectivityProject extends AppActions {
 class TestServicesProject extends AppActions {
   LAProject project;
   HostsServicesChecks hostsServicesChecks;
-  VoidCallback onServersStatusReady;
+  Function(Map<String, dynamic>) onServersStatusReady;
 
   TestServicesProject(
       this.project, this.hostsServicesChecks, this.onServersStatusReady);

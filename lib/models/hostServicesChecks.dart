@@ -39,7 +39,7 @@ class HostsServicesChecks {
   void add(LAServiceDeploy sd, List<BasicService>? deps) {
     Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
     if (deps != null) {
-      deps.forEach((dep) {
+      BasicService.toCheck(deps).forEach((dep) {
         dep.tcp.forEach((tcp) {
           HostServiceCheck ch = hChecks.values.firstWhere(
               (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
@@ -64,19 +64,19 @@ class HostsServicesChecks {
           ch.services.add(sd.serviceId);
           hChecks[ch.id] = ch;
         });
-        if (dep.name != Java.v8.name && dep.name != PostGis.v2_4.name) {
-          HostServiceCheck ch = hChecks.values.firstWhere(
-              (ch) => ch.type == ServiceCheckType.other && ch.args == dep.name,
-              orElse: () {
-            var ch =
-                HostServiceCheck(type: ServiceCheckType.other, args: dep.name);
-            hChecks[ch.id] = ch;
-            return ch;
-          });
-          ch.serviceDeploys.add(sd.id);
-          ch.services.add(sd.serviceId);
+
+        HostServiceCheck ch = hChecks.values.firstWhere(
+            (ch) => ch.type == ServiceCheckType.other && ch.args == dep.name,
+            orElse: () {
+          var ch =
+              HostServiceCheck(type: ServiceCheckType.other, args: dep.name);
           hChecks[ch.id] = ch;
-        }
+          return ch;
+        });
+        ch.serviceDeploys.add(sd.id);
+        ch.services.add(sd.serviceId);
+        hChecks[ch.id] = ch;
+
         checks[sd.serverId] = hChecks;
       });
     }

@@ -8,7 +8,9 @@ import 'package:la_toolkit/models/laServer.dart';
 
 class ServersStatusPanel extends StatefulWidget {
   final bool extendedStatus;
-  ServersStatusPanel({Key? key, required this.extendedStatus})
+  final Map<String, dynamic> results;
+  ServersStatusPanel(
+      {Key? key, required this.extendedStatus, required this.results})
       : super(key: key);
 
   @override
@@ -35,6 +37,11 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
                 services: vm.project.getServerServicesFull(serverId: server.id),
                 alaInstallVersion: vm.project.alaInstallRelease!,
                 extendedStatus: widget.extendedStatus,
+                status: widget.results.isNotEmpty &&
+                        widget.results['results'] != null &&
+                        widget.results['results'][server.id] != null
+                    ? widget.results['results'][server.id]
+                    : [],
                 onTerm: () => vm.openTerm(vm.project, server),
               )
           ]);

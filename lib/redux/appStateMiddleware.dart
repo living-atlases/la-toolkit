@@ -220,7 +220,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is TestServicesProject) {
       Api.checkHostServices(action.hostsServicesChecks)
           // without await to correct set appState.loading
-          .then((results) => store.dispatch(OnTestServicesResults(results)));
+          .then((results) {
+        store.dispatch(OnTestServicesResults(results));
+        action.onServersStatusReady(results);
+      });
     }
     if (action is OnSshKeysScan) {
       scanSshKeys(store, action.onKeysScanned);
