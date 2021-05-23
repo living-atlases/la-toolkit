@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
@@ -39,52 +40,56 @@ class _TagsSelectorState extends State<TagsSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(11),
-      ),
-      child: Column(
-        children: <Widget>[
-          MultiSelectDialogField<String>(
-            // initialChildSize: 0.5,
-            listType: MultiSelectListType.CHIP,
-            searchable: true,
-            confirmText: Text("CONFIRM"),
-            selectedColor: Theme.of(context).primaryColor.withOpacity(.2),
-            buttonIcon: Icon(widget.icon, color: Colors.grey),
-            buttonText: Text(widget.title, style: TextStyle(fontSize: 16)),
-            title: Text(widget.modalTitle, style: TextStyle(fontSize: 16)),
-            initialValue: _selected,
-            items: widget.tags
-                .map((tag) => MultiSelectItem<String>(tag, tag))
-                .toList(),
-            onConfirm: (values) {
-              setState(() {
-                _selected = values;
-              });
-              widget.onChange(values);
-            },
-            chipDisplay: MultiSelectChipDisplay<String>(
-              // icon: Icon(Mdi.tag, size: 6, color: Colors.white),
-              chipColor: Theme.of(context).primaryColor.withOpacity(.8),
-              textStyle: TextStyle(color: Colors.white),
-              onTap: (value) {
-                _selected.remove(value);
-              },
-            ),
-          ),
-          _selected.isEmpty
-              ? Container(
-                  padding: EdgeInsets.all(10),
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    widget.placeHolder,
-                    style: TextStyle(color: Colors.black45),
-                  ))
-              : Container(),
-        ],
-      ),
-    );
+    return Card(
+        elevation: CardConstants.defaultElevation,
+        margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(children: <Widget>[
+              Column(
+                children: <Widget>[
+                  MultiSelectDialogField<String>(
+                    // initialChildSize: 0.5,
+                    listType: MultiSelectListType.CHIP,
+                    searchable: true,
+                    confirmText: Text("CONFIRM"),
+                    selectedColor:
+                        Theme.of(context).primaryColor.withOpacity(.2),
+                    buttonIcon: Icon(widget.icon, color: Colors.grey),
+                    buttonText:
+                        Text(widget.title, style: TextStyle(fontSize: 16)),
+                    title:
+                        Text(widget.modalTitle, style: TextStyle(fontSize: 16)),
+                    initialValue: _selected,
+                    items: widget.tags
+                        .map((tag) => MultiSelectItem<String>(tag, tag))
+                        .toList(),
+                    onConfirm: (values) {
+                      setState(() {
+                        _selected = values;
+                      });
+                      widget.onChange(values);
+                    },
+                    chipDisplay: MultiSelectChipDisplay<String>(
+                      // icon: Icon(Mdi.tag, size: 6, color: Colors.white),
+                      chipColor: Theme.of(context).primaryColor.withOpacity(.8),
+                      textStyle: TextStyle(color: Colors.white),
+                      onTap: (value) {
+                        _selected.remove(value);
+                      },
+                    ),
+                  ),
+                  _selected.isEmpty
+                      ? Container(
+                          padding: EdgeInsets.all(10),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            widget.placeHolder,
+                            style: TextStyle(color: Colors.black45),
+                          ))
+                      : Container(),
+                ],
+              ),
+            ])));
   }
 }

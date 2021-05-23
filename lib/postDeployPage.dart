@@ -8,9 +8,9 @@ import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
-import 'components/hostsSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
+import 'components/serverSelector.dart';
 import 'models/deployCmd.dart';
 import 'models/laProject.dart';
 import 'models/laVariableDesc.dart';
@@ -90,7 +90,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
                                 }),
                             if (cmd.configurePostfix) PostDeployFields(),
                             const SizedBox(height: 20),
-                            HostsSelector(
+                            ServerSelector(
                                 selectorKey: GlobalKey<FormFieldState>(),
                                 title: "Do the Post-deploy in servers:",
                                 modalTitle:

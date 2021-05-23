@@ -6,7 +6,7 @@ import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:mdi/mdi.dart';
 
-import 'hostsSelector.dart';
+import 'serverSelector.dart';
 
 class GatewaySelector extends StatefulWidget {
   final LAServer exclude;
@@ -28,7 +28,7 @@ class _GatewaySelectorState extends State<GatewaySelector> {
                   store.dispatch(SaveCurrentProject(project)));
         },
         builder: (BuildContext context, _GatewaySelectorViewModel vm) {
-          return HostsSelector(
+          return ServerSelector(
             selectorKey: GlobalKey<FormFieldState>(),
             exclude: widget.exclude,
             initialValue: widget.exclude.gateways,

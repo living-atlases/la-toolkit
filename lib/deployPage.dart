@@ -8,10 +8,11 @@ import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
+import 'components/defDivider.dart';
 import 'components/deployBtn.dart';
-import 'components/hostsSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
+import 'components/serverSelector.dart';
 import 'components/servicesChipPanel.dart';
 import 'components/tagsSelector.dart';
 import 'components/tipsCard.dart';
@@ -88,7 +89,7 @@ class _DeployPageState extends State<DeployPage> {
                                       vm.project.getServicesAssignedToServers(),
                                   onChange: (s) =>
                                       setState(() => cmd.deployServices = s)),
-                              HostsSelector(
+                              ServerSelector(
                                   selectorKey: GlobalKey<FormFieldState>(),
                                   title: "Deploy to servers:",
                                   modalTitle:
@@ -146,6 +147,7 @@ class _DeployPageState extends State<DeployPage> {
                                       value: cmd.advanced,
                                       onChanged: (value) => setState(
                                           () => cmd.advanced = value))),
+                              if (cmd.advanced) const DefDivider(),
                               if (cmd.advanced)
                                 ListTile(
                                     title: const Text(
