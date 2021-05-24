@@ -4,10 +4,11 @@ services:
   la-toolkit:
     image: livingatlases/la-toolkit:latest
     container_name: la-toolkit
+    restart: always
     hostname: la-toolkit
     ports:
-      - "2010:2010"
-      - "2011-2100:2011-2100"
+      - "20010:2010"
+      - "20011-20100:20011-20100"
       # Internal an external ports should match in the previous range. 
       # So don't do these kind of redirections:
       # - "3011-3100:2011-2100"
@@ -22,3 +23,38 @@ services:
       - /data/la-toolkit/ssh:/home/ubuntu/.ssh/:rw
       # For 'custom' ala-install
       # - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
+
+  mongo:
+    image: mongo:4
+    restart: always
+    # Uncomment if mongo-express is not enough
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: la_toolkit_mongo_admin
+      MONGO_INITDB_ROOT_PASSWORD: la_toolkit_changeme
+      MONGO_INITDB_DATABASE: la_toolkit
+      LA_USER: la_toolkit_user
+      LA_PASS: la_toolkit_changeme
+    volumes:
+      - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+      - /data/la-toolkit/mongo:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 9081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: la_toolkit_mongo_admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: la_toolkit_changeme
+
+  # 'watchtower' upgrade automatically the la-toolkit, whenever there is a new Docker image available,
+  # but a container restart is also need to get the new image
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --no-restart
