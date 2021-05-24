@@ -63,7 +63,6 @@ class LAProject implements IsJsonSerializable<LAProject> {
   @JsonKey(ignore: true)
   Map<String, dynamic> checkResults;
 
-
   // Relations -----
   List<LAServer> servers;
   List<LAService> services;
@@ -78,36 +77,36 @@ class LAProject implements IsJsonSerializable<LAProject> {
   @JsonKey(ignore: true)
   CmdHistoryDetails? lastCmdDetails;
 
-  LAProject({
-    String? id,
-    this.longName = "",
-    this.shortName = "",
-    this.domain = "",
-    this.dirName = "",
-    this.useSSL = true,
-    this.isCreated = false,
-    this.isHub = false,
-    bool? fstDeployed,
-    this.additionalVariables = "",
-    this.status = LAProjectStatus.created,
-    this.alaInstallRelease,
-    this.generatorRelease,
-    LALatLng? mapBoundsFstPoint,
-    LALatLng? mapBoundsSndPoint,
-    this.theme = "clean",
-    this.mapZoom,
-    this.lastCmdEntry,
-    this.lastCmdDetails,
-    bool? advancedEdit,
-    bool? advancedTune,
-    List<LAVariable>? variables,
-    List<CmdHistoryEntry>? cmdHistoryEntries,
-    List<LAServer>? servers,
-    List<LAService>? services,
-    List<LAServiceDeploy>? serviceDeploys,
-    Map<String, List<String>>? serverServices,
-    Map<String, dynamic>? checkResults
-  })  : id = id ?? new ObjectId().toString(),
+  LAProject(
+      {String? id,
+      this.longName = "",
+      this.shortName = "",
+      this.domain = "",
+      this.dirName = "",
+      this.useSSL = true,
+      this.isCreated = false,
+      this.isHub = false,
+      bool? fstDeployed,
+      this.additionalVariables = "",
+      this.status = LAProjectStatus.created,
+      this.alaInstallRelease,
+      this.generatorRelease,
+      LALatLng? mapBoundsFstPoint,
+      LALatLng? mapBoundsSndPoint,
+      this.theme = "clean",
+      this.mapZoom,
+      this.lastCmdEntry,
+      this.lastCmdDetails,
+      bool? advancedEdit,
+      bool? advancedTune,
+      List<LAVariable>? variables,
+      List<CmdHistoryEntry>? cmdHistoryEntries,
+      List<LAServer>? servers,
+      List<LAService>? services,
+      List<LAServiceDeploy>? serviceDeploys,
+      Map<String, List<String>>? serverServices,
+      Map<String, dynamic>? checkResults})
+      : id = id ?? new ObjectId().toString(),
         servers = servers ?? [],
         services = services ?? getInitialServices(),
         serviceDeploys = serviceDeploys ?? [],
