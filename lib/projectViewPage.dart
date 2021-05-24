@@ -49,6 +49,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               status: store.state.currentProject.status,
               alaInstallReleases: store.state.alaInstallReleases,
               generatorReleases: store.state.generatorReleases,
+              loading: store.state.loading,
               onOpenProject: (project) {
                 store.dispatch(OpenProject(project));
                 BeamerCond.of(context, LAProjectEditLocation());
@@ -96,10 +97,12 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 BeamerCond.of(context, PortalStatusLocation());
               },
               onTestConnProject: (project, silence) {
-                if (!silence) context.loaderOverlay.show();
+                // if (!silence) context.loaderOverlay.show();
                 store.dispatch(TestConnectivityProject(project, () {
                   if (!silence)
                     _showServersStatus(context, store.state.currentProject);
+                }, () {
+                  //  if (!silence) context.loaderOverlay.hide();
                 }));
               });
         },
@@ -219,6 +222,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   ),
                   context: context,
                   showLaIcon: false,
+                  loading: vm.loading,
                   backLocation: HomeLocation(),
                   showBack: true,
                   // backRoute: HomePage.routeName,
@@ -303,6 +307,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
 class _ProjectPageViewModel {
   final LAProject project;
   final LAProjectStatus status;
+  final bool loading;
   List<String> alaInstallReleases;
   List<String> generatorReleases;
   final void Function(LAProject project) onOpenProject;
@@ -321,6 +326,7 @@ class _ProjectPageViewModel {
       required this.alaInstallReleases,
       required this.generatorReleases,
       required this.status,
+      required this.loading,
       required this.onOpenProject,
       required this.onTuneProject,
       required this.onDelProject,
@@ -339,6 +345,7 @@ class _ProjectPageViewModel {
           runtimeType == other.runtimeType &&
           project == other.project &&
           status.value == other.status.value &&
+          loading == other.loading &&
           ListEquality().equals(generatorReleases, other.generatorReleases) &&
           ListEquality().equals(alaInstallReleases, other.alaInstallReleases);
 
@@ -346,6 +353,7 @@ class _ProjectPageViewModel {
   int get hashCode =>
       project.hashCode ^
       status.value.hashCode ^
+      loading.hashCode ^
       ListEquality().hash(generatorReleases) ^
       ListEquality().hash(alaInstallReleases);
 }

@@ -239,8 +239,10 @@ typedef void ErrorCallback(error);
 class TestConnectivityProject extends AppActions {
   LAProject project;
   VoidCallback onServersStatusReady;
+  VoidCallback onFailed;
 
-  TestConnectivityProject(this.project, this.onServersStatusReady);
+  TestConnectivityProject(
+      this.project, this.onServersStatusReady, this.onFailed);
 }
 
 class TestServicesProject extends AppActions {

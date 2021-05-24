@@ -211,11 +211,17 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is TestConnectivityProject) {
       LAProject project = action.project;
-      await genSshConf(project);
-      Api.testConnectivity(project.serversWithServices()).then((results) {
-        store.dispatch(OnTestConnectivityResults(results));
-        action.onServersStatusReady();
-      });
+      try {
+        await genSshConf(project);
+        Api.testConnectivity(project.serversWithServices()).then((results) {
+          store.dispatch(OnTestConnectivityResults(results));
+          action.onServersStatusReady();
+        });
+      } catch (e) {
+        action.onFailed();
+        store.dispatch(ShowSnackBar(AppSnackBarMessage(
+            "Failed to test the connectivity with your servers.")));
+      }
     }
     if (action is TestServicesProject) {
       Api.checkHostServices(action.hostsServicesChecks)
