@@ -130,7 +130,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                   child: ResultsPieChart(
                                       cmdHistoryDetails.resultsTotals)),
                               SizedBox(height: 20),
-                              const Text('Task details:',
+                              const Text('Tasks details:',
                                   style: UiUtils.subtitleStyle),
                               const SizedBox(height: 20),
                               Column(

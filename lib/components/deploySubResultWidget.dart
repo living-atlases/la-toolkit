@@ -5,11 +5,15 @@ import 'package:la_toolkit/models/ansibleError.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 
 class DeploySubResultWidget extends StatelessWidget {
+  final String host;
   final String title;
   final dynamic results;
   final List<AnsibleError> errors;
   DeploySubResultWidget(
-      {required this.title, required this.results, required this.errors});
+      {required this.host,
+      required this.title,
+      required this.results,
+      required this.errors});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +52,7 @@ class DeploySubResultWidget extends StatelessWidget {
     List<Widget> columnChildren = [];
     if (results.length > 0) {
       DeployTextSummary summary =
-          DeployTextSummary(title: title, results: results);
+          DeployTextSummary(host: host, title: title, results: results);
       columnChildren.addAll([summary]);
     }
     if (errorsWidgets.length > 0) SizedBox(height: 10);
@@ -66,24 +70,39 @@ class DeploySubResultWidget extends StatelessWidget {
 class DeployTextSummary extends StatelessWidget {
   const DeployTextSummary({
     Key? key,
+    required this.host,
     required this.title,
     required this.results,
   }) : super(key: key);
 
+  final String host;
   final String title;
   final dynamic results;
+  final double defFontSize = 16;
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> resultTexts = ResultType.values
+    List<TextSpan> resultTexts = ResultType.values
         .where((t) => results[t.toS()] != null && results[t.toS()] != 0)
-        .map((type) => Text("${type.toS()} (${results[type.toS()]}) ",
-            style: TextStyle(color: type.color)))
+        .map((type) => TextSpan(
+            text: "${type.toS()} (${results[type.toS()]}) ",
+            style: TextStyle(fontSize: defFontSize, color: type.color)))
         .toList();
 
-    return Row(children: [
-      Text("$title: ", style: TextStyle()),
-      for (Widget text in resultTexts) text
-    ]);
+    return RichText(
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.left,
+        softWrap: true,
+        text: TextSpan(children: <TextSpan>[
+          TextSpan(
+              text: host,
+              style: TextStyle(
+                fontSize:
+                    defFontSize, /* decoration: TextDecoration.underline */
+              )),
+          TextSpan(
+              text: " ($title): ", style: TextStyle(fontSize: defFontSize)),
+          for (TextSpan text in resultTexts) text
+        ]));
   }
 }

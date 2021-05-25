@@ -110,7 +110,8 @@ class CmdHistoryDetails {
         });
         result['stats'].keys.forEach((host) {
           DeploySubResultWidget subResult = DeploySubResultWidget(
-              title: "$host (${plays.join(', ')})",
+              host: host,
+              title: plays.join(', '),
               results: result['stats'][host],
               errors: errors[host]!);
           _details!.add(subResult);
