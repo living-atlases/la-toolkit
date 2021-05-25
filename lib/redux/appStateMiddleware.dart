@@ -224,11 +224,18 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     if (action is TestServicesProject) {
-      Api.checkHostServices(action.hostsServicesChecks)
-          // without await to correct set appState.loading
-          .then((results) {
-        store.dispatch(OnTestServicesResults(results));
-      });
+      try {
+        Api.checkHostServices(action.hostsServicesChecks)
+            // without await to correct set appState.loading
+            .then((results) {
+          action.onResults();
+          store.dispatch(OnTestServicesResults(results));
+        });
+      } catch (e) {
+        action.onFailed();
+        store.dispatch(ShowSnackBar(AppSnackBarMessage(
+            "Failed to test the connectivity with your servers.")));
+      }
     }
     if (action is OnSshKeysScan) {
       scanSshKeys(store, action.onKeysScanned);

@@ -248,8 +248,11 @@ class TestConnectivityProject extends AppActions {
 class TestServicesProject extends AppActions {
   LAProject project;
   HostsServicesChecks hostsServicesChecks;
+  VoidCallback onResults;
+  VoidCallback onFailed;
 
-  TestServicesProject(this.project, this.hostsServicesChecks);
+  TestServicesProject(
+      this.project, this.hostsServicesChecks, this.onResults, this.onFailed);
 }
 
 class OnTestConnectivityResults extends AppActions {

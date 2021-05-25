@@ -64,7 +64,6 @@ class HostsServicesChecks {
           ch.services.add(sd.serviceId);
           hChecks[ch.id] = ch;
         });
-
         HostServiceCheck ch = hChecks.values.firstWhere(
             (ch) => ch.type == ServiceCheckType.other && ch.args == dep.name,
             orElse: () {

@@ -93,7 +93,11 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 /* store.dispatch(
                     ShowSnackBar(AppSnackBarMessage("Under development"))); */
                 store.dispatch(TestServicesProject(
-                    project, project.serverServicesToMonitor().item2));
+                    project,
+                    project.serverServicesToMonitor().item2,
+                    () => store.dispatch(TestConnectivityProject(
+                        store.state.currentProject, () => {}, () => {})),
+                    () => {}));
                 BeamerCond.of(context, PortalStatusLocation());
               },
               onTestConnProject: (project, silence) {

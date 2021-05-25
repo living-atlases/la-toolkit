@@ -445,8 +445,17 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   String get etcHostsVar {
     List<String> etcHostLines = [];
-    serversWithServices().forEach((server) => etcHostLines.add(
-        "      ${server.ip} ${getServerServices(serverId: server.id).map((sName) => services.firstWhere((s) => s.nameInt == sName).url(domain)).toList().join(' ')}"));
+    serversWithServices().forEach((server) {
+      String hostnames = getServerServicesFull(serverId: server.id)
+          .where((s) =>
+              s.nameInt != LAServiceName.biocache_cli.toS() &&
+              s.nameInt != LAServiceName.biocache_backend.toS() &&
+              s.nameInt != LAServiceName.nameindexer.toS())
+          .map((s) => s.url(domain))
+          .toList()
+          .join(' ');
+      etcHostLines.add("      ${server.ip} ${server.name} $hostnames");
+    });
     return etcHostLines.join('\n');
   }
 
@@ -670,7 +679,9 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
       String tooltip = name != "Index"
           ? serviceTooltip(name)
           : "This is protected by default, see our wiki for more info";
-
+      if (nameInt == LAServiceName.solr.toS()) {
+        url = "${url.replaceFirst("https", "http")}:8983";
+      }
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
       List<BasicService>? deps;
       if (mainDeps != null) deps = getDeps()[nameInt]!.serviceDepends;
@@ -692,7 +703,7 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
             alaAdmin: desc.alaAdmin,
             status: st,
             help: help));
-      // This is for userdetails, apikeys, etc
+      // This is for userdetails, apikeys, etcetera
       desc.subServices.forEach((sub) => allServices.add(ProdServiceDesc(
             name: sub.name,
             // This maybe is not correct
