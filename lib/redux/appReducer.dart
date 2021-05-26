@@ -156,7 +156,6 @@ AppState _tuneProject(AppState state, TuneProject action) {
 }
 
 AppState _openProjectTools(AppState state, OpenProjectTools action) {
-  print('${action.project}');
   return state.copyWith(
       currentProject: action.project,
       status: LAProjectViewStatus.view,
