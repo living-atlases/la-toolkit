@@ -16,6 +16,7 @@ extension ServiceCheckTypeToString on ServiceCheckType {
 @JsonSerializable(explicitToJson: true)
 class HostServiceCheck {
   String id;
+  String name;
   ServiceCheckType type;
   String host; // localhost or other
   String args;
@@ -25,6 +26,7 @@ class HostServiceCheck {
 
   HostServiceCheck(
       {String? id,
+      required this.name,
       required this.type,
       this.host: "localhost",
       serviceDeploys,

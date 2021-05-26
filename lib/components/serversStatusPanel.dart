@@ -38,9 +38,8 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
                 alaInstallVersion: vm.project.alaInstallRelease!,
                 extendedStatus: widget.extendedStatus,
                 status: widget.results.isNotEmpty &&
-                        widget.results['results'] != null &&
-                        widget.results['results'][server.id] != null
-                    ? widget.results['results'][server.id]
+                        widget.results[server.id] != null
+                    ? widget.results[server.id]
                     : [],
                 onTerm: () => vm.openTerm(vm.project, server),
               )

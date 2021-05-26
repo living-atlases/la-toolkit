@@ -20,13 +20,14 @@ class HostsServicesChecks {
       _$HostsServicesChecksFromJson(json);
   Map<String, dynamic> toJson() => _$HostsServicesChecksToJson(this);
 
-  void setUrls(LAServiceDeploy sd, List<String> urls) {
+  void setUrls(LAServiceDeploy sd, List<String> urls, String name) {
     Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
     urls.forEach((url) {
       HostServiceCheck ch = hChecks.values
           .firstWhere((ch) => ch.type == ServiceCheckType.url && ch.args == url,
               orElse: () {
-        var ch = HostServiceCheck(type: ServiceCheckType.url, args: url);
+        var ch =
+            HostServiceCheck(name: name, type: ServiceCheckType.url, args: url);
         hChecks[ch.id] = ch;
         return ch;
       });
@@ -36,7 +37,7 @@ class HostsServicesChecks {
     });
   }
 
-  void add(LAServiceDeploy sd, List<BasicService>? deps) {
+  void add(LAServiceDeploy sd, List<BasicService>? deps, String name) {
     Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
     if (deps != null) {
       BasicService.toCheck(deps).forEach((dep) {
@@ -44,7 +45,8 @@ class HostsServicesChecks {
           HostServiceCheck ch = hChecks.values.firstWhere(
               (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
               orElse: () {
-            var ch = HostServiceCheck(type: ServiceCheckType.tcp, args: "$tcp");
+            var ch = HostServiceCheck(
+                name: name, type: ServiceCheckType.tcp, args: "$tcp");
             hChecks[ch.id] = ch;
             return ch;
           });
@@ -56,7 +58,8 @@ class HostsServicesChecks {
           HostServiceCheck ch = hChecks.values.firstWhere(
               (ch) => ch.type == ServiceCheckType.udp && ch.args == "$udp",
               orElse: () {
-            var ch = HostServiceCheck(type: ServiceCheckType.udp, args: "$udp");
+            var ch = HostServiceCheck(
+                name: name, type: ServiceCheckType.udp, args: "$udp");
             hChecks[ch.id] = ch;
             return ch;
           });
@@ -67,8 +70,8 @@ class HostsServicesChecks {
         HostServiceCheck ch = hChecks.values.firstWhere(
             (ch) => ch.type == ServiceCheckType.other && ch.args == dep.name,
             orElse: () {
-          var ch =
-              HostServiceCheck(type: ServiceCheckType.other, args: dep.name);
+          var ch = HostServiceCheck(
+              name: name, type: ServiceCheckType.other, args: dep.name);
           hChecks[ch.id] = ch;
           return ch;
         });

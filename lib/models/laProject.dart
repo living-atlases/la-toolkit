@@ -76,6 +76,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
   CmdHistoryEntry? lastCmdEntry;
   @JsonKey(ignore: true)
   CmdHistoryDetails? lastCmdDetails;
+  @JsonKey(ignore: true)
+  Tuple2<List<ProdServiceDesc>, HostsServicesChecks>? servicesToMonitor;
 
   LAProject(
       {String? id,
@@ -308,7 +310,9 @@ servers-services:
 ${sToS ?? "Some error in serversToServices"}
 services selected (${getServicesAssignedToServers().length}): [${getServicesAssignedToServers().join(', ')}]
 services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().join(', ')}]
-services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}].''';
+services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}]
+check results length: ${checkResults.length} 
+''';
   }
 
   //static List<LAService> initialServices = getInitialServices(id);
@@ -725,14 +729,14 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   String serviceTooltip(String name) => "Open the $name service";
 
-  HostsServicesChecks getHostServicesChecks(
+  HostsServicesChecks _getHostServicesChecks(
       List<ProdServiceDesc> prodServices) {
     HostsServicesChecks hostsChecks = HostsServicesChecks();
     prodServices.forEach((service) {
       service.serviceDeploys.forEach((sd) {
-        hostsChecks.setUrls(sd, service.urls);
+        hostsChecks.setUrls(sd, service.urls, service.nameInt);
         service.deps!.forEach((dep) {
-          hostsChecks.add(sd, service.deps);
+          hostsChecks.add(sd, service.deps, service.nameInt);
         });
       });
     });
@@ -741,8 +745,12 @@ services not in use (${getServicesNameListNotInUse().length}): [${getServicesNam
 
   Tuple2<List<ProdServiceDesc>, HostsServicesChecks> serverServicesToMonitor() {
     List<ProdServiceDesc> services = prodServices;
-    HostsServicesChecks checks = getHostServicesChecks(services);
-    return Tuple2(services, checks);
+    if (servicesToMonitor == null ||
+        !ListEquality().equals(servicesToMonitor!.item1, prodServices)) {
+      HostsServicesChecks checks = _getHostServicesChecks(services);
+      servicesToMonitor = Tuple2(services, checks);
+    }
+    return servicesToMonitor!;
   }
 
   Map<String, LAServiceDepsDesc> getDeps() =>

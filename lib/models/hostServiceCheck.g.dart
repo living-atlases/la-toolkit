@@ -9,6 +9,7 @@ part of 'hostServiceCheck.dart';
 HostServiceCheck _$HostServiceCheckFromJson(Map<String, dynamic> json) {
   return HostServiceCheck(
     id: json['id'] as String?,
+    name: json['name'] as String,
     type: _$enumDecode(_$ServiceCheckTypeEnumMap, json['type']),
     host: json['host'] as String,
     serviceDeploys: json['serviceDeploys'],
@@ -20,6 +21,7 @@ HostServiceCheck _$HostServiceCheckFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$HostServiceCheckToJson(HostServiceCheck instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'name': instance.name,
       'type': _$ServiceCheckTypeEnumMap[instance.type],
       'host': instance.host,
       'args': instance.args,
