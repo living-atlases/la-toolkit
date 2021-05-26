@@ -17,6 +17,7 @@ class CmdHistoryDetails {
   @JsonKey(ignore: true)
   CmdHistoryEntry? cmd;
   int? port;
+  int? pid;
   int code;
   List<dynamic> results;
   String logs;
@@ -30,6 +31,7 @@ class CmdHistoryDetails {
   CmdHistoryDetails(
       {this.cmd,
       this.port,
+      this.pid,
       required this.code,
       required this.results,
       required this.logs,
@@ -45,6 +47,7 @@ class CmdHistoryDetails {
           code == other.code &&
           cmd == other.cmd &&
           port == other.port &&
+          pid == other.pid &&
           results == other.results &&
           logs == other.logs &&
           fstRetrieved == other.fstRetrieved &&
@@ -172,6 +175,7 @@ class CmdHistoryDetails {
       logs.hashCode ^
       cmd.hashCode ^
       port.hashCode ^
+      pid.hashCode ^
       logsColorized.hashCode ^
       fstRetrieved.hashCode;
 

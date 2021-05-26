@@ -184,10 +184,12 @@ class DeployUtils {
     store.dispatch(DeployProject(
         project: project,
         cmd: deployCmd,
-        onStart: (cmdEntry, port) {
+        onStart: (cmdEntry, port, ttydPid) {
           context.loaderOverlay.hide();
-          TermDialog.show(context, port: port, title: "Ansible console",
-              onClose: () async {
+          TermDialog.show(context,
+              port: port,
+              pid: ttydPid,
+              title: "Ansible console", onClose: () async {
             if (!deployCmd.dryRun) {
               // Show the results
               store

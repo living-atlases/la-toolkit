@@ -12,7 +12,10 @@ import '../notInDemo.dart';
 
 class TermDialog {
   static show(context,
-      {title: 'Console', required int port, VoidCallback? onClose}) async {
+      {title: 'Console',
+      required int port,
+      required int pid,
+      VoidCallback? onClose}) async {
     print("${getInitialUrl(port)}");
     await showFloatingModalBottomSheet(
         // This can be added to the custom modal
@@ -46,7 +49,10 @@ class TermDialog {
                 body: termArea(port),
               ),
             ));
-    if (onClose != null) onClose();
+    Api.termClose(port: port, pid: pid);
+    if (onClose != null) {
+      onClose();
+    }
   }
 
   static String getInitialUrl(int port) => 'http://localhost:$port/';
@@ -100,9 +106,9 @@ class TermDialog {
     // context.loaderOverlay.show();
     context.loaderOverlay.show();
     Api.term(
-        onStart: (cmd, port) {
+        onStart: (cmd, port, ttydPid) {
           context.loaderOverlay.hide();
-          TermDialog.show(context, port: port);
+          TermDialog.show(context, port: port, pid: ttydPid);
         },
         onError: (error) {
           context.loaderOverlay.hide();

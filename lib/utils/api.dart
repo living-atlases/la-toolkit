@@ -194,12 +194,12 @@ class Api {
   }
 
   static Future<void> term(
-      {required Function(String cmd, int port) onStart,
+      {required Function(String cmd, int port, int ttydPort) onStart,
       required ErrorCallback onError,
       String? server,
       String? projectId}) async {
     if (AppUtils.isDemo()) {
-      onStart("", 2011);
+      onStart("", 2011, 1);
       return;
     }
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/term");
@@ -212,7 +212,7 @@ class Api {
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
-        onStart(l['cmd'], l['port']);
+        onStart(l['cmd'], l['port'], l['ttydPid']);
       } else
         onError(response.statusCode);
     });
@@ -220,7 +220,7 @@ class Api {
 
   static Future<void> termLogs(
       {required CmdHistoryEntry cmd,
-      required Function(String cmd, int port) onStart,
+      required Function(String cmd, int port, int ttydPort) onStart,
       required ErrorCallback onError}) async {
     if (AppUtils.isDemo()) return;
     Uri url = Uri.http(env['BACKEND']!, "/api/v1/term-logs");
@@ -232,7 +232,7 @@ class Api {
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
-        onStart(l['cmd'], l['port']);
+        onStart(l['cmd'], l['port'], l['ttydPid']);
       } else
         onError(response.statusCode);
     });
@@ -270,7 +270,8 @@ class Api {
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
-        action.onStart(CmdHistoryEntry.fromJson(l['cmdEntry']), l['port']);
+        action.onStart(
+            CmdHistoryEntry.fromJson(l['cmdEntry']), l['port'], l['ttydPid']);
       } else
         action.onError(response.statusCode);
     }).catchError((error) {
@@ -423,5 +424,17 @@ class Api {
     } else {
       throw "Failed to delete project";
     }
+  }
+
+  static Future<void> termClose({required int port, required int pid}) async {
+    if (AppUtils.isDemo()) return;
+    Uri url = Uri.http(env['BACKEND']!, "/api/v1/term-close");
+    Response response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({'port': port, 'pid': pid})));
+    if (response.statusCode == 200) {
+      return;
+    }
+    return;
   }
 }

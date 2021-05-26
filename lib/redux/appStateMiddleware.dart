@@ -309,8 +309,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         lastCmdDet.cmd = action.cmdHistoryEntry;
         Api.termLogs(
             cmd: action.cmdHistoryEntry,
-            onStart: (cmd, port) {
+            onStart: (cmd, port, ttydPid) {
               lastCmdDet!.port = port;
+              lastCmdDet.pid = ttydPid;
               store.dispatch(ShowDeployProjectResults(
                   action.cmdHistoryEntry, action.fstRetrieved, lastCmdDet));
               action.onReady();

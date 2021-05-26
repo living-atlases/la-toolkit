@@ -169,7 +169,7 @@ class SaveDeployCmd extends AppActions {
 class DeployProject extends AppActions {
   LAProject project;
   DeployCmd cmd;
-  Function(CmdHistoryEntry cmd, int port) onStart;
+  Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart;
   ErrorCallback onError;
 
   DeployProject(
