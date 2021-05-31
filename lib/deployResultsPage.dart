@@ -6,6 +6,7 @@ import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
+import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
@@ -39,13 +40,15 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
               store.dispatch(
                   DeployUtils.getCmdResults(context, cmdHistory, false));
             },
-            onClose: (project) {
+            onClose: (project, cmdHistory) {
               store.dispatch(OpenProjectTools(project));
               BeamerCond.of(context, LAProjectViewLocation());
+              Api.termClose(port: cmdHistory.port!, pid: cmdHistory.pid!);
             });
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {
         CmdHistoryDetails? cmdHistoryDetails = vm.project.lastCmdDetails;
+
         if (cmdHistoryDetails != null) {
           List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
           bool failed = cmdHistoryDetails.failed;
@@ -73,7 +76,8 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                         icon: Tooltip(
                             child: const Icon(Icons.close, color: Colors.white),
                             message: "Close"),
-                        onPressed: () => vm.onClose(vm.project)),
+                        onPressed: () =>
+                            vm.onClose(vm.project, cmdHistoryDetails)),
                   ]),
               body: ScrollPanel(
                   withPadding: true,
@@ -194,7 +198,7 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
 
 class _DeployResultsViewModel {
   final LAProject project;
-  final Function(LAProject) onClose;
+  final Function(LAProject, CmdHistoryDetails cmdDetails) onClose;
   final void Function(CmdHistoryEntry entry) onOpenDeployResults;
   _DeployResultsViewModel(
       {required this.project,
