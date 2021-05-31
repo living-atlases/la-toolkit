@@ -25,11 +25,14 @@ services:
       - /data/la-toolkit/logs/:/home/ubuntu/ansible/logs/:rw
       - /data/la-toolkit/ssh:/home/ubuntu/.ssh/:rw
       # For 'custom' ala-install
+      # Take into account that if your change from 'custom' to other ala-install version
+      # code changes will be git stashed
       # - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
 
   mongo:
     image: mongo:4
     restart: always
+    container_name: la-toolkit-mongo
     # Uncomment if mongo-express is not enough
     ports:
       - 27017:27017
@@ -45,6 +48,7 @@ services:
 
   mongo-express:
     image: mongo-express
+    container_name: la-toolkit-mongo-express
     restart: always
     ports:
       - 9081:8081
@@ -57,6 +61,7 @@ services:
 
   watchtower:
     image: containrrr/watchtower
+    container_name: la-toolkit-watchtower
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
