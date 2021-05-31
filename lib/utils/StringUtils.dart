@@ -5,12 +5,12 @@ class StringUtils {
   }
 
   static String suggestDirName(
-      {required String shortName, required String uuid}) {
+      {required String shortName, required String id}) {
     String dirName = shortName
         .toLowerCase()
         .replaceAll(RegExp(r'[^\d.-\w]'), '')
         .replaceAll('.', '-');
-    return dirName.length <= 1 ? "la-${uuid.substring(0, 8)}" : dirName;
+    return dirName.length <= 1 ? "la-${id.substring(0, 8)}" : dirName;
   }
 }
 

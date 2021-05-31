@@ -5,18 +5,18 @@ import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/tagsConstants.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
+import 'package:la_toolkit/utils/debounce.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
-import 'package:smart_select/smart_select.dart';
 
+import 'components/defDivider.dart';
 import 'components/deployBtn.dart';
-import 'components/hostSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
-import 'components/selectUtils.dart';
+import 'components/serverSelector.dart';
 import 'components/servicesChipPanel.dart';
+import 'components/tagsSelector.dart';
 import 'components/tipsCard.dart';
-import 'laTheme.dart';
 import 'models/laProject.dart';
 
 class DeployPage extends StatefulWidget {
@@ -27,11 +27,8 @@ class DeployPage extends StatefulWidget {
 
 class _DeployPageState extends State<DeployPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<S2MultiState<String>> _skipTagsKey =
-      GlobalKey<S2MultiState<String>>();
-  final GlobalKey<S2MultiState<String>> _selectTagsKey =
-      GlobalKey<S2MultiState<String>>();
   // TODO do something with --skip-tags nameindex
+  final debouncer = Debouncer(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +38,10 @@ class _DeployPageState extends State<DeployPage> {
             project: store.state.currentProject,
             cmd: store.state.repeatCmd,
             onDeployProject: (project, cmd) => DeployUtils.deployActionDispatch(
-                context: context, store: store, project: project, cmd: cmd),
+                context: context,
+                store: store,
+                project: project,
+                deployCmd: cmd),
             onCancel: (project) {
               store.dispatch(OpenProjectTools(project));
               BeamerCond.of(context, LAProjectViewLocation());
@@ -68,181 +68,151 @@ class _DeployPageState extends State<DeployPage> {
                           message: "Cancel the deploy"),
                       onPressed: () => vm.onCancel(vm.project)),
                 ]),
-            body: ScrollPanel(
-                withPadding: true,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1, // 10%
-                      child: Container(),
-                    ),
-                    Expanded(
-                        flex: 8, // 80%,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 20),
-                              Text("Select which services you want to deploy:",
-                                  style: TextStyle(fontSize: 16)),
-                              // TODO: limit to real selected services
-                              ServicesChipPanel(
-                                  initialValue: cmd.deployServices,
-                                  services:
-                                      vm.project.getServicesNameListSelected(),
-                                  onChange: (s) =>
-                                      setState(() => cmd.deployServices = s)),
-                              HostSelector(
-                                  title: "Deploy to servers:",
-                                  modalTitle:
-                                      "Choose some servers if you want to limit the deploy to them",
-                                  emptyPlaceholder: "All servers",
-                                  initialValue: cmd.limitToServers,
-                                  serverList: vm.project
-                                      .serversWithServices()
-                                      .map((e) => e.name)
-                                      .toList(),
-                                  icon: Mdi.server,
-                                  onChange: (limitToServers) => setState(() =>
-                                      cmd.limitToServers = limitToServers)),
-                              TagsSelector(
-                                  initialValue: cmd.tags,
-                                  selectorKey: _selectTagsKey,
-                                  tags: TagsConstants.getTagsFor(
-                                      vm.project.alaInstallRelease),
-                                  icon: Mdi.tagPlusOutline,
-                                  title: "Tags:",
-                                  placeHolder: "All",
-                                  modalTitle:
-                                      "Select the tags you want to limit to",
-                                  onChange: (tags) =>
-                                      setState(() => cmd.tags = tags)),
-                              TagsSelector(
-                                  initialValue: cmd.skipTags,
-                                  selectorKey: _skipTagsKey,
-                                  tags: TagsConstants.getTagsFor(
-                                      vm.project.alaInstallRelease),
-                                  icon: Mdi.tagOffOutline,
-                                  title: "Skip tags:",
-                                  placeHolder: "None",
-                                  modalTitle:
-                                      "Select the tags you want to skip",
-                                  onChange: (skipTags) =>
-                                      setState(() => cmd.skipTags = skipTags)),
-                              TipsCard(
-                                  text:
-                                      '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
-                                  margin: EdgeInsets.zero),
+            body: NotificationListener(
+                onNotification: (SizeChangedLayoutNotification notification) {
+                  debouncer.run(() {
+                    setState(() {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration: Duration(seconds: 5),
+                          content: Text(
+                              "Resizing this window will break the ansible terminal. Please do not resize this window during deploying until we found a fix.")));
+                    });
+                  });
+                  return true;
+                },
+                child: SizeChangedLayoutNotifier(
+                    child: ScrollPanel(
+                        withPadding: true,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1, // 10%
+                              child: Container(),
+                            ),
+                            Expanded(
+                                flex: 8, // 80%,
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 20),
+                                      Text(
+                                          "Select which services you want to deploy:",
+                                          style: TextStyle(fontSize: 16)),
+                                      // TODO: limit to real selected services
+                                      ServicesChipPanel(
+                                          initialValue: cmd.deployServices,
+                                          services: vm.project
+                                              .getServicesAssignedToServers(),
+                                          onChange: (s) => setState(
+                                              () => cmd.deployServices = s)),
+                                      ServerSelector(
+                                          selectorKey:
+                                              GlobalKey<FormFieldState>(),
+                                          title: "Deploy to servers:",
+                                          modalTitle:
+                                              "Choose some servers if you want to limit the deploy to them",
+                                          placeHolder: "All servers",
+                                          initialValue: cmd.limitToServers,
+                                          hosts: vm.project
+                                              .serversWithServices()
+                                              .map((e) => e.name)
+                                              .toList(),
+                                          icon: Mdi.server,
+                                          onChange: (limitToServers) =>
+                                              setState(() =>
+                                                  cmd.limitToServers =
+                                                      limitToServers)),
+                                      TagsSelector(
+                                          initialValue: cmd.tags,
+                                          selectorKey:
+                                              GlobalKey<FormFieldState>(),
+                                          tags: TagsConstants.getTagsFor(
+                                              vm.project.alaInstallRelease),
+                                          icon: Mdi.tagPlusOutline,
+                                          title: "Tags:",
+                                          placeHolder: "All",
+                                          modalTitle:
+                                              "Select the tags you want to limit to:",
+                                          onChange: (tags) =>
+                                              setState(() => cmd.tags = tags)),
+                                      TagsSelector(
+                                          initialValue: cmd.skipTags,
+                                          selectorKey:
+                                              GlobalKey<FormFieldState>(),
+                                          tags: TagsConstants.getTagsFor(
+                                              vm.project.alaInstallRelease),
+                                          icon: Mdi.tagOffOutline,
+                                          title: "Skip tags:",
+                                          placeHolder: "None",
+                                          modalTitle:
+                                              "Select the tags you want to skip:",
+                                          onChange: (skipTags) => setState(
+                                              () => cmd.skipTags = skipTags)),
+                                      TipsCard(
+                                          text:
+                                              '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
+                                          margin: EdgeInsets.zero),
+                                      ListTile(
+                                          title: const Text(
+                                            'Only deploy properties (service configurations)',
+                                          ),
+                                          trailing: Switch(
+                                              value: cmd.onlyProperties,
+                                              onChanged: (value) => setState(
+                                                  () => cmd.onlyProperties =
+                                                      value))),
+                                      ListTile(
+                                          title: const Text(
+                                            'Advanced options',
+                                          ),
+                                          trailing: Switch(
+                                              value: cmd.advanced,
+                                              onChanged: (value) => setState(
+                                                  () => cmd.advanced = value))),
+                                      if (cmd.advanced) const DefDivider(),
+                                      if (cmd.advanced)
+                                        ListTile(
+                                            title: const Text(
+                                              'Show extra debug info',
+                                            ),
+                                            trailing: Switch(
+                                                value: cmd.debug,
+                                                onChanged: (value) => setState(
+                                                    () => cmd.debug = value))),
+                                      if (cmd.advanced)
+                                        /*  Not necessary now
                               ListTile(
-                                  title: const Text(
-                                    'Only deploy properties (service configurations)',
-                                  ),
-                                  trailing: Switch(
-                                      value: cmd.onlyProperties,
-                                      onChanged: (value) => setState(
-                                          () => cmd.onlyProperties = value))),
-                              ListTile(
-                                  title: const Text(
-                                    'Advanced options',
-                                  ),
-                                  trailing: Switch(
-                                      value: cmd.advanced,
-                                      onChanged: (value) => setState(
-                                          () => cmd.advanced = value))),
-                              if (cmd.advanced)
-                                ListTile(
-                                    title: const Text(
-                                      'Show extra debug info',
-                                    ),
-                                    trailing: Switch(
-                                        value: cmd.debug,
-                                        onChanged: (value) =>
-                                            setState(() => cmd.debug = value))),
-                              if (cmd.advanced)
-                                ListTile(
                                     title: const Text(
                                       'Continue even if some service deployment fails',
                                     ),
                                     trailing: Switch(
                                         value: cmd.continueEvenIfFails,
                                         onChanged: (value) => setState(() =>
-                                            cmd.continueEvenIfFails = value))),
-                              if (cmd.advanced)
-                                ListTile(
-                                    title: const Text(
-                                      'Dry run (only show the ansible command)',
-                                    ),
-                                    trailing: Switch(
-                                        value: cmd.dryRun,
-                                        onChanged: (value) => setState(
-                                            () => cmd.dryRun = value))),
-                              TipsCard(
-                                  text:
-                                      "This project is generated in the '${vm.project.dirName}' directory."),
-                              LaunchBtn(onTap: onTap, execBtn: execBtn),
-                            ])),
-                    Expanded(
-                      flex: 1, // 10%
-                      child: Container(),
-                    )
-                  ],
-                )));
+                                            cmd.continueEvenIfFails = value))), */
+                                        if (cmd.advanced)
+                                          ListTile(
+                                              title: const Text(
+                                                'Dry run (only show the ansible command)',
+                                              ),
+                                              trailing: Switch(
+                                                  value: cmd.dryRun,
+                                                  onChanged: (value) =>
+                                                      setState(() =>
+                                                          cmd.dryRun = value))),
+                                      TipsCard(
+                                          text:
+                                              "This project is generated in the '${vm.project.dirName}' directory."),
+                                      LaunchBtn(onTap: onTap, execBtn: execBtn),
+                                    ])),
+                            Expanded(
+                              flex: 1, // 10%
+                              child: Container(),
+                            )
+                          ],
+                        )))));
       },
     );
-  }
-}
-
-class TagsSelector extends StatelessWidget {
-  final GlobalKey<S2MultiState<String>> selectorKey;
-  final List<String> tags;
-  final IconData icon;
-  final String title;
-  final String placeHolder;
-  final String modalTitle;
-  final List<String> initialValue;
-  final Function(List<String>) onChange;
-
-  TagsSelector(
-      {required this.selectorKey,
-      required this.tags,
-      required this.icon,
-      required this.initialValue,
-      required this.title,
-      required this.placeHolder,
-      required this.modalTitle,
-      required this.onChange});
-
-  @override
-  Widget build(BuildContext context) {
-    return SmartSelect<String>.multiple(
-        key: selectorKey,
-        value: initialValue,
-        title: title,
-        choiceItems: S2Choice.listFrom<String, String>(
-            source: tags, value: (index, e) => e, title: (index, e) => e),
-        placeholder: placeHolder,
-        modalHeader: true,
-        modalTitle: modalTitle,
-        modalType: S2ModalType.popupDialog,
-        choiceType: S2ChoiceType.chips,
-        modalConfirm: true,
-        modalConfirmBuilder: (context, state) =>
-            SelectUtils.modalConfirmBuild(state),
-        modalHeaderStyle: S2ModalHeaderStyle(
-            backgroundColor: LAColorTheme.laPalette,
-            textStyle: TextStyle(color: Colors.white)),
-        tileBuilder: (context, state) {
-          return S2Tile.fromState(state,
-              // padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              leading: Icon(icon),
-              dense: false,
-              isTwoLine: true,
-              trailing: const Icon(Icons.keyboard_arrow_down)
-              // isTwoLine: true,
-              );
-        },
-        onChange: (state) {
-          onChange(state.value);
-        });
   }
 }
 

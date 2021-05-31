@@ -5,49 +5,92 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/basicService.dart';
 
+import 'hostServiceCheck.dart';
+import 'laServiceDeploy.dart';
+
 part 'hostServicesChecks.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class HostsServicesChecks {
-  Map<String, HostServicesChecks> map = {};
+  // Server Id to check
+  Map<String, Map<String, HostServiceCheck>> checks = {};
   HostsServicesChecks();
 
   factory HostsServicesChecks.fromJson(Map<String, dynamic> json) =>
       _$HostsServicesChecksFromJson(json);
   Map<String, dynamic> toJson() => _$HostsServicesChecksToJson(this);
 
-  void setUrls(String server, List<String> urls) {
-    HostServicesChecks hostServices = _getServer(server);
-    hostServices.setUrls(urls);
+  void setUrls(LAServiceDeploy sd, List<String> urls, String name) {
+    Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
+    urls.forEach((url) {
+      HostServiceCheck ch = hChecks.values
+          .firstWhere((ch) => ch.type == ServiceCheckType.url && ch.args == url,
+              orElse: () {
+        var ch =
+            HostServiceCheck(name: name, type: ServiceCheckType.url, args: url);
+        hChecks[ch.id] = ch;
+        return ch;
+      });
+      ch.serviceDeploys.add(sd.id);
+      ch.services.add(sd.serviceId);
+      hChecks[ch.id] = ch;
+    });
   }
 
-  void add(String server, List<BasicService>? deps) {
-    HostServicesChecks hostServices = _getServer(server);
+  void add(LAServiceDeploy sd, List<BasicService>? deps, String name) {
+    Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
     if (deps != null) {
-      deps.forEach((dep) {
-        hostServices.tcpPorts.addAll(dep.tcp);
-        hostServices.udpPorts.addAll(dep.udp);
-        if (dep.name != Java.v8.name && dep.name != PostGis.v2_4.name) {
-          hostServices.otherChecks.add(dep.name);
-        }
+      BasicService.toCheck(deps).forEach((dep) {
+        dep.tcp.forEach((tcp) {
+          HostServiceCheck ch = hChecks.values.firstWhere(
+              (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
+              orElse: () {
+            var ch = HostServiceCheck(
+                name: name, type: ServiceCheckType.tcp, args: "$tcp");
+            hChecks[ch.id] = ch;
+            return ch;
+          });
+          ch.serviceDeploys.add(sd.id);
+          ch.services.add(sd.serviceId);
+          hChecks[ch.id] = ch;
+        });
+        dep.udp.forEach((udp) {
+          HostServiceCheck ch = hChecks.values.firstWhere(
+              (ch) => ch.type == ServiceCheckType.udp && ch.args == "$udp",
+              orElse: () {
+            var ch = HostServiceCheck(
+                name: name, type: ServiceCheckType.udp, args: "$udp");
+            hChecks[ch.id] = ch;
+            return ch;
+          });
+          ch.serviceDeploys.add(sd.id);
+          ch.services.add(sd.serviceId);
+          hChecks[ch.id] = ch;
+        });
+        HostServiceCheck ch = hChecks.values.firstWhere(
+            (ch) => ch.type == ServiceCheckType.other && ch.args == dep.name,
+            orElse: () {
+          var ch = HostServiceCheck(
+              name: name, type: ServiceCheckType.other, args: dep.name);
+          hChecks[ch.id] = ch;
+          return ch;
+        });
+        ch.serviceDeploys.add(sd.id);
+        ch.services.add(sd.serviceId);
+        hChecks[ch.id] = ch;
+
+        checks[sd.serverId] = hChecks;
       });
     }
   }
 
-  HostServicesChecks _getServer(String server) {
-    HostServicesChecks hostServices;
-    if (!map.containsKey(server)) {
-      hostServices = HostServicesChecks();
-      map[server] = hostServices;
-    } else {
-      hostServices = map[server]!;
-    }
-    return hostServices;
+  Map<String, HostServiceCheck> _getServiceCheck(String server) {
+    return checks.putIfAbsent(server, () => {});
   }
 
   @override
   String toString() {
-    return 'HostsServicesChecks{map: $map}';
+    return 'HostsServicesChecks{checks: $checks}';
   }
 
   @override
@@ -55,10 +98,10 @@ class HostsServicesChecks {
       identical(this, other) ||
       other is HostsServicesChecks &&
           runtimeType == other.runtimeType &&
-          DeepCollectionEquality.unordered().equals(map, other.map);
+          DeepCollectionEquality.unordered().equals(checks, other.checks);
 
   @override
-  int get hashCode => DeepCollectionEquality.unordered().hash(map);
+  int get hashCode => DeepCollectionEquality.unordered().hash(checks);
 }
 
 @JsonSerializable(createToJson: false)

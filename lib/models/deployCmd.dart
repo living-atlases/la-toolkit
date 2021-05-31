@@ -6,6 +6,8 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 
 part 'deployCmd.g.dart';
 
+// Typical ansible cmd
+
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class DeployCmd {
@@ -19,20 +21,21 @@ class DeployCmd {
   bool debug;
   bool dryRun;
 
-  DeployCmd(
-      {List<String>? deployServices,
-      List<String>? limitToServers,
-      List<String>? skipTags,
-      List<String>? tags,
-      this.advanced = false,
-      this.onlyProperties = false,
-      this.continueEvenIfFails = false,
-      this.debug = false,
-      this.dryRun = false})
-      : deployServices = deployServices ?? [],
+  DeployCmd({
+    List<String>? deployServices,
+    List<String>? limitToServers,
+    List<String>? skipTags,
+    List<String>? tags,
+    this.advanced = false,
+    this.onlyProperties = false,
+    this.continueEvenIfFails = false,
+    this.debug = false,
+    this.dryRun = false,
+  })  : deployServices = deployServices ?? [],
         limitToServers = limitToServers ?? [],
         skipTags = skipTags ?? [],
-        tags = tags ?? [];
+        tags = tags ?? []
+  /* super(type: CmdType.deploy, properties: {} )*/;
 
   @override
   bool operator ==(Object other) =>
@@ -61,12 +64,12 @@ class DeployCmd {
       debug.hashCode ^
       dryRun.hashCode;
 
-  String toStringClassic() {
+  @override
+  String toString() {
     return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun}';
   }
 
-  @override
-  String toString() {
+  String get desc {
     bool isAll = ListEquality().equals(deployServices, ['all']);
     String services = 'deploy of';
 
@@ -75,7 +78,9 @@ class DeployCmd {
       services = 'full deploy';
     else if (serviceLength <= 5) {
       List<String> servicesForHuman = deployServices
-          .map((serviceName) => LAServiceDesc.get(serviceName).name)
+          .map((serviceName) => serviceName == "lists"
+              ? LAServiceDesc.get(LAServiceName.species_lists.toS()).name
+              : LAServiceDesc.get(serviceName).name)
           .toList();
       servicesForHuman.asMap().forEach((i, value) => services += i == 0
           ? ' ' + value

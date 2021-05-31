@@ -8,28 +8,26 @@ part of 'cmdHistoryEntry.dart';
 
 extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
   CmdHistoryEntry copyWith({
-    String? cmd,
-    DateTime? date,
-    DeployCmd? deployCmd,
+    Cmd? cmd,
+    int? createdAt,
+    String? desc,
+    String? id,
     String? invDir,
     String? logsPrefix,
     String? logsSuffix,
-    PostDeployCmd? postDeployCmd,
-    PreDeployCmd? preDeployCmd,
+    String? rawCmd,
     CmdResult? result,
-    String? uuid,
   }) {
     return CmdHistoryEntry(
       cmd: cmd ?? this.cmd,
-      date: date ?? this.date,
-      deployCmd: deployCmd ?? this.deployCmd,
+      createdAt: createdAt ?? this.createdAt,
+      desc: desc ?? this.desc,
+      id: id ?? this.id,
       invDir: invDir ?? this.invDir,
       logsPrefix: logsPrefix ?? this.logsPrefix,
       logsSuffix: logsSuffix ?? this.logsSuffix,
-      postDeployCmd: postDeployCmd ?? this.postDeployCmd,
-      preDeployCmd: preDeployCmd ?? this.preDeployCmd,
+      rawCmd: rawCmd ?? this.rawCmd,
       result: result ?? this.result,
-      uuid: uuid ?? this.uuid,
     );
   }
 }
@@ -40,35 +38,29 @@ extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
 
 CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) {
   return CmdHistoryEntry(
-    uuid: json['uuid'] as String?,
+    id: json['id'] as String?,
     logsPrefix: json['logsPrefix'] as String,
     logsSuffix: json['logsSuffix'] as String,
+    desc: json['desc'] as String?,
     invDir: json['invDir'] as String?,
-    cmd: json['cmd'] as String,
-    deployCmd: DeployCmd.fromJson(json['deployCmd'] as Map<String, dynamic>),
-    preDeployCmd: json['preDeployCmd'] == null
-        ? null
-        : PreDeployCmd.fromJson(json['preDeployCmd'] as Map<String, dynamic>),
-    postDeployCmd: json['postDeployCmd'] == null
-        ? null
-        : PostDeployCmd.fromJson(json['postDeployCmd'] as Map<String, dynamic>),
-    date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
+    rawCmd: json['rawCmd'] as String,
+    cmd: Cmd.fromJson(json['cmd'] as Map<String, dynamic>),
+    createdAt: json['createdAt'] as int?,
     result: _$enumDecode(_$CmdResultEnumMap, json['result']),
   );
 }
 
 Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
     <String, dynamic>{
-      'uuid': instance.uuid,
+      'id': instance.id,
+      'desc': instance.desc,
       'logsPrefix': instance.logsPrefix,
       'logsSuffix': instance.logsSuffix,
-      'cmd': instance.cmd,
+      'rawCmd': instance.rawCmd,
       'invDir': instance.invDir,
-      'deployCmd': instance.deployCmd.toJson(),
-      'preDeployCmd': instance.preDeployCmd?.toJson(),
-      'postDeployCmd': instance.postDeployCmd?.toJson(),
-      'date': instance.date.toIso8601String(),
+      'cmd': instance.cmd.toJson(),
       'result': _$CmdResultEnumMap[instance.result],
+      'createdAt': instance.createdAt,
     };
 
 K _$enumDecode<K, V>(

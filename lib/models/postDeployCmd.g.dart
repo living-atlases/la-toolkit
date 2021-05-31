@@ -59,11 +59,11 @@ Map<String, dynamic> _$PostDeployCmdToJson(PostDeployCmd instance) =>
       'deployServices': instance.deployServices,
       'limitToServers': instance.limitToServers,
       'skipTags': instance.skipTags,
-      'tags': instance.tags,
       'advanced': instance.advanced,
       'onlyProperties': instance.onlyProperties,
       'continueEvenIfFails': instance.continueEvenIfFails,
       'debug': instance.debug,
       'dryRun': instance.dryRun,
       'configurePostfix': instance.configurePostfix,
+      'tags': instance.tags,
     };

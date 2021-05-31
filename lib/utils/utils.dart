@@ -2,8 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/intl_browser.dart';
+import 'package:la_toolkit/components/LoadingTextOverlay.dart';
+// import 'package:intl/intl.dart';
+
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
@@ -143,11 +144,11 @@ class DeployUtils {
       required var store,
       required LAProject project,
       required DeployCmd deployCmd}) {
-    context.showLoaderOverlay();
+    context.loaderOverlay.show(widget: const LoadingTextOverlay());
     store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           if (deployCmd is PreDeployCmd) {
             BeamerCond.of(context, PreDeployLocation());
           } else if (deployCmd is PostDeployCmd) {
@@ -158,7 +159,7 @@ class DeployUtils {
         },
         deployCmd: deployCmd,
         onError: (e) {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           UiUtils.showSnackBarError(context, e);
         }));
   }
@@ -167,44 +168,38 @@ class DeployUtils {
       {required BuildContext context,
       var store,
       required LAProject project,
-      required DeployCmd cmd}) {
-    context.showLoaderOverlay();
-    if (cmd.runtimeType == PostDeployCmd) {
+      required DeployCmd deployCmd}) {
+    context.loaderOverlay.show();
+    if (deployCmd.runtimeType == PostDeployCmd) {
       // We generate again the inventories with the smtp values
       store.dispatch(PrepareDeployProject(
           project: project,
           onReady: () {},
-          deployCmd: cmd,
+          deployCmd: deployCmd,
           onError: (e) {
-            context.hideLoaderOverlay();
+            context.loaderOverlay.hide();
             UiUtils.showSnackBarError(context, e);
           }));
     }
     store.dispatch(DeployProject(
         project: project,
-        cmd: cmd,
-        onStart: (ansibleCmd, port, logsPrefix, logsSuffix, invDir) {
-          context.hideLoaderOverlay();
-          TermDialog.show(context, port: port, title: "Ansible console",
-              onClose: () async {
-            if (!cmd.dryRun) {
+        cmd: deployCmd,
+        onStart: (cmdEntry, port, ttydPid) {
+          context.loaderOverlay.hide();
+          TermDialog.show(context,
+              port: port,
+              pid: ttydPid,
+              title: "Ansible console", onClose: () async {
+            if (!deployCmd.dryRun) {
               // Show the results
-              CmdHistoryEntry cmdHistory = CmdHistoryEntry(
-                  cmd: ansibleCmd,
-                  deployCmd: cmd,
-                  preDeployCmd: cmd is PreDeployCmd ? cmd : null,
-                  postDeployCmd: cmd is PostDeployCmd ? cmd : null,
-                  logsPrefix: logsPrefix,
-                  logsSuffix: logsSuffix,
-                  invDir: invDir);
-              store.dispatch(
-                  DeployUtils.getCmdResults(context, cmdHistory, true));
+              store
+                  .dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
             }
-            // context.hideLoaderOverlay();
+            // context.loaderOverlay.hide();
           });
         },
         onError: (error) {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               action: SnackBarAction(
                 label: 'OK',
@@ -219,16 +214,16 @@ class DeployUtils {
 
   static AppActions getCmdResults(
       BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
-    context.showLoaderOverlay();
+    context.loaderOverlay.show();
     return GetDeployProjectResults(
         cmdHistoryEntry: cmdHistory,
         fstRetrieved: fstRetrieved,
         onReady: () {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           BeamerCond.of(context, DeployResultsLocation());
         },
         onFailed: () {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('There was some problem retrieving the results'),
             duration: Duration(days: 365),
@@ -240,7 +235,7 @@ class DeployUtils {
         });
   }
 }
-
+/*
 class LADateUtils {
   static Future<String> now() async {
     final DateTime now = DateTime.now();
@@ -249,4 +244,4 @@ class LADateUtils {
     // DateFormat('yyyy-MM-dd H:mm:ss a', locale);
     return formatter.format(now);
   }
-}
+} */

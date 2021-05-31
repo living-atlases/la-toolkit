@@ -6,6 +6,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/redux/entityActions.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:simple_moment/simple_moment.dart';
@@ -13,6 +14,7 @@ import 'package:simple_moment/simple_moment.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/statusIcon.dart';
+import 'models/cmd.dart';
 
 class LogsHistoryPage extends StatelessWidget {
   static const routeName = "logs";
@@ -25,18 +27,24 @@ class LogsHistoryPage extends StatelessWidget {
       converter: (store) {
         return _ViewModel(
             project: store.state.currentProject,
-            logsNum: store.state.currentProject.cmdHistory.length,
+            logsNum: store.state.currentProject.cmdHistoryEntries.length,
             onDeleteCmd: (log) => store.dispatch(DeleteLog(log)),
             onRepeatCmd: (project, cmdHistory) {
-              store.dispatch(DeployUtils.doDeploy(
-                  context: context,
-                  store: store,
-                  project: project,
-                  deployCmd: cmdHistory.inhCmd));
+              if (cmdHistory.cmd.type.isDeploy) {
+                store.dispatch(DeployUtils.doDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    deployCmd: cmdHistory.deployCmd!));
+              }
             },
             onOpenDeployResults: (cmdHistory) {
               store.dispatch(
                   DeployUtils.getCmdResults(context, cmdHistory, false));
+            },
+            onNoDescCmd: (cmdHistory, desc) {
+              store.dispatch(RequestUpdateOneProps<CmdHistoryEntry>(
+                  cmdHistory.id, {'desc': desc}));
             });
       },
       builder: (BuildContext context, _ViewModel vm) {
@@ -61,13 +69,16 @@ class LogsHistoryPage extends StatelessWidget {
                           itemBuilder:
                               (BuildContext context, int index) =>
                                   LogItem(
-                                      vm.project.cmdHistory[index],
+                                      vm.project.cmdHistoryEntries[index],
                                       () => vm.onOpenDeployResults(
-                                          vm.project.cmdHistory[index]),
+                                          vm.project.cmdHistoryEntries[index]),
                                       () => vm.onRepeatCmd(vm.project,
-                                          vm.project.cmdHistory[index]),
+                                          vm.project.cmdHistoryEntries[index]),
                                       () => vm.onDeleteCmd(
-                                          vm.project.cmdHistory[index])))
+                                          vm.project.cmdHistoryEntries[index]),
+                                      (desc) => vm.onNoDescCmd(
+                                          vm.project.cmdHistoryEntries[index],
+                                          desc)))
                     ]))));
       },
     );
@@ -79,12 +90,24 @@ class LogItem extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onRepeat;
   final VoidCallback onDelete;
-  LogItem(this.log, this.onTap, this.onRepeat, this.onDelete);
+  final Function(String desc) onNoDesc;
+
+  LogItem(this.log, this.onTap, this.onRepeat, this.onDelete, this.onNoDesc);
   @override
   Widget build(BuildContext context) {
     // print(log.deployCmd.toStringClassic());
+    var noDesc = log.desc == null || log.desc == "";
+    String desc = "TODO - OTHER CMD TYPES";
+    if (log.cmd.type.isDeploy) {
+      desc = noDesc ? log.deployCmd!.desc : log.desc!;
+      if (noDesc)
+        onNoDesc(desc); // Update the backend (not done in db migration)
+      desc = log.deployCmd!.desc;
+    }
+    /* print(log.cmd.type);
+    print(desc); */
     return ListTile(
-        title: Text(log.inhCmd.toString()),
+        title: Text(desc),
         subtitle: Text(
             "Finished status: ${log.result.toS()}, ${Moment.now().from(log.date).toString()}"),
         onTap: () => onTap(),
@@ -117,13 +140,15 @@ class _ViewModel {
   final void Function(CmdHistoryEntry entry) onOpenDeployResults;
   final void Function(LAProject project, CmdHistoryEntry entry) onRepeatCmd;
   final void Function(CmdHistoryEntry entry) onDeleteCmd;
+  final void Function(CmdHistoryEntry entry, String desc) onNoDescCmd;
 
   _ViewModel(
       {required this.project,
       required this.logsNum,
       required this.onOpenDeployResults,
       required this.onDeleteCmd,
-      required this.onRepeatCmd});
+      required this.onRepeatCmd,
+      required this.onNoDescCmd});
 
   @override
   bool operator ==(Object other) =>

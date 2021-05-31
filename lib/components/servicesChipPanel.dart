@@ -22,7 +22,7 @@ class ServicesChipPanel extends StatefulWidget {
 
 class _ServicesChipPanelState extends State<ServicesChipPanel> {
   static const padding = EdgeInsets.fromLTRB(5, -2, 5, -2);
-  static const margin = EdgeInsets.fromLTRB(0, 0, 0, 0);
+  static const margin = EdgeInsets.fromLTRB(0, 10, 0, 10);
   final _chipsKey = GlobalKey();
   final _formKey = GlobalKey<FormState>();
   final allStyle = C2ChoiceStyle(
@@ -109,7 +109,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                       choiceBuilder: (item) {
                         if (item.value == 'all')
                           return CustomChip(
-                              label: item.label,
+                              label: item.label!,
                               width: double.infinity,
                               height: 40,
                               // color: Colors.redAccent,

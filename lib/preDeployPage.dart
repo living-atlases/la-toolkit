@@ -8,7 +8,7 @@ import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
-import 'components/hostSelector.dart';
+import 'components/serverSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'models/deployCmd.dart';
@@ -37,7 +37,10 @@ class _PreDeployPageState extends State<PreDeployPage> {
             },
             onDoDeployTaskSwitchs: (project, cmd) =>
                 DeployUtils.deployActionDispatch(
-                    context: context, store: store, project: project, cmd: cmd),
+                    context: context,
+                    store: store,
+                    project: project,
+                    deployCmd: cmd),
             cmd: store.state.repeatCmd.runtimeType != PreDeployCmd
                 ? PreDeployCmd()
                 : store.state.repeatCmd as PreDeployCmd);
@@ -135,14 +138,22 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                   cmd.addAdditionalDeps = newValue;
                                   vm.onSaveDeployCmd(cmd);
                                 }),
+                            DeployTaskSwitch(
+                                title: "Try these tasks as 'root'",
+                                initialValue: cmd.rootBecome,
+                                onChanged: (newValue) {
+                                  cmd.rootBecome = newValue;
+                                  vm.onSaveDeployCmd(cmd);
+                                }),
                             const SizedBox(height: 20),
-                            HostSelector(
+                            ServerSelector(
+                                selectorKey: GlobalKey<FormFieldState>(),
                                 title: "Do the pre-deploy in servers:",
                                 modalTitle:
                                     "Choose some servers if you want to limit the pre-deploy to them",
-                                emptyPlaceholder: "All servers",
+                                placeHolder: "All servers",
                                 initialValue: cmd.limitToServers,
-                                serverList: vm.project
+                                hosts: vm.project
                                     .serversWithServices()
                                     .map((e) => e.name)
                                     .toList(),

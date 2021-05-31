@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/hostSelector.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:mdi/mdi.dart';
 
-import 'choiceEmptyPanel.dart';
+import 'serverSelector.dart';
 
 class GatewaySelector extends StatefulWidget {
   final LAServer exclude;
@@ -29,20 +28,21 @@ class _GatewaySelectorState extends State<GatewaySelector> {
                   store.dispatch(SaveCurrentProject(project)));
         },
         builder: (BuildContext context, _GatewaySelectorViewModel vm) {
-          return HostSelector(
+          return ServerSelector(
+            selectorKey: GlobalKey<FormFieldState>(),
             exclude: widget.exclude,
             initialValue: widget.exclude.gateways,
-            serverList: vm.project.getServersNameList(),
+            hosts: vm.project.getServersNameList(),
             title: "SSH Gateway",
             icon: Mdi.doorClosedLock,
             modalTitle:
                 "Select the server (or servers) that is used as gateway to access to this server:",
-            emptyPlaceholder: "Direct connection",
-            choiceEmptyPanel: ChoiceEmptyPanel(
+            placeHolder: "Direct connection",
+            /* choiceEmptyPanel: ChoiceEmptyPanel(
                 title: "This server doesn't have a ssh gateway associated",
                 body:
                     "If you access to this server using another server as a ssh gateway, you should add the gateway also as a server and select later here.",
-                footer: "For more info see our ssh documentation in our wiki"),
+                footer: "For more info see our ssh documentation in our wiki"), */
             onChange: (gateways) {
               widget.exclude.gateways = gateways;
               vm.project.upsertByName(widget.exclude);

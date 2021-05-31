@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
+import '../laTheme.dart';
 import '../routes.dart';
 import 'laIcon.dart';
 
@@ -17,7 +18,7 @@ class LAAppBar extends AppBar {
       List<Widget>? actions,
       Widget? leading,
       IconData? titleIcon,
-      PreferredSize? bottom})
+      bool loading: false})
       : super(
             /*
             // This breaks the Navigation
@@ -34,9 +35,21 @@ class LAAppBar extends AppBar {
               },
             ),*/
             toolbarHeight: kToolbarHeight * 1.2,
-            actions: actions ?? List<Widget>.empty(growable: true),
+            actions: actions == null
+                ? List<Widget>.empty(growable: true)
+                : actions +
+                    <Widget>[
+                      Container(margin: const EdgeInsets.only(right: 20.0))
+                    ],
             leading: leading,
-            bottom: bottom,
+            bottom: PreferredSize(
+                preferredSize: Size(double.infinity, 1.0),
+                child: loading
+                    ? LinearProgressIndicator(
+                        minHeight: 6,
+                        backgroundColor: LAColorTheme.laPaletteAccent,
+                      )
+                    : Container()),
             title: SizedBox(
               height: kToolbarHeight * 1.2,
               child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [

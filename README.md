@@ -67,7 +67,7 @@ Optionally you'll need the [Docker Compose](https://docs.docker.com/compose/inst
 Your will need also some directories to store your config, logs and ssh configuration. In GNU/Linux you can use:
 
 ```
- mkdir -p ./la-toolkit-data/config/ ./la-toolkit-data/logs/ ./la-toolkit-data/ssh/
+ mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/
 ``` 
 or similar to create it. If you use a diferent directory, you'll have to update the docker-compose files accordinly.
 

@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/brandingSelector.dart';
 import 'package:la_toolkit/components/serverCardList.dart';
 import 'package:la_toolkit/components/serverDetailsCardList.dart';
-import 'package:la_toolkit/components/themeSelector.dart';
 import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -20,7 +20,7 @@ import 'components/laAppBar.dart';
 import 'components/lintProject.dart';
 import 'components/scrollPanel.dart';
 import 'components/serviceWidget.dart';
-import 'components/servicesInServerChooser.dart';
+import 'components/servicesInServerSelector.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
@@ -116,12 +116,10 @@ class LAProjectEditPage extends StatelessWidget {
             _project.init();
           }
           // Set default version of the project
-          if (_project.alaInstallRelease != null &&
-                  _project.alaInstallRelease!.isEmpty ||
+          if (_project.alaInstallRelease == null &&
               vm.state.alaInstallReleases.length > 0)
             _project.alaInstallRelease = vm.state.alaInstallReleases[0];
-          if (_project.generatorRelease != null &&
-                  _project.generatorRelease!.isEmpty ||
+          if (_project.generatorRelease == null &&
               vm.state.generatorReleases.length > 0)
             _project.generatorRelease = vm.state.generatorReleases[0];
           int _step = vm.state.currentStep;
@@ -197,7 +195,10 @@ class LAProjectEditPage extends StatelessWidget {
                           vm.onSaveCurrentProject(_project);
                         }),
                     SizedBox(height: 20),
-                    ThemeSelector()
+                    BrandingTile(
+                        initialValue: _project.theme,
+                        onChange: (String newTheme) =>
+                            _project.theme = newTheme)
                   ],
                 ),
               ));
@@ -244,7 +245,7 @@ class LAProjectEditPage extends StatelessWidget {
                       onFieldSubmitted: (value) =>
                           serversNameSplit(value).forEach((server) {
                         _addServer(server.trim(), _project,
-                            vm.onSaveCurrentProject(_project));
+                            (_project) => vm.onSaveCurrentProject(_project));
                       }),
                       focusNode: _focusNodes[_serversStep],
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -267,8 +268,11 @@ class LAProjectEditPage extends StatelessWidget {
                                   serversNameSplit(
                                     _serverAddController.text,
                                   ).forEach((server) {
-                                    _addServer(server, _project,
-                                        vm.onSaveCurrentProject(_project));
+                                    _addServer(
+                                        server,
+                                        _project,
+                                        (_project) =>
+                                            vm.onSaveCurrentProject(_project));
                                   });
                                 }
                               },
@@ -322,9 +326,9 @@ If you are unsure type something like "server1, server2, server3".
               // subtitle: const Text("Compatibilities"),
               content: Column(
                   children: (_project.numServers() > 0)
-                      ? _project.servers
-                          .map((s) => ServicesInServerChooser(server: s))
-                          .toList()
+                      ? (_project.servers
+                          .map((s) => ServicesInServerSelector(server: s))
+                          .toList())
                       : [
                           Container(
                               child: const Text(
@@ -466,7 +470,7 @@ If you have doubts or need to ask for some information, save this project and co
 
   void _addServer(String value, LAProject project,
       void Function(LAProject) onSaveCurrentProject) {
-    project.upsertByName(LAServer(name: value));
+    project.upsertByName(LAServer(name: value, projectId: project.id));
     _serverAddController.clear();
     _formKeys[_serversStep].currentState!.reset();
     _focusNodes[_serversStep]!.requestFocus();

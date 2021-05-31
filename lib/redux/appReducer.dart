@@ -5,6 +5,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/laServiceDeploy.dart';
 import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
@@ -12,8 +13,10 @@ import 'package:universal_html/html.dart' as html;
 
 import '../models/appState.dart';
 import 'actions.dart';
+import 'entityApis.dart';
+import 'entityReducer.dart';
 
-final appReducer = combineReducers<AppState>([
+List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
   new TypedReducer<AppState, OnFetchSoftwareDepsState>(_onFetchState),
   new TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
@@ -29,7 +32,6 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, CreateProject>(_createProject),
   new TypedReducer<AppState, ImportProject>(_importProject),
   new TypedReducer<AppState, AddTemplateProjects>(_addTemplateProjects),
-  new TypedReducer<AppState, AddProject>(_addProject),
   new TypedReducer<AppState, OpenProject>(_openProject),
   new TypedReducer<AppState, GotoStepEditProject>(_gotoStepEditProject),
   new TypedReducer<AppState, NextStepEditProject>(_nextStepEditProject),
@@ -39,11 +41,17 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
   new TypedReducer<AppState, EditService>(_editService),
   new TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
-  new TypedReducer<AppState, DelProject>(_delProject),
-  new TypedReducer<AppState, UpdateProject>(_updateProject),
+  new TypedReducer<AppState, OnDemoAddProjects>(_onDemoAddProjects),
+  new TypedReducer<AppState, OnProjectsAdded>(_onProjectsAdded),
+  new TypedReducer<AppState, OnProjectUpdated>(_onProjectUpdated),
+  new TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
+  new TypedReducer<AppState, ProjectsLoad>(_projectsLoad),
+  new TypedReducer<AppState, OnProjectsLoad>(_onProjectsLoad),
   new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
+  new TypedReducer<AppState, TestServicesProject>(_testServicesProject),
   new TypedReducer<AppState, OnTestConnectivityResults>(
       _onTestConnectivityResults),
+  new TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
   new TypedReducer<AppState, OnSshKeysScan>(_onSshKeysScan),
   new TypedReducer<AppState, OnSshKeysScanned>(_onSshKeysScanned),
   new TypedReducer<AppState, OnAddSshKey>(_onAddSshKey),
@@ -56,8 +64,10 @@ final appReducer = combineReducers<AppState>([
   new TypedReducer<AppState, SaveDeployCmd>(_saveDeployCmd),
   new TypedReducer<AppState, DeleteLog>(_onDeleteLog),
   new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
-  new TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
-]);
+];
+
+final appReducer =
+    combineReducers<AppState>(basic + EntityReducer<LAProject>().appReducer);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
   return state.copyWith(firstUsage: false);
@@ -110,18 +120,7 @@ AppState _importProject(AppState state, ImportProject action) {
 }
 
 AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
-  Map<String, dynamic> json = action.templates;
-  List<dynamic> projects = json['projects'];
-  List<LAProject> newProjects = List<LAProject>.empty(growable: true);
-  projects.forEach((pJson) {
-    pJson['uuid'] = null;
-    LAProject newProject = LAProject.fromJson(pJson);
-    newProjects.add(newProject);
-  });
-  action.onAdded(projects.length);
-  return state.copyWith(
-      projects: new List<LAProject>.from(state.projects)
-        ..insertAll(0, newProjects));
+  return state;
 }
 
 AppState _openProject(AppState state, OpenProject action) {
@@ -157,7 +156,6 @@ AppState _tuneProject(AppState state, TuneProject action) {
 }
 
 AppState _openProjectTools(AppState state, OpenProjectTools action) {
-  print('${action.project}');
   return state.copyWith(
       currentProject: action.project,
       status: LAProjectViewStatus.view,
@@ -166,8 +164,8 @@ AppState _openProjectTools(AppState state, OpenProjectTools action) {
 
 AppState _generateInvProject(AppState state, GenerateInvProject action) {
   if (AppUtils.isDemo()) return state;
-  String uuid = action.project.uuid;
-  String url = "http://${env['BACKEND']}/api/v1/gen/$uuid/true";
+  String id = action.project.id;
+  String url = "http://${env['BACKEND']}/api/v1/gen/$id/true";
   html.AnchorElement anchorElement = new html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();
@@ -178,44 +176,82 @@ AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
   return state.copyWith(currentProject: action.project);
 }
 
-AppState _addProject(AppState state, AddProject action) {
-  state.projects.forEach((project) {
-    if (project.uuid == action.project.uuid)
-      throw ("Trying to add an existing project.");
-    return;
-  });
-  action.project.dirName = action.project.suggestDirName();
+AppState _onDemoAddProjects(AppState state, OnDemoAddProjects action) {
   return state.copyWith(
-      currentProject: action.project,
-      status: LAProjectViewStatus.view,
       projects: new List<LAProject>.from(state.projects)
-        ..insert(0, action.project));
+        ..insertAll(0, action.projects));
 }
 
-AppState _delProject(AppState state, DelProject action) {
+AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
+  List<LAProject> ps = [];
+  if (AppUtils.isDemo()) {
+    LAProject newP = LAProject.fromJson(action.projectsJson[0]);
+    ps = new List<LAProject>.from(state.projects)..insert(0, newP);
+  } else {
+    action.projectsJson.forEach((pJson) {
+      ps.add(LAProject.fromJson(pJson));
+    });
+  }
+  return state.copyWith(
+      currentProject: ps[0], status: LAProjectViewStatus.view, projects: ps);
+}
+
+AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
   return state.copyWith(
       currentProject: LAProject(),
       projects: new List<LAProject>.from(state.projects)
-        ..removeWhere((item) => item.uuid == action.project.uuid));
+        ..removeWhere((item) => item.id == action.project.id));
 }
 
-AppState _updateProject(AppState state, UpdateProject action) {
+AppState _projectsLoad(AppState state, ProjectsLoad action) {
+  return state.copyWith(loading: true);
+}
+
+AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
+  List<LAProject> ps = [];
+  action.projectsJson.forEach((pJson) {
+    try {
+      ps.add(LAProject.fromJson(pJson));
+    } catch (e) {
+      print("Failed to retrieve project");
+      print(pJson);
+    }
+  });
+  LAProject currentProject = ps.firstWhere(
+      (p) => p.id == state.currentProject.id,
+      orElse: () => ps.length > 0 ? ps[0] : LAProject());
   return state.copyWith(
-      currentProject: action.project,
-      projects: state.projects
-          .map((project) =>
-              project.uuid == action.project.uuid ? action.project : project)
-          .toList());
+      currentProject: currentProject, projects: ps, loading: false);
+}
+
+AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
+  List<LAProject> ps = [];
+  if (AppUtils.isDemo()) {
+    LAProject updatedP = LAProject.fromJson(action.projectsJson[0]);
+    ps = state.projects
+        .map((project) => project.id == updatedP.id ? updatedP : project)
+        .toList();
+  } else {
+    action.projectsJson.forEach((pJson) {
+      ps.add(LAProject.fromJson(pJson));
+    });
+  }
+  return state.copyWith(currentProject: ps[0], projects: ps);
 }
 
 AppState _editService(AppState state, EditService action) {
-  LAProject currentProject = state.currentProject;
-  currentProject.services[action.service.nameInt] = action.service;
-  return state.copyWith(currentProject: currentProject);
+  LAProject cProj = state.currentProject;
+  cProj.updateService(action.service);
+
+  return state.copyWith(currentProject: cProj);
 }
 
 AppState _testConnectivityProject(
     AppState state, TestConnectivityProject action) {
+  return state.copyWith(loading: true);
+}
+
+AppState _testServicesProject(AppState state, TestServicesProject action) {
   return state.copyWith(loading: true);
 }
 
@@ -236,8 +272,8 @@ AppState _onTestConnectivityResults(
     server.reachable = serviceStatus(action.results[serverName]['ping']);
     server.sshReachable = serviceStatus(action.results[serverName]['ssh']);
     server.sudoEnabled = serviceStatus(action.results[serverName]['sudo']);
-    server.osName = action.results[serverName]['os']['name'];
-    server.osVersion = action.results[serverName]['os']['version'];
+    server.osName = action.results[serverName]['os']['name'] ?? "";
+    server.osVersion = action.results[serverName]['os']['version'] ?? "";
     currentProject.upsertByName(server);
   }
   if (currentProject.allServersWithServicesReady() &&
@@ -251,7 +287,7 @@ AppState _onTestConnectivityResults(
       loading: false,
       projects: state.projects
           .map((project) =>
-              project.uuid == currentProject.uuid ? currentProject : project)
+              project.id == currentProject.id ? currentProject : project)
           .toList());
 }
 
@@ -282,27 +318,29 @@ AppState _showDeployProjectResults(
   currentProject.lastCmdDetails = action.results;
   bool fstDeployed = currentProject.lastCmdDetails!.numFailures() != null;
   currentProject.fstDeployed = currentProject.fstDeployed || fstDeployed;
-  action.cmdHistoryEntry.result = currentProject.lastCmdDetails!.result;
+  CmdResult result = currentProject.lastCmdDetails!.result;
+  action.cmdHistoryEntry.result = result;
   if (action.fstRetrieved) {
     // remove and just search?
-    currentProject.cmdHistory.insert(0, action.cmdHistoryEntry);
+    EntityApis.cmdHistoryEntryApi
+        .update(action.cmdHistoryEntry.id, {'result': result.toS()});
+    currentProject.cmdHistoryEntries.insert(0, action.cmdHistoryEntry);
   } else {
-    int index = currentProject.cmdHistory
-        .indexWhere((cur) => cur.uuid == action.cmdHistoryEntry.uuid);
-    if (index != -1) {
-      currentProject.cmdHistory
-          .replaceRange(index, index + 1, [action.cmdHistoryEntry]);
-    }
+    currentProject.cmdHistoryEntries = currentProject.cmdHistoryEntries
+        .map((che) =>
+            che.id == action.cmdHistoryEntry.id ? action.cmdHistoryEntry : che)
+        .toList();
   }
   List<LAProject> projects = replaceProject(state, currentProject);
   return state.copyWith(
+      loading: false,
       currentProject: currentProject,
       projects: projects); //, repeatCmd: DeployCmd());
 }
 
 List<LAProject> replaceProject(AppState state, LAProject currentProject) {
   List<LAProject> projects = new List<LAProject>.from(state.projects);
-  int index = projects.indexWhere((cur) => cur.uuid == currentProject.uuid);
+  int index = projects.indexWhere((cur) => cur.id == currentProject.id);
   projects.replaceRange(index, index + 1, [currentProject]);
   return projects;
 }
@@ -334,8 +372,8 @@ AppState _saveDeployCmd(AppState state, SaveDeployCmd action) {
 
 AppState _onDeleteLog(AppState state, DeleteLog action) {
   LAProject p = state.currentProject;
-  p.cmdHistory = new List<CmdHistoryEntry>.from(p.cmdHistory)
-    ..removeWhere((cmd) => cmd.uuid == action.cmd.uuid);
+  p.cmdHistoryEntries = new List<CmdHistoryEntry>.from(p.cmdHistoryEntries)
+    ..removeWhere((cmd) => cmd.id == action.cmd.id);
   List<LAProject> projects = replaceProject(state, p);
   return state.copyWith(currentProject: p, projects: projects);
 }
@@ -350,7 +388,24 @@ AppState _onAppPackageInfo(AppState state, OnAppPackageInfo action) {
 
 AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   LAProject currentProject = state.currentProject;
-  Map<String, dynamic> results = action.results;
-  for (String serverName in results.keys) {}
+  Map<String, dynamic> response = action.results;
+  String pId = response['projectId'];
+  // List<dynamic> results = response['results'];
+  List<dynamic> sdsJ = response['serviceDeploys'];
+  List<LAServiceDeploy> sds = [];
+  sdsJ.forEach((sdJ) {
+    LAServiceDeploy sd = LAServiceDeploy.fromJson(sdJ);
+    sds.add(sd);
+    // print(sdJ);
+  });
+  if (currentProject.id == pId) {
+    currentProject.serviceDeploys = sds;
+    currentProject.checkResults = response['results'];
+    return state.copyWith(
+        loading: false,
+        currentProject: currentProject,
+        projects: replaceProject(state, currentProject));
+  }
+  // for (String serverName in response.keys) {}
   return state;
 }

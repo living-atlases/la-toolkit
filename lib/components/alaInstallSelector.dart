@@ -27,6 +27,7 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
           initialValue: currentProject.alaInstallRelease,
           versions: vm.state.alaInstallReleases,
           onChange: (String? value) {
+            print(value);
             currentProject.alaInstallRelease =
                 value ?? vm.state.alaInstallReleases[0];
             vm.onUpdateProject(currentProject);

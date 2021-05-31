@@ -30,6 +30,13 @@ class BasicService {
   @override
   int get hashCode =>
       version.hashCode ^ name.hashCode ^ tcp.hashCode ^ udp.hashCode;
+
+  static List<BasicService> toCheck(List<BasicService> deps) {
+    return deps
+        .where(
+            (dep) => dep.name != Java.v8.name && dep.name != PostGis.v2_4.name)
+        .toList();
+  }
 }
 
 class Java extends BasicService {

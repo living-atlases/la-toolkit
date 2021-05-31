@@ -36,6 +36,7 @@ class ServersCardList extends StatelessWidget {
                             icon: const Icon(Icons.delete),
                             onPressed: () {
                               _project.delete(_project.servers[index]);
+                              _project.validateCreation();
                               vm.onSaveCurrentProject(_project);
                             },
                           ),

@@ -12,7 +12,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 # Install ansible via PIP
 RUN python3 -m pip install --upgrade pip cffi \
     pip install setuptools && \
-    pip install ansible==2.10.3 && \
+    pip install ansible==2.10.3 ansible-base=2.10.3 && \
     pip install mitogen ansible-lint
 
 # Install node via APT
@@ -106,6 +106,8 @@ RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
 RUN su - ubuntu -c 'npm install -g yo'
 RUN su - ubuntu -c 'npm install -g sails'
 RUN su - ubuntu -c 'npm install -g forever'
+RUN su - ubuntu -c 'npm install -g db-migrate'
+RUN su - ubuntu -c 'npm install -g db-migrate-mongodb'
 RUN echo "2021032402"
 RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 

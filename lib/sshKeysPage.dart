@@ -32,7 +32,7 @@ class SshKeyPage extends StatelessWidget {
             onImportKey: (name, publicKey, privateKey) =>
                 store.dispatch(OnImportSshKey(name, publicKey, privateKey)),
             onScanKeys: () => store
-                .dispatch(OnSshKeysScan(() => context.hideLoaderOverlay())));
+                .dispatch(OnSshKeysScan(() => context.loaderOverlay.hide())));
       },
       builder: (BuildContext context, _SshKeyViewModel vm) {
         return Scaffold(
@@ -58,7 +58,7 @@ class SshKeyPage extends StatelessWidget {
                       icon: Icon(Mdi.refresh),
                       style: TextButton.styleFrom(primary: Colors.white),
                       onPressed: () {
-                        context.showLoaderOverlay();
+                        context.loaderOverlay.show();
                         vm.onScanKeys();
                       },
                       label: Text("SCAN YOUR KEYS")),

@@ -8,12 +8,16 @@ part of 'laVariable.dart';
 
 extension LAVariableCopyWith on LAVariable {
   LAVariable copyWith({
+    String? id,
     String? nameInt,
+    String? projectId,
     LAServiceName? service,
     Object? value,
   }) {
     return LAVariable(
+      id: id ?? this.id,
       nameInt: nameInt ?? this.nameInt,
+      projectId: projectId ?? this.projectId,
       service: service ?? this.service,
       value: value ?? this.value,
     );
@@ -26,17 +30,21 @@ extension LAVariableCopyWith on LAVariable {
 
 LAVariable _$LAVariableFromJson(Map<String, dynamic> json) {
   return LAVariable(
+    id: json['id'] as String?,
     nameInt: json['nameInt'] as String,
     service: _$enumDecode(_$LAServiceNameEnumMap, json['service']),
     value: json['value'],
+    projectId: json['projectId'] as String,
   )..status = _$enumDecode(_$LAVariableStatusEnumMap, json['status']);
 }
 
 Map<String, dynamic> _$LAVariableToJson(LAVariable instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'nameInt': instance.nameInt,
       'service': _$LAServiceNameEnumMap[instance.service],
       'value': instance.value,
+      'projectId': instance.projectId,
       'status': _$LAVariableStatusEnumMap[instance.status],
     };
 

@@ -68,21 +68,23 @@ class AppState {
       this.firstUsage = true,
       LAProject? currentProject,
       this.currentStep = 0,
-      this.status = LAProjectViewStatus.view,
+      LAProjectViewStatus? status,
       List<String>? alaInstallReleases,
       List<String>? generatorReleases,
       List<AppSnackBarMessage>? appSnackBarMessages,
       DeployCmd? repeatCmd,
       this.pkgInfo,
       this.backendVersion,
-      this.loading = false,
+      bool? loading,
       List<SshKey>? sshKeys})
       : projects = projects ?? [],
         sshKeys = sshKeys ?? [],
+        status = status ?? LAProjectViewStatus.view,
         currentProject = currentProject ?? LAProject(),
         alaInstallReleases = alaInstallReleases ?? [],
         generatorReleases = generatorReleases ?? [],
         repeatCmd = repeatCmd ?? DeployCmd(),
+        loading = loading ?? false,
         appSnackBarMessages = appSnackBarMessages ?? [];
 
   factory AppState.fromJson(Map<String, dynamic> json) =>

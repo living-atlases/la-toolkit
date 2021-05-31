@@ -58,9 +58,8 @@ class ImportProject extends AppActions {
 }
 
 class AddTemplateProjects extends AppActions {
-  Map<String, dynamic> templates;
   Function(int) onAdded;
-  AddTemplateProjects({required this.templates, required this.onAdded});
+  AddTemplateProjects({required this.onAdded});
 }
 
 class AddProject extends AppActions {
@@ -69,10 +68,42 @@ class AddProject extends AppActions {
   AddProject(this.project);
 }
 
+class OnDemoAddProjects extends AppActions {
+  List<LAProject> projects;
+
+  OnDemoAddProjects(this.projects);
+}
+
+class OnProjectsAdded extends AppActions {
+  List<dynamic> projectsJson;
+
+  OnProjectsAdded(this.projectsJson);
+}
+
 class DelProject extends AppActions {
   LAProject project;
 
   DelProject(this.project);
+}
+
+class OnProjectDeleted extends AppActions {
+  LAProject project;
+  OnProjectDeleted(this.project);
+}
+
+class OnProjectUpdated extends AppActions {
+  List<dynamic> projectsJson;
+  OnProjectUpdated(this.projectsJson);
+}
+
+class ProjectsLoad extends AppActions {
+  ProjectsLoad();
+}
+
+class OnProjectsLoad extends AppActions {
+  List<dynamic> projectsJson;
+
+  OnProjectsLoad(this.projectsJson);
 }
 
 class OpenProject extends AppActions {
@@ -138,8 +169,7 @@ class SaveDeployCmd extends AppActions {
 class DeployProject extends AppActions {
   LAProject project;
   DeployCmd cmd;
-  Function(String cmd, int port, String logsPrefix, String logsSuffix,
-      String invDir) onStart;
+  Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart;
   ErrorCallback onError;
 
   DeployProject(
@@ -209,17 +239,20 @@ typedef void ErrorCallback(error);
 class TestConnectivityProject extends AppActions {
   LAProject project;
   VoidCallback onServersStatusReady;
+  VoidCallback onFailed;
 
-  TestConnectivityProject(this.project, this.onServersStatusReady);
+  TestConnectivityProject(
+      this.project, this.onServersStatusReady, this.onFailed);
 }
 
 class TestServicesProject extends AppActions {
   LAProject project;
   HostsServicesChecks hostsServicesChecks;
-  VoidCallback onServersStatusReady;
+  VoidCallback onResults;
+  VoidCallback onFailed;
 
   TestServicesProject(
-      this.project, this.hostsServicesChecks, this.onServersStatusReady);
+      this.project, this.hostsServicesChecks, this.onResults, this.onFailed);
 }
 
 class OnTestConnectivityResults extends AppActions {

@@ -44,7 +44,7 @@ class PostDeployCmd extends DeployCmd {
   Map<String, dynamic> toJson() => _$PostDeployCmdToJson(this);
 
   @override
-  String toString() {
+  String get desc {
     List<String> tasks = [];
     if (configurePostfix) tasks.add('configure postfix');
     String result =
@@ -52,7 +52,8 @@ class PostDeployCmd extends DeployCmd {
     return dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);
   }
 
-  List<String> get postTags {
+  @override
+  List<String> get tags {
     List<String> tags = [];
     if (configurePostfix) tags.add("post-task-postfix");
     return tags;

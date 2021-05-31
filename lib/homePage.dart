@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
@@ -62,7 +59,7 @@ class _HomePageState extends State<HomePage> {
               state: store.state,
               onImportProject: (yoRc) {
                 store.dispatch(ImportProject(yoRcJson: yoRc));
-                context.hideLoaderOverlay();
+                context.loaderOverlay.hide();
                 BeamerCond.of(context, LAProjectEditLocation());
               },
               onAddProject: () {
@@ -71,16 +68,15 @@ class _HomePageState extends State<HomePage> {
               },
               onAppPackageInfo: (pkgInfo) =>
                   store.dispatch(OnAppPackageInfo(pkgInfo)),
-              onAddTemplates: (templates) {
-                context.showLoaderOverlay();
-                store.dispatch(AddTemplateProjects(
-                    templates: templates,
-                    onAdded: (num) {
-                      context.hideLoaderOverlay();
-                      /* ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              projectsReload: () => store.dispatch(ProjectsLoad()),
+              onAddTemplates: () {
+                context.loaderOverlay.show();
+                store.dispatch(AddTemplateProjects(onAdded: (num) {
+                  context.loaderOverlay.hide();
+                  /* ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('Added $num sample LA Projects'),
                       )); */
-                    }));
+                }));
               });
         },
         builder: (BuildContext context, _HomePageViewModel vm) {
@@ -101,7 +97,21 @@ class _HomePageState extends State<HomePage> {
                   // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
                   // App bar with floating: true, pinned: true, snap: false:
                   appBar: LAAppBar(
-                      context: context, title: MyApp.appName, showLaIcon: true),
+                      context: context,
+                      title: MyApp.appName,
+                      showLaIcon: true,
+                      loading: vm.state.loading,
+                      actions: [
+                        if (AppUtils.isDev())
+                          IconButton(
+                            icon: Tooltip(
+                                child: Icon(Icons.refresh, color: Colors.white),
+                                message: "Refresh projects"),
+                            onPressed: () {
+                              vm.projectsReload();
+                            },
+                          )
+                      ]),
                   body: AppSnackBar(LAProjectsList()),
                   floatingActionButton:
                       /*
@@ -153,11 +163,8 @@ class _HomePageState extends State<HomePage> {
         // onClose: () => print('DIAL CLOSED'),
         tooltip: 'More options',
         heroTag: 'speed-dial-more-tag',
-        backgroundColor: vm.state.projects.length > 0
-            ? LAColorTheme.laPalette
-            : Colors.white,
-        foregroundColor:
-            vm.state.projects.length > 0 ? Colors.white : Colors.black,
+        backgroundColor: LAColorTheme.laPalette,
+        foregroundColor: Colors.white,
         elevation: 8.0,
         shape: CircleBorder(),
         // orientation: SpeedDialOrientation.Up,
@@ -171,12 +178,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Add some sample LA projects',
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () async {
-              // https://flutter.dev/docs/development/ui/assets-and-images#loading-text-assets
-
-              String templatesS = await rootBundle.loadString(
-                  AssetsUtils.pathWorkaround('la-toolkit-templates.json'));
-              Map<String, dynamic> templates = jsonDecode(templatesS);
-              vm.onAddTemplates(templates);
+              vm.onAddTemplates();
             },
             // onLongPress: () => print('FIRST CHILD LONG PRESS'),
           ),
@@ -230,7 +232,7 @@ class _HomePageState extends State<HomePage> {
           child: Text('OK'),
           onPressed: () async {
             try {
-              context.showLoaderOverlay();
+              context.loaderOverlay.show();
               String? yoRcJson = await FileUtils.getYoRcJson();
               if (yoRcJson != null)
                 vm.onImportProject(yoRcJson);
@@ -253,7 +255,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onFinish(BuildContext context, bool withError) {
-    context.hideLoaderOverlay();
+    context.loaderOverlay.hide();
     Navigator.pop(context);
     if (withError) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -269,15 +271,16 @@ class _HomePageViewModel {
   final void Function() onAddProject;
   final void Function(String) onImportProject;
   final void Function(PackageInfo) onAppPackageInfo;
-  final void Function(Map<String, dynamic>) onAddTemplates;
+  final void Function() onAddTemplates;
+  final void Function() projectsReload;
 
-  _HomePageViewModel({
-    required this.state,
-    required this.onAddProject,
-    required this.onImportProject,
-    required this.onAddTemplates,
-    required this.onAppPackageInfo,
-  });
+  _HomePageViewModel(
+      {required this.state,
+      required this.onAddProject,
+      required this.onImportProject,
+      required this.onAddTemplates,
+      required this.onAppPackageInfo,
+      required this.projectsReload});
 
   @override
   bool operator ==(Object other) =>
@@ -298,6 +301,4 @@ class _HomePageViewModel {
       // status.hashCode ^
       // currentStep.hashCode ^
       state.projects.hashCode;
-  // alaInstallReleases.hashCode;
-
 }

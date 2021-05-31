@@ -1,10 +1,13 @@
 import 'dart:ui';
 
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
-import 'package:uuid/uuid.dart';
+import 'package:objectid/objectid.dart';
+
+import 'isJsonSerializable.dart';
 
 part 'laService.g.dart';
 
@@ -25,37 +28,69 @@ extension ParseToString on ServiceStatus {
         return ResultType.ok.color;
     }
   }
+
+  Color get backColor {
+    switch (this) {
+      case ServiceStatus.failed:
+        return Colors.red.shade100;
+      case ServiceStatus.unknown:
+        return Colors.grey.shade100;
+      case ServiceStatus.success:
+        return Colors.green.shade100;
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case ServiceStatus.failed:
+        return Icons.warning_amber_outlined;
+      case ServiceStatus.unknown:
+        return Icons.check;
+      case ServiceStatus.success:
+        return Icons.check;
+    }
+  }
 }
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class LAService {
-  String uuid;
+class LAService implements IsJsonSerializable<LAService> {
+  // Basic -----
+  String id;
   String nameInt;
-  String iniPath;
   bool use;
+
+  // Urs related -----
   bool usesSubdomain;
+  String iniPath;
   String suburl;
+
+  // Status -----
   ServiceStatus status;
 
+  // Relations ----
+  String projectId;
+
   LAService(
-      {String? uuid,
+      {String? id,
       required this.nameInt,
       required this.iniPath,
       required this.use,
       required this.usesSubdomain,
       ServiceStatus? status,
-      required this.suburl})
-      : uuid = uuid ?? Uuid().v4(),
+      required this.suburl,
+      required this.projectId})
+      : id = id ?? new ObjectId().toString(),
         status = status ?? ServiceStatus.unknown;
 
-  LAService.fromDesc(LAServiceDesc desc)
-      : uuid = Uuid().v4(),
+  LAService.fromDesc(LAServiceDesc desc, String projectId)
+      : id = new ObjectId().toString(),
         nameInt = desc.nameInt,
         iniPath = desc.path,
         use = !desc.optional ? true : desc.initUse,
         usesSubdomain = true,
         this.status = ServiceStatus.unknown,
+        projectId = projectId,
         suburl = desc.name;
 
   String get path => usesSubdomain
@@ -75,7 +110,7 @@ class LAService {
   @override
   String toString() {
     if (use)
-      return 'LAService{name: $nameInt';
+      return 'LAService ($nameInt, project: (${projectId.length > 8 ? projectId.substring(0, 8) : ""}))';
     else
       return "not used";
   }
@@ -88,9 +123,10 @@ class LAService {
           nameInt == other.nameInt &&
           iniPath == other.iniPath &&
           use == other.use &&
-          uuid == other.uuid &&
+          id == other.id &&
           status == other.status &&
           usesSubdomain == other.usesSubdomain &&
+          projectId == other.projectId &&
           suburl == other.suburl;
 
   @override
@@ -99,7 +135,19 @@ class LAService {
       iniPath.hashCode ^
       use.hashCode ^
       usesSubdomain.hashCode ^
-      uuid.hashCode ^
+      id.hashCode ^
       status.hashCode ^
+      projectId.hashCode ^
       suburl.hashCode;
+
+  @override
+  LAService fromJson(Map<String, dynamic> json) => LAService.fromJson(json);
+
+  static List<String> removeSimpleServices(List<String> services) {
+    return services
+        .where((nameInt) =>
+            nameInt != LAServiceName.biocache_cli.toS() &&
+            nameInt != LAServiceName.nameindexer.toS())
+        .toList();
+  }
 }

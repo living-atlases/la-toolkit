@@ -15,6 +15,7 @@ import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:mdi/mdi.dart';
+import 'package:tuple/tuple.dart';
 
 class ServerStatusCard extends StatelessWidget {
   final LAServer server;
@@ -22,21 +23,24 @@ class ServerStatusCard extends StatelessWidget {
   final List<LAService> services;
   final String alaInstallVersion;
   final VoidCallback onTerm;
+  final List<dynamic> status;
   ServerStatusCard(
       {required this.server,
       required this.extendedStatus,
       required this.services,
       required this.alaInstallVersion,
-      required this.onTerm});
+      required this.onTerm,
+      required this.status});
 
   @override
   Widget build(BuildContext context) {
-    Map<String, LAServiceDepsDesc> despForV =
+    Map<String, LAServiceDepsDesc> depsForV =
         LAServiceDepsDesc.getDeps(alaInstallVersion);
     LinkedHashSet<BasicService> deps = LinkedHashSet<BasicService>();
     services.forEach((service) {
-      LAServiceDepsDesc? serDepDesc = despForV[service.nameInt];
-      if (serDepDesc != null) deps.addAll(serDepDesc.serviceDepends);
+      LAServiceDepsDesc? serDepDesc = depsForV[service.nameInt];
+      if (serDepDesc != null)
+        deps.addAll(BasicService.toCheck(serDepDesc.serviceDepends));
     });
     return IntrinsicWidth(
         child: Card(
@@ -101,7 +105,7 @@ class ServerStatusCard extends StatelessWidget {
                   // Expanded(
                   if (!extendedStatus) ConnectivityStatus(server: server),
                   if (extendedStatus) const SizedBox(width: 10),
-                  if (extendedStatus) DepsPanel(deps),
+                  if (extendedStatus) DepsPanel(deps, status),
                 ]))));
   }
 
@@ -175,22 +179,56 @@ class SimpleServerStatusItem extends StatelessWidget {
 
 class DepsPanel extends StatelessWidget {
   final LinkedHashSet<BasicService> deps;
-  const DepsPanel(this.deps);
+  final List<dynamic> status;
+  const DepsPanel(this.deps, this.status);
 
   @override
   Widget build(BuildContext context) {
+    Map<BasicService, CmdResult> depStatus = {};
+    deps.forEach((BasicService dep) {
+      int depCodeStatus = 0;
+      int checks = 0;
+      dep.tcp.forEach((tcp) {
+        String type = "tcp";
+        Tuple2<int, int> r = checkResultForType(type, "$tcp");
+        depCodeStatus += r.item2;
+        checks += r.item1;
+      });
+      dep.udp.forEach((udp) {
+        String type = "udp";
+        Tuple2<int, int> r = checkResultForType(type, "$udp");
+        depCodeStatus += r.item2;
+        checks += r.item1;
+      });
+      Tuple2<int, int> r = checkResultForType(dep.name, "");
+      depCodeStatus += r.item2;
+      checks += r.item1;
+      depStatus[dep] = checks == 0
+          ? CmdResult.unknown
+          : (depCodeStatus == 0 ? CmdResult.success : CmdResult.failed);
+    });
+
     return Padding(
         padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var dep in deps.where((dep) => dep.name != "java"))
+              for (var dep in deps)
                 Row(children: [
-                  const StatusIcon(CmdResult.success, size: 10),
+                  StatusIcon(depStatus[dep]!, size: 10),
                   const SizedBox(width: 3),
                   Text(dep.name)
                 ])
             ]));
+  }
+
+  Tuple2<int, int> checkResultForType(String type, String value) {
+    int depCodeStatus = 0;
+    List<dynamic> matchs = status
+        .where((s) => s['service'] == "check_$type" && s['args'] == "$value")
+        .toList();
+    matchs.forEach((match) => depCodeStatus += int.parse(match['code'] ?? '0'));
+    return Tuple2(matchs.length, depCodeStatus);
   }
 }

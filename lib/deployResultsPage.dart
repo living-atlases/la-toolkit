@@ -6,6 +6,7 @@ import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
+import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
@@ -15,6 +16,7 @@ import 'components/scrollPanel.dart';
 import 'components/termCommandDesc.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
+import 'models/cmd.dart';
 import 'models/cmdHistoryEntry.dart';
 
 class DeployResultsPage extends StatefulWidget {
@@ -38,26 +40,35 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
               store.dispatch(
                   DeployUtils.getCmdResults(context, cmdHistory, false));
             },
-            onClose: (project) {
+            onClose: (project, cmdHistory) {
               store.dispatch(OpenProjectTools(project));
               BeamerCond.of(context, LAProjectViewLocation());
+              Api.termClose(port: cmdHistory.port!, pid: cmdHistory.pid!);
             });
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {
         CmdHistoryDetails? cmdHistoryDetails = vm.project.lastCmdDetails;
+
         if (cmdHistoryDetails != null) {
           List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
           bool failed = cmdHistoryDetails.failed;
           CmdResult result = cmdHistoryDetails.result;
+          CmdHistoryEntry cmdEntry = cmdHistoryDetails.cmd!;
           // print(result);
           var nothingDone = !failed && cmdHistoryDetails.nothingDone;
           var noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
+          String title = cmdEntry.cmd.type.isDeploy
+              ? cmdHistoryDetails.cmd!.deployCmd!.getTitle()
+              : "TODO FIXME";
+          String desc = cmdEntry.cmd.type.isDeploy
+              ? cmdHistoryDetails.cmd!.deployCmd!.desc
+              : "TODO FIXME";
           return Scaffold(
               key: _scaffoldKey,
               appBar: LAAppBar(
                   context: context,
                   titleIcon: Icons.analytics_outlined,
-                  title: cmdHistoryDetails.cmd!.inhCmd.getTitle(),
+                  title: title,
                   showLaIcon: false,
                   showBack: true,
                   actions: [
@@ -65,7 +76,8 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                         icon: Tooltip(
                             child: const Icon(Icons.close, color: Colors.white),
                             message: "Close"),
-                        onPressed: () => vm.onClose(vm.project)),
+                        onPressed: () =>
+                            vm.onClose(vm.project, cmdHistoryDetails)),
                   ]),
               body: ScrollPanel(
                   withPadding: true,
@@ -81,8 +93,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const SizedBox(height: 20),
-                              Text(cmdHistoryDetails.cmd!.inhCmd.toString(),
-                                  style: UiUtils.cmdTitleStyle),
+                              Text(desc, style: UiUtils.cmdTitleStyle),
                               const SizedBox(height: 20),
                               Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -115,13 +126,15 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                         style: UiUtils.titleStyle)
                                   ]),
                               const SizedBox(height: 20),
+                              const Text('Tasks summary:',
+                                  style: UiUtils.subtitleStyle),
                               Container(
                                   width: 400,
                                   height: 300,
                                   child: ResultsPieChart(
                                       cmdHistoryDetails.resultsTotals)),
                               SizedBox(height: 20),
-                              const Text('Task details:',
+                              const Text('Tasks details:',
                                   style: UiUtils.subtitleStyle),
                               const SizedBox(height: 20),
                               Column(
@@ -185,7 +198,7 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
 
 class _DeployResultsViewModel {
   final LAProject project;
-  final Function(LAProject) onClose;
+  final Function(LAProject, CmdHistoryDetails cmdDetails) onClose;
   final void Function(CmdHistoryEntry entry) onOpenDeployResults;
   _DeployResultsViewModel(
       {required this.project,

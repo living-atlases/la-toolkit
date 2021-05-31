@@ -3,31 +3,43 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/sshKey.dart';
-import 'package:uuid/uuid.dart';
+import 'package:objectid/objectid.dart';
 
+import 'isJsonSerializable.dart';
 import 'laService.dart';
 
 part 'laServer.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class LAServer {
-  String uuid;
+class LAServer implements IsJsonSerializable<LAServer> {
+  // Basic
+  String id;
   String name;
+  List<String> aliases;
+
+  // Connectivity
   String ip;
   int sshPort;
   String? sshUser;
-  List<String> aliases;
   SshKey? sshKey;
+  // List of proxy jumps (assh allows multi proxyjumps)
   List<String> gateways;
+
+  // Status
   ServiceStatus reachable;
   ServiceStatus sshReachable;
   ServiceStatus sudoEnabled;
+
+  // Facts
   String osName;
   String osVersion;
 
+  // Relations
+  String projectId;
+
   LAServer(
-      {String? uuid,
+      {String? id,
       required this.name,
       String? ip,
       this.sshPort: 22,
@@ -39,8 +51,9 @@ class LAServer {
       this.sshReachable: ServiceStatus.unknown,
       this.sudoEnabled: ServiceStatus.unknown,
       this.osName = "",
-      this.osVersion = ""})
-      : uuid = uuid ?? Uuid().v4(),
+      this.osVersion = "",
+      required this.projectId})
+      : id = id ?? new ObjectId().toString(),
         this.aliases = aliases ?? [],
         this.gateways = gateways ?? [],
         this.ip = ip ?? "";
@@ -55,7 +68,7 @@ class LAServer {
       other is LAServer &&
           runtimeType == other.runtimeType &&
           name == other.name &&
-          uuid == other.uuid &&
+          id == other.id &&
           ip == other.ip &&
           sshPort == other.sshPort &&
           sshUser == other.sshUser &&
@@ -66,12 +79,13 @@ class LAServer {
           osVersion == other.osVersion &&
           reachable == other.reachable &&
           sshReachable == other.sshReachable &&
+          projectId == other.projectId &&
           sudoEnabled == other.sudoEnabled;
 
   @override
   int get hashCode =>
       name.hashCode ^
-      uuid.hashCode ^
+      id.hashCode ^
       ip.hashCode ^
       sshPort.hashCode ^
       sshUser.hashCode ^
@@ -82,6 +96,7 @@ class LAServer {
       osVersion.hashCode ^
       reachable.hashCode ^
       sshReachable.hashCode ^
+      projectId.hashCode ^
       sudoEnabled.hashCode;
 
   bool isReady() {
@@ -90,15 +105,20 @@ class LAServer {
         this.sudoEnabled == ServiceStatus.success;
   }
 
+  bool isSshReady() {
+    return this.reachable == ServiceStatus.success &&
+        this.sshReachable == ServiceStatus.success;
+  }
+
   @override
   String toString() {
-    return '''$name (${uuid.substring(0, 8)}...)${ip.length > 0 ? ', ' + ip : ''} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}''';
+    return '''$name (${id.substring(0, 8)}...)${ip.length > 0 ? ', ' + ip : ''} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}''';
   }
 
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {
-    if (servers.map((s) => s.uuid).toList().contains(laServer.uuid)) {
+    if (servers.map((s) => s.id).toList().contains(laServer.id)) {
       servers = servers
-          .map((current) => current.uuid == laServer.uuid ? laServer : current)
+          .map((current) => current.id == laServer.id ? laServer : current)
           .toList();
     } else {
       servers.add(laServer);
@@ -111,8 +131,8 @@ class LAServer {
     if (servers.map((s) => s.name).toList().contains(laServer.name)) {
       servers = servers.map((current) {
         if (current.name == laServer.name) {
-          // set the same previous uuid;
-          laServer.uuid = current.uuid;
+          // set the same previous id;
+          laServer.id = current.id;
           return laServer;
         } else
           return current;
@@ -122,4 +142,7 @@ class LAServer {
     }
     return servers;
   }
+
+  @override
+  LAServer fromJson(Map<String, dynamic> json) => LAServer.fromJson(json);
 }

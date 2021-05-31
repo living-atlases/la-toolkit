@@ -15,7 +15,6 @@ import 'package:mdi/mdi.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import 'components/appSnackBarMessage.dart';
 import 'components/generatorSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
@@ -50,6 +49,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               status: store.state.currentProject.status,
               alaInstallReleases: store.state.alaInstallReleases,
               generatorReleases: store.state.generatorReleases,
+              loading: store.state.loading,
               onOpenProject: (project) {
                 store.dispatch(OpenProject(project));
                 BeamerCond.of(context, LAProjectEditLocation());
@@ -90,16 +90,23 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               onGenInvProject: (project) =>
                   store.dispatch(GenerateInvProject(project)),
               onPortalStatus: (project) {
-                store.dispatch(
-                    ShowSnackBar(AppSnackBarMessage("Under development")));
-                store.dispatch(TestConnectivityProject(project, () {}));
+                /* store.dispatch(
+                    ShowSnackBar(AppSnackBarMessage("Under development"))); */
+                store.dispatch(TestServicesProject(
+                    project,
+                    project.serverServicesToMonitor().item2,
+                    () => store.dispatch(TestConnectivityProject(
+                        store.state.currentProject, () => {}, () => {})),
+                    () => {}));
                 BeamerCond.of(context, PortalStatusLocation());
               },
               onTestConnProject: (project, silence) {
-                if (!silence) context.showLoaderOverlay();
+                // if (!silence) context.loaderOverlay.show();
                 store.dispatch(TestConnectivityProject(project, () {
                   if (!silence)
                     _showServersStatus(context, store.state.currentProject);
+                }, () {
+                  //  if (!silence) context.loaderOverlay.hide();
                 }));
               });
         },
@@ -135,7 +142,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.foundation),
                 title: "Pre-Deploy Tasks",
-                enabled: project.allServersWithServicesReady(),
+                enabled: project.isCreated &&
+                        project.allServersWithServicesReady() ||
+                    project.allServersWithSshReady(),
                 action: () => vm.onPreDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.format_paint),
@@ -146,25 +155,28 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 title: "Deploy",
                 tooltip: "Install/update your LA Portal or some services",
                 grid: 12,
-                enabled: project.allServersWithServicesReady(),
+                enabled:
+                    project.isCreated && project.allServersWithServicesReady(),
                 action: () => vm.onDeployProject(project)),
             Tool(
                 icon: const Icon(Icons.receipt_long),
                 title: "Logs History",
                 tooltip: "Show deploy logs history",
-                enabled: project.allServersWithServicesReady() &&
-                    project.cmdHistory.length > 0,
+                enabled: project.isCreated &&
+                    project.allServersWithServicesReady() &&
+                    project.cmdHistoryEntries.length > 0,
                 action: () => vm.onViewLogs(project)),
             Tool(
                 icon: const Icon(Icons.house_siding),
                 title: "Post-Deploy Tasks",
-                enabled: project.fstDeployed,
+                enabled: project.isCreated && project.fstDeployed,
                 action: () => vm.onPostDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.fact_check),
                 title: "Portal Status",
                 tooltip: "Check your portal servers and services status",
-                enabled: project.allServersWithServicesReady(),
+                enabled:
+                    project.isCreated && project.allServersWithServicesReady(),
                 action: () => vm.onPortalStatus(vm.project)),
             /* Tool(
                 icon: const Icon(Icons.pie_chart),
@@ -214,6 +226,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   ),
                   context: context,
                   showLaIcon: false,
+                  loading: vm.loading,
                   backLocation: HomeLocation(),
                   showBack: true,
                   // backRoute: HomePage.routeName,
@@ -226,7 +239,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                       child: Column(children: [
                         Container(
                             padding: EdgeInsets.only(top: 80, bottom: 50),
-                            child: LAProjectTimeline(uuid: project.uuid)),
+                            child: LAProjectTimeline(id: project.id)),
                         // Disabled for now
                         // ServicesChipPanel(),
                         Row(
@@ -258,7 +271,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
 
   void _showServersStatus(BuildContext context, LAProject currentProject) {
     bool allReady = currentProject.allServersWithServicesReady();
-    context.hideLoaderOverlay();
+    context.loaderOverlay.hide();
     Alert(
         context: context,
         closeIcon: Icon(Icons.close),
@@ -278,7 +291,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   : "Uuppps! It seems that some servers are not yet ready",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
           SizedBox(height: 20),
-          ServersStatusPanel(extendedStatus: false)
+          ServersStatusPanel(extendedStatus: false, results: {})
         ])),
         buttons: [
           DialogButton(
@@ -298,6 +311,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
 class _ProjectPageViewModel {
   final LAProject project;
   final LAProjectStatus status;
+  final bool loading;
   List<String> alaInstallReleases;
   List<String> generatorReleases;
   final void Function(LAProject project) onOpenProject;
@@ -316,6 +330,7 @@ class _ProjectPageViewModel {
       required this.alaInstallReleases,
       required this.generatorReleases,
       required this.status,
+      required this.loading,
       required this.onOpenProject,
       required this.onTuneProject,
       required this.onDelProject,
@@ -334,6 +349,7 @@ class _ProjectPageViewModel {
           runtimeType == other.runtimeType &&
           project == other.project &&
           status.value == other.status.value &&
+          loading == other.loading &&
           ListEquality().equals(generatorReleases, other.generatorReleases) &&
           ListEquality().equals(alaInstallReleases, other.alaInstallReleases);
 
@@ -341,6 +357,7 @@ class _ProjectPageViewModel {
   int get hashCode =>
       project.hashCode ^
       status.value.hashCode ^
+      loading.hashCode ^
       ListEquality().hash(generatorReleases) ^
       ListEquality().hash(alaInstallReleases);
 }

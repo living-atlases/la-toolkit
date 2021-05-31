@@ -56,7 +56,7 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
         ? null
         : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
     currentStep: json['currentStep'] as int,
-    status: _$enumDecode(_$LAProjectViewStatusEnumMap, json['status']),
+    status: _$enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
     alaInstallReleases: (json['alaInstallReleases'] as List<dynamic>?)
         ?.map((e) => e as String)
         .toList(),
@@ -104,6 +104,17 @@ K _$enumDecode<K, V>(
       return MapEntry(unknownValue, enumValues.values.first);
     },
   ).key;
+}
+
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
+  dynamic source, {
+  K? unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$LAProjectViewStatusEnumMap = {

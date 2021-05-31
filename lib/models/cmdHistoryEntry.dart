@@ -5,7 +5,10 @@ import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
-import 'package:uuid/uuid.dart';
+import 'package:objectid/objectid.dart';
+
+import 'cmd.dart';
+import 'isJsonSerializable.dart';
 
 part 'cmdHistoryEntry.g.dart';
 
@@ -34,46 +37,54 @@ extension CmdResultToIconData on CmdResult {
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class CmdHistoryEntry {
-  String uuid;
+class CmdHistoryEntry implements IsJsonSerializable {
+  String id;
+  String? desc;
   String logsPrefix;
   String logsSuffix;
-  String cmd;
+  String rawCmd;
   String invDir;
-  DeployCmd deployCmd;
-  // We add this in order to serialize other inherit class correctly
-  PreDeployCmd? preDeployCmd;
-  PostDeployCmd? postDeployCmd;
+  Cmd cmd;
+  @JsonKey(ignore: true)
   DateTime date;
   CmdResult result;
+  int createdAt;
+  @JsonKey(ignore: true)
+  DeployCmd? parsedCmd;
 
   CmdHistoryEntry(
-      {String? uuid,
+      {String? id,
       required this.logsPrefix,
       required this.logsSuffix,
+      required this.desc,
       String? invDir,
+      required this.rawCmd,
       required this.cmd,
-      required this.deployCmd,
-      this.preDeployCmd,
-      this.postDeployCmd,
-      DateTime? date,
+      int? createdAt,
       this.result: CmdResult.unknown})
-      : uuid = uuid ?? Uuid().v4(),
+      : id = id ?? new ObjectId().toString(),
         invDir = invDir ?? "",
-        this.date = date ?? DateTime.now();
+        createdAt = createdAt ?? DateTime.now().millisecond,
+        this.date = createdAt != null
+            ? DateTime.fromMillisecondsSinceEpoch(createdAt)
+            : DateTime.now() {
+    if (cmd.type.isDeploy) {
+      if (cmd.type == CmdType.preDeploy) {
+        parsedCmd = PreDeployCmd.fromJson(cmd.properties);
+      } else if (cmd.type == CmdType.postDeploy) {
+        parsedCmd = PostDeployCmd.fromJson(cmd.properties);
+      } else
+        /* if (cmd.type == CmdType.deploy) { */
+        parsedCmd = DeployCmd.fromJson(cmd.properties);
+    }
+  }
 
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryEntryFromJson(json);
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
 
-  DeployCmd get inhCmd {
-    if (preDeployCmd != null) {
-      deployCmd = preDeployCmd!;
-    }
-    if (postDeployCmd != null) {
-      deployCmd = postDeployCmd!;
-    }
-    return deployCmd;
+  DeployCmd? get deployCmd {
+    return parsedCmd;
   }
 
   @override
@@ -81,27 +92,30 @@ class CmdHistoryEntry {
       identical(this, other) ||
       other is CmdHistoryEntry &&
           runtimeType == other.runtimeType &&
-          uuid == other.uuid &&
+          id == other.id &&
           logsPrefix == other.logsPrefix &&
           logsSuffix == other.logsSuffix &&
+          rawCmd == other.rawCmd &&
           cmd == other.cmd &&
-          deployCmd == other.deployCmd &&
-          preDeployCmd == other.preDeployCmd &&
-          postDeployCmd == other.postDeployCmd &&
           date == other.date &&
           invDir == other.invDir &&
+          desc == other.desc &&
           result == other.result;
 
   @override
   int get hashCode =>
-      uuid.hashCode ^
+      id.hashCode ^
       invDir.hashCode ^
       logsPrefix.hashCode ^
       logsSuffix.hashCode ^
-      cmd.hashCode ^
-      deployCmd.hashCode ^
-      preDeployCmd.hashCode ^
-      postDeployCmd.hashCode ^
+      desc.hashCode ^
+      rawCmd.hashCode ^
       date.hashCode ^
+      cmd.hashCode ^
       result.hashCode;
+
+  @override
+  fromJson(Map<String, dynamic> json) {
+    return CmdHistoryEntry.fromJson(json);
+  }
 }

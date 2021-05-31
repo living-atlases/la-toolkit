@@ -1,8 +1,10 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 
 import 'basicService.dart';
+import 'laServiceDeploy.dart';
 
 class ProdServiceDesc {
   final IconData icon;
@@ -14,7 +16,7 @@ class ProdServiceDesc {
   final bool alaAdmin;
   final String? help;
   final String subtitle;
-  final List<String> hostnames;
+  final List<LAServiceDeploy> serviceDeploys;
   final List<BasicService>? deps;
   final List<String> urls = [];
   final ServiceStatus status;
@@ -28,7 +30,7 @@ class ProdServiceDesc {
       required this.admin,
       required this.alaAdmin,
       required this.subtitle,
-      required this.hostnames,
+      required this.serviceDeploys,
       this.help,
       required this.deps,
       required this.status}) {
@@ -40,4 +42,38 @@ class ProdServiceDesc {
       if (admin) urls.add(url + '/admin/');
     }
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProdServiceDesc &&
+          runtimeType == other.runtimeType &&
+          icon == other.icon &&
+          name == other.name &&
+          nameInt == other.nameInt &&
+          tooltip == other.tooltip &&
+          url == other.url &&
+          admin == other.admin &&
+          alaAdmin == other.alaAdmin &&
+          help == other.help &&
+          subtitle == other.subtitle &&
+          ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
+          ListEquality().equals(deps, other.deps) &&
+          ListEquality().equals(urls, other.urls) &&
+          status == other.status;
+
+  @override
+  int get hashCode =>
+      icon.hashCode ^
+      name.hashCode ^
+      nameInt.hashCode ^
+      tooltip.hashCode ^
+      admin.hashCode ^
+      alaAdmin.hashCode ^
+      help.hashCode ^
+      subtitle.hashCode ^
+      ListEquality().hash(serviceDeploys) ^
+      ListEquality().hash(deps) ^
+      ListEquality().hash(urls) ^
+      status.hashCode;
 }

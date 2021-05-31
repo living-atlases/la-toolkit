@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -15,6 +17,7 @@ class CmdHistoryDetails {
   @JsonKey(ignore: true)
   CmdHistoryEntry? cmd;
   int? port;
+  int? pid;
   int code;
   List<dynamic> results;
   String logs;
@@ -28,6 +31,7 @@ class CmdHistoryDetails {
   CmdHistoryDetails(
       {this.cmd,
       this.port,
+      this.pid,
       required this.code,
       required this.results,
       required this.logs,
@@ -43,6 +47,7 @@ class CmdHistoryDetails {
           code == other.code &&
           cmd == other.cmd &&
           port == other.port &&
+          pid == other.pid &&
           results == other.results &&
           logs == other.logs &&
           fstRetrieved == other.fstRetrieved &&
@@ -74,10 +79,12 @@ class CmdHistoryDetails {
   List<Widget> get detailsWidgetList {
     if (_details == null) {
       _details = [];
-      Map<String, List<AnsibleError>> errors = {};
       results.forEach((result) {
+        Map<String, List<AnsibleError>> errors = {};
+        HashSet<String> plays = new HashSet<String>();
         result['plays'].forEach((play) {
-          String name = play['play']['name'];
+          String playName = play['play']['name'];
+          plays.add(playName);
           play['tasks'].forEach((task) {
             task['hosts'].keys.forEach((host) {
               if (errors[host] == null) errors[host] = [];
@@ -90,15 +97,24 @@ class CmdHistoryDetails {
                 String msg = task['hosts'][host] != null
                     ? task['hosts'][host]['msg']
                     : '';
+                if (task['hosts'][host]['results'] != null) {
+                  task['hosts'][host]['results'].forEach((r) {
+                    if (r['stderr'] != null) msg += "\n" + r['stderr'];
+                  });
+                }
                 errors[host]!.add(AnsibleError(
-                    host: host, playName: name, taskName: taskName, msg: msg));
+                    host: host,
+                    playName: playName,
+                    taskName: taskName,
+                    msg: msg));
               }
             });
           });
         });
         result['stats'].keys.forEach((host) {
           DeploySubResultWidget subResult = DeploySubResultWidget(
-              title: host,
+              host: host,
+              title: plays.join(', '),
               results: result['stats'][host],
               errors: errors[host]!);
           _details!.add(subResult);
@@ -159,6 +175,7 @@ class CmdHistoryDetails {
       logs.hashCode ^
       cmd.hashCode ^
       port.hashCode ^
+      pid.hashCode ^
       logsColorized.hashCode ^
       fstRetrieved.hashCode;
 

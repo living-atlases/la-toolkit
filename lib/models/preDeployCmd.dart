@@ -15,6 +15,7 @@ class PreDeployCmd extends DeployCmd {
   bool etcHosts;
   bool solrLimits;
   bool addAdditionalDeps;
+  bool rootBecome;
 
   PreDeployCmd(
       {this.addAnsibleUser = false,
@@ -23,6 +24,7 @@ class PreDeployCmd extends DeployCmd {
       this.etcHosts = true,
       this.solrLimits = true,
       this.addAdditionalDeps = true,
+      bool? rootBecome,
       List<String>? limitToServers,
       List<String>? skipTags,
       List<String>? tags,
@@ -30,7 +32,8 @@ class PreDeployCmd extends DeployCmd {
       continueEvenIfFails = false,
       debug = false,
       dryRun = false})
-      : super(
+      : rootBecome = rootBecome ?? false,
+        super(
             deployServices: ['all'],
             limitToServers: limitToServers,
             skipTags: skipTags,
@@ -45,7 +48,8 @@ class PreDeployCmd extends DeployCmd {
       _$PreDeployCmdFromJson(json);
   Map<String, dynamic> toJson() => _$PreDeployCmdToJson(this);
 
-  List<String> get preTags {
+  @override
+  List<String> get tags {
     List<String> tags = [];
     if (addAnsibleUser) tags.add("pre-task-def-user");
     if (addSshKeys) tags.add("pre-task-ssh-keys");
@@ -57,7 +61,7 @@ class PreDeployCmd extends DeployCmd {
   }
 
   @override
-  String toString() {
+  String get desc {
     List<String> tasks = [];
     if (addAnsibleUser) tasks.add('add default user');
     if (addSshKeys) tasks.add('add ssh keys');
@@ -65,6 +69,7 @@ class PreDeployCmd extends DeployCmd {
     if (etcHosts) tasks.add("setup '/etc/hosts'");
     if (solrLimits) tasks.add('setup solr limits');
     if (addAdditionalDeps) tasks.add('additional deps install');
+    if (rootBecome) tasks.add('as root');
     String result =
         'pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
     return dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);

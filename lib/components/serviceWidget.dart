@@ -211,17 +211,20 @@ class ServiceWidget extends StatelessWidget {
     });
   }
 
-  Widget _wrapField({required Widget child}) {
+  Widget _wrapField({required Widget child, required bool isSub}) {
     return IntrinsicWidth(
-        child: Column(
-            // mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-          ConstrainedBox(
-              constraints: new BoxConstraints(
-                minWidth: 60.0,
-              ),
-              child: child)
-        ]));
+        child: Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Column(
+                // mainAxisAlignment: MainAxisAlignment.start,
+
+                children: [
+                  ConstrainedBox(
+                      constraints: new BoxConstraints(
+                        minWidth: isSub ? 80.0 : 100,
+                      ),
+                      child: child)
+                ])));
   }
 
   Widget _createSubUrlField(LAService service, LAServiceDesc serviceDesc,
@@ -236,12 +239,14 @@ class ServiceWidget extends StatelessWidget {
             // hint: serviceDesc.hint,
             isDense: false,
             isCollapsed: true,
+            contentPadding: EdgeInsets.only(bottom: 4),
             regexp: LARegExp.subdomain,
             error: error,
             onChanged: (value) {
               service.suburl = value;
               vm.onEditService(service);
-            }));
+            }),
+        isSub: true);
   }
 
   Widget _createPathField(LAService service, LAServiceDesc serviceDesc,
@@ -255,13 +260,15 @@ class ServiceWidget extends StatelessWidget {
                 : null,
             isDense: false,
             isCollapsed: true,
+            contentPadding: EdgeInsets.only(bottom: 4),
             regexp: LARegExp.subdomain,
             allowEmpty: true,
             error: error,
             onChanged: (value) {
               service.iniPath = value;
               vm.onEditService(service);
-            }));
+            }),
+        isSub: false);
   }
 }
 

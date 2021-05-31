@@ -12,7 +12,10 @@ import '../notInDemo.dart';
 
 class TermDialog {
   static show(context,
-      {title: 'Console', required int port, VoidCallback? onClose}) async {
+      {title: 'Console',
+      required int port,
+      required int pid,
+      VoidCallback? onClose}) async {
     print("${getInitialUrl(port)}");
     await showFloatingModalBottomSheet(
         // This can be added to the custom modal
@@ -46,7 +49,10 @@ class TermDialog {
                 body: termArea(port),
               ),
             ));
-    if (onClose != null) onClose();
+    Api.termClose(port: port, pid: pid);
+    if (onClose != null) {
+      onClose();
+    }
   }
 
   static String getInitialUrl(int port) => 'http://localhost:$port/';
@@ -96,18 +102,19 @@ class TermDialog {
 
   // Opens a bash or a ssh on server
   static void openTerm(BuildContext context,
-      [String? projectUuid, String? server]) {
-    context.showLoaderOverlay();
+      [String? projectId, String? server]) {
+    // context.loaderOverlay.show();
+    context.loaderOverlay.show();
     Api.term(
-        onStart: (cmd, port) {
-          context.hideLoaderOverlay();
-          TermDialog.show(context, port: port);
+        onStart: (cmd, port, ttydPid) {
+          context.loaderOverlay.hide();
+          TermDialog.show(context, port: port, pid: ttydPid);
         },
         onError: (error) {
-          context.hideLoaderOverlay();
+          context.loaderOverlay.hide();
           UiUtils.termErrorAlert(context, error);
         },
-        projectUuid: projectUuid,
+        projectId: projectId,
         server: server);
   }
 }
