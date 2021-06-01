@@ -12,7 +12,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 # Install ansible via PIP
 RUN python3 -m pip install --upgrade pip cffi \
     pip install setuptools && \
-    pip install ansible==2.10.3 ansible-base=2.10.3 && \
+    pip install ansible==2.10.3 ansible-base==2.10.3 && \
     pip install mitogen ansible-lint
 
 # Install node via APT
