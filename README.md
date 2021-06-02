@@ -12,19 +12,43 @@ _Under development tool_
    * [Data directories](#data-directories)
 * [Running the la-toolkit](#running-the-la-toolkit)
    * [Using docker-compose](#using-docker-compose)
-   * [Ubuntu 20 vs Ubuntu 18](#ubuntu-20-vs-ubuntu-18)
-   * [Or using only docker if you don't want to use docker-compose](#or-using-only-docker-if-you-dont-want-to-use-docker-compose)
-* [Run the LA-Toolkit docker image](#run-the-la-toolkit-docker-image)
    * [Running the la-toolkit in an external server.](#running-the-la-toolkit-in-an-external-server)
 * [Upgrade the toolkit](#upgrade-the-toolkit)
+   * [Notes to upgrade to 1.1.X](#notes-to-upgrade-to-11X)
+* [Logs and debugging](#logs-and-debugging)
 * [Development](#development)
    * [Using flutter web](#using-flutter-web)
    * [Autogeneration of code](#autogeneration-of-code)
    * [Backend during development](#backend-during-development)
    * [Flutter build](#flutter-build)
+   * [Ubuntu 20 vs Ubuntu 18](#ubuntu-20-vs-ubuntu-18)
    * [Docker image build](#docker-image-build)
 * [Developed so far and Roadmap](#developed-so-far-and-roadmap)
 * [Screenshots](#screenshots)
+   * [Loading:](#loading)
+   * [Intro page:](#intro-page)
+   * [Intro continuation:](#intro-continuation)
+   * [List of created projects:](#list-of-created-projects)
+   * [Project Tools:](#project-tools)
+   * [Editing the project:](#editing-the-project)
+   * [Service definition:](#service-definition)
+   * [Theme selection:](#theme-selection)
+   * [Services in servers:](#services-in-servers)
+   * [Servers connectivity:](#servers-connectivity)
+   * [Project tunning:](#project-tunning)
+   * [Project drawer with links to each service and admin interfaces:](#project-drawer-with-links-to-each-service-and-admin-interfaces)
+   * [SSH keys administration:](#ssh-keys-administration)
+   * [SSH Gateways configuration:](#ssh-gateways-configuration)
+   * [Project configuration lint warnings](#project-configuration-lint-warnings)
+   * [Testing connectivity with the project servers:](#testing-connectivity-with-the-project-servers)
+   * [Deployment:](#deployment)
+   * [Deployment Ansible terminal:](#deployment-ansible-terminal)
+   * [Deployment results (success):](#deployment-results-success)
+   * [Deployment results (failed):](#deployment-results-failed)
+   * [History of deployments with repeat function](#history-of-deployments-with-repeat-function)
+   * [Console for the intrepids:](#console-for-the-intrepids)
+* [License](#license)
+   * [Others](#others)
 
 ## Introduction
 
@@ -130,7 +154,7 @@ docker-compose up -d
 
 TODO: Add the update task to the Windows script.
 
-### Notes to upgrade to 1.1.0
+### Notes to upgrade to 1.1.X
 
 - Copy the new `docker-compose.yml` as it includes new images and configurations
 - Move your data to `/data/la-toolkit` and create an additional `/data/la-toolkit/mongo/`. If you want to use a different directories edit your `docker-compose.yml` volumes accordingly. You can also use symlinks.
