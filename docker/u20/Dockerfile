@@ -5,7 +5,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         apt-get install -y software-properties-common python-docopt sudo curl byobu jq && \
         apt-get install -y python-dev git 'python.*-pip' python3-minimal 'python2.*-minimal' && \
         apt-get install -y python-docopt nagios-plugins iputils-ping openjdk-8-jre && \
-        apt-get install -y gnupg2 sshpass openssh-client openssh-server vim && \
+        apt-get install -y gnupg2 sshpass openssh-client openssh-server vim netcat && \
         rm -rf /var/lib/apt/lists/* && \
         apt-get clean
 
@@ -75,10 +75,6 @@ RUN chown ubuntu:ubuntu -R /home/ubuntu/.byobu
 COPY docker/ansible-list-tags /usr/local/bin/ansible-list-tags
 RUN chmod +x /usr/local/bin/ansible-list-tags
 
-# server launch script
-COPY docker/launch.sh /usr/local/bin/la-toolkit-launch
-RUN chmod +x /usr/local/bin/la-toolkit-launch
-
 # Ansible working directory
 RUN mkdir /home/ubuntu/ansible
 COPY docker/ansible.cfg /home/ubuntu/.ansible.cfg
@@ -118,12 +114,12 @@ RUN su - ubuntu -c 'git clone --depth 1 --branch v2.0.6 https://github.com/Atlas
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-RUN echo "2021053101"
+RUN echo "2021060101"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 # la-toolkit frontend
-RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.1.0/flutter-web-1.1.0.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
+RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.1.1/flutter-web-1.1.1.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
 # RUN echo "2021032402"
 # COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
@@ -137,11 +133,17 @@ RUN chmod +x /usr/local/bin/echo-bash
 COPY docker/check_by_ssh /usr/local/bin/check_by_ssh
 RUN chmod +x /usr/local/bin/check_by_ssh
 
+# server launch script
+COPY docker/launch.sh /usr/local/bin/la-toolkit-launch
+RUN chmod +x /usr/local/bin/la-toolkit-launch
+
 # The year of ALA Portal launch ;-)
 EXPOSE 2010
 
 # Used by ttyd
 EXPOSE 2011
+
+USER ubuntu
 
 # launch the backend
 CMD /usr/local/bin/la-toolkit-launch

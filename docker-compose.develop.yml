@@ -15,10 +15,14 @@ services:
       # Internal an external ports should match in the previous range. 
       # So don't do these kind of redirections:
       # - "3011-3100:2011-2100"
+    depends_on:
+      - mongo
     environment:
       # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       # Useful for having logs with local time
       TZ: "Europe/Copenhagen"
+      # db user/pass (should match the same mongo vars LA_USER/LA_PASS)
+      DATABASE_URL: mongodb://la_toolkit_user:la_toolkit_changeme@mongo:27017/la_toolkit
     volumes:
       # mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/
       - /data/la-toolkit/config/:/home/ubuntu/ansible/la-inventories/:rw
