@@ -34,9 +34,9 @@ services:
     image: mongo:4
     restart: always
     container_name: la-toolkit-mongo
-    # Uncomment if mongo-express is not enough
-    ports:
-      - 27017:27017
+    # Uncomment if mongo-express if you want to access mongo from the outside
+    # ports:
+    #  - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: la_toolkit_mongo_admin
       MONGO_INITDB_ROOT_PASSWORD: la_toolkit_changeme
@@ -44,6 +44,8 @@ services:
       LA_USER: la_toolkit_user
       LA_PASS: la_toolkit_changeme
     volumes:
+      # If you don't clone the la-toolkit repo you will need also the mongo-init.sh script that
+      # setup the db initially
       - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - /data/la-toolkit/mongo:/data/db
 
