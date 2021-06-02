@@ -130,7 +130,14 @@ docker-compose up -d
 
 TODO: Add the update task to the Windows script.
 
-### Logs and debugging
+### Notes to upgrade to 1.1.0
+
+- Copy the new `docker-compose.yml` as it includes new images and configurations
+- Move your data to `/data/la-toolkit` and create an additional `/data/la-toolkit/mongo/`. If you want to use a different directories edit your `docker-compose.yml` volumes accordingly. You can also use symlinks.
+- Change the mongo db user/passwords before start the container.
+- A migration of your projects json configuration to mongo should be done at startup. Please verify that the `la-toolkit` start correctly. If not see the "Logs and debugging" section above.
+
+## Logs and debugging
 
 Startup errors can be debuged running `docker-compose` without `-d`:
 
@@ -144,16 +151,14 @@ Runtime server errors during the use of the la-toolkit can be debugged looking t
 docker logs la-toolkit
 ```
 
+If the `la-toolkit` restart continuosly durint development, it can be debugged with:
+```
+docker run -it --network=la-toolkit_default --entrypoint /bin/bash  livingatlases/la-toolkit:latest -s
+```
+
 In some cases the [browser devtools console](https://developer.chrome.com/docs/devtools/open/) can show some info about browser code errors. 
 
 Please [fill an issue](https://developer.chrome.com/docs/devtools/open/) with this information if you encounter some problem.
-
-### Notes to upgrade to 1.1.0
-
-- Copy the new `docker-compose.yml` as it includes new images and configurations
-- Move your data to `/data/la-toolkit` and create an additional `/data/la-toolkit/mongo/`. If you want to use a different directories edit your `docker-compose.yml` volumes accordingly. You can also use symlinks.
-- Change the mongo db user/passwords before start the container.
-- A migration of your projects json configuration to mongo should be done at startup. Please verify that the `la-toolkit` start correctly. If not see the "Logs and debugging" section above.
 
 ## Development
 
