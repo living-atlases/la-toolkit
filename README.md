@@ -67,9 +67,20 @@ Optionally you'll need the [Docker Compose](https://docs.docker.com/compose/inst
 Your will need also some directories to store your config, logs and ssh configuration. In GNU/Linux you can use:
 
 ```
- mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/
+mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/ /data/la-toolkit/mongo
+      
 ``` 
-or similar to create it. If you use a diferent directory, you'll have to update the docker-compose files accordinly.
+or similar to create it.  Something like:
+
+```
+/data/la-toolkit
+         ├── config
+         ├── logs
+         ├── mongo
+         └── ssh 
+```
+
+If you use a diferent directory, you'll have to update the `docker-compose.yml` files accordinly.
 
 ## Running the la-toolkit
 
@@ -79,62 +90,20 @@ or similar to create it. If you use a diferent directory, you'll have to update 
 ./dockerTask.sh compose
 ```
 
-This will open the toolkit in http://localhost:2010/
+or directly:
 
-run `./dockerTask.sh` for more options (like how to run a development environment).
+```
+docker-compose up -d
+```
+
+This will start three containers (la-toolkit, la-toolkit-mongo and la-toolkit-watchtower). You can see it with `docker ps`. Verify that they start correctly.
+
+Open the toolkit in http://localhost:2010/
+
+Run `./dockerTask.sh` for more options (like how to run a development environment).
 
 In Windows, try `dockerTask.ps1` (feedback welcome).
 
-### Ubuntu 20 vs Ubuntu 18
-
-Right now there are two images based in Ubuntu 20.04 and 18.04 respectively. We have tested more u18 as deployment environment, but we are tryng to start using u20. So if you have some ansible issue during deploying (like python2/ptython3 issues), try 18.04 instead.
-
-### Or using only docker if you don't want to use docker-compose
-
-Download  the LA-Toolkit Image from Docker Hub via:
-
-```
-docker pull livingatlases/la-toolkit:latest
-```
-
-you can also build yourself the images (see the Development section).
-
-#### Run the LA-Toolkit docker image
-
-Run the image exposing the port `2010` that is were the la-toolkit web interface is listen to,  the `2011` port, used by interactive terminal commands, and configuring the volumes for:
-
-- your ssh keys
-- your inventories and configuration
-- your logs
-
-So create this directories or reuse existing ones and run:
-
-```
-docker run --rm \
-   -v PUT_YOUR_SSH_KEYS_DIRECTORY_HERE:/home/ubuntu/.ssh/ \
-   -v PUT_YOUR_CONFIG_DIRECTORY_HERE:/home/ubuntu/ansible/la-inventories \
-   -v PUT_YOUR_LOGS_DIRECTORY_HERE:/home/ubuntu/ansible/logs \
-   -t -d --name la-toolkit -h la-toolkit -p 2010:2010 -p 2011:2011 la-toolkit:latest
-```
-
-During development some test directory like `/var/tmp/la-toolkit/.ssh/`.
-
-Optionally you can mount a different `ala-install` repository (for instance a modified one):
-
-```
-   (...)
-   -v PUT_YOUR_ALA_INSTALL_DIRECTORY_HERE/:/home/ubuntu/ansible/ala-install/ \
-   (...)
-```
-In this case, use `custom` in the ala-install releases version dropdown.
-
-To start using the LA Toolkit visit:
-http://localhost:2010/
-
-Stop it with:
-```
-docker stop la-toolkit
-```
 ### Running the la-toolkit in an external server.
 
 You can run the la-toolkit in another server and redirect the ports via ssh like:
@@ -160,6 +129,31 @@ docker-compose up -d
 ```
 
 TODO: Add the update task to the Windows script.
+
+### Logs and debugging
+
+Startup errors can be debuged running `docker-compose` without `-d`:
+
+```
+docker-compose -f ./docker-compose.yml up 
+```
+
+Runtime server errors during the use of the la-toolkit can be debugged looking the logs with:
+
+```
+docker logs la-toolkit
+```
+
+In some cases the [browser devtools console](https://developer.chrome.com/docs/devtools/open/) can show some info about browser code errors. 
+
+Please [fill an issue](https://developer.chrome.com/docs/devtools/open/) with this information if you encounter some problem.
+
+### Notes to upgrade to 1.1.0
+
+- Copy the new `docker-compose.yml` as it includes new images and configurations
+- Move your data to `/data/la-toolkit` and create an additional `/data/la-toolkit/mongo/`. If you want to use a different directories edit your `docker-compose.yml` volumes accordingly. You can also use symlinks.
+- Change the mongo db user/passwords before start the container.
+- A migration of your projects json configuration to mongo should be done at startup. Please verify that the `la-toolkit` start correctly. If not see the "Logs and debugging" section above.
 
 ## Development
 
@@ -202,6 +196,10 @@ While we finish the null safety migration we have to use:
 flutter build web --no-sound-null-safety 
 ```
 
+### Ubuntu 20 vs Ubuntu 18
+
+Right now there are two images based in Ubuntu 20.04 and 18.04 respectively. We have tested more u18 as deployment environment, but we are tryng to start using u20. So if you have some ansible issue during deploying (like python2/ptython3 issues), try 18.04 instead.
+
 ### Docker image build
 
 You will need to build the flutter web as described below prior to build a `la-toolkit` image.
@@ -231,7 +229,7 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 - [X] Logs store and replay previous deploy tasks
 - [X] Ansible task errors summary
 - [X] Software dependencies release checking and notification of available upgrades
-- [~] Pre-deploy tasks (wip)
+- [X] Pre-deploy tasks (wip)
 - [~] Post-deploy tasks (wip)
 - [ ] Branding deployment (wip)
 - [ ] Stats tool
