@@ -7,8 +7,8 @@ services:
     restart: always
     hostname: la-toolkit
     ports:
-      - "20010:2010"
-      - "20011-20100:20011-20100"
+      - "2010:2010"
+      - "2011-2100:2011-2100"
       # Internal an external ports should match in the previous range. 
       # So don't do these kind of redirections:
       # - "3011-3100:2011-2100"
