@@ -31,5 +31,5 @@ do
     echo Trying to connect to the mongo db at $PARSED_HOST:$PARSED_PORT...
     sleep 3
 done
-cd /home/ubuntu/la-toolkit && NODE_ENV=production db-migrate up
+cd /home/ubuntu/la-toolkit && db-migrate up
 cd /home/ubuntu/la-toolkit && forever app.js --prod --port 2010 --verbose
