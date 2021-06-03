@@ -220,11 +220,6 @@ We need to have the frontend build prior to build the docker image:
 flutter test && flutter build web
 ```
 
-While we finish the null safety migration we have to use:
-```
-flutter build web --no-sound-null-safety 
-```
-
 ### Ubuntu 20 vs Ubuntu 18
 
 Right now there are two images based in Ubuntu 20.04 and 18.04 respectively. We have tested more u18 as deployment environment, but we are tryng to start using u20. So if you have some ansible issue during deploying (like python2/ptython3 issues), try 18.04 instead.

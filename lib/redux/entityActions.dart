@@ -21,7 +21,7 @@ class SuccessCreateOne<T> {
 class FailCreateOne<T> {
   const FailCreateOne({this.entity, this.error});
   final T? entity;
-  final dynamic? error;
+  final dynamic error;
   Map<String, dynamic> toJson() => {'entity': entity, 'error': error};
 }
 
@@ -230,7 +230,7 @@ class SuccessDeleteOne<T> {
 class FailDeleteOne<T> {
   const FailDeleteOne({required this.id, this.error});
   final String id;
-  final dynamic? error;
+  final dynamic error;
   Map<String, dynamic> toJson() => {'id': id, 'error': error};
 }
 

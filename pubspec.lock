@@ -37,7 +37,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.5.0"
+    version: "2.6.1"
   badges:
     dependency: "direct main"
     description:
@@ -339,21 +339,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0-nullsafety.1"
-  flutter_image:
-    dependency: transitive
-    description:
-      name: flutter_image
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
   flutter_linkify:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: dff5ae9714c8990ac140c41947ca9fc37dd53507
-      url: "https://github.com/MohamedEL-Torky/flutter_linkify.git"
-    source: git
+      name: flutter_linkify
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "5.0.2"
   flutter_localizations:
     dependency: transitive
@@ -365,10 +356,10 @@ packages:
     description:
       path: "."
       ref: "issues/829-nullsafety"
-      resolved-ref: "09b306afdfc5d748cdaf3307084e70fcb6a21c6d"
-      url: "https://github.com/fleaflet/flutter_map"
+      resolved-ref: "252bbc4ca6bf3578367d1a60c954afc6b228360d"
+      url: "git://github.com/josxha/flutter_map.git"
     source: git
-    version: "0.12.0"
+    version: "0.13.0"
   flutter_markdown:
     dependency: "direct main"
     description:
@@ -602,7 +593,7 @@ packages:
       name: node_preamble
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.13"
+    version: "2.0.0"
   objectid:
     dependency: "direct main"
     description:
@@ -936,7 +927,7 @@ packages:
       name: source_span
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0"
+    version: "1.8.1"
   stack_trace:
     dependency: transitive
     description:
@@ -978,21 +969,21 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.16.5"
+    version: "1.16.8"
   test_api:
     dependency: transitive
     description:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.19"
+    version: "0.3.0"
   test_core:
     dependency: transitive
     description:
       name: test_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.15"
+    version: "0.3.19"
   timelines:
     dependency: "direct main"
     description:

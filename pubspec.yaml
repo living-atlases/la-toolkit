@@ -36,10 +36,7 @@ dependencies:
   # ui
   introduction_screen: ^2.0.0
   # https://github.com/Cretezy/flutter_linkify/issues/79
-  flutter_linkify: # ^5.0.0
-    git:
-       url: https://github.com/MohamedEL-Torky/flutter_linkify.git
-       ref: master
+  flutter_linkify: ^5.0.2
   url_launcher: ^6.0.2
   flutter_markdown: ^0.6.1
   timelines: ^0.1.0
@@ -94,7 +91,6 @@ dependencies:
   http: ^0.13.1
   # flutter_data: ^0.7.0
 
-
   # Remove this in the future?
   shared_preferences: ^2.0.5
 
@@ -118,11 +114,7 @@ dependencies:
   universal_html: ^2.0.4
 
   # map
-  # flutter_map: ^0.12.0
-  flutter_map:
-    git:
-      url: https://github.com/fleaflet/flutter_map
-      ref: issues/829-nullsafety
+  flutter_map: ^0.12.0
   # https://github.com/porn/area/pull/2
   area: # ^1.0.0
     git:
@@ -208,3 +200,10 @@ flutter:
     - family:  LAIcon
       fonts:
         - asset: fonts/LAIcon.ttf
+
+# https://github.com/fleaflet/flutter_map/issues/829
+dependency_overrides:
+  flutter_map:
+    git:
+      url: git://github.com/josxha/flutter_map.git
+      ref: issues/829-nullsafety
