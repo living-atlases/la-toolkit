@@ -11,7 +11,6 @@ import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/sshKeysPage.dart';
-import 'package:la_toolkit/utils/utils.dart';
 
 import 'deployPage.dart';
 import 'homePage.dart';
@@ -33,7 +32,7 @@ class Routes {
             notFoundPage: notFoundPage,
             // Better show a NotFoundPage
             // notFoundRedirect: HomeLocation(),
-            navigatorObservers: [if (AppUtils.isDev()) devNavObserver],
+            navigatorObservers: [devNavObserver],
             locationBuilder: BeamerLocationBuilder(beamLocations: [
               HomeLocation(),
               LAProjectEditLocation(),
@@ -63,10 +62,7 @@ abstract class NamedBeamLocation extends BeamLocation {
 
 class BeamerCond {
   static of(BuildContext context, NamedBeamLocation loc) {
-    if (AppUtils.isDev())
-      Beamer.of(context).beamToNamed(loc.route);
-    else
-      Beamer.of(context).beamTo(loc);
+    Beamer.of(context).beamToNamed(loc.route);
   }
 }
 
