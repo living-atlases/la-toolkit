@@ -248,8 +248,11 @@ void main() {
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
     expect(testProject.getServicesNameListInUse().length > 0, equals(true));
 
-//    print(testProject.getServicesNameListInUse().length);
-    //   print(testProject.getServicesNameListSelected().length);
+    print(testProject.getServicesNameListInUse().length);
+    print(testProject.getServicesAssignedToServers().length);
+    print(testProject.getServicesNameListInUse());
+    print(testProject.getServicesAssignedToServers());
+    print(testProject);
     expect(
         testProject.getServicesNameListInUse().length ==
             testProject.getServicesAssignedToServers().length,
@@ -371,7 +374,7 @@ void main() {
     expect(p.getHostname(bie), equals(['vm1']));
     p.getService(bie).iniPath = "/species";
     expect(p.etcHostsVar,
-        equals('      10.0.0.1 species.l-a.site species-ws.l-a.site'));
+        equals('      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site'));
     expect(p.serviceDeploys.length,
         equals(p.getServicesAssignedToServers().length));
     p.delete(vm1);

@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -390,13 +391,14 @@ check results length: ${checkResults.length}
   }
 
   void assign(LAServer server, List<String> assignedServices) {
-    List<String> newServices = []..addAll(assignedServices);
+    HashSet<String> newServices = new HashSet<String>();
+    newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
     if (newServices.contains(LAServiceName.biocache_backend.toS())) {
       newServices.add(LAServiceName.nameindexer.toS());
       newServices.add(LAServiceName.biocache_cli.toS());
     }
-    serverServices[server.id] = newServices;
+    serverServices[server.id] = newServices.toList();
     List serviceIds = [];
     newServices.forEach((sN) {
       LAService service = services.firstWhere((s) => s.nameInt == sN);
