@@ -104,7 +104,9 @@ or similar to create it.  Something like:
          └── ssh 
 ```
 
-If you use a diferent directory, you'll have to update the `docker-compose.yml` files accordinly.
+If you use a different directory, you'll have to update the `docker-compose.yml` files accordinly.
+
+This directories should be writable by your user and docker.
 
 ## Running the la-toolkit
 
