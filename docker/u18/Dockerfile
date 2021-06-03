@@ -145,5 +145,10 @@ EXPOSE 2011
 
 USER ubuntu
 
+VOLUME ["/home/ubuntu/.ssh/"]
+VOLUME ["/home/ubuntu/ansible/logs/"]
+VOLUME ["/home/ubuntu/ansible/la-inventories/"]
+VOLUME ["/home/ubuntu/ansible/ala-install/"]
+
 # launch the backend
 CMD /usr/local/bin/la-toolkit-launch
