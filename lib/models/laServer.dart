@@ -100,9 +100,9 @@ class LAServer implements IsJsonSerializable<LAServer> {
       sudoEnabled.hashCode;
 
   bool isReady() {
-    return this.reachable == ServiceStatus.success &&
+    return // this.reachable == ServiceStatus.success &&
         this.sshReachable == ServiceStatus.success &&
-        this.sudoEnabled == ServiceStatus.success;
+            this.sudoEnabled == ServiceStatus.success;
   }
 
   bool isSshReady() {
