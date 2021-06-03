@@ -49,7 +49,7 @@ class LAProjectEditPage extends StatelessWidget {
     null,
     FocusNode(),
   ];
-  final List<Step> _steps = []..length = totalSteps;
+  final List<Step> _steps = List<Step>.empty(growable: true);
 
   static const _serverHint =
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
@@ -122,7 +122,7 @@ class LAProjectEditPage extends StatelessWidget {
             _project.generatorRelease = vm.state.generatorReleases[0];
           int _step = vm.state.currentStep;
           print('Building project edit currentStep: $_step key: $_scaffoldKey');
-          _steps[0] = Step(
+          _steps.add(Step(
               title: const Text('Basic information'),
               subtitle: const Text(
                   'Define the main information of your portal, like name, ...'),
@@ -199,8 +199,8 @@ class LAProjectEditPage extends StatelessWidget {
                             _project.theme = newTheme)
                   ],
                 ),
-              ));
-          _steps[1] = Step(
+              )));
+          _steps.add(Step(
               isActive: _setIsActive(_step, _mapStep),
               state: _setSetStatus(_step, _mapStep),
               title: const Text('Location information'),
@@ -219,8 +219,8 @@ class LAProjectEditPage extends StatelessWidget {
                       LAVariableDesc.get("map_zone_name"), value);
                   vm.onSaveCurrentProject(_project);
                 }).buildTitle(context),
-              ]));
-          _steps[2] = Step(
+              ])));
+          _steps.add(Step(
               isActive: _setIsActive(_step, _serversStep),
               state: _setSetStatus(_step, _serversStep),
               title: const Text('Servers'),
@@ -285,8 +285,8 @@ If you are unsure type something like "server1, server2, server3".
 """),
                   ],
                 ),
-              ));
-          _steps[3] = Step(
+              )));
+          _steps.add(Step(
               isActive: _setIsActive(_step, _servicesStep),
               state: _setSetStatus(_step, _servicesStep),
               title: const Text('Services'),
@@ -315,8 +315,8 @@ If you are unsure type something like "server1, server2, server3".
                                   collectoryFocusNode:
                                       _focusNodes[_servicesStep]))
                     ],
-                  )));
-          _steps[4] = Step(
+                  ))));
+          _steps.add(Step(
               isActive: _setIsActive(_step, _serverToServiceStep),
               state: _setSetStatus(_step, _serverToServiceStep),
               title:
@@ -331,8 +331,8 @@ If you are unsure type something like "server1, server2, server3".
                           Container(
                               child: const Text(
                                   'You need to add some server before to this step...'))
-                        ]));
-          _steps[5] = Step(
+                        ])));
+          _steps.add(Step(
               isActive: _setIsActive(_step, _serversAdditional),
               state: _setSetStatus(_step, _serversAdditional),
               title: const Text('Define better your servers'),
@@ -370,7 +370,7 @@ If you have doubts or need to ask for some information, save this project and co
                             })),
                     SizedBox(height: 20),
                     ServersDetailsCardList(_focusNodes[_serversAdditional]!),
-                  ])));
+                  ]))));
           return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
