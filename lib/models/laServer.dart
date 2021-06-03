@@ -106,8 +106,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
   }
 
   bool isSshReady() {
-    return this.reachable == ServiceStatus.success &&
-        this.sshReachable == ServiceStatus.success;
+    return this.sshReachable == ServiceStatus.success;
   }
 
   @override
