@@ -49,7 +49,6 @@ class LAProjectEditPage extends StatelessWidget {
     null,
     FocusNode(),
   ];
-  final List<Step> _steps = List<Step>.empty(growable: true);
 
   static const _serverHint =
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
@@ -122,226 +121,228 @@ class LAProjectEditPage extends StatelessWidget {
             _project.generatorRelease = vm.state.generatorReleases[0];
           int _step = vm.state.currentStep;
           print('Building project edit currentStep: $_step key: $_scaffoldKey');
-          _steps.add(Step(
-              title: const Text('Basic information'),
-              subtitle: const Text(
-                  'Define the main information of your portal, like name, ...'),
-              isActive: _setIsActive(_step, _basicStep),
-              state: _setSetStatus(_step, _basicStep),
-              content: Form(
-                key: _formKeys[_basicStep],
-                child: Column(
-                  children: <Widget>[
-                    GenericTextFormField(
-                        //_createTextField(
-                        // LONG NAME
-                        //  key: _formKeys[0],
-                        label: 'Your LA Project Long Name',
-                        hint:
-                            "Similar to e.g: 'Atlas of Living Australia', 'BioAtlas Sweden', 'NBN Atlas', ...",
-                        wikipage: "Glossary#Long-name",
-                        error: 'Project name invalid.',
-                        initialValue: _project.longName,
-                        regexp: LARegExp.projectNameRegexp,
-                        focusNode: _focusNodes[_basicStep],
-                        onChanged: (value) {
-                          _project.longName = value;
-                          vm.onSaveCurrentProject(_project);
-                        }),
-                    GenericTextFormField(
-                        // SHORT NAME
-                        label: 'Short Name',
-                        hint:
-                            "Similar to for e.g.: 'ALA', 'GBIF.ES', 'NBN',...",
-                        wikipage: "Glossary#Short-name",
-                        error: 'Project short name invalid.',
-                        initialValue: _project.shortName,
-                        regexp: LARegExp.projectNameRegexp,
-                        onChanged: (value) {
-                          _project.shortName = value;
-                          vm.onSaveCurrentProject(_project);
-                        }),
-                    Tooltip(
-                        // SSL
-                        message: "Quite recommended",
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text(
-                            'Use SSL?',
-                          ),
-                          trailing: Switch(
-                            value: _project.useSSL,
-                            // activeColor: Color(0xFF6200EE),
-                            onChanged: (bool newValue) {
-                              _project.useSSL = newValue;
-                              vm.onSaveCurrentProject(_project);
-                            },
-                          ),
-                        )),
-                    GenericTextFormField(
-                        // DOMAIN
-                        label: 'The domain of your LA node',
-                        hint:
-                            " Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
-                        prefixText: _protocolToS(_project.useSSL),
-                        wikipage: "Glossary#Domain",
-                        error: 'Project short name invalid.',
-                        initialValue: _project.domain,
-                        regexp: LARegExp.domainRegexp,
-                        onChanged: (value) {
-                          _project.domain = value;
-                          vm.onSaveCurrentProject(_project);
-                        }),
-                    SizedBox(height: 20),
-                    BrandingTile(
-                        initialValue: _project.theme,
-                        onChange: (String newTheme) =>
-                            _project.theme = newTheme)
-                  ],
-                ),
-              )));
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _mapStep),
-              state: _setSetStatus(_step, _mapStep),
-              title: const Text('Location information'),
-              subtitle: const Text('Select the map area of your LA portal,...'),
-              content: Column(children: [
-                _stepIntro(
-                    text:
-                        "Tap in two points to select the default map area of your LA portal. Drag them to modify the area. This area is used in services like collections, regions and spatial in their main page.",
-                    helpPage: "Glossary#Services-map-area"),
-                SizedBox(height: 20),
-                MapAreaSelector(),
-                // MAP AREA NAME
-                MessageItem(_project, LAVariableDesc.get("map_zone_name"),
-                    (value) {
-                  _project.setVariable(
-                      LAVariableDesc.get("map_zone_name"), value);
-                  vm.onSaveCurrentProject(_project);
-                }).buildTitle(context),
-              ])));
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _serversStep),
-              state: _setSetStatus(_step, _serversStep),
-              title: const Text('Servers'),
-              subtitle:
-                  const Text('Inventory of the servers of your LA portal'),
-              content: Form(
-                key: _formKeys[_serversStep],
-                child: Column(
-                  // SERVERS
-                  children: <Widget>[
-                    ServersCardList(),
-                    // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
-                    TextFormField(
-                      controller: _serverAddController,
-                      showCursor: true,
-                      cursorColor: Colors.orange,
-                      // TODO: When deployed change this
-                      style: LAColorTheme.unDeployedTextStyle,
-                      initialValue: null,
-                      onFieldSubmitted: (value) =>
-                          serversNameSplit(value).forEach((server) {
-                        _addServer(server.trim(), _project,
-                            (_project) => vm.onSaveCurrentProject(_project));
-                      }),
-                      focusNode: _focusNodes[_serversStep],
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String? value) {
-                        return value != null &&
-                                    LARegExp.hostnameRegexp.hasMatch(value) ||
-                                LARegExp.multiHostnameRegexp.hasMatch(value!)
-                            ? null
-                            : 'Invalid server name.';
-                      },
-                      decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                              icon: const Icon(Icons.add_circle),
-                              onPressed: () {
-                                if (_formKeys[_serversStep].currentState !=
-                                        null &&
-                                    _formKeys[_serversStep]
-                                        .currentState!
-                                        .validate()) {
-                                  serversNameSplit(
-                                    _serverAddController.text,
-                                  ).forEach((server) {
-                                    _addServer(
-                                        server,
-                                        _project,
-                                        (_project) =>
-                                            vm.onSaveCurrentProject(_project));
-                                  });
-                                }
+          final List<Step> _steps = [
+            Step(
+                title: const Text('Basic information'),
+                subtitle: const Text(
+                    'Define the main information of your portal, like name, ...'),
+                isActive: _setIsActive(_step, _basicStep),
+                state: _setSetStatus(_step, _basicStep),
+                content: Form(
+                  key: _formKeys[_basicStep],
+                  child: Column(
+                    children: <Widget>[
+                      GenericTextFormField(
+                          //_createTextField(
+                          // LONG NAME
+                          //  key: _formKeys[0],
+                          label: 'Your LA Project Long Name',
+                          hint:
+                              "Similar to e.g: 'Atlas of Living Australia', 'BioAtlas Sweden', 'NBN Atlas', ...",
+                          wikipage: "Glossary#Long-name",
+                          error: 'Project name invalid.',
+                          initialValue: _project.longName,
+                          regexp: LARegExp.projectNameRegexp,
+                          focusNode: _focusNodes[_basicStep],
+                          onChanged: (value) {
+                            _project.longName = value;
+                            vm.onSaveCurrentProject(_project);
+                          }),
+                      GenericTextFormField(
+                          // SHORT NAME
+                          label: 'Short Name',
+                          hint:
+                              "Similar to for e.g.: 'ALA', 'GBIF.ES', 'NBN',...",
+                          wikipage: "Glossary#Short-name",
+                          error: 'Project short name invalid.',
+                          initialValue: _project.shortName,
+                          regexp: LARegExp.projectNameRegexp,
+                          onChanged: (value) {
+                            _project.shortName = value;
+                            vm.onSaveCurrentProject(_project);
+                          }),
+                      Tooltip(
+                          // SSL
+                          message: "Quite recommended",
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text(
+                              'Use SSL?',
+                            ),
+                            trailing: Switch(
+                              value: _project.useSSL,
+                              // activeColor: Color(0xFF6200EE),
+                              onChanged: (bool newValue) {
+                                _project.useSSL = newValue;
+                                vm.onSaveCurrentProject(_project);
                               },
-                              color: LAColorTheme.inactive),
-                          hintText: _serverHint,
-                          labelText:
-                              'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
-                    ),
-                    TipsCard(text: """## Tips
+                            ),
+                          )),
+                      GenericTextFormField(
+                          // DOMAIN
+                          label: 'The domain of your LA node',
+                          hint:
+                              " Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
+                          prefixText: _protocolToS(_project.useSSL),
+                          wikipage: "Glossary#Domain",
+                          error: 'Project short name invalid.',
+                          initialValue: _project.domain,
+                          regexp: LARegExp.domainRegexp,
+                          onChanged: (value) {
+                            _project.domain = value;
+                            vm.onSaveCurrentProject(_project);
+                          }),
+                      SizedBox(height: 20),
+                      BrandingTile(
+                          initialValue: _project.theme,
+                          onChange: (String newTheme) =>
+                              _project.theme = newTheme)
+                    ],
+                  ),
+                )),
+            Step(
+                isActive: _setIsActive(_step, _mapStep),
+                state: _setSetStatus(_step, _mapStep),
+                title: const Text('Location information'),
+                subtitle:
+                    const Text('Select the map area of your LA portal,...'),
+                content: Column(children: [
+                  _stepIntro(
+                      text:
+                          "Tap in two points to select the default map area of your LA portal. Drag them to modify the area. This area is used in services like collections, regions and spatial in their main page.",
+                      helpPage: "Glossary#Services-map-area"),
+                  SizedBox(height: 20),
+                  MapAreaSelector(),
+                  // MAP AREA NAME
+                  MessageItem(_project, LAVariableDesc.get("map_zone_name"),
+                      (value) {
+                    _project.setVariable(
+                        LAVariableDesc.get("map_zone_name"), value);
+                    vm.onSaveCurrentProject(_project);
+                  }).buildTitle(context),
+                ])),
+            Step(
+                isActive: _setIsActive(_step, _serversStep),
+                state: _setSetStatus(_step, _serversStep),
+                title: const Text('Servers'),
+                subtitle:
+                    const Text('Inventory of the servers of your LA portal'),
+                content: Form(
+                  key: _formKeys[_serversStep],
+                  child: Column(
+                    // SERVERS
+                    children: <Widget>[
+                      ServersCardList(),
+                      // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
+                      TextFormField(
+                        controller: _serverAddController,
+                        showCursor: true,
+                        cursorColor: Colors.orange,
+                        // TODO: When deployed change this
+                        style: LAColorTheme.unDeployedTextStyle,
+                        initialValue: null,
+                        onFieldSubmitted: (value) =>
+                            serversNameSplit(value).forEach((server) {
+                          _addServer(server.trim(), _project,
+                              (_project) => vm.onSaveCurrentProject(_project));
+                        }),
+                        focusNode: _focusNodes[_serversStep],
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (String? value) {
+                          return value != null &&
+                                      LARegExp.hostnameRegexp.hasMatch(value) ||
+                                  LARegExp.multiHostnameRegexp.hasMatch(value!)
+                              ? null
+                              : 'Invalid server name.';
+                        },
+                        decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                                icon: const Icon(Icons.add_circle),
+                                onPressed: () {
+                                  if (_formKeys[_serversStep].currentState !=
+                                          null &&
+                                      _formKeys[_serversStep]
+                                          .currentState!
+                                          .validate()) {
+                                    serversNameSplit(
+                                      _serverAddController.text,
+                                    ).forEach((server) {
+                                      _addServer(
+                                          server,
+                                          _project,
+                                          (_project) => vm
+                                              .onSaveCurrentProject(_project));
+                                    });
+                                  }
+                                },
+                                color: LAColorTheme.inactive),
+                            hintText: _serverHint,
+                            labelText:
+                                'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
+                      ),
+                      TipsCard(text: """## Tips
 See the [infrastructure requirements page](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Infrastructure-Requirements) and other portals infrastructure in [our documentation wiki](https://github.com/AtlasOfLivingAustralia/documentation/wiki/) to dimension your LA portal. For a test portal a big server can host the main basic LA services.
 If you are unsure type something like "server1, server2, server3".
 """),
-                  ],
-                ),
-              )));
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _servicesStep),
-              state: _setSetStatus(_step, _servicesStep),
-              title: const Text('Services'),
-              subtitle: const Text(
-                  'Choose the services of your portal and how your services URLs will look like'),
-              // subtitle: const Text("Error!"),
-              content: Form(
-                  key: _formKeys[_servicesStep],
-                  child: Column(
-                    children: [
-                      _stepIntro(
-                          text:
-                              "Please select the services of your LA Portal. Some services are mandatory, and some services are optional and you can use them later.",
-                          helpPage:
-                              "Infrastructure-Requirements#core-components-for-a-living-atlas"),
-                      ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: LAServiceDesc.map.length,
-                          // itemCount: appStateProv.appState.projects.length,
-                          itemBuilder: (BuildContext context, int index) =>
-                              ServiceWidget(
-                                  serviceName: LAServiceDesc.list
-                                      .elementAt(index)
-                                      .nameInt,
-                                  collectoryFocusNode:
-                                      _focusNodes[_servicesStep]))
                     ],
-                  ))));
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _serverToServiceStep),
-              state: _setSetStatus(_step, _serverToServiceStep),
-              title:
-                  const Text('Define which services will run in which servers'),
-              // subtitle: const Text("Compatibilities"),
-              content: Column(
-                  children: (_project.numServers() > 0)
-                      ? (_project.servers
-                          .map((s) => ServicesInServerSelector(server: s))
-                          .toList())
-                      : [
-                          Container(
-                              child: const Text(
-                                  'You need to add some server before to this step...'))
-                        ])));
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _serversAdditional),
-              state: _setSetStatus(_step, _serversAdditional),
-              title: const Text('Define better your servers'),
-              subtitle: const Text(
-                  "Information to know how to reach and access to your servers, like IP Addressing, names aliases, secure access information"),
-              content: Form(
-                  key: _formKeys[5],
-                  child: Column(children: [
-                    TipsCard(text: '''
+                  ),
+                )),
+            Step(
+                isActive: _setIsActive(_step, _servicesStep),
+                state: _setSetStatus(_step, _servicesStep),
+                title: const Text('Services'),
+                subtitle: const Text(
+                    'Choose the services of your portal and how your services URLs will look like'),
+                // subtitle: const Text("Error!"),
+                content: Form(
+                    key: _formKeys[_servicesStep],
+                    child: Column(
+                      children: [
+                        _stepIntro(
+                            text:
+                                "Please select the services of your LA Portal. Some services are mandatory, and some services are optional and you can use them later.",
+                            helpPage:
+                                "Infrastructure-Requirements#core-components-for-a-living-atlas"),
+                        ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: LAServiceDesc.map.length,
+                            // itemCount: appStateProv.appState.projects.length,
+                            itemBuilder: (BuildContext context, int index) =>
+                                ServiceWidget(
+                                    serviceName: LAServiceDesc.list
+                                        .elementAt(index)
+                                        .nameInt,
+                                    collectoryFocusNode:
+                                        _focusNodes[_servicesStep]))
+                      ],
+                    ))),
+            Step(
+                isActive: _setIsActive(_step, _serverToServiceStep),
+                state: _setSetStatus(_step, _serverToServiceStep),
+                title: const Text(
+                    'Define which services will run in which servers'),
+                // subtitle: const Text("Compatibilities"),
+                content: Column(
+                    children: (_project.numServers() > 0)
+                        ? (_project.servers
+                            .map((s) => ServicesInServerSelector(server: s))
+                            .toList())
+                        : [
+                            Container(
+                                child: const Text(
+                                    'You need to add some server before to this step...'))
+                          ])),
+            Step(
+                isActive: _setIsActive(_step, _serversAdditional),
+                state: _setSetStatus(_step, _serversAdditional),
+                title: const Text('Define better your servers'),
+                subtitle: const Text(
+                    "Information to know how to reach and access to your servers, like IP Addressing, names aliases, secure access information"),
+                content: Form(
+                    key: _formKeys[5],
+                    child: Column(children: [
+                      TipsCard(text: '''
 Here we'll define how to connect to your server (thanks to the [IP address](https://en.wikipedia.org/wiki/IP_address)) and how to do it securely (thanks to [SSH](https://en.wikipedia.org/wiki/SSH_(Secure_Shell))).
 
 This is the most difficult part of all this project definition. If we configure correctly this, we'll deploy correctly later our portal.
@@ -350,27 +351,28 @@ We'll use SSH to access to your server. For read more about SSH, read our wiki p
 
 If you have doubts or need to ask for some information, save this project and continue later filling this. Don't hesitate to ask us in our #slack channel.    
                          ''', margin: EdgeInsets.fromLTRB(0, 0, 0, 10)),
-                    MessageItem(_project, LAVariableDesc.get("ansible_user"),
-                        (value) {
-                      _project.setVariable(
-                          LAVariableDesc.get("ansible_user"), value);
-                      vm.onSaveCurrentProject(_project);
-                    }).buildTitle(context),
-                    SizedBox(height: 20),
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text(
-                          'Advanced SSH options',
-                        ),
-                        trailing: Switch(
-                            value: _project.advancedEdit,
-                            onChanged: (value) {
-                              _project.advancedEdit = value;
-                              vm.onSaveCurrentProject(_project);
-                            })),
-                    SizedBox(height: 20),
-                    ServersDetailsCardList(_focusNodes[_serversAdditional]!),
-                  ]))));
+                      MessageItem(_project, LAVariableDesc.get("ansible_user"),
+                          (value) {
+                        _project.setVariable(
+                            LAVariableDesc.get("ansible_user"), value);
+                        vm.onSaveCurrentProject(_project);
+                      }).buildTitle(context),
+                      SizedBox(height: 20),
+                      ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text(
+                            'Advanced SSH options',
+                          ),
+                          trailing: Switch(
+                              value: _project.advancedEdit,
+                              onChanged: (value) {
+                                _project.advancedEdit = value;
+                                vm.onSaveCurrentProject(_project);
+                              })),
+                      SizedBox(height: 20),
+                      ServersDetailsCardList(_focusNodes[_serversAdditional]!),
+                    ])))
+          ];
           return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(

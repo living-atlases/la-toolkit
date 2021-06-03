@@ -93,9 +93,11 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                               .map((service) => MultiSelectItem<String>(
                                   service, LAServiceDesc.get(service).name))
                               .toList(),
-                          onSelectionChanged: (values) =>
+                          onSelectionChanged: (List<String?> values) =>
                               _multiSelectKey.currentState!.validate(),
-                          onConfirm: (List<String> values) {
+                          onConfirm: (List<String?> valuesN) {
+                            List<String> values =
+                                valuesN.whereType<String>().toList();
                             setState(() {
                               _selected = values;
                             });

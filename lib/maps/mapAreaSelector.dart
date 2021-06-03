@@ -55,6 +55,12 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
               ),
             );
           }).toList();
+          List<LatLng> areaNN = [];
+          List<LatLng> projectAreaNN = [];
+          if (projectArea[0] != null && projectArea[2] != null)
+            projectAreaNN = projectArea.whereType<LatLng>().toList();
+          if (area[0] != null && area[2] != null)
+            areaNN = area.whereType<LatLng>().toList();
           return Container(
               height: 470, // size of collectory
               width: MediaQuery.of(context).size.width * 0.8,
@@ -95,7 +101,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                     polylines: [
                       if (projectArea[0] != null && projectArea[2] != null)
                         Polyline(
-                            points: projectArea as List<LatLng>,
+                            points: projectAreaNN,
                             strokeWidth: 4.0,
                             isDotted: false,
                             color: LAColorTheme.laPalette),
@@ -104,7 +110,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                   PolylineLayerOptions(polylines: [
                     if (area[0] != null && area[2] != null)
                       Polyline(
-                          points: area as List<LatLng>,
+                          points: areaNN,
                           strokeWidth: 4.0,
                           isDotted: true,
                           color: LAColorTheme.laPalette)
