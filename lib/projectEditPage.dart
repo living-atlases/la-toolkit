@@ -119,7 +119,7 @@ class LAProjectEditPage extends StatelessWidget {
           if (_project.generatorRelease == null &&
               vm.state.generatorReleases.length > 0)
             _project.generatorRelease = vm.state.generatorReleases[0];
-          int _step = vm.state.currentStep;
+          final int _step = vm.state.currentStep;
           print('Building project edit currentStep: $_step key: $_scaffoldKey');
           final List<Step> _steps = [
             Step(

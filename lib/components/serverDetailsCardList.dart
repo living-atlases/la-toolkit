@@ -9,6 +9,7 @@ import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -22,16 +23,17 @@ class ServersDetailsCardList extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersCardListViewModel>(
-        distinct: false,
+        distinct: true,
         converter: (store) {
           return _ServersCardListViewModel(
-              state: store.state,
+              currentProject: store.state.currentProject,
+              sshKeys: store.state.sshKeys,
               onSaveCurrentProject: (project) {
                 store.dispatch(SaveCurrentProject(project));
               });
         },
         builder: (BuildContext context, _ServersCardListViewModel vm) {
-          final _project = vm.state.currentProject;
+          final _project = vm.currentProject;
 
           return ListView.builder(
               scrollDirection: Axis.vertical,
@@ -96,7 +98,7 @@ class ServersDetailsCardList extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    items: vm.state.sshKeys
+                                    items: vm.sshKeys
                                         // For now we only support keys with no passphrase
                                         .where((k) => k.encrypted != true)
                                         .toList()
@@ -126,12 +128,30 @@ class ServersDetailsCardList extends StatelessWidget {
                                     }).toList(),
                                     onChanged: (SshKey? value) {
                                       if (value != null) {
-                                        _project.servers[index].sshKey = value;
+                                        if (_isFirstServer(
+                                            index, _project.servers.length)) {
+                                          UiUtils.showAlertDialog(context, () {
+                                            for (int i = 0;
+                                                i < _project.servers.length;
+                                                i++) {
+                                              _project.servers[i].sshKey =
+                                                  value;
+                                            }
+                                          }, () {
+                                            _project.servers[index].sshKey =
+                                                value;
+                                          },
+                                              title: "Use this ssh key always",
+                                              subtitle:
+                                                  "Do you want to use this ssh key in all your servers?",
+                                              confirmBtn: "YES",
+                                              cancelBtn: "NO");
+                                        } else {
+                                          _project.servers[index].sshKey =
+                                              value;
+                                        }
                                         vm.onSaveCurrentProject(_project);
                                       }
-                                      /* setState(() {
-                                    value;
-                                  }); */
                                     },
                                   ),
                                   SizedBox(width: 10),
@@ -192,6 +212,11 @@ class ServersDetailsCardList extends StatelessWidget {
                                               children: [
                                                 Flexible(
                                                   child: GatewaySelector(
+                                                      firstServer:
+                                                          _isFirstServer(
+                                                              index,
+                                                              _project.servers
+                                                                  .length),
                                                       exclude: _project
                                                           .servers[index]),
                                                 ),
@@ -307,6 +332,10 @@ class ServersDetailsCardList extends StatelessWidget {
         });
   }
 
+  bool _isFirstServer(int index, int length) {
+    return index == 0 && length > 1;
+  }
+
   _generateRenameDialog(
       {required BuildContext context,
       required _ServersCardListViewModel vm,
@@ -361,9 +390,23 @@ class ServersDetailsCardList extends StatelessWidget {
 }
 
 class _ServersCardListViewModel {
-  final AppState state;
+  final List<SshKey> sshKeys;
+  final LAProject currentProject;
   final void Function(LAProject project) onSaveCurrentProject;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _ServersCardListViewModel &&
+          runtimeType == other.runtimeType &&
+          sshKeys == other.sshKeys &&
+          currentProject == other.currentProject;
+
+  @override
+  int get hashCode => sshKeys.hashCode ^ currentProject.hashCode;
+
   _ServersCardListViewModel(
-      {required this.state, required this.onSaveCurrentProject});
+      {required this.currentProject,
+      required this.sshKeys,
+      required this.onSaveCurrentProject});
 }

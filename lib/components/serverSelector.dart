@@ -68,7 +68,7 @@ class _ServerSelectorState extends State<ServerSelector> {
                 items: serverList
                     .map((host) => MultiSelectItem<String>(host, host))
                     .toList(),
-                onConfirm: (values) {
+                onConfirm: (List<String> values) {
                   setState(() {
                     _selected = values;
                   });

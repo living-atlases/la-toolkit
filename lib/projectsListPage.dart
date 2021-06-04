@@ -146,7 +146,9 @@ class ProjectCard extends StatelessWidget {
                                               ),
                                               onPressed: () => !AppUtils.isDev()
                                                   ? UiUtils.showAlertDialog(
-                                                      context, () => onDelete())
+                                                      context,
+                                                      () => onDelete(),
+                                                      () => {})
                                                   : onDelete(),
                                             )),
                                         SizedBox(width: 20),

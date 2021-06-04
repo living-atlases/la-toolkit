@@ -31,7 +31,7 @@ class ToolShortcut extends StatelessWidget {
           ? null
           : () {
               if (tool.askConfirmation)
-                UiUtils.showAlertDialog(context, () => tool.action());
+                UiUtils.showAlertDialog(context, () => tool.action(), () => {});
               else
                 tool.action();
             },

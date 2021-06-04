@@ -62,24 +62,29 @@ class UiUtils {
   static const TextStyle subtitleStyle =
       TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
 
-  static showAlertDialog(BuildContext context, VoidCallback onConfirm) {
+  static showAlertDialog(BuildContext context, VoidCallback onConfirm, VoidCallback onCancel,
+      {title = "Please Confirm",
+      subtitle = "Are you sure?",
+      confirmBtn = "CONFIRM",
+      cancelBtn = "CANCEL"
+      }) {
     // set up the buttons
     Widget cancelButton = TextButton(
-      child: Text("CANCEL"),
+      child: Text(cancelBtn),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
       },
     );
     Widget continueButton = TextButton(
-        child: Text("CONFIRM"),
+        child: Text(confirmBtn),
         onPressed: () {
           Navigator.of(context, rootNavigator: true).pop();
           onConfirm();
         });
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Please Confirm"),
-      content: Text("Are you sure?"),
+      title: Text(title),
+      content: Text(subtitle),
       actions: [
         cancelButton,
         continueButton,
