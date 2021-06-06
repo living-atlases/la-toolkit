@@ -63,6 +63,9 @@ Future<void> main() async {
     store.dispatch(OnFetchSoftwareDepsState());
   });
 
+  // https://github.com/slovnicki/beamer/tree/master/package#tips-and-common-issues
+  Beamer.setPathUrlStrategy();
+
   runApp(MyApp(store: store));
   /* runApp(BetterFeedback(
     // key: _mainKey,
@@ -102,6 +105,8 @@ class MyApp extends StatelessWidget {
   static String appName = 'Living Atlases Toolkit';
   MyApp({Key? key, required this.store}) : super(key: key);
 
+  final _routerDelegate = Routes().routerDelegate;
+
   @override
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
@@ -111,8 +116,8 @@ class MyApp extends StatelessWidget {
             overlayOpacity: 0.5,
             overlayColor: Colors.black,
             child: MaterialApp.router(
-              routerDelegate: Routes().routerDelegate,
-              routeInformationParser: BeamerRouteInformationParser(),
+              routerDelegate: _routerDelegate,
+              routeInformationParser: BeamerParser(),
               backButtonDispatcher:
                   BeamerBackButtonDispatcher(delegate: Routes().routerDelegate),
               // navigatorKey: MainKeys.navKey,

@@ -14,6 +14,7 @@ import 'package:la_toolkit/sshKeysPage.dart';
 
 import 'deployPage.dart';
 import 'homePage.dart';
+import 'main.dart';
 
 class Routes {
   static final notFoundPage = BeamPage(
@@ -24,11 +25,11 @@ class Routes {
     ),
   );
 
-  BeamerRouterDelegate routerDelegate;
+  BeamerDelegate routerDelegate;
   static final NavigatorObserver devNavObserver = NavigatorObserver();
 
   Routes._privateConstructor()
-      : routerDelegate = BeamerRouterDelegate(
+      : routerDelegate = BeamerDelegate(
             notFoundPage: notFoundPage,
             // Better show a NotFoundPage
             // notFoundRedirect: HomeLocation(),
@@ -72,10 +73,7 @@ class HomeLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-          key: ValueKey('home'),
-          child: HomePage(),
-        )
+        BeamPage(key: ValueKey('home'), child: HomePage(), title: MyApp.appName)
       ];
 
   @override
@@ -86,9 +84,9 @@ class LAProjectEditLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: LAProjectEditPage(),
-        )
+            key: ValueKey(route),
+            child: LAProjectEditPage(),
+            title: "${MyApp.appName}: Editing your project")
       ];
   @override
   String get route => LAProjectEditPage.routeName;
@@ -97,9 +95,9 @@ class LAProjectEditLocation extends NamedBeamLocation {
 class LAProjectViewLocation extends NamedBeamLocation {
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: LAProjectViewPage(),
-        )
+            key: ValueKey(route),
+            child: LAProjectViewPage(),
+            title: "${MyApp.appName}: Tools")
       ];
 
   @override
@@ -112,9 +110,9 @@ class SandboxLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: SandboxPage(),
-        )
+            key: ValueKey(route),
+            child: SandboxPage(),
+            title: "${MyApp.appName}: Sandbox")
       ];
 }
 
@@ -124,9 +122,9 @@ class LAProjectTuneLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: LAProjectTunePage(),
-        )
+            key: ValueKey(route),
+            child: LAProjectTunePage(),
+            title: "${MyApp.appName}: Tune your project")
       ];
 }
 
@@ -137,9 +135,9 @@ class PreDeployLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(PreDeployPage.routeName),
-          child: PreDeployPage(),
-        )
+            key: ValueKey(PreDeployPage.routeName),
+            child: PreDeployPage(),
+            title: "${MyApp.appName}: Pre-Deploy")
       ];
 }
 
@@ -150,9 +148,9 @@ class PostDeployLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(PostDeployPage.routeName),
-          child: PostDeployPage(),
-        )
+            key: ValueKey(PostDeployPage.routeName),
+            child: PostDeployPage(),
+            title: "${MyApp.appName}: Post-Deploy")
       ];
 }
 
@@ -163,9 +161,9 @@ class LogsHistoryLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: LogsHistoryPage(),
-        )
+            key: ValueKey(route),
+            child: LogsHistoryPage(),
+            title: "${MyApp.appName}: Logs History")
       ];
 }
 
@@ -175,9 +173,9 @@ class SshKeysLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: SshKeyPage(),
-        )
+            key: ValueKey(route),
+            child: SshKeyPage(),
+            title: "${MyApp.appName}: SSH Keys")
       ];
 }
 
@@ -188,9 +186,9 @@ class DeployLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: DeployPage(),
-        )
+            key: ValueKey(route),
+            child: DeployPage(),
+            title: "${MyApp.appName}: Deploy")
       ];
 }
 
@@ -201,9 +199,9 @@ class DeployResultsLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: DeployResultsPage(),
-        )
+            key: ValueKey(route),
+            child: DeployResultsPage(),
+            title: "${MyApp.appName}: Deploy Results")
       ];
 }
 
@@ -214,8 +212,8 @@ class PortalStatusLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-          key: ValueKey(route),
-          child: PortalStatusPage(),
-        )
+            key: ValueKey(route),
+            child: PortalStatusPage(),
+            title: "${MyApp.appName}: Portal Status")
       ];
 }
