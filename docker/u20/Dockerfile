@@ -109,7 +109,7 @@ RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 
 # ala-install
 RUN echo "2021032402 (change this date to rebuild & repeat this and the following steps)"
-RUN su - ubuntu -c 'git clone --depth 1 --branch v2.0.6 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
+RUN su - ubuntu -c 'git clone --depth 1 --branch v2.0.7 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
@@ -119,7 +119,7 @@ RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-too
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 # la-toolkit frontend
-RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.1.6/flutter-web-1.1.6.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
+RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.1.7/flutter-web-1.1.7.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
 # RUN echo "2021032402"
 # COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
