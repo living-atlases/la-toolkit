@@ -14,6 +14,7 @@ import 'components/laAppBar.dart';
 import 'components/resultsPieChart.dart';
 import 'components/scrollPanel.dart';
 import 'components/termCommandDesc.dart';
+import 'components/termsDrawer.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/cmd.dart';
@@ -65,6 +66,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
               : "TODO FIXME";
           return Scaffold(
               key: _scaffoldKey,
+              endDrawer: const TermsDrawer(),
               appBar: LAAppBar(
                   context: context,
                   titleIcon: Icons.analytics_outlined,
@@ -72,6 +74,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                   showLaIcon: false,
                   showBack: true,
                   actions: [
+                    TermsDrawer.termsIcon(vm.project, _scaffoldKey),
                     IconButton(
                         icon: Tooltip(
                             child: const Icon(Icons.close, color: Colors.white),

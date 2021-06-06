@@ -16,6 +16,7 @@ import 'components/scrollPanel.dart';
 import 'components/serverSelector.dart';
 import 'components/servicesChipPanel.dart';
 import 'components/tagsSelector.dart';
+import 'components/termsDrawer.dart';
 import 'components/tipsCard.dart';
 import 'models/laProject.dart';
 
@@ -55,6 +56,7 @@ class _DeployPageState extends State<DeployPage> {
             : () => vm.onDeployProject(vm.project, cmd);
         return Scaffold(
             key: _scaffoldKey,
+            endDrawer: const TermsDrawer(),
             appBar: LAAppBar(
                 context: context,
                 titleIcon: Mdi.rocketLaunch,
@@ -62,6 +64,7 @@ class _DeployPageState extends State<DeployPage> {
                 showLaIcon: false,
                 showBack: true,
                 actions: [
+                  TermsDrawer.termsIcon(vm.project, _scaffoldKey),
                   IconButton(
                       icon: Tooltip(
                           child: const Icon(Icons.close, color: Colors.white),

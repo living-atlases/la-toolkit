@@ -2,30 +2,39 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/helpIcon.dart';
-import 'package:la_toolkit/components/laIcon.dart';
 import 'package:la_toolkit/components/listTileLink.dart';
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
-import '../routes.dart';
 import 'adminIconButton.dart';
 
-class ProjectDrawer extends StatelessWidget {
-  const ProjectDrawer({Key? key}) : super(key: key);
+class TermsDrawer extends StatelessWidget {
+  const TermsDrawer({Key? key}) : super(key: key);
+
+  static Widget termsIcon(LAProject project, GlobalKey<ScaffoldState> key) {
+    return IconButton(
+      color: Colors.white,
+      icon: const Icon(Mdi.console),
+      tooltip: "${project.shortName} terminals",
+      onPressed: () => key.currentState?.openEndDrawer(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ProjectDrawerViewModel>(
-        converter: (store) {
-      return _ProjectDrawerViewModel(
+    return StoreConnector<AppState, _TermsDrawerViewModel>(converter: (store) {
+      return _TermsDrawerViewModel(
         state: store.state,
+        openTerm: (project, server) =>
+            TermDialog.openTerm(context, project.id, server.name),
       );
-    }, builder: (BuildContext context, _ProjectDrawerViewModel vm) {
+    }, builder: (BuildContext context, _TermsDrawerViewModel vm) {
       return Drawer(
           child: ListView(
               // Important: Remove any padding from the ListView.
@@ -54,7 +63,7 @@ class ProjectDrawer extends StatelessWidget {
                           ),
                     const SizedBox(height: 10.0),
                     // FIXME
-                    Text(vm.state.currentProject.shortName,
+                    Text("${vm.state.currentProject.shortName} Terminals",
                         style: TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
@@ -66,40 +75,17 @@ class ProjectDrawer extends StatelessWidget {
                 ),
               ),
             ),
-            ListTile(
-              leading: const Icon(LAIcon.la),
-              title: Text('Home'),
-              onTap: () {
-                context.beamBack();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Mdi.key),
-              title: Text('SSH Keys'),
-              onTap: () {
-                BeamerCond.of(context, SshKeysLocation());
-              },
-            ),
+            for (LAServer server in vm.state.currentProject.servers)
+              Tooltip(
+                  message: "Open a terminal in ${server.name}",
+                  child: ListTile(
+                      leading: const Icon(Mdi.console),
+                      title: Text(server.name),
+                      onTap: () =>
+                          vm.openTerm(vm.state.currentProject, server))),
             TermDialog.drawerItem(context),
-            Column(children: _createProjectLinks(vm.state.currentProject)),
-            if (AppUtils.isDev())
-              ListTile(
-                leading: const Icon(Icons.build),
-                title: Text('Sandbox'),
-                onTap: () {
-                  BeamerCond.of(context, SandboxLocation());
-                },
-              ),
-            Column(children: ListTileLink.drawerBottomLinks(context, false))
           ]));
     });
-  }
-
-  List<Widget> _createProjectLinks(LAProject currentProject) {
-    return [
-      for (var serviceDesc in currentProject.prodServices)
-        ServiceListTileLink(desc: serviceDesc)
-    ];
   }
 }
 
@@ -141,8 +127,9 @@ class ServiceListTileLink extends StatelessWidget {
   }
 }
 
-class _ProjectDrawerViewModel {
+class _TermsDrawerViewModel {
   final AppState state;
+  final void Function(LAProject, LAServer) openTerm;
 
-  _ProjectDrawerViewModel({required this.state});
+  _TermsDrawerViewModel({required this.state, required this.openTerm});
 }

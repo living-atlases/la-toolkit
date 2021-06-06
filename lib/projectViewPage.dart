@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/lintProject.dart';
+import 'package:la_toolkit/components/termsDrawer.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
@@ -217,6 +218,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               key: _scaffoldKey,
               backgroundColor: Colors.white,
               drawer: ProjectDrawer(),
+              endDrawer: const TermsDrawer(),
               appBar: LAAppBar(
                   leading: IconButton(
                     color: Colors.white,
@@ -231,6 +233,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   showBack: true,
                   // backRoute: HomePage.routeName,
                   projectIcon: projectIconUrl,
+                  actions: [
+                    if (project.isCreated)
+                      TermsDrawer.termsIcon(vm.project, _scaffoldKey)
+                  ],
                   title: "Toolkit of ${project.shortName} Portal"),
               body: new ScrollPanel(
                   child: Container(
