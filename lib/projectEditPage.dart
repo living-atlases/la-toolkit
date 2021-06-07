@@ -373,85 +373,88 @@ If you have doubts or need to ask for some information, save this project and co
                       ServersDetailsCardList(_focusNodes[_serversAdditional]!),
                     ])))
           ];
-          return Scaffold(
-            key: _scaffoldKey,
-            appBar: LAAppBar(
-                context: context,
-                titleIcon: Icons.edit,
-                title: vm.state.status.title,
-                showLaIcon: false,
-                actions: <Widget>[
-                  Tooltip(
-                      message: "Project configuration progress",
-                      child: CircularPercentIndicator(
-                        radius: 50.0,
-                        lineWidth: 6.0,
-                        percent: _project.status.percent / 100,
-                        center: new Text("${_project.status.percent}%",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 12)),
-                        progressColor: Colors.white,
-                      )),
-                  SizedBox(width: 20),
-                  if (_step != 0)
-                    TextButton(
-                        child: const Text('PREVIOUS'),
-                        style: TextButton.styleFrom(primary: Colors.white),
-                        onPressed: () => onStepCancel(vm, _project)),
-                  if (_step != _steps.length - 1)
-                    TextButton(
-                        child: const Text('NEXT'),
-                        style: TextButton.styleFrom(primary: Colors.white),
-                        onPressed: () => onStepContinue(vm, _project)),
-                  Tooltip(
-                    message: "Close without saving your changes",
-                    child: TextButton(
-                        child: const Icon(Icons.close, color: Colors.white),
+          return Title(
+              title: "${_project.shortName}: ${vm.state.status.title}",
+              color: LAColorTheme.laPalette,
+              child: Scaffold(
+                key: _scaffoldKey,
+                appBar: LAAppBar(
+                    context: context,
+                    titleIcon: Icons.edit,
+                    title: vm.state.status.title,
+                    showLaIcon: false,
+                    actions: <Widget>[
+                      Tooltip(
+                          message: "Project configuration progress",
+                          child: CircularPercentIndicator(
+                            radius: 50.0,
+                            lineWidth: 6.0,
+                            percent: _project.status.percent / 100,
+                            center: new Text("${_project.status.percent}%",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12)),
+                            progressColor: Colors.white,
+                          )),
+                      SizedBox(width: 20),
+                      if (_step != 0)
+                        TextButton(
+                            child: const Text('PREVIOUS'),
+                            style: TextButton.styleFrom(primary: Colors.white),
+                            onPressed: () => onStepCancel(vm, _project)),
+                      if (_step != _steps.length - 1)
+                        TextButton(
+                            child: const Text('NEXT'),
+                            style: TextButton.styleFrom(primary: Colors.white),
+                            onPressed: () => onStepContinue(vm, _project)),
+                      Tooltip(
+                        message: "Close without saving your changes",
+                        child: TextButton(
+                            child: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () {
+                              vm.onFinish(_project);
+                            }),
+                      ),
+                      IconButton(
+                        icon: Tooltip(
+                            child: const Icon(Icons.save, color: Colors.white),
+                            message: "Save the current LA project"),
                         onPressed: () {
                           vm.onFinish(_project);
-                        }),
-                  ),
-                  IconButton(
-                    icon: Tooltip(
-                        child: const Icon(Icons.save, color: Colors.white),
-                        message: "Save the current LA project"),
-                    onPressed: () {
-                      vm.onFinish(_project);
-                    },
-                  )
-                ]),
-            body: AppSnackBar(ScrollPanel(
-                child: Column(children: [
-              Stepper(
-                  steps: _steps,
-                  currentStep: _step,
-                  type: stepperType,
-                  onStepContinue: () {
-                    // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                    onStepContinue(vm, _project);
-                  },
-                  onStepTapped: (step) {
-                    vm.onGoto(step);
-                    vm.onSaveCurrentProject(_project);
-                  },
-                  onStepCancel: () {
-                    onStepCancel(vm, _project);
-                  },
-                  // https://github.com/flutter/flutter/issues/11133
-                  controlsBuilder: (BuildContext context,
-                      {VoidCallback? onStepContinue,
-                      VoidCallback? onStepCancel}) {
-                    return ButtonBar(
-                      alignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        // empty and custom in the AppBar
-                      ],
-                    );
-                  }),
-              LintProjectPanel()
-            ]))),
-            //     ])
-          );
+                        },
+                      )
+                    ]),
+                body: AppSnackBar(ScrollPanel(
+                    child: Column(children: [
+                  Stepper(
+                      steps: _steps,
+                      currentStep: _step,
+                      type: stepperType,
+                      onStepContinue: () {
+                        // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
+                        onStepContinue(vm, _project);
+                      },
+                      onStepTapped: (step) {
+                        vm.onGoto(step);
+                        vm.onSaveCurrentProject(_project);
+                      },
+                      onStepCancel: () {
+                        onStepCancel(vm, _project);
+                      },
+                      // https://github.com/flutter/flutter/issues/11133
+                      controlsBuilder: (BuildContext context,
+                          {VoidCallback? onStepContinue,
+                          VoidCallback? onStepCancel}) {
+                        return ButtonBar(
+                          alignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            // empty and custom in the AppBar
+                          ],
+                        );
+                      }),
+                  LintProjectPanel()
+                ]))),
+                //     ])
+              ));
         });
   }
 

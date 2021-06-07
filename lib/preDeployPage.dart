@@ -8,9 +8,10 @@ import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
-import 'components/serverSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
+import 'components/serverSelector.dart';
+import 'laTheme.dart';
 import 'models/deployCmd.dart';
 import 'models/laProject.dart';
 
@@ -57,119 +58,122 @@ class _PreDeployPageState extends State<PreDeployPage> {
             ? () => vm.onDoDeployTaskSwitchs(vm.project, cmd)
             : null;
         String defUser = vm.project.getVariableValue("ansible_user").toString();
-
-        return Scaffold(
-            key: _scaffoldKey,
-            appBar: LAAppBar(
-                context: context,
-                titleIcon: Icons.foundation,
-                showBack: true,
-                title: "Pre-Deploy Tasks",
-                showLaIcon: false,
-                actions: []),
-            body: ScrollPanel(
-                withPadding: true,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1, // 10%
-                      child: Container(),
-                    ),
-                    Expanded(
-                        flex: 8, // 80%,
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 20),
-                            const Text(
-                                'These are tasks that depending on the status of your servers can be helpful to setup them correctly.'),
-                            const SizedBox(height: 20),
-                            DeployTaskSwitch(
-                                title:
-                                    "Add the '$defUser' user to your servers",
-                                initialValue: cmd.addAnsibleUser,
-                                help:
-                                    "Before-Start-Your-LA-Installation#default-user-ubuntu",
-                                onChanged: (newValue) {
-                                  cmd.addAnsibleUser = newValue;
-                                  vm.onSaveDeployCmd(cmd);
-                                }),
-                            DeployTaskSwitch(
-                                title:
-                                    "Give the 'ubuntu' user sudo permissions",
-                                initialValue: cmd.giveSudo,
-                                help: "Before-Start-Your-LA-Installation#sudo",
-                                onChanged: (newValue) {
-                                  cmd.giveSudo = newValue;
-                                  vm.onSaveDeployCmd(cmd);
-                                }),
-                            DeployTaskSwitch(
-                                title:
-                                    "Add your public ssh keys to '$defUser' user (warning: right now we add all your ssh keys)",
-                                initialValue: cmd.addSshKeys,
-                                help:
-                                    "SSH-for-Beginners#public-and-private-ip-addresses",
-                                onChanged: (newValue) {
-                                  cmd.addSshKeys = newValue;
-                                  vm.onSaveDeployCmd(cmd);
-                                }),
-                            DeployTaskSwitch(
-                                title:
-                                    "Configure the '/etc/hosts' in your servers",
-                                initialValue: cmd.etcHosts,
-                                help:
-                                    "Before-Start-Your-LA-Installation#fake-dns-calls",
-                                onChanged: (newValue) {
-                                  cmd.etcHosts = newValue;
-                                  vm.onSaveDeployCmd(cmd);
-                                }),
-                            DeployTaskSwitch(
-                                title:
-                                    "Adjust solr limits (increase the number of files and process allowed to create)",
-                                initialValue: cmd.solrLimits,
-                                help:
-                                    "Before-Start-Your-LA-Installation#solr-limits",
-                                onChanged: (newValue) =>
-                                    setState(() => cmd.solrLimits = newValue)),
-                            DeployTaskSwitch(
-                                title:
-                                    "Add additional package utils for monitoring and troubleshooting",
-                                initialValue: cmd.addAdditionalDeps,
-                                onChanged: (newValue) {
-                                  cmd.addAdditionalDeps = newValue;
-                                  vm.onSaveDeployCmd(cmd);
-                                }),
-                            DeployTaskSwitch(
-                                title: "Try these tasks as 'root'",
-                                initialValue: cmd.rootBecome,
-                                onChanged: (newValue) {
-                                  cmd.rootBecome = newValue;
-                                  vm.onSaveDeployCmd(cmd);
-                                }),
-                            const SizedBox(height: 20),
-                            ServerSelector(
-                                selectorKey: GlobalKey<FormFieldState>(),
-                                title: "Do the pre-deploy in servers:",
-                                modalTitle:
-                                    "Choose some servers if you want to limit the pre-deploy to them",
-                                placeHolder: "All servers",
-                                initialValue: cmd.limitToServers,
-                                hosts: vm.project
-                                    .serversWithServices()
-                                    .map((e) => e.name)
-                                    .toList(),
-                                icon: Mdi.server,
-                                onChange: (limitToServers) => setState(
-                                    () => cmd.limitToServers = limitToServers)),
-                            const SizedBox(height: 20),
-                            LaunchBtn(onTap: onTap, execBtn: execBtn),
-                          ],
-                        )),
-                    Expanded(
-                      flex: 1, // 10%
-                      child: Container(),
-                    )
-                  ],
-                )));
+        return Title(
+            title: "${vm.project.shortName} Pre-Deploy Tasks",
+            color: LAColorTheme.laPalette,
+            child: Scaffold(
+                key: _scaffoldKey,
+                appBar: LAAppBar(
+                    context: context,
+                    titleIcon: Icons.foundation,
+                    showBack: true,
+                    title: "Pre-Deploy Tasks",
+                    showLaIcon: false,
+                    actions: []),
+                body: ScrollPanel(
+                    withPadding: true,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1, // 10%
+                          child: Container(),
+                        ),
+                        Expanded(
+                            flex: 8, // 80%,
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 20),
+                                const Text(
+                                    'These are tasks that depending on the status of your servers can be helpful to setup them correctly.'),
+                                const SizedBox(height: 20),
+                                DeployTaskSwitch(
+                                    title:
+                                        "Add the '$defUser' user to your servers",
+                                    initialValue: cmd.addAnsibleUser,
+                                    help:
+                                        "Before-Start-Your-LA-Installation#default-user-ubuntu",
+                                    onChanged: (newValue) {
+                                      cmd.addAnsibleUser = newValue;
+                                      vm.onSaveDeployCmd(cmd);
+                                    }),
+                                DeployTaskSwitch(
+                                    title:
+                                        "Give the 'ubuntu' user sudo permissions",
+                                    initialValue: cmd.giveSudo,
+                                    help:
+                                        "Before-Start-Your-LA-Installation#sudo",
+                                    onChanged: (newValue) {
+                                      cmd.giveSudo = newValue;
+                                      vm.onSaveDeployCmd(cmd);
+                                    }),
+                                DeployTaskSwitch(
+                                    title:
+                                        "Add your public ssh keys to '$defUser' user (warning: right now we add all your ssh keys)",
+                                    initialValue: cmd.addSshKeys,
+                                    help:
+                                        "SSH-for-Beginners#public-and-private-ip-addresses",
+                                    onChanged: (newValue) {
+                                      cmd.addSshKeys = newValue;
+                                      vm.onSaveDeployCmd(cmd);
+                                    }),
+                                DeployTaskSwitch(
+                                    title:
+                                        "Configure the '/etc/hosts' in your servers",
+                                    initialValue: cmd.etcHosts,
+                                    help:
+                                        "Before-Start-Your-LA-Installation#fake-dns-calls",
+                                    onChanged: (newValue) {
+                                      cmd.etcHosts = newValue;
+                                      vm.onSaveDeployCmd(cmd);
+                                    }),
+                                DeployTaskSwitch(
+                                    title:
+                                        "Adjust solr limits (increase the number of files and process allowed to create)",
+                                    initialValue: cmd.solrLimits,
+                                    help:
+                                        "Before-Start-Your-LA-Installation#solr-limits",
+                                    onChanged: (newValue) => setState(
+                                        () => cmd.solrLimits = newValue)),
+                                DeployTaskSwitch(
+                                    title:
+                                        "Add additional package utils for monitoring and troubleshooting",
+                                    initialValue: cmd.addAdditionalDeps,
+                                    onChanged: (newValue) {
+                                      cmd.addAdditionalDeps = newValue;
+                                      vm.onSaveDeployCmd(cmd);
+                                    }),
+                                DeployTaskSwitch(
+                                    title: "Try these tasks as 'root'",
+                                    initialValue: cmd.rootBecome,
+                                    onChanged: (newValue) {
+                                      cmd.rootBecome = newValue;
+                                      vm.onSaveDeployCmd(cmd);
+                                    }),
+                                const SizedBox(height: 20),
+                                ServerSelector(
+                                    selectorKey: GlobalKey<FormFieldState>(),
+                                    title: "Do the pre-deploy in servers:",
+                                    modalTitle:
+                                        "Choose some servers if you want to limit the pre-deploy to them",
+                                    placeHolder: "All servers",
+                                    initialValue: cmd.limitToServers,
+                                    hosts: vm.project
+                                        .serversWithServices()
+                                        .map((e) => e.name)
+                                        .toList(),
+                                    icon: Mdi.server,
+                                    onChange: (limitToServers) => setState(() =>
+                                        cmd.limitToServers = limitToServers)),
+                                const SizedBox(height: 20),
+                                LaunchBtn(onTap: onTap, execBtn: execBtn),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 1, // 10%
+                          child: Container(),
+                        )
+                      ],
+                    ))));
       },
     );
   }

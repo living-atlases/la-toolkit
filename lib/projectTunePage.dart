@@ -80,117 +80,121 @@ class LAProjectTunePage extends StatelessWidget {
             vm.onSaveProject(project);
           }));
         });
-        return Scaffold(
-            key: _scaffoldKey,
-            appBar: LAAppBar(
-                context: context,
-                titleIcon: Icons.edit,
-                title: LAProjectViewStatus.tune.title,
-                showLaIcon: false,
-                actions: [
-                  TextButton(
-                      // icon: Icon(Icons.cancel),
-                      style: TextButton.styleFrom(primary: Colors.white),
-                      child: Text(
-                        "CANCEL",
-                      ),
-                      onPressed: () => vm.onCancel(project)),
-                  IconButton(
-                    icon: Tooltip(
-                        child: Icon(Icons.save, color: Colors.white),
-                        message: "Save the current LA project variables"),
-                    onPressed: () {
-                      vm.onUpdateProject(project);
-                    },
-                  )
-                ]),
-            body: AppSnackBar(ScrollPanel(
-                withPadding: true,
-                child: Form(
-                    key: _formKey,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          ListTile(
-                              // contentPadding: EdgeInsets.zero,
-                              title: const Text(
-                                'Advanced options',
-                              ),
-                              trailing: Switch(
-                                  value: project.advancedTune,
-                                  onChanged: (value) {
-                                    project.advancedTune = value;
-                                    vm.onSaveProject(project);
-                                  })),
-                          SizedBox(height: 20),
-                          ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            // Let the ListView know how many items it needs to build.
-                            itemCount: items.length,
-                            // Provide a builder function. This is where the magic happens.
-                            // Convert each item into a widget based on the type of item it is.
-                            itemBuilder: (context, index) {
-                              final item = items[index];
-                              return ListTile(
-                                // contentPadding: EdgeInsets.zero,
-                                title: item.buildTitle(context),
-                                subtitle: item.buildSubtitle(context),
-                              );
-                            },
+        return Title(
+            title: "${project.shortName}: ${LAProjectViewStatus.tune.title}",
+            color: LAColorTheme.laPalette,
+            child: Scaffold(
+                key: _scaffoldKey,
+                appBar: LAAppBar(
+                    context: context,
+                    titleIcon: Icons.edit,
+                    title: LAProjectViewStatus.tune.title,
+                    showLaIcon: false,
+                    actions: [
+                      TextButton(
+                          // icon: Icon(Icons.cancel),
+                          style: TextButton.styleFrom(primary: Colors.white),
+                          child: Text(
+                            "CANCEL",
                           ),
-                          if (project.advancedTune) SizedBox(height: 20),
-                          if (project.advancedTune)
-                            HeadingItem("Other variables").buildTitle(context),
-                          if (project.advancedTune) SizedBox(height: 30),
-                          if (project.advancedTune)
-                            Text(
-                              "Write here other extra ansible variables that are not configurable in the previous forms:",
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.black54),
-                            ),
-                          if (project.advancedTune) SizedBox(height: 20),
-                          if (project.advancedTune)
-                            // This breaks the newline enter key:
-                            //ListTile(
-                            //                        title:
-                            GenericTextFormField(
-                                initialValue: project
-                                            .additionalVariables.length >
-                                        0
-                                    ? utf8.decode(base64
-                                        .decode(project.additionalVariables))
-                                    : _initialExtraAnsibleVariables(project),
-                                minLines: 100,
-                                maxLines: null,
-                                fillColor: Colors.grey[100],
-                                enabledBorder: true,
-                                allowEmpty: true,
-                                keyboardType: TextInputType.multiline,
-                                monoSpaceFont: true,
-                                error: "",
-                                onChanged: (value) {
-                                  project.additionalVariables =
-                                      base64.encode(utf8.encode(value));
-                                  vm.onSaveProject(project);
-                                }),
-                          /* trailing: HelpIcon(
+                          onPressed: () => vm.onCancel(project)),
+                      IconButton(
+                        icon: Tooltip(
+                            child: Icon(Icons.save, color: Colors.white),
+                            message: "Save the current LA project variables"),
+                        onPressed: () {
+                          vm.onUpdateProject(project);
+                        },
+                      )
+                    ]),
+                body: AppSnackBar(ScrollPanel(
+                    withPadding: true,
+                    child: Form(
+                        key: _formKey,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              ListTile(
+                                  // contentPadding: EdgeInsets.zero,
+                                  title: const Text(
+                                    'Advanced options',
+                                  ),
+                                  trailing: Switch(
+                                      value: project.advancedTune,
+                                      onChanged: (value) {
+                                        project.advancedTune = value;
+                                        vm.onSaveProject(project);
+                                      })),
+                              SizedBox(height: 20),
+                              ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                // Let the ListView know how many items it needs to build.
+                                itemCount: items.length,
+                                // Provide a builder function. This is where the magic happens.
+                                // Convert each item into a widget based on the type of item it is.
+                                itemBuilder: (context, index) {
+                                  final item = items[index];
+                                  return ListTile(
+                                    // contentPadding: EdgeInsets.zero,
+                                    title: item.buildTitle(context),
+                                    subtitle: item.buildSubtitle(context),
+                                  );
+                                },
+                              ),
+                              if (project.advancedTune) SizedBox(height: 20),
+                              if (project.advancedTune)
+                                HeadingItem("Other variables")
+                                    .buildTitle(context),
+                              if (project.advancedTune) SizedBox(height: 30),
+                              if (project.advancedTune)
+                                Text(
+                                  "Write here other extra ansible variables that are not configurable in the previous forms:",
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.black54),
+                                ),
+                              if (project.advancedTune) SizedBox(height: 20),
+                              if (project.advancedTune)
+                                // This breaks the newline enter key:
+                                //ListTile(
+                                //                        title:
+                                GenericTextFormField(
+                                    initialValue:
+                                        project.additionalVariables.length > 0
+                                            ? utf8.decode(base64.decode(
+                                                project.additionalVariables))
+                                            : _initialExtraAnsibleVariables(
+                                                project),
+                                    minLines: 100,
+                                    maxLines: null,
+                                    fillColor: Colors.grey[100],
+                                    enabledBorder: true,
+                                    allowEmpty: true,
+                                    keyboardType: TextInputType.multiline,
+                                    monoSpaceFont: true,
+                                    error: "",
+                                    onChanged: (value) {
+                                      project.additionalVariables =
+                                          base64.encode(utf8.encode(value));
+                                      vm.onSaveProject(project);
+                                    }),
+                              /* trailing: HelpIcon(
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
-                          SizedBox(height: 20),
-                          LintProjectPanel(),
-                          if (_endNoteEnabled)
-                            Row(children: [
-                              Text(
-                                  "Note: the colors of the variables values indicate if these values are "),
-                              Text("already deployed",
-                                  style: LAColorTheme.deployedTextStyle),
-                              Text(" in your servers or "),
-                              Text("they are not deployed yet",
-                                  style: LAColorTheme.unDeployedTextStyle),
-                              Text("."),
-                            ]),
-                        ])))));
+                              SizedBox(height: 20),
+                              LintProjectPanel(),
+                              if (_endNoteEnabled)
+                                Row(children: [
+                                  Text(
+                                      "Note: the colors of the variables values indicate if these values are "),
+                                  Text("already deployed",
+                                      style: LAColorTheme.deployedTextStyle),
+                                  Text(" in your servers or "),
+                                  Text("they are not deployed yet",
+                                      style: LAColorTheme.unDeployedTextStyle),
+                                  Text("."),
+                                ]),
+                            ]))))));
       },
     );
   }

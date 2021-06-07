@@ -14,6 +14,7 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/servicesStatusPanel.dart';
 import 'components/textTitle.dart';
+import 'laTheme.dart';
 import 'models/hostServicesChecks.dart';
 import 'models/laProject.dart';
 import 'models/laServer.dart';
@@ -67,73 +68,77 @@ class PortalStatusPage extends StatelessWidget {
                 subtitle: utf8.decode(base64.decode(check['msg']))));
           });
         });
-        return Scaffold(
-          key: _scaffoldKey,
-          appBar: LAAppBar(
-              context: context,
-              titleIcon: Icons.fact_check,
-              title: "${vm.project.shortName} Portal Status",
-              showLaIcon: false,
-              showBack: true,
-              loading: vm.loading,
-              actions: [
-                IconButton(
-                  icon: Tooltip(
-                      child: Icon(Icons.pause, color: Colors.white),
-                      message: "Pause to check services"),
-                  onPressed: () {
-                    //
-                  },
-                ),
-                Container(
-                    margin: const EdgeInsets.only(right: 10.0),
-                    child: IconButton(
+        var pageTitle = "${vm.project.shortName} Portal Status";
+        return Title(
+            title: pageTitle,
+            color: LAColorTheme.laPalette,
+            child: Scaffold(
+              key: _scaffoldKey,
+              appBar: LAAppBar(
+                  context: context,
+                  titleIcon: Icons.fact_check,
+                  title: pageTitle,
+                  showLaIcon: false,
+                  showBack: true,
+                  loading: vm.loading,
+                  actions: [
+                    IconButton(
                       icon: Tooltip(
-                          child: Icon(Mdi.reload, color: Colors.white),
-                          message: "Recheck the status of the portal"),
+                          child: Icon(Icons.pause, color: Colors.white),
+                          message: "Pause to check services"),
                       onPressed: () {
-                        vm.checkServices(vm.serverServicesToMonitor.item2);
+                        //
                       },
-                    ))
-              ]),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          body: ScrollPanel(
-              withPadding: true,
-              padding: 40,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 0, // 10%
-                    child: Container(),
-                  ),
-                  Expanded(
-                      flex: 10, // 80%,
-                      child: Column(children: [
-                        // Add
-                        // https://pub.dev/packages/circular_countdown_timer
-                        // or similar and a sliderdesc
-                        TextTitle(text: "Servers"),
-                        ServersStatusPanel(
-                            extendedStatus: true, results: vm.checkResults),
-                        TextTitle(text: "Services", separator: true),
-                        ServicesStatusPanel(
-                            services: vm.serverServicesToMonitor.item1),
-                        TextTitle(text: "Details", separator: true),
-                        for (Widget w in resultWidgets) w
-                      ])),
-                  Expanded(
-                    flex: 0, // 10%
-                    child: Container(),
-                  )
-                ],
-              )),
-          /* floatingActionButton: ReCheckBtns(
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(right: 10.0),
+                        child: IconButton(
+                          icon: Tooltip(
+                              child: Icon(Mdi.reload, color: Colors.white),
+                              message: "Recheck the status of the portal"),
+                          onPressed: () {
+                            vm.checkServices(vm.serverServicesToMonitor.item2);
+                          },
+                        ))
+                  ]),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              body: ScrollPanel(
+                  withPadding: true,
+                  padding: 40,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 0, // 10%
+                        child: Container(),
+                      ),
+                      Expanded(
+                          flex: 10, // 80%,
+                          child: Column(children: [
+                            // Add
+                            // https://pub.dev/packages/circular_countdown_timer
+                            // or similar and a sliderdesc
+                            TextTitle(text: "Servers"),
+                            ServersStatusPanel(
+                                extendedStatus: true, results: vm.checkResults),
+                            TextTitle(text: "Services", separator: true),
+                            ServicesStatusPanel(
+                                services: vm.serverServicesToMonitor.item1),
+                            TextTitle(text: "Details", separator: true),
+                            for (Widget w in resultWidgets) w
+                          ])),
+                      Expanded(
+                        flex: 0, // 10%
+                        child: Container(),
+                      )
+                    ],
+                  )),
+              /* floatingActionButton: ReCheckBtns(
               () => vm.checkServices(vm.serverServicesToMonitor.item2)), */
-          /* floatingActionButton:  CountDownWidget(
+              /* floatingActionButton:  CountDownWidget(
               onReload: () =>
                   vm.checkServices(vm.serverServicesToMonitor.item2)), */
-        );
+            ));
       },
     );
   }

@@ -11,6 +11,7 @@ import 'components/deployTaskSwitch.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/serverSelector.dart';
+import 'laTheme.dart';
 import 'models/deployCmd.dart';
 import 'models/laProject.dart';
 import 'models/laVariableDesc.dart';
@@ -55,67 +56,69 @@ class _PostDeployPageState extends State<PostDeployPage> {
         VoidCallback? onTap = cmd.configurePostfix
             ? () => vm.onDoPostDeployTasks(vm.project, cmd)
             : null;
-
-        return Scaffold(
-            key: _scaffoldKey,
-            appBar: LAAppBar(
-                context: context,
-                titleIcon: Icons.foundation,
-                showBack: true,
-                title: "Post-Deploy Tasks",
-                showLaIcon: false,
-                actions: []),
-            body: ScrollPanel(
-                withPadding: true,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1, // 10%
-                      child: Container(),
-                    ),
-                    Expanded(
-                        flex: 8, // 80%,
-                        child: Column(
-                          children: [
-                            /* const SizedBox(height: 20),
+        return Title(
+            title: "${vm.project.shortName} Post-Deploy Tasks",
+            color: LAColorTheme.laPalette,
+            child: Scaffold(
+                key: _scaffoldKey,
+                appBar: LAAppBar(
+                    context: context,
+                    titleIcon: Icons.foundation,
+                    showBack: true,
+                    title: "Post-Deploy Tasks",
+                    showLaIcon: false,
+                    actions: []),
+                body: ScrollPanel(
+                    withPadding: true,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1, // 10%
+                          child: Container(),
+                        ),
+                        Expanded(
+                            flex: 8, // 80%,
+                            child: Column(
+                              children: [
+                                /* const SizedBox(height: 20),
                             const Text('Tasks:', style: DeployUtils.titleStyle), */
-                            const SizedBox(height: 20),
-                            DeployTaskSwitch(
-                                title: "Configure postfix email service",
-                                initialValue: cmd.configurePostfix,
-                                help: "Postfix-configuration",
-                                onChanged: (newValue) {
-                                  cmd.configurePostfix = newValue;
-                                  vm.onSaveDeployCmd(cmd);
-                                }),
-                            if (cmd.configurePostfix) PostDeployFields(),
-                            const SizedBox(height: 20),
-                            ServerSelector(
-                                selectorKey: GlobalKey<FormFieldState>(),
-                                title: "Do the Post-deploy in servers:",
-                                modalTitle:
-                                    "Choose some servers if you want to limit the Post-deploy to them",
-                                placeHolder: "All servers",
-                                initialValue: cmd.limitToServers,
-                                hosts: vm.project
-                                    .serversWithServices()
-                                    .map((e) => e.name)
-                                    .toList(),
-                                icon: Mdi.server,
-                                onChange: (limitToServers) {
-                                  cmd.limitToServers = limitToServers;
-                                  vm.onSaveDeployCmd(cmd);
-                                }),
-                            const SizedBox(height: 20),
-                            LaunchBtn(onTap: onTap, execBtn: execBtn),
-                          ],
-                        )),
-                    Expanded(
-                      flex: 1, // 10%
-                      child: Container(),
-                    )
-                  ],
-                )));
+                                const SizedBox(height: 20),
+                                DeployTaskSwitch(
+                                    title: "Configure postfix email service",
+                                    initialValue: cmd.configurePostfix,
+                                    help: "Postfix-configuration",
+                                    onChanged: (newValue) {
+                                      cmd.configurePostfix = newValue;
+                                      vm.onSaveDeployCmd(cmd);
+                                    }),
+                                if (cmd.configurePostfix) PostDeployFields(),
+                                const SizedBox(height: 20),
+                                ServerSelector(
+                                    selectorKey: GlobalKey<FormFieldState>(),
+                                    title: "Do the Post-deploy in servers:",
+                                    modalTitle:
+                                        "Choose some servers if you want to limit the Post-deploy to them",
+                                    placeHolder: "All servers",
+                                    initialValue: cmd.limitToServers,
+                                    hosts: vm.project
+                                        .serversWithServices()
+                                        .map((e) => e.name)
+                                        .toList(),
+                                    icon: Mdi.server,
+                                    onChange: (limitToServers) {
+                                      cmd.limitToServers = limitToServers;
+                                      vm.onSaveDeployCmd(cmd);
+                                    }),
+                                const SizedBox(height: 20),
+                                LaunchBtn(onTap: onTap, execBtn: execBtn),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 1, // 10%
+                          child: Container(),
+                        )
+                      ],
+                    ))));
       },
     );
   }

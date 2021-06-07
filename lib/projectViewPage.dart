@@ -214,64 +214,70 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           ];
           String projectIconUrl =
               project.getVariableValue("favicon_url").toString();
-          return Scaffold(
-              key: _scaffoldKey,
-              backgroundColor: Colors.white,
-              drawer: ProjectDrawer(),
-              endDrawer: const TermsDrawer(),
-              appBar: LAAppBar(
-                  leading: IconButton(
-                    color: Colors.white,
-                    icon: const Icon(Mdi.vectorLink),
-                    tooltip: "${project.shortName} links drawer",
-                    onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                  ),
-                  context: context,
-                  showLaIcon: false,
-                  loading: vm.loading,
-                  backLocation: HomeLocation(),
-                  showBack: true,
-                  // backRoute: HomePage.routeName,
-                  projectIcon: projectIconUrl,
-                  actions: [
-                    if (project.isCreated)
-                      TermsDrawer.termsIcon(vm.project, _scaffoldKey)
-                  ],
-                  title: "Toolkit of ${project.shortName} Portal"),
-              body: new ScrollPanel(
-                  child: Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 80, vertical: 20),
-                      child: Column(children: [
-                        Container(
-                            padding: EdgeInsets.only(top: 80, bottom: 50),
-                            child: LAProjectTimeline(id: project.id)),
-                        // Disabled for now
-                        // ServicesChipPanel(),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SizedBox(width: 250, child: ALAInstallSelector()),
-                              SizedBox(width: 250, child: GeneratorSelector())
-                            ]),
-                        SizedBox(height: 20),
-                        ResponsiveGridRow(
-                            // desiredItemWidth: 120,
-                            // minSpacing: 20,
-                            children: tools.map((tool) {
-                          return ResponsiveGridCol(
-                              lg: tool.grid,
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                height: 120,
-                                alignment: Alignment(0, 0),
-                                color: Colors.white,
-                                // color: LAColorTheme.laPalette.shade50,
-                                child: ToolShortcut(tool: tool),
-                              ));
-                        }).toList()),
-                        LintProjectPanel()
-                      ]))));
+          return Title(
+              title: "${project.shortName} Tools",
+              color: LAColorTheme.laPalette,
+              child: Scaffold(
+                  key: _scaffoldKey,
+                  backgroundColor: Colors.white,
+                  drawer: ProjectDrawer(),
+                  endDrawer: const TermsDrawer(),
+                  appBar: LAAppBar(
+                      leading: IconButton(
+                        color: Colors.white,
+                        icon: const Icon(Mdi.vectorLink),
+                        tooltip: "${project.shortName} links drawer",
+                        onPressed: () =>
+                            _scaffoldKey.currentState?.openDrawer(),
+                      ),
+                      context: context,
+                      showLaIcon: false,
+                      loading: vm.loading,
+                      backLocation: HomeLocation(),
+                      showBack: true,
+                      // backRoute: HomePage.routeName,
+                      projectIcon: projectIconUrl,
+                      actions: [
+                        if (project.isCreated)
+                          TermsDrawer.termsIcon(vm.project, _scaffoldKey)
+                      ],
+                      title: "Toolkit of ${project.shortName} Portal"),
+                  body: new ScrollPanel(
+                      child: Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 80, vertical: 20),
+                          child: Column(children: [
+                            Container(
+                                padding: EdgeInsets.only(top: 80, bottom: 50),
+                                child: LAProjectTimeline(id: project.id)),
+                            // Disabled for now
+                            // ServicesChipPanel(),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                      width: 250, child: ALAInstallSelector()),
+                                  SizedBox(
+                                      width: 250, child: GeneratorSelector())
+                                ]),
+                            SizedBox(height: 20),
+                            ResponsiveGridRow(
+                                // desiredItemWidth: 120,
+                                // minSpacing: 20,
+                                children: tools.map((tool) {
+                              return ResponsiveGridCol(
+                                  lg: tool.grid,
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    height: 120,
+                                    alignment: Alignment(0, 0),
+                                    color: Colors.white,
+                                    // color: LAColorTheme.laPalette.shade50,
+                                    child: ToolShortcut(tool: tool),
+                                  ));
+                            }).toList()),
+                            LintProjectPanel()
+                          ])))));
         });
   }
 

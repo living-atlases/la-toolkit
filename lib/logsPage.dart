@@ -48,38 +48,44 @@ class LogsHistoryPage extends StatelessWidget {
             });
       },
       builder: (BuildContext context, _ViewModel vm) {
-        return Scaffold(
-            key: _scaffoldKey,
-            appBar: LAAppBar(
-                context: context,
-                titleIcon: Icons.receipt_long,
-                title: "Logs History",
-                showLaIcon: false,
-                showBack: true,
-                actions: []),
-            body: new ScrollPanel(
-                child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 80, vertical: 20),
-                    child: Column(children: <Widget>[
-                      ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: vm.logsNum,
-                          // itemCount: appStateProv.appState.projects.length,
-                          itemBuilder:
-                              (BuildContext context, int index) =>
+        return Title(
+            title: "${vm.project.shortName} Logs History",
+            color: LAColorTheme.laPalette,
+            child: Scaffold(
+                key: _scaffoldKey,
+                appBar: LAAppBar(
+                    context: context,
+                    titleIcon: Icons.receipt_long,
+                    title: "Logs History",
+                    showLaIcon: false,
+                    showBack: true,
+                    actions: []),
+                body: new ScrollPanel(
+                    child: Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                        child: Column(children: <Widget>[
+                          ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: vm.logsNum,
+                              // itemCount: appStateProv.appState.projects.length,
+                              itemBuilder: (BuildContext context, int index) =>
                                   LogItem(
                                       vm.project.cmdHistoryEntries[index],
                                       () => vm.onOpenDeployResults(
                                           vm.project.cmdHistoryEntries[index]),
-                                      () => vm.onRepeatCmd(vm.project,
-                                          vm.project.cmdHistoryEntries[index]),
+                                      () =>
+                                          vm.onRepeatCmd(
+                                              vm.project,
+                                              vm.project
+                                                  .cmdHistoryEntries[index]),
                                       () => vm.onDeleteCmd(
                                           vm.project.cmdHistoryEntries[index]),
                                       (desc) => vm.onNoDescCmd(
                                           vm.project.cmdHistoryEntries[index],
                                           desc)))
-                    ]))));
+                        ])))));
       },
     );
   }

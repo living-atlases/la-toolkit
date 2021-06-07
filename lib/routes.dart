@@ -93,12 +93,8 @@ class LAProjectEditLocation extends NamedBeamLocation {
 }
 
 class LAProjectViewLocation extends NamedBeamLocation {
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-            key: ValueKey(route),
-            child: LAProjectViewPage(),
-            title: "${MyApp.appName}: Tools")
-      ];
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      [BeamPage(key: ValueKey(route), child: LAProjectViewPage())];
 
   @override
   String get route => LAProjectViewPage.routeName;
@@ -134,10 +130,7 @@ class PreDeployLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-            key: ValueKey(PreDeployPage.routeName),
-            child: PreDeployPage(),
-            title: "${MyApp.appName}: Pre-Deploy")
+        BeamPage(key: ValueKey(PreDeployPage.routeName), child: PreDeployPage())
       ];
 }
 
@@ -148,9 +141,7 @@ class PostDeployLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-            key: ValueKey(PostDeployPage.routeName),
-            child: PostDeployPage(),
-            title: "${MyApp.appName}: Post-Deploy")
+            key: ValueKey(PostDeployPage.routeName), child: PostDeployPage())
       ];
 }
 
@@ -184,12 +175,8 @@ class DeployLocation extends NamedBeamLocation {
   String get route => DeployPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-            key: ValueKey(route),
-            child: DeployPage(),
-            title: "${MyApp.appName}: Deploy")
-      ];
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      [BeamPage(key: ValueKey(route), child: DeployPage())];
 }
 
 class DeployResultsLocation extends NamedBeamLocation {
@@ -197,12 +184,8 @@ class DeployResultsLocation extends NamedBeamLocation {
   String get route => DeployResultsPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-            key: ValueKey(route),
-            child: DeployResultsPage(),
-            title: "${MyApp.appName}: Deploy Results")
-      ];
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      [BeamPage(key: ValueKey(route), child: DeployResultsPage())];
 }
 
 class PortalStatusLocation extends NamedBeamLocation {
@@ -210,10 +193,6 @@ class PortalStatusLocation extends NamedBeamLocation {
   String get route => PortalStatusPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-            key: ValueKey(route),
-            child: PortalStatusPage(),
-            title: "${MyApp.appName}: Portal Status")
-      ];
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      [BeamPage(key: ValueKey(route), child: PortalStatusPage())];
 }

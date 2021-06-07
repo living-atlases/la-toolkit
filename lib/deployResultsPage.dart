@@ -64,102 +64,111 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
           String desc = cmdEntry.cmd.type.isDeploy
               ? cmdHistoryDetails.cmd!.deployCmd!.desc
               : "TODO FIXME";
-          return Scaffold(
-              key: _scaffoldKey,
-              endDrawer: const TermsDrawer(),
-              appBar: LAAppBar(
-                  context: context,
-                  titleIcon: Icons.analytics_outlined,
-                  title: title,
-                  showLaIcon: false,
-                  showBack: true,
-                  actions: [
-                    TermsDrawer.termsIcon(vm.project, _scaffoldKey),
-                    IconButton(
-                        icon: Tooltip(
-                            child: const Icon(Icons.close, color: Colors.white),
-                            message: "Close"),
-                        onPressed: () =>
-                            vm.onClose(vm.project, cmdHistoryDetails)),
-                  ]),
-              body: ScrollPanel(
-                  withPadding: true,
-                  child: Row(
-                    children: <Widget>[
-                      const Expanded(
-                        flex: 1, // 10%
-                        child: const SizedBox(),
-                      ),
-                      Expanded(
-                          flex: 8, // 80%,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(height: 20),
-                              Text(desc, style: UiUtils.cmdTitleStyle),
-                              const SizedBox(height: 20),
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                        noFailedButDone
-                                            ? Mdi.checkboxMarkedCircleOutline
-                                            : result == CmdResult.aborted
-                                                ? Mdi.heartBroken
-                                                : Icons.remove_done,
-                                        size: 60,
-                                        color: noFailedButDone
-                                            ? LAColorTheme.up
-                                            : nothingDone ||
-                                                    result == CmdResult.aborted
-                                                ? LAColorTheme.inactive
-                                                : LAColorTheme.down),
-                                    const SizedBox(width: 20),
-                                    Text(
-                                        noFailedButDone
-                                            ? "All steps ok"
-                                            : nothingDone
-                                                ? "No steps were executed"
-                                                : result == CmdResult.failed
-                                                    ? "Uuppps! some step failed"
-                                                    : result ==
+          return Title(
+              title: "${vm.project.shortName}: $title",
+              color: LAColorTheme.laPalette,
+              child: Scaffold(
+                  key: _scaffoldKey,
+                  endDrawer: const TermsDrawer(),
+                  appBar: LAAppBar(
+                      context: context,
+                      titleIcon: Icons.analytics_outlined,
+                      title: title,
+                      showLaIcon: false,
+                      showBack: true,
+                      actions: [
+                        TermsDrawer.termsIcon(vm.project, _scaffoldKey),
+                        IconButton(
+                            icon: Tooltip(
+                                child: const Icon(Icons.close,
+                                    color: Colors.white),
+                                message: "Close"),
+                            onPressed: () =>
+                                vm.onClose(vm.project, cmdHistoryDetails)),
+                      ]),
+                  body: ScrollPanel(
+                      withPadding: true,
+                      child: Row(
+                        children: <Widget>[
+                          const Expanded(
+                            flex: 1, // 10%
+                            child: const SizedBox(),
+                          ),
+                          Expanded(
+                              flex: 8, // 80%,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Text(desc, style: UiUtils.cmdTitleStyle),
+                                  const SizedBox(height: 20),
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                            noFailedButDone
+                                                ? Mdi
+                                                    .checkboxMarkedCircleOutline
+                                                : result == CmdResult.aborted
+                                                    ? Mdi.heartBroken
+                                                    : Icons.remove_done,
+                                            size: 60,
+                                            color: noFailedButDone
+                                                ? LAColorTheme.up
+                                                : nothingDone ||
+                                                        result ==
                                                             CmdResult.aborted
-                                                        ? "The command didn't finished correctly"
-                                                        : "The command failed for some reason",
-                                        style: UiUtils.titleStyle)
-                                  ]),
-                              const SizedBox(height: 20),
-                              const Text('Tasks summary:',
-                                  style: UiUtils.subtitleStyle),
-                              Container(
-                                  width: 400,
-                                  height: 300,
-                                  child: ResultsPieChart(
-                                      cmdHistoryDetails.resultsTotals)),
-                              SizedBox(height: 20),
-                              const Text('Tasks details:',
-                                  style: UiUtils.subtitleStyle),
-                              const SizedBox(height: 20),
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: resultsDetails),
-                              const SizedBox(height: 20),
-                              const Text('Command executed:',
-                                  style: UiUtils.subtitleStyle),
-                              const SizedBox(height: 20),
-                              TermCommandDesc(
-                                  cmdHistoryDetails: cmdHistoryDetails),
-                              const SizedBox(height: 20),
-                              Text('Ansible Logs:',
-                                  style: UiUtils.subtitleStyle),
-                              const SizedBox(height: 20),
-                              Container(
-                                  height: 600,
-                                  width: 1000,
-                                  child: TermDialog.termArea(
-                                      cmdHistoryDetails.port!)),
-                              TipsCard(text: """## Tips with the logs
+                                                    ? LAColorTheme.inactive
+                                                    : LAColorTheme.down),
+                                        const SizedBox(width: 20),
+                                        Text(
+                                            noFailedButDone
+                                                ? "All steps ok"
+                                                : nothingDone
+                                                    ? "No steps were executed"
+                                                    : result == CmdResult.failed
+                                                        ? "Uuppps! some step failed"
+                                                        : result ==
+                                                                CmdResult
+                                                                    .aborted
+                                                            ? "The command didn't finished correctly"
+                                                            : "The command failed for some reason",
+                                            style: UiUtils.titleStyle)
+                                      ]),
+                                  const SizedBox(height: 20),
+                                  const Text('Tasks summary:',
+                                      style: UiUtils.subtitleStyle),
+                                  Container(
+                                      width: 400,
+                                      height: 300,
+                                      child: ResultsPieChart(
+                                          cmdHistoryDetails.resultsTotals)),
+                                  SizedBox(height: 20),
+                                  const Text('Tasks details:',
+                                      style: UiUtils.subtitleStyle),
+                                  const SizedBox(height: 20),
+                                  Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: resultsDetails),
+                                  const SizedBox(height: 20),
+                                  const Text('Command executed:',
+                                      style: UiUtils.subtitleStyle),
+                                  const SizedBox(height: 20),
+                                  TermCommandDesc(
+                                      cmdHistoryDetails: cmdHistoryDetails),
+                                  const SizedBox(height: 20),
+                                  Text('Ansible Logs:',
+                                      style: UiUtils.subtitleStyle),
+                                  const SizedBox(height: 20),
+                                  Container(
+                                      height: 600,
+                                      width: 1000,
+                                      child: TermDialog.termArea(
+                                          cmdHistoryDetails.port!)),
+                                  TipsCard(text: """## Tips with the logs
 This logs are located in the file `logs/${cmdHistoryDetails.cmd!.logsPrefix}-${cmdHistoryDetails.cmd!.logsSuffix}.log`.
 
 This term shows the end of that log file using the command `less`. You can use your mouse scroll or the keyboard:
@@ -179,14 +188,14 @@ This is useful to search errors. For instance `?FAILED` will search backward the
 
 More info about [how to navigate in this log file](https://www.thegeekstuff.com/2010/02/unix-less-command-10-tips-for-effective-navigation/).
 """),
-                            ],
-                          )),
-                      const Expanded(
-                        flex: 1, // 10%
-                        child: const SizedBox(),
-                      )
-                    ],
-                  )));
+                                ],
+                              )),
+                          const Expanded(
+                            flex: 1, // 10%
+                            child: const SizedBox(),
+                          )
+                        ],
+                      ))));
         } else {
           if (_loadCall == false) {
             _loadCall = true;
