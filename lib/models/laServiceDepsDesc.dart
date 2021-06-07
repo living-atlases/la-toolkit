@@ -96,6 +96,10 @@ class LAServiceDepsDesc {
       nameInt: "dashboard",
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
+    LAServiceName.sds.toS(): LAServiceDepsDesc(
+      nameInt: "sds",
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
+    ),
     LAServiceName.alerts.toS(): LAServiceDepsDesc(
       nameInt: "alerts",
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, Postfix.def, MySql.v5_7],
