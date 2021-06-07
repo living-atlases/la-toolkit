@@ -137,12 +137,12 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                                   extendedStatus: true,
                                   results: vm.checkResults),
                             if (_tab == 1)
-                              TextTitle(text: "Services", separator: true),
+                              TextTitle(text: "Services", separator: false),
                             if (_tab == 1)
                               ServicesStatusPanel(
                                   services: vm.serverServicesToMonitor.item1),
                             if (_tab == 2)
-                              TextTitle(text: "Details", separator: true),
+                              TextTitle(text: "Details", separator: false),
                             if (_tab == 2)
                               for (Widget w in resultWidgets) w
                           ])),
