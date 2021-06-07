@@ -17,7 +17,7 @@ import 'adminIconButton.dart';
 class TermsDrawer extends StatelessWidget {
   const TermsDrawer({Key? key}) : super(key: key);
 
-  static Widget termsIcon(LAProject project, GlobalKey<ScaffoldState> key) {
+  static Widget appBarIcon(LAProject project, GlobalKey<ScaffoldState> key) {
     return IconButton(
       color: Colors.white,
       icon: const Icon(Mdi.console),

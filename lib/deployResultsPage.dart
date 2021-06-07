@@ -11,6 +11,7 @@ import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
 import 'components/laAppBar.dart';
+import 'components/projectDrawer.dart';
 import 'components/resultsPieChart.dart';
 import 'components/scrollPanel.dart';
 import 'components/termCommandDesc.dart';
@@ -69,15 +70,18 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
               color: LAColorTheme.laPalette,
               child: Scaffold(
                   key: _scaffoldKey,
+                  drawer: const ProjectDrawer(),
                   endDrawer: const TermsDrawer(),
                   appBar: LAAppBar(
                       context: context,
                       titleIcon: Icons.analytics_outlined,
                       title: title,
                       showLaIcon: false,
+                      leading:
+                          ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),
                       showBack: true,
                       actions: [
-                        TermsDrawer.termsIcon(vm.project, _scaffoldKey),
+                        TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                         IconButton(
                             icon: Tooltip(
                                 child: const Icon(Icons.close,

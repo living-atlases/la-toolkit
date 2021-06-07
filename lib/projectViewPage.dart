@@ -221,16 +221,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               child: Scaffold(
                   key: _scaffoldKey,
                   backgroundColor: Colors.white,
-                  drawer: ProjectDrawer(),
+                  drawer: const ProjectDrawer(),
                   endDrawer: const TermsDrawer(),
                   appBar: LAAppBar(
-                      leading: IconButton(
-                        color: Colors.white,
-                        icon: const Icon(Mdi.vectorLink),
-                        tooltip: "${project.shortName} links drawer",
-                        onPressed: () =>
-                            _scaffoldKey.currentState?.openDrawer(),
-                      ),
+                      leading: ProjectDrawer.appBarIcon(project, _scaffoldKey),
                       context: context,
                       showLaIcon: false,
                       loading: vm.loading,
@@ -240,7 +234,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                       projectIcon: projectIconUrl,
                       actions: [
                         if (project.isCreated)
-                          TermsDrawer.termsIcon(vm.project, _scaffoldKey)
+                          TermsDrawer.appBarIcon(vm.project, _scaffoldKey)
                       ],
                       title: "Toolkit of ${project.shortName} Portal"),
                   body: new ScrollPanel(

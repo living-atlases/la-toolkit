@@ -12,6 +12,7 @@ import 'package:mdi/mdi.dart';
 import 'components/defDivider.dart';
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
+import 'components/projectDrawer.dart';
 import 'components/scrollPanel.dart';
 import 'components/serverSelector.dart';
 import 'components/servicesChipPanel.dart';
@@ -60,6 +61,7 @@ class _DeployPageState extends State<DeployPage> {
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
+                drawer: const ProjectDrawer(),
                 endDrawer: const TermsDrawer(),
                 appBar: LAAppBar(
                     context: context,
@@ -67,8 +69,9 @@ class _DeployPageState extends State<DeployPage> {
                     title: "Deployment",
                     showLaIcon: false,
                     showBack: true,
+                    leading: ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),
                     actions: [
-                      TermsDrawer.termsIcon(vm.project, _scaffoldKey),
+                      TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                       IconButton(
                           icon: Tooltip(
                               child:

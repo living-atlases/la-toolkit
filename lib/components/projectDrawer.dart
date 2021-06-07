@@ -18,6 +18,15 @@ import 'adminIconButton.dart';
 class ProjectDrawer extends StatelessWidget {
   const ProjectDrawer({Key? key}) : super(key: key);
 
+  static Widget appBarIcon(LAProject project, GlobalKey<ScaffoldState> key) {
+    return IconButton(
+      color: Colors.white,
+      icon: const Icon(Mdi.vectorLink),
+      tooltip: "${project.shortName} links drawer",
+      onPressed: () => key.currentState?.openDrawer(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectDrawerViewModel>(
