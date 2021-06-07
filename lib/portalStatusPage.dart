@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/checkResultCard.dart';
@@ -21,9 +22,16 @@ import 'models/laServer.dart';
 import 'models/laService.dart';
 import 'models/prodServiceDesc.dart';
 
-class PortalStatusPage extends StatelessWidget {
+class PortalStatusPage extends StatefulWidget {
   static const routeName = "status";
+
+  @override
+  _PortalStatusPageState createState() => _PortalStatusPageState();
+}
+
+class _PortalStatusPageState extends State<PortalStatusPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _tab = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +54,6 @@ class PortalStatusPage extends StatelessWidget {
             });
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
-        /*if (vm.loading)
-          context.loaderOverlay.show();
-        else
-          context.loaderOverlay.hide(); */
-        // print("Building PortalStatus $_scaffoldKey");
         List<Widget> resultWidgets = [];
         vm.checkResults.keys.forEach((String serverId) {
           LAServer s = vm.project.servers.firstWhere((s) => s.id == serverId);
@@ -103,6 +106,16 @@ class PortalStatusPage extends StatelessWidget {
                   ]),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
+              bottomNavigationBar: ConvexAppBar(
+                backgroundColor: LAColorTheme.laPalette,
+                items: [
+                  TabItem(icon: Mdi.server, title: "Servers"),
+                  TabItem(icon: Icons.fact_check, title: "Services"),
+                  TabItem(icon: Icons.receipt_long, title: "Details"),
+                ],
+                initialActiveIndex: 0, //optional, default as 0
+                onTap: (int i) => setState(() => _tab = i),
+              ),
               body: ScrollPanel(
                   withPadding: true,
                   padding: 40,
@@ -118,14 +131,20 @@ class PortalStatusPage extends StatelessWidget {
                             // Add
                             // https://pub.dev/packages/circular_countdown_timer
                             // or similar and a sliderdesc
-                            TextTitle(text: "Servers"),
-                            ServersStatusPanel(
-                                extendedStatus: true, results: vm.checkResults),
-                            TextTitle(text: "Services", separator: true),
-                            ServicesStatusPanel(
-                                services: vm.serverServicesToMonitor.item1),
-                            TextTitle(text: "Details", separator: true),
-                            for (Widget w in resultWidgets) w
+                            if (_tab == 0) TextTitle(text: "Servers"),
+                            if (_tab == 0)
+                              ServersStatusPanel(
+                                  extendedStatus: true,
+                                  results: vm.checkResults),
+                            if (_tab == 1)
+                              TextTitle(text: "Services", separator: true),
+                            if (_tab == 1)
+                              ServicesStatusPanel(
+                                  services: vm.serverServicesToMonitor.item1),
+                            if (_tab == 2)
+                              TextTitle(text: "Details", separator: true),
+                            if (_tab == 2)
+                              for (Widget w in resultWidgets) w
                           ])),
                       Expanded(
                         flex: 0, // 10%
