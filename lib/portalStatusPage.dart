@@ -106,8 +106,12 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                   ]),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
+              // TODO: use here badges
+              // https://github.com/hacktons/convex_bottom_bar/
+              // {0: '99+', 1: Icons.assistant_photo, 2: Colors.redAccent},
               bottomNavigationBar: ConvexAppBar(
                 backgroundColor: LAColorTheme.laPalette,
+                style: TabStyle.react,
                 items: [
                   TabItem(icon: Mdi.server, title: "Servers"),
                   TabItem(icon: Icons.fact_check, title: "Services"),
