@@ -155,6 +155,6 @@ ala-install releases: ${alaInstallReleases.length}, generator releases: ${genera
 snackMessages: ${appSnackBarMessages.length} repeatCmd: $repeatCmd
 currentProject of ${projects.length} -----
 $currentProject
-''';
+===''';
   }
 }
