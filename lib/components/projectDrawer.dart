@@ -8,6 +8,7 @@ import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
@@ -107,7 +108,8 @@ class ProjectDrawer extends StatelessWidget {
   List<Widget> _createProjectLinks(LAProject currentProject) {
     return [
       for (var serviceDesc in currentProject.prodServices)
-        ServiceListTileLink(desc: serviceDesc)
+        if (!LAServiceDesc.internalServices.contains(serviceDesc.nameInt))
+          ServiceListTileLink(desc: serviceDesc)
     ];
   }
 }

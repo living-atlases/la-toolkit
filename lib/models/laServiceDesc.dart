@@ -355,6 +355,13 @@ class LAServiceDesc {
 
   static List<LAServiceDesc> list = map.values.toList();
 
+  static List<String> internalServices = [
+    LAServiceName.nameindexer.toS(),
+    LAServiceName.biocache_backend.toS(),
+    LAServiceName.biocache_cli.toS(),
+    LAServiceName.branding.toS(),
+  ];
+
   bool isCompatibleWith(String? alaInstallVersion, LAServiceDesc otherService) {
     bool compatible = true;
     if (otherService == this) return true;
