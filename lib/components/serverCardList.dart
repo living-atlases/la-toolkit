@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/renameServerIcon.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
@@ -36,25 +37,35 @@ class ServersCardList extends StatelessWidget {
                         child: Container(
                             margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
                             child: ListTile(
-                              contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              title: Text(_project.servers[index].name),
-                              subtitle: Text(LAService.servicesForHumans(
-                                  _project.getServerServicesFull(
-                                      serverId: _project.servers[index].id))),
-                              trailing: Tooltip(
-                                  message: "Delete this server",
-                                  child: IconButton(
-                                      icon: const Icon(Icons.delete),
-                                      onPressed: () =>
-                                          UiUtils.showAlertDialog(context, () {
-                                            _project.delete(
-                                                _project.servers[index]);
-                                            _project.validateCreation();
-                                            vm.onSaveCurrentProject(_project);
-                                          }, () => {},
-                                              title:
-                                                  "Deleting the server '${_project.servers[index].name}'"))),
-                            ))));
+                                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                title: Text(_project.servers[index].name),
+                                subtitle: Text(LAService.servicesForHumans(
+                                    _project.getServerServicesFull(
+                                        serverId: _project.servers[index].id))),
+                                trailing:
+                                    Wrap(spacing: 12, // space between two icons
+                                        children: <Widget>[
+                                      RenameServerIcon(
+                                          _project,
+                                          _project.servers[index],
+                                          (LAProject project) =>
+                                              vm.onSaveCurrentProject(project)),
+                                      Tooltip(
+                                          message: "Delete this server",
+                                          child: IconButton(
+                                              icon: const Icon(Icons.delete),
+                                              onPressed: () =>
+                                                  UiUtils.showAlertDialog(
+                                                      context, () {
+                                                    _project.delete(_project
+                                                        .servers[index]);
+                                                    _project.validateCreation();
+                                                    vm.onSaveCurrentProject(
+                                                        _project);
+                                                  }, () => {},
+                                                      title:
+                                                          "Deleting the server '${_project.servers[index].name}'"))),
+                                    ])))));
               });
         });
   }
