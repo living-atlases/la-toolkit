@@ -361,12 +361,10 @@ packages:
   flutter_map:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "issues/829-nullsafety"
-      resolved-ref: "252bbc4ca6bf3578367d1a60c954afc6b228360d"
-      url: "git://github.com/josxha/flutter_map.git"
-    source: git
-    version: "0.13.0"
+      name: flutter_map
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.13.1"
   flutter_markdown:
     dependency: "direct main"
     description:

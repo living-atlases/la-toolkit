@@ -114,7 +114,7 @@ dependencies:
   universal_html: ^2.0.4
 
   # map
-  flutter_map: ^0.12.0
+  flutter_map: ^0.13.1
   # https://github.com/porn/area/pull/2
   area: # ^1.0.0
     git:
@@ -200,10 +200,3 @@ flutter:
     - family:  LAIcon
       fonts:
         - asset: fonts/LAIcon.ttf
-
-# https://github.com/fleaflet/flutter_map/issues/829
-dependency_overrides:
-  flutter_map:
-    git:
-      url: git://github.com/josxha/flutter_map.git
-      ref: issues/829-nullsafety
