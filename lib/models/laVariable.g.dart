@@ -90,6 +90,7 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.spatial: 'spatial',
   LAServiceName.webapi: 'webapi',
   LAServiceName.dashboard: 'dashboard',
+  LAServiceName.sds: 'sds',
   LAServiceName.alerts: 'alerts',
   LAServiceName.doi: 'doi',
   LAServiceName.biocache_backend: 'biocache_backend',
