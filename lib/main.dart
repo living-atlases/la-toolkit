@@ -9,6 +9,7 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -64,7 +65,8 @@ Future<void> main() async {
   });
 
   // https://github.com/slovnicki/beamer/tree/master/package#tips-and-common-issues
-  Beamer.setPathUrlStrategy();
+  // This does not work in production as /project is a sails blueprint path also
+  // Beamer.setPathUrlStrategy();
 
   runApp(MyApp(store: store));
   /* runApp(BetterFeedback(
@@ -136,7 +138,7 @@ class MyApp extends StatelessWidget {
                   background: Container(color: Color(0xFFF5F5F5))),
               title: appName,
               theme: LAColorTheme.laThemeData,
-              debugShowCheckedModeBanner: false,
+              debugShowCheckedModeBanner: AppUtils.isDev(),
             )));
   }
 }
