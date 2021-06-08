@@ -22,6 +22,7 @@ void main() {
   final regions = LAServiceName.regions.toS();
   final spatial = LAServiceName.spatial.toS();
   final cas = LAServiceName.cas.toS();
+  final sds = LAServiceName.sds.toS();
   // final dashboard = LAServiceName.dashboard.toS();
   final doi = LAServiceName.doi.toS();
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -646,9 +647,13 @@ void main() {
     expect(p.shortName, equals('GBIF.ES'));
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
-    LAServiceDesc.list.forEach((service) {
-      //   print("${service.nameInt}");
-      expect(p.getService(service.nameInt).use, equals(true));
+    LAServiceDesc.list
+        .where((s) => s.nameInt != LAServiceName.sds.toS())
+        .toList()
+        .forEach((service) {
+      if (![sds].contains(service.nameInt))
+        expect(p.getService(service.nameInt).use, equals(true),
+            reason: "${service.nameInt} should be in Use");
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));
         expect(p.getService(service.nameInt).iniPath, equals(''));
@@ -672,8 +677,9 @@ void main() {
     expect(p.dirName != null && p.dirName!.length > 0, equals(true));
     LAServiceDesc.list.forEach((service) {
       // print("${service.nameInt}");
-      if (![lists, webapi, doi, bie, regions].contains(service.nameInt))
-        expect(p.getService(service.nameInt).use, equals(true));
+      if (![lists, webapi, doi, bie, regions, sds].contains(service.nameInt))
+        expect(p.getService(service.nameInt).use, equals(true),
+            reason: "${service.nameInt} should be in Use");
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));
         if (![collectory, alaHub, biocacheService, alerts, images]
