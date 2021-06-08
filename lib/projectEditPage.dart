@@ -69,11 +69,12 @@ class LAProjectEditPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(
-        // with true fails ssl y ssh advanced
-        distinct: true,
+        // with true fails ssl y ssh advanced, and delete
+        distinct: false,
         converter: (store) {
           return _ProjectPageViewModel(
               state: store.state,
+              project: store.state.currentProject,
               ssl: store.state.currentProject.useSSL,
               advancedEdit: store.state.currentProject.advancedEdit,
               onFinish: (project) {
@@ -105,8 +106,8 @@ class LAProjectEditPage extends StatelessWidget {
               });
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
-          // print('build project page');
-          LAProject _project = vm.state.currentProject;
+          print('build project edit page');
+          final LAProject _project = vm.project;
           if (_project.getVariableValue("pac4j_cookie_signing_key") == null ||
               _project.getVariableValue("pac4j_cookie_signing_key") == '') {
             // Auto-generate CAS keys
@@ -495,6 +496,7 @@ If you have doubts or need to ask for some information, save this project and co
 
 class _ProjectPageViewModel {
   final AppState state;
+  final LAProject project;
   final bool ssl;
   final bool advancedEdit;
   final Function(LAProject) onSaveCurrentProject;
@@ -505,6 +507,7 @@ class _ProjectPageViewModel {
   final Function(int) onGoto;
   _ProjectPageViewModel(
       {required this.state,
+      required this.project,
       required this.onSaveCurrentProject,
       required this.onFinish,
       required this.onCancel,
@@ -519,7 +522,7 @@ class _ProjectPageViewModel {
     bool equals = identical(this, other) ||
         other is _ProjectPageViewModel &&
             runtimeType == other.runtimeType &&
-            state.currentProject == other.state.currentProject &&
+            project == other.project &&
             ssl == other.ssl &&
             advancedEdit == other.advancedEdit &&
             state.currentStep == other.state.currentStep;
@@ -533,6 +536,7 @@ class _ProjectPageViewModel {
   int get hashCode {
     return state.currentProject.hashCode ^
         state.currentStep.hashCode ^
+        project.hashCode ^
         ssl.hashCode ^
         advancedEdit.hashCode;
   }

@@ -4,6 +4,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:objectid/objectid.dart';
 
@@ -149,5 +150,13 @@ class LAService implements IsJsonSerializable<LAService> {
             nameInt != LAServiceName.biocache_cli.toS() &&
             nameInt != LAServiceName.nameindexer.toS())
         .toList();
+  }
+
+  static String servicesForHumans(List<LAService> services) {
+    return services
+        .map((service) =>
+            StringUtils.capitalize(LAServiceDesc.get(service.nameInt).name))
+        .toList()
+        .join(', ');
   }
 }

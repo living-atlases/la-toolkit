@@ -11,8 +11,6 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:mdi/mdi.dart';
 import 'package:tuple/tuple.dart';
@@ -91,12 +89,7 @@ class ServerStatusCard extends StatelessWidget {
                               overflow: TextOverflow.visible,
                               softWrap: true,
                               text: TextSpan(
-                                  text: services
-                                      .map((service) => StringUtils.capitalize(
-                                          LAServiceDesc.get(service.nameInt)
-                                              .name))
-                                      .toList()
-                                      .join(', '),
+                                  text: LAService.servicesForHumans(services),
                                   style: ServiceStatusCard.subtitle),
                             )),
                     ],

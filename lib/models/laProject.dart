@@ -154,8 +154,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
   bool validateCreation({debug: false}) {
     bool valid = true;
     LAProjectStatus status = LAProjectStatus.created;
-    if (servers.length != serverServices.length)
-      throw ('Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length})');
+    if (servers.length != serverServices.length) {
+      String msgErr =
+          'Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length}';
+      print(msgErr);
+      print("servers (${servers.length}): $servers");
+      print("serverServices (${serverServices.length}): $serverServices");
+      throw (msgErr);
+    }
 
     valid = valid &&
         LARegExp.projectNameRegexp.hasMatch(longName) &&
@@ -307,13 +313,13 @@ class LAProject implements IsJsonSerializable<LAProject> {
 isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
-servers-services: 
+serviceDeploys (${serviceDeploys.length})
+servers-services (${serverServices.length}): 
 ${sToS ?? "Some error in serversToServices"}
 services selected (${getServicesAssignedToServers().length}): [${getServicesAssignedToServers().join(', ')}]
 services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().join(', ')}]
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}]
-check results length: ${checkResults.length} 
-''';
+check results length: ${checkResults.length}''';
   }
 
   //static List<LAService> initialServices = getInitialServices(id);
@@ -423,10 +429,20 @@ check results length: ${checkResults.length}
   }
 
   void delete(LAServer serverToDelete) {
-    serverServices.removeWhere((key, value) => key == serverToDelete.id);
+    /* print(servers.length);
+    print(serviceDeploys.length);
+    print(serverServices.length); */
+    serverServices.remove(serverToDelete.id);
     serviceDeploys =
         serviceDeploys.where((sd) => sd.serverId != serverToDelete.id).toList();
     servers = servers.where((s) => s.id != serverToDelete.id).toList();
+    // Remove serviceDeploy inconsistencies
+    serviceDeploys.removeWhere(
+        (sd) => (servers.firstWhereOrNull((s) => s.id == sd.serverId) == null));
+    /* print(servers.length);
+    print(serviceDeploys.length);
+    print(serverServices.length);
+    validateCreation(debug: true); */
   }
 
   String additionalVariablesDecoded() {

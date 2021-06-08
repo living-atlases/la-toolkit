@@ -28,7 +28,9 @@ class _GatewaySelectorState extends State<GatewaySelector> {
           return _GatewaySelectorViewModel(
               project: store.state.currentProject,
               server: store.state.currentProject.servers
-                  .firstWhere((s) => s.id == widget.exclude.id),
+                  .firstWhere((s) => s.id == widget.exclude.id,
+                      // workaround for delete servers
+                      orElse: () => widget.exclude),
               onSaveProject: (project) =>
                   store.dispatch(SaveCurrentProject(project)));
         },

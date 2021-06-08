@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/redux/actions.dart';
+import 'package:la_toolkit/utils/cardConstants.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
 class ServersCardList extends StatelessWidget {
   ServersCardList({Key? key}) : super(key: key);
 
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersCardListViewModel>(
-        distinct: false,
+        distinct: true,
         converter: (store) {
           return _ServersCardListViewModel(
               currentProject: store.state.currentProject,
@@ -25,22 +28,33 @@ class ServersCardList extends StatelessWidget {
               itemCount: _project.numServers(),
               // itemCount: appStateProv.appState.projects.length,
               itemBuilder: (BuildContext context, int index) {
-                return Card(
-                    elevation: 1,
-                    child: Container(
-                        margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          title: Text(_project.servers[index].name),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              _project.delete(_project.servers[index]);
-                              _project.validateCreation();
-                              vm.onSaveCurrentProject(_project);
-                            },
-                          ),
-                        )));
+                return IntrinsicWidth(
+                    child: Card(
+                        margin: CardConstants.defaultSeparation,
+                        elevation: CardConstants.defaultElevation,
+                        shape: CardConstants.defaultShape,
+                        child: Container(
+                            margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              title: Text(_project.servers[index].name),
+                              subtitle: Text(LAService.servicesForHumans(
+                                  _project.getServerServicesFull(
+                                      serverId: _project.servers[index].id))),
+                              trailing: Tooltip(
+                                  message: "Delete this server",
+                                  child: IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () =>
+                                          UiUtils.showAlertDialog(context, () {
+                                            _project.delete(
+                                                _project.servers[index]);
+                                            _project.validateCreation();
+                                            vm.onSaveCurrentProject(_project);
+                                          }, () => {},
+                                              title:
+                                                  "Deleting the server '${_project.servers[index].name}'"))),
+                            ))));
               });
         });
   }
@@ -48,6 +62,16 @@ class ServersCardList extends StatelessWidget {
 
 class _ServersCardListViewModel {
   final LAProject currentProject;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _ServersCardListViewModel &&
+          runtimeType == other.runtimeType &&
+          currentProject == other.currentProject;
+
+  @override
+  int get hashCode => currentProject.hashCode;
   final void Function(LAProject project) onSaveCurrentProject;
 
   _ServersCardListViewModel(
