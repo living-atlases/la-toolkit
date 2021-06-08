@@ -66,7 +66,7 @@ void main() {
         domain: "l-a.site",
         alaInstallRelease: "",
         generatorRelease: "");
-    testProject.upsertByName(LAServer(name: "vm1", projectId: testProject.id));
+    testProject.upsertServer(LAServer(name: "vm1", projectId: testProject.id));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(1));
     expect(testProject.validateCreation(), equals(false));
@@ -80,10 +80,10 @@ void main() {
         domain: "l-a.site",
         alaInstallRelease: "",
         generatorRelease: "");
-    testProject.upsertByName(LAServer(name: "vm1", projectId: testProject.id));
-    testProject.upsertByName(
+    testProject.upsertServer(LAServer(name: "vm1", projectId: testProject.id));
+    testProject.upsertServer(
         LAServer(name: "vm2", ip: "10.0.0.1", projectId: testProject.id));
-    testProject.upsertByName(
+    testProject.upsertServer(
         LAServer(name: "vm2", ip: "10.0.0.2", projectId: testProject.id));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(2));
@@ -151,8 +151,8 @@ void main() {
         LAServer(name: "vm4", ip: "10.0.0.4", projectId: testProject.id);
     LAProject testProjectCopy =
         testProject.copyWith(servers: [], serverServices: {});
-    testProject.upsertByName(vm1);
-    testProjectCopy.upsertByName(vm1);
+    testProject.upsertServer(vm1);
+    testProjectCopy.upsertServer(vm1);
     expect(testProject.getServerServicesForTest().length, equals(1));
     expect(testProject.servers.length, equals(1));
     expect(testProjectCopy.getServerServicesForTest().length, equals(1));
@@ -168,7 +168,7 @@ void main() {
     expect(testProject == testProjectCopy, equals(true));
     expect(testProject.servers, equals(testProjectCopy.servers));
 
-    testProject.upsertByName(vm2);
+    testProject.upsertServer(vm2);
     expect(testProjectCopy.servers.length, equals(1));
 
     expect(testProject.getServerServicesForTest().length, equals(2));
@@ -186,11 +186,11 @@ void main() {
         equals(false));
     expect(testProject.hashCode == testProjectCopy.hashCode, equals(false));
     expect(testProject == testProjectCopy, equals(false));
-    testProjectCopy.upsertByName(vm2);
+    testProjectCopy.upsertServer(vm2);
     expect(testProject == testProjectCopy, equals(true));
     expect(testProject.servers, equals(testProjectCopy.servers));
-    testProject.upsertByName(vm3);
-    testProject.upsertByName(vm4);
+    testProject.upsertServer(vm3);
+    testProject.upsertServer(vm4);
     expect(testProject == testProjectCopy, equals(false));
     testProject.assign(vm1, [LAServiceName.collectory.toS()]);
     expect(testProject == testProjectCopy, equals(false));
@@ -308,7 +308,7 @@ void main() {
 
     expect(p == pBis, equals(true));
     LAServer vm1 = LAServer(name: "vm1", projectId: p.id);
-    p.upsertByName(vm1);
+    p.upsertServer(vm1);
     p.assign(vm1, [collectory, bie, bieIndex, lists]);
     expect(p.getServicesAssignedToServers().length, equals(4));
     expect(p.serviceDeploys.length,
@@ -321,7 +321,7 @@ void main() {
         projectId: p.id);
     expect(p.getServerServices(serverId: vm1.id).contains(collectory),
         equals(true));
-    p.upsertByName(vm1Bis);
+    p.upsertServer(vm1Bis);
 
     expect(p.getServerServices(serverId: vm1.id).contains(collectory),
         equals(true));

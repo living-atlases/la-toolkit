@@ -110,7 +110,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
               // https://github.com/hacktons/convex_bottom_bar/
               // {0: '99+', 1: Icons.assistant_photo, 2: Colors.redAccent},
               bottomNavigationBar: ConvexAppBar(
-                backgroundColor: LAColorTheme.laPalette,
+                backgroundColor: Colors.black26,
                 style: TabStyle.react,
                 items: [
                   TabItem(icon: Mdi.server, title: "Servers"),

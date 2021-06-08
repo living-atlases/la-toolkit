@@ -374,7 +374,7 @@ check results length: ${checkResults.length}''';
     return serverServices[serverName] ?? [];
   }
 
-  void upsertByName(LAServer laServer) {
+  void upsertServer(LAServer laServer) {
     servers = LAServer.upsertByName(servers, laServer);
     LAServer upsertServer =
         servers.firstWhereOrNull((s) => s.name == laServer.name)!;
@@ -635,7 +635,7 @@ check results length: ${checkResults.length}''';
           // id is empty when is new
           s = LAServer(
               id: new ObjectId().toString(), name: hostname, projectId: p.id);
-          p.upsertByName(s);
+          p.upsertServer(s);
         } else {
           s = p.servers.where((c) => c.name == hostname).toList()[0];
         }

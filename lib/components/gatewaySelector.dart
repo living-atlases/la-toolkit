@@ -58,12 +58,12 @@ class _GatewaySelectorState extends State<GatewaySelector> {
                     if (!gateways.contains(s.name)) {
                       print("Setting gateways for ${s.name}");
                       s.gateways = gateways;
-                      vm.project.upsertByName(s);
+                      vm.project.upsertServer(s);
                     }
                   }
                 }, () {
                   vm.server.gateways = gateways;
-                  vm.project.upsertByName(vm.server);
+                  vm.project.upsertServer(vm.server);
                 },
                     title: "Use this gateway always",
                     subtitle:
@@ -72,7 +72,7 @@ class _GatewaySelectorState extends State<GatewaySelector> {
                     cancelBtn: "NO");
               } else {
                 vm.server.gateways = gateways;
-                vm.project.upsertByName(vm.server);
+                vm.project.upsertServer(vm.server);
               }
               vm.onSaveProject(vm.project);
             },

@@ -170,7 +170,7 @@ class ServersDetailsCardList extends StatelessWidget {
                                             if (_project.servers[index].id ==
                                                 current.id) {
                                               current.ip = value;
-                                              _project.upsertByName(current);
+                                              _project.upsertServer(current);
                                             }
                                             return current;
                                           }).toList();

@@ -258,24 +258,20 @@ AppState _testServicesProject(AppState state, TestServicesProject action) {
 AppState _onTestConnectivityResults(
     AppState state, OnTestConnectivityResults action) {
   LAProject currentProject = state.currentProject;
+
   currentProject.servers.forEach((server) {
     server.reachable = ServiceStatus.unknown;
     server.sshReachable = ServiceStatus.unknown;
     server.sudoEnabled = ServiceStatus.unknown;
     server.osName = "";
     server.osVersion = "";
-    currentProject.upsertByName(server);
+    currentProject.upsertServer(server);
   });
-  for (String serverName in action.results.keys) {
-    LAServer server =
-        currentProject.servers.where((e) => e.name == serverName).toList()[0];
-    server.reachable = serviceStatus(action.results[serverName]['ping']);
-    server.sshReachable = serviceStatus(action.results[serverName]['ssh']);
-    server.sudoEnabled = serviceStatus(action.results[serverName]['sudo']);
-    server.osName = action.results[serverName]['os']['name'] ?? "";
-    server.osVersion = action.results[serverName]['os']['version'] ?? "";
-    currentProject.upsertByName(server);
-  }
+
+  action.results['servers'].forEach((server) {
+    currentProject.upsertServer(LAServer.fromJson(server));
+  });
+
   if (currentProject.allServersWithServicesReady() &&
       currentProject.status.value <= LAProjectStatus.reachable.value) {
     currentProject.setProjectStatus(LAProjectStatus.reachable);
