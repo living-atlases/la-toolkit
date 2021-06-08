@@ -135,8 +135,11 @@ In Windows, try `dockerTask.ps1` (feedback welcome).
 You can run the la-toolkit in another server and redirect the ports via ssh like:
 
 ```
- ssh -L 2010:127.0.0.1:2010 -L 2011:127.0.0.1:2011 yourUser@yourRemoteServer -N -f
+ ssh -L 2010:127.0.0.1:2010 -L 2011:127.0.0.1:2011 -L 2012:127.0.0.1:2012 yourUser@yourRemoteServer -N -f
 ```
+
+Currently we use a range of ports for the terms (2011-2100), so depending on the number of users using this instance of the la-toolkit you'll [need more port redirections](https://unix.stackexchange.com/a/589259).
+
 ## Upgrade the toolkit
 
 Get the latest version of the la-toolkit with:
@@ -162,6 +165,12 @@ TODO: Add the update task to the Windows script.
 - Move your data to `/data/la-toolkit` and create an additional `/data/la-toolkit/mongo/`. If you want to use a different directories edit your `docker-compose.yml` volumes accordingly. You can also use symlinks.
 - Change the mongo db user/passwords before start the container.
 - A migration of your projects json configuration to mongo should be done at startup. Please verify that the `la-toolkit` start correctly. If not see the "Logs and debugging" section above.
+
+## Migrate your old inventories to the toolkit 
+
+If you were using other generated inventories, you can import it using the (+) button with some addiotional steps:
+- Tune your imported project in the Edit and Tune tools. For instance, add your servers IPs, etc. See that there is a "Advanced" mode. There you can copy in the bottom text area your inventory local-extras.
+- After enter in the Deploy Tool, some new inventories will be generated (and also a new password file). Substitute that generated local-password with your old one that you are using, to restore your passwords and not using new ones.
 
 ## Logs and debugging
 
