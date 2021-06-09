@@ -113,12 +113,12 @@ class LogItem extends StatelessWidget {
     }
 
     String duration = log.duration != null
-        ? 'Duration: ${printDuration(Duration(milliseconds: log.duration!.toInt()))}, f'
-        : 'F';
+        ? 'duration: ${printDuration(Duration(milliseconds: log.duration!.toInt()))}, '
+        : '';
     return ListTile(
         title: Text(desc),
         subtitle: Text(
-            "${duration}inished status: ${log.result.toS()}, ${Moment.now().from(log.date).toString()}"),
+            "${Moment.now().from(log.date).toString()}, ${duration}finished status: ${log.result.toS()}"),
         onTap: () => onTap(),
         trailing: Wrap(
           spacing: 12, // space between two icons
