@@ -21,6 +21,12 @@ class LogsHistoryPage extends StatelessWidget {
   static const routeName = "logs";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // https://sailsjs.com/documentation/reference/blueprint-api/find-where
+  // Pagination
+  // http://127.0.0.1:1337/CmdHistoryEntry?populate=cmd&where={%22projectId%22:%22609a1d0756d6b525227ce1e6%22}&sort=createdAt%20DESC
+  // ?limit=100
+  // ?skip=30
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
@@ -50,7 +56,7 @@ class LogsHistoryPage extends StatelessWidget {
       },
       builder: (BuildContext context, _ViewModel vm) {
         return Title(
-            title: "${vm.project.shortName} Logs History",
+            title: "${vm.project.shortName} Tasks Logs History",
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
