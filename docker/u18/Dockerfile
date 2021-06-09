@@ -104,7 +104,7 @@ RUN su - ubuntu -c 'npm install -g sails'
 RUN su - ubuntu -c 'npm install -g forever'
 RUN su - ubuntu -c 'npm install -g db-migrate'
 RUN su - ubuntu -c 'npm install -g db-migrate-mongodb'
-RUN echo "2021062801"
+RUN echo "2021060901"
 RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 
 # ala-install
