@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/adminIconButton.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -60,14 +61,15 @@ class ServiceSmallLinks extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SimpleServiceStatusItem(
-              icon: Tooltip(
-                  message: service.tooltip,
-                  child: InkWell(
-                    child: Icon(Icons.link,
-                        size: iconDefSize, color: LAColorTheme.link),
-                    onTap: () async => await launch(service.url),
-                  ))),
+          if (service.nameInt != LAServiceName.biocache_backend.toS())
+            SimpleServiceStatusItem(
+                icon: Tooltip(
+                    message: service.tooltip,
+                    child: InkWell(
+                      child: Icon(Icons.link,
+                          size: iconDefSize, color: LAColorTheme.link),
+                      onTap: () async => await launch(service.url),
+                    ))),
           if (service.admin)
             SimpleServiceStatusItem(
                 icon: AdminIconButton(
