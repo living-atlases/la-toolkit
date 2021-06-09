@@ -77,6 +77,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                       titleIcon: Icons.analytics_outlined,
                       title: title,
                       showLaIcon: false,
+                      onBack: () => vm.onClose(vm.project, cmdHistoryDetails),
                       leading:
                           ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),
                       showBack: true,

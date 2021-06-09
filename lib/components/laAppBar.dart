@@ -18,7 +18,8 @@ class LAAppBar extends AppBar {
       List<Widget>? actions,
       Widget? leading,
       IconData? titleIcon,
-      bool loading: false})
+      bool loading: false,
+      VoidCallback? onBack})
       : super(
             /*
             // This breaks the Navigation
@@ -68,6 +69,7 @@ class LAAppBar extends AppBar {
                             BeamerCond.of(context, HomeLocation());
                           }
                         }
+                        if (onBack != null) onBack();
                       }),
                 if (showLaIcon)
                   IconButton(
