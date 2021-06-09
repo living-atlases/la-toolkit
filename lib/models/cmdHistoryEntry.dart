@@ -51,6 +51,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
   int createdAt;
   @JsonKey(ignore: true)
   DeployCmd? parsedCmd;
+  double? duration;
 
   CmdHistoryEntry(
       {String? id,
@@ -61,6 +62,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
       required this.rawCmd,
       required this.cmd,
       int? createdAt,
+      this.duration,
       this.result: CmdResult.unknown})
       : id = id ?? new ObjectId().toString(),
         invDir = invDir ?? "",
@@ -100,6 +102,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
           date == other.date &&
           invDir == other.invDir &&
           desc == other.desc &&
+          duration == other.duration &&
           result == other.result;
 
   @override
@@ -112,6 +115,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
       rawCmd.hashCode ^
       date.hashCode ^
       cmd.hashCode ^
+      duration.hashCode ^
       result.hashCode;
 
   @override

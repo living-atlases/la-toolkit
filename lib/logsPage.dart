@@ -1,3 +1,4 @@
+import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -110,12 +111,14 @@ class LogItem extends StatelessWidget {
         onNoDesc(desc); // Update the backend (not done in db migration)
       desc = log.deployCmd!.desc;
     }
-    /* print(log.cmd.type);
-    print(desc); */
+
+    String duration = log.duration != null
+        ? 'Duration: ${printDuration(Duration(milliseconds: log.duration!.toInt()))}, f'
+        : 'F';
     return ListTile(
         title: Text(desc),
         subtitle: Text(
-            "Finished status: ${log.result.toS()}, ${Moment.now().from(log.date).toString()}"),
+            "${duration}inished status: ${log.result.toS()}, ${Moment.now().from(log.date).toString()}"),
         onTap: () => onTap(),
         trailing: Wrap(
           spacing: 12, // space between two icons

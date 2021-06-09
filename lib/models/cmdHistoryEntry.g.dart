@@ -11,6 +11,7 @@ extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
     Cmd? cmd,
     int? createdAt,
     String? desc,
+    double? duration,
     String? id,
     String? invDir,
     String? logsPrefix,
@@ -22,6 +23,7 @@ extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
       cmd: cmd ?? this.cmd,
       createdAt: createdAt ?? this.createdAt,
       desc: desc ?? this.desc,
+      duration: duration ?? this.duration,
       id: id ?? this.id,
       invDir: invDir ?? this.invDir,
       logsPrefix: logsPrefix ?? this.logsPrefix,
@@ -46,6 +48,7 @@ CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) {
     rawCmd: json['rawCmd'] as String,
     cmd: Cmd.fromJson(json['cmd'] as Map<String, dynamic>),
     createdAt: json['createdAt'] as int?,
+    duration: (json['duration'] as num?)?.toDouble(),
     result: _$enumDecode(_$CmdResultEnumMap, json['result']),
   );
 }
@@ -61,6 +64,7 @@ Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
       'cmd': instance.cmd.toJson(),
       'result': _$CmdResultEnumMap[instance.result],
       'createdAt': instance.createdAt,
+      'duration': instance.duration,
     };
 
 K _$enumDecode<K, V>(
