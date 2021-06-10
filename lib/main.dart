@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:beamer/beamer.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/foundation.dart';
@@ -5,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
@@ -22,8 +26,21 @@ import 'routes.dart';
 Future<void> main() async {
   AppStateMiddleware appStateMiddleware = AppStateMiddleware();
 
-  await DotEnv.load(
-      fileName: "${kReleaseMode ? 'env.production.txt' : '.env.development'}");
+  if (kReleaseMode) {
+    // Get the env from the server in production (or demo from assets)
+    Uri url = Uri(
+        scheme: Uri.base.scheme,
+        host: Uri.base.host,
+        path: "/env.production.txt");
+    Response response = await http.get(url);
+    if (response.statusCode == 200) {
+      Map<String, String> jsonResponse = jsonDecode(response.body);
+      await DotEnv.load(mergeWith: jsonResponse);
+    }
+  } else {
+    await DotEnv.load(fileName: '.env.development');
+  }
+
   if (kReleaseMode) {
     // is Release Mode ??
     print('Running in release mode');

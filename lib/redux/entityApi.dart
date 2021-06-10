@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/isJsonSerializable.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
 class EntityApi<T extends IsJsonSerializable> {
   final String model;
@@ -113,7 +114,7 @@ class EntityApi<T extends IsJsonSerializable> {
   }
 
   Uri baseUri<T>([String path = "", Map<String, dynamic>? queryParameters]) =>
-      Uri.http(env['BACKEND']!, "/$model${path != "" ? '/' + path : ''}",
+      AppUtils.uri(env['BACKEND']!, "/$model${path != "" ? '/' + path : ''}",
           queryParameters);
 
 /*

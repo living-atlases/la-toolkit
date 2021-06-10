@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -55,7 +57,10 @@ class TermDialog {
     }
   }
 
-  static String getInitialUrl(int port) => 'http://localhost:$port/';
+  static String getInitialUrl(int port) =>
+      (env['TERM_PROXY'] ?? "false").parseBool()
+          ? '${AppUtils.scheme}://${env['BACKEND']!.split(":")[0]}/ttyd$port'
+          : '${AppUtils.scheme}://${env['BACKEND']!.split(":")[0]}:$port/';
 
   static SafeArea termArea(int port) {
     return SafeArea(

@@ -3,17 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/components/LoadingTextOverlay.dart';
-// import 'package:intl/intl.dart';
-
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/redux/appActions.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 
 import '../laTheme.dart';
 import '../models/preDeployCmd.dart';
@@ -38,8 +36,15 @@ class AppUtils {
     return (env['DEMO'] ?? "false").parseBool();
   }
 
+  static bool https = (env['HTTPS'] ?? "false").parseBool();
+
+  static Function uri =
+      (String a, String p) => https ? Uri.https(a, p) : Uri.http(a, p);
+  static String scheme =
+      (env['HTTPS'] ?? "false").parseBool() ? "https" : "http";
+
   static String proxyImg(imgUrl) {
-    return "http://${env['BACKEND']}/api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
+    return "$scheme://${env['BACKEND']}/api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
   }
 }
 
@@ -62,12 +67,12 @@ class UiUtils {
   static const TextStyle subtitleStyle =
       TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
 
-  static showAlertDialog(BuildContext context, VoidCallback onConfirm, VoidCallback onCancel,
+  static showAlertDialog(
+      BuildContext context, VoidCallback onConfirm, VoidCallback onCancel,
       {title = "Please Confirm",
       subtitle = "Are you sure?",
       confirmBtn = "CONFIRM",
-      cancelBtn = "CANCEL"
-      }) {
+      cancelBtn = "CANCEL"}) {
     // set up the buttons
     Widget cancelButton = TextButton(
       child: Text(cancelBtn),
