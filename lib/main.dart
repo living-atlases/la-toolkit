@@ -26,19 +26,24 @@ import 'routes.dart';
 Future<void> main() async {
   AppStateMiddleware appStateMiddleware = AppStateMiddleware();
 
-  if (kReleaseMode) {
-    // Get the env from the server in production (or demo from assets)
+  await DotEnv.load(
+      fileName: "${kReleaseMode ? 'env.production.txt' : '.env.development'}");
+
+  print("Uri base: ${Uri.base.toString()}");
+  if (kReleaseMode && !AppUtils.isDemo()) {
+    // Get the env from the server in production also
     Uri url = Uri(
         scheme: Uri.base.scheme,
         host: Uri.base.host,
-        path: "/env.production.txt");
+        port: Uri.base.port,
+        path: "/api/v1/get-env");
+    print("Uri env: ${url.toString()}");
     Response response = await http.get(url);
     if (response.statusCode == 200) {
       Map<String, String> jsonResponse = jsonDecode(response.body);
-      await DotEnv.load(mergeWith: jsonResponse);
+      await DotEnv.load(
+          fileName: 'env.production.txt', mergeWith: jsonResponse);
     }
-  } else {
-    await DotEnv.load(fileName: '.env.development');
   }
 
   if (kReleaseMode) {
