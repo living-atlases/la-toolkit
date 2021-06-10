@@ -22,10 +22,11 @@ services:
       DATABASE_URL: mongodb://la_toolkit_user:la_toolkit_changeme@mongo:27017/la_toolkit
       NODE_ENV: production
       # Advanced optional URLs (useful to enable https and use a proxy)
-      # TOOLKIT_SENTRY_DSN: "SOME_DSN",
-      # TOOLKIT_PUBLIC_URL: "localhost:2010",
-      # TOOLKIT_HTTPS : false
-      # TOOLKIT_TERM_PROXY : false
+      # TOOLKIT_SENTRY_DSN: "SOME_DSN"
+      # TOOLKIT_PUBLIC_URL: "localhost:2010" or "toolkit.example.com"
+      # TOOLKIT_HTTPS: "false"
+      # TOOLKIT_TERM_PROXY: "false"
+
     # The volumes should be writeable by your user so maybe you have to set your uid:gid here
     # user: 1000:1000
     volumes:
