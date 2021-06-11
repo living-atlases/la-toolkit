@@ -39,7 +39,7 @@ class DeploySubResultWidget extends StatelessWidget {
                 ]),
                 textAlign: TextAlign.left,
                 showCursor: true,
-                autofocus: true,
+                autofocus: false,
                 onTap: () => FlutterClipboard.copy(error.msg).then((value) =>
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text("Error copied to clipboard")))),
