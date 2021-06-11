@@ -13,7 +13,6 @@ import 'package:universal_html/html.dart' as html;
 
 import '../models/appState.dart';
 import 'actions.dart';
-import 'entityApis.dart';
 import 'entityReducer.dart';
 
 List<Reducer<AppState>> basic = [
@@ -314,12 +313,7 @@ AppState _showDeployProjectResults(
   currentProject.lastCmdDetails = action.results;
   bool fstDeployed = currentProject.lastCmdDetails!.numFailures() != null;
   currentProject.fstDeployed = currentProject.fstDeployed || fstDeployed;
-  CmdResult result = currentProject.lastCmdDetails!.result;
-  action.cmdHistoryEntry.result = result;
   if (action.fstRetrieved) {
-    // remove and just search?
-    EntityApis.cmdHistoryEntryApi
-        .update(action.cmdHistoryEntry.id, {'result': result.toS()});
     currentProject.cmdHistoryEntries.insert(0, action.cmdHistoryEntry);
   } else {
     currentProject.cmdHistoryEntries = currentProject.cmdHistoryEntries

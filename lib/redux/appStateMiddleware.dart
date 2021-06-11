@@ -307,6 +307,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (lastCmdDet != null) {
         lastCmdDet.fstRetrieved = action.fstRetrieved;
         lastCmdDet.cmd = action.cmdHistoryEntry;
+        if (action.fstRetrieved ||
+            action.cmdHistoryEntry.result == CmdResult.unknown) {
+          // Compute result with ansible + code
+          CmdResult result = lastCmdDet.result;
+          action.cmdHistoryEntry.result = result;
+          // Update backend
+          await EntityApis.cmdHistoryEntryApi
+              .update(action.cmdHistoryEntry.id, {'result': result.toS()});
+        }
         Api.termLogs(
             cmd: action.cmdHistoryEntry,
             onStart: (cmd, port, ttydPid) {
