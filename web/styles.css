@@ -5,7 +5,7 @@
 
 .hero::before {
   background-size: cover;
-  content: "";
+  content: '';
   display: block;
   position: absolute;
   top: 0;
@@ -18,7 +18,7 @@
 }
 
 .hero::before {
-  background-image: url(img/back-full.png);
+  background-image: url(img/la-toolkit-back.svg);
 }
 
 .back-footer {
@@ -50,10 +50,10 @@ a,
 
 @media (max-width: 320px) {
   .hero::before {
-    background-image: url(img/back-200.png);
   }
 }
-/ @media (max-width: 460px) {
+
+@media (max-width: 460px) {
   .splash-image {
     width: 60%;
   }
@@ -61,42 +61,35 @@ a,
 
 @media (min-width: 320px) {
   .hero::before {
-    background-image: url(img/back-460.png);
   }
 }
 
 @media (min-width: 460px) {
   .hero::before {
-    background-image: url(img/back-720.png);
   }
 }
 
 @media (min-width: 720px) {
   .hero::before {
-    background-image: url(img/back-980.png);
   }
 }
 
 @media (min-width: 980px) {
   .hero::before {
-    background-image: url(img/back-1240.png);
   }
 }
 
 @media (min-width: 1240px) {
   .hero::before {
-    background-image: url(img/back-1500.png);
   }
 }
 
 @media (min-width: 1500px) {
   .hero::before {
-    background-image: url(img/back-1760.png);
   }
 }
 
 @media (min-width: 1760px) {
   .hero::before {
-    background-image: url(img/back-1920.png);
   }
 }
