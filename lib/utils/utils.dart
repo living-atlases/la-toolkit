@@ -9,9 +9,9 @@ import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
 
 import '../laTheme.dart';
 import '../models/preDeployCmd.dart';
@@ -38,8 +38,8 @@ class AppUtils {
 
   static bool https = (env['HTTPS'] ?? "false").parseBool();
 
-  static Function uri =
-      (String a, String p) => https ? Uri.https(a, p) : Uri.http(a, p);
+  static Function uri = (String a, String p, [query]) =>
+      https ? Uri.https(a, p, query) : Uri.http(a, p, query);
   static String scheme =
       (env['HTTPS'] ?? "false").parseBool() ? "https" : "http";
 
