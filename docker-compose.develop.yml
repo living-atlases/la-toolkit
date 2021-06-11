@@ -26,6 +26,7 @@ services:
       # Advanced optional URLs (useful to enable https and use a proxy)
       # TOOLKIT_SENTRY_DSN: "SOME_DSN"
       # TOOLKIT_PUBLIC_URL: "localhost:2010" or "toolkit.example.com"
+      TOOLKIT_PUBLIC_URL: "localhost:20010"
       # TOOLKIT_HTTPS: "false"
       # TOOLKIT_TERM_PROXY: "false"
 
@@ -56,7 +57,7 @@ services:
       LA_USER: la_toolkit_user
       LA_PASS: la_toolkit_changeme
     volumes:
-      - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - /data/la-toolkit/mongo:/data/db
 
   mongo-express:

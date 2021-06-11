@@ -55,7 +55,7 @@ services:
     volumes:
       # If you don't clone the la-toolkit repo you will need also the mongo-init.sh script that
       # setup the db initially
-      - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - /data/la-toolkit/mongo:/data/db
 
 #  Optionally in production (because this will open your db to the outside):
