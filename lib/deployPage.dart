@@ -56,6 +56,11 @@ class _DeployPageState extends State<DeployPage> {
         VoidCallback? onTap = cmd.deployServices.isEmpty
             ? null
             : () => vm.onDeployProject(vm.project, cmd);
+        final bool advanced = cmd.advanced ||
+            cmd.tags.length > 0 ||
+            cmd.limitToServers.length > 0 ||
+            cmd.skipTags.length > 0 ||
+            cmd.onlyProperties;
         return Title(
             title: "${vm.project.shortName} Deployment",
             color: LAColorTheme.laPalette,
@@ -124,11 +129,11 @@ class _DeployPageState extends State<DeployPage> {
                                                 'Advanced options',
                                               ),
                                               trailing: Switch(
-                                                  value: cmd.advanced,
+                                                  value: advanced,
                                                   onChanged: (value) =>
                                                       setState(() => cmd
                                                           .advanced = value))),
-                                          if (cmd.advanced)
+                                          if (advanced)
                                             ServerSelector(
                                                 selectorKey:
                                                     GlobalKey<FormFieldState>(),
@@ -147,7 +152,7 @@ class _DeployPageState extends State<DeployPage> {
                                                     setState(() =>
                                                         cmd.limitToServers =
                                                             limitToServers)),
-                                          if (cmd.advanced)
+                                          if (advanced)
                                             TagsSelector(
                                                 initialValue: cmd.tags,
                                                 selectorKey:
@@ -162,7 +167,7 @@ class _DeployPageState extends State<DeployPage> {
                                                     "Select the tags you want to limit to:",
                                                 onChange: (tags) => setState(
                                                     () => cmd.tags = tags)),
-                                          if (cmd.advanced)
+                                          if (advanced)
                                             TagsSelector(
                                                 initialValue: cmd.skipTags,
                                                 selectorKey:
@@ -178,12 +183,12 @@ class _DeployPageState extends State<DeployPage> {
                                                 onChange: (skipTags) =>
                                                     setState(() => cmd
                                                         .skipTags = skipTags)),
-                                          if (cmd.advanced)
+                                          if (advanced)
                                             TipsCard(
                                                 text:
                                                     '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
                                                 margin: EdgeInsets.zero),
-                                          if (cmd.advanced)
+                                          if (advanced)
                                             ListTile(
                                                 title: const Text(
                                                   'Only deploy properties (service configurations)',
@@ -194,8 +199,8 @@ class _DeployPageState extends State<DeployPage> {
                                                         setState(() =>
                                                             cmd.onlyProperties =
                                                                 value))),
-                                          if (cmd.advanced) const DefDivider(),
-                                          if (cmd.advanced)
+                                          if (advanced) const DefDivider(),
+                                          if (advanced)
                                             ListTile(
                                                 title: const Text(
                                                   'Show extra debug info',
@@ -205,7 +210,7 @@ class _DeployPageState extends State<DeployPage> {
                                                     onChanged: (value) =>
                                                         setState(() => cmd
                                                             .debug = value))),
-                                          if (cmd.advanced)
+                                          if (advanced)
                                             /*  Not necessary now
                               ListTile(
                                     title: const Text(
@@ -215,7 +220,7 @@ class _DeployPageState extends State<DeployPage> {
                                         value: cmd.continueEvenIfFails,
                                         onChanged: (value) => setState(() =>
                                             cmd.continueEvenIfFails = value))), */
-                                            if (cmd.advanced)
+                                            if (advanced)
                                               ListTile(
                                                   title: const Text(
                                                     'Dry run (only show the ansible command)',
@@ -226,9 +231,10 @@ class _DeployPageState extends State<DeployPage> {
                                                           setState(() =>
                                                               cmd.dryRun =
                                                                   value))),
-                                          TipsCard(
-                                              text:
-                                                  "This project is generated in the '${vm.project.dirName}' directory."),
+                                          if (advanced)
+                                            TipsCard(
+                                                text:
+                                                    "This project is generated in the '${vm.project.dirName}' directory."),
                                           LaunchBtn(
                                               onTap: onTap, execBtn: execBtn),
                                         ])),
