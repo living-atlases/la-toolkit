@@ -18,6 +18,7 @@ class CmdHistoryDetails {
   CmdHistoryEntry? cmd;
   int? port;
   int? pid;
+  double? duration;
   int code;
   List<dynamic> results;
   String logs;
@@ -32,6 +33,7 @@ class CmdHistoryDetails {
       {this.cmd,
       this.port,
       this.pid,
+      this.duration,
       required this.code,
       required this.results,
       required this.logs,
@@ -48,6 +50,7 @@ class CmdHistoryDetails {
           cmd == other.cmd &&
           port == other.port &&
           pid == other.pid &&
+          duration == other.duration &&
           results == other.results &&
           logs == other.logs &&
           fstRetrieved == other.fstRetrieved &&
@@ -176,6 +179,7 @@ class CmdHistoryDetails {
       cmd.hashCode ^
       port.hashCode ^
       pid.hashCode ^
+      duration.hashCode ^
       logsColorized.hashCode ^
       fstRetrieved.hashCode;
 

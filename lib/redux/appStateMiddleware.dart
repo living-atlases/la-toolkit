@@ -301,6 +301,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         // Don't load results again we have this already
       } else {
         lastCmdDet = await Api.getAnsiblewResults(
+            cmdHistoryEntryId: action.cmdHistoryEntry.id,
             logsPrefix: action.cmdHistoryEntry.logsPrefix,
             logsSuffix: action.cmdHistoryEntry.logsSuffix);
       }
@@ -312,6 +313,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           // Compute result with ansible + code
           CmdResult result = lastCmdDet.result;
           action.cmdHistoryEntry.result = result;
+          action.cmdHistoryEntry.duration = lastCmdDet.duration;
           // Update backend
           await EntityApis.cmdHistoryEntryApi
               .update(action.cmdHistoryEntry.id, {'result': result.toS()});

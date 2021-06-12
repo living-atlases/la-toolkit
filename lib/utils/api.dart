@@ -283,13 +283,18 @@ class Api {
   }
 
   static Future<CmdHistoryDetails?> getAnsiblewResults(
-      {required String logsPrefix, required String logsSuffix}) async {
+      {required cmdHistoryEntryId,
+      required String logsPrefix,
+      required String logsSuffix}) async {
     if (AppUtils.isDemo()) return null;
     Uri url = uri(env['BACKEND']!, "/api/v1/ansiblew-results");
     Response response = await http.post(url,
         headers: {'Content-type': 'application/json'},
-        body: utf8.encode(
-            json.encode({'logsPrefix': logsPrefix, 'logsSuffix': logsSuffix})));
+        body: utf8.encode(json.encode({
+          'cmdHistoryEntryId': cmdHistoryEntryId,
+          'logsPrefix': logsPrefix,
+          'logsSuffix': logsSuffix
+        })));
     if (response.statusCode == 200) {
       return CmdHistoryDetails.fromJson(json.decode(response.body));
     }
