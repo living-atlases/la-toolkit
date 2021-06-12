@@ -119,7 +119,7 @@ class LogItem extends StatelessWidget {
     }
 
     String duration = log.duration != null
-        ? 'duration: ${printDuration(Duration(milliseconds: log.duration!.toInt()))}, '
+        ? 'duration: ${prettyDuration(Duration(milliseconds: log.duration!.toInt()), abbreviated: false)}, '
         : '';
     return ListTile(
         title: Text(desc),
