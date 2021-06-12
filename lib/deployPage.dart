@@ -108,74 +108,17 @@ class _DeployPageState extends State<DeployPage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           SizedBox(height: 20),
-                                          Text(
-                                              "Select which services you want to deploy:",
-                                              style: TextStyle(fontSize: 16)),
-                                          // TODO: limit to real selected services
+                                          ListTile(
+                                              title: Text(
+                                                  "Select which services you want to deploy:",
+                                                  style:
+                                                      TextStyle(fontSize: 16))),
                                           ServicesChipPanel(
                                               initialValue: cmd.deployServices,
                                               services: vm.project
                                                   .getServicesAssignedToServers(),
                                               onChange: (s) => setState(() =>
                                                   cmd.deployServices = s)),
-                                          ServerSelector(
-                                              selectorKey:
-                                                  GlobalKey<FormFieldState>(),
-                                              title: "Deploy to servers:",
-                                              modalTitle:
-                                                  "Choose some servers if you want to limit the deploy to them",
-                                              placeHolder: "All servers",
-                                              initialValue: cmd.limitToServers,
-                                              hosts: vm.project
-                                                  .serversWithServices()
-                                                  .map((e) => e.name)
-                                                  .toList(),
-                                              icon: Mdi.server,
-                                              onChange: (limitToServers) =>
-                                                  setState(() =>
-                                                      cmd.limitToServers =
-                                                          limitToServers)),
-                                          TagsSelector(
-                                              initialValue: cmd.tags,
-                                              selectorKey:
-                                                  GlobalKey<FormFieldState>(),
-                                              tags: TagsConstants.getTagsFor(
-                                                  vm.project.alaInstallRelease),
-                                              icon: Mdi.tagPlusOutline,
-                                              title: "Tags:",
-                                              placeHolder: "All",
-                                              modalTitle:
-                                                  "Select the tags you want to limit to:",
-                                              onChange: (tags) => setState(
-                                                  () => cmd.tags = tags)),
-                                          TagsSelector(
-                                              initialValue: cmd.skipTags,
-                                              selectorKey:
-                                                  GlobalKey<FormFieldState>(),
-                                              tags: TagsConstants.getTagsFor(
-                                                  vm.project.alaInstallRelease),
-                                              icon: Mdi.tagOffOutline,
-                                              title: "Skip tags:",
-                                              placeHolder: "None",
-                                              modalTitle:
-                                                  "Select the tags you want to skip:",
-                                              onChange: (skipTags) => setState(
-                                                  () =>
-                                                      cmd.skipTags = skipTags)),
-                                          TipsCard(
-                                              text:
-                                                  '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
-                                              margin: EdgeInsets.zero),
-                                          ListTile(
-                                              title: const Text(
-                                                'Only deploy properties (service configurations)',
-                                              ),
-                                              trailing: Switch(
-                                                  value: cmd.onlyProperties,
-                                                  onChanged: (value) =>
-                                                      setState(() =>
-                                                          cmd.onlyProperties =
-                                                              value))),
                                           ListTile(
                                               title: const Text(
                                                 'Advanced options',
@@ -185,6 +128,72 @@ class _DeployPageState extends State<DeployPage> {
                                                   onChanged: (value) =>
                                                       setState(() => cmd
                                                           .advanced = value))),
+                                          if (cmd.advanced)
+                                            ServerSelector(
+                                                selectorKey:
+                                                    GlobalKey<FormFieldState>(),
+                                                title: "Deploy to servers:",
+                                                modalTitle:
+                                                    "Choose some servers if you want to limit the deploy to them",
+                                                placeHolder: "All servers",
+                                                initialValue:
+                                                    cmd.limitToServers,
+                                                hosts: vm.project
+                                                    .serversWithServices()
+                                                    .map((e) => e.name)
+                                                    .toList(),
+                                                icon: Mdi.server,
+                                                onChange: (limitToServers) =>
+                                                    setState(() =>
+                                                        cmd.limitToServers =
+                                                            limitToServers)),
+                                          if (cmd.advanced)
+                                            TagsSelector(
+                                                initialValue: cmd.tags,
+                                                selectorKey:
+                                                    GlobalKey<FormFieldState>(),
+                                                tags: TagsConstants.getTagsFor(
+                                                    vm.project
+                                                        .alaInstallRelease),
+                                                icon: Mdi.tagPlusOutline,
+                                                title: "Tags:",
+                                                placeHolder: "All",
+                                                modalTitle:
+                                                    "Select the tags you want to limit to:",
+                                                onChange: (tags) => setState(
+                                                    () => cmd.tags = tags)),
+                                          if (cmd.advanced)
+                                            TagsSelector(
+                                                initialValue: cmd.skipTags,
+                                                selectorKey:
+                                                    GlobalKey<FormFieldState>(),
+                                                tags: TagsConstants.getTagsFor(
+                                                    vm.project
+                                                        .alaInstallRelease),
+                                                icon: Mdi.tagOffOutline,
+                                                title: "Skip tags:",
+                                                placeHolder: "None",
+                                                modalTitle:
+                                                    "Select the tags you want to skip:",
+                                                onChange: (skipTags) =>
+                                                    setState(() => cmd
+                                                        .skipTags = skipTags)),
+                                          if (cmd.advanced)
+                                            TipsCard(
+                                                text:
+                                                    '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
+                                                margin: EdgeInsets.zero),
+                                          if (cmd.advanced)
+                                            ListTile(
+                                                title: const Text(
+                                                  'Only deploy properties (service configurations)',
+                                                ),
+                                                trailing: Switch(
+                                                    value: cmd.onlyProperties,
+                                                    onChanged: (value) =>
+                                                        setState(() =>
+                                                            cmd.onlyProperties =
+                                                                value))),
                                           if (cmd.advanced) const DefDivider(),
                                           if (cmd.advanced)
                                             ListTile(
