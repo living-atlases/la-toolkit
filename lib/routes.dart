@@ -26,14 +26,12 @@ class Routes {
   );
 
   BeamerDelegate routerDelegate;
-  static final NavigatorObserver devNavObserver = NavigatorObserver();
 
   Routes._privateConstructor()
       : routerDelegate = BeamerDelegate(
             notFoundPage: notFoundPage,
             // Better show a NotFoundPage
             // notFoundRedirect: HomeLocation(),
-            navigatorObservers: [devNavObserver],
             locationBuilder: BeamerLocationBuilder(beamLocations: [
               HomeLocation(),
               LAProjectEditLocation(),
