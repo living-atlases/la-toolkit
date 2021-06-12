@@ -1,11 +1,10 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/redux/appActions.dart';
-import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
@@ -43,9 +42,8 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                   DeployUtils.getCmdResults(context, cmdHistory, false));
             },
             onClose: (project, cmdHistory) {
-              store.dispatch(OpenProjectTools(project));
-              BeamerCond.of(context, LAProjectViewLocation());
-              Api.termClose(port: cmdHistory.port!, pid: cmdHistory.pid!);
+              closeTerm(cmdHistory);
+              context.beamBack();
             });
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {
@@ -77,10 +75,10 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                       titleIcon: Icons.analytics_outlined,
                       title: title,
                       showLaIcon: false,
-                      onBack: () => vm.onClose(vm.project, cmdHistoryDetails),
+                      showBack: true,
+                      onBack: () => closeTerm(cmdHistoryDetails),
                       leading:
                           ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),
-                      showBack: true,
                       actions: [
                         TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                         IconButton(
@@ -211,6 +209,9 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
       },
     );
   }
+
+  Future<void> closeTerm(CmdHistoryDetails cmdHistoryDetails) =>
+      Api.termClose(port: cmdHistoryDetails.port!, pid: cmdHistoryDetails.pid!);
 }
 
 class _DeployResultsViewModel {
