@@ -10,6 +10,7 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:tap_debouncer/tap_debouncer.dart';
 
 import 'components/appSnackBar.dart';
 import 'components/genericTextFormField.dart';
@@ -415,14 +416,17 @@ If you have doubts or need to ask for some information, save this project and co
                               vm.onFinish(_project);
                             }),
                       ),
-                      IconButton(
-                        icon: Tooltip(
-                            child: const Icon(Icons.save, color: Colors.white),
-                            message: "Save the current LA project"),
-                        onPressed: () {
-                          vm.onFinish(_project);
-                        },
-                      )
+                      TapDebouncer(
+                          onTap: () async => await vm.onFinish(_project),
+                          builder: (context, onTap) {
+                            return IconButton(
+                              icon: Tooltip(
+                                  child: const Icon(Icons.save,
+                                      color: Colors.white),
+                                  message: "Save the current LA project"),
+                              onPressed: onTap,
+                            );
+                          })
                     ]),
                 body: AppSnackBar(ScrollPanel(
                     child: Column(children: [
