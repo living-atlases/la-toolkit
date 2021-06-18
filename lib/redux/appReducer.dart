@@ -189,7 +189,9 @@ AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
     ps = new List<LAProject>.from(state.projects)..insert(0, newP);
   } else {
     action.projectsJson.forEach((pJson) {
-      ps.add(LAProject.fromJson(pJson));
+      LAProject p = LAProject.fromJson(pJson);
+      p.validateCreation();
+      ps.add(p);
     });
   }
   return state.copyWith(
