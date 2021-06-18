@@ -202,7 +202,8 @@ class LAVariableDesc {
       nameInt: "favicon_url",
       regExp: LARegExp.url,
       error: "Invalid url",
-      defValue: (_) => 'https://www.gbif.org/favicon.ico',
+      defValue: (_) =>
+          'https://raw.githubusercontent.com/living-atlases/artwork/master/favicon.ico',
       hint: "Like: https://www.gbif.org/favicon.ico",
     ),
     "orgAddress": LAVariableDesc(
