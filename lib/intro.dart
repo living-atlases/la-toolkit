@@ -4,6 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:la_toolkit/redux/actions.dart';
+import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -44,7 +45,10 @@ class _IntroState extends State<Intro> {
     return StoreConnector<AppState, _IntroViewModel>(converter: (store) {
       return _IntroViewModel(
         state: store.state,
-        onAddProject: () => store.dispatch(CreateProject()),
+        onAddProject: () {
+          store.dispatch(CreateProject());
+          BeamerCond.of(context, LAProjectEditLocation());
+        },
         onIntroEnd: () => store.dispatch(OnIntroEnd()),
       );
     }, builder: (BuildContext context, _IntroViewModel vm) {
