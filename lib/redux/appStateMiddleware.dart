@@ -196,6 +196,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         await Api.deleteProject(project: action.project);
         store.dispatch(OnProjectDeleted(action.project));
       } catch (e) {
+        print(e);
         store.dispatch(ShowSnackBar(
             AppSnackBarMessage.ok("Failed to delete project ($e)")));
       }
