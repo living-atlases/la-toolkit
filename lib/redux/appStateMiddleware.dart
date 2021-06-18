@@ -129,8 +129,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
       // GENERATOR RELEASES
       if (AppUtils.isDemo()) {
-        store
-            .dispatch(OnFetchGeneratorReleases(['1.1.37', '1.1.36', '1.1.35']));
+        store.dispatch(
+            OnFetchGeneratorReleases(['1.1.49', '1.1.48', '1.1.47', '1.1.46']));
       } else {
         // generatorReleasesApiUrl =
         //  "https://registry.npmjs.org/generator-living-atlas";
@@ -157,9 +157,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is AddProject) {
       try {
         action.project.dirName = action.project.suggestDirName();
-        List<dynamic> projects = await Api.addProject(project: action.project);
-        store.dispatch(OnProjectsAdded(projects));
-        await genSshConf(action.project);
+        if (!AppUtils.isDemo()) {
+          List<dynamic> projects =
+              await Api.addProject(project: action.project);
+          store.dispatch(OnProjectsAdded(projects));
+          await genSshConf(action.project);
+        } else {
+          // We just add to the store
+          store.dispatch(OnDemoAddProjects([action.project]));
+        }
       } catch (e) {
         store.dispatch(
             ShowSnackBar(AppSnackBarMessage.ok("Failed to save project ($e)")));
@@ -206,8 +212,12 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     if (action is ProjectsLoad) {
-      Api.getConf()
-          .then((projects) => store.dispatch(OnProjectsLoad(projects)));
+      Api.getConf().then((projects) {
+        if (!AppUtils.isDemo())
+          store.dispatch(OnProjectsLoad(projects));
+        else
+          store.dispatch(OnDemoProjectsLoad());
+      });
     }
     if (action is TestConnectivityProject) {
       LAProject project = action.project;

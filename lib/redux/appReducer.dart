@@ -46,6 +46,7 @@ List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
   new TypedReducer<AppState, ProjectsLoad>(_projectsLoad),
   new TypedReducer<AppState, OnProjectsLoad>(_onProjectsLoad),
+  new TypedReducer<AppState, OnDemoProjectsLoad>(_onDemoProjectsLoad),
   new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
   new TypedReducer<AppState, TestServicesProject>(_testServicesProject),
   new TypedReducer<AppState, OnTestConnectivityResults>(
@@ -221,6 +222,10 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
       orElse: () => ps.length > 0 ? ps[0] : LAProject());
   return state.copyWith(
       currentProject: currentProject, projects: ps, loading: false);
+}
+
+AppState _onDemoProjectsLoad(AppState state, OnDemoProjectsLoad action) {
+  return state.copyWith(loading: false);
 }
 
 AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {

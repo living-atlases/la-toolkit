@@ -106,6 +106,10 @@ class OnProjectsLoad extends AppActions {
   OnProjectsLoad(this.projectsJson);
 }
 
+class OnDemoProjectsLoad extends AppActions {
+  OnDemoProjectsLoad();
+}
+
 class OpenProject extends AppActions {
   LAProject project;
 
