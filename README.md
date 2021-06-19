@@ -265,12 +265,13 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 - [X] Ansible task errors summary
 - [X] Software dependencies release checking and notification of available upgrades
 - [X] Pre-deploy tasks (wip)
+- [X] Portal status tool
 - [~] Post-deploy tasks (wip)
 - [ ] Branding deployment (wip)
-- [ ] Stats tool
-- [ ] Monitor tool
-- [ ] Improve ssh keys management
 - [ ] Support additional hubs configuration
+- [ ] Services redundancy
+- [ ] LA pipelines support
+- [ ] Improve ssh keys management
 
 ## Screenshots
 
@@ -357,6 +358,10 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 ### History of deployments with repeat function 
 
 ![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s20.png)
+
+### Software upgrade checks
+
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s23.png)
 
 ### Console for the intrepids:
 
