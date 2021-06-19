@@ -123,7 +123,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 action: () => vm.onOpenProject(project)),
             Tool(
                 icon: const Icon(Icons.tune),
-                title: "Tune Configuration",
+                title: "Tune your\nConfiguration",
                 tooltip:
                     "Fine tune the portal configuration with other options different than the basic ones.",
                 enabled: vm.status.value >= LAProjectStatus.basicDefined.value,
@@ -201,7 +201,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 enabled: true,
                 askConfirmation: true,
                 action: () => vm.onDelProject(project)),
-            if (AppUtils.isDev())
+            if (false && AppUtils.isDev())
               Tool(
                   icon: const Icon(Mdi.pipe),
                   title: "Data Processing Pipelines",
