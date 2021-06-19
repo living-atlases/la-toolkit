@@ -35,7 +35,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
           return _MapAreaSelectorViewModel(
               currentProject: store.state.currentProject,
               onUpdateProject: (project) =>
-                  store.dispatch(UpdateProject(project!)));
+                  store.dispatch(SaveCurrentProject(project!)));
         },
         builder: (BuildContext context, _MapAreaSelectorViewModel vm) {
           _project = vm.currentProject;
