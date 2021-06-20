@@ -7,6 +7,7 @@ import 'package:la_toolkit/components/helpIcon.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
@@ -32,6 +33,7 @@ class LAProjectTunePage extends StatelessWidget {
       converter: (store) {
         return _ProjectTuneViewModel(
           project: store.state.currentProject,
+          status: store.state.currentProject.status,
           onSaveProject: (project) {
             store.dispatch(SaveCurrentProject(project));
           },
@@ -125,6 +127,33 @@ class LAProjectTunePage extends StatelessWidget {
                                         project.advancedTune = value;
                                         vm.onSaveProject(project);
                                       })),
+                              if (project.advancedTune) SizedBox(height: 20),
+                              if (project.advancedTune)
+                                ListTile(
+                                    // contentPadding: EdgeInsets.zero,
+                                    title: const Text(
+                                      'This project is in Production',
+                                    ),
+                                    trailing: Switch(
+                                        value: vm.status ==
+                                            LAProjectStatus.inProduction,
+                                        onChanged: (bool value) {
+                                          if (value) {
+                                            project.isCreated = true;
+                                            project.fstDeployed = true;
+                                            project.setProjectStatus(
+                                                LAProjectStatus.inProduction);
+                                            project.validateCreation(
+                                                debug: true);
+                                            vm.onSaveProject(project);
+                                          } else {
+                                            project.setProjectStatus(
+                                                LAProjectStatus.firstDeploy);
+                                            project.validateCreation(
+                                                debug: true);
+                                            vm.onSaveProject(project);
+                                          }
+                                        })),
                               SizedBox(height: 20),
                               ListView.builder(
                                 scrollDirection: Axis.vertical,
@@ -308,12 +337,14 @@ class MessageItem implements ListItem {
 
 class _ProjectTuneViewModel {
   final LAProject project;
+  final LAProjectStatus status;
   final void Function(LAProject) onUpdateProject;
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
 
   _ProjectTuneViewModel(
       {required this.project,
+      required this.status,
       required this.onUpdateProject,
       required this.onSaveProject,
       required this.onCancel});
@@ -322,8 +353,9 @@ class _ProjectTuneViewModel {
       identical(this, other) ||
       other is _ProjectTuneViewModel &&
           runtimeType == other.runtimeType &&
-          project == other.project;
+          project == other.project &&
+          status == other.status;
 
   @override
-  int get hashCode => project.hashCode;
+  int get hashCode => project.hashCode ^ status.hashCode;
 }

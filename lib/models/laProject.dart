@@ -55,7 +55,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   String? generatorRelease;
 
   // Status -----
-  @JsonKey(ignore: true)
+  // @JsonKey(ignore: true)
   LAProjectStatus status;
   bool isCreated;
   bool fstDeployed;
@@ -153,7 +153,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
   bool validateCreation({debug: false}) {
     bool valid = true;
-    LAProjectStatus status = LAProjectStatus.created;
+    LAProjectStatus tempStatus = LAProjectStatus.created;
     if (servers.length != serverServices.length) {
       String msgErr =
           'Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length}';
@@ -169,7 +169,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         LARegExp.domainRegexp.hasMatch(domain) &&
         alaInstallRelease != null &&
         generatorRelease != null;
-    if (valid) status = LAProjectStatus.basicDefined;
+    if (valid) tempStatus = LAProjectStatus.basicDefined;
     if (debug) print("Step 1 valid: ${valid ? 'yes' : 'no'}");
 
     valid = valid && servers.length > 0;
@@ -193,16 +193,18 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
     isCreated = valid;
     if (isCreated && !allServersWithServicesReady())
-      setProjectStatus(LAProjectStatus.advancedDefined);
+      tempStatus = LAProjectStatus.advancedDefined;
     if (isCreated && fstDeployed && allServersWithServicesReady()) {
-      status = LAProjectStatus.firstDeploy;
+      tempStatus = LAProjectStatus.firstDeploy;
     }
-    if (isCreated &&
+    /* if (isCreated &&
         allServersWithServicesReady() &&
-        this.status.value < status.value) setProjectStatus(status);
-    // Only update status if is better
-    if (status.value > this.status.value) setProjectStatus(status);
-    if (debug) print("Valid at end: ${valid ? 'yes' : 'no'}");
+        this.tempStatus.value < tempStatus.value) setProjectStatus(tempStatus); */
+    // Only update tempStatus if is better
+    if (this.status.value < tempStatus.value) setProjectStatus(tempStatus);
+    if (debug)
+      print(
+          "Valid at end: ${valid ? 'yes' : 'no'}, tempStatus: ${this.status.title}");
     return valid;
   }
 

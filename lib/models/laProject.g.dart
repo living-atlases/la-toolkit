@@ -86,6 +86,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     isHub: json['isHub'] as bool,
     fstDeployed: json['fstDeployed'] as bool?,
     additionalVariables: json['additionalVariables'] as String,
+    status: _$enumDecode(_$LAProjectStatusEnumMap, json['status']),
     alaInstallRelease: json['alaInstallRelease'] as String?,
     generatorRelease: json['generatorRelease'] as String?,
     mapBoundsFstPoint: json['mapBoundsFstPoint'] == null
@@ -139,6 +140,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'additionalVariables': instance.additionalVariables,
       'alaInstallRelease': instance.alaInstallRelease,
       'generatorRelease': instance.generatorRelease,
+      'status': _$LAProjectStatusEnumMap[instance.status],
       'isCreated': instance.isCreated,
       'fstDeployed': instance.fstDeployed,
       'advancedEdit': instance.advancedEdit,
@@ -152,3 +154,38 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'variables': instance.variables.map((e) => e.toJson()).toList(),
       'lastCmdEntry': instance.lastCmdEntry?.toJson(),
     };
+
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
+}) {
+  if (source == null) {
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
+  }
+
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
+}
+
+const _$LAProjectStatusEnumMap = {
+  LAProjectStatus.created: 'created',
+  LAProjectStatus.basicDefined: 'basicDefined',
+  LAProjectStatus.advancedDefined: 'advancedDefined',
+  LAProjectStatus.reachable: 'reachable',
+  LAProjectStatus.firstDeploy: 'firstDeploy',
+  LAProjectStatus.inProduction: 'inProduction',
+};
