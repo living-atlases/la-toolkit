@@ -13,6 +13,7 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
 import 'components/appSnackBar.dart';
 import 'components/laAppBar.dart';
@@ -127,8 +128,9 @@ class LAProjectTunePage extends StatelessWidget {
                                         project.advancedTune = value;
                                         vm.onSaveProject(project);
                                       })),
-                              if (project.advancedTune) SizedBox(height: 20),
-                              if (project.advancedTune)
+                              if (!AppUtils.isDemo() && project.advancedTune)
+                                SizedBox(height: 20),
+                              if (!AppUtils.isDemo() && project.advancedTune)
                                 ListTile(
                                     // contentPadding: EdgeInsets.zero,
                                     title: const Text(
