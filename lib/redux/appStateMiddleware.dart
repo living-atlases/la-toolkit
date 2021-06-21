@@ -350,6 +350,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is RequestUpdateOneProps<CmdHistoryEntry>) {
       EntityApis.cmdHistoryEntryApi.update(action.id, action.props);
     }
+    if (action is DeleteLog) {
+      try {
+        await EntityApis.cmdHistoryEntryApi.delete(id: action.cmd.id);
+        store.dispatch(OnDeletedLog(action.cmd));
+      } catch (e) {
+        store.dispatch(ShowSnackBar(AppSnackBarMessage(
+            'Something was wrong trying to delete that log, check the server logs')));
+      }
+    }
     next(action);
   }
 

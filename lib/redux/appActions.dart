@@ -306,6 +306,11 @@ class DeleteLog extends AppActions {
   DeleteLog(this.cmd);
 }
 
+class OnDeletedLog extends AppActions {
+  CmdHistoryEntry cmd;
+  OnDeletedLog(this.cmd);
+}
+
 class OnAppPackageInfo extends AppActions {
   PackageInfo packageInfo;
   OnAppPackageInfo(this.packageInfo);

@@ -62,7 +62,7 @@ List<Reducer<AppState>> basic = [
   new TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
   new TypedReducer<AppState, PrepareDeployProject>(_prepareDeployProject),
   new TypedReducer<AppState, SaveDeployCmd>(_saveDeployCmd),
-  new TypedReducer<AppState, DeleteLog>(_onDeleteLog),
+  new TypedReducer<AppState, OnDeletedLog>(_onDeletedLog),
   new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
 ];
 
@@ -367,7 +367,7 @@ AppState _saveDeployCmd(AppState state, SaveDeployCmd action) {
   return state.copyWith(repeatCmd: action.deployCmd);
 }
 
-AppState _onDeleteLog(AppState state, DeleteLog action) {
+AppState _onDeletedLog(AppState state, OnDeletedLog action) {
   LAProject p = state.currentProject;
   p.cmdHistoryEntries = new List<CmdHistoryEntry>.from(p.cmdHistoryEntries)
     ..removeWhere((cmd) => cmd.id == action.cmd.id);
