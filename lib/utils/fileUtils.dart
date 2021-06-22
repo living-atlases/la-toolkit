@@ -51,7 +51,7 @@ class FileUtils {
     uploadInput.addEventListener('change', (e) async {
       await onChange(e, uploadInput, completer, errorMessage);
     });
-    /* // not addd two listeners
+    /* // not add two listeners
     uploadInput.onChange.listen((e) async {
       await onChange(e, uploadInput, completer, errorMessage);
     }); */
@@ -74,7 +74,7 @@ class FileUtils {
 
     final files = uploadInput.files;
 
-    if (files != null && files.length > 0) {
+    if (files != null && files.isNotEmpty) {
       final file = files[0];
       if (file.type == 'application/json' && file.name == '.yo-rc.json') {
         Uint8List? u8 = await _getHtmlFileContent(file, completer);
@@ -102,15 +102,15 @@ class FileUtils {
     reader.onError.listen((error) => completer.completeError(error));
     reader.onLoadEnd.listen((event) {
       var r = reader.result.toString().split(",").last;
-      Uint8List data = Base64Decoder().convert(r);
+      Uint8List data = const Base64Decoder().convert(r);
       file = data;
     }).onData((data) {
       var r = reader.result.toString().split(",").last;
-      file = Base64Decoder().convert(r);
+      file = const Base64Decoder().convert(r);
       // return file;
     });
     while (file == null) {
-      await new Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 1000));
       if (file != null) {
         break;
       }

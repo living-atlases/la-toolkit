@@ -12,12 +12,11 @@ class NetworkImageWPlaceHolder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: FadeInImage.assetNetwork(
-            height: height,
-            width: width,
-            // don't have color ...
-            placeholder: 'assets/images/la-icon.png',
-            image: url));
+    return FadeInImage.assetNetwork(
+        height: height,
+        width: width,
+        // don't have color ...
+        placeholder: 'assets/images/la-icon.png',
+        image: url);
   }
 }

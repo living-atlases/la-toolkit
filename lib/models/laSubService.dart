@@ -13,6 +13,6 @@ class LASubServiceDesc {
       this.desc = "",
       required this.path,
       required this.icon,
-      this.admin: false,
-      this.alaAdmin: false});
+      this.admin = false,
+      this.alaAdmin = false});
 }

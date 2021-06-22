@@ -19,7 +19,7 @@ import 'main.dart';
 
 class Routes {
   static final notFoundPage = BeamPage(
-    child: Scaffold(
+    child: const Scaffold(
       body: Center(
         child: Text('Not found'),
       ),
@@ -73,7 +73,10 @@ class HomeLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(key: ValueKey('home'), child: HomePage(), title: MyApp.appName)
+        BeamPage(
+            key: const ValueKey('home'),
+            child: const HomePage(),
+            title: MyApp.appName)
       ];
 
   @override
@@ -93,8 +96,9 @@ class LAProjectEditLocation extends NamedBeamLocation {
 }
 
 class LAProjectViewLocation extends NamedBeamLocation {
+  @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
-      [BeamPage(key: ValueKey(route), child: LAProjectViewPage())];
+      [BeamPage(key: ValueKey(route), child: const LAProjectViewPage())];
 
   @override
   String get route => LAProjectViewPage.routeName;
@@ -107,7 +111,7 @@ class SandboxLocation extends NamedBeamLocation {
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
             key: ValueKey(route),
-            child: SandboxPage(),
+            child: const SandboxPage(),
             title: "${MyApp.appName}: Sandbox")
       ];
 }
@@ -130,7 +134,9 @@ class PreDeployLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(key: ValueKey(PreDeployPage.routeName), child: PreDeployPage())
+        BeamPage(
+            key: const ValueKey(PreDeployPage.routeName),
+            child: const PreDeployPage())
       ];
 }
 
@@ -141,7 +147,8 @@ class PostDeployLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
-            key: ValueKey(PostDeployPage.routeName), child: PostDeployPage())
+            key: const ValueKey(PostDeployPage.routeName),
+            child: const PostDeployPage())
       ];
 }
 
@@ -176,7 +183,7 @@ class DeployLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
-      [BeamPage(key: ValueKey(route), child: DeployPage())];
+      [BeamPage(key: ValueKey(route), child: const DeployPage())];
 }
 
 class CmdTermLocation extends BeamLocation {
@@ -203,7 +210,7 @@ class DeployResultsLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
-      [BeamPage(key: ValueKey(route), child: DeployResultsPage())];
+      [BeamPage(key: ValueKey(route), child: const DeployResultsPage())];
 }
 
 class PortalStatusLocation extends NamedBeamLocation {
@@ -212,5 +219,5 @@ class PortalStatusLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
-      [BeamPage(key: ValueKey(route), child: PortalStatusPage())];
+      [BeamPage(key: ValueKey(route), child: const PortalStatusPage())];
 }

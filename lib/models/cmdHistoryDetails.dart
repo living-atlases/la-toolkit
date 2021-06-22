@@ -59,13 +59,17 @@ class CmdHistoryDetails {
   Map<String, num> get resultsTotals {
     if (_resultsTotals == null) {
       _resultsTotals = {};
-      ResultTypes.list.forEach((type) => _resultsTotals![type] = 0);
-      results.forEach((result) {
-        result['stats'].keys.forEach((key) {
-          ResultTypes.list.forEach((type) => _resultsTotals![type] =
-              _resultsTotals![type]! + result['stats'][key][type]);
-        });
-      });
+      for (var type in ResultTypes.list) {
+        _resultsTotals![type] = 0;
+      }
+      for (var result in results) {
+        for (var key in result['stats'].keys) {
+          for (var type in ResultTypes.list) {
+            _resultsTotals![type] =
+                _resultsTotals![type]! + result['stats'][key][type];
+          }
+        }
+      }
     }
     return _resultsTotals!;
   }
@@ -82,9 +86,9 @@ class CmdHistoryDetails {
   List<Widget> get detailsWidgetList {
     if (_details == null) {
       _details = [];
-      results.forEach((result) {
+      for (var result in results) {
         Map<String, List<AnsibleError>> errors = {};
-        HashSet<String> plays = new HashSet<String>();
+        HashSet<String> plays = HashSet<String>();
         result['plays'].forEach((play) {
           String playName = play['play']['name'];
           plays.add(playName);
@@ -142,7 +146,7 @@ class CmdHistoryDetails {
                         },
 
 */
-      });
+      }
     }
     return _details!;
   }

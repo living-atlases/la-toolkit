@@ -36,9 +36,9 @@ void main() {
       'αν ένας ανώνυμος',
       'Biodiversitäts-Atlas Österreich',
     ];
-    correctNames.forEach((name) {
+    for (String name in correctNames) {
       expect(LARegExp.projectNameRegexp.hasMatch(name), equals(true));
-    });
+    }
   });
 
   test('project shortname name regexp should allow valid unicode names', () {
@@ -48,9 +48,9 @@ void main() {
       'ALA',
       'Biodiversitäts-Atlas Österreich',
     ];
-    correctNames.forEach((name) {
+    for (String name in correctNames) {
       expect(LARegExp.shortNameRegexp.hasMatch(name), equals(true));
-    });
+    }
   });
 
   test('hostname regexp should not allow non letters', () {
@@ -59,9 +59,9 @@ void main() {
   });
   test('multi hostname regexp should not allow non letters', () {
     List<String> names = ['vm org', 'vm1, vm2', 'vm1,vm2'];
-    names.forEach((name) {
+    for (String name in names) {
       expect(LARegExp.multiHostnameRegexp.hasMatch(name), equals(true));
-    });
+    }
   });
   test('hostname regexp should allow basic names', () {
     var string = 'vm1';
@@ -89,9 +89,9 @@ void main() {
 
   test('ipv4', () {
     List<String> ipAddresses = ['127.0.0.1', '10.0.0.1', '1.1.1.1'];
-    ipAddresses.forEach((ipv4) {
+    for (String ipv4 in ipAddresses) {
       expect(LARegExp.ipv4.hasMatch(ipv4), equals(true));
-    });
+    }
   });
 
   test('ipv4 failed', () {
@@ -106,9 +106,9 @@ void main() {
       // Neither ipv6
       '::1'
     ];
-    ipAddresses.forEach((ipv4) {
+    for (String ipv4 in ipAddresses) {
       expect(LARegExp.ipv4.hasMatch(ipv4), equals(false));
-    });
+    }
   });
 
   test('private addresses', () {
@@ -119,9 +119,9 @@ void main() {
       'fd12:3456:789a:1::1',
       '192.168.0.1'
     ];
-    ipAddresses.forEach((privateIp) {
+    for (String privateIp in ipAddresses) {
       expect(LARegExp.privateIp.hasMatch(privateIp), equals(true));
-    });
+    }
   });
 
   test('private addresses', () {
@@ -130,9 +130,9 @@ void main() {
       '192.1.1.1',
       'fe80::1ff:fe23:4567:890a',
     ];
-    ipAddresses.forEach((privateIp) {
+    for (String privateIp in ipAddresses) {
       expect(LARegExp.privateIp.hasMatch(privateIp), equals(false));
-    });
+    }
   });
 
   test('ipv6', () {
@@ -141,9 +141,9 @@ void main() {
       '2620:119:35::35',
       'fe80::1ff:fe23:4567:890a'
     ];
-    ipAddresses.forEach((ipv6) {
+    for (String ipv6 in ipAddresses) {
       expect(LARegExp.ipv6.hasMatch(ipv6), equals(true));
-    });
+    }
   });
   test('ipv6 failed', () {
     List<String> ipAddresses = [
@@ -153,9 +153,9 @@ void main() {
       '111',
       '255.255.255.256',
     ];
-    ipAddresses.forEach((ipv6) {
+    for (String ipv6 in ipAddresses) {
       expect(LARegExp.ipv6.hasMatch(ipv6), equals(false));
-    });
+    }
   });
 
   test('ip v4 or v6', () {
@@ -167,9 +167,9 @@ void main() {
       '2620:119:35::35',
       'fe80::1ff:fe23:4567:890a'
     ];
-    ipAddresses.forEach((ip) {
+    for (String ip in ipAddresses) {
       expect(LARegExp.ip.hasMatch(ip), equals(true));
-    });
+    }
   });
 
   test('domain regexp should allow valid domains', () {
@@ -177,9 +177,9 @@ void main() {
       'l-a.site',
       'example.org',
     ];
-    domains.forEach((d) {
+    for (String d in domains) {
       expect(LARegExp.domainRegexp.hasMatch(d), equals(true));
-    });
+    }
   });
 
   test('valid ssh pub keys', () {
@@ -198,10 +198,10 @@ uKOrwPhU3NbKQwtjb0Wsxx1gAmQqIOLTpAdsrAauPxC7TPYA5qQVCphvimKuhQM/1gMV22
 5JrnjspVlthCzuFYUjXOKC3wxz6FFEtwnXu3uC5bVVkmkNadJmD21gD23yk4BraGXVYpRM
 IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
     ];
-    pubKeys.forEach((key) {
+    for (String key in pubKeys) {
       expect(
           LARegExp.sshPubKey.hasMatch(key.replaceAll('\n', '')), equals(true));
-    });
+    }
   });
 
   test('url regexp should allow valid urls', () {
@@ -215,12 +215,12 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       'example.com',
       ''
     ];
-    urls.forEach((url) {
+    for (String url in urls) {
       expect(LARegExp.url.hasMatch(url), equals(true));
-    });
-    wrongUrls.forEach((url) {
+    }
+    for (String url in wrongUrls) {
       expect(LARegExp.url.hasMatch(url), equals(false));
-    });
+    }
   });
 
   test('email regexp should allow valid emails', () {
@@ -232,12 +232,12 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       'example.com',
       '',
     ];
-    emails.forEach((email) {
+    for (String email in emails) {
       expect(LARegExp.email.hasMatch(email), equals(true));
-    });
-    wrongEmails.forEach((email) {
+    }
+    for (String email in wrongEmails) {
       expect(LARegExp.email.hasMatch(email), equals(false));
-    });
+    }
   });
 
   test('test valid and invalid port numbers', () {
@@ -251,12 +251,12 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       '70000',
       'abc',
     ];
-    valid.forEach((current) {
+    for (String current in valid) {
       expect(LARegExp.portNumber.hasMatch(current), equals(true));
-    });
-    invalid.forEach((current) {
+    }
+    for (String current in invalid) {
       expect(LARegExp.portNumber.hasMatch(current), equals(false));
-    });
+    }
   });
 
   test('test subdomains', () {
@@ -266,9 +266,9 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       'a_b',
       'a.b',
     ];
-    subdomains.forEach((sub) {
+    for (String sub in subdomains) {
       expect(LARegExp.subdomain.hasMatch(sub), equals(true));
-    });
+    }
   });
 
   test('test invalid subdomains', () {
@@ -277,12 +277,12 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       'a b',
       'a\b',
     ];
-    subdomains.forEach((sub) {
+    for (String sub in subdomains) {
       // print("Testing $sub");
       expect(
         LARegExp.subdomain.hasMatch(sub),
         equals(false),
       );
-    });
+    }
   });
 }

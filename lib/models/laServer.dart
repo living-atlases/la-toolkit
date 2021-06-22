@@ -42,24 +42,25 @@ class LAServer implements IsJsonSerializable<LAServer> {
       {String? id,
       required this.name,
       String? ip,
-      this.sshPort: 22,
+      this.sshPort = 22,
       this.sshUser,
       List<String>? aliases,
       List<String>? gateways,
       this.sshKey,
-      this.reachable: ServiceStatus.unknown,
-      this.sshReachable: ServiceStatus.unknown,
-      this.sudoEnabled: ServiceStatus.unknown,
+      this.reachable = ServiceStatus.unknown,
+      this.sshReachable = ServiceStatus.unknown,
+      this.sudoEnabled = ServiceStatus.unknown,
       this.osName = "",
       this.osVersion = "",
       required this.projectId})
-      : id = id ?? new ObjectId().toString(),
-        this.aliases = aliases ?? [],
-        this.gateways = gateways ?? [],
-        this.ip = ip ?? "";
+      : id = id ?? ObjectId().toString(),
+        aliases = aliases ?? [],
+        gateways = gateways ?? [],
+        ip = ip ?? "";
 
   factory LAServer.fromJson(Map<String, dynamic> json) =>
       _$LAServerFromJson(json);
+  @override
   Map<String, dynamic> toJson() => _$LAServerToJson(this);
 
   @override
@@ -90,8 +91,8 @@ class LAServer implements IsJsonSerializable<LAServer> {
       sshPort.hashCode ^
       sshUser.hashCode ^
       sshKey.hashCode ^
-      DeepCollectionEquality.unordered().hash(aliases) ^
-      DeepCollectionEquality.unordered().hash(gateways) ^
+      const DeepCollectionEquality.unordered().hash(aliases) ^
+      const DeepCollectionEquality.unordered().hash(gateways) ^
       osName.hashCode ^
       osVersion.hashCode ^
       reachable.hashCode ^
@@ -101,17 +102,17 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   bool isReady() {
     return // this.reachable == ServiceStatus.success &&
-        this.sshReachable == ServiceStatus.success &&
-            this.sudoEnabled == ServiceStatus.success;
+        sshReachable == ServiceStatus.success &&
+            sudoEnabled == ServiceStatus.success;
   }
 
   bool isSshReady() {
-    return this.sshReachable == ServiceStatus.success;
+    return sshReachable == ServiceStatus.success;
   }
 
   @override
   String toString() {
-    return '''$name ($id)${ip.length > 0 ? ', ' + ip : ''} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.length > 0 ? ' ' + aliases.join(' ') : ''}''';
+    return '''$name ($id)${ip.isNotEmpty ? ', ' + ip : ''} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.isNotEmpty ? ' ' + aliases.join(' ') : ''}''';
   }
 
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {
@@ -133,8 +134,9 @@ class LAServer implements IsJsonSerializable<LAServer> {
           // set the same previous id;
           laServer.id = current.id;
           return laServer;
-        } else
+        } else {
           return current;
+        }
       }).toList();
     } else {
       servers.add(laServer);

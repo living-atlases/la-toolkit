@@ -85,13 +85,13 @@ void main() {
       'Лорем ипсум долор сит амет, фастидии ехпетенда при ид.',
       '議さだや設9売サコヱ助送首し康美イヤエテ決竹ハキ約泣ヘハ式追だじけ',
     ];
-    shortNames.forEach((shortName) {
-      String uuid = new ObjectId().toString();
+    for (String shortName in shortNames) {
+      String uuid = ObjectId().toString();
       String dirName =
           StringUtils.suggestDirName(shortName: shortName, id: uuid);
       // print("$shortName: $dirName");
       expect(dirName.length >= 2, equals(true));
-    });
+    }
   });
 
   test('dirName generated as expected', () {
@@ -100,13 +100,13 @@ void main() {
       ['LA.TEST', 'la-test'],
       ['ALA', 'ala']
     ];
-    pairs.forEach((pair) {
-      String uuid = new ObjectId().toString();
+    for (List<String> pair in pairs) {
+      String uuid = ObjectId().toString();
       String dirName = StringUtils.suggestDirName(shortName: pair[0], id: uuid);
       // Uncomment to get a list of vars
       // print("${pair[0]}: $dirName");
       expect(dirName.length >= 2, equals(true));
       expect(dirName == pair[1], equals(true));
-    });
+    }
   });
 }

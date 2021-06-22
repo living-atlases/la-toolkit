@@ -10,9 +10,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ServiceStatusCard extends StatelessWidget {
   final ProdServiceDesc service;
-  static final TextStyle subtitle = TextStyle(color: LAColorTheme.inactive);
+  static const TextStyle subtitle = TextStyle(color: LAColorTheme.inactive);
 
-  ServiceStatusCard(this.service);
+  const ServiceStatusCard(this.service, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,23 +23,23 @@ class ServiceStatusCard extends StatelessWidget {
         child: Card(
             elevation: CardConstants.defaultElevation,
             // color: Colors.black12,
-            margin: EdgeInsets.all(10),
+            margin: const EdgeInsets.all(10),
             child: Padding(
-                padding: EdgeInsets.all(5),
+                padding: const EdgeInsets.all(5),
                 child: Row(children: [
                   Icon(service.icon, size: 30, color: service.status.color),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(service.name,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16)),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(service.subtitle, style: subtitle),
                     ],
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   ServiceSmallLinks(service: service, iconDefSize: iconDefSize),
                 ]))));
   }
@@ -93,7 +93,8 @@ class ServiceSmallLinks extends StatelessWidget {
 
 class SimpleServiceStatusItem extends StatelessWidget {
   final Widget icon;
-  SimpleServiceStatusItem({required this.icon});
+  const SimpleServiceStatusItem({Key? key, required this.icon})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -85,9 +85,9 @@ class Api {
         })));
     if (response.statusCode == 200) {
       Map<String, dynamic> l = json.decode(response.body);
-      l.keys.forEach((element) {
-        // print("out: ${l[element]['out']}");
-      });
+      // for (var element in l.keys) {
+      // print("out: ${l[element]['out']}");
+      // }
       return l;
     } else {
       return {};
@@ -215,8 +215,9 @@ class Api {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
         onStart(l['cmd'], l['port'], l['ttydPid']);
-      } else
+      } else {
         onError(response.statusCode);
+      }
     });
   }
 
@@ -235,8 +236,9 @@ class Api {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
         onStart(l['cmd'], l['port'], l['ttydPid']);
-      } else
+      } else {
         onError(response.statusCode);
+      }
     });
   }
 
@@ -274,8 +276,9 @@ class Api {
         Map<String, dynamic> l = json.decode(response.body);
         action.onStart(
             CmdHistoryEntry.fromJson(l['cmdEntry']), l['port'], l['ttydPid']);
-      } else
+      } else {
         action.onError(response.statusCode);
+      }
     }).catchError((error) {
       print(error);
       action.onError(error);
@@ -394,10 +397,10 @@ class Api {
     Uri url = uri(env['BACKEND']!, "/api/v1/add-projects");
 
     List<dynamic> projectsJ = [];
-    projects.forEach((project) {
+    for (var project in projects) {
       Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
       projectsJ.add(projectJ);
-    });
+    }
     Map<String, dynamic> body = {'projects': projectsJ};
 
     Response response = await http.post(url,

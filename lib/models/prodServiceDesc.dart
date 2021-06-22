@@ -57,9 +57,9 @@ class ProdServiceDesc {
           alaAdmin == other.alaAdmin &&
           help == other.help &&
           subtitle == other.subtitle &&
-          ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
-          ListEquality().equals(deps, other.deps) &&
-          ListEquality().equals(urls, other.urls) &&
+          const ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
+          const ListEquality().equals(deps, other.deps) &&
+          const ListEquality().equals(urls, other.urls) &&
           status == other.status;
 
   @override
@@ -72,8 +72,8 @@ class ProdServiceDesc {
       alaAdmin.hashCode ^
       help.hashCode ^
       subtitle.hashCode ^
-      ListEquality().hash(serviceDeploys) ^
-      ListEquality().hash(deps) ^
-      ListEquality().hash(urls) ^
+      const ListEquality().hash(serviceDeploys) ^
+      const ListEquality().hash(deps) ^
+      const ListEquality().hash(urls) ^
       status.hashCode;
 }

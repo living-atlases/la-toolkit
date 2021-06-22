@@ -12,8 +12,8 @@ class BasicService {
         udp = udp ?? [];
 
   bool isCompatible(BasicService other) {
-    if (this.name != other.name) return true;
-    if (this.version != other.version) return false;
+    if (name != other.name) return true;
+    if (version != other.version) return false;
     return true;
   }
 

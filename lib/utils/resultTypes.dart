@@ -40,7 +40,7 @@ enum ResultType {
 
 extension ParseToString on ResultType {
   String toS() {
-    return this.toString().split('.').last;
+    return toString().split('.').last;
   }
 
   String title() {
@@ -53,7 +53,7 @@ extension ParseToString on ResultType {
       case ResultType.changed:
         return Colors.brown;
       case ResultType.failures:
-        return Color.fromRGBO(246, 114, 128, 1);
+        return const Color.fromRGBO(246, 114, 128, 1);
       case ResultType.ignored:
         return Colors.grey;
       case ResultType.ok:
@@ -91,8 +91,7 @@ class ResultTypes {
   static List<String>? _list;
 
   static List<String> get list {
-    if (_list == null)
-      _list = ResultType.values.map((ResultType v) => v.toS()).toList();
+    _list ??= ResultType.values.map((ResultType v) => v.toS()).toList();
     return _list!;
   }
 }

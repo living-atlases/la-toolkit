@@ -22,24 +22,27 @@ class ServerStatusCard extends StatelessWidget {
   final String alaInstallVersion;
   final VoidCallback onTerm;
   final List<dynamic> status;
-  ServerStatusCard(
-      {required this.server,
+  const ServerStatusCard(
+      {Key? key,
+      required this.server,
       required this.extendedStatus,
       required this.services,
       required this.alaInstallVersion,
       required this.onTerm,
-      required this.status});
+      required this.status})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Map<String, LAServiceDepsDesc> depsForV =
         LAServiceDepsDesc.getDeps(alaInstallVersion);
     LinkedHashSet<BasicService> deps = LinkedHashSet<BasicService>();
-    services.forEach((service) {
+    for (LAService service in services) {
       LAServiceDepsDesc? serDepDesc = depsForV[service.nameInt];
-      if (serDepDesc != null)
+      if (serDepDesc != null) {
         deps.addAll(BasicService.toCheck(serDepDesc.serviceDepends));
-    });
+      }
+    }
     return IntrinsicWidth(
         child: Card(
             elevation: CardConstants.defaultElevation,
@@ -61,8 +64,8 @@ class ServerStatusCard extends StatelessWidget {
                               primary: Colors.white,
                               elevation: 10,
                               shadowColor: Colors.green,
-                              minimumSize: Size(0, 0),
-                              padding: EdgeInsets.fromLTRB(1, 1, 1, 0),
+                              minimumSize: const Size(0, 0),
+                              padding: const EdgeInsets.fromLTRB(1, 1, 1, 0),
                               enableFeedback: true),
                           onPressed: () => onTerm(),
                         ))
@@ -78,11 +81,13 @@ class ServerStatusCard extends StatelessWidget {
                       Text("IP: ${server.ip}", style: GoogleFonts.robotoMono()),
                       if (extendedStatus) const SizedBox(height: 10),
                       if (extendedStatus)
+                        // ignore: sized_box_for_whitespace
                         Container(
                             width: 140,
                             child: ConnectivityStatus(server: server)),
                       if (extendedStatus) const SizedBox(height: 10),
                       if (extendedStatus)
+                        // ignore: sized_box_for_whitespace
                         Container(
                             width: 140,
                             child: RichText(
@@ -145,8 +150,10 @@ class SimpleServerStatusItem extends StatelessWidget {
   final ServiceStatus status;
   final String successHint;
   final String errorHint;
-  SimpleServerStatusItem(
-      this.text, this.status, this.successHint, this.errorHint);
+  const SimpleServerStatusItem(
+      this.text, this.status, this.successHint, this.errorHint,
+      {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -173,36 +180,36 @@ class SimpleServerStatusItem extends StatelessWidget {
 class DepsPanel extends StatelessWidget {
   final LinkedHashSet<BasicService> deps;
   final List<dynamic> status;
-  const DepsPanel(this.deps, this.status);
+  const DepsPanel(this.deps, this.status, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Map<BasicService, CmdResult> depStatus = {};
-    deps.forEach((BasicService dep) {
+    for (BasicService dep in deps) {
       int depCodeStatus = 0;
       int checks = 0;
-      dep.tcp.forEach((tcp) {
+      for (num tcp in dep.tcp) {
         String type = "tcp";
         Tuple2<int, int> r = checkResultForType(type, "$tcp");
         depCodeStatus += r.item2;
         checks += r.item1;
-      });
-      dep.udp.forEach((udp) {
+      }
+      for (num udp in dep.udp) {
         String type = "udp";
         Tuple2<int, int> r = checkResultForType(type, "$udp");
         depCodeStatus += r.item2;
         checks += r.item1;
-      });
+      }
       Tuple2<int, int> r = checkResultForType(dep.name, "");
       depCodeStatus += r.item2;
       checks += r.item1;
       depStatus[dep] = checks == 0
           ? CmdResult.unknown
           : (depCodeStatus == 0 ? CmdResult.success : CmdResult.failed);
-    });
+    }
 
     return Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
+        padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,9 +226,11 @@ class DepsPanel extends StatelessWidget {
   Tuple2<int, int> checkResultForType(String type, String value) {
     int depCodeStatus = 0;
     List<dynamic> matchs = status
-        .where((s) => s['service'] == "check_$type" && s['args'] == "$value")
+        .where((s) => s['service'] == "check_$type" && s['args'] == value)
         .toList();
-    matchs.forEach((match) => depCodeStatus += int.parse(match['code'] ?? '0'));
+    for (var match in matchs) {
+      depCodeStatus += int.parse(match['code'] ?? '0');
+    }
     return Tuple2(matchs.length, depCodeStatus);
   }
 }

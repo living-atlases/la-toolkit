@@ -28,11 +28,11 @@ class LAColorTheme {
 
   static ThemeData laThemeData = ThemeData(
       primarySwatch: LAColorTheme.laPalette, // Color(0xFF78B578),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         foregroundColor: Colors.white,
         // splashColor: Colors.white.withOpacity(0.25),
       ),
-      buttonTheme: ButtonThemeData(
+      buttonTheme: const ButtonThemeData(
         // buttonColor: Colors.deepPurple, //  <-- dark color
         textTheme:
             ButtonTextTheme.primary, //  <-- this auto selects the right color

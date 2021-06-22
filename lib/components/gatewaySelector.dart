@@ -12,7 +12,8 @@ import 'serverSelector.dart';
 class GatewaySelector extends StatefulWidget {
   final bool firstServer;
   final LAServer exclude;
-  GatewaySelector({Key? key, required this.firstServer, required this.exclude})
+  const GatewaySelector(
+      {Key? key, required this.firstServer, required this.exclude})
       : super(key: key);
 
   @override

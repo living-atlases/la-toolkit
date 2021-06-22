@@ -237,8 +237,8 @@ class SaveCurrentProject extends AppActions {
   SaveCurrentProject(this.project);
 }
 
-typedef void VoidCallback();
-typedef void ErrorCallback(error);
+typedef VoidCallback = void Function();
+typedef ErrorCallback = void Function(int error);
 
 class TestConnectivityProject extends AppActions {
   LAProject project;

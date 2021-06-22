@@ -5,12 +5,14 @@ class HelpIcon extends StatelessWidget {
   final String url;
   final String? tooltip;
 
-  HelpIcon({required String wikipage, String? tooltip})
+  HelpIcon({Key? key, required String wikipage, String? tooltip})
       : url =
             "https://github.com/AtlasOfLivingAustralia/documentation/wiki/${wikipage.replaceAll(' ', '-')}",
-        this.tooltip = tooltip == null ? "Read more in our Wiki" : null;
+        tooltip = tooltip == null ? "Read more in our Wiki" : null,
+        super(key: key);
 
-  HelpIcon.url({required this.url, this.tooltip});
+  const HelpIcon.url({Key? key, required this.url, this.tooltip})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class HelpIcon extends StatelessWidget {
           // print("Opening help page: $url");
           await launch(url);
         },
-        icon: Icon(Icons.help_outline),
+        icon: const Icon(Icons.help_outline),
         /*size: 24,*/ color: Colors.blueGrey);
   }
 }

@@ -25,6 +25,8 @@ import 'models/prodServiceDesc.dart';
 class PortalStatusPage extends StatefulWidget {
   static const routeName = "status";
 
+  const PortalStatusPage({Key? key}) : super(key: key);
+
   @override
   _PortalStatusPageState createState() => _PortalStatusPageState();
 }
@@ -55,7 +57,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
         List<Widget> resultWidgets = [];
-        vm.checkResults.keys.forEach((String serverId) {
+        for (String serverId in vm.checkResults.keys) {
           LAServer s = vm.project.servers.firstWhere((s) => s.id == serverId);
           resultWidgets.add(TextTitle(text: s.name, separator: false));
           vm.checkResults[serverId]!.forEach((check) {
@@ -70,7 +72,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                 status: st,
                 subtitle: utf8.decode(base64.decode(check['msg']))));
           });
-        });
+        }
         var pageTitle = "${vm.project.shortName} Portal Status";
         return Title(
             title: pageTitle,
@@ -86,7 +88,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                   loading: vm.loading,
                   actions: [
                     IconButton(
-                      icon: Tooltip(
+                      icon: const Tooltip(
                           child: Icon(Icons.pause, color: Colors.white),
                           message: "Pause to check services"),
                       onPressed: () {
@@ -96,7 +98,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                     Container(
                         margin: const EdgeInsets.only(right: 10.0),
                         child: IconButton(
-                          icon: Tooltip(
+                          icon: const Tooltip(
                               child: Icon(Mdi.reload, color: Colors.white),
                               message: "Recheck the status of the portal"),
                           onPressed: () {
@@ -112,7 +114,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
               bottomNavigationBar: ConvexAppBar(
                 backgroundColor: LAColorTheme.laPalette.shade500,
                 style: TabStyle.react,
-                items: [
+                items: const [
                   TabItem(icon: Mdi.server, title: "Servers"),
                   TabItem(icon: Icons.fact_check, title: "Services"),
                   TabItem(icon: Icons.receipt_long, title: "Details"),
@@ -135,18 +137,20 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                             // Add
                             // https://pub.dev/packages/circular_countdown_timer
                             // or similar and a sliderdesc
-                            if (_tab == 0) TextTitle(text: "Servers"),
+                            if (_tab == 0) const TextTitle(text: "Servers"),
                             if (_tab == 0)
                               ServersStatusPanel(
                                   extendedStatus: true,
                                   results: vm.checkResults),
                             if (_tab == 1)
-                              TextTitle(text: "Services", separator: false),
+                              const TextTitle(
+                                  text: "Services", separator: false),
                             if (_tab == 1)
                               ServicesStatusPanel(
                                   services: vm.serverServicesToMonitor.item1),
                             if (_tab == 2)
-                              TextTitle(text: "Details", separator: false),
+                              const TextTitle(
+                                  text: "Details", separator: false),
                             if (_tab == 2)
                               for (Widget w in resultWidgets) w
                           ])),
@@ -188,7 +192,7 @@ class _PortalStatusViewModel {
       other is _PortalStatusViewModel &&
           runtimeType == other.runtimeType &&
           loading == other.loading &&
-          DeepCollectionEquality.unordered()
+          const DeepCollectionEquality.unordered()
               .equals(checkResults, other.checkResults) &&
           serverServicesToMonitor == other.serverServicesToMonitor &&
           project == other.project;
@@ -198,5 +202,5 @@ class _PortalStatusViewModel {
       project.hashCode ^
       loading.hashCode ^
       serverServicesToMonitor.hashCode ^
-      DeepCollectionEquality.unordered().hash(checkResults);
+      const DeepCollectionEquality.unordered().hash(checkResults);
 }

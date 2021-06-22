@@ -31,8 +31,10 @@ import 'models/laServiceDesc.dart';
 class LAProjectEditPage extends StatelessWidget {
   static const routeName = "project";
 
+  LAProjectEditPage({Key? key}) : super(key: key);
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  static final int totalSteps = 6;
+  static const int totalSteps = 6;
 
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
@@ -116,11 +118,13 @@ class LAProjectEditPage extends StatelessWidget {
           }
           // Set default version of the project
           if (_project.alaInstallRelease == null &&
-              vm.state.alaInstallReleases.length > 0)
+              vm.state.alaInstallReleases.isNotEmpty) {
             _project.alaInstallRelease = vm.state.alaInstallReleases[0];
+          }
           if (_project.generatorRelease == null &&
-              vm.state.generatorReleases.length > 0)
+              vm.state.generatorReleases.isNotEmpty) {
             _project.generatorRelease = vm.state.generatorReleases[0];
+          }
           final int _step = vm.state.currentStep;
           print('Building project edit currentStep: $_step key: $_scaffoldKey');
           final List<Step> _steps = [
@@ -194,7 +198,7 @@ class LAProjectEditPage extends StatelessWidget {
                             _project.domain = value;
                             vm.onSaveCurrentProject(_project);
                           }),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       BrandingTile(
                           initialValue: _project.theme,
                           onChange: (String newTheme) =>
@@ -213,8 +217,8 @@ class LAProjectEditPage extends StatelessWidget {
                       text:
                           "Tap in two points to select the default map area of your LA portal. Drag them to modify the area. This area is used in services like collections, regions and spatial in their main page.",
                       helpPage: "Glossary#Services-map-area"),
-                  SizedBox(height: 20),
-                  MapAreaSelector(),
+                  const SizedBox(height: 20),
+                  const MapAreaSelector(),
                   // MAP AREA NAME
                   MessageItem(_project, LAVariableDesc.get("map_zone_name"),
                       (value) {
@@ -234,7 +238,7 @@ class LAProjectEditPage extends StatelessWidget {
                   child: Column(
                     // SERVERS
                     children: <Widget>[
-                      ServersCardList(),
+                      const ServersCardList(),
                       // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
                       TextFormField(
                         controller: _serverAddController,
@@ -282,7 +286,7 @@ class LAProjectEditPage extends StatelessWidget {
                             labelText:
                                 'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
                       ),
-                      TipsCard(text: """## Tips
+                      const TipsCard(text: """## Tips
 See the [infrastructure requirements page](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Infrastructure-Requirements) and other portals infrastructure in [our documentation wiki](https://github.com/AtlasOfLivingAustralia/documentation/wiki/) to dimension your LA portal. For a test portal a big server can host the main basic LA services.
 If you are unsure type something like "server1, server2, server3".
 """),
@@ -331,9 +335,8 @@ If you are unsure type something like "server1, server2, server3".
                             .map((s) => ServicesInServerSelector(server: s))
                             .toList())
                         : [
-                            Container(
-                                child: const Text(
-                                    'You need to add some server before to this step...'))
+                            const Text(
+                                'You need to add some server before to this step...')
                           ])),
             Step(
                 isActive: _setIsActive(_step, _serversAdditional),
@@ -344,7 +347,7 @@ If you are unsure type something like "server1, server2, server3".
                 content: Form(
                     key: _formKeys[5],
                     child: Column(children: [
-                      TipsCard(text: '''
+                      const TipsCard(text: '''
 Here we'll define how to connect to your server (thanks to the [IP address](https://en.wikipedia.org/wiki/IP_address)) and how to do it securely (thanks to [SSH](https://en.wikipedia.org/wiki/SSH_(Secure_Shell))).
 
 This is the most difficult part of all this project definition. If we configure correctly this, we'll deploy correctly later our portal.
@@ -359,7 +362,7 @@ If you have doubts or need to ask for some information, save this project and co
                             LAVariableDesc.get("ansible_user"), value);
                         vm.onSaveCurrentProject(_project);
                       }).buildTitle(context),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       ListTile(
                           contentPadding: EdgeInsets.zero,
                           title: const Text(
@@ -371,7 +374,7 @@ If you have doubts or need to ask for some information, save this project and co
                                 _project.advancedEdit = value;
                                 vm.onSaveCurrentProject(_project);
                               })),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       ServersDetailsCardList(_focusNodes[_serversAdditional]!),
                     ])))
           ];
@@ -392,12 +395,12 @@ If you have doubts or need to ask for some information, save this project and co
                             radius: 50.0,
                             lineWidth: 6.0,
                             percent: _project.status.percent / 100,
-                            center: new Text("${_project.status.percent}%",
-                                style: TextStyle(
+                            center: Text("${_project.status.percent}%",
+                                style: const TextStyle(
                                     color: Colors.white, fontSize: 12)),
                             progressColor: Colors.white,
                           )),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       if (_step != 0)
                         TextButton(
                             child: const Text('PREVIOUS'),
@@ -420,9 +423,8 @@ If you have doubts or need to ask for some information, save this project and co
                           onTap: () async => await vm.onFinish(_project),
                           builder: (context, onTap) {
                             return IconButton(
-                              icon: Tooltip(
-                                  child: const Icon(Icons.save,
-                                      color: Colors.white),
+                              icon: const Tooltip(
+                                  child: Icon(Icons.save, color: Colors.white),
                                   message: "Save the current LA project"),
                               onPressed: onTap,
                             );
@@ -449,22 +451,21 @@ If you have doubts or need to ask for some information, save this project and co
                       controlsBuilder: (BuildContext context,
                           {VoidCallback? onStepContinue,
                           VoidCallback? onStepCancel}) {
-                        return ButtonBar(
+                        return const ButtonBar(
                           alignment: MainAxisAlignment.start,
                           children: <Widget>[
                             // empty and custom in the AppBar
                           ],
                         );
                       }),
-                  LintProjectPanel()
+                  const LintProjectPanel()
                 ]))),
                 //     ])
               ));
         });
   }
 
-  List<String> serversNameSplit(String value) =>
-      value.split(new RegExp(r"[, ]+"));
+  List<String> serversNameSplit(String value) => value.split(RegExp(r"[, ]+"));
 
   void onStepCancel(_ProjectPageViewModel vm, LAProject project) {
     vm.onPrevious();
@@ -550,15 +551,13 @@ class HostHeader extends StatelessWidget {
   final String title;
   final String? help;
 
-  HostHeader({required this.title, this.help});
+  const HostHeader({Key? key, required this.title, this.help})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
-        Text(this.title),
-        if (this.help != null) HelpIcon(wikipage: this.help!)
-      ],
+      children: [Text(title), if (help != null) HelpIcon(wikipage: help!)],
     );
   }
 }

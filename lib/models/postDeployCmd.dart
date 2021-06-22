@@ -41,6 +41,7 @@ class PostDeployCmd extends DeployCmd {
 
   factory PostDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PostDeployCmdFromJson(json);
+  @override
   Map<String, dynamic> toJson() => _$PostDeployCmdToJson(this);
 
   @override

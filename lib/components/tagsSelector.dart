@@ -15,15 +15,17 @@ class TagsSelector extends StatefulWidget {
   final List<String> initialValue;
   final Function(List<String>) onChange;
 
-  TagsSelector(
-      {required this.selectorKey,
+  const TagsSelector(
+      {Key? key,
+      required this.selectorKey,
       required this.tags,
       required this.icon,
       required this.initialValue,
       required this.title,
       required this.placeHolder,
       required this.modalTitle,
-      required this.onChange});
+      required this.onChange})
+      : super(key: key);
 
   @override
   _TagsSelectorState createState() => _TagsSelectorState();
@@ -52,14 +54,14 @@ class _TagsSelectorState extends State<TagsSelector> {
                     // initialChildSize: 0.5,
                     listType: MultiSelectListType.CHIP,
                     searchable: true,
-                    confirmText: Text("CONFIRM"),
+                    confirmText: const Text("CONFIRM"),
                     selectedColor:
                         Theme.of(context).primaryColor.withOpacity(.2),
                     buttonIcon: Icon(widget.icon, color: Colors.grey),
-                    buttonText:
-                        Text(widget.title, style: TextStyle(fontSize: 16)),
-                    title:
-                        Text(widget.modalTitle, style: TextStyle(fontSize: 16)),
+                    buttonText: Text(widget.title,
+                        style: const TextStyle(fontSize: 16)),
+                    title: Text(widget.modalTitle,
+                        style: const TextStyle(fontSize: 16)),
                     initialValue: _selected,
                     items: widget.tags
                         .map((tag) => MultiSelectItem<String>(tag, tag))
@@ -73,7 +75,7 @@ class _TagsSelectorState extends State<TagsSelector> {
                     chipDisplay: MultiSelectChipDisplay<String>(
                       // icon: Icon(Mdi.tag, size: 6, color: Colors.white),
                       chipColor: Theme.of(context).primaryColor.withOpacity(.8),
-                      textStyle: TextStyle(color: Colors.white),
+                      textStyle: const TextStyle(color: Colors.white),
                       onTap: (value) {
                         _selected.remove(value);
                       },
@@ -81,11 +83,11 @@ class _TagsSelectorState extends State<TagsSelector> {
                   ),
                   _selected.isEmpty
                       ? Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           alignment: Alignment.centerLeft,
                           child: Text(
                             widget.placeHolder,
-                            style: TextStyle(color: Colors.black45),
+                            style: const TextStyle(color: Colors.black45),
                           ))
                       : Container(),
                 ],

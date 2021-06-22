@@ -19,7 +19,8 @@ class BrandingTile extends StatefulWidget {
   final String initialValue;
   final Function(String) onChange;
 
-  BrandingTile({Key? key, required this.initialValue, required this.onChange})
+  const BrandingTile(
+      {Key? key, required this.initialValue, required this.onChange})
       : super(key: key);
 
   @override
@@ -39,10 +40,10 @@ class _BrandingTileState extends State<BrandingTile> {
   Widget build(BuildContext context) {
     return ListTile(
       ///contentPadding: padding,
-      title: Text("Portal branding"),
+      title: const Text("Portal branding"),
       subtitle: Text(initialValue),
       onTap: () => _showDialog(context),
-      leading: Icon(Icons.format_paint),
+      leading: const Icon(Icons.format_paint),
       trailing: HelpIcon(wikipage: "Styling-the-web-app"),
     );
   }
@@ -54,15 +55,15 @@ class _BrandingTileState extends State<BrandingTile> {
     String theme = initialValue;
     Alert(
         context: context,
-        closeIcon: Icon(Icons.close),
-        image: Icon(
+        closeIcon: const Icon(Icons.close),
+        image: const Icon(
             Icons.format_paint /* , size: 60, color: LAColorTheme.laPalette*/),
         title: "Select your branding theme",
-        style: AlertStyle(
+        style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
           children: <Widget>[
-            TextWithHelp(
+            const TextWithHelp(
                 padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
                 text:
                     "Scroll to choose a branding for your portal or choose 'custom' if you have developed your own theme:",
@@ -71,7 +72,7 @@ class _BrandingTileState extends State<BrandingTile> {
               initialValue: initialValue,
               onChange: (String newTheme) => theme = newTheme,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
           ],
@@ -86,7 +87,7 @@ class _BrandingTileState extends State<BrandingTile> {
               });
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               "SELECT",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -99,7 +100,7 @@ class BrandingSelector extends StatefulWidget {
   final String initialValue;
   final Function(String) onChange;
 
-  BrandingSelector(
+  const BrandingSelector(
       {Key? key, required this.initialValue, required this.onChange})
       : super(key: key);
 
@@ -108,7 +109,7 @@ class BrandingSelector extends StatefulWidget {
 }
 
 class _BrandingSelectorState extends State<BrandingSelector> {
-  static List<Branding> _brandings = [
+  static final List<Branding> _brandings = [
     Branding(name: 'clean', desc: 'Clean Bootstrap compatible theme'),
     Branding(name: 'cosmo', desc: ''),
     Branding(name: 'darkly', desc: 'Flatly night mode theme'),
@@ -148,7 +149,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
     _brandings.insert(0, _selected[0]);
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         children: <Widget>[
           MultiSelectChipField<Branding>(
@@ -163,14 +164,14 @@ class _BrandingSelectorState extends State<BrandingSelector> {
               ),
               borderRadius: BorderRadius.circular(5),
               boxShadow: [
-                new BoxShadow(
+                BoxShadow(
                   color: Colors.grey.withOpacity(.4),
                 ),
               ],
               /* border:
                   Border.all(width: 0, color: Theme.of(context).primaryColor),*/
             ),
-            title: Text("Select your branding"),
+            title: const Text("Select your branding"),
             initialValue: _selected,
             key: _multiSelectKey,
             height: 330,
@@ -187,7 +188,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
                     color: _selected.contains(item.value)
                         ? LAColorTheme.laPalette
                         : Colors.black54,
-                    margin: EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(5),
                     child: Column(
                         // mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -205,7 +206,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
                                     MainAxisAlignment.spaceBetween, */
                               children: <Widget>[
                                 Text(item.value.name,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 14,
                                         fontWeight: FontWeight.normal))

@@ -1,16 +1,17 @@
-import 'dart:html';
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/utils/utils.dart';
+// https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
+// ignore: implementation_imports
+import 'package:pointer_interceptor/src/shim/dart_ui.dart' as ui;
+import 'package:universal_html/html.dart';
 
 import '../notInDemo.dart';
 
 class EmbedWebView extends StatefulWidget {
   final String src;
   final double? height, width;
-  EmbedWebView({Key? key, required this.src, this.height, this.width})
+  const EmbedWebView({Key? key, required this.src, this.height, this.width})
       : super(key: key);
 
   @override
@@ -54,7 +55,7 @@ class EmbedWebViewState extends State<EmbedWebView>
         bottom: false,
         child: Container(
             color: LAColorTheme.laPalette,
-            padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
             child: !AppUtils.isDemo()
                 ? Center(
                     child: SizedBox(
@@ -66,6 +67,6 @@ class EmbedWebViewState extends State<EmbedWebView>
                       ),
                     ),
                   )
-                : NotInTheDemoPanel()));
+                : const NotInTheDemoPanel()));
   }
 }

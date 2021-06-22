@@ -109,7 +109,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       List<LAServiceDeploy>? serviceDeploys,
       Map<String, List<String>>? serverServices,
       Map<String, dynamic>? checkResults})
-      : id = id ?? new ObjectId().toString(),
+      : id = id ?? ObjectId().toString(),
         servers = servers ?? [],
         services = services ?? getInitialServices(),
         serviceDeploys = serviceDeploys ?? [],
@@ -126,7 +126,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       s.projectId = this.id;
       return s;
     }).toList();
-    if ((dirName == null || dirName!.length == 0) && shortName.length > 0) {
+    if ((dirName == null || dirName!.isEmpty) && shortName.isNotEmpty) {
       dirName = suggestDirName();
     }
     validateCreation();
@@ -151,7 +151,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return MapUtils.center(mapBoundsFstPoint, mapBoundsSndPoint);
   }
 
-  bool validateCreation({debug: false}) {
+  bool validateCreation({debug = false}) {
     bool valid = true;
     LAProjectStatus tempStatus = LAProjectStatus.created;
     if (servers.length != serverServices.length) {
@@ -172,28 +172,30 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if (valid) tempStatus = LAProjectStatus.basicDefined;
     if (debug) print("Step 1 valid: ${valid ? 'yes' : 'no'}");
 
-    valid = valid && servers.length > 0;
-    if (valid)
-      servers.forEach((s) {
+    valid = valid && servers.isNotEmpty;
+    if (valid) {
+      for (LAServer s in servers) {
         valid = valid && LARegExp.hostnameRegexp.hasMatch(s.name);
-      });
-
+      }
+    }
     if (debug) print("Step 2 valid: ${valid ? 'yes' : 'no'}");
     // If the previous steps are correct, this is also correct
 
     valid = valid && allServicesAssignedToServers();
     if (debug) print("Step 3 valid: ${valid ? 'yes' : 'no'}");
 
-    if (valid)
-      servers.forEach((s) {
+    if (valid) {
+      for (LAServer s in servers) {
         valid = valid && LARegExp.ip.hasMatch(s.ip);
         valid = valid && s.sshKey != null;
-      });
+      }
+    }
     if (debug) print("Step 4 valid: ${valid ? 'yes' : 'no'}");
 
     isCreated = valid;
-    if (isCreated && !allServersWithServicesReady())
+    if (isCreated && !allServersWithServicesReady()) {
       tempStatus = LAProjectStatus.advancedDefined;
+    }
     if (isCreated && fstDeployed && allServersWithServicesReady()) {
       tempStatus = LAProjectStatus.firstDeploy;
     }
@@ -201,15 +203,16 @@ class LAProject implements IsJsonSerializable<LAProject> {
         allServersWithServicesReady() &&
         this.tempStatus.value < tempStatus.value) setProjectStatus(tempStatus); */
     // Only update tempStatus if is better
-    if (this.status.value < tempStatus.value) setProjectStatus(tempStatus);
-    if (debug)
+    if (status.value < tempStatus.value) setProjectStatus(tempStatus);
+    if (debug) {
       print(
-          "Valid at end: ${valid ? 'yes' : 'no'}, tempStatus: ${this.status.title}");
+          "Valid at end: ${valid ? 'yes' : 'no'}, tempStatus: ${status.title}");
+    }
     return valid;
   }
 
-  bool allServicesAssignedToServers({debug: false}) {
-    bool ok = getServicesNameListInUse().length > 0 &&
+  bool allServicesAssignedToServers({debug = false}) {
+    bool ok = getServicesNameListInUse().isNotEmpty &&
         getServicesNameListInUse().length ==
             getServicesAssignedToServers().length;
     if (!ok && debug) {
@@ -227,28 +230,28 @@ class LAProject implements IsJsonSerializable<LAProject> {
   List<LAServer> serversWithServices() {
     return servers
         .where((s) =>
-            serverServices[s.id] != null && serverServices[s.id]!.length > 0)
+            serverServices[s.id] != null && serverServices[s.id]!.isNotEmpty)
         .toList();
   }
 
   bool allServersWithIPs() {
     bool allReady = true;
-    servers.forEach((s) {
+    for (LAServer s in servers) {
       allReady = allReady && LARegExp.ip.hasMatch(s.ip);
-    });
+    }
     return allReady;
   }
 
   bool allServersWithSshKeys() {
     bool allReady = true;
-    servers.forEach((s) {
+    for (LAServer s in servers) {
       allReady = allReady && s.sshKey != null;
-    });
+    }
     return allReady;
   }
 
   bool allServersWithServicesReady() {
-    bool allReady = true && serversWithServices().length > 0;
+    bool allReady = true && serversWithServices().isNotEmpty;
     serversWithServices().forEach((s) {
       allReady = allReady && s.isReady();
     });
@@ -256,7 +259,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   bool allServersWithSshReady() {
-    bool allReady = true && serversWithServices().length > 0;
+    bool allReady = true && serversWithServices().isNotEmpty;
     serversWithServices().forEach((s) {
       allReady = allReady && s.isSshReady();
     });
@@ -299,6 +302,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   factory LAProject.fromJson(Map<String, dynamic> json) =>
       _$LAProjectFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$LAProjectToJson(this);
 
   @override
@@ -310,7 +314,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
               '${servers.firstWhere((server) => server.id == entry.key).name} has ${entry.value}')
           .toList()
           .join('\n');
-    } catch (e) {}
+    } catch (e) {
+      print("Error in toString: $e");
+    }
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, hub: $isHub, allWServReady: ___${allServersWithServicesReady()}___
 isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
@@ -399,7 +405,7 @@ check results length: ${checkResults.length}''';
   }
 
   void assign(LAServer server, List<String> assignedServices) {
-    HashSet<String> newServices = new HashSet<String>();
+    HashSet<String> newServices = HashSet<String>();
     newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
     if (newServices.contains(LAServiceName.biocache_backend.toS())) {
@@ -408,7 +414,7 @@ check results length: ${checkResults.length}''';
     }
     serverServices[server.id] = newServices.toList();
     List serviceIds = [];
-    newServices.forEach((sN) {
+    for (String sN in newServices) {
       LAService service = services.firstWhere((s) => s.nameInt == sN);
       serviceIds.add(service.id);
       serviceDeploys.firstWhere(
@@ -421,7 +427,7 @@ check results length: ${checkResults.length}''';
         serviceDeploys.add(newSd);
         return newSd;
       });
-    });
+    }
 
     // Remove previous deploys
     serviceDeploys.removeWhere((sD) =>
@@ -448,7 +454,7 @@ check results length: ${checkResults.length}''';
   }
 
   String additionalVariablesDecoded() {
-    return additionalVariables.length > 0
+    return additionalVariables.isNotEmpty
         ? utf8.decode(base64.decode(additionalVariables))
         : "";
   }
@@ -457,12 +463,12 @@ check results length: ${checkResults.length}''';
     List<String> hostnames = [];
 
     serverServices.forEach((id, services) {
-      services.forEach((currentService) {
+      for (String currentService in services) {
         if (service == currentService) {
           LAServer server = servers.firstWhere((s) => s.id == id);
           hostnames.add(server.name);
         }
-      });
+      }
     });
     return hostnames;
   }
@@ -485,15 +491,16 @@ check results length: ${checkResults.length}''';
 
   String get hostnames {
     List<String> hostList = [];
-    serversWithServices().forEach((server) => hostList.add("${server.name}"));
+    serversWithServices().forEach((server) => hostList.add(server.name));
     return hostList.join('|');
   }
 
   String get sshKeysInUse {
     List<String> sshKeysInUseList = [];
     serversWithServices().forEach((server) {
-      if (server.sshKey != null)
+      if (server.sshKey != null) {
         sshKeysInUseList.add("'~/.ssh/${server.sshKey!.name}.pub'");
+      }
     });
     // toSet.toList to remove dups
     return sshKeysInUseList.toSet().toList().join(', ');
@@ -504,7 +511,7 @@ check results length: ${checkResults.length}''';
     List<String> biocacheHubHosts = getHostname(LAServiceName.ala_hub.toS());
     List<String> common = List.from(colHosts);
     common.removeWhere((item) => biocacheHubHosts.contains(item));
-    return ListEquality().equals(common, colHosts);
+    return const ListEquality().equals(common, colHosts);
   }
 
   void setMap(LatLng firstPoint, LatLng sndPoint, double zoom) {
@@ -567,7 +574,7 @@ check results length: ${checkResults.length}''';
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
       conf["LA_${service.nameInt}_hostname"] =
-          getHostname(service.nameInt).length > 0
+          getHostname(service.nameInt).isNotEmpty
               ? getHostname(service.nameInt)[0]
               : "";
       conf["LA_${service.nameInt}_url"] = service.url(domain);
@@ -586,7 +593,7 @@ check results length: ${checkResults.length}''';
     return LAProject.fromObject(yoRc);
   }
 
-  factory LAProject.fromObject(Map<String, dynamic> yoRc, {debug: false}) {
+  factory LAProject.fromObject(Map<String, dynamic> yoRc, {debug = false}) {
     Function a = (String tag) => yoRc["LA_$tag"];
     LAProject p = LAProject(
         longName: yoRc['LA_project_name'],
@@ -612,9 +619,10 @@ check results length: ${checkResults.length}''';
           service.forceSubdomain ? true : a("${n}_uses_subdomain") ?? true;
       projectService.usesSubdomain = useSub;
       if (debug) print("domain: $domain");
-      if (debug)
+      if (debug) {
         print(
             "$n (LA_use_$n): $useIt subdomain (LA_${n}_uses_subdomain): $useSub");
+      }
       String invPath = a("${n}_path") ?? '';
 
       projectService.iniPath =
@@ -627,22 +635,24 @@ check results length: ${checkResults.length}''';
 
       String hostname = a("${n}_hostname") ?? '';
 
-      if (debug)
+      if (debug) {
         print(
             "$n: url: $url path: '$invPath' initPath: '${projectService.iniPath}' useSub: $useSub suburl: ${projectService.suburl} hostname: $hostname");
+      }
 
-      if (useIt && hostname.length > 0) {
+      if (useIt && hostname.isNotEmpty) {
         LAServer s;
         if (!p.getServersNameList().contains(hostname)) {
           // id is empty when is new
           s = LAServer(
-              id: new ObjectId().toString(), name: hostname, projectId: p.id);
+              id: ObjectId().toString(), name: hostname, projectId: p.id);
           p.upsertServer(s);
         } else {
           s = p.servers.where((c) => c.name == hostname).toList()[0];
         }
-        if (!tempServerServices.containsKey(s.id))
+        if (!tempServerServices.containsKey(s.id)) {
           tempServerServices[s.id] = List<String>.empty(growable: true);
+        }
         tempServerServices[s.id]!.add(service.nameInt);
       }
     });
@@ -664,15 +674,17 @@ check results length: ${checkResults.length}''';
       p.mapBoundsSndPoint = LALatLng(
           latitude: double.parse(bbox[2]), longitude: double.parse(bbox[3]));
     }
-    if (p.dirName == null || p.dirName!.length == 0)
+    if (p.dirName == null || p.dirName!.isEmpty) {
       p.dirName = p.suggestDirName();
+    }
     // TODO mapzoom
     return p;
   }
 
   List<String> getServerServices({required String serverId}) {
-    if (!serverServices.containsKey(serverId))
+    if (!serverServices.containsKey(serverId)) {
       serverServices[serverId] = List<String>.empty(growable: true);
+    }
     return serverServices[serverId]!;
   }
 
@@ -712,8 +724,8 @@ check results length: ${checkResults.length}''';
       List<String> hostnames = getHostname(nameInt);
       List<LAServiceDeploy> sd =
           serviceDeploys.where((sd) => sd.serviceId == service.id).toList();
-      ServiceStatus st = sd.length > 0 ? sd[0].status : ServiceStatus.unknown;
-      if (nameInt != LAServiceName.cas.toS())
+      ServiceStatus st = sd.isNotEmpty ? sd[0].status : ServiceStatus.unknown;
+      if (nameInt != LAServiceName.cas.toS()) {
         allServices.add(ProdServiceDesc(
             name: name,
             nameInt: nameInt,
@@ -727,6 +739,7 @@ check results length: ${checkResults.length}''';
             alaAdmin: desc.alaAdmin,
             status: st,
             help: help));
+      }
       // This is for userdetails, apikeys, etcetera
       desc.subServices.forEach((sub) => allServices.add(ProdServiceDesc(
             name: sub.name,
@@ -766,7 +779,7 @@ check results length: ${checkResults.length}''';
   Tuple2<List<ProdServiceDesc>, HostsServicesChecks> serverServicesToMonitor() {
     List<ProdServiceDesc> services = prodServices;
     if (servicesToMonitor == null ||
-        !ListEquality().equals(servicesToMonitor!.item1, prodServices)) {
+        !const ListEquality().equals(servicesToMonitor!.item1, prodServices)) {
       HostsServicesChecks checks = _getHostServicesChecks(services);
       servicesToMonitor = Tuple2(services, checks);
     }
@@ -816,7 +829,7 @@ check results length: ${checkResults.length}''';
           dirName == other.dirName &&
           domain == other.domain &&
           useSSL == other.useSSL &&
-          DeepCollectionEquality.unordered()
+          const DeepCollectionEquality.unordered()
               .equals(serverServices, other.serverServices) &&
           additionalVariables == other.additionalVariables &&
           isCreated == other.isCreated &&
@@ -831,12 +844,13 @@ check results length: ${checkResults.length}''';
           mapBoundsSndPoint == other.mapBoundsSndPoint &&
           lastCmdEntry == other.lastCmdEntry &&
           lastCmdDetails == other.lastCmdDetails &&
-          ListEquality().equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
-          ListEquality().equals(servers, other.servers) &&
-          ListEquality().equals(services, other.services) &&
-          ListEquality().equals(variables, other.variables) &&
-          ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
-          DeepCollectionEquality.unordered()
+          const ListEquality()
+              .equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
+          const ListEquality().equals(servers, other.servers) &&
+          const ListEquality().equals(services, other.services) &&
+          const ListEquality().equals(variables, other.variables) &&
+          const ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
+          const DeepCollectionEquality.unordered()
               .equals(checkResults, other.checkResults) &&
           mapZoom == other.mapZoom;
 
@@ -848,7 +862,7 @@ check results length: ${checkResults.length}''';
       dirName.hashCode ^
       domain.hashCode ^
       useSSL.hashCode ^
-      DeepCollectionEquality.unordered().hash(serverServices) ^
+      const DeepCollectionEquality.unordered().hash(serverServices) ^
       isCreated.hashCode ^
       isHub.hashCode ^
       fstDeployed.hashCode ^
@@ -861,11 +875,11 @@ check results length: ${checkResults.length}''';
       mapBoundsFstPoint.hashCode ^
       mapBoundsSndPoint.hashCode ^
       lastCmdDetails.hashCode ^
-      ListEquality().hash(cmdHistoryEntries) ^
-      ListEquality().hash(servers) ^
-      ListEquality().hash(services) ^
-      ListEquality().hash(variables) ^
-      ListEquality().hash(serviceDeploys) ^
-      DeepCollectionEquality.unordered().hash(checkResults) ^
+      const ListEquality().hash(cmdHistoryEntries) ^
+      const ListEquality().hash(servers) ^
+      const ListEquality().hash(services) ^
+      const ListEquality().hash(variables) ^
+      const ListEquality().hash(serviceDeploys) ^
+      const DeepCollectionEquality.unordered().hash(checkResults) ^
       mapZoom.hashCode;
 }

@@ -9,7 +9,7 @@ class ServicesChipPanel extends StatefulWidget {
   final Function(List<String>) onChange;
   final List<String> services;
   final List<String> initialValue;
-  ServicesChipPanel(
+  const ServicesChipPanel(
       {Key? key,
       required this.onChange,
       required this.services,
@@ -25,18 +25,18 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
   static const margin = EdgeInsets.fromLTRB(0, 10, 0, 10);
   final _chipsKey = GlobalKey();
   final _formKey = GlobalKey<FormState>();
-  final allStyle = C2ChoiceStyle(
-    labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  final allStyle = const C2ChoiceStyle(
+    labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     // color: Colors.red,
     // margin: EdgeInsets.fromLTRB(0, 40, 40, 20),
 
-    borderRadius: const BorderRadius.all(Radius.circular(15)),
+    borderRadius: BorderRadius.all(Radius.circular(15)),
     padding: EdgeInsets.fromLTRB(10, 0, 10, 2),
     showCheckmark: true,
   );
   late List<String> formValue; // LAServiceDesc.list[3].name];
   List<String> _selectAllOrElements(List<String> values) {
-    List<String> newVal = values.length > 0
+    List<String> newVal = values.isNotEmpty
         ? values.last == 'all'
             ? ['all']
             : values.where((item) => item != 'all').toList()
@@ -107,7 +107,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                             activeStyle: allStyle,
                             style: allStyle)),
                       choiceBuilder: (item) {
-                        if (item.value == 'all')
+                        if (item.value == 'all') {
                           return CustomChip(
                               label: item.label!,
                               width: double.infinity,
@@ -116,8 +116,9 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                               margin: const EdgeInsets.fromLTRB(0, 15, 30, 5),
                               selected: item.selected,
                               onSelect: item.select!);
-                        else
+                        } else {
                           return null;
+                        }
                       },
                       choiceStyle: const C2ChoiceStyle(
                           // color: Colors.indigo,
@@ -125,14 +126,14 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                           margin: margin,
                           labelPadding: padding,
                           showCheckmark: true,
-                          labelStyle: const TextStyle(fontSize: 12),
+                          labelStyle: TextStyle(fontSize: 12),
                           borderOpacity: .3),
                       choiceActiveStyle: const C2ChoiceStyle(
                         // color: Colors.indigo,
                         margin: margin,
                         showCheckmark: true,
                         labelPadding: padding,
-                        labelStyle: const TextStyle(fontSize: 12),
+                        labelStyle: TextStyle(fontSize: 12),
                         brightness: Brightness.dark,
                       ),
                       wrapped: true,
@@ -156,7 +157,7 @@ class CustomChip extends StatelessWidget {
   final bool selected;
   final Function(bool selected) onSelect;
 
-  CustomChip({
+  const CustomChip({
     Key? key,
     required this.label,
     this.color,
@@ -170,8 +171,8 @@ class CustomChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      width: this.width,
-      height: this.height,
+      width: width,
+      height: height,
       margin: margin ??
           const EdgeInsets.symmetric(
             vertical: 15,
@@ -204,17 +205,15 @@ class CustomChip extends StatelessWidget {
               top: 9,
               right: -46,
               bottom: 7,
-              child: Container(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: selected ? Colors.white : Colors.black45,
-                  ),
+              child: Text(
+                label,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: selected ? Colors.white : Colors.black45,
                 ),
               ),
             ),

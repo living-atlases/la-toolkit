@@ -14,7 +14,11 @@ class DragMarkerPluginOptions extends LayerOptions {
 class DragMarkerPlugin implements MapPlugin {
   @override
   Widget createLayer(
-      LayerOptions options, MapState mapState, Stream<Null> stream) {
+      // ignore: prefer_void_to_null
+      LayerOptions options,
+      MapState mapState,
+      // ignore: prefer_void_to_null
+      Stream<Null> stream) {
     if (options is DragMarkerPluginOptions) {
       return StreamBuilder<int>(
           stream: stream as Stream<int>?,
@@ -29,9 +33,7 @@ class DragMarkerPlugin implements MapPlugin {
                   stream: stream,
                   options: options));
             }
-            return Container(
-              child: Stack(children: dragMarkers),
-            );
+            return Stack(children: dragMarkers);
           });
     }
 
@@ -58,16 +60,21 @@ class DragMarkerPlugin implements MapPlugin {
 }
 
 class DragMarkerWidget extends StatefulWidget {
-  DragMarkerWidget(
-      {this.mapState,
+  const DragMarkerWidget(
+      {Key? key,
+      this.mapState,
       this.marker,
       AnchorPos? anchorPos,
       this.stream,
-      this.options}); //: anchor = Anchor.forPos(anchorPos, marker.width, marker.height);
+      this.options})
+      : super(
+            key:
+                key); //: anchor = Anchor.forPos(anchorPos, marker.width, marker.height);
 
   final MapState? mapState;
   //final Anchor anchor;
   final DragMarker? marker;
+  // ignore: prefer_void_to_null
   final Stream<Null>? stream;
   final LayerOptions? options;
 
@@ -139,8 +146,9 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
     markerPointStart =
         LatLng(widget.marker!.point!.latitude, widget.marker!.point!.longitude);
 
-    if (widget.marker!.onDragStart != null)
+    if (widget.marker!.onDragStart != null) {
       widget.marker!.onDragStart!(details, widget.marker!.point);
+    }
   }
 
   void onPanUpdate(DragUpdateDetails details) {
@@ -207,8 +215,9 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
       updatePixelPos(marker.point);
     });
 
-    if (marker.onDragUpdate != null)
+    if (marker.onDragUpdate != null) {
       marker.onDragUpdate!(details, marker.point);
+    }
   }
 
   /// If dragging near edge of the screen, adjust the map so we keep dragging
@@ -230,8 +239,9 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
   void onPanEnd(details) {
     isDragging = false;
     if (autoDragTimer != null) autoDragTimer!.cancel();
-    if (widget.marker!.onDragEnd != null)
+    if (widget.marker!.onDragEnd != null) {
       widget.marker!.onDragEnd!(details, widget.marker!.point);
+    }
     setState(() {}); // Needed if using a feedback widget
   }
 

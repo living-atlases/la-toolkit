@@ -21,14 +21,14 @@ import 'routes.dart';
 class HomePage extends StatefulWidget {
   static const routeName = "/";
 
-  HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static const String unknown = 'Unknown';
   PackageInfo _packageInfo = PackageInfo(
     appName: unknown,
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
               projectsReload: () => store.dispatch(ProjectsLoad()),
               onAddTemplates: () {
                 context.loaderOverlay.show();
-                store.dispatch(AddTemplateProjects(onAdded: (num) {
+                store.dispatch(AddTemplateProjects(onAdded: (numA) {
                   context.loaderOverlay.hide();
                   /* ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('Added $num sample LA Projects'),
@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                       actions: [
                         if (AppUtils.isDev())
                           IconButton(
-                            icon: Tooltip(
+                            icon: const Tooltip(
                                 child: Icon(Icons.refresh, color: Colors.white),
                                 message: "Refresh projects"),
                             onPressed: () {
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                             },
                           )
                       ]),
-                  body: AppSnackBar(LAProjectsList()),
+                  body: const AppSnackBar(LAProjectsList()),
                   floatingActionButton:
                       /*
                           FloatingActionButton.extended(
@@ -123,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                             icon: Icon(Icons.add_circle_outline),
                           ) */
                       _moreBtn(vm))
-              : Intro();
+              : const Intro();
         });
   }
 
@@ -166,38 +166,38 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: LAColorTheme.laPalette,
         foregroundColor: Colors.white,
         elevation: 8.0,
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         // orientation: SpeedDialOrientation.Up,
         // childMarginBottom: 2,
         // childMarginTop: 2,
         children: [
           SpeedDialChild(
-            child: Icon(Icons.copy_outlined),
+            child: const Icon(Icons.copy_outlined),
             backgroundColor: LAColorTheme.laPalette,
             foregroundColor: Colors.white,
             label: 'Add some sample LA projects',
-            labelStyle: TextStyle(fontSize: 18.0),
+            labelStyle: const TextStyle(fontSize: 18.0),
             onTap: () async {
               vm.onAddTemplates();
             },
             // onLongPress: () => print('FIRST CHILD LONG PRESS'),
           ),
           SpeedDialChild(
-            child: Icon(Icons.upload_rounded),
+            child: const Icon(Icons.upload_rounded),
             backgroundColor: LAColorTheme.laPalette,
             foregroundColor: Colors.white,
             label: 'Import previous generated inventories',
-            labelStyle: TextStyle(fontSize: 18.0),
+            labelStyle: const TextStyle(fontSize: 18.0),
             onTap: () => showAlertDialog(context, vm),
             // onLongPress: () => print('SECOND CHILD LONG PRESS'),
           ),
-          if (vm.state.projects.length > 0)
+          if (vm.state.projects.isNotEmpty)
             SpeedDialChild(
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
               backgroundColor: LAColorTheme.laPalette,
               foregroundColor: Colors.white,
               label: 'Create a new LA Project',
-              labelStyle: TextStyle(fontSize: 18.0),
+              labelStyle: const TextStyle(fontSize: 18.0),
               onTap: () => vm.onAddProject(),
               // onLongPress: () => print('SECOND CHILD LONG PRESS'),
             ),
@@ -206,10 +206,10 @@ class _HomePageState extends State<HomePage> {
 
   showAlertDialog(BuildContext context, _HomePageViewModel vm) {
     AlertDialog alert = AlertDialog(
-      title: Text('Import of Inventories'),
+      title: const Text('Import of Inventories'),
       content: SingleChildScrollView(
         child: ListBody(
-          children: <Widget>[
+          children: const <Widget>[
             Text(
                 'Please select a \'.yo-rc.json\' file of some previous generated inventories to import it. This file is located in the parent directory of your inventories (maybe you have to show hidden files).'),
             SizedBox(height: 20),
@@ -224,20 +224,21 @@ class _HomePageState extends State<HomePage> {
       ),
       actions: <Widget>[
         TextButton(
-            child: Text('CANCEL'),
+            child: const Text('CANCEL'),
             onPressed: () async {
               onFinish(context, false);
             }),
         TextButton(
-          child: Text('OK'),
+          child: const Text('OK'),
           onPressed: () async {
             try {
               context.loaderOverlay.show();
               String? yoRcJson = await FileUtils.getYoRcJson();
-              if (yoRcJson != null)
+              if (yoRcJson != null) {
                 vm.onImportProject(yoRcJson);
-              else
+              } else {
                 onFinish(context, true);
+              }
             } catch (e) {
               onFinish(context, true);
             }
@@ -258,7 +259,7 @@ class _HomePageState extends State<HomePage> {
     context.loaderOverlay.hide();
     Navigator.pop(context);
     if (withError) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
             'Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),
       ));

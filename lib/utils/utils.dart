@@ -107,7 +107,7 @@ class UiUtils {
   static showSnackBarError(BuildContext context, String e) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(e),
-      duration: Duration(days: 365),
+      duration: const Duration(days: 365),
       action: SnackBarAction(
         label: 'OK',
         onPressed: () {},
@@ -118,17 +118,17 @@ class UiUtils {
   static void termErrorAlert(context, error) {
     Alert(
         context: context,
-        closeIcon: Icon(Icons.close),
-        image:
-            Icon(Icons.error_outline, size: 60, color: LAColorTheme.inactive),
+        closeIcon: const Icon(Icons.close),
+        image: const Icon(Icons.error_outline,
+            size: 60, color: LAColorTheme.inactive),
         title: "ERROR",
-        style: AlertStyle(
+        style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(children: <Widget>[
           Text(
             "We had some problem ($error)",
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           // Text(error),
@@ -139,7 +139,7 @@ class UiUtils {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               "OK",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -237,8 +237,9 @@ class DeployUtils {
         onFailed: () {
           context.loaderOverlay.hide();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('There was some problem retrieving the results'),
-            duration: Duration(days: 365),
+            content:
+                const Text('There was some problem retrieving the results'),
+            duration: const Duration(days: 365),
             action: SnackBarAction(
               label: 'OK',
               onPressed: () {},

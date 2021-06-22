@@ -64,7 +64,7 @@ class TermsDrawer extends StatelessWidget {
                     const SizedBox(height: 10.0),
                     // FIXME
                     Text("${vm.state.currentProject.shortName} Terminals",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
                         )),
@@ -98,14 +98,15 @@ class ServiceListTileLink extends StatelessWidget {
   final bool alaAdmin;
   final String? help;
 
-  ServiceListTileLink({required ProdServiceDesc desc})
-      : this.icon = desc.icon,
-        this.name = desc.name,
-        this.tooltip = desc.tooltip,
-        this.url = desc.url,
-        this.admin = desc.admin,
-        this.alaAdmin = desc.alaAdmin,
-        this.help = desc.help;
+  ServiceListTileLink({Key? key, required ProdServiceDesc desc})
+      : icon = desc.icon,
+        name = desc.name,
+        tooltip = desc.tooltip,
+        url = desc.url,
+        admin = desc.admin,
+        alaAdmin = desc.alaAdmin,
+        help = desc.help,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {

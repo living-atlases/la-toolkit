@@ -16,7 +16,7 @@ enum CmdResult { unknown, aborted, success, failed }
 
 extension CmdResultToString on CmdResult {
   String toS() {
-    return this.toString().split('.').last;
+    return toString().split('.').last;
   }
 }
 
@@ -63,11 +63,11 @@ class CmdHistoryEntry implements IsJsonSerializable {
       required this.cmd,
       int? createdAt,
       this.duration,
-      this.result: CmdResult.unknown})
-      : id = id ?? new ObjectId().toString(),
+      this.result = CmdResult.unknown})
+      : id = id ?? ObjectId().toString(),
         invDir = invDir ?? "",
         createdAt = createdAt ?? DateTime.now().millisecond,
-        this.date = createdAt != null
+        date = createdAt != null
             ? DateTime.fromMillisecondsSinceEpoch(createdAt)
             : DateTime.now() {
     if (cmd.type.isDeploy) {
@@ -75,14 +75,16 @@ class CmdHistoryEntry implements IsJsonSerializable {
         parsedCmd = PreDeployCmd.fromJson(cmd.properties);
       } else if (cmd.type == CmdType.postDeploy) {
         parsedCmd = PostDeployCmd.fromJson(cmd.properties);
-      } else
+      } else {
         /* if (cmd.type == CmdType.deploy) { */
         parsedCmd = DeployCmd.fromJson(cmd.properties);
+      }
     }
   }
 
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryEntryFromJson(json);
+  @override
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
 
   DeployCmd? get deployCmd {

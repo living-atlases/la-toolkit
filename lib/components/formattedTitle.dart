@@ -10,14 +10,15 @@ class FormattedTitle extends StatelessWidget {
   final double? fontSize;
   final Color? color;
 
-  FormattedTitle(
-      {required this.title, this.fontSize, this.color, this.subtitle});
+  const FormattedTitle(
+      {Key? key, required this.title, this.fontSize, this.color, this.subtitle})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
         contentPadding: EdgeInsets.zero,
-        title: Text("${StringUtils.capitalize(title)}",
+        title: Text(StringUtils.capitalize(title),
             style: GoogleFonts.signika(
                 textStyle: TextStyle(
                     color: color ?? LAColorTheme.laPalette.shade500,

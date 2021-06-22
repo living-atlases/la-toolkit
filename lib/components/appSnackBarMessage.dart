@@ -20,7 +20,7 @@ class AppSnackBarMessage {
 
   factory AppSnackBarMessage.ok(String message) => AppSnackBarMessage(
       message,
-      Duration(days: 365),
+      const Duration(days: 365),
       SnackBarAction(
         label: 'OK',
         onPressed: () {},

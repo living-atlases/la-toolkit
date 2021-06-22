@@ -123,20 +123,23 @@ void main() {
     LAProject testProjectOther = testProject.copyWith();
 
     expect(
-        ListEquality().equals(testProject.services, testProjectOther.services),
+        const ListEquality()
+            .equals(testProject.services, testProjectOther.services),
         equals(true));
     expect(
-        MapEquality().equals(testProject.getServerServicesForTest(),
+        const MapEquality().equals(testProject.getServerServicesForTest(),
             testProjectOther.getServerServicesForTest()),
         equals(true));
     expect(
         testProject.mapBoundsFstPoint == testProjectOther.mapBoundsFstPoint &&
             testProject.mapBoundsSndPoint == testProjectOther.mapBoundsSndPoint,
         equals(true));
-    expect(ListEquality().equals(testProject.servers, testProjectOther.servers),
+    expect(
+        const ListEquality()
+            .equals(testProject.servers, testProjectOther.servers),
         equals(true));
     expect(
-        ListEquality()
+        const ListEquality()
             .equals(testProject.variables, testProjectOther.variables),
         equals(true));
     expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
@@ -158,10 +161,11 @@ void main() {
     expect(testProjectCopy.getServerServicesForTest().length, equals(1));
     expect(testProjectCopy.servers.length, equals(1));
     expect(
-        ListEquality().equals(testProject.services, testProjectCopy.services),
+        const ListEquality()
+            .equals(testProject.services, testProjectCopy.services),
         equals(true));
     expect(
-        DeepCollectionEquality.unordered().equals(
+        const DeepCollectionEquality.unordered().equals(
             testProject.getServerServicesForTest(),
             testProjectCopy.getServerServicesForTest()),
         equals(true));
@@ -175,14 +179,16 @@ void main() {
     expect(testProject.servers == testProjectCopy.servers, equals(false));
     expect(testProjectCopy.getServerServicesForTest().length, equals(1));
     expect(
-        MapEquality().equals(testProject.getServerServicesForTest(),
+        const MapEquality().equals(testProject.getServerServicesForTest(),
             testProjectCopy.getServerServicesForTest()),
         equals(false));
     expect(
         testProject.mapBoundsFstPoint == testProjectCopy.mapBoundsFstPoint &&
             testProject.mapBoundsSndPoint == testProjectCopy.mapBoundsSndPoint,
         equals(true));
-    expect(ListEquality().equals(testProject.servers, testProjectCopy.servers),
+    expect(
+        const ListEquality()
+            .equals(testProject.servers, testProjectCopy.servers),
         equals(false));
     expect(testProject.hashCode == testProjectCopy.hashCode, equals(false));
     expect(testProject == testProjectCopy, equals(false));
@@ -208,7 +214,7 @@ void main() {
     print(testProject.services);
     print(testProject.getServiceE(LAServiceName.collectory)); */
 
-    expect(testProject.getHostname(LAServiceName.regions.toS()).length == 0,
+    expect(testProject.getHostname(LAServiceName.regions.toS()).isEmpty,
         equals(true));
 
     testProject
@@ -247,7 +253,7 @@ void main() {
     vm2.sshKey = SshKey(name: "k2", desc: "", encrypted: false);
     vm3.sshKey = SshKey(name: "k3", desc: "", encrypted: false);
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
-    expect(testProject.getServicesNameListInUse().length > 0, equals(true));
+    expect(testProject.getServicesNameListInUse().isNotEmpty, equals(true));
 
     print(testProject.getServicesNameListInUse().length);
     print(testProject.getServicesAssignedToServers().length);
@@ -642,7 +648,7 @@ void main() {
   }
 }    
 ''';
-    var p = new LAProject.import(yoRcJson: yoRcJson);
+    var p = LAProject.import(yoRcJson: yoRcJson);
     expect(p.longName, equals('Portal de Datos de GBIF.ES'));
     expect(p.shortName, equals('GBIF.ES'));
     expect(p.domain, equals('gbif.es'));
@@ -651,9 +657,10 @@ void main() {
         .where((s) => s.nameInt != LAServiceName.sds.toS())
         .toList()
         .forEach((service) {
-      if (![sds].contains(service.nameInt))
+      if (![sds].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
+      }
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));
         expect(p.getService(service.nameInt).iniPath, equals(''));
@@ -669,24 +676,26 @@ void main() {
     expect(p.getService(solr).fullUrl(p.useSSL, p.domain),
         equals('https://index.gbif.es'));
 
-    p = new LAProject.import(yoRcJson: yoRcJsonCa);
+    p = LAProject.import(yoRcJson: yoRcJsonCa);
     expect(p.longName, equals('Canadensys'));
     expect(p.shortName, equals('Canadensys'));
     expect(p.domain, equals('canadensys.net'));
     expect(p.useSSL, equals(true));
-    expect(p.dirName != null && p.dirName!.length > 0, equals(true));
-    LAServiceDesc.list.forEach((service) {
+    expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
+    for (var service in LAServiceDesc.list) {
       // print("${service.nameInt}");
-      if (![lists, webapi, doi, bie, regions, sds].contains(service.nameInt))
+      if (![lists, webapi, doi, bie, regions, sds].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
+      }
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));
         if (![collectory, alaHub, biocacheService, alerts, images]
-            .contains(service.nameInt))
+            .contains(service.nameInt)) {
           expect(p.getService(service.nameInt).iniPath, equals(''));
+        }
       }
-    });
+    }
 
     expect(p.getService(doi).use, equals(false));
     expect(p.getService(collectory).iniPath, equals('collections'));
@@ -706,25 +715,25 @@ void main() {
     expect(p.getHostname(regions), equals([]));
     // Missing branding url etc
 
-    p = new LAProject.import(yoRcJson: yoRcJsonAt);
+    p = LAProject.import(yoRcJson: yoRcJsonAt);
     expect(p.getService(doi).use, equals(false));
     expect(p.getService(alerts).use, equals(false));
     expect(p.getServicesNameListNotInUse().contains(doi), equals(true));
     expect(p.getServicesNameListInUse().contains(doi), equals(false));
     expect(p.getServicesNameListNotInUse().contains(alerts), equals(true));
     expect(p.getServicesNameListInUse().contains(alerts), equals(false));
-    p.servers.forEach((server) {
+    for (LAServer server in p.servers) {
       expect(p.getServerServicesForTest()[server.id]!.contains(doi),
           equals(false));
       expect(p.getServerServicesForTest()[server.id]!.contains(alerts),
           equals(false));
-    });
+    }
     expect(
         p.servers.length == p.getServerServicesForTest().length, equals(true));
     expect(p.getService(collectory).suburl, equals('collectory'));
-    expect(p.prodServices.length > 0, equals(true));
-    expect(p.serverServices.length > 0, equals(true));
-    expect(p.serviceDeploys.length > 0, equals(true));
+    expect(p.prodServices.isNotEmpty, equals(true));
+    expect(p.serverServices.isNotEmpty, equals(true));
+    expect(p.serviceDeploys.isNotEmpty, equals(true));
   });
 
   test('Test empty project creation toString should not fail', () {
@@ -746,16 +755,17 @@ void main() {
     List<LAProject> templates = await LAProject.importTemplates(
         "../../assets/la-toolkit-templates.json");
     expect(templates.length, equals(5));
-    templates.forEach((LAProject p) {
-      expect(p.servers.length > 0, equals(true));
-      expect(p.services.length > 0, equals(true));
-      expect(p.serverServices.length > 0, equals(true));
-      expect(p.serviceDeploys.length > 0, equals(true));
-      expect(p.toString().length > 0, equals(true));
-      expect(p.variables.length > 0, equals(true));
-      if (p.shortName != 'ALA')
+    for (LAProject p in templates) {
+      expect(p.servers.isNotEmpty, equals(true));
+      expect(p.services.isNotEmpty, equals(true));
+      expect(p.serverServices.isNotEmpty, equals(true));
+      expect(p.serviceDeploys.isNotEmpty, equals(true));
+      expect(p.toString().isNotEmpty, equals(true));
+      expect(p.variables.isNotEmpty, equals(true));
+      if (p.shortName != 'ALA') {
         // The default value
         expect(p.mapBoundsFstPoint.latitude != -44, equals(true));
-    });
+      }
+    }
   });
 }

@@ -24,6 +24,9 @@ import 'models/laProject.dart';
 
 class DeployPage extends StatefulWidget {
   static const routeName = "deploy";
+
+  const DeployPage({Key? key}) : super(key: key);
+
   @override
   _DeployPageState createState() => _DeployPageState();
 }
@@ -57,9 +60,9 @@ class _DeployPageState extends State<DeployPage> {
             ? null
             : () => vm.onDeployProject(vm.project, cmd);
         final bool advanced = cmd.advanced ||
-            cmd.tags.length > 0 ||
-            cmd.limitToServers.length > 0 ||
-            cmd.skipTags.length > 0 ||
+            cmd.tags.isNotEmpty ||
+            cmd.limitToServers.isNotEmpty ||
+            cmd.skipTags.isNotEmpty ||
             cmd.onlyProperties;
         return Title(
             title: "${vm.project.shortName} Deployment",
@@ -78,9 +81,8 @@ class _DeployPageState extends State<DeployPage> {
                     actions: [
                       TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                       IconButton(
-                          icon: Tooltip(
-                              child:
-                                  const Icon(Icons.close, color: Colors.white),
+                          icon: const Tooltip(
+                              child: Icon(Icons.close, color: Colors.white),
                               message: "Cancel the deploy"),
                           onPressed: () => vm.onCancel(vm.project)),
                     ]),
@@ -89,7 +91,7 @@ class _DeployPageState extends State<DeployPage> {
                         (SizeChangedLayoutNotification notification) {
                       debouncer.run(() {
                         setState(() {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               duration: Duration(seconds: 5),
                               content: Text(
                                   "Resizing this window will break the ansible terminal. Please do not resize this window during deploying until we found a fix.")));
@@ -112,8 +114,8 @@ class _DeployPageState extends State<DeployPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          SizedBox(height: 20),
-                                          ListTile(
+                                          const SizedBox(height: 20),
+                                          const ListTile(
                                               title: Text(
                                                   "Select which services you want to deploy:",
                                                   style:
@@ -184,7 +186,7 @@ class _DeployPageState extends State<DeployPage> {
                                                     setState(() => cmd
                                                         .skipTags = skipTags)),
                                           if (advanced)
-                                            TipsCard(
+                                            const TipsCard(
                                                 text:
                                                     '''Ansible tasks are marked with tags, and then when you run it you can use `--tags` or `--skip-tags` to execute or skip a subset of these tasks.''',
                                                 margin: EdgeInsets.zero),

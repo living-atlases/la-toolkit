@@ -13,7 +13,8 @@ class RenameServerIcon extends StatelessWidget {
   final Function(LAProject) onRename;
   final LAServer server;
 
-  RenameServerIcon(this.project, this.server, this.onRename);
+  const RenameServerIcon(this.project, this.server, this.onRename, {Key? key})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Tooltip(
@@ -37,10 +38,10 @@ class RenameServerIcon extends StatelessWidget {
     String? name;
     Alert(
         context: context,
-        closeIcon: Icon(Icons.close),
-        image: Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
+        closeIcon: const Icon(Icons.close),
+        image: const Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
         title: "Server rename",
-        style: AlertStyle(
+        style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
           children: <Widget>[
@@ -55,7 +56,7 @@ class RenameServerIcon extends StatelessWidget {
                 onChanged: (value) {
                   name = value;
                 }),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
           ],
@@ -73,7 +74,7 @@ class RenameServerIcon extends StatelessWidget {
                 }
               }
             },
-            child: Text(
+            child: const Text(
               "RENAME",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),

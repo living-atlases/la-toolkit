@@ -3,6 +3,7 @@ import 'package:la_toolkit/utils/regexp.dart';
 
 import 'laProject.dart';
 
+// ignore: constant_identifier_names
 enum LAVariableType { String, int, double, bool }
 
 enum LAVariableSubcategory { org, cache, downloads, apikeys, otherKeys, ssl }

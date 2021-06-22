@@ -4,17 +4,18 @@ import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'components/defDivider.dart';
-import 'components/selectorPlayground.dart';
 import 'models/appState.dart';
 
 class SandboxPage extends StatefulWidget {
   static const routeName = "sandbox";
+
+  const SandboxPage({Key? key}) : super(key: key);
   @override
   _SandboxPageState createState() => _SandboxPageState();
 }
 
 class _SandboxPageState extends State<SandboxPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<LatLng> area = []..length = 5;
   bool firstPoint = true;
 
@@ -26,9 +27,9 @@ class _SandboxPageState extends State<SandboxPage> {
       );
     }, builder: (BuildContext context, _SandboxViewModel vm) {
       List<DropdownMenuItem<String>> releases = [];
-      vm.state.alaInstallReleases.forEach((element) =>
-          releases.add(DropdownMenuItem(child: Text(element), value: element)));
-
+      for (var element in vm.state.alaInstallReleases) {
+        releases.add(DropdownMenuItem(child: Text(element), value: element));
+      }
       return Scaffold(
           key: _scaffoldKey,
           // backgroundColor: Colors.white,
@@ -37,24 +38,22 @@ class _SandboxPageState extends State<SandboxPage> {
             context: context,
             title: 'Sandbox',
             showBack: true,
-            actions: [],
+            actions: const [],
           ),
           body: Column(
             children: [
-              Container(
-                child: Column(
-                  children: [
-                    // FilePickerDemo(),
-                    //  BrandingDialog(),
-                  ],
-                ),
+              Column(
+                children: const [
+                  // FilePickerDemo(),
+                  //  BrandingDialog(),
+                ],
               ),
               Column(
                 children: <Widget>[
                   const SizedBox(height: 7),
-                  DefDivider(),
+                  const DefDivider(),
                   // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
-                  BrandingSelector(),
+                  // BrandingSelector(),
                   const SizedBox(height: 7),
                   Container(),
                 ],

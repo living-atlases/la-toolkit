@@ -17,6 +17,8 @@ import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 
 class LAProjectsList extends StatelessWidget {
+  const LAProjectsList({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectsPageViewModel>(
@@ -43,10 +45,10 @@ class LAProjectsList extends StatelessWidget {
         builder: (BuildContext context, _ProjectsPageViewModel vm) {
           int num = vm.state.projects.length;
           return num > 0
-              ? new ScrollPanel(
+              ? ScrollPanel(
                   child: Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 80, vertical: 20),
                       child: Column(children: <Widget>[
                         AnimationLimiter(
                             child: ListView.builder(
@@ -83,7 +85,7 @@ class LAProjectsList extends StatelessWidget {
                           child: ElevatedButton.icon(
                               onPressed: () => vm.onCreateProject(),
                               style: TextButton.styleFrom(
-                                  minimumSize: Size(100, 50),
+                                  minimumSize: const Size(100, 50),
                                   primary: Colors.white,
                                   // padding: const EdgeInsets.all(8.0),
                                   shape: RoundedRectangleBorder(
@@ -93,7 +95,7 @@ class LAProjectsList extends StatelessWidget {
                               icon: const Icon(Icons.add_circle_outline,
                                   size: 30),
                               label: const Text("Create a New LA Project",
-                                  style: const TextStyle(fontSize: 18))))
+                                  style: TextStyle(fontSize: 18))))
                     ]));
         });
   }
@@ -103,93 +105,92 @@ class ProjectCard extends StatelessWidget {
   final LAProject project;
   final void Function() onOpen;
   final void Function() onDelete;
-  ProjectCard(this.project, this.onOpen, this.onDelete);
+  const ProjectCard(this.project, this.onOpen, this.onDelete, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 40.0),
-      child: Container(
-        child: new Stack(
-          children: <Widget>[
-            MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                    onTap: () => onOpen(),
-                    child: Card(
-                      child: Container(
-                        height: 220.0,
-                        margin: EdgeInsets.fromLTRB(30, 12, 20, 30),
-                        child: Column(
-                            // crossAxisAlignment: CrossAxisAlignment.stretch,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  // LONG NAME
-                                  title: FormattedTitle(
-                                      title: project.longName,
-                                      fontSize: 22,
-                                      color: LAColorTheme.inactive),
-                                  trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
+      child: Stack(
+        children: <Widget>[
+          MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                  onTap: () => onOpen(),
+                  child: Card(
+                    child: Container(
+                      height: 220.0,
+                      margin: const EdgeInsets.fromLTRB(30, 12, 20, 30),
+                      child: Column(
+                          // crossAxisAlignment: CrossAxisAlignment.stretch,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                // LONG NAME
+                                title: FormattedTitle(
+                                    title: project.longName,
+                                    fontSize: 22,
+                                    color: LAColorTheme.inactive),
+                                trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Tooltip(
+                                          message: "Delete this project",
+                                          child: IconButton(
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.grey,
+                                            ),
+                                            onPressed: () => !AppUtils.isDev()
+                                                ? UiUtils.showAlertDialog(
+                                                    context,
+                                                    () => onDelete(),
+                                                    () => {})
+                                                : onDelete(),
+                                          )),
+                                      const SizedBox(width: 20),
+                                      Tooltip(
+                                          message: "Configure this project",
+                                          child: IconButton(
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
+                                            icon: const Icon(
+                                              Icons.settings,
+                                              color: Colors.grey,
+                                            ),
+                                            onPressed: () => onOpen(),
+                                          ))
+                                    ])),
+                            Text(
+                              // SHORT NAME
+                              project.shortName,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            SelectableLinkify(
+                                linkStyle: const TextStyle(
+                                    color: LAColorTheme.laPalette),
+                                options: const LinkifyOptions(humanize: false),
+                                text:
+                                    "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
+                                onOpen: (link) async => await launch(link.url)),
+                            ButtonBar(
+                                alignment: MainAxisAlignment.center,
+                                buttonPadding:
+                                    const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                children: <Widget>[
+                                  Wrap(
+                                      direction: Axis.horizontal,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.start,
                                       children: [
-                                        Tooltip(
-                                            message: "Delete this project",
-                                            child: IconButton(
-                                              padding: EdgeInsets.zero,
-                                              constraints: BoxConstraints(),
-                                              icon: Icon(
-                                                Icons.delete,
-                                                color: Colors.grey,
-                                              ),
-                                              onPressed: () => !AppUtils.isDev()
-                                                  ? UiUtils.showAlertDialog(
-                                                      context,
-                                                      () => onDelete(),
-                                                      () => {})
-                                                  : onDelete(),
-                                            )),
-                                        SizedBox(width: 20),
-                                        Tooltip(
-                                            message: "Configure this project",
-                                            child: IconButton(
-                                              padding: EdgeInsets.zero,
-                                              constraints: BoxConstraints(),
-                                              icon: Icon(
-                                                Icons.settings,
-                                                color: Colors.grey,
-                                              ),
-                                              onPressed: () => onOpen(),
-                                            ))
-                                      ])),
-                              Text(
-                                // SHORT NAME
-                                project.shortName,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              SelectableLinkify(
-                                  linkStyle:
-                                      TextStyle(color: LAColorTheme.laPalette),
-                                  options: LinkifyOptions(humanize: false),
-                                  text:
-                                      "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
-                                  onOpen: (link) async =>
-                                      await launch(link.url)),
-                              ButtonBar(
-                                  alignment: MainAxisAlignment.center,
-                                  buttonPadding:
-                                      EdgeInsets.fromLTRB(0, 5, 0, 0),
-                                  children: <Widget>[
-                                    Wrap(
-                                        direction: Axis.horizontal,
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.start,
-                                        children: [
-                                          LAProjectTimeline(id: project.id),
-                                          // Text('Configured: '),
-                                          /* LinearPercentIndicator(
+                                        LAProjectTimeline(id: project.id),
+                                        // Text('Configured: '),
+                                        /* LinearPercentIndicator(
                                           width: 300,
                                           // MediaQuery.of(context).size.width - 50,
                                           animation: true,
@@ -202,32 +203,31 @@ class ProjectCard extends StatelessWidget {
                                               LinearStrokeCap.roundAll,
                                           progressColor: LAColorTheme
                                               .laThemeData.primaryColorLight), */
-                                        ]),
-                                  ]),
-                            ]),
-                      ),
-                    ))),
-            FractionalTranslation(
-              translation: Offset(0.0, -0.4),
-              child: Align(
-                child: CircleAvatar(
-                  radius: 25.0,
-                  child: project.getVariableValue("favicon_url") != null &&
-                          !AppUtils.isDemo()
-                      ? ImageIcon(
-                          NetworkImage(AppUtils.proxyImg(
-                              project.getVariableValue("favicon_url"))),
-                          color: LAColorTheme.laPalette,
-                          size: 35)
-                      : Text(project.shortName.length > 3
-                          ? project.shortName.substring(0, 1)
-                          : project.shortName),
-                ),
-                alignment: FractionalOffset(0.5, 0.0),
+                                      ]),
+                                ]),
+                          ]),
+                    ),
+                  ))),
+          FractionalTranslation(
+            translation: const Offset(0.0, -0.4),
+            child: Align(
+              child: CircleAvatar(
+                radius: 25.0,
+                child: project.getVariableValue("favicon_url") != null &&
+                        !AppUtils.isDemo()
+                    ? ImageIcon(
+                        NetworkImage(AppUtils.proxyImg(
+                            project.getVariableValue("favicon_url"))),
+                        color: LAColorTheme.laPalette,
+                        size: 35)
+                    : Text(project.shortName.length > 3
+                        ? project.shortName.substring(0, 1)
+                        : project.shortName),
               ),
+              alignment: const FractionalOffset(0.5, 0.0),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

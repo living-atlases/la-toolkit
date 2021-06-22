@@ -20,22 +20,24 @@ class TermCommandDesc extends StatelessWidget {
     String cmd = cmdHistoryDetails.cmd!.rawCmd;
     Widget? subtitle;
     const subColor = Colors.grey;
-    if (cmdHistoryDetails.cmd!.invDir != "")
+    if (cmdHistoryDetails.cmd!.invDir != "") {
       subtitle = RichText(
           overflow: TextOverflow.visible,
           textAlign: TextAlign.left,
           softWrap: true,
           text: TextSpan(children: <TextSpan>[
-            TextSpan(
+            const TextSpan(
                 text: 'Executed in directory: ',
-                style: const TextStyle(color: subColor)),
+                style: TextStyle(color: subColor)),
             TextSpan(
                 text: cmdHistoryDetails.cmd!.invDir,
                 style: GoogleFonts.robotoMono(color: subColor)),
             // TextSpan(text: ""),
           ]));
+    }
     return ListTile(
-        leading: Icon(Mdi.console, size: 36, color: LAColorTheme.laPalette),
+        leading:
+            const Icon(Mdi.console, size: 36, color: LAColorTheme.laPalette),
         title: MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
@@ -47,7 +49,7 @@ class TermCommandDesc extends StatelessWidget {
         trailing: Tooltip(
             message: "Press to copy the command",
             child: IconButton(
-              icon: Icon(Icons.copy),
+              icon: const Icon(Icons.copy),
               onPressed: () => onTap(cmd, context),
             )));
   }

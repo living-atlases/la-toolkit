@@ -9,24 +9,26 @@ class CheckResultCard extends StatelessWidget {
   final String? actionText;
   final VoidCallback? action;
 
-  CheckResultCard(
-      {required this.status,
+  const CheckResultCard(
+      {Key? key,
+      required this.status,
       required this.title,
       required this.subtitle,
       this.actionText,
-      this.action});
+      this.action})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.fromLTRB(5, 10, 0, 0),
+        padding: const EdgeInsets.fromLTRB(5, 10, 0, 0),
         child: Card(
             elevation: 2,
             color: status.backColor,
             child: Container(
-                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: ListTile(
-                  contentPadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  contentPadding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                   leading: Icon(status.icon, color: status.color),
                   trailing: actionText != null
                       ? TextButton(

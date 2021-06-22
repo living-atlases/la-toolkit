@@ -12,7 +12,7 @@ import 'embedWebView.dart';
 
 class TermDialog {
   static show(context,
-      {title: 'Console',
+      {title = 'Console',
       required int port,
       required int pid,
       VoidCallback? onClose}) async {
@@ -27,13 +27,13 @@ class TermDialog {
         builder: (context) => Material(
               child: Scaffold(
                 appBar: AppBar(
-                  leading: Icon(
+                  leading: const Icon(
                     Mdi.console,
                     color: Colors.white,
                   ),
                   title: Text(
                     title,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   actions: [
                     Tooltip(
@@ -85,7 +85,7 @@ class TermDialog {
   static ListTile drawerItem(BuildContext context) {
     return ListTile(
       leading: const Icon(Mdi.console),
-      title: Text('Console'),
+      title: const Text('Console'),
       onTap: () {
         openTerm(context);
       },
@@ -122,7 +122,7 @@ class FloatingModal extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(100, 100, 100, 0),
+        padding: const EdgeInsets.fromLTRB(100, 100, 100, 0),
         child: Material(
           color: backgroundColor,
           clipBehavior: Clip.antiAlias,

@@ -21,6 +21,8 @@ class LogsHistoryPage extends StatelessWidget {
   static const routeName = "logs";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  LogsHistoryPage({Key? key}) : super(key: key);
+
   // https://sailsjs.com/documentation/reference/blueprint-api/find-where
   // Pagination
   // http://127.0.0.1:1337/CmdHistoryEntry?populate=cmd&where={%22projectId%22:%22609a1d0756d6b525227ce1e6%22}&sort=createdAt%20DESC
@@ -66,11 +68,11 @@ class LogsHistoryPage extends StatelessWidget {
                     title: "Logs History",
                     showLaIcon: false,
                     showBack: true,
-                    actions: []),
-                body: new ScrollPanel(
+                    actions: const []),
+                body: ScrollPanel(
                     child: Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 80, vertical: 20),
                         child: Column(children: <Widget>[
                           ListView.builder(
                               scrollDirection: Axis.vertical,
@@ -105,7 +107,10 @@ class LogItem extends StatelessWidget {
   final VoidCallback onDelete;
   final Function(String desc) onNoDesc;
 
-  LogItem(this.log, this.onTap, this.onRepeat, this.onDelete, this.onNoDesc);
+  const LogItem(
+      this.log, this.onTap, this.onRepeat, this.onDelete, this.onNoDesc,
+      {Key? key})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     // print(log.deployCmd.toStringClassic());
@@ -113,8 +118,9 @@ class LogItem extends StatelessWidget {
     String desc = "TODO - OTHER CMD TYPES";
     if (log.cmd.type.isDeploy) {
       desc = noDesc ? log.deployCmd!.desc : log.desc!;
-      if (noDesc)
+      if (noDesc) {
         onNoDesc(desc); // Update the backend (not done in db migration)
+      }
       desc = log.deployCmd!.desc;
     }
 
@@ -138,13 +144,13 @@ class LogItem extends StatelessWidget {
             Tooltip(
                 message: "Delete this log",
                 child: IconButton(
-                  icon: Icon(Icons.delete, color: LAColorTheme.inactive),
+                  icon: const Icon(Icons.delete, color: LAColorTheme.inactive),
                   onPressed: () => onDelete(),
                 )), // icon-2
           ],
         ),
         leading: Padding(
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
             child: StatusIcon(log.result)));
   }
 }

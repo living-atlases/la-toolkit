@@ -13,12 +13,14 @@ class AdminIconButton extends StatelessWidget {
   final bool min;
 
   const AdminIconButton(
-      {required this.url,
+      {Key? key,
+      required this.url,
       this.tooltip,
-      this.alaAdmin: false,
+      this.alaAdmin = false,
       this.min = false,
       this.color,
-      this.size});
+      this.size})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     var icon =

@@ -9,8 +9,9 @@ import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
 class ServersCardList extends StatelessWidget {
-  ServersCardList({Key? key}) : super(key: key);
+  const ServersCardList({Key? key}) : super(key: key);
 
+  @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersCardListViewModel>(
         distinct: true,
@@ -35,9 +36,10 @@ class ServersCardList extends StatelessWidget {
                         elevation: CardConstants.defaultElevation,
                         shape: CardConstants.defaultShape,
                         child: Container(
-                            margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                            margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                             child: ListTile(
-                                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(0, 0, 0, 0),
                                 title: Text(_project.servers[index].name),
                                 subtitle: Text(LAService.servicesForHumans(
                                     _project.getServerServicesFull(

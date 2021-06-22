@@ -46,6 +46,7 @@ class PreDeployCmd extends DeployCmd {
 
   factory PreDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PreDeployCmdFromJson(json);
+  @override
   Map<String, dynamic> toJson() => _$PreDeployCmdToJson(this);
 
   @override

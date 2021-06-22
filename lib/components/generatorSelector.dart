@@ -6,7 +6,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/actions.dart';
 
 class GeneratorSelector extends StatefulWidget {
-  GeneratorSelector({Key? key}) : super(key: key);
+  const GeneratorSelector({Key? key}) : super(key: key);
 
   @override
   _GeneratorSelectorState createState() => _GeneratorSelectorState();

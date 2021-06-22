@@ -18,7 +18,7 @@ enum LAProjectViewStatus { view, edit, tune, create }
 
 extension ParseToString on LAProjectViewStatus {
   String toS() {
-    return this.toString().split('.').last;
+    return toString().split('.').last;
   }
 }
 
@@ -123,11 +123,11 @@ class AppState {
       pkgInfo.hashCode ^
       backendVersion.hashCode ^
       loading.hashCode ^
-      ListEquality().hash(appSnackBarMessages) ^
-      ListEquality().hash(projects) ^
-      ListEquality().hash(alaInstallReleases) ^
-      ListEquality().hash(generatorReleases) ^
-      ListEquality().hash(sshKeys);
+      const ListEquality().hash(appSnackBarMessages) ^
+      const ListEquality().hash(projects) ^
+      const ListEquality().hash(alaInstallReleases) ^
+      const ListEquality().hash(generatorReleases) ^
+      const ListEquality().hash(sshKeys);
 
   static LAProjectViewStatus statusFromString(String s) {
     switch (s) {

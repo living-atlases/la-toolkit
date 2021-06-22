@@ -22,7 +22,7 @@ class HostsServicesChecks {
 
   void setUrls(LAServiceDeploy sd, List<String> urls, String name) {
     Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
-    urls.forEach((url) {
+    for (String url in urls) {
       HostServiceCheck ch = hChecks.values
           .firstWhere((ch) => ch.type == ServiceCheckType.url && ch.args == url,
               orElse: () {
@@ -34,14 +34,14 @@ class HostsServicesChecks {
       ch.serviceDeploys.add(sd.id);
       ch.services.add(sd.serviceId);
       hChecks[ch.id] = ch;
-    });
+    }
   }
 
   void add(LAServiceDeploy sd, List<BasicService>? deps, String name) {
     Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
     if (deps != null) {
       BasicService.toCheck(deps).forEach((dep) {
-        dep.tcp.forEach((tcp) {
+        for (num tcp in dep.tcp) {
           HostServiceCheck ch = hChecks.values.firstWhere(
               (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
               orElse: () {
@@ -53,8 +53,8 @@ class HostsServicesChecks {
           ch.serviceDeploys.add(sd.id);
           ch.services.add(sd.serviceId);
           hChecks[ch.id] = ch;
-        });
-        dep.udp.forEach((udp) {
+        }
+        for (num udp in dep.udp) {
           HostServiceCheck ch = hChecks.values.firstWhere(
               (ch) => ch.type == ServiceCheckType.udp && ch.args == "$udp",
               orElse: () {
@@ -66,7 +66,7 @@ class HostsServicesChecks {
           ch.serviceDeploys.add(sd.id);
           ch.services.add(sd.serviceId);
           hChecks[ch.id] = ch;
-        });
+        }
         HostServiceCheck ch = hChecks.values.firstWhere(
             (ch) => ch.type == ServiceCheckType.other && ch.args == dep.name,
             orElse: () {
@@ -98,10 +98,10 @@ class HostsServicesChecks {
       identical(this, other) ||
       other is HostsServicesChecks &&
           runtimeType == other.runtimeType &&
-          DeepCollectionEquality.unordered().equals(checks, other.checks);
+          const DeepCollectionEquality.unordered().equals(checks, other.checks);
 
   @override
-  int get hashCode => DeepCollectionEquality.unordered().hash(checks);
+  int get hashCode => const DeepCollectionEquality.unordered().hash(checks);
 }
 
 @JsonSerializable(createToJson: false)
@@ -136,18 +136,20 @@ class HostServicesChecks {
       identical(this, other) ||
       other is HostServicesChecks &&
           runtimeType == other.runtimeType &&
-          DeepCollectionEquality.unordered().equals(tcpPorts, other.tcpPorts) &&
-          DeepCollectionEquality.unordered().equals(udpPorts, other.udpPorts) &&
-          DeepCollectionEquality.unordered()
+          const DeepCollectionEquality.unordered()
+              .equals(tcpPorts, other.tcpPorts) &&
+          const DeepCollectionEquality.unordered()
+              .equals(udpPorts, other.udpPorts) &&
+          const DeepCollectionEquality.unordered()
               .equals(otherChecks, other.otherChecks) &&
           listEquals(urls, other.urls);
 
   @override
   int get hashCode =>
-      DeepCollectionEquality.unordered().hash(tcpPorts) ^
-      DeepCollectionEquality.unordered().hash(udpPorts) ^
-      DeepCollectionEquality.unordered().hash(otherChecks) ^
-      ListEquality().hash(urls);
+      const DeepCollectionEquality.unordered().hash(tcpPorts) ^
+      const DeepCollectionEquality.unordered().hash(udpPorts) ^
+      const DeepCollectionEquality.unordered().hash(otherChecks) ^
+      const ListEquality().hash(urls);
 
   void setUrls(List<String> urls) {
     this.urls.addAll(urls);

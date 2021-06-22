@@ -29,17 +29,17 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
       required this.service,
       this.value,
       required this.projectId})
-      : id = id ?? new ObjectId().toString();
+      : id = id ?? ObjectId().toString();
 
-  LAVariable.fromDesc(LAVariableDesc desc, String projectId)
-      : id = new ObjectId().toString(),
+  LAVariable.fromDesc(LAVariableDesc desc, this.projectId)
+      : id = ObjectId().toString(),
         nameInt = desc.nameInt,
         service = desc.service,
-        status = LAVariableStatus.undeployed,
-        projectId = projectId;
+        status = LAVariableStatus.undeployed;
 
   factory LAVariable.fromJson(Map<String, dynamic> json) =>
       _$LAVariableFromJson(json);
+  @override
   Map<String, dynamic> toJson() => _$LAVariableToJson(this);
 
   @override

@@ -9,16 +9,17 @@ import 'laIcon.dart';
 
 class LAAppBar extends AppBar {
   LAAppBar(
-      {required BuildContext context,
+      {Key? key,
+      required BuildContext context,
       required String title,
       String? projectIcon,
-      bool showLaIcon: false,
+      bool showLaIcon = false,
       NamedBeamLocation? backLocation,
-      bool showBack: false,
+      bool showBack = false,
       List<Widget>? actions,
       Widget? leading,
       IconData? titleIcon,
-      bool loading: false,
+      bool loading = false,
       VoidCallback? onBack})
       : super(
             /*
@@ -35,6 +36,7 @@ class LAAppBar extends AppBar {
                 );
               },
             ),*/
+            key: key,
             toolbarHeight: kToolbarHeight * 1.2,
             actions: actions == null
                 ? List<Widget>.empty(growable: true)
@@ -44,9 +46,9 @@ class LAAppBar extends AppBar {
                     ],
             leading: leading,
             bottom: PreferredSize(
-                preferredSize: Size(double.infinity, 1.0),
+                preferredSize: const Size(double.infinity, 1.0),
                 child: loading
-                    ? LinearProgressIndicator(
+                    ? const LinearProgressIndicator(
                         minHeight: 6,
                         backgroundColor: LAColorTheme.laPaletteAccent,
                       )
@@ -57,8 +59,8 @@ class LAAppBar extends AppBar {
                 if (showBack)
                   IconButton(
                       tooltip: "Back",
-                      icon:
-                          Icon(Icons.arrow_back, size: 28, color: Colors.black),
+                      icon: const Icon(Icons.arrow_back,
+                          size: 28, color: Colors.black),
                       onPressed: () {
                         if (backLocation != null) {
                           BeamerCond.of(context, backLocation);
@@ -74,7 +76,8 @@ class LAAppBar extends AppBar {
                 if (showLaIcon)
                   IconButton(
                       tooltip: "Homepage",
-                      icon: Icon(LAIcon.la, size: 34, color: Colors.white),
+                      icon:
+                          const Icon(LAIcon.la, size: 34, color: Colors.white),
                       onPressed: () {
                         BeamerCond.of(context, HomeLocation());
                       }),
@@ -82,18 +85,18 @@ class LAAppBar extends AppBar {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(children: [
                       if (projectIcon != null && !AppUtils.isDemo())
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                       if (projectIcon != null && !AppUtils.isDemo())
                         ImageIcon(NetworkImage(AppUtils.proxyImg(projectIcon)),
                             color: Colors.white, size: 26),
                       if (projectIcon != null && !AppUtils.isDemo())
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                       if (titleIcon != null)
                         Icon(titleIcon, size: 26, color: Colors.white),
-                      if (titleIcon != null) SizedBox(width: 8),
+                      if (titleIcon != null) const SizedBox(width: 8),
                       Text(title,
                           style: GoogleFonts.signika(
-                              textStyle: TextStyle(
+                              textStyle: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 26,
                                   fontWeight: FontWeight.w400)))

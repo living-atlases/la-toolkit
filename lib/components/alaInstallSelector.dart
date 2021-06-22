@@ -6,7 +6,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/actions.dart';
 
 class ALAInstallSelector extends StatefulWidget {
-  ALAInstallSelector({Key? key}) : super(key: key);
+  const ALAInstallSelector({Key? key}) : super(key: key);
 
   @override
   _ALAInstallSelectorState createState() => _ALAInstallSelectorState();

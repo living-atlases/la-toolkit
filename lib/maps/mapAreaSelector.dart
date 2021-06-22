@@ -12,7 +12,7 @@ import '../laTheme.dart';
 import 'dragmarker.dart';
 
 class MapAreaSelector extends StatefulWidget {
-  MapAreaSelector({Key? key}) : super(key: key);
+  const MapAreaSelector({Key? key}) : super(key: key);
 
   @override
   _MapAreaSelectorState createState() => _MapAreaSelectorState();
@@ -50,23 +50,25 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
               width: 80.0,
               height: 80.0,
               point: latLng!,
-              builder: (ctx) => Container(
-                child: new Icon(Icons.circle, size: 16, color: Colors.blueGrey),
-              ),
+              builder: (ctx) =>
+                  const Icon(Icons.circle, size: 16, color: Colors.blueGrey),
             );
           }).toList();
           List<LatLng> areaNN = [];
           List<LatLng> projectAreaNN = [];
-          if (projectArea[0] != null && projectArea[2] != null)
+          if (projectArea[0] != null && projectArea[2] != null) {
             projectAreaNN = projectArea.whereType<LatLng>().toList();
-          if (area[0] != null && area[2] != null)
+          }
+          if (area[0] != null && area[2] != null) {
             areaNN = area.whereType<LatLng>().toList();
+          }
+          // ignore: sized_box_for_whitespace
           return Container(
               height: 470, // size of collectory
               width: MediaQuery.of(context).size.width * 0.8,
               child: FlutterMap(
                 mapController: mapController,
-                options: new MapOptions(
+                options: MapOptions(
                     center: vm.currentProject!.getCenter(),
                     zoom: vm.currentProject!.mapZoom ?? 1.0,
                     /* center: LatLng(-28.2, 134),
@@ -130,8 +132,9 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                     lineWidth: 2,
                     rebuild: null,
                     //   rebuild: () {}, // new in nullsafety ??
-                    textStyle: TextStyle(color: Colors.blue, fontSize: 12),
-                    padding: EdgeInsets.all(10),
+                    textStyle:
+                        const TextStyle(color: Colors.blue, fontSize: 12),
+                    padding: const EdgeInsets.all(10),
                   ),
                   DragMarkerPluginOptions(markers: [
                     if (projectArea[0] != null && projectArea[2] != null)
@@ -161,9 +164,9 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
       point: LatLng(initialPoint.latitude, initialPoint.longitude),
       width: 80.0,
       height: 80.0,
-      offset: Offset(0.0, 0.0),
-      builder: (ctx) => Container(
-          child: Icon(Icons.circle, size: 20, color: LAColorTheme.laPalette)),
+      offset: const Offset(0.0, 0.0),
+      builder: (ctx) =>
+          const Icon(Icons.circle, size: 20, color: LAColorTheme.laPalette),
       onDragStart: (details, point) => print("Start point $point"),
       onDragEnd: (details, endPoint) {
         print("End point $endPoint");
@@ -186,8 +189,8 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
         print("on long press");
       },
       feedbackBuilder: (ctx) =>
-          Container(child: Icon(Icons.close, size: 45, color: Colors.orange)),
-      feedbackOffset: Offset(0.0, 0.0),
+          const Icon(Icons.close, size: 45, color: Colors.orange),
+      feedbackOffset: const Offset(0.0, 0.0),
       updateMapNearEdge: false,
       nearEdgeRatio: 1.0,
       nearEdgeSpeed: 1.0,
@@ -212,7 +215,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
     bounds.extend(area[3]!);
     mapController.fitBounds(
       bounds,
-      options: FitBoundsOptions(
+      options: const FitBoundsOptions(
         padding: EdgeInsets.all(40),
       ),
     );

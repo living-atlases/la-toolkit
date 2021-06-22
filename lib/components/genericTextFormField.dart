@@ -29,8 +29,9 @@ class GenericTextFormField extends StatefulWidget {
   final bool obscureText;
   final EdgeInsets? contentPadding;
 
-  GenericTextFormField(
-      {this.label,
+  const GenericTextFormField(
+      {Key? key,
+      this.label,
       this.hint,
       this.hintStyle,
       required this.initialValue,
@@ -51,7 +52,8 @@ class GenericTextFormField extends StatefulWidget {
       this.obscureText = false,
       this.keyboardType,
       this.deployed = false,
-      this.contentPadding});
+      this.contentPadding})
+      : super(key: key);
 
   @override
   _GenericTextFormFieldState createState() => _GenericTextFormFieldState();
@@ -87,8 +89,8 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
         hintText: widget.hint,
         isCollapsed: widget.isCollapsed,
         isDense: widget.isDense,
-        labelStyle: widget.hintStyle ?? null,
-        hintStyle: TextStyle(
+        labelStyle: widget.hintStyle,
+        hintStyle: const TextStyle(
           height: 1.5, // sets the distance between label and input
         ),
         prefixText: widget.prefixText,
@@ -106,28 +108,15 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
                         onTapDown: (tap) => showPass(false)))
                 : null
             : Padding(
-                padding: EdgeInsets.only(top: 5), // add padding to adjust icon
+                padding:
+                    const EdgeInsets.only(top: 5), // add padding to adjust icon
                 child: HelpIcon(wikipage: widget.wikipage!)),
         enabledBorder: widget.enabledBorder
             ? OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey[500]!))
             : null // , width: 1.0),
         );
-    final onChange = (String value) => debouncer.run(() {
-          setState(() {
-            delayedValue = value;
-            if (formKey.currentState != null &&
-                formKey.currentState!.validate()) {
-              widget.onChanged(value);
-            }
-          });
-        });
-    final validator = (_) => widget.regexp != null &&
-            delayedValue != null &&
-            !widget.regexp!.hasMatch(delayedValue!) &&
-            !(widget.allowEmpty && delayedValue!.isEmpty)
-        ? widget.error
-        : null;
+
     final style = widget.deployed
         ? !widget.monoSpaceFont
             ? LAColorTheme.deployedTextStyle
@@ -144,7 +133,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
             children: <Widget>[
               TextFormField(
                   decoration: decoration,
-                  onChanged: onChange,
+                  onChanged: (String value) => onChange(value),
                   style: style,
                   focusNode: widget.focusNode,
                   obscureText: obscureTextState,
@@ -153,8 +142,28 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
                   keyboardType: widget.keyboardType,
                   initialValue: widget.initialValue,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: validator)
+                  validator: (_) => validator())
             ]));
+  }
+
+  onChange(String value) {
+    debouncer.run(() {
+      setState(() {
+        delayedValue = value;
+        if (formKey.currentState != null && formKey.currentState!.validate()) {
+          widget.onChanged(value);
+        }
+      });
+    });
+  }
+
+  String? validator() {
+    return widget.regexp != null &&
+            delayedValue != null &&
+            !widget.regexp!.hasMatch(delayedValue!) &&
+            !(widget.allowEmpty && delayedValue!.isEmpty)
+        ? widget.error
+        : null;
   }
 
   @override

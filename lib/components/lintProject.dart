@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/models/Dependencies.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/dependencies.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -10,7 +10,7 @@ import 'package:la_toolkit/routes.dart';
 import 'alertCard.dart';
 
 class LintProjectPanel extends StatefulWidget {
-  LintProjectPanel({Key? key}) : super(key: key);
+  const LintProjectPanel({Key? key}) : super(key: key);
 
   @override
   _LintProjectPanelState createState() => _LintProjectPanelState();
@@ -49,21 +49,22 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                     action: () => BeamerCond.of(context, SshKeysLocation())),
               if (project.allServersWithServicesReady() &&
                   !project.allServersWithOs('Ubuntu', '18.04'))
-                AlertCard(
+                const AlertCard(
                     message:
                         "The current supported OS version in Ubuntu 18.04"),
               if (basicDefined && !project.allServicesAssignedToServers())
-                AlertCard(message: "Some service is not assigned to a server"),
+                const AlertCard(
+                    message: "Some service is not assigned to a server"),
               if (basicDefined && !project.allServersWithIPs())
-                AlertCard(
+                const AlertCard(
                     message:
                         "All servers should have configured their IP address"),
               if (basicDefined && !project.allServersWithSshKeys())
-                AlertCard(
+                const AlertCard(
                     message:
                         "All servers should have configured their SSH keys"),
               if (!project.collectoryAndBiocacheDifferentServers())
-                AlertCard(
+                const AlertCard(
                     message:
                         "The collections and the occurrences front-end (bioache-hub) services are in the same server. This can cause start-up problems when caches are enabled")
             ],
@@ -75,7 +76,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
 class LintErrorPanel extends StatelessWidget {
   final List<String> errors;
 
-  LintErrorPanel(this.errors);
+  const LintErrorPanel(this.errors, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Column(children: errors.map((e) => AlertCard(message: e)).toList());

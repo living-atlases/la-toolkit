@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/components/embedWebView.dart';
-import 'package:la_toolkit/components/termDialog.dart';
 
 class CmdTermPage extends StatelessWidget {
   static const routeName = "term";
@@ -16,16 +14,17 @@ class CmdTermPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Material App Bar'),
+        title: const Text('Material App Bar'),
       ),
       body: InteractiveViewer(
           child: Container(
-              alignment: Alignment.center,
+        alignment: Alignment.center,
 /*              width: 1000,
               height: 1000,*/
-              child: EmbedWebView(src: TermDialog.getInitialUrl(port)))),
+        // child: EmbedWebView(src: TermDialog.getInitialUrl(port)))),
+      )),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () {},
       ),
     );

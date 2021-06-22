@@ -59,7 +59,7 @@ class ServiceWidget extends StatelessWidget {
           ? Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
               child: Container(
-                  padding: EdgeInsets.fromLTRB(20.0, 0, 10.0, 20.0),
+                  padding: const EdgeInsets.fromLTRB(20.0, 0, 10.0, 20.0),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -114,12 +114,13 @@ class ServiceWidget extends StatelessWidget {
                                                 0.6,
                                             child: Wrap(children: [
                                               Text(
-                                                  "${StringUtils.capitalize(serviceDesc.desc)}",
+                                                  StringUtils.capitalize(
+                                                      serviceDesc.desc),
                                                   style: TextStyle(
                                                       fontSize: 14,
                                                       color: Colors.grey[600]))
                                             ])),
-                                        SizedBox(height: 10)
+                                        const SizedBox(height: 10)
                                       ]),
                                 if (!optional)
                                   Text(
@@ -143,7 +144,8 @@ class ServiceWidget extends StatelessWidget {
                                         ? "Use a subdomain for this service?"
                                         : "This service requires a subdomain",
                                     child: Container(
-                                      padding: EdgeInsets.fromLTRB(0, 3, 20, 0),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 3, 20, 0),
                                       child: AdvancedSwitch(
                                         controller: domainSwitchController,
                                         height: 16.0,
@@ -151,10 +153,10 @@ class ServiceWidget extends StatelessWidget {
                                         activeColor: LAColorTheme.inactive,
                                         inactiveColor: LAColorTheme.laPalette,
                                         // activeColor: Color(0xFF009688),
-                                        inactiveChild: Text('SUBD'),
-                                        activeChild: Text('PATH'),
-                                        borderRadius: BorderRadius.all(
-                                            const Radius.circular(4)),
+                                        inactiveChild: const Text('SUBD'),
+                                        activeChild: const Text('PATH'),
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(4)),
                                       ),
                                     )),
                                 /* Switch(
@@ -205,7 +207,7 @@ class ServiceWidget extends StatelessWidget {
                               isExpanded: false,
                             ) */
                               ]),
-                        SizedBox(height: 10)
+                        const SizedBox(height: 10)
                       ])))
           : Container();
     });
@@ -214,13 +216,13 @@ class ServiceWidget extends StatelessWidget {
   Widget _wrapField({required Widget child, required bool isSub}) {
     return IntrinsicWidth(
         child: Padding(
-            padding: EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.only(top: 4),
             child: Column(
                 // mainAxisAlignment: MainAxisAlignment.start,
 
                 children: [
                   ConstrainedBox(
-                      constraints: new BoxConstraints(
+                      constraints: BoxConstraints(
                         minWidth: isSub ? 80.0 : 100,
                       ),
                       child: child)
@@ -239,7 +241,7 @@ class ServiceWidget extends StatelessWidget {
             // hint: serviceDesc.hint,
             isDense: false,
             isCollapsed: true,
-            contentPadding: EdgeInsets.only(bottom: 4),
+            contentPadding: const EdgeInsets.only(bottom: 4),
             regexp: LARegExp.subdomain,
             error: error,
             onChanged: (value) {
@@ -260,7 +262,7 @@ class ServiceWidget extends StatelessWidget {
                 : null,
             isDense: false,
             isCollapsed: true,
-            contentPadding: EdgeInsets.only(bottom: 4),
+            contentPadding: const EdgeInsets.only(bottom: 4),
             regexp: LARegExp.subdomain,
             allowEmpty: true,
             error: error,

@@ -42,10 +42,10 @@ class DeployCmd {
       identical(this, other) ||
       other is DeployCmd &&
           runtimeType == other.runtimeType &&
-          ListEquality().equals(deployServices, other.deployServices) &&
-          ListEquality().equals(limitToServers, other.limitToServers) &&
-          ListEquality().equals(skipTags, other.skipTags) &&
-          ListEquality().equals(tags, other.tags) &&
+          const ListEquality().equals(deployServices, other.deployServices) &&
+          const ListEquality().equals(limitToServers, other.limitToServers) &&
+          const ListEquality().equals(skipTags, other.skipTags) &&
+          const ListEquality().equals(tags, other.tags) &&
           advanced == other.advanced &&
           onlyProperties == other.onlyProperties &&
           continueEvenIfFails == other.continueEvenIfFails &&
@@ -54,10 +54,10 @@ class DeployCmd {
 
   @override
   int get hashCode =>
-      ListEquality().hash(deployServices) ^
-      ListEquality().hash(limitToServers) ^
-      ListEquality().hash(skipTags) ^
-      ListEquality().hash(tags) ^
+      const ListEquality().hash(deployServices) ^
+      const ListEquality().hash(limitToServers) ^
+      const ListEquality().hash(skipTags) ^
+      const ListEquality().hash(tags) ^
       advanced.hashCode ^
       onlyProperties.hashCode ^
       continueEvenIfFails.hashCode ^
@@ -70,13 +70,13 @@ class DeployCmd {
   }
 
   String get desc {
-    bool isAll = ListEquality().equals(deployServices, ['all']);
+    bool isAll = const ListEquality().equals(deployServices, ['all']);
     String services = 'deploy of';
 
     var serviceLength = deployServices.length;
-    if (isAll)
+    if (isAll) {
       services = 'full deploy';
-    else if (serviceLength <= 5) {
+    } else if (serviceLength <= 5) {
       List<String> servicesForHuman = deployServices
           .map((serviceName) => serviceName == "lists"
               ? LAServiceDesc.get(LAServiceName.species_lists.toS()).name
@@ -88,14 +88,15 @@ class DeployCmd {
               ? ', ' + value
               : ' and ' + value);
       services += ' service' + (serviceLength > 1 ? 's' : '');
-    } else
+    } else {
       services += ' some services';
+    }
 
     String servers = toStringServers();
     String prefix = '';
     List<String> lTags = List<String>.from(tags);
     if (onlyProperties) lTags.add('properties');
-    if (lTags.length > 0 && lTags.length <= 3) {
+    if (lTags.isNotEmpty && lTags.length <= 3) {
       prefix += ' (tags: ' + lTags.join(', ') + ')';
     } else if (lTags.length > 3) {
       prefix = ' (only some tasks)';
@@ -107,12 +108,13 @@ class DeployCmd {
 
   String toStringServers() {
     String servers = '';
-    if (limitToServers.length == 0)
+    if (limitToServers.isEmpty) {
       servers = '';
-    else if (limitToServers.length <= 3)
+    } else if (limitToServers.length <= 3) {
       servers += ' in ' + limitToServers.join(', ');
-    else
+    } else {
       servers = ' in some servers';
+    }
     return servers;
   }
 

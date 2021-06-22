@@ -18,6 +18,8 @@ import 'models/laProject.dart';
 class PreDeployPage extends StatefulWidget {
   static const routeName = "predeploy";
 
+  const PreDeployPage({Key? key}) : super(key: key);
+
   @override
   _PreDeployPageState createState() => _PreDeployPageState();
 }
@@ -69,7 +71,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
                     showBack: true,
                     title: "Pre-Deploy Tasks",
                     showLaIcon: false,
-                    actions: []),
+                    actions: const []),
                 body: ScrollPanel(
                     withPadding: true,
                     child: Row(

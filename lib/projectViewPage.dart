@@ -33,12 +33,14 @@ class LAProjectViewPage extends StatefulWidget {
   // It's StatefulWidget to retrieve _scaffoldKey.currentState
   static const routeName = "tools";
 
+  const LAProjectViewPage({Key? key}) : super(key: key);
+
   @override
   _LAProjectViewPageState createState() => _LAProjectViewPageState();
 }
 
 class _LAProjectViewPageState extends State<LAProjectViewPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(
@@ -104,8 +106,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               onTestConnProject: (project, silence) {
                 // if (!silence) context.loaderOverlay.show();
                 store.dispatch(TestConnectivityProject(project, () {
-                  if (!silence)
+                  if (!silence) {
                     _showServersStatus(context, store.state.currentProject);
+                  }
                 }, () {
                   //  if (!silence) context.loaderOverlay.hide();
                 }));
@@ -165,7 +168,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 tooltip: "Show deploy logs history",
                 enabled: project.isCreated &&
                     project.allServersWithServicesReady() &&
-                    project.cmdHistoryEntries.length > 0,
+                    project.cmdHistoryEntries.isNotEmpty,
                 action: () => vm.onViewLogs(project)),
             Tool(
                 icon: const Icon(Icons.house_siding),
@@ -237,25 +240,26 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                           TermsDrawer.appBarIcon(vm.project, _scaffoldKey)
                       ],
                       title: "Toolkit of ${project.shortName} Portal"),
-                  body: new ScrollPanel(
+                  body: ScrollPanel(
                       child: Container(
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                               horizontal: 80, vertical: 20),
                           child: Column(children: [
                             Container(
-                                padding: EdgeInsets.only(top: 80, bottom: 50),
+                                padding:
+                                    const EdgeInsets.only(top: 80, bottom: 50),
                                 child: LAProjectTimeline(id: project.id)),
                             // Disabled for now
                             // ServicesChipPanel(),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
+                                children: const [
                                   SizedBox(
                                       width: 250, child: ALAInstallSelector()),
                                   SizedBox(
                                       width: 250, child: GeneratorSelector())
                                 ]),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
                             ResponsiveGridRow(
                                 // desiredItemWidth: 120,
                                 // minSpacing: 20,
@@ -263,15 +267,15 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                               return ResponsiveGridCol(
                                   lg: tool.grid,
                                   child: Container(
-                                    padding: EdgeInsets.all(10),
+                                    padding: const EdgeInsets.all(10),
                                     height: 120,
-                                    alignment: Alignment(0, 0),
+                                    alignment: const Alignment(0, 0),
                                     color: Colors.white,
                                     // color: LAColorTheme.laPalette.shade50,
                                     child: ToolShortcut(tool: tool),
                                   ));
                             }).toList()),
-                            LintProjectPanel()
+                            const LintProjectPanel()
                           ])))));
         });
   }
@@ -281,24 +285,25 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
     context.loaderOverlay.hide();
     Alert(
         context: context,
-        closeIcon: Icon(Icons.close),
+        closeIcon: const Icon(Icons.close),
         image: Icon(
             allReady ? Mdi.checkboxMarkedCircleOutline : Icons.remove_done,
             size: 60,
             color: allReady ? LAColorTheme.up : LAColorTheme.down),
         title: "Servers Status",
-        style: AlertStyle(
+        style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
-            children: new List.from([
-          SizedBox(height: 20),
+            children: List.from([
+          const SizedBox(height: 20),
           Text(
               allReady
                   ? "Congrats! All the servers are ready"
                   : "Uuppps! It seems that some servers are not yet ready",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-          SizedBox(height: 20),
-          ServersStatusPanel(extendedStatus: false, results: {})
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+          const SizedBox(height: 20),
+          const ServersStatusPanel(extendedStatus: false, results: {})
         ])),
         buttons: [
           DialogButton(
@@ -306,7 +311,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               "OK",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -357,14 +362,16 @@ class _ProjectPageViewModel {
           project == other.project &&
           status.value == other.status.value &&
           loading == other.loading &&
-          ListEquality().equals(generatorReleases, other.generatorReleases) &&
-          ListEquality().equals(alaInstallReleases, other.alaInstallReleases);
+          const ListEquality()
+              .equals(generatorReleases, other.generatorReleases) &&
+          const ListEquality()
+              .equals(alaInstallReleases, other.alaInstallReleases);
 
   @override
   int get hashCode =>
       project.hashCode ^
       status.value.hashCode ^
       loading.hashCode ^
-      ListEquality().hash(generatorReleases) ^
-      ListEquality().hash(alaInstallReleases);
+      const ListEquality().hash(generatorReleases) ^
+      const ListEquality().hash(alaInstallReleases);
 }

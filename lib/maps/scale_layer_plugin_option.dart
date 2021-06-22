@@ -1,4 +1,3 @@
-
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -27,7 +26,10 @@ class ScaleLayerPluginOption extends LayerOptions {
 class ScaleLayerPlugin implements MapPlugin {
   @override
   Widget createLayer(
-      LayerOptions options, MapState mapState, Stream<Null> stream) {
+      LayerOptions options,
+      MapState mapState,
+      // ignore: prefer_void_to_null
+      Stream<Null> stream) {
     if (options is ScaleLayerPluginOption) {
       return ScaleLayer(options, mapState, stream);
     }
@@ -43,6 +45,7 @@ class ScaleLayerPlugin implements MapPlugin {
 class ScaleLayer extends StatelessWidget {
   final ScaleLayerPluginOption scaleLayerOpts;
   final MapState map;
+  // ignore: prefer_void_to_null
   final Stream<Null> stream;
   final scale = [
     25000000,
@@ -124,8 +127,10 @@ class ScalePainter extends CustomPainter {
     var textSpan = TextSpan(style: textStyle, text: text);
     var textPainter =
         TextPainter(text: textSpan, textDirection: TextDirection.ltr)..layout();
-    textPainter.paint(canvas,
-        Offset(width / 2 - textPainter.width / 2 + paddingLeft, paddingTop as double));
+    textPainter.paint(
+        canvas,
+        Offset(width / 2 - textPainter.width / 2 + paddingLeft,
+            paddingTop as double));
     paddingTop += textPainter.height;
     var p1 = Offset(paddingLeft as double, sizeForStartEnd + paddingTop);
     var p2 = Offset(paddingLeft + width, sizeForStartEnd + paddingTop);

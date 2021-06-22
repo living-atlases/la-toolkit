@@ -8,7 +8,7 @@ import 'indicator.dart';
 class ResultsPieChart extends StatefulWidget {
   final Map<String, num> results;
 
-  ResultsPieChart(this.results);
+  const ResultsPieChart(this.results, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => ResultsPieChartState();
@@ -52,7 +52,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
               ),
             ),
           ),
-          SizedBox(width: 100),
+          const SizedBox(width: 100),
           Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -60,7 +60,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
             children: <Widget>[
               for (ResultType type in ResultType.values)
                 Padding(
-                    padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                     child: Indicator(
                       color: type.color,
                       text: "${type.title()} (${widget.results[type.toS()]})",
@@ -74,9 +74,9 @@ class ResultsPieChartState extends State<ResultsPieChart> {
   }
 
   List<PieChartSectionData> showingSections2() {
-    final isTouched = false; // i == touchedIndex;
-    final double fontSize = isTouched ? 20 : 12;
-    final double radius = isTouched ? 60 : 50;
+    const isTouched = false; // i == touchedIndex;
+    const double fontSize = isTouched ? 20 : 12;
+    const double radius = isTouched ? 60 : 50;
 
     return ResultType.values
         .where((t) =>

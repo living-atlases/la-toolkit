@@ -26,7 +26,7 @@ class SshKey {
       required this.desc,
       this.fingerprint,
       required this.encrypted,
-      this.missing: false});
+      this.missing = false});
 
   factory SshKey.fromJson(Map<String, dynamic> json) => _$SshKeyFromJson(json);
   Map<String, dynamic> toJson() => _$SshKeyToJson(this);

@@ -4,6 +4,7 @@ import 'package:beamer/beamer.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// ignore: library_prefixes
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -27,7 +28,7 @@ Future<void> main() async {
   AppStateMiddleware appStateMiddleware = AppStateMiddleware();
 
   await DotEnv.load(
-      fileName: "${kReleaseMode ? 'env.production.txt' : '.env.development'}");
+      fileName: kReleaseMode ? 'env.production.txt' : '.env.development');
 
   print("Uri base: ${Uri.base.toString()}");
   if (kReleaseMode && !AppUtils.isDemo()) {
@@ -119,8 +120,7 @@ Future<void> main() async {
 
 // https://stackoverflow.com/questions/50303441/flutter-redux-navigator-globalkey-currentstate-returns-null
 class MainKeys {
-  static final GlobalKey<NavigatorState> navKey =
-      new GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 }
 
 class MyApp extends StatelessWidget {
@@ -151,13 +151,13 @@ class MyApp extends StatelessWidget {
                   minWidth: 450,
                   defaultScale: true,
                   breakpoints: [
-                    ResponsiveBreakpoint.resize(450, name: MOBILE),
-                    ResponsiveBreakpoint.autoScale(800, name: TABLET),
-                    ResponsiveBreakpoint.autoScale(1000, name: TABLET),
-                    ResponsiveBreakpoint.resize(1200, name: DESKTOP),
-                    ResponsiveBreakpoint.autoScale(2460, name: "4K"),
+                    const ResponsiveBreakpoint.resize(450, name: MOBILE),
+                    const ResponsiveBreakpoint.autoScale(800, name: TABLET),
+                    const ResponsiveBreakpoint.autoScale(1000, name: TABLET),
+                    const ResponsiveBreakpoint.resize(1200, name: DESKTOP),
+                    const ResponsiveBreakpoint.autoScale(2460, name: "4K"),
                   ],
-                  background: Container(color: Color(0xFFF5F5F5))),
+                  background: Container(color: const Color(0xFFF5F5F5))),
               title: appName,
               theme: LAColorTheme.laThemeData,
               debugShowCheckedModeBanner: AppUtils.isDev(),

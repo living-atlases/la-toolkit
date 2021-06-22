@@ -7,7 +7,7 @@ class NotInTheDemoPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         "This does not work in the demo",
         textAlign: TextAlign.center,

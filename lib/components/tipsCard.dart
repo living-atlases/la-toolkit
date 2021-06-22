@@ -7,10 +7,12 @@ class TipsCard extends StatelessWidget {
   final String text;
   final EdgeInsets? margin;
   const TipsCard(
-      {required this.text,
-      this.margin: const EdgeInsets.fromLTRB(0, 30, 0, 0)});
+      {Key? key,
+      required this.text,
+      this.margin = const EdgeInsets.fromLTRB(0, 30, 0, 0)})
+      : super(key: key);
   static const _markdownColor = Colors.black54;
-  static const _markdownStyle = const TextStyle(color: _markdownColor);
+  static const _markdownStyle = TextStyle(color: _markdownColor);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class TipsCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
+              const Padding(
                   padding: EdgeInsets.fromLTRB(20, 20, 0, 20),
                   child: Icon(Icons.info, color: Colors.grey)),
               Expanded(

@@ -23,6 +23,8 @@ import 'models/cmdHistoryEntry.dart';
 class DeployResultsPage extends StatefulWidget {
   static const routeName = "deploy-results";
 
+  const DeployResultsPage({Key? key}) : super(key: key);
+
   @override
   _DeployResultsPageState createState() => _DeployResultsPageState();
 }
@@ -82,9 +84,8 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                       actions: [
                         TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                         IconButton(
-                            icon: Tooltip(
-                                child: const Icon(Icons.close,
-                                    color: Colors.white),
+                            icon: const Tooltip(
+                                child: Icon(Icons.close, color: Colors.white),
                                 message: "Close"),
                             onPressed: () =>
                                 vm.onClose(vm.project, cmdHistoryDetails)),
@@ -95,7 +96,7 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                         children: <Widget>[
                           const Expanded(
                             flex: 1, // 10%
-                            child: const SizedBox(),
+                            child: SizedBox(),
                           ),
                           Expanded(
                               flex: 8, // 80%,
@@ -142,12 +143,13 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                   const SizedBox(height: 20),
                                   const Text('Tasks summary:',
                                       style: UiUtils.subtitleStyle),
+                                  // ignore: sized_box_for_whitespace
                                   Container(
                                       width: 400,
                                       height: 300,
                                       child: ResultsPieChart(
                                           cmdHistoryDetails.resultsTotals)),
-                                  SizedBox(height: 20),
+                                  const SizedBox(height: 20),
                                   const Text('Tasks details:',
                                       style: UiUtils.subtitleStyle),
                                   const SizedBox(height: 20),
@@ -163,9 +165,10 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                   TermCommandDesc(
                                       cmdHistoryDetails: cmdHistoryDetails),
                                   const SizedBox(height: 20),
-                                  Text('Ansible Logs:',
+                                  const Text('Ansible Logs:',
                                       style: UiUtils.subtitleStyle),
                                   const SizedBox(height: 20),
+                                  // ignore: sized_box_for_whitespace
                                   Container(
                                       height: 600,
                                       width: 1000,
@@ -195,7 +198,7 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
                               )),
                           const Expanded(
                             flex: 1, // 10%
-                            child: const SizedBox(),
+                            child: SizedBox(),
                           )
                         ],
                       ))));

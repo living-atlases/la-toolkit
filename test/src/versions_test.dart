@@ -1,4 +1,4 @@
-import 'package:la_toolkit/models/Dependencies.dart';
+import 'package:la_toolkit/models/dependencies.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -16,12 +16,12 @@ void main() {
       VersionConstraint.parse('>=1.2.3'),
       VersionConstraint.parse('<2.0.0')
     ];
-    failConstraints.forEach((cont) {
+    for (VersionConstraint cont in failConstraints) {
       expect(cont.allows(v123), equals(false));
-    });
-    validConstraints.forEach((cont) {
+    }
+    for (VersionConstraint cont in validConstraints) {
       expect(cont.allows(v123), equals(true));
-    });
+    }
   });
 
   test('Compare dependencies ', () {

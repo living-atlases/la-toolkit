@@ -7,7 +7,7 @@ import 'tool.dart';
 class ToolShortcut extends StatelessWidget {
   final Tool tool;
 
-  ToolShortcut({required this.tool});
+  const ToolShortcut({Key? key, required this.tool}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ToolShortcut extends StatelessWidget {
         elevation: elevation,
         shadowColor: LAColorTheme.laPalette,
         // primary: Colors.white,
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
       ),
       // disabledColor: Colors.grey[200],
       // disabledElevation: 0.2,
@@ -30,10 +30,11 @@ class ToolShortcut extends StatelessWidget {
       onPressed: !tool.enabled
           ? null
           : () {
-              if (tool.askConfirmation)
+              if (tool.askConfirmation) {
                 UiUtils.showAlertDialog(context, () => tool.action(), () => {});
-              else
+              } else {
                 tool.action();
+              }
             },
 
       child: Column(
@@ -64,8 +65,8 @@ class ToolShortcut extends StatelessWidget {
     );
     if (tool.tooltip != null) {
       return Tooltip(
-        waitDuration: Duration(seconds: 1, milliseconds: 0),
-        padding: EdgeInsets.all(10),
+        waitDuration: const Duration(seconds: 1, milliseconds: 0),
+        padding: const EdgeInsets.all(10),
         message: tool.tooltip!,
         child: btn,
       );

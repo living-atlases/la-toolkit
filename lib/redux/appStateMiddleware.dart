@@ -29,7 +29,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   SharedPreferences? _pref;
 
   _initPrefs() async {
-    if (_pref == null) _pref = await SharedPreferences.getInstance();
+    _pref ??= await SharedPreferences.getInstance();
   }
 
   Future<AppState> getState() async {
@@ -54,7 +54,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     return appState.copyWith(loading: true);
   }
 
-  AppState initialEmptyAppState({bool failedLoad: false}) {
+  AppState initialEmptyAppState({bool failedLoad = false}) {
     print("Load prefs empty (and failed $failedLoad)");
     return AppState(
         failedLoad: failedLoad,
@@ -77,16 +77,19 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (alaInstallReleasesResponse.statusCode == 200) {
         List<dynamic> l = jsonDecode(alaInstallReleasesResponse.body) as List;
         List<String> alaInstallReleases = [];
-        l.forEach((element) => alaInstallReleases.add(element["tag_name"]));
+        for (var element in l) {
+          alaInstallReleases.add(element["tag_name"]);
+        }
         // Remove the old ones
         int limitResults = 6;
         alaInstallReleases.removeRange(alaInstallReleases.length - limitResults,
             alaInstallReleases.length);
         alaInstallReleases.add('upstream');
         alaInstallReleases.add('custom');
-        if (!ListEquality()
-            .equals(alaInstallReleases, store.state.alaInstallReleases))
+        if (!const ListEquality()
+            .equals(alaInstallReleases, store.state.alaInstallReleases)) {
           store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
+        }
         scanSshKeys(store, () => {});
       } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
@@ -101,7 +104,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           await http.get(laToolkitReleasesApiUrl);
       if (laToolkitReleasesResponse.statusCode == 200) {
         List<dynamic> l = jsonDecode(laToolkitReleasesResponse.body) as List;
-        if (l.length > 0) {
+        if (l.isNotEmpty) {
           Version lastLAToolkitVersion = Version.parse(
               l.first["tag_name"].toString().replaceFirst('v', ''));
           if (!AppUtils.isDemo()) {
@@ -112,7 +115,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               print("$backendVersion < $lastLAToolkitVersion");
               store.dispatch(ShowSnackBar(AppSnackBarMessage(
                   "There is a new version the LA-Toolkit available. Please upgrade this toolkit.",
-                  Duration(seconds: 5),
+                  const Duration(seconds: 5),
                   SnackBarAction(
                       label: "MORE INFO",
                       onPressed: () async {
@@ -145,10 +148,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           Map<String, dynamic> l = json.decode(generatorReleasesResponse.body);
           Map<String, dynamic> versions = l['versions'];
           List<String> generatorReleases = [];
-          versions.keys.forEach((key) => generatorReleases.insert(0, key));
-          if (!ListEquality()
-              .equals(generatorReleases, store.state.generatorReleases))
+          for (var key in versions.keys) {
+            generatorReleases.insert(0, key);
+          }
+          if (!const ListEquality()
+              .equals(generatorReleases, store.state.generatorReleases)) {
             store.dispatch(OnFetchGeneratorReleases(generatorReleases));
+          }
         } else {
           store.dispatch(OnFetchGeneratorReleasesFailed());
         }
@@ -214,10 +220,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is ProjectsLoad) {
       Api.getConf().then((projects) {
-        if (!AppUtils.isDemo())
+        if (!AppUtils.isDemo()) {
           store.dispatch(OnProjectsLoad(projects));
-        else
+        } else {
           store.dispatch(OnDemoProjectsLoad());
+        }
       });
     }
     if (action is TestConnectivityProject) {
@@ -301,8 +308,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         Api.preDeploy(action);
       } else if (action.cmd.runtimeType == PostDeployCmd) {
         Api.postDeploy(action);
-      } else
+      } else {
         Api.ansiblew(action);
+      }
     }
     if (action is GetDeployProjectResults) {
       CmdHistoryDetails? lastCmdDet = store.state.currentProject.lastCmdDetails;
@@ -364,8 +372,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
   void scanSshKeys(store, VoidCallback onKeysScanned) {
     Api.sshKeysScan().then((keys) {
-      if (!ListEquality().equals(keys, store.state.sshKeys))
+      if (!const ListEquality().equals(keys, store.state.sshKeys)) {
         store.dispatch(OnSshKeysScanned(keys));
+      }
       onKeysScanned();
     });
   }

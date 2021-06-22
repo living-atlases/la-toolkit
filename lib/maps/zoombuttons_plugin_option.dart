@@ -28,6 +28,7 @@ class ZoomButtonsPluginOption extends LayerOptions {
     this.zoomOutColor,
     this.zoomOutColorIcon,
     this.zoomOutIcon = Icons.zoom_out,
+    // ignore: prefer_void_to_null
     Stream<Null>? rebuild,
   }) : super(key: key, rebuild: rebuild);
 }
@@ -35,7 +36,11 @@ class ZoomButtonsPluginOption extends LayerOptions {
 class ZoomButtonsPlugin implements MapPlugin {
   @override
   Widget createLayer(
-      LayerOptions options, MapState mapState, Stream<Null> stream) {
+      // ignore: prefer_void_to_null
+      LayerOptions options,
+      MapState mapState,
+      // ignore: prefer_void_to_null
+      Stream<Null> stream) {
     if (options is ZoomButtonsPluginOption) {
       return ZoomButtons(options, mapState, stream);
     }
@@ -51,6 +56,7 @@ class ZoomButtonsPlugin implements MapPlugin {
 class ZoomButtons extends StatelessWidget {
   final ZoomButtonsPluginOption zoomButtonsOpts;
   final MapState map;
+  // ignore: prefer_void_to_null
   final Stream<Null> stream;
   final FitBoundsOptions options =
       const FitBoundsOptions(padding: EdgeInsets.all(12.0));

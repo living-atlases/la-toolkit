@@ -6,13 +6,13 @@ import '../laTheme.dart';
 
 class CountDownWidget extends StatefulWidget {
   final void Function() onReload;
-  CountDownWidget({required this.onReload});
+  const CountDownWidget({Key? key, required this.onReload}) : super(key: key);
   @override
   _CountDownWidgetState createState() => _CountDownWidgetState();
 }
 
 class _CountDownWidgetState extends State<CountDownWidget> {
-  CountDownController _controller = CountDownController();
+  final CountDownController _controller = CountDownController();
   final int _duration = 5;
   final double _size = 60;
 
@@ -51,7 +51,7 @@ class _CountDownWidgetState extends State<CountDownWidget> {
               // Begin and end contours with a flat edge and no extension.
               strokeCap: StrokeCap.round,
               // Text Style for Countdown Text.
-              textStyle: TextStyle(
+              textStyle: const TextStyle(
                   fontSize: 14.0,
                   color: LAColorTheme.laPalette,
                   fontWeight: FontWeight.bold),
@@ -85,7 +85,7 @@ class _CountDownWidgetState extends State<CountDownWidget> {
             width: 30,
           ),
           _button(title: "Start", onPressed: () => _controller.start()), */
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             _button(
@@ -96,7 +96,7 @@ class _CountDownWidgetState extends State<CountDownWidget> {
             width: 10,
           ),
           _button(title: "Resume", onPressed: () => _controller.resume()), */
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             _button(

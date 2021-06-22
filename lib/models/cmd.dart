@@ -11,7 +11,7 @@ enum CmdType { ansible, deploy, preDeploy, postDeploy, laPipelines, bash }
 
 extension ParseToString on CmdType {
   String toS() {
-    return this.toString().split('.').last;
+    return toString().split('.').last;
   }
 
   bool get isDeploy =>
@@ -28,7 +28,7 @@ class Cmd {
   final Map<String, dynamic> properties;
 
   Cmd({String? id, required this.type, required this.properties})
-      : id = id ?? new ObjectId().toString();
+      : id = id ?? ObjectId().toString();
 
   @override
   bool operator ==(Object other) =>

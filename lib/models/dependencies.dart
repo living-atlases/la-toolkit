@@ -45,7 +45,9 @@ class Dependencies {
         lintError.add(
             'la-generator recommended version should be ${match[generator]!}');
       }
-    } catch (e) {}
+    } catch (e) {
+      print("Verify exception $e");
+    }
     return lintError;
   }
 
@@ -58,7 +60,8 @@ class Dependencies {
         generator: generatorV.replaceFirst(RegExp(r'^v'), '')
       };
       return verify(combo);
-    } else
+    } else {
       return [];
+    }
   }
 }

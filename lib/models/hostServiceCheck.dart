@@ -9,7 +9,7 @@ enum ServiceCheckType { tcp, udp, url, other }
 
 extension ServiceCheckTypeToString on ServiceCheckType {
   String toS() {
-    return this.toString().split('.').last;
+    return toString().split('.').last;
   }
 }
 
@@ -28,10 +28,10 @@ class HostServiceCheck {
       {String? id,
       required this.name,
       required this.type,
-      this.host: "localhost",
+      this.host = "localhost",
       serviceDeploys,
       services,
-      this.args: ""})
+      this.args = ""})
       : id = id ?? ObjectId().toString(),
         serviceDeploys = serviceDeploys ?? HashSet<String>(),
         services = services ?? HashSet<String>();

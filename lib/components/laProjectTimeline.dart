@@ -16,10 +16,9 @@ const _iconsVerticalPadding = 4.0;
 
 class LAProjectTimeline extends StatelessWidget {
   final int size = LAProjectStatus.values.length;
-
   final String id;
 
-  LAProjectTimeline({required this.id});
+  LAProjectTimeline({Key? key, required this.id}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +29,7 @@ class LAProjectTimeline extends StatelessWidget {
               .where((element) => element.id == id)
               .toList();
           return _LAProjectTimelineViewModel(
-            status: ourProjects.length > 0
+            status: ourProjects.isNotEmpty
                 ? ourProjects[0].status
                 : LAProjectStatus.created,
           );
@@ -43,7 +42,7 @@ class LAProjectTimeline extends StatelessWidget {
                 shrinkWrap: true,
                 theme: TimelineThemeData(
                   direction: small ? Axis.vertical : Axis.horizontal,
-                  connectorTheme: ConnectorThemeData(
+                  connectorTheme: const ConnectorThemeData(
                     space: 30.0,
                     thickness: 5.0,
                   ),
@@ -88,8 +87,8 @@ class LAProjectTimeline extends StatelessWidget {
                     Widget? child;
                     if (index == vm.status.value) {
                       color = inProgressColor;
-                      child = Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      child = const Padding(
+                        padding: EdgeInsets.all(8.0),
                         child: CircularProgressIndicator(
                           strokeWidth: 3.0,
                           valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -97,7 +96,7 @@ class LAProjectTimeline extends StatelessWidget {
                       );
                     } else if (index < vm.status.value) {
                       color = completeColor;
-                      child = Icon(
+                      child = const Icon(
                         Icons.check,
                         color: Colors.white,
                         size: 15.0,
@@ -111,7 +110,7 @@ class LAProjectTimeline extends StatelessWidget {
                       return Stack(
                         children: [
                           CustomPaint(
-                            size: Size(30.0, 30.0),
+                            size: const Size(30.0, 30.0),
                             painter: _BezierPainter(
                               color: color,
                               drawStart: index > 0,
@@ -129,7 +128,7 @@ class LAProjectTimeline extends StatelessWidget {
                       return Stack(
                         children: [
                           CustomPaint(
-                            size: Size(15.0, 15.0),
+                            size: const Size(15.0, 15.0),
                             painter: _BezierPainter(
                               color: color,
                               drawEnd: index < size - 1,
@@ -237,10 +236,10 @@ class _BezierPainter extends CustomPainter {
 
     final radius = size.width / 2;
 
-    var angle;
-    var offset1;
-    var offset2;
-    var path;
+    double angle;
+    Offset offset1;
+    Offset offset2;
+    Path path;
 
     if (drawStart) {
       angle = 3 * pi / 4;

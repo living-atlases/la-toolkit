@@ -9,7 +9,7 @@ import 'package:la_toolkit/models/laServer.dart';
 class ServersStatusPanel extends StatefulWidget {
   final bool extendedStatus;
   final Map<String, dynamic> results;
-  ServersStatusPanel(
+  const ServersStatusPanel(
       {Key? key, required this.extendedStatus, required this.results})
       : super(key: key);
 

@@ -7,11 +7,16 @@ import 'package:mdi/mdi.dart';
 enum LAServiceName {
   all,
   collectory,
+  // ignore: constant_identifier_names
   ala_hub,
+  // ignore: constant_identifier_names
   biocache_service,
+  // ignore: constant_identifier_names
   ala_bie,
+  // ignore: constant_identifier_names
   bie_index,
   images,
+  // ignore: constant_identifier_names
   species_lists,
   regions,
   logger,
@@ -23,15 +28,18 @@ enum LAServiceName {
   sds,
   alerts,
   doi,
+  // ignore: constant_identifier_names
   biocache_backend,
   branding,
+  // ignore: constant_identifier_names
   biocache_cli,
+  // ignore: constant_identifier_names
   nameindexer,
 }
 
 extension ParseToString on LAServiceName {
   String toS() {
-    return this.toString().split('.').last;
+    return toString().split('.').last;
   }
 }
 
@@ -81,9 +89,9 @@ class LAServiceDesc {
       this.depends,
       required this.icon,
       subServices,
-      this.admin: false,
-      this.alaAdmin: false,
-      this.initUse: false})
+      this.admin = false,
+      this.alaAdmin = false,
+      this.initUse = false})
       : subServices = subServices ?? [];
 
   static final Map<String, LAServiceDesc> map = {
@@ -369,11 +377,11 @@ class LAServiceDesc {
     Map<String, LAServiceDepsDesc> deps =
         LAServiceDepsDesc.getDeps(alaInstallVersion);
 
-    deps[this.nameInt]!.serviceDepends.forEach((service) {
-      deps[otherService.nameInt]!.serviceDepends.forEach((otherService) {
+    for (var service in deps[nameInt]!.serviceDepends) {
+      for (var otherService in deps[otherService.nameInt]!.serviceDepends) {
         compatible = compatible && service.isCompatible(otherService);
-      });
-    });
+      }
+    }
     return compatible;
   }
 }

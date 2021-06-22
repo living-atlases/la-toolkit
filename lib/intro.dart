@@ -12,7 +12,7 @@ import 'laTheme.dart';
 import 'models/appState.dart';
 
 class Intro extends StatefulWidget {
-  Intro({Key? key}) : super(key: key);
+  const Intro({Key? key}) : super(key: key);
 
   @override
   _IntroState createState() => _IntroState();
@@ -21,12 +21,12 @@ class Intro extends StatefulWidget {
 class _IntroState extends State<Intro> {
   final introKey = GlobalKey<IntroductionScreenState>();
   static const _markdownColor = LAColorTheme.inactive;
-  static const _markdownStyle = const TextStyle(fontSize: 18);
+  static const _markdownStyle = TextStyle(fontSize: 18);
 
   Widget _buildTitle(String title) {
     return Text(title,
         style: GoogleFonts.signika(
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
                 color: Colors.black,
                 fontSize: 38,
                 fontWeight: FontWeight.w400)));
@@ -35,7 +35,7 @@ class _IntroState extends State<Intro> {
   @override
   Widget build(BuildContext context) {
     const bodyStyle = TextStyle(fontSize: 19.0);
-    const pageDecoration = const PageDecoration(
+    const pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
       bodyTextStyle: bodyStyle,
       descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
@@ -105,7 +105,7 @@ Living Atlases portals''',
             image: _buildImage('la-toolkit-intro-images-5.png', 150),
             decoration: pageDecoration,
             footer: FloatingActionButton(
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
               onPressed: () {
                 vm.onIntroEnd();
                 vm.onAddProject();
@@ -133,7 +133,8 @@ Living Atlases portals''',
     });
   }
 
-  Widget _introText({required String text, bool markdown: false}) {
+  Widget _introText({required String text, bool markdown = false}) {
+    // ignore: sized_box_for_whitespace
     return Container(
         width: MediaQuery.of(context).size.width * 0.5,
         child: markdown
@@ -151,8 +152,8 @@ Living Atlases portals''',
                 data: text)
             : Text(text,
                 textAlign: TextAlign.left,
-                style:
-                    TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal)));
+                style: const TextStyle(
+                    fontSize: 18.0, fontWeight: FontWeight.normal)));
   }
 
   Widget _buildImage([String? assetName, double? width]) {

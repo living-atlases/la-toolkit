@@ -15,7 +15,8 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 class ServicesInServerSelector extends StatefulWidget {
   final LAServer server;
 
-  ServicesInServerSelector({Key? key, required this.server}) : super(key: key);
+  const ServicesInServerSelector({Key? key, required this.server})
+      : super(key: key);
 
   @override
   _ServicesInServerSelectorState createState() =>
@@ -54,7 +55,7 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
               .toList();
       _selected = servicesInServer;
       return Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               /* color: Theme.of(context).primaryColor.withOpacity(.4), */
               /* border: Border.all(
           color: Theme.of(context).primaryColor,
@@ -66,7 +67,7 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
               // color: Colors.black12,
               margin: const EdgeInsets.all(10),
               child: Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   children: <Widget>[
                     Tooltip(
@@ -79,9 +80,9 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                           initialValue: _selected,
                           // shape: StadiumBorder(side: BorderSide()),
                           buttonIcon:
-                              Icon(Mdi.serverPlus, color: Colors.black45),
+                              const Icon(Mdi.serverPlus, color: Colors.black45),
                           // Remove the lines
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                               // color: Colors.black12
                               //  border: Border.all(),
                               ),
@@ -108,8 +109,8 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                           validator: (selection) {
                             if (selection != null) {
                               Set<String> incompatible = {};
-                              selection.forEach((first) {
-                                selection.forEach((second) {
+                              for (var first in selection) {
+                                for (var second in selection) {
                                   // print("$first compatible with $second");
                                   if (first != second &&
                                       !LAServiceDesc.get(first)
@@ -118,19 +119,20 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                                               LAServiceDesc.get(second))) {
                                     incompatible.addAll({first, second});
                                   }
-                                });
-                              });
-                              return incompatible.length == 0
+                                }
+                              }
+                              return incompatible.isEmpty
                                   ? ""
                                   : "Services: ${incompatible.join(', ')} can't be installed together.";
                             }
                             return null;
                           },
                           chipDisplay: MultiSelectChipDisplay<String>(
-                            shape: StadiumBorder(
+                            shape: const StadiumBorder(
                                 side:
                                     BorderSide(color: LAColorTheme.laPalette)),
-                            textStyle: TextStyle(color: LAColorTheme.laPalette),
+                            textStyle:
+                                const TextStyle(color: LAColorTheme.laPalette),
                             onTap: (value) {
                               // setState(() {});
                               _multiSelectKey.currentState!.validate();
@@ -139,9 +141,9 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                         )),
                     if (_selected.isEmpty)
                       Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           alignment: Alignment.centerLeft,
-                          child: Text(
+                          child: const Text(
                             "None selected",
                             style: TextStyle(color: Colors.black54),
                           )),

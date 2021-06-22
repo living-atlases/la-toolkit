@@ -19,8 +19,9 @@ import 'helpIcon.dart';
 class ServersDetailsCardList extends StatelessWidget {
   final FocusNode focusNode;
 
-  ServersDetailsCardList(this.focusNode, {Key? key}) : super(key: key);
+  const ServersDetailsCardList(this.focusNode, {Key? key}) : super(key: key);
 
+  @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersCardListViewModel>(
         distinct: true,
@@ -49,7 +50,7 @@ class ServersDetailsCardList extends StatelessWidget {
                         // margin: EdgeInsets.fromLTRB(30, 12, 20, 30),
                         children: [
                           ListTile(
-                            leading: Icon(Mdi.server),
+                            leading: const Icon(Mdi.server),
                             // tileColor: Colors.black12,
                             title: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,32 +65,28 @@ class ServersDetailsCardList extends StatelessWidget {
                                       _project.servers[index],
                                       (LAProject project) =>
                                           vm.onSaveCurrentProject(project)),
-                                  SizedBox(width: 40),
+                                  const SizedBox(width: 40),
                                   DropdownButton(
                                     isDense: false,
                                     // isExpanded: true,
                                     underline: Container(),
 
-                                    disabledHint: Text("No ssh keys available"),
+                                    disabledHint:
+                                        const Text("No ssh keys available"),
                                     hint: Row(
                                       children: [
                                         if (_project.servers[index].sshKey !=
                                             null)
-                                          Container(
-                                              child: Icon(Mdi.key,
-                                                  color:
-                                                      LAColorTheme.laPalette)),
+                                          const Icon(Mdi.key,
+                                              color: LAColorTheme.laPalette),
                                         if (_project.servers[index].sshKey !=
                                             null)
-                                          SizedBox(width: 5),
-                                        Container(
-                                          child: Text(
-                                              _project.servers[index].sshKey !=
-                                                      null
-                                                  ? _project.servers[index]
-                                                      .sshKey!.name
-                                                  : "No SSH key selected"),
-                                        ),
+                                          const SizedBox(width: 5),
+                                        Text(_project.servers[index].sshKey !=
+                                                null
+                                            ? _project
+                                                .servers[index].sshKey!.name
+                                            : "No SSH key selected"),
                                       ],
                                     ),
                                     items: vm.sshKeys
@@ -101,15 +98,15 @@ class ServersDetailsCardList extends StatelessWidget {
                                         value: sshKey,
                                         child: Row(
                                           children: [
-                                            Icon(Mdi.key),
-                                            SizedBox(
+                                            const Icon(Mdi.key),
+                                            const SizedBox(
                                               width: 10,
                                             ),
                                             Text(
                                               sshKey.name,
                                               // style: TextStyle(color: Colors.red),
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 10,
                                             ),
                                             Text(
@@ -148,10 +145,10 @@ class ServersDetailsCardList extends StatelessWidget {
                                       }
                                     },
                                   ),
-                                  SizedBox(width: 10),
+                                  const SizedBox(width: 10),
                                   HelpIcon(
                                       wikipage: "SSH-for-Beginners#ssh-keys"),
-                                  SizedBox(width: 10),
+                                  const SizedBox(width: 10),
                                   Flexible(
                                     child: GenericTextFormField(
                                         // IP
@@ -183,136 +180,125 @@ class ServersDetailsCardList extends StatelessWidget {
                                     "SSH-for-Beginners#public-and-private-ip-addresses"),
                           ),
                           Padding(
-                              padding: EdgeInsets.fromLTRB(16, 0, 16, 20),
-                              child: Container(
-                                //height: _project.advancedEdit ? 180 : 0,
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      /* SizedBox(height: 10),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  /* SizedBox(height: 10),
                                       Text("Advanced optional settings:",
                                           style: TextStyle(fontSize: 16)),*/
-                                      // SizedBox(height: 10),
-                                      if (_project.advancedEdit)
-                                        Flexible(
-                                          child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Flexible(
-                                                  child: GatewaySelector(
-                                                      firstServer:
-                                                          _isFirstServer(
-                                                              index,
-                                                              _project.servers
-                                                                  .length),
-                                                      exclude: _project
-                                                          .servers[index]),
-                                                ),
-                                                HelpIcon(
-                                                    wikipage:
-                                                        "SSH-For-Beginners#Gateways"),
-                                                SizedBox(width: 20),
-                                                Flexible(
-                                                  child: GenericTextFormField(
-                                                      // SSH Port
-                                                      label:
-                                                          "SSH alternative Port",
-                                                      hint:
-                                                          'Only if this is different than 22',
-                                                      error: 'Invalid port',
-                                                      initialValue: _project
-                                                                  .servers[
-                                                                      index]
-                                                                  .sshPort !=
-                                                              22
-                                                          ? _project
+                                  // SizedBox(height: 10),
+                                  if (_project.advancedEdit)
+                                    Flexible(
+                                      child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Flexible(
+                                              child: GatewaySelector(
+                                                  firstServer: _isFirstServer(
+                                                      index,
+                                                      _project.servers.length),
+                                                  exclude:
+                                                      _project.servers[index]),
+                                            ),
+                                            HelpIcon(
+                                                wikipage:
+                                                    "SSH-For-Beginners#Gateways"),
+                                            const SizedBox(width: 20),
+                                            Flexible(
+                                              child: GenericTextFormField(
+                                                  // SSH Port
+                                                  label: "SSH alternative Port",
+                                                  hint:
+                                                      'Only if this is different than 22',
+                                                  error: 'Invalid port',
+                                                  initialValue: _project
                                                               .servers[index]
-                                                              .sshPort
-                                                              .toString()
-                                                          : null,
-                                                      allowEmpty: true,
-                                                      isDense: true,
-                                                      regexp:
-                                                          LARegExp.portNumber,
-                                                      onChanged: (value) {
-                                                        _project.servers[index]
-                                                            .sshPort = value
-                                                                    .length >
-                                                                0
+                                                              .sshPort !=
+                                                          22
+                                                      ? _project.servers[index]
+                                                          .sshPort
+                                                          .toString()
+                                                      : null,
+                                                  allowEmpty: true,
+                                                  isDense: true,
+                                                  regexp: LARegExp.portNumber,
+                                                  onChanged: (value) {
+                                                    _project.servers[index]
+                                                            .sshPort =
+                                                        value.isNotEmpty
                                                             ? int.parse(value)
                                                             : 22;
-                                                        vm.onSaveCurrentProject(
-                                                            _project);
-                                                      }),
-                                                ),
-                                                HelpIcon(
-                                                    wikipage:
-                                                        "SSH-For-Beginners#ssh-ports"),
-                                                SizedBox(width: 20),
-                                                Flexible(
-                                                  child: GenericTextFormField(
-                                                      // SSH User
-                                                      label:
-                                                          "SSH alternative username",
-                                                      hint:
-                                                          'Only if it\'s different than \'${_project.getVariableValue("ansible_user")}\' in this server',
-                                                      error: 'Invalid username',
-                                                      initialValue: _project
-                                                              .servers[index]
-                                                              .sshUser ??
-                                                          '',
-                                                      isDense: true,
-                                                      regexp: LARegExp.username,
-                                                      allowEmpty: true,
-                                                      onChanged: (value) {
-                                                        _project.servers[index]
-                                                            .sshUser = value;
-                                                        vm.onSaveCurrentProject(
-                                                            _project);
-                                                      }),
-                                                )
-                                              ]),
-                                        ),
-                                      if (_project.advancedEdit)
-                                        Flexible(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Flexible(
-                                                child: GenericTextFormField(
-                                                    // ALIASES
-                                                    label:
-                                                        "Aliases (other names you give to this server separated by spaces)",
-                                                    /* hint:
+                                                    vm.onSaveCurrentProject(
+                                                        _project);
+                                                  }),
+                                            ),
+                                            HelpIcon(
+                                                wikipage:
+                                                    "SSH-For-Beginners#ssh-ports"),
+                                            const SizedBox(width: 20),
+                                            Flexible(
+                                              child: GenericTextFormField(
+                                                  // SSH User
+                                                  label:
+                                                      "SSH alternative username",
+                                                  hint:
+                                                      'Only if it\'s different than \'${_project.getVariableValue("ansible_user")}\' in this server',
+                                                  error: 'Invalid username',
+                                                  initialValue: _project
+                                                          .servers[index]
+                                                          .sshUser ??
+                                                      '',
+                                                  isDense: true,
+                                                  regexp: LARegExp.username,
+                                                  allowEmpty: true,
+                                                  onChanged: (value) {
+                                                    _project.servers[index]
+                                                        .sshUser = value;
+                                                    vm.onSaveCurrentProject(
+                                                        _project);
+                                                  }),
+                                            )
+                                          ]),
+                                    ),
+                                  if (_project.advancedEdit)
+                                    Flexible(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Flexible(
+                                            child: GenericTextFormField(
+                                                // ALIASES
+                                                label:
+                                                    "Aliases (other names you give to this server separated by spaces)",
+                                                /* hint:
                                                       'e.g. \'${_project.getService('collectory')?.url(_project.domain)} ${_project.getService('ala_hub')?.url(_project.domain)} ${_project.getService('ala_bie')?.suburl}\' ', */
-                                                    error: 'Wrong aliases.',
-                                                    initialValue: _project
-                                                        .servers[index].aliases
-                                                        .join(' '),
-                                                    isDense: true,
-                                                    /* isCollapsed: true, */
-                                                    regexp:
-                                                        LARegExp.aliasesRegexp,
-                                                    onChanged: (value) {
-                                                      _project.servers[index]
-                                                              .aliases =
-                                                          value.split(' ');
-                                                      vm.onSaveCurrentProject(
-                                                          _project);
-                                                    }),
-                                              ),
-                                            ],
+                                                error: 'Wrong aliases.',
+                                                initialValue: _project
+                                                    .servers[index].aliases
+                                                    .join(' '),
+                                                isDense: true,
+                                                /* isCollapsed: true, */
+                                                regexp: LARegExp.aliasesRegexp,
+                                                onChanged: (value) {
+                                                  _project.servers[index]
+                                                          .aliases =
+                                                      value.split(' ');
+                                                  vm.onSaveCurrentProject(
+                                                      _project);
+                                                }),
                                           ),
-                                        ),
-                                    ]),
-                              ))
+                                        ],
+                                      ),
+                                    ),
+                                ]),
+                          )
                         ]));
                 /*
 

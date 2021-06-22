@@ -65,7 +65,7 @@ class ProjectDrawer extends StatelessWidget {
                     const SizedBox(height: 10.0),
                     // FIXME
                     Text(vm.state.currentProject.shortName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
                         )),
@@ -78,14 +78,14 @@ class ProjectDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(LAIcon.la),
-              title: Text('Home'),
+              title: const Text('Home'),
               onTap: () {
                 context.beamBack();
               },
             ),
             ListTile(
               leading: const Icon(Mdi.key),
-              title: Text('SSH Keys'),
+              title: const Text('SSH Keys'),
               onTap: () {
                 BeamerCond.of(context, SshKeysLocation());
               },
@@ -95,7 +95,7 @@ class ProjectDrawer extends StatelessWidget {
             if (AppUtils.isDev())
               ListTile(
                 leading: const Icon(Icons.build),
-                title: Text('Sandbox'),
+                title: const Text('Sandbox'),
                 onTap: () {
                   BeamerCond.of(context, SandboxLocation());
                 },
@@ -123,14 +123,15 @@ class ServiceListTileLink extends StatelessWidget {
   final bool alaAdmin;
   final String? help;
 
-  ServiceListTileLink({required ProdServiceDesc desc})
-      : this.icon = desc.icon,
-        this.name = desc.name,
-        this.tooltip = desc.tooltip,
-        this.url = desc.url,
-        this.admin = desc.admin,
-        this.alaAdmin = desc.alaAdmin,
-        this.help = desc.help;
+  ServiceListTileLink({Key? key, required ProdServiceDesc desc})
+      : icon = desc.icon,
+        name = desc.name,
+        tooltip = desc.tooltip,
+        url = desc.url,
+        admin = desc.admin,
+        alaAdmin = desc.alaAdmin,
+        help = desc.help,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -7,10 +7,12 @@ class TextWithHelp extends StatelessWidget {
   final String helpPage;
   final EdgeInsets padding;
 
-  TextWithHelp(
-      {required this.text,
+  const TextWithHelp(
+      {Key? key,
+      required this.text,
       required this.helpPage,
-      this.padding: EdgeInsets.zero});
+      this.padding = EdgeInsets.zero})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return ListTile(

@@ -6,14 +6,18 @@ class ScrollPanel extends StatelessWidget {
   final bool withPadding;
   final double padding;
 
-  ScrollPanel(
-      {required this.child, this.withPadding = false, this.padding = 80});
+  const ScrollPanel(
+      {Key? key,
+      required this.child,
+      this.withPadding = false,
+      this.padding = 80})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
-        constraints: new BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.9),
-        child: new Scrollbar(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
+        child: Scrollbar(
             child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: withPadding

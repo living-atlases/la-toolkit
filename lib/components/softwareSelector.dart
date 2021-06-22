@@ -7,7 +7,7 @@ class SoftwareSelector extends StatefulWidget {
   final Function(String?) onChange;
   final String label;
 
-  SoftwareSelector(
+  const SoftwareSelector(
       {Key? key,
       required this.label,
       required this.versions,
@@ -30,22 +30,22 @@ Choose the latest release to update your portal.
   @override
   Widget build(BuildContext context) {
     Map<String, DropdownMenuItem<String>> releases = {};
-    widget.versions.forEach((String element) {
+    for (String element in widget.versions) {
       // remove dups
       releases[element] = DropdownMenuItem(
           // remove starting 'v' from git tags
           child: Text(element.replaceFirst(RegExp(r'^v'), '')),
           value: element);
-    });
+    }
     bool outDated = widget.initialValue != null &&
-        widget.versions.length > 0 &&
+        widget.versions.isNotEmpty &&
         (widget.versions.first != widget.initialValue &&
             (widget.initialValue != 'custom' &&
                 widget.initialValue != 'upstream'));
     List<DropdownMenuItem<String>> items = releases.values.toList();
     DropdownButtonFormField menu = DropdownButtonFormField(
         key: _formKey,
-        icon: Icon(Icons.arrow_drop_down),
+        icon: const Icon(Icons.arrow_drop_down),
         iconSize: 32,
         // hint: Text("Recommended a recent version"),
         // underline: SizedBox(),
@@ -57,7 +57,7 @@ Choose the latest release to update your portal.
         ),
         value: widget.initialValue != null && widget.initialValue!.isNotEmpty
             ? widget.initialValue
-            : items.length > 0
+            : items.isNotEmpty
                 ? items[0].value
                 : "",
         items: items,
@@ -65,7 +65,7 @@ Choose the latest release to update your portal.
           widget.onChange(value);
         });
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Tooltip(
             message: outDated ? outdatedTooltip : updatedTooltip,
             child: outDated
@@ -76,7 +76,7 @@ Choose the latest release to update your portal.
                     badgeColor: Colors.orangeAccent,
                     borderRadius: BorderRadius.circular(8),
                     badgeContent: const Text('NEW',
-                        style: const TextStyle(color: Colors.white)),
+                        style: TextStyle(color: Colors.white)),
                     child: menu,
                   )
                 : menu));

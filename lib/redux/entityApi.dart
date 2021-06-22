@@ -11,8 +11,7 @@ class EntityApi<T extends IsJsonSerializable> {
 
   EntityApi(this.model);
 
-  Future<Map<String, dynamic>> create<T extends IsJsonSerializable>(
-      T entity) async {
+  Future<Map<String, dynamic>> create(T entity) async {
     Uri url = baseUri();
     try {
       Response response = await http.post(url,
@@ -28,7 +27,7 @@ class EntityApi<T extends IsJsonSerializable> {
     }
   }
 
-  Future<Map<String, dynamic>> update<T extends IsJsonSerializable>(
+  Future<Map<String, dynamic>> update(
       String id, Map<String, dynamic> toUpdate) async {
     Uri url = baseUri(id);
     try {
@@ -69,15 +68,16 @@ class EntityApi<T extends IsJsonSerializable> {
       if (response.statusCode == 200) {
         List<dynamic> l = jsonDecode(response.body);
         return l;
-      } else
+      } else {
         throw "Failed to find (${response.reasonPhrase})";
+      }
     } catch (e) {
       print(e);
       throw "Failed to find ($e)";
     }
   }
 
-  Future<Map<String, dynamic>> addTo<T extends IsJsonSerializable>(
+  Future<Map<String, dynamic>> addTo(
       {required String id,
       required String association,
       required String fk}) async {
@@ -96,10 +96,9 @@ class EntityApi<T extends IsJsonSerializable> {
     }
   }
 
-  Future<Map<String, dynamic>> delete<T extends IsJsonSerializable>(
-      {required String id}) async {
+  Future<Map<String, dynamic>> delete({required String id}) async {
     // DELETE /:model/:id
-    String path = "$id";
+    String path = id;
     Uri url = baseUri(path);
     try {
       Response response = await http.delete(url);
@@ -113,7 +112,7 @@ class EntityApi<T extends IsJsonSerializable> {
     }
   }
 
-  Uri baseUri<T>([String path = "", Map<String, dynamic>? queryParameters]) =>
+  Uri baseUri([String path = "", Map<String, dynamic>? queryParameters]) =>
       AppUtils.uri(env['BACKEND']!, "/$model${path != "" ? '/' + path : ''}",
           queryParameters);
 

@@ -19,7 +19,7 @@ import 'models/postDeployCmd.dart';
 
 class PostDeployPage extends StatefulWidget {
   static const routeName = "postdeploy";
-
+  const PostDeployPage({Key? key}) : super(key: key);
   @override
   _PostDeployPageState createState() => _PostDeployPageState();
 }
@@ -67,7 +67,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
                     showBack: true,
                     title: "Post-Deploy Tasks",
                     showLaIcon: false,
-                    actions: []),
+                    actions: const []),
                 body: ScrollPanel(
                     withPadding: true,
                     child: Row(
@@ -91,7 +91,8 @@ class _PostDeployPageState extends State<PostDeployPage> {
                                       cmd.configurePostfix = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
-                                if (cmd.configurePostfix) PostDeployFields(),
+                                if (cmd.configurePostfix)
+                                  const PostDeployFields(),
                                 const SizedBox(height: 20),
                                 ServerSelector(
                                     selectorKey: GlobalKey<FormFieldState>(),
@@ -125,7 +126,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
 }
 
 class PostDeployFields extends StatelessWidget {
-  PostDeployFields({Key? key}) : super(key: key);
+  const PostDeployFields({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -136,13 +137,13 @@ class PostDeployFields extends StatelessWidget {
           onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _PostDeployFieldsViewModel vm) {
       List<Widget> items = [];
-      PostDeployCmd.postDeployVariables.forEach((varName) {
+      for (var varName in PostDeployCmd.postDeployVariables) {
         items.add(const SizedBox(height: 20));
         items.add(MessageItem(vm.project, LAVariableDesc.get(varName), (value) {
           vm.project.setVariable(LAVariableDesc.get(varName), value);
           vm.onUpdateProject(vm.project);
         }).buildTitle(context));
-      });
+      }
       return Column(children: items);
     });
   }

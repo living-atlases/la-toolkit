@@ -26,12 +26,13 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       required this.projectId,
       this.checkedAt,
       ServiceStatus? status})
-      : id = id ?? new ObjectId().toString(),
+      : id = id ?? ObjectId().toString(),
         status = status ?? ServiceStatus.unknown;
 
   factory LAServiceDeploy.fromJson(Map<String, dynamic> json) =>
       _$LAServiceDeployFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$LAServiceDeployToJson(this);
 
   @override

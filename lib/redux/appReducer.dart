@@ -16,54 +16,50 @@ import 'actions.dart';
 import 'entityReducer.dart';
 
 List<Reducer<AppState>> basic = [
-  new TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
-  new TypedReducer<AppState, OnFetchSoftwareDepsState>(_onFetchState),
-  new TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
-  new TypedReducer<AppState, OnFetchAlaInstallReleases>(
-      _onFetchAlaInstallReleases),
-  new TypedReducer<AppState, OnFetchBackendVersion>(_onFetchBackendVersion),
-  new TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(
+  TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
+  TypedReducer<AppState, OnFetchSoftwareDepsState>(_onFetchState),
+  TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
+  TypedReducer<AppState, OnFetchAlaInstallReleases>(_onFetchAlaInstallReleases),
+  TypedReducer<AppState, OnFetchBackendVersion>(_onFetchBackendVersion),
+  TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(
       _onFetchAlaInstallReleasesFailed),
-  new TypedReducer<AppState, OnFetchGeneratorReleases>(
-      _onFetchGeneratorReleases),
-  new TypedReducer<AppState, OnFetchGeneratorReleasesFailed>(
+  TypedReducer<AppState, OnFetchGeneratorReleases>(_onFetchGeneratorReleases),
+  TypedReducer<AppState, OnFetchGeneratorReleasesFailed>(
       _onFetchGeneratorReleasesFailed),
-  new TypedReducer<AppState, CreateProject>(_createProject),
-  new TypedReducer<AppState, ImportProject>(_importProject),
-  new TypedReducer<AppState, AddTemplateProjects>(_addTemplateProjects),
-  new TypedReducer<AppState, OpenProject>(_openProject),
-  new TypedReducer<AppState, GotoStepEditProject>(_gotoStepEditProject),
-  new TypedReducer<AppState, NextStepEditProject>(_nextStepEditProject),
-  new TypedReducer<AppState, PreviousStepEditProject>(_previousStepEditProject),
-  new TypedReducer<AppState, TuneProject>(_tuneProject),
-  new TypedReducer<AppState, GenerateInvProject>(_generateInvProject),
-  new TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
-  new TypedReducer<AppState, EditService>(_editService),
-  new TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
-  new TypedReducer<AppState, OnDemoAddProjects>(_onDemoAddProjects),
-  new TypedReducer<AppState, OnProjectsAdded>(_onProjectsAdded),
-  new TypedReducer<AppState, OnProjectUpdated>(_onProjectUpdated),
-  new TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
-  new TypedReducer<AppState, ProjectsLoad>(_projectsLoad),
-  new TypedReducer<AppState, OnProjectsLoad>(_onProjectsLoad),
-  new TypedReducer<AppState, OnDemoProjectsLoad>(_onDemoProjectsLoad),
-  new TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
-  new TypedReducer<AppState, TestServicesProject>(_testServicesProject),
-  new TypedReducer<AppState, OnTestConnectivityResults>(
-      _onTestConnectivityResults),
-  new TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
-  new TypedReducer<AppState, OnSshKeysScan>(_onSshKeysScan),
-  new TypedReducer<AppState, OnSshKeysScanned>(_onSshKeysScanned),
-  new TypedReducer<AppState, OnAddSshKey>(_onAddSshKey),
-  new TypedReducer<AppState, OnImportSshKey>(_onImportSshKey),
-  new TypedReducer<AppState, ShowDeployProjectResults>(
-      _showDeployProjectResults),
-  new TypedReducer<AppState, ShowSnackBar>(_showSnackBar),
-  new TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
-  new TypedReducer<AppState, PrepareDeployProject>(_prepareDeployProject),
-  new TypedReducer<AppState, SaveDeployCmd>(_saveDeployCmd),
-  new TypedReducer<AppState, OnDeletedLog>(_onDeletedLog),
-  new TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
+  TypedReducer<AppState, CreateProject>(_createProject),
+  TypedReducer<AppState, ImportProject>(_importProject),
+  TypedReducer<AppState, AddTemplateProjects>(_addTemplateProjects),
+  TypedReducer<AppState, OpenProject>(_openProject),
+  TypedReducer<AppState, GotoStepEditProject>(_gotoStepEditProject),
+  TypedReducer<AppState, NextStepEditProject>(_nextStepEditProject),
+  TypedReducer<AppState, PreviousStepEditProject>(_previousStepEditProject),
+  TypedReducer<AppState, TuneProject>(_tuneProject),
+  TypedReducer<AppState, GenerateInvProject>(_generateInvProject),
+  TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
+  TypedReducer<AppState, EditService>(_editService),
+  TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
+  TypedReducer<AppState, OnDemoAddProjects>(_onDemoAddProjects),
+  TypedReducer<AppState, OnProjectsAdded>(_onProjectsAdded),
+  TypedReducer<AppState, OnProjectUpdated>(_onProjectUpdated),
+  TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
+  TypedReducer<AppState, ProjectsLoad>(_projectsLoad),
+  TypedReducer<AppState, OnProjectsLoad>(_onProjectsLoad),
+  TypedReducer<AppState, OnDemoProjectsLoad>(_onDemoProjectsLoad),
+  TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
+  TypedReducer<AppState, TestServicesProject>(_testServicesProject),
+  TypedReducer<AppState, OnTestConnectivityResults>(_onTestConnectivityResults),
+  TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
+  TypedReducer<AppState, OnSshKeysScan>(_onSshKeysScan),
+  TypedReducer<AppState, OnSshKeysScanned>(_onSshKeysScanned),
+  TypedReducer<AppState, OnAddSshKey>(_onAddSshKey),
+  TypedReducer<AppState, OnImportSshKey>(_onImportSshKey),
+  TypedReducer<AppState, ShowDeployProjectResults>(_showDeployProjectResults),
+  TypedReducer<AppState, ShowSnackBar>(_showSnackBar),
+  TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
+  TypedReducer<AppState, PrepareDeployProject>(_prepareDeployProject),
+  TypedReducer<AppState, SaveDeployCmd>(_saveDeployCmd),
+  TypedReducer<AppState, OnDeletedLog>(_onDeletedLog),
+  TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
 ];
 
 final appReducer =
@@ -107,7 +103,7 @@ AppState _onFetchGeneratorReleasesFailed(
 
 AppState _createProject(AppState state, CreateProject action) {
   return state.copyWith(
-      currentProject: new LAProject(),
+      currentProject: LAProject(),
       status: LAProjectViewStatus.create,
       currentStep: 0);
 }
@@ -166,7 +162,7 @@ AppState _generateInvProject(AppState state, GenerateInvProject action) {
   if (AppUtils.isDemo()) return state;
   String id = action.project.id;
   String url = "${AppUtils.scheme}://${env['BACKEND']}/api/v1/gen/$id/true";
-  html.AnchorElement anchorElement = new html.AnchorElement(href: url);
+  html.AnchorElement anchorElement = html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();
   return state;
@@ -178,7 +174,7 @@ AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
 
 AppState _onDemoAddProjects(AppState state, OnDemoAddProjects action) {
   return state.copyWith(
-      projects: new List<LAProject>.from(state.projects)
+      projects: List<LAProject>.from(state.projects)
         ..insertAll(0, action.projects));
 }
 
@@ -186,13 +182,13 @@ AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
   List<LAProject> ps = [];
   if (AppUtils.isDemo()) {
     LAProject newP = LAProject.fromJson(action.projectsJson[0]);
-    ps = new List<LAProject>.from(state.projects)..insert(0, newP);
+    ps = List<LAProject>.from(state.projects)..insert(0, newP);
   } else {
-    action.projectsJson.forEach((pJson) {
+    for (var pJson in action.projectsJson) {
       LAProject p = LAProject.fromJson(pJson);
       p.validateCreation();
       ps.add(p);
-    });
+    }
   }
   return state.copyWith(
       currentProject: ps[0], status: LAProjectViewStatus.view, projects: ps);
@@ -201,7 +197,7 @@ AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
 AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
   return state.copyWith(
       currentProject: LAProject(),
-      projects: new List<LAProject>.from(state.projects)
+      projects: List<LAProject>.from(state.projects)
         ..removeWhere((item) => item.id == action.project.id));
 }
 
@@ -211,17 +207,17 @@ AppState _projectsLoad(AppState state, ProjectsLoad action) {
 
 AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
   List<LAProject> ps = [];
-  action.projectsJson.forEach((pJson) {
+  for (var pJson in action.projectsJson) {
     try {
       ps.add(LAProject.fromJson(pJson));
     } catch (e) {
       print("Failed to retrieve project");
       print(pJson);
     }
-  });
+  }
   LAProject currentProject = ps.firstWhere(
       (p) => p.id == state.currentProject.id,
-      orElse: () => ps.length > 0 ? ps[0] : LAProject());
+      orElse: () => ps.isNotEmpty ? ps[0] : LAProject());
   return state.copyWith(
       currentProject: currentProject, projects: ps, loading: false);
 }
@@ -238,9 +234,9 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
         .map((project) => project.id == updatedP.id ? updatedP : project)
         .toList();
   } else {
-    action.projectsJson.forEach((pJson) {
+    for (var pJson in action.projectsJson) {
       ps.add(LAProject.fromJson(pJson));
-    });
+    }
   }
   return state.copyWith(currentProject: ps[0], projects: ps);
 }
@@ -265,14 +261,14 @@ AppState _onTestConnectivityResults(
     AppState state, OnTestConnectivityResults action) {
   LAProject currentProject = state.currentProject;
 
-  currentProject.servers.forEach((server) {
+  for (LAServer server in currentProject.servers) {
     server.reachable = ServiceStatus.unknown;
     server.sshReachable = ServiceStatus.unknown;
     server.sudoEnabled = ServiceStatus.unknown;
     server.osName = "";
     server.osVersion = "";
     currentProject.upsertServer(server);
-  });
+  }
 
   action.results['servers'].forEach((server) {
     currentProject.upsertServer(LAServer.fromJson(server));
@@ -281,8 +277,9 @@ AppState _onTestConnectivityResults(
   if (currentProject.allServersWithServicesReady() &&
       currentProject.status.value <= LAProjectStatus.reachable.value) {
     currentProject.setProjectStatus(LAProjectStatus.reachable);
-  } else
+  } else {
     currentProject.setProjectStatus(LAProjectStatus.advancedDefined);
+  }
 
   return state.copyWith(
       currentProject: currentProject,
@@ -336,7 +333,7 @@ AppState _showDeployProjectResults(
 }
 
 List<LAProject> replaceProject(AppState state, LAProject currentProject) {
-  List<LAProject> projects = new List<LAProject>.from(state.projects);
+  List<LAProject> projects = List<LAProject>.from(state.projects);
   int index = projects.indexWhere((cur) => cur.id == currentProject.id);
   projects.replaceRange(index, index + 1, [currentProject]);
   return projects;
@@ -369,7 +366,7 @@ AppState _saveDeployCmd(AppState state, SaveDeployCmd action) {
 
 AppState _onDeletedLog(AppState state, OnDeletedLog action) {
   LAProject p = state.currentProject;
-  p.cmdHistoryEntries = new List<CmdHistoryEntry>.from(p.cmdHistoryEntries)
+  p.cmdHistoryEntries = List<CmdHistoryEntry>.from(p.cmdHistoryEntries)
     ..removeWhere((cmd) => cmd.id == action.cmd.id);
   List<LAProject> projects = replaceProject(state, p);
   return state.copyWith(currentProject: p, projects: projects);
@@ -390,11 +387,11 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   // List<dynamic> results = response['results'];
   List<dynamic> sdsJ = response['serviceDeploys'];
   List<LAServiceDeploy> sds = [];
-  sdsJ.forEach((sdJ) {
+  for (var sdJ in sdsJ) {
     LAServiceDeploy sd = LAServiceDeploy.fromJson(sdJ);
     sds.add(sd);
     // print(sdJ);
-  });
+  }
   if (currentProject.id == pId) {
     currentProject.serviceDeploys = sds;
     currentProject.checkResults = response['results'];

@@ -23,6 +23,8 @@ import 'models/laServiceDesc.dart';
 import 'models/laVariable.dart';
 
 class LAProjectTunePage extends StatelessWidget {
+  LAProjectTunePage({Key? key}) : super(key: key);
+
   static const routeName = "tune";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -97,12 +99,12 @@ class LAProjectTunePage extends StatelessWidget {
                       TextButton(
                           // icon: Icon(Icons.cancel),
                           style: TextButton.styleFrom(primary: Colors.white),
-                          child: Text(
+                          child: const Text(
                             "CANCEL",
                           ),
                           onPressed: () => vm.onCancel(project)),
                       IconButton(
-                        icon: Tooltip(
+                        icon: const Tooltip(
                             child: Icon(Icons.save, color: Colors.white),
                             message: "Save the current LA project variables"),
                         onPressed: () {
@@ -129,7 +131,7 @@ class LAProjectTunePage extends StatelessWidget {
                                         vm.onSaveProject(project);
                                       })),
                               if (!AppUtils.isDemo() && project.advancedTune)
-                                SizedBox(height: 20),
+                                const SizedBox(height: 20),
                               if (!AppUtils.isDemo() && project.advancedTune)
                                 ListTile(
                                     // contentPadding: EdgeInsets.zero,
@@ -156,7 +158,7 @@ class LAProjectTunePage extends StatelessWidget {
                                             vm.onSaveProject(project);
                                           }
                                         })),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               ListView.builder(
                                 scrollDirection: Axis.vertical,
                                 shrinkWrap: true,
@@ -173,25 +175,28 @@ class LAProjectTunePage extends StatelessWidget {
                                   );
                                 },
                               ),
-                              if (project.advancedTune) SizedBox(height: 20),
+                              if (project.advancedTune)
+                                const SizedBox(height: 20),
                               if (project.advancedTune)
                                 HeadingItem("Other variables")
                                     .buildTitle(context),
-                              if (project.advancedTune) SizedBox(height: 30),
                               if (project.advancedTune)
-                                Text(
+                                const SizedBox(height: 30),
+                              if (project.advancedTune)
+                                const Text(
                                   "Write here other extra ansible variables that are not configurable in the previous forms:",
                                   style: TextStyle(
                                       fontSize: 18, color: Colors.black54),
                                 ),
-                              if (project.advancedTune) SizedBox(height: 20),
+                              if (project.advancedTune)
+                                const SizedBox(height: 20),
                               if (project.advancedTune)
                                 // This breaks the newline enter key:
                                 //ListTile(
                                 //                        title:
                                 GenericTextFormField(
                                     initialValue:
-                                        project.additionalVariables.length > 0
+                                        project.additionalVariables.isNotEmpty
                                             ? utf8.decode(base64.decode(
                                                 project.additionalVariables))
                                             : _initialExtraAnsibleVariables(
@@ -212,18 +217,18 @@ class LAProjectTunePage extends StatelessWidget {
                               /* trailing: HelpIcon(
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
-                              SizedBox(height: 20),
-                              LintProjectPanel(),
+                              const SizedBox(height: 20),
+                              const LintProjectPanel(),
                               if (_endNoteEnabled)
                                 Row(children: [
-                                  Text(
+                                  const Text(
                                       "Note: the colors of the variables values indicate if these values are "),
                                   Text("already deployed",
                                       style: LAColorTheme.deployedTextStyle),
-                                  Text(" in your servers or "),
+                                  const Text(" in your servers or "),
                                   Text("they are not deployed yet",
                                       style: LAColorTheme.unDeployedTextStyle),
-                                  Text("."),
+                                  const Text("."),
                                 ]),
                             ]))))));
       },
@@ -278,6 +283,7 @@ class HeadingItem implements ListItem {
 
   HeadingItem(this.heading, [this.subheading = false]);
 
+  @override
   Widget buildTitle(BuildContext context) {
     return Text(heading,
         style: !subheading
@@ -286,7 +292,8 @@ class HeadingItem implements ListItem {
                 fontSize: 18, color: LAColorTheme.laThemeData.hintColor));
   }
 
-  Widget buildSubtitle(BuildContext context) => Text("");
+  @override
+  Widget buildSubtitle(BuildContext context) => const Text("");
 }
 
 // A ListItem that contains data to display a message.
@@ -296,10 +303,12 @@ class MessageItem implements ListItem {
   ValueChanged<Object> onChanged;
   MessageItem(this.project, this.varDesc, this.onChanged);
 
+  @override
   Widget buildTitle(BuildContext context) {
     final initialValue = project.getVariableValue(varDesc.nameInt);
     var laVariable = project.getVariable(varDesc.nameInt);
     final bool deployed = laVariable.status == LAVariableStatus.deployed;
+    // ignore: prefer_typing_uninitialized_variables
     var defValue;
     if (varDesc.defValue != null) defValue = varDesc.defValue!(project);
     return ListTile(
@@ -334,7 +343,8 @@ class MessageItem implements ListItem {
             varDesc.help != null ? HelpIcon(wikipage: varDesc.help!) : null);
   }
 
-  Widget buildSubtitle(BuildContext context) => Text("");
+  @override
+  Widget buildSubtitle(BuildContext context) => const Text("");
 }
 
 class _ProjectTuneViewModel {

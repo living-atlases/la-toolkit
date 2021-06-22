@@ -9,31 +9,33 @@ class DeploySubResultWidget extends StatelessWidget {
   final String title;
   final dynamic results;
   final List<AnsibleError> errors;
-  DeploySubResultWidget(
-      {required this.host,
+  const DeploySubResultWidget(
+      {Key? key,
+      required this.host,
       required this.title,
       required this.results,
-      required this.errors});
+      required this.errors})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<Widget> errorsWidgets = [];
-    errors.forEach((error) {
+    for (var error in errors) {
       errorsWidgets.addAll([
         Padding(
-            padding: EdgeInsets.fromLTRB(20, 10, 0, 0),
+            padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               SelectableText.rich(
                 //overflow: TextOverflow.visible,
                 //softWrap: true,
                 TextSpan(children: <TextSpan>[
-                  TextSpan(text: "  Task:  "),
+                  const TextSpan(text: "  Task:  "),
                   TextSpan(
                       text: error.taskName, style: GoogleFonts.robotoMono()),
-                  TextSpan(text: " failed with message: \n"),
+                  const TextSpan(text: " failed with message: \n"),
                   TextSpan(
-                      text: "${error.msg}",
+                      text: error.msg,
                       style: GoogleFonts.robotoMono(
                           color: ResultType.failures.color)),
                 ]),
@@ -48,17 +50,17 @@ class DeploySubResultWidget extends StatelessWidget {
               // TextSpan(text: ""),
             ]))
       ]);
-    });
+    }
     List<Widget> columnChildren = [];
     if (results.length > 0) {
       DeployTextSummary summary =
           DeployTextSummary(host: host, title: title, results: results);
       columnChildren.addAll([summary]);
     }
-    if (errorsWidgets.length > 0) SizedBox(height: 10);
-    if (errorsWidgets.length > 0) columnChildren.addAll(errorsWidgets);
+    if (errorsWidgets.isNotEmpty) const SizedBox(height: 10);
+    if (errorsWidgets.isNotEmpty) columnChildren.addAll(errorsWidgets);
     return Padding(
-        padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
         child: Column(
           //mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,

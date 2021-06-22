@@ -68,9 +68,9 @@ void main() {
     List<String> laVariablesList =
         LAVariableDesc.map.values.map((v) => v.nameInt).toList();
     laVariablesList.sort();
-    laVariablesList.forEach((e) {
+    for (var e in laVariablesList) {
       list = list + "LA_variable_$e: 'LA_variable_$e',\n";
-    });
+    }
     print(list);
     expect(list.length, greaterThan(0));
   });

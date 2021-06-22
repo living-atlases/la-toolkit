@@ -5,7 +5,8 @@ import 'package:la_toolkit/models/prodServiceDesc.dart';
 
 class ServicesStatusPanel extends StatelessWidget {
   final List<ProdServiceDesc> services;
-  ServicesStatusPanel({Key? key, required this.services}) : super(key: key);
+  const ServicesStatusPanel({Key? key, required this.services})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

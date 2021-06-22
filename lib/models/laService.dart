@@ -16,7 +16,7 @@ enum ServiceStatus { unknown, success, failed }
 
 extension ParseToString on ServiceStatus {
   String toS() {
-    return this.toString().split('.').last;
+    return toString().split('.').last;
   }
 
   Color get color {
@@ -81,17 +81,16 @@ class LAService implements IsJsonSerializable<LAService> {
       ServiceStatus? status,
       required this.suburl,
       required this.projectId})
-      : id = id ?? new ObjectId().toString(),
+      : id = id ?? ObjectId().toString(),
         status = status ?? ServiceStatus.unknown;
 
-  LAService.fromDesc(LAServiceDesc desc, String projectId)
-      : id = new ObjectId().toString(),
+  LAService.fromDesc(LAServiceDesc desc, this.projectId)
+      : id = ObjectId().toString(),
         nameInt = desc.nameInt,
         iniPath = desc.path,
         use = !desc.optional ? true : desc.initUse,
         usesSubdomain = true,
-        this.status = ServiceStatus.unknown,
-        projectId = projectId,
+        status = ServiceStatus.unknown,
         suburl = desc.name;
 
   String get path => usesSubdomain
@@ -106,14 +105,16 @@ class LAService implements IsJsonSerializable<LAService> {
 
   factory LAService.fromJson(Map<String, dynamic> json) =>
       _$LAServiceFromJson(json);
+  @override
   Map<String, dynamic> toJson() => _$LAServiceToJson(this);
 
   @override
   String toString() {
-    if (use)
+    if (use) {
       return 'LAService ($nameInt, project: (${projectId.length > 8 ? projectId.substring(0, 8) : ""}))';
-    else
+    } else {
       return "not used";
+    }
   }
 
   @override

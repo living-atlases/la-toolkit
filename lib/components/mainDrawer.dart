@@ -15,25 +15,21 @@ class MainDrawer extends StatefulWidget {
   final String currentRoute;
   final PackageInfo packageInfo;
 
-  MainDrawer(
-      {required this.appName,
+  const MainDrawer(
+      {Key? key,
+      required this.appName,
       required this.currentRoute,
-      required this.packageInfo});
-  /*  : super(
-            key: key,
-            child: mainDrawer(context, currentRoute, appName, packageInfo)); */
+      required this.packageInfo})
+      : super(key: key);
 
   @override
-  _MainDrawerState createState() =>
-      _MainDrawerState(appName, currentRoute, packageInfo);
+  State<StatefulWidget> createState() {
+    return _MainDrawerState();
+  }
 }
 
 class _MainDrawerState extends State<MainDrawer> {
-  final String appName;
-  final String currentRoute;
-  final PackageInfo packageInfo;
-
-  _MainDrawerState(this.appName, this.currentRoute, this.packageInfo);
+  _MainDrawerState();
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +51,8 @@ class _MainDrawerState extends State<MainDrawer> {
                     height: 80.0,
                   ),
                   const SizedBox(height: 20.0),
-                  Text(appName,
-                      style: TextStyle(
+                  Text(widget.appName,
+                      style: const TextStyle(
                         fontSize: 24.0,
                         color: Colors.white,
                       )),
@@ -69,7 +65,7 @@ class _MainDrawerState extends State<MainDrawer> {
           ),
           ListTile(
             leading: const Icon(Mdi.key),
-            title: Text('SSH Keys'),
+            title: const Text('SSH Keys'),
             onTap: () {
               BeamerCond.of(context, SshKeysLocation());
             },
@@ -78,21 +74,21 @@ class _MainDrawerState extends State<MainDrawer> {
           if (AppUtils.isDev())
             ListTile(
               leading: const Icon(Icons.build),
-              title: Text('Sandbox'),
+              title: const Text('Sandbox'),
               onTap: () {
                 BeamerCond.of(context, SandboxLocation());
               },
             ),
           Column(children: ListTileLink.drawerBottomLinks(context, false)),
           AboutListTile(
-              icon: Icon(LAIcon.la),
-              applicationName: appName,
+              icon: const Icon(LAIcon.la),
+              applicationName: widget.appName,
               applicationVersion:
-                  "Version: ${packageInfo.version} build: ${packageInfo.buildNumber}",
-              applicationIcon: Icon(LAIcon.la),
+                  "Version: ${widget.packageInfo.version} build: ${widget.packageInfo.buildNumber}",
+              applicationIcon: const Icon(LAIcon.la),
               applicationLegalese:
                   "© 2020-${DateTime.now().year.toString()} Living Atlases, under Apache 2.0",
-              aboutBoxChildren: <Widget>[
+              aboutBoxChildren: const <Widget>[
                 SizedBox(height: 10.0),
                 /* Text(S.of(context).appMoto),
                     // , style: TextStyle(fontStyle: FontStyle.italic)),

@@ -18,6 +18,8 @@ import 'laTheme.dart';
 import 'notInDemo.dart';
 
 class SshKeyPage extends StatelessWidget {
+  SshKeyPage({Key? key}) : super(key: key);
+
   static const routeName = "ssh-keys";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -45,23 +47,23 @@ class SshKeyPage extends StatelessWidget {
                 showBack: true,
                 actions: [
                   TextButton.icon(
-                      icon: Icon(Icons.add_circle_outline),
+                      icon: const Icon(Icons.add_circle_outline),
                       style: TextButton.styleFrom(primary: Colors.white),
                       onPressed: () => _generateKeyDialog(context, vm),
-                      label: Text("GENERATE A NEW KEY")),
+                      label: const Text("GENERATE A NEW KEY")),
                   TextButton.icon(
-                      icon: Icon(Icons.upload_rounded),
+                      icon: const Icon(Icons.upload_rounded),
                       style: TextButton.styleFrom(primary: Colors.white),
                       onPressed: () => _importKeysDialog(context, vm),
-                      label: Text("UPLOAD KEYS")),
+                      label: const Text("UPLOAD KEYS")),
                   TextButton.icon(
-                      icon: Icon(Mdi.refresh),
+                      icon: const Icon(Mdi.refresh),
                       style: TextButton.styleFrom(primary: Colors.white),
                       onPressed: () {
                         context.loaderOverlay.show();
                         vm.onScanKeys();
                       },
-                      label: Text("SCAN YOUR KEYS")),
+                      label: const Text("SCAN YOUR KEYS")),
                 ]),
             body: AppSnackBar(ScrollPanel(
                 withPadding: true,
@@ -74,7 +76,7 @@ class SshKeyPage extends StatelessWidget {
                     Expanded(
                         flex: 8, // 80%,
                         child: AppUtils.isDemo()
-                            ? NotInTheDemoPanel()
+                            ? const NotInTheDemoPanel()
                             : SshKeysTable(vm: vm)),
                     Expanded(
                       flex: 1, // 10%
@@ -90,15 +92,15 @@ class SshKeyPage extends StatelessWidget {
     String? name;
     Alert(
         context: context,
-        closeIcon: Icon(Icons.close),
-        image: Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
+        closeIcon: const Icon(Icons.close),
+        image: const Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
         title: "SSH Key Generation",
-        style: AlertStyle(
+        style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
           children: <Widget>[
             // TODO: Add a subsection for this help
-            TextWithHelp(
+            const TextWithHelp(
                 text: "Type a name for you new ssh key:",
                 helpPage: "SSH-for-Beginners"),
             GenericTextFormField(
@@ -114,7 +116,7 @@ class SshKeyPage extends StatelessWidget {
                 onChanged: (value) {
                   name = value;
                 }),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
           ],
@@ -128,7 +130,7 @@ class SshKeyPage extends StatelessWidget {
                 Navigator.pop(context);
               }
             },
-            child: Text(
+            child: const Text(
               "GENERATE",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -142,15 +144,15 @@ class SshKeyPage extends StatelessWidget {
     String? privateKey;
     Alert(
         context: context,
-        closeIcon: Icon(Icons.close),
-        image: Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
+        closeIcon: const Icon(Icons.close),
+        image: const Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
         title: "SSH Key Import",
-        style: AlertStyle(
+        style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
           children: <Widget>[
             // TODO: Add a subsection for this help
-            TextWithHelp(
+            const TextWithHelp(
                 text: "Type a name for you ssh key:",
                 helpPage: "SSH-for-Beginners"),
             GenericTextFormField(
@@ -166,7 +168,7 @@ class SshKeyPage extends StatelessWidget {
                 onChanged: (value) {
                   name = value;
                 }),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             GenericTextFormField(
@@ -184,7 +186,7 @@ class SshKeyPage extends StatelessWidget {
                 onChanged: (value) {
                   publicKey = value;
                 }),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             GenericTextFormField(
@@ -215,7 +217,7 @@ class SshKeyPage extends StatelessWidget {
                 }
               }
             },
-            child: Text(
+            child: const Text(
               "IMPORT",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -235,25 +237,25 @@ class SshKeysTable extends StatelessWidget {
         // sortAscending: sort,
         // sortColumnIndex: 0,
         showCheckboxColumn: false,
-        columns: [
-          const DataColumn(
-            label: const Text("NAME"),
+        columns: const [
+          DataColumn(
+            label: Text("NAME"),
             numeric: false,
             tooltip: "This is the key name",
           ),
-          const DataColumn(
-            label: const Text("DESCRIPTION"),
+          DataColumn(
+            label: Text("DESCRIPTION"),
             numeric: false,
             tooltip: "",
           ),
-          const DataColumn(
-            label: const Text("PROTECTED?"),
+          DataColumn(
+            label: Text("PROTECTED?"),
             numeric: false,
             tooltip:
                 "If the key is passphrase protected (for now we only support passwordless keys)",
           ),
-          const DataColumn(
-            label: const Text("PUBLIC KEY"),
+          DataColumn(
+            label: Text("PUBLIC KEY"),
             numeric: false,
             tooltip: "SSH Public key, press the icon to copy",
           ),
@@ -268,11 +270,11 @@ class SshKeysTable extends StatelessWidget {
                   DataCell(Padding(
                       padding: const EdgeInsets.only(left: 30),
                       child: sshKey.encrypted
-                          ? Tooltip(
+                          ? const Tooltip(
                               message:
                                   "SSH Key password encrypted, no supported right now",
                               child: Icon(Mdi.lockOutline))
-                          : Tooltip(
+                          : const Tooltip(
                               message: "SSH Key without password",
                               child: Icon(Mdi.lockOpenVariantOutline,
                                   color: Colors.grey)))),
@@ -281,11 +283,11 @@ class SshKeysTable extends StatelessWidget {
                       child: Tooltip(
                           message: "Press to copy the SSH public key",
                           child: IconButton(
-                            icon: Icon(Icons.copy),
+                            icon: const Icon(Icons.copy),
                             onPressed: () => FlutterClipboard.copy(
                                     sshKey.publicKey)
                                 .then((value) => ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                                    .showSnackBar(const SnackBar(
                                         content: Text(
                                             "SSH Key copied to clipboard")))),
                           )))),
