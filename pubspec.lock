@@ -236,13 +236,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  csp:
-    dependency: transitive
-    description:
-      name: csp
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
   csslib:
     dependency: transitive
     description:
@@ -250,13 +243,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.17.0"
-  cupertino_icons:
-    dependency: transitive
-    description:
-      name: cupertino_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   dart_style:
     dependency: transitive
     description:
@@ -460,7 +446,7 @@ packages:
     source: hosted
     version: "4.0.0"
   intl:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -501,13 +487,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.1"
-  kind:
-    dependency: transitive
-    description:
-      name: kind
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.2"
   latlong2:
     dependency: "direct main"
     description:
@@ -760,13 +739,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  protobuf:
-    dependency: transitive
-    description:
-      name: protobuf
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   pub_semver:
     dependency: "direct main"
     description:
@@ -823,13 +795,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
-  share:
-    dependency: transitive
-    description:
-      name: share
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -1129,20 +1094,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  web_browser:
-    dependency: "direct main"
-    description:
-      name: web_browser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.0"
-  web_node:
-    dependency: transitive
-    description:
-      name: web_node
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.1"
   web_socket_channel:
     dependency: transitive
     description:
@@ -1157,13 +1108,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  webview_flutter:
-    dependency: transitive
-    description:
-      name: webview_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.4"
   win32:
     dependency: transitive
     description:

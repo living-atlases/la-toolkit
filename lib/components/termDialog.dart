@@ -7,10 +7,8 @@ import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:web_browser/web_browser.dart';
 
-import '../laTheme.dart';
-import '../notInDemo.dart';
+import 'embedWebView.dart';
 
 class TermDialog {
   static show(context,
@@ -18,7 +16,7 @@ class TermDialog {
       required int port,
       required int pid,
       VoidCallback? onClose}) async {
-    print("${getInitialUrl(port)}");
+    // print("${getInitialUrl(port)}");
     await showFloatingModalBottomSheet(
         // This can be added to the custom modal
         // expand: false,
@@ -39,13 +37,12 @@ class TermDialog {
                   ),
                   actions: [
                     Tooltip(
-                      message: "Close the console",
-                      child: TextButton(
-                          child: const Icon(Icons.close, color: Colors.white),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          }),
-                    ),
+                        message: "Close the console",
+                        child: TextButton(
+                            child: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            })),
                   ],
                 ),
                 body: termArea(port),
@@ -62,21 +59,11 @@ class TermDialog {
           ? '${AppUtils.scheme}://${env['BACKEND']!.split(":")[0]}/ttyd$port'
           : '${AppUtils.scheme}://${env['BACKEND']!.split(":")[0]}:$port/';
 
-  static SafeArea termArea(int port) {
-    return SafeArea(
-        bottom: false,
+  static Widget termArea(int port) {
+    return InteractiveViewer(
         child: Container(
-          color: LAColorTheme.laPalette,
-          padding: EdgeInsets.fromLTRB(3, 0, 8, 0),
-          child: !AppUtils.isDemo()
-              ? WebBrowser(
-                  initialUrl: getInitialUrl(port),
-                  interactionSettings: WebBrowserInteractionSettings(
-                      topBar: null, bottomBar: null),
-                  javascriptEnabled: true,
-                )
-              : NotInTheDemoPanel(),
-        ));
+            alignment: Alignment.center,
+            child: EmbedWebView(src: getInitialUrl(port))));
   }
 
   static Future<T> showFloatingModalBottomSheet<T>({
@@ -111,7 +98,7 @@ class TermDialog {
     // context.loaderOverlay.show();
     context.loaderOverlay.show();
     Api.term(
-        onStart: (cmd, port, ttydPid) {
+        onStart: (String cmd, int port, int ttydPid) {
           context.loaderOverlay.hide();
           TermDialog.show(context, port: port, pid: ttydPid);
         },
