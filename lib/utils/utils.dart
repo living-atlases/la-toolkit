@@ -196,6 +196,8 @@ class DeployUtils {
         cmd: deployCmd,
         onStart: (cmdEntry, port, ttydPid) {
           context.loaderOverlay.hide();
+          /* Not used right now, maybe in the future
+          context.beamToNamed('/term/$port/$ttydPid'); */
           TermDialog.show(context,
               port: port,
               pid: ttydPid,

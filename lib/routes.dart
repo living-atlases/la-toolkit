@@ -1,6 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:la_toolkit/cmdTermPage.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/logsPage.dart';
 import 'package:la_toolkit/portalStatusPage.dart';
@@ -44,7 +45,8 @@ class Routes {
               PreDeployLocation(),
               PostDeployLocation(),
               DeployResultsLocation(),
-              PortalStatusLocation()
+              PortalStatusLocation(),
+              // disabled for now CmdTermLocation()
             ]));
 
   static final Routes _instance = Routes._privateConstructor();
@@ -175,6 +177,24 @@ class DeployLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
       [BeamPage(key: ValueKey(route), child: DeployPage())];
+}
+
+class CmdTermLocation extends BeamLocation {
+  @override
+  List<String> get pathBlueprints => ['/${CmdTermPage.routeName}/:port/:pid'];
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
+        BeamPage(
+            key: ValueKey(
+                '${CmdTermPage.routeName}-${state.pathParameters['port']}-${state.pathParameters['pid']}'),
+            child:
+
+                //if (state.uri.pathSegments.contains('books'))
+                CmdTermPage(
+                    port: int.parse(state.pathParameters['port']!),
+                    ttydPid: int.parse(state.pathParameters['pid']!)))
+      ];
 }
 
 class DeployResultsLocation extends NamedBeamLocation {
