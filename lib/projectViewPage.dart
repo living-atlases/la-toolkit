@@ -201,7 +201,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 enabled: true,
                 askConfirmation: true,
                 action: () => vm.onDelProject(project)),
-            if (false && AppUtils.isDev())
+            if (AppUtils.isDev())
               Tool(
                   icon: const Icon(Mdi.pipe),
                   title: "Data Processing Pipelines",
