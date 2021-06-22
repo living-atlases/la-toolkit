@@ -196,7 +196,7 @@ class Api {
   }
 
   static Future<void> term(
-      {required Function(String cmd, int port, int ttydPort) onStart,
+      {required Function(String cmd, int port, int ttydPid) onStart,
       required ErrorCallback onError,
       String? server,
       String? projectId}) async {
