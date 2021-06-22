@@ -11,7 +11,8 @@ class AdminIconButton extends StatelessWidget {
   final Color? color;
   final double? size;
   final bool min;
-  AdminIconButton(
+
+  const AdminIconButton(
       {required this.url,
       this.tooltip,
       this.alaAdmin: false,
