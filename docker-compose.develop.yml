@@ -60,6 +60,30 @@ services:
       - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - /data/la-toolkit/mongo:/data/db
 
+  mongo-db-backup:
+    image: tiredofit/mongodb-backup
+    container_name: la-toolkit-mongo-db-backup
+    restart: always
+    links:
+     - mongo
+    depends_on:
+     - mongo
+    environment:
+      - DB_HOST=mongo
+      - DB_USER=la_toolkit_mongo_admin
+      - DB_PASS=la_toolkit_changeme
+      - DB_DUMP_DEBUG=TRUE
+      - DB_DUMP_FREQ=1440
+      # Un comment to set a time to do the backup or uncomment to inmediate backup
+      # - DB_DUMP_BEGIN: 0000
+      - DB_CLEANUP_TIME=8640
+      - MD5=TRUE
+      - COMPRESSION=XZ
+      - TZ=Europe/Copenhagen
+    restart: always
+    volumes:
+      - /data/la-toolkit/backups:/backups
+
   mongo-express:
     image: mongo-express
     container_name: la-toolkit-mongo-express

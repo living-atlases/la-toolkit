@@ -91,7 +91,7 @@ Optionally you'll need the [Docker Compose](https://docs.docker.com/compose/inst
 Your will need also some directories to store your config, logs and ssh configuration. In GNU/Linux you can use:
 
 ```
-mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/ /data/la-toolkit/mongo
+mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/ /data/la-toolkit/mongo /data/la-toolkit/backups
       
 ``` 
 or similar to create it.  Something like:
@@ -101,6 +101,7 @@ or similar to create it.  Something like:
          ├── config
          ├── logs
          ├── mongo
+         ├── backups
          └── ssh 
 ```
 
