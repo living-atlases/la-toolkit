@@ -11,10 +11,10 @@ extension PreDeployCmdCopyWith on PreDeployCmd {
     bool? addAdditionalDeps,
     bool? addAnsibleUser,
     bool? addSshKeys,
-    dynamic? advanced,
-    dynamic? continueEvenIfFails,
-    dynamic? debug,
-    dynamic? dryRun,
+    bool? advanced,
+    bool? continueEvenIfFails,
+    bool? debug,
+    bool? dryRun,
     bool? etcHosts,
     bool? giveSudo,
     List<String>? limitToServers,
@@ -61,10 +61,10 @@ PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) {
     skipTags:
         (json['skipTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
     tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-    advanced: json['advanced'],
-    continueEvenIfFails: json['continueEvenIfFails'],
-    debug: json['debug'],
-    dryRun: json['dryRun'],
+    advanced: json['advanced'] as bool,
+    continueEvenIfFails: json['continueEvenIfFails'] as bool,
+    debug: json['debug'] as bool,
+    dryRun: json['dryRun'] as bool,
   )
     ..deployServices = (json['deployServices'] as List<dynamic>)
         .map((e) => e as String)

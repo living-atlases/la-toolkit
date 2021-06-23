@@ -38,7 +38,7 @@ class AppUtils {
 
   static bool https = (env['HTTPS'] ?? "false").parseBool();
 
-  static Function uri = (String a, String p, [query]) =>
+  static uri(String a, String p, [query]) =>
       https ? Uri.https(a, p, query) : Uri.http(a, p, query);
   static String scheme =
       (env['HTTPS'] ?? "false").parseBool() ? "https" : "http";

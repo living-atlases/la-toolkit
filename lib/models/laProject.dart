@@ -10,6 +10,7 @@ import 'package:la_toolkit/models/isJsonSerializable.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laSubService.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
@@ -536,13 +537,15 @@ check results length: ${checkResults.length}''';
       serviceDeploys.removeWhere(
           (sd) => sd.projectId == id && sd.serviceId == service.id);
       // Disable dependents
-      depends.forEach((serviceDesc) => serviceInUse(serviceDesc.nameInt, use));
+      for (LAServiceDesc serviceDesc in depends) {
+        serviceInUse(serviceDesc.nameInt, use);
+      }
     } else {
-      depends.forEach((serviceDesc) {
+      for (LAServiceDesc serviceDesc in depends) {
         if (!serviceDesc.optional) {
           serviceInUse(serviceDesc.nameInt, use);
         }
-      });
+      }
     }
   }
 
@@ -570,7 +573,7 @@ check results length: ${checkResults.length}''';
     if (additionalVariables != "") {
       conf["LA_additionalVariables"] = additionalVariables;
     }
-    services.forEach((service) {
+    for (LAService service in services) {
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
       conf["LA_${service.nameInt}_hostname"] =
@@ -579,11 +582,11 @@ check results length: ${checkResults.length}''';
               : "";
       conf["LA_${service.nameInt}_url"] = service.url(domain);
       conf["LA_${service.nameInt}_path"] = service.path;
-    });
+    }
 
-    variables.forEach((variable) {
+    for (LAVariable variable in variables) {
       conf["LA_variable_${variable.nameInt}"] = variable.value;
-    });
+    }
     return conf;
   }
 
@@ -594,7 +597,7 @@ check results length: ${checkResults.length}''';
   }
 
   factory LAProject.fromObject(Map<String, dynamic> yoRc, {debug = false}) {
-    Function a = (String tag) => yoRc["LA_$tag"];
+    a(String tag) => yoRc["LA_$tag"];
     LAProject p = LAProject(
         longName: yoRc['LA_project_name'],
         shortName: yoRc['LA_project_shortname'],
@@ -604,7 +607,7 @@ check results length: ${checkResults.length}''';
     String domain = p.domain;
     Map<String, List<String>> tempServerServices = {};
 
-    LAServiceDesc.list.forEach((service) {
+    for (LAServiceDesc service in LAServiceDesc.list) {
       String n = service.nameInt == "cas" ? "CAS" : service.nameInt;
       // ala_bie and images was not optional in the past
       bool useIt = !service.optional
@@ -655,9 +658,10 @@ check results length: ${checkResults.length}''';
         }
         tempServerServices[s.id]!.add(service.nameInt);
       }
-    });
-    p.servers
-        .forEach((server) => p.assign(server, tempServerServices[server.id]!));
+    }
+    for (LAServer server in p.servers) {
+      p.assign(server, tempServerServices[server.id]!);
+    }
 
     // Other variables
     LAVariableDesc.map.forEach((String name, LAVariableDesc laVar) {
@@ -741,21 +745,23 @@ check results length: ${checkResults.length}''';
             help: help));
       }
       // This is for userdetails, apikeys, etcetera
-      desc.subServices.forEach((sub) => allServices.add(ProdServiceDesc(
-            name: sub.name,
-            // This maybe is not correct
-            nameInt: nameInt,
-            deps: deps,
-            tooltip: serviceTooltip(name),
-            subtitle: hostnames.join(', '),
-            serviceDeploys: sd,
-            icon: sub.icon,
-            url: url + sub.path,
-            admin: sub.admin,
-            alaAdmin: sub.alaAdmin,
-            status: st,
-            // status: service.status,
-          )));
+      for (LASubServiceDesc sub in desc.subServices) {
+        allServices.add(ProdServiceDesc(
+          name: sub.name,
+          // This maybe is not correct
+          nameInt: nameInt,
+          deps: deps,
+          tooltip: serviceTooltip(name),
+          subtitle: hostnames.join(', '),
+          serviceDeploys: sd,
+          icon: sub.icon,
+          url: url + sub.path,
+          admin: sub.admin,
+          alaAdmin: sub.alaAdmin,
+          status: st,
+          // status: service.status,
+        ));
+      }
     });
     return allServices;
   }
@@ -765,14 +771,12 @@ check results length: ${checkResults.length}''';
   HostsServicesChecks _getHostServicesChecks(
       List<ProdServiceDesc> prodServices) {
     HostsServicesChecks hostsChecks = HostsServicesChecks();
-    prodServices.forEach((service) {
-      service.serviceDeploys.forEach((sd) {
+    for (ProdServiceDesc service in prodServices) {
+      for (LAServiceDeploy sd in service.serviceDeploys) {
         hostsChecks.setUrls(sd, service.urls, service.nameInt);
-        service.deps!.forEach((dep) {
-          hostsChecks.add(sd, service.deps, service.nameInt);
-        });
-      });
-    });
+        hostsChecks.add(sd, service.deps, service.nameInt);
+      }
+    }
     return hostsChecks;
   }
 
@@ -807,13 +811,13 @@ check results length: ${checkResults.length}''';
     String templatesS = await rootBundle.loadString(file);
     List<dynamic> projectsJ = jsonDecode(templatesS);
 
-    projectsJ.forEach((genJson) {
+    for (Map<String, dynamic> genJson in projectsJ) {
       Map<String, dynamic> pJson =
           genJson['generator-living-atlas']['promptValues'];
       pJson['LA_id'] = null;
       LAProject p = LAProject.fromObject(pJson);
       list.add(p);
-    });
+    }
 
     return list;
   }

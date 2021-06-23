@@ -8,11 +8,11 @@ part of 'postDeployCmd.dart';
 
 extension PostDeployCmdCopyWith on PostDeployCmd {
   PostDeployCmd copyWith({
-    dynamic? advanced,
+    bool? advanced,
     bool? configurePostfix,
-    dynamic? continueEvenIfFails,
-    dynamic? debug,
-    dynamic? dryRun,
+    bool? continueEvenIfFails,
+    bool? debug,
+    bool? dryRun,
     List<String>? limitToServers,
     List<String>? skipTags,
     List<String>? tags,
@@ -43,10 +43,10 @@ PostDeployCmd _$PostDeployCmdFromJson(Map<String, dynamic> json) {
     skipTags:
         (json['skipTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
     tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-    advanced: json['advanced'],
-    continueEvenIfFails: json['continueEvenIfFails'],
-    debug: json['debug'],
-    dryRun: json['dryRun'],
+    advanced: json['advanced'] as bool,
+    continueEvenIfFails: json['continueEvenIfFails'] as bool,
+    debug: json['debug'] as bool,
+    dryRun: json['dryRun'] as bool,
   )
     ..deployServices = (json['deployServices'] as List<dynamic>)
         .map((e) => e as String)

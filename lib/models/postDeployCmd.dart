@@ -24,10 +24,10 @@ class PostDeployCmd extends DeployCmd {
       List<String>? limitToServers,
       List<String>? skipTags,
       List<String>? tags,
-      advanced = false,
-      continueEvenIfFails = false,
-      debug = false,
-      dryRun = false})
+      bool advanced = false,
+      bool continueEvenIfFails = false,
+      bool debug = false,
+      bool dryRun = false})
       : super(
             deployServices: ['all'],
             limitToServers: limitToServers,
