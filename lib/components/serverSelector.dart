@@ -73,10 +73,12 @@ class _ServerSelectorState extends State<ServerSelector> {
                     .map((host) => MultiSelectItem<String>(host, host))
                     .toList(),
                 onConfirm: (List<String> values) {
-                  setState(() {
-                    _selected = values;
-                  });
                   widget.onChange(values);
+                  if (mounted) {
+                    setState(() {
+                      _selected = values;
+                    });
+                  }
                 },
                 chipDisplay: MultiSelectChipDisplay<String>(
                   // icon: Icon(widget.icon),
@@ -85,11 +87,11 @@ class _ServerSelectorState extends State<ServerSelector> {
 
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(2))),
-                  onTap: (value) {
+                  /* onTap: (value) {
                     setState(() {
                       _selected.remove(value);
                     });
-                  },
+                  }, */
                 ),
               ),
               _selected.isEmpty

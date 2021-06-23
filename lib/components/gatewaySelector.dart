@@ -9,37 +9,33 @@ import 'package:mdi/mdi.dart';
 
 import 'serverSelector.dart';
 
-class GatewaySelector extends StatefulWidget {
+class GatewaySelector extends StatelessWidget {
   final bool firstServer;
   final LAServer exclude;
   const GatewaySelector(
       {Key? key, required this.firstServer, required this.exclude})
       : super(key: key);
-
-  @override
-  _GatewaySelectorState createState() => _GatewaySelectorState();
-}
-
-class _GatewaySelectorState extends State<GatewaySelector> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _GatewaySelectorViewModel>(
-        distinct: true,
+        distinct: false,
         converter: (store) {
           return _GatewaySelectorViewModel(
               project: store.state.currentProject,
-              server: store.state.currentProject.servers
-                  .firstWhere((s) => s.id == widget.exclude.id,
-                      // workaround for delete servers
-                      orElse: () => widget.exclude),
+              server: exclude,
               onSaveProject: (project) =>
                   store.dispatch(SaveCurrentProject(project)));
         },
         builder: (BuildContext context, _GatewaySelectorViewModel vm) {
+          List<String> initialValue = vm.project.servers
+              .where((s) => vm.server.gateways.contains(s.id))
+              .map((s) => s.name)
+              .toList();
+          // print("Building gateway selector for ${vm.server.name}");
           return ServerSelector(
             selectorKey: GlobalKey<FormFieldState>(),
             exclude: vm.server,
-            initialValue: vm.server.gateways,
+            initialValue: initialValue,
             hosts: vm.project.getServersNameList(),
             title: "SSH Gateway",
             icon: Mdi.doorClosedLock,
@@ -51,19 +47,25 @@ class _GatewaySelectorState extends State<GatewaySelector> {
                 body:
                     "If you access to this server using another server as a ssh gateway, you should add the gateway also as a server and select later here.",
                 footer: "For more info see our ssh documentation in our wiki"), */
-            onChange: (List<String> gateways) {
-              if (widget.firstServer) {
+            onChange: (List<String> gatewaysNames) {
+              print(
+                  "Gateway name-------------------------------------: $gatewaysNames");
+              List<String> gatewaysIds = vm.project.servers
+                  .where((s) => gatewaysNames.contains(s.name))
+                  .map((s) => s.id)
+                  .toList();
+              print("Gateway ids: $gatewaysIds");
+              if (firstServer) {
                 UiUtils.showAlertDialog(context, () {
-                  for (int i = 0; i < vm.project.servers.length; i++) {
-                    LAServer s = vm.project.servers[i];
-                    if (!gateways.contains(s.name)) {
+                  for (LAServer s in vm.project.servers) {
+                    if (!gatewaysIds.contains(s.id)) {
                       print("Setting gateways for ${s.name}");
-                      s.gateways = gateways;
+                      s.gateways = gatewaysIds;
                       vm.project.upsertServer(s);
                     }
                   }
                 }, () {
-                  vm.server.gateways = gateways;
+                  vm.server.gateways = gatewaysIds;
                   vm.project.upsertServer(vm.server);
                 },
                     title: "Use this gateway always",
@@ -72,7 +74,7 @@ class _GatewaySelectorState extends State<GatewaySelector> {
                     confirmBtn: "YES",
                     cancelBtn: "NO");
               } else {
-                vm.server.gateways = gateways;
+                vm.server.gateways = gatewaysIds;
                 vm.project.upsertServer(vm.server);
               }
               vm.onSaveProject(vm.project);

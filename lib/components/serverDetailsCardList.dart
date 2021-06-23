@@ -2,14 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/renameServerIcon.dart';
-import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/components/sshKeySelector.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/regexp.dart';
-import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
 import 'gatewaySelector.dart';
@@ -66,85 +65,21 @@ class ServersDetailsCardList extends StatelessWidget {
                                       (LAProject project) =>
                                           vm.onSaveCurrentProject(project)),
                                   const SizedBox(width: 40),
-                                  DropdownButton(
-                                    isDense: false,
-                                    // isExpanded: true,
-                                    underline: Container(),
-
-                                    disabledHint:
-                                        const Text("No ssh keys available"),
-                                    hint: Row(
-                                      children: [
-                                        if (_project.servers[index].sshKey !=
-                                            null)
-                                          const Icon(Mdi.key,
-                                              color: LAColorTheme.laPalette),
-                                        if (_project.servers[index].sshKey !=
-                                            null)
-                                          const SizedBox(width: 5),
-                                        Text(_project.servers[index].sshKey !=
-                                                null
-                                            ? _project
-                                                .servers[index].sshKey!.name
-                                            : "No SSH key selected"),
-                                      ],
-                                    ),
-                                    items: vm.sshKeys
-                                        // For now we only support keys with no passphrase
-                                        .where((k) => k.encrypted != true)
-                                        .toList()
-                                        .map((SshKey sshKey) {
-                                      return DropdownMenuItem(
-                                        value: sshKey,
-                                        child: Row(
-                                          children: [
-                                            const Icon(Mdi.key),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              sshKey.name,
-                                              // style: TextStyle(color: Colors.red),
-                                            ),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              sshKey.desc,
-                                              // style: TextStyle(color: Colors.red),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (SshKey? value) {
-                                      if (value != null) {
-                                        if (_isFirstServer(
-                                            index, _project.servers.length)) {
-                                          UiUtils.showAlertDialog(context, () {
-                                            for (int i = 0;
-                                                i < _project.servers.length;
-                                                i++) {
-                                              _project.servers[i].sshKey =
-                                                  value;
-                                            }
-                                          }, () {
-                                            _project.servers[index].sshKey =
-                                                value;
-                                          },
-                                              title: "Use this ssh key always",
-                                              subtitle:
-                                                  "Do you want to use this ssh key in all your servers?",
-                                              confirmBtn: "YES",
-                                              cancelBtn: "NO");
-                                        } else {
-                                          _project.servers[index].sshKey =
-                                              value;
-                                        }
-                                        vm.onSaveCurrentProject(_project);
-                                      }
-                                    },
-                                  ),
+                                  SshKeySelector(
+                                      key: ValueKey(
+                                          _project.servers[index].name +
+                                              _project.servers[index].sshKey
+                                                  .hashCode
+                                                  .toString()),
+                                      project: _project,
+                                      server: _project.servers[index],
+                                      currentSshKey:
+                                          _project.servers[index].sshKey,
+                                      isFirst: _isFirstServer(
+                                          index, _project.servers.length),
+                                      sshKeys: vm.sshKeys,
+                                      onSave: (LAProject project) =>
+                                          vm.onSaveCurrentProject(project)),
                                   const SizedBox(width: 10),
                                   HelpIcon(
                                       wikipage: "SSH-for-Beginners#ssh-keys"),
@@ -200,6 +135,11 @@ class ServersDetailsCardList extends StatelessWidget {
                                           children: [
                                             Flexible(
                                               child: GatewaySelector(
+                                                  key: ValueKey(_project
+                                                          .servers[index].name +
+                                                      _project.servers[index]
+                                                          .gateways.hashCode
+                                                          .toString()),
                                                   firstServer: _isFirstServer(
                                                       index,
                                                       _project.servers.length),
