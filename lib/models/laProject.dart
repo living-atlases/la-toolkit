@@ -628,13 +628,15 @@ check results length: ${checkResults.length}''';
       }
       String invPath = a("${n}_path") ?? '';
 
-      projectService.iniPath =
-          invPath.startsWith("/") ? invPath.substring(1) : invPath;
+      String iniPath = invPath.startsWith("/") ? invPath.substring(1) : invPath;
       String url = a("${n}_url") ?? a("${n}_hostname") ?? '';
 
-      projectService.suburl = useSub
-          ? url.replaceFirst('.$domain', '')
-          : url.replaceFirst('$domain/', '');
+      if (useSub) {
+        projectService.suburl = url.replaceFirst('.$domain', '');
+        projectService.iniPath = iniPath;
+      } else {
+        projectService.suburl = iniPath;
+      }
 
       String hostname = a("${n}_hostname") ?? '';
 

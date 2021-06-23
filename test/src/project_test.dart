@@ -23,7 +23,8 @@ void main() {
   final spatial = LAServiceName.spatial.toS();
   final cas = LAServiceName.cas.toS();
   final sds = LAServiceName.sds.toS();
-  // final dashboard = LAServiceName.dashboard.toS();
+  final dashboard = LAServiceName.dashboard.toS();
+  final branding = LAServiceName.branding.toS();
   final doi = LAServiceName.doi.toS();
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -648,6 +649,94 @@ void main() {
   }
 }    
 ''';
+    var yoRcJsonDemo = '''
+    {
+  "generator-living-atlas": {
+    "promptValues": {
+      "LA_project_name": "Demo de GBIF.ES",
+      "LA_project_shortname": "GBIF.ES",
+      "LA_pkg_name": "gbif-es",
+      "LA_domain": "demo.gbif.es",
+      "LA_use_species": true,
+      "LA_use_spatial": false,
+      "LA_use_regions": false,
+      "LA_use_species_lists": true,
+      "LA_use_CAS": false,
+      "LA_use_images": true,
+      "LA_use_alerts": false,
+      "LA_use_doi": false,
+      "LA_use_webapi": false,
+      "LA_use_dashboard": false,
+      "LA_enable_ssl": true,
+      "LA_use_git": true,
+      "LA_generate_branding": true,
+      "LA_cas_hostname": "demo.gbif.es",
+      "LA_cas_url": "auth.demo.gbif.es",
+      "LA_spatial_hostname": "demo.gbif.es",
+      "LA_spatial_url": "spatial.demo.gbif.es",
+      "LA_collectory_uses_subdomain": false,
+      "LA_collectory_hostname": "demo.gbif.es",
+      "LA_collectory_url": "demo.gbif.es",
+      "LA_collectory_path": "/colecciones",
+      "LA_ala_hub_uses_subdomain": false,
+      "LA_ala_hub_hostname": "demo.gbif.es",
+      "LA_ala_hub_url": "demo.gbif.es",
+      "LA_ala_hub_path": "/registros",
+      "LA_biocache_service_uses_subdomain": false,
+      "LA_biocache_service_hostname": "demo.gbif.es",
+      "LA_biocache_service_url": "demo.gbif.es",
+      "LA_biocache_service_path": "/registros-ws",
+      "LA_ala_bie_uses_subdomain": false,
+      "LA_ala_bie_hostname": "demo.gbif.es",
+      "LA_ala_bie_url": "demo.gbif.es",
+      "LA_ala_bie_path": "/especies",
+      "LA_bie_index_uses_subdomain": false,
+      "LA_bie_index_hostname": "demo.gbif.es",
+      "LA_bie_index_url": "demo.gbif.es",
+      "LA_bie_index_path": "/especies-ws",
+      "LA_images_uses_subdomain": false,
+      "LA_images_hostname": "demo.gbif.es",
+      "LA_images_url": "demo.gbif.es",
+      "LA_images_path": "/dimages",
+      "LA_lists_uses_subdomain": false,
+      "LA_lists_hostname": "demo.gbif.es",
+      "LA_lists_url": "demo.gbif.es",
+      "LA_lists_path": "/listas",
+      "LA_regions_uses_subdomain": true,
+      "LA_regions_hostname": "demo.gbif.es",
+      "LA_regions_url": "regions.demo.gbif.es",
+      "LA_regions_path": "/",
+      "LA_logger_uses_subdomain": false,
+      "LA_logger_hostname": "demo.gbif.es",
+      "LA_logger_url": "demo.gbif.es",
+      "LA_logger_path": "/logger",
+      "LA_solr_uses_subdomain": false,
+      "LA_solr_hostname": "demo.gbif.es",
+      "LA_solr_url": "demo.gbif.es",
+      "LA_solr_path": "/index",
+      "LA_biocache_backend_hostname": "demo.gbif.es",
+      "LA_main_hostname": "demo.gbif.es",
+      "LA_webapi_uses_subdomain": true,
+      "LA_webapi_hostname": "",
+      "LA_webapi_url": "",
+      "LA_webapi_path": "",
+      "LA_dashboard_uses_subdomain": true,
+      "LA_dashboard_hostname": "demo.gbif.es",
+      "LA_dashboard_path": "/",
+      "LA_dashboard_url": "dashboard.demo.gbif.es",
+      "LA_alerts_uses_subdomain": true,
+      "LA_alerts_hostname": "demo.gbif.es",
+      "LA_alerts_path": "/",
+      "LA_alerts_url": "alerts.demo.gbif.es",
+      "LA_doi_uses_subdomain": true,
+      "LA_doi_hostname": "demo.gbif.es",
+      "LA_doi_path": "/",
+      "LA_doi_url": "doi.demo.gbif.es"
+    },
+    "firstRun": false
+  }
+}
+''';
     var p = LAProject.import(yoRcJson: yoRcJson);
     expect(p.longName, equals('Portal de Datos de GBIF.ES'));
     expect(p.shortName, equals('GBIF.ES'));
@@ -674,7 +763,39 @@ void main() {
     expect(p.getService(cas).suburl, equals('auth'));
     expect(p.getService(lists).suburl, equals('listas'));
     expect(p.getService(solr).fullUrl(p.useSSL, p.domain),
-        equals('https://index.gbif.es'));
+        equals('https://index.gbif.es/'));
+
+    p = LAProject.import(yoRcJson: yoRcJsonDemo);
+    expect(p.longName, equals('Demo de GBIF.ES'));
+    expect(p.shortName, equals('GBIF.ES'));
+    expect(p.domain, equals('demo.gbif.es'));
+    expect(p.useSSL, equals(true));
+    expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
+    for (LAServiceDesc service in LAServiceDesc.list) {
+      print(service.nameInt);
+      if (![
+        lists,
+        webapi,
+        doi,
+        bie,
+        regions,
+        alerts,
+        sds,
+        cas,
+        spatial,
+        dashboard,
+        branding
+      ].contains(service.nameInt)) {
+        expect(p.getService(service.nameInt).use, equals(true),
+            reason: "${service.nameInt} should be in Use");
+        if (!service.withoutUrl) {
+          expect(p.getService(service.nameInt).usesSubdomain, equals(false));
+        }
+        expect(p.getService(collectory).fullUrl(true, "demo.gbif.es"),
+            equals('https://demo.gbif.es/colecciones'));
+        expect(p.getService(collectory).path, equals('/colecciones'));
+      }
+    }
 
     p = LAProject.import(yoRcJson: yoRcJsonCa);
     expect(p.longName, equals('Canadensys'));
