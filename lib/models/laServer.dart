@@ -112,7 +112,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   @override
   String toString() {
-    return '''$name ($id)${ip.isNotEmpty ? ', ' + ip : ''} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.isNotEmpty ? ' ' + aliases.join(' ') : ''}''';
+    return '''$name ($id)${ip.isNotEmpty ? ', ' + ip : ''} gws: ${gateways.length} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.isNotEmpty ? ' ' + aliases.join(' ') : ''}''';
   }
 
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {

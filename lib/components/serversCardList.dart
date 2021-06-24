@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/renameServerIcon.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
@@ -38,6 +39,8 @@ class ServersCardList extends StatelessWidget {
                         child: Container(
                             margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                             child: ListTile(
+                                key: ValueKey(_project.servers[index].name +
+                                    "basic-tile"),
                                 contentPadding:
                                     const EdgeInsets.fromLTRB(0, 0, 0, 0),
                                 title: Text(_project.servers[index].name),
@@ -59,8 +62,21 @@ class ServersCardList extends StatelessWidget {
                                               onPressed: () =>
                                                   UiUtils.showAlertDialog(
                                                       context, () {
+                                                    String deletedId = _project
+                                                        .servers[index].id;
                                                     _project.delete(_project
                                                         .servers[index]);
+                                                    // Remove server from others gateways
+                                                    for (LAServer s
+                                                        in _project.servers) {
+                                                      if (s.gateways.contains(
+                                                          deletedId)) {
+                                                        s.gateways
+                                                            .remove(deletedId);
+                                                        _project
+                                                            .upsertServer(s);
+                                                      }
+                                                    }
                                                     _project.validateCreation();
                                                     vm.onSaveCurrentProject(
                                                         _project);
@@ -75,6 +91,10 @@ class ServersCardList extends StatelessWidget {
 
 class _ServersCardListViewModel {
   final LAProject currentProject;
+  final void Function(LAProject project) onSaveCurrentProject;
+
+  _ServersCardListViewModel(
+      {required this.currentProject, required this.onSaveCurrentProject});
 
   @override
   bool operator ==(Object other) =>
@@ -85,8 +105,4 @@ class _ServersCardListViewModel {
 
   @override
   int get hashCode => currentProject.hashCode;
-  final void Function(LAProject project) onSaveCurrentProject;
-
-  _ServersCardListViewModel(
-      {required this.currentProject, required this.onSaveCurrentProject});
 }

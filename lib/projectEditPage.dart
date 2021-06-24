@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/brandingSelector.dart';
-import 'package:la_toolkit/components/serverCardList.dart';
 import 'package:la_toolkit/components/serverDetailsCardList.dart';
+import 'package:la_toolkit/components/serversCardList.dart';
 import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -237,7 +237,9 @@ class LAProjectEditPage extends StatelessWidget {
                 child: Column(
                   // SERVERS
                   children: <Widget>[
-                    const ServersCardList(),
+                    // with const, does not changes
+                    // ignore: prefer_const_constructors
+                    ServersCardList(),
                     // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
                     TextFormField(
                       controller: _serverAddController,

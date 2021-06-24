@@ -102,7 +102,7 @@ class _ServerSelectorState extends State<ServerSelector> {
                         widget.placeHolder,
                         style: const TextStyle(color: Colors.black45),
                       ))
-                  : Container(),
+                  : const Text(""),
             ],
           ),
         ));
