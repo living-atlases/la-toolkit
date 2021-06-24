@@ -21,6 +21,7 @@ class SoftwareSelector extends StatefulWidget {
 
 class _SoftwareSelectorState extends State<SoftwareSelector> {
   static const String outdatedTooltip = '''
+  
 New version available. 
 Choose the latest release to update your portal.
 ''';
