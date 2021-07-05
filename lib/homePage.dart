@@ -99,6 +99,7 @@ class _HomePageState extends State<HomePage> {
                   appBar: LAAppBar(
                       context: context,
                       title: MyApp.appName,
+                      tooltip: _packageInfo.version,
                       showLaIcon: true,
                       loading: vm.state.loading,
                       actions: [

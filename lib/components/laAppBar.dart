@@ -20,7 +20,8 @@ class LAAppBar extends AppBar {
       Widget? leading,
       IconData? titleIcon,
       bool loading = false,
-      VoidCallback? onBack})
+      VoidCallback? onBack,
+      String? tooltip})
       : super(
             /*
             // This breaks the Navigation
@@ -94,13 +95,21 @@ class LAAppBar extends AppBar {
                       if (titleIcon != null)
                         Icon(titleIcon, size: 26, color: Colors.white),
                       if (titleIcon != null) const SizedBox(width: 8),
-                      Text(title,
-                          style: GoogleFonts.signika(
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w400)))
+                      tooltip != null
+                          ? Tooltip(
+                              message: "Version: $tooltip",
+                              child: _title(title))
+                          : _title(title)
                     ]))
               ]),
             ));
+
+  static Text _title(String title) {
+    return Text(title,
+        style: GoogleFonts.signika(
+            textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.w400)));
+  }
 }
