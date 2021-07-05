@@ -120,9 +120,11 @@ class FloatingModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool small = UiUtils.isSmallScreen(context);
+    double pad = small ? 10.0 : 100.0;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(100, 100, 100, 0),
+        padding: EdgeInsets.fromLTRB(pad, pad, pad, 0),
         child: Material(
           color: backgroundColor,
           clipBehavior: Clip.antiAlias,
