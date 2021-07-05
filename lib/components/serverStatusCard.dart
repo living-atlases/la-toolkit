@@ -11,6 +11,7 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:mdi/mdi.dart';
 import 'package:tuple/tuple.dart';
@@ -215,11 +216,14 @@ class DepsPanel extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               for (var dep in deps)
-                Row(children: [
-                  StatusIcon(depStatus[dep]!, size: 10),
-                  const SizedBox(width: 3),
-                  Text(dep.name)
-                ])
+                Tooltip(
+                    message:
+                        "Status: ${StringUtils.capitalize(depStatus[dep]!.toServiceSt())}",
+                    child: Row(children: [
+                      StatusIcon(depStatus[dep]!, size: 12),
+                      const SizedBox(width: 3),
+                      Text(dep.name)
+                    ]))
             ]));
   }
 

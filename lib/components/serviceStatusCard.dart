@@ -5,6 +5,7 @@ import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,7 +28,11 @@ class ServiceStatusCard extends StatelessWidget {
             child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: Row(children: [
-                  Icon(service.icon, size: 30, color: service.status.color),
+                  Tooltip(
+                      message:
+                          "Status: ${StringUtils.capitalize(service.status.toSforHumans())}",
+                      child: Icon(service.icon,
+                          size: 30, color: service.status.color)),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
