@@ -146,6 +146,9 @@ class UiUtils {
           )
         ]).show();
   }
+
+  static bool isSmallScreen(BuildContext context) =>
+      MediaQuery.of(context).size.width < 750;
 }
 
 class DeployUtils {
