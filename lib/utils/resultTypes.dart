@@ -53,7 +53,7 @@ extension ParseToString on ResultType {
       case ResultType.changed:
         return Colors.brown;
       case ResultType.failures:
-        return const Color.fromRGBO(246, 114, 128, 1);
+        return Colors.redAccent;
       case ResultType.ignored:
         return Colors.grey;
       case ResultType.ok:
