@@ -36,148 +36,150 @@ class LAProjectTimeline extends StatelessWidget {
         },
         builder: (BuildContext context, _LAProjectTimelineViewModel vm) {
           bool small = MediaQuery.of(context).size.width < 750;
-          return SizedBox(
-              height: small ? 600 : 100.0,
-              child: Timeline.tileBuilder(
-                shrinkWrap: true,
-                theme: TimelineThemeData(
-                  direction: small ? Axis.vertical : Axis.horizontal,
-                  connectorTheme: const ConnectorThemeData(
-                    space: 30.0,
-                    thickness: 5.0,
-                  ),
-                ),
-                builder: TimelineTileBuilder.connected(
-                  connectionDirection: ConnectionDirection.before,
-                  itemExtentBuilder: (_, __) => 100,
-                  oppositeContentsBuilder: (context, index) {
-                    return Padding(
-                      padding:
-                          const EdgeInsets.only(bottom: _iconsVerticalPadding),
-                      // steps icons size
-                      child: Icon(
-                        LAProjectStatus.values[index].icon,
-                        // Image.asset(
-                        // 'assets/images/process_timeline/status${index + 1}.png',
-                        // width: 50.0,
-                        size: 25.0,
-                        color: getColor(vm.status, index),
+          return Visibility(
+              visible: !small,
+              child: SizedBox(
+                  height: small ? 600 : 100.0,
+                  child: Timeline.tileBuilder(
+                    shrinkWrap: true,
+                    theme: TimelineThemeData(
+                      direction: small ? Axis.vertical : Axis.horizontal,
+                      connectorTheme: const ConnectorThemeData(
+                        space: 30.0,
+                        thickness: 5.0,
                       ),
-                    );
-                  },
-                  contentsBuilder: (context, index) {
-                    return Padding(
-                      // Top of step titles
-                      padding: EdgeInsets.only(
-                          top: small ? 0 : _iconsVerticalPadding,
-                          left: small ? 20 : 0),
-                      child: Text(
-                        LAProjectStatus.values[index].title
-                            .replaceAll(' ', '\n'),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            // fontWeight: FontWeight.bold,
+                    ),
+                    builder: TimelineTileBuilder.connected(
+                      connectionDirection: ConnectionDirection.before,
+                      itemExtentBuilder: (_, __) => 100,
+                      oppositeContentsBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: _iconsVerticalPadding),
+                          // steps icons size
+                          child: Icon(
+                            LAProjectStatus.values[index].icon,
+                            // Image.asset(
+                            // 'assets/images/process_timeline/status${index + 1}.png',
+                            // width: 50.0,
+                            size: 25.0,
                             color: getColor(vm.status, index),
-                            fontSize: 11),
-                      ),
-                    );
-                  },
-                  indicatorBuilder: (_, index) {
-                    Color color;
-                    Widget? child;
-                    if (index == vm.status.value) {
-                      color = inProgressColor;
-                      child = const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3.0,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                        ),
-                      );
-                    } else if (index < vm.status.value) {
-                      color = completeColor;
-                      child = const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 15.0,
-                      );
-                    } else {
-                      color = todoColor;
-                    }
-
-                    // <= to show spinner
-                    if (index < vm.status.value) {
-                      return Stack(
-                        children: [
-                          CustomPaint(
-                            size: const Size(30.0, 30.0),
-                            painter: _BezierPainter(
-                              color: color,
-                              drawStart: index > 0,
-                              drawEnd: index < vm.status.value,
+                          ),
+                        );
+                      },
+                      contentsBuilder: (context, index) {
+                        return Padding(
+                          // Top of step titles
+                          padding: EdgeInsets.only(
+                              top: small ? 0 : _iconsVerticalPadding,
+                              left: small ? 20 : 0),
+                          child: Text(
+                            LAProjectStatus.values[index].title
+                                .replaceAll(' ', '\n'),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                // fontWeight: FontWeight.bold,
+                                color: getColor(vm.status, index),
+                                fontSize: 11),
+                          ),
+                        );
+                      },
+                      indicatorBuilder: (_, index) {
+                        Color color;
+                        Widget? child;
+                        if (index == vm.status.value) {
+                          color = inProgressColor;
+                          child = const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                              valueColor: AlwaysStoppedAnimation(Colors.white),
                             ),
-                          ),
-                          DotIndicator(
-                            size: 30.0,
-                            color: color,
-                            child: child,
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Stack(
-                        children: [
-                          CustomPaint(
-                            size: const Size(15.0, 15.0),
-                            painter: _BezierPainter(
-                              color: color,
-                              drawEnd: index < size - 1,
-                            ),
-                          ),
-                          OutlinedDotIndicator(
-                            borderWidth: 4.0,
-                            color: color,
-                          ),
-                        ],
-                      );
-                    }
-                  },
-                  connectorBuilder: (_, index, type) {
-                    if (index > 0) {
-                      if (index == vm.status.value) {
-                        final prevColor = getColor(vm.status, index - 1);
-                        final color = getColor(vm.status, index);
-                        List<Color> gradientColors;
-                        if (type == ConnectorType.start) {
-                          gradientColors = [
-                            Color.lerp(prevColor, color, 0.5)!,
-                            color
-                          ];
+                          );
+                        } else if (index < vm.status.value) {
+                          color = completeColor;
+                          child = const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 15.0,
+                          );
                         } else {
-                          gradientColors = [
-                            prevColor,
-                            Color.lerp(prevColor, color, 0.5)!
-                          ];
+                          color = todoColor;
                         }
-                        return DecoratedLineConnector(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: gradientColors,
-                            ),
-                          ),
-                        );
-                      } else {
-                        return SolidLineConnector(
-                          color: getColor(vm.status, index),
-                        );
-                      }
-                    } else {
-                      return const SizedBox(); // Icon(Icons.close); // previously null
-                    }
-                  },
-                  itemCount: size,
-                ),
-              ));
+
+                        // <= to show spinner
+                        if (index < vm.status.value) {
+                          return Stack(
+                            children: [
+                              CustomPaint(
+                                size: const Size(30.0, 30.0),
+                                painter: _BezierPainter(
+                                  color: color,
+                                  drawStart: index > 0,
+                                  drawEnd: index < vm.status.value,
+                                ),
+                              ),
+                              DotIndicator(
+                                size: 30.0,
+                                color: color,
+                                child: child,
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Stack(
+                            children: [
+                              CustomPaint(
+                                size: const Size(15.0, 15.0),
+                                painter: _BezierPainter(
+                                  color: color,
+                                  drawEnd: index < size - 1,
+                                ),
+                              ),
+                              OutlinedDotIndicator(
+                                borderWidth: 4.0,
+                                color: color,
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                      connectorBuilder: (_, index, type) {
+                        if (index > 0) {
+                          if (index == vm.status.value) {
+                            final prevColor = getColor(vm.status, index - 1);
+                            final color = getColor(vm.status, index);
+                            List<Color> gradientColors;
+                            if (type == ConnectorType.start) {
+                              gradientColors = [
+                                Color.lerp(prevColor, color, 0.5)!,
+                                color
+                              ];
+                            } else {
+                              gradientColors = [
+                                prevColor,
+                                Color.lerp(prevColor, color, 0.5)!
+                              ];
+                            }
+                            return DecoratedLineConnector(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: gradientColors,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return SolidLineConnector(
+                              color: getColor(vm.status, index),
+                            );
+                          }
+                        } else {
+                          return const SizedBox(); // Icon(Icons.close); // previously null
+                        }
+                      },
+                      itemCount: size,
+                    ),
+                  )));
         });
   }
 
