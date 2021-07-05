@@ -875,7 +875,7 @@ void main() {
   test('Template import', () async {
     List<LAProject> templates = await LAProject.importTemplates(
         "../../assets/la-toolkit-templates.json");
-    expect(templates.length, equals(5));
+    expect(templates.length, equals(6));
     for (LAProject p in templates) {
       expect(p.servers.isNotEmpty, equals(true));
       expect(p.services.isNotEmpty, equals(true));
