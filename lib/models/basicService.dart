@@ -3,11 +3,13 @@ class BasicService {
   String name;
   List<num> tcp;
   List<num> udp;
+  bool reachableFromOtherServers;
   BasicService(
       {required this.name,
       required this.version,
       List<num>? tcp,
-      List<num>? udp})
+      List<num>? udp,
+      this.reachableFromOtherServers = false})
       : tcp = tcp ?? [],
         udp = udp ?? [];
 
@@ -40,26 +42,32 @@ class BasicService {
 }
 
 class Java extends BasicService {
-  Java(version) : super(name: "java", version: version);
+  Java(version)
+      : super(name: "java", version: version, reachableFromOtherServers: false);
   static final v8 = Java("8");
 }
 
 abstract class Tcp extends BasicService {
-  Tcp(name, version, port) : super(name: name, version: version, tcp: [port]);
+  Tcp(name, version, port, [reachableFromOtherServers = false])
+      : super(
+            name: name,
+            version: version,
+            tcp: [port],
+            reachableFromOtherServers: reachableFromOtherServers);
 }
 
 class Cas extends Tcp {
-  Cas(version) : super("cas", version, 9000);
+  Cas(version) : super("cas", version, 9000, false);
   static final def = Cas("");
 }
 
 class UserDetails extends Tcp {
-  UserDetails(version) : super("userdetails", version, 9001);
+  UserDetails(version) : super("userdetails", version, 9001, false);
   static final def = UserDetails("");
 }
 
 class CasManagement extends Tcp {
-  CasManagement(version) : super("cas-management", version, 8070);
+  CasManagement(version) : super("cas-management", version, 8070, false);
   static final def = CasManagement("");
 }
 
@@ -74,7 +82,12 @@ class Doi extends Tcp {
 }
 
 class Nginx extends BasicService {
-  Nginx(version) : super(name: "nginx", version: version, tcp: [80, 443]);
+  Nginx(version)
+      : super(
+            name: "nginx",
+            version: version,
+            tcp: [80, 443],
+            reachableFromOtherServers: true);
   static final def = Nginx("");
 }
 
@@ -84,12 +97,22 @@ class Postfix extends BasicService {
 }
 
 class Solr extends BasicService {
-  Solr(version) : super(name: "solr", version: version, tcp: [8983]);
+  Solr(version)
+      : super(
+            name: "solr",
+            version: version,
+            tcp: [8983],
+            reachableFromOtherServers: true);
   static final v7 = Solr("7");
 }
 
 class Cassandra extends BasicService {
-  Cassandra(version) : super(name: "cassandra", version: version, tcp: [9042]);
+  Cassandra(version)
+      : super(
+            name: "cassandra",
+            version: version,
+            tcp: [9042],
+            reachableFromOtherServers: true);
   static final v2 = Cassandra("2");
   static final v3 = Cassandra("3");
 }

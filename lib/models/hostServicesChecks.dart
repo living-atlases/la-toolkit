@@ -6,6 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/basicService.dart';
 
 import 'hostServiceCheck.dart';
+import 'laServer.dart';
 import 'laServiceDeploy.dart';
 
 part 'hostServicesChecks.g.dart';
@@ -20,40 +21,56 @@ class HostsServicesChecks {
       _$HostsServicesChecksFromJson(json);
   Map<String, dynamic> toJson() => _$HostsServicesChecksToJson(this);
 
-  void setUrls(LAServiceDeploy sd, List<String> urls, String name) {
-    Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
-    for (String url in urls) {
-      HostServiceCheck ch = hChecks.values
-          .firstWhere((ch) => ch.type == ServiceCheckType.url && ch.args == url,
-              orElse: () {
-        var ch =
-            HostServiceCheck(name: name, type: ServiceCheckType.url, args: url);
-        hChecks[ch.id] = ch;
-        return ch;
-      });
-      ch.serviceDeploys.add(sd.id);
-      ch.services.add(sd.serviceId);
-      hChecks[ch.id] = ch;
+  void setUrls(LAServiceDeploy sd, List<String> urls, String name,
+      List<String> serversIds, bool full) {
+    for (String serverId in full ? serversIds : [sd.serverId]) {
+      Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
+      for (String url in urls) {
+        HostServiceCheck ch = hChecks.values.firstWhere(
+            (ch) => ch.type == ServiceCheckType.url && ch.args == url,
+            orElse: () {
+          var ch = HostServiceCheck(
+              name: name, type: ServiceCheckType.url, args: url);
+          hChecks[ch.id] = ch;
+          return ch;
+        });
+        ch.serviceDeploys.add(sd.id);
+        ch.services.add(sd.serviceId);
+        hChecks[serverId] = ch;
+      }
     }
   }
 
-  void add(LAServiceDeploy sd, List<BasicService>? deps, String name) {
-    Map<String, HostServiceCheck> hChecks = _getServiceCheck(sd.serverId);
+  void add(LAServiceDeploy sd, LAServer server, List<BasicService>? deps,
+      String name, List<String> serversIds, bool full) {
     if (deps != null) {
       BasicService.toCheck(deps).forEach((dep) {
         for (num tcp in dep.tcp) {
-          HostServiceCheck ch = hChecks.values.firstWhere(
-              (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
-              orElse: () {
-            var ch = HostServiceCheck(
-                name: name, type: ServiceCheckType.tcp, args: "$tcp");
+          // Some services should be checked also from others servers like solr/cassandra
+          for (String serverId in full && dep.reachableFromOtherServers
+              ? serversIds
+              : [sd.serverId]) {
+            Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
+            HostServiceCheck ch = hChecks.values.firstWhere(
+                (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
+                orElse: () {
+              var ch = HostServiceCheck(
+                  name: name,
+                  type: ServiceCheckType.tcp,
+                  host: tcp == 8983 || tcp == 9000 || server.id != serverId
+                      ? server.name
+                      : "localhost",
+                  args: "$tcp");
+              hChecks[ch.id] = ch;
+              return ch;
+            });
+            ch.serviceDeploys.add(sd.id);
+            ch.services.add(sd.serviceId);
             hChecks[ch.id] = ch;
-            return ch;
-          });
-          ch.serviceDeploys.add(sd.id);
-          ch.services.add(sd.serviceId);
-          hChecks[ch.id] = ch;
+          }
         }
+        String serverId = sd.serverId;
+        Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
         for (num udp in dep.udp) {
           HostServiceCheck ch = hChecks.values.firstWhere(
               (ch) => ch.type == ServiceCheckType.udp && ch.args == "$udp",
@@ -78,8 +95,7 @@ class HostsServicesChecks {
         ch.serviceDeploys.add(sd.id);
         ch.services.add(sd.serviceId);
         hChecks[ch.id] = ch;
-
-        checks[sd.serverId] = hChecks;
+        checks[serverId] = hChecks;
       });
     }
   }

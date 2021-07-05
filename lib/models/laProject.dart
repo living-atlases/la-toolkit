@@ -770,13 +770,17 @@ check results length: ${checkResults.length}''';
 
   String serviceTooltip(String name) => "Open the $name service";
 
-  HostsServicesChecks _getHostServicesChecks(
-      List<ProdServiceDesc> prodServices) {
+  HostsServicesChecks _getHostServicesChecks(List<ProdServiceDesc> prodServices,
+      [bool full = true]) {
     HostsServicesChecks hostsChecks = HostsServicesChecks();
+    List<String> serversIds = serversWithServices().map((s) => s.id).toList();
     for (ProdServiceDesc service in prodServices) {
       for (LAServiceDeploy sd in service.serviceDeploys) {
-        hostsChecks.setUrls(sd, service.urls, service.nameInt);
-        hostsChecks.add(sd, service.deps, service.nameInt);
+        hostsChecks.setUrls(
+            sd, service.urls, service.nameInt, serversIds, full);
+        LAServer server = servers.firstWhere((s) => s.id == sd.serverId);
+        hostsChecks.add(
+            sd, server, service.deps, service.nameInt, serversIds, full);
       }
     }
     return hostsChecks;
@@ -786,7 +790,7 @@ check results length: ${checkResults.length}''';
     List<ProdServiceDesc> services = prodServices;
     if (servicesToMonitor == null ||
         !const ListEquality().equals(servicesToMonitor!.item1, prodServices)) {
-      HostsServicesChecks checks = _getHostServicesChecks(services);
+      HostsServicesChecks checks = _getHostServicesChecks(services, false);
       servicesToMonitor = Tuple2(services, checks);
     }
     return servicesToMonitor!;
