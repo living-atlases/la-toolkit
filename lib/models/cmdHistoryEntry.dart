@@ -35,6 +35,21 @@ extension CmdResultToIconData on CmdResult {
   }
 }
 
+extension CmdResultToServiceStatus on CmdResult {
+  String toServiceSt() {
+    switch (this) {
+      case CmdResult.unknown:
+        return "checking";
+      case CmdResult.aborted:
+        return "aborted";
+      case CmdResult.success:
+        return "running";
+      case CmdResult.failed:
+        return "stopped";
+    }
+  }
+}
+
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class CmdHistoryEntry implements IsJsonSerializable {

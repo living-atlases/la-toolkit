@@ -19,6 +19,17 @@ extension ParseToString on ServiceStatus {
     return toString().split('.').last;
   }
 
+  String toSforHumans() {
+    switch (this) {
+      case ServiceStatus.failed:
+        return "Some check failed";
+      case ServiceStatus.unknown:
+        return "checking";
+      case ServiceStatus.success:
+        return "No issues detected";
+    }
+  }
+
   Color get color {
     switch (this) {
       case ServiceStatus.failed:
