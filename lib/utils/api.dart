@@ -351,12 +351,13 @@ class Api {
   }
 
   static Future<Map<String, dynamic>> checkHostServices(
-      HostsServicesChecks hostsServicesChecks) async {
+      String projectId, HostsServicesChecks hostsServicesChecks) async {
     if (AppUtils.isDemo()) return {};
     Uri url = uri(env['BACKEND']!, "/api/v1/test-host-services");
     Response response = await http.post(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({
+          'projectId': projectId,
           'hostsServices': hostsServicesChecks.toJson(),
         })));
     if (response.statusCode == 200) {

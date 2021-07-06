@@ -243,7 +243,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is TestServicesProject) {
       try {
-        Api.checkHostServices(action.hostsServicesChecks)
+        Api.checkHostServices(action.project.id, action.hostsServicesChecks)
             // without await to correct set appState.loading
             .then((results) {
           action.onResults();
