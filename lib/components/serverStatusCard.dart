@@ -218,7 +218,7 @@ class DepsPanel extends StatelessWidget {
               for (var dep in deps)
                 Tooltip(
                     message:
-                        "Status: ${StringUtils.capitalize(depStatus[dep]!.toServiceSt())}",
+                        "Status: ${StringUtils.capitalize(depStatus[dep]!.toServiceForHumans())}",
                     child: Row(children: [
                       StatusIcon(depStatus[dep]!, size: 12),
                       const SizedBox(width: 3),

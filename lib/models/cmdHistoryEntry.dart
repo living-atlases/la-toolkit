@@ -36,16 +36,16 @@ extension CmdResultToIconData on CmdResult {
 }
 
 extension CmdResultToServiceStatus on CmdResult {
-  String toServiceSt() {
+  String toServiceForHumans() {
     switch (this) {
       case CmdResult.unknown:
         return "checking";
       case CmdResult.aborted:
         return "aborted";
       case CmdResult.success:
-        return "running";
+        return "No issues detected";
       case CmdResult.failed:
-        return "stopped";
+        return "Some check failed";
     }
   }
 }
