@@ -100,6 +100,8 @@ RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/base-b
 RUN su - ubuntu -c 'mkdir -p "/home/ubuntu/.npm-packages/lib"'
 RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
 RUN su - ubuntu -c 'npm install -g yo'
+RUN su - ubuntu -c 'npm install -g yarn'
+RUN su - ubuntu -c 'npm install -g brunch'
 RUN su - ubuntu -c 'npm install -g sails'
 RUN su - ubuntu -c 'npm install -g forever'
 RUN su - ubuntu -c 'npm install -g db-migrate'
