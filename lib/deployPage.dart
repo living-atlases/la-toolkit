@@ -43,7 +43,7 @@ class _DeployPageState extends State<DeployPage> {
         return _DeployViewModel(
             project: store.state.currentProject,
             cmd: store.state.repeatCmd,
-            onDeployProject: (project, cmd) => DeployUtils.deployActionDispatch(
+            onDeployProject: (project, cmd) => DeployUtils.deployActionLaunch(
                 context: context,
                 store: store,
                 project: project,

@@ -326,12 +326,13 @@ class LAServiceDesc {
     LAServiceName.branding.toS(): LAServiceDesc(
         name: "branding",
         nameInt: "branding",
-        group: "ala-demo",
+        group: "branding",
         desc: "Web branding used by all services",
         icon: Icons.format_paint,
+        sample: "Styling-the-web-app",
         withoutUrl: false,
         optional: false,
-        path: "branding-${DateTime.now().year}"),
+        path: "brand-${DateTime.now().year}"),
     LAServiceName.biocache_cli.toS(): LAServiceDesc(
         name: "biocache-cli",
         nameInt: "biocache_cli",

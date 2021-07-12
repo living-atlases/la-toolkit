@@ -173,7 +173,7 @@ class LAVariableDesc {
         defValue: (project) => true,
         type: LAVariableType.bool,
         hint: "usually 25 or 587"),
-    "header_and_footer_baseurl": LAVariableDesc(
+    /* "header_and_footer_baseurl": LAVariableDesc(
       name: "Headers and Footer Base URL",
       nameInt: "header_and_footer_baseurl",
       regExp: LARegExp.url,
@@ -183,7 +183,7 @@ class LAVariableDesc {
           .getServiceE(LAServiceName.branding)
           .fullUrl(project.useSSL, project.domain)),
       hint: "Like: https://www.ala.org.au/commonui-bs3",
-    ),
+    ), */
     "downloads_terms_of_use": LAVariableDesc(
       name: "Terms of Use URL",
       nameInt: "downloads_terms_of_use",

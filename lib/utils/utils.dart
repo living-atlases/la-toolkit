@@ -177,7 +177,7 @@ class DeployUtils {
         }));
   }
 
-  static deployActionDispatch(
+  static deployActionLaunch(
       {required BuildContext context,
       var store,
       required LAProject project,

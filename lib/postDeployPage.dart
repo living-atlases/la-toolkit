@@ -41,7 +41,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
               store.dispatch(UpdateProject(project));
             },
             onDoPostDeployTasks: (project, cmd) =>
-                DeployUtils.deployActionDispatch(
+                DeployUtils.deployActionLaunch(
                     context: context,
                     store: store,
                     project: project,

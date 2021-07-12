@@ -127,10 +127,12 @@ class ServiceWidget extends StatelessWidget {
                                       "${StringUtils.capitalize(serviceDesc.desc)}:")
                               ]),
                           trailing: serviceDesc.sample != null
-                              ? HelpIcon.url(
-                                  url: serviceDesc.sample!,
-                                  tooltip:
-                                      "See a similar service in production")
+                              ? serviceDesc.name == LAServiceName.branding.toS()
+                                  ? HelpIcon(wikipage: "Styling-the-web-app")
+                                  : HelpIcon.url(
+                                      url: serviceDesc.sample!,
+                                      tooltip:
+                                          "See a similar service in production")
                               : null,
                         ),
 
@@ -219,7 +221,6 @@ class ServiceWidget extends StatelessWidget {
             padding: const EdgeInsets.only(top: 4),
             child: Column(
                 // mainAxisAlignment: MainAxisAlignment.start,
-
                 children: [
                   ConstrainedBox(
                       constraints: BoxConstraints(
@@ -239,6 +240,7 @@ class ServiceWidget extends StatelessWidget {
                 : null,
             // This
             // hint: serviceDesc.hint,
+            allowEmpty: false,
             isDense: false,
             isCollapsed: true,
             contentPadding: const EdgeInsets.only(bottom: 4),
