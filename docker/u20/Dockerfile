@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 
 # Install some dependencies via APT
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-        apt-get install -y software-properties-common python-docopt sudo curl byobu jq && \
+        apt-get install -y software-properties-common python-docopt sudo curl byobu jq rsync && \
         apt-get install -y python-dev git 'python.*-pip' python3-minimal 'python2.*-minimal' && \
         apt-get install -y python-docopt nagios-plugins iputils-ping openjdk-8-jre && \
         apt-get install -y gnupg2 sshpass openssh-client openssh-server vim netcat && \
