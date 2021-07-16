@@ -99,10 +99,9 @@ class SshKeyPage extends StatelessWidget {
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
           children: <Widget>[
-            // TODO: Add a subsection for this help
             const TextWithHelp(
                 text: "Type a name for you new ssh key:",
-                helpPage: "SSH-for-Beginners"),
+                helpPage: "SSH-for-Beginners#ssh-key-generation"),
             GenericTextFormField(
                 initialValue: "",
                 regexp: LARegExp.hostnameRegexp,
