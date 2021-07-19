@@ -1,6 +1,7 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/brandingDeployCmd.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
@@ -65,7 +66,9 @@ class CmdHistoryEntry implements IsJsonSerializable {
   CmdResult result;
   int createdAt;
   @JsonKey(ignore: true)
-  DeployCmd? parsedCmd;
+  DeployCmd? parsedDeployCmd;
+  @JsonKey(ignore: true)
+  BrandingDeployCmd? parsedBrandingDeployCmd;
   double? duration;
 
   CmdHistoryEntry(
@@ -85,16 +88,22 @@ class CmdHistoryEntry implements IsJsonSerializable {
         date = createdAt != null
             ? DateTime.fromMillisecondsSinceEpoch(createdAt)
             : DateTime.now() {
-    if (cmd.type.isDeploy) {
+    if (isAnsibleDeploy()) {
       if (cmd.type == CmdType.preDeploy) {
-        parsedCmd = PreDeployCmd.fromJson(cmd.properties);
+        parsedDeployCmd = PreDeployCmd.fromJson(cmd.properties);
       } else if (cmd.type == CmdType.postDeploy) {
-        parsedCmd = PostDeployCmd.fromJson(cmd.properties);
+        parsedDeployCmd = PostDeployCmd.fromJson(cmd.properties);
       } else {
         /* if (cmd.type == CmdType.deploy) { */
-        parsedCmd = DeployCmd.fromJson(cmd.properties);
+        parsedDeployCmd = DeployCmd.fromJson(cmd.properties);
       }
+    } else if (cmd.type == CmdType.brandingDeploy) {
+      parsedBrandingDeployCmd = BrandingDeployCmd.fromJson(cmd.properties);
     }
+  }
+
+  bool isAnsibleDeploy() {
+    return cmd.type.isAnsibleDeploy;
   }
 
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
@@ -103,7 +112,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
 
   DeployCmd? get deployCmd {
-    return parsedCmd;
+    return parsedDeployCmd;
   }
 
   @override
@@ -138,5 +147,21 @@ class CmdHistoryEntry implements IsJsonSerializable {
   @override
   fromJson(Map<String, dynamic> json) {
     return CmdHistoryEntry.fromJson(json);
+  }
+
+  String getTitle() {
+    return isAnsibleDeploy()
+        ? deployCmd!.getTitle()
+        : cmd.type == CmdType.brandingDeploy
+            ? parsedBrandingDeployCmd!.getTitle()
+            : "TODO FIXME";
+  }
+
+  String getDesc() {
+    return isAnsibleDeploy()
+        ? deployCmd!.desc
+        : cmd.type == CmdType.brandingDeploy
+            ? parsedBrandingDeployCmd!.desc
+            : "TODO FIXME";
   }
 }

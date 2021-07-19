@@ -41,7 +41,7 @@ services:
       # For 'custom' ala-install
       # Take into account that if your change from 'custom' to other ala-install version
       # code changes will be git stashed
-      # - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
+      - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
 
   mongo:
     image: mongo:4

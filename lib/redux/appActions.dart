@@ -1,6 +1,8 @@
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
+import 'package:la_toolkit/models/brandingDeployCmd.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
+import 'package:la_toolkit/models/commonCmd.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/hostServicesChecks.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -156,7 +158,7 @@ class OnViewLogs extends AppActions {
 class PrepareDeployProject extends AppActions {
   LAProject project;
   VoidCallback onReady;
-  DeployCmd deployCmd;
+  CommonCmd deployCmd;
   Function(String) onError;
   PrepareDeployProject(
       {required this.project,
@@ -170,42 +172,58 @@ class SaveDeployCmd extends AppActions {
   SaveDeployCmd({required this.deployCmd});
 }
 
-class DeployProject extends AppActions {
+abstract class DeployAction extends AppActions {
   LAProject project;
-  DeployCmd cmd;
   Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart;
   ErrorCallback onError;
-
-  DeployProject(
-      {required this.project,
-      required this.cmd,
-      required this.onStart,
-      required this.onError});
+  DeployAction(
+      {required this.project, required this.onStart, required this.onError});
 }
 
-class GetDeployProjectResults extends AppActions {
+class DeployProject extends DeployAction {
+  DeployCmd cmd;
+
+  DeployProject(
+      {required this.cmd,
+      required LAProject project,
+      required Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart,
+      required ErrorCallback onError})
+      : super(project: project, onStart: onStart, onError: onError);
+}
+
+class BrandingDeploy extends DeployAction {
+  BrandingDeployCmd cmd;
+
+  BrandingDeploy(
+      {required this.cmd,
+      required LAProject project,
+      required Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart,
+      required ErrorCallback onError})
+      : super(project: project, onStart: onStart, onError: onError);
+}
+
+class GetCmdResults extends AppActions {
   CmdHistoryEntry cmdHistoryEntry;
   VoidCallback onReady;
   VoidCallback onFailed;
   bool fstRetrieved;
 
-  GetDeployProjectResults(
+  GetCmdResults(
       {required this.cmdHistoryEntry,
       required this.fstRetrieved,
       required this.onReady,
       required this.onFailed});
 }
 
-class ShowDeployProjectResults extends AppActions {
+class ShowCmdResults extends AppActions {
   CmdHistoryEntry cmdHistoryEntry;
   CmdHistoryDetails results;
   bool fstRetrieved;
 
-  ShowDeployProjectResults(
-      this.cmdHistoryEntry, this.fstRetrieved, this.results);
+  ShowCmdResults(this.cmdHistoryEntry, this.fstRetrieved, this.results);
 }
 
-class OnShowDeployProjectResultsFailed extends AppActions {}
+class OnShowCmdResultsFailed extends AppActions {}
 
 class OpenProjectTools extends AppActions {
   LAProject project;

@@ -53,7 +53,7 @@ List<Reducer<AppState>> basic = [
   TypedReducer<AppState, OnSshKeysScanned>(_onSshKeysScanned),
   TypedReducer<AppState, OnAddSshKey>(_onAddSshKey),
   TypedReducer<AppState, OnImportSshKey>(_onImportSshKey),
-  TypedReducer<AppState, ShowDeployProjectResults>(_showDeployProjectResults),
+  TypedReducer<AppState, ShowCmdResults>(_showDeployProjectResults),
   TypedReducer<AppState, ShowSnackBar>(_showSnackBar),
   TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
   TypedReducer<AppState, PrepareDeployProject>(_prepareDeployProject),
@@ -310,8 +310,7 @@ AppState _onImportSshKey(AppState state, OnImportSshKey action) {
   return state;
 }
 
-AppState _showDeployProjectResults(
-    AppState state, ShowDeployProjectResults action) {
+AppState _showDeployProjectResults(AppState state, ShowCmdResults action) {
   LAProject currentProject = state.currentProject;
   currentProject.lastCmdEntry = action.cmdHistoryEntry;
   currentProject.lastCmdDetails = action.results;

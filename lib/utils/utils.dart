@@ -1,10 +1,13 @@
+import 'package:duration/duration.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:la_toolkit/components/LoadingTextOverlay.dart';
 import 'package:la_toolkit/components/termDialog.dart';
+import 'package:la_toolkit/models/brandingDeployCmd.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
+import 'package:la_toolkit/models/commonCmd.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
@@ -12,6 +15,7 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:simple_moment/simple_moment.dart';
 
 import '../laTheme.dart';
 import '../models/preDeployCmd.dart';
@@ -66,6 +70,11 @@ class UiUtils {
   );
   static const TextStyle subtitleStyle =
       TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
+  static const TextStyle dateStyle = TextStyle(
+      color: LAColorTheme.inactive,
+      fontWeight: FontWeight.w400,
+      fontSize: 18,
+      fontStyle: FontStyle.italic);
 
   static showAlertDialog(
       BuildContext context, VoidCallback onConfirm, VoidCallback onCancel,
@@ -156,21 +165,23 @@ class DeployUtils {
       {required BuildContext context,
       required var store,
       required LAProject project,
-      required DeployCmd deployCmd}) {
+      required CommonCmd commonCmd}) {
     context.loaderOverlay.show(widget: const LoadingTextOverlay());
     store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {
           context.loaderOverlay.hide();
-          if (deployCmd is PreDeployCmd) {
+          if (commonCmd is PreDeployCmd) {
             BeamerCond.of(context, PreDeployLocation());
-          } else if (deployCmd is PostDeployCmd) {
+          } else if (commonCmd is PostDeployCmd) {
             BeamerCond.of(context, PostDeployLocation());
+          } else if (commonCmd is BrandingDeployCmd) {
+            BeamerCond.of(context, BrandingDeployLocation());
           } else {
             BeamerCond.of(context, DeployLocation());
           }
         },
-        deployCmd: deployCmd,
+        deployCmd: commonCmd,
         onError: (e) {
           context.loaderOverlay.hide();
           UiUtils.showSnackBarError(context, e);
@@ -227,15 +238,48 @@ class DeployUtils {
         }));
   }
 
+  static brandingDeployActionLaunch(
+      {required BuildContext context,
+      var store,
+      required LAProject project,
+      required BrandingDeployCmd deployCmd}) {
+    context.loaderOverlay.show();
+    store.dispatch(BrandingDeploy(
+        project: project,
+        cmd: deployCmd,
+        onStart: (cmdEntry, port, ttydPid) {
+          context.loaderOverlay.hide();
+          /* Not used right now, maybe in the future
+          context.beamToNamed('/term/$port/$ttydPid'); */
+          TermDialog.show(context, port: port, pid: ttydPid, title: "Console",
+              onClose: () async {
+            // Show the results
+            store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
+          });
+        },
+        onError: (error) {
+          context.loaderOverlay.hide();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              action: SnackBarAction(
+                label: 'OK',
+                onPressed: () {
+                  // Some code to undo the change.
+                },
+              ),
+              content: Text(
+                  'Oooopss, some problem have arisen trying to deploy the branding: $error')));
+        }));
+  }
+
   static AppActions getCmdResults(
       BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
     context.loaderOverlay.show();
-    return GetDeployProjectResults(
+    return GetCmdResults(
         cmdHistoryEntry: cmdHistory,
         fstRetrieved: fstRetrieved,
         onReady: () {
           context.loaderOverlay.hide();
-          BeamerCond.of(context, DeployResultsLocation());
+          BeamerCond.of(context, CmdResultsLocation());
         },
         onFailed: () {
           context.loaderOverlay.hide();
@@ -251,13 +295,18 @@ class DeployUtils {
         });
   }
 }
-/*
+
 class LADateUtils {
-  static Future<String> now() async {
+/*  static Future<String> now() async {
     final DateTime now = DateTime.now();
     String locale = await findSystemLocale();
     final DateFormat formatter = DateFormat.yMd(locale).add_jm();
     // DateFormat('yyyy-MM-dd H:mm:ss a', locale);
     return formatter.format(now);
-  }
-} */
+  }*/
+  static String formatDuration(double duration) =>
+      prettyDuration(Duration(milliseconds: duration.toInt()),
+          abbreviated: false);
+
+  static String formatDate(DateTime date) => Moment.now().from(date).toString();
+}

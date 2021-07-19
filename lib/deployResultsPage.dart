@@ -17,19 +17,18 @@ import 'components/termCommandDesc.dart';
 import 'components/termsDrawer.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
-import 'models/cmd.dart';
 import 'models/cmdHistoryEntry.dart';
 
-class DeployResultsPage extends StatefulWidget {
-  static const routeName = "deploy-results";
+class CmdResultsPage extends StatefulWidget {
+  static const routeName = "cmd-results";
 
-  const DeployResultsPage({Key? key}) : super(key: key);
+  const CmdResultsPage({Key? key}) : super(key: key);
 
   @override
-  _DeployResultsPageState createState() => _DeployResultsPageState();
+  _CmdResultsPageState createState() => _CmdResultsPageState();
 }
 
-class _DeployResultsPageState extends State<DeployResultsPage> {
+class _CmdResultsPageState extends State<CmdResultsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _loadCall = false;
 
@@ -57,14 +56,14 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
           CmdResult result = cmdHistoryDetails.result;
           CmdHistoryEntry cmdEntry = cmdHistoryDetails.cmd!;
           // print(result);
-          var nothingDone = !failed && cmdHistoryDetails.nothingDone;
-          var noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
-          String title = cmdEntry.cmd.type.isDeploy
-              ? cmdHistoryDetails.cmd!.deployCmd!.getTitle()
-              : "TODO FIXME";
-          String desc = cmdEntry.cmd.type.isDeploy
-              ? cmdHistoryDetails.cmd!.deployCmd!.desc
-              : "TODO FIXME";
+          bool nothingDone = !failed && cmdHistoryDetails.nothingDone;
+          bool noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
+          print(
+              "failed $failed, nothingDone: $nothingDone, noFailedButDone: $noFailedButDone, numFails ${cmdHistoryDetails.numFailures()}");
+          String title = cmdEntry.getTitle();
+          String desc = cmdEntry.getDesc();
+          bool isAnsibleDeploy = cmdEntry.isAnsibleDeploy();
+
           return Title(
               title: "${vm.project.shortName}: $title",
               color: LAColorTheme.laPalette,
@@ -106,52 +105,77 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                   const SizedBox(height: 20),
                                   Text(desc, style: UiUtils.cmdTitleStyle),
                                   const SizedBox(height: 20),
+                                  Text(
+                                      "${LADateUtils.formatDate(cmdEntry.date)} ${cmdEntry.duration != null ? ', duration: ' + LADateUtils.formatDuration(cmdEntry.duration!) : ''}",
+                                      style: UiUtils.dateStyle),
+                                  const SizedBox(height: 20),
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Icon(
-                                            noFailedButDone
-                                                ? Mdi
-                                                    .checkboxMarkedCircleOutline
-                                                : result == CmdResult.aborted
-                                                    ? Mdi.heartBroken
-                                                    : Icons.remove_done,
-                                            size: 60,
-                                            color: noFailedButDone
-                                                ? LAColorTheme.up
-                                                : nothingDone ||
-                                                        result ==
-                                                            CmdResult.aborted
-                                                    ? LAColorTheme.inactive
-                                                    : LAColorTheme.down),
+                                        if (isAnsibleDeploy)
+                                          Icon(
+                                              noFailedButDone
+                                                  ? Mdi
+                                                      .checkboxMarkedCircleOutline
+                                                  : result == CmdResult.aborted
+                                                      ? Mdi.heartBroken
+                                                      : Icons.remove_done,
+                                              size: 60,
+                                              color: noFailedButDone
+                                                  ? LAColorTheme.up
+                                                  : nothingDone ||
+                                                          result ==
+                                                              CmdResult.aborted
+                                                      ? LAColorTheme.inactive
+                                                      : LAColorTheme.down),
+                                        if (!isAnsibleDeploy)
+                                          Icon(
+                                              !failed
+                                                  ? Mdi
+                                                      .checkboxMarkedCircleOutline
+                                                  : Icons.remove_done,
+                                              size: 60,
+                                              color: !failed
+                                                  ? LAColorTheme.up
+                                                  : LAColorTheme.down),
                                         const SizedBox(width: 20),
                                         Text(
-                                            noFailedButDone
-                                                ? "All steps ok"
-                                                : nothingDone
-                                                    ? "No steps were executed"
-                                                    : result == CmdResult.failed
-                                                        ? "Uuppps! some step failed"
+                                            isAnsibleDeploy
+                                                ? noFailedButDone
+                                                    ? "All steps ok"
+                                                    : nothingDone
+                                                        ? "No steps were executed"
                                                         : result ==
-                                                                CmdResult
-                                                                    .aborted
-                                                            ? "The command didn't finished correctly"
-                                                            : "The command failed for some reason",
+                                                                CmdResult.failed
+                                                            ? "Uuppps! some step failed"
+                                                            : result ==
+                                                                    CmdResult
+                                                                        .aborted
+                                                                ? "The command didn't finished correctly"
+                                                                : "The command failed for some reason"
+                                                :
+                                                // no Ansible Logs
+                                                failed
+                                                    ? "Something were wrong"
+                                                    : "The command ended correctly",
                                             style: UiUtils.titleStyle)
                                       ]),
                                   const SizedBox(height: 20),
-                                  const Text('Tasks summary:',
-                                      style: UiUtils.subtitleStyle),
+                                  if (isAnsibleDeploy)
+                                    const Text('Tasks summary:',
+                                        style: UiUtils.subtitleStyle),
                                   // ignore: sized_box_for_whitespace
-                                  Container(
-                                      width: 400,
-                                      height: 300,
-                                      child: ResultsPieChart(
-                                          cmdHistoryDetails.resultsTotals)),
+                                  if (isAnsibleDeploy)
+                                    SizedBox(
+                                        width: 400,
+                                        height: 300,
+                                        child: ResultsPieChart(
+                                            cmdHistoryDetails.resultsTotals)),
                                   const SizedBox(height: 20),
-                                  const Text('Tasks details:',
-                                      style: UiUtils.subtitleStyle),
+                                  if (isAnsibleDeploy)
+                                    const Text('Tasks details:',
+                                        style: UiUtils.subtitleStyle),
                                   const SizedBox(height: 20),
                                   Column(
                                       crossAxisAlignment:
@@ -165,7 +189,10 @@ class _DeployResultsPageState extends State<DeployResultsPage> {
                                   TermCommandDesc(
                                       cmdHistoryDetails: cmdHistoryDetails),
                                   const SizedBox(height: 20),
-                                  const Text('Ansible Logs:',
+                                  Text(
+                                      isAnsibleDeploy
+                                          ? 'Ansible Logs:'
+                                          : 'Logs',
                                       style: UiUtils.subtitleStyle),
                                   const SizedBox(height: 20),
                                   // ignore: sized_box_for_whitespace

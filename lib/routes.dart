@@ -13,6 +13,7 @@ import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/sshKeysPage.dart';
 
+import 'brandingDeployPage.dart';
 import 'deployPage.dart';
 import 'homePage.dart';
 import 'main.dart';
@@ -44,7 +45,8 @@ class Routes {
               DeployLocation(),
               PreDeployLocation(),
               PostDeployLocation(),
-              DeployResultsLocation(),
+              BrandingDeployLocation(),
+              CmdResultsLocation(),
               PortalStatusLocation(),
               // disabled for now CmdTermLocation()
             ]));
@@ -140,6 +142,18 @@ class PreDeployLocation extends NamedBeamLocation {
       ];
 }
 
+class BrandingDeployLocation extends NamedBeamLocation {
+  @override
+  String get route => BrandingDeployPage.routeName;
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
+        BeamPage(
+            key: const ValueKey(BrandingDeployPage.routeName),
+            child: const BrandingDeployPage())
+      ];
+}
+
 class PostDeployLocation extends NamedBeamLocation {
   @override
   String get route => PostDeployPage.routeName;
@@ -204,13 +218,13 @@ class CmdTermLocation extends BeamLocation {
       ];
 }
 
-class DeployResultsLocation extends NamedBeamLocation {
+class CmdResultsLocation extends NamedBeamLocation {
   @override
-  String get route => DeployResultsPage.routeName;
+  String get route => CmdResultsPage.routeName;
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
-      [BeamPage(key: ValueKey(route), child: const DeployResultsPage())];
+      [BeamPage(key: ValueKey(route), child: const CmdResultsPage())];
 }
 
 class PortalStatusLocation extends NamedBeamLocation {

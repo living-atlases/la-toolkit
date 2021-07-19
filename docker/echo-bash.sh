@@ -8,7 +8,20 @@ colgre='\033[0;90m' # Grey
 colblu='\033[0;34m' # Blue
 colrst='\033[0m'    # Text Reset
 
-echo -e ${colblu}"\$ "${colrst}${colgrn}"$@ "${colgre}"### This is the command we've executed"${colrst} ; "$@" ;
+echo -e ${colblu}"\$ "${colrst}${colgrn}"$@ "${colgre}"### This is the command we've executed"${colrst} 
+
+echo $BASH_LOG_FILE_COLORIZED
+echo $BASH_LOG_FILE
+
+if [[ -n "${BASH_LOG_FILE_COLORIZED}" ]]; then
+  # unbuffer preserve colors with tee
+  ((
+    unbuffer "$@" ;
+  ) 2>&1) | tee "${BASH_LOG_FILE_COLORIZED}"
+  cat "${BASH_LOG_FILE_COLORIZED}" | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g" > "${BASH_LOG_FILE}"
+else
+  "$@" ;
+fi
 
 RESULT=$?
 echo

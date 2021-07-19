@@ -6,6 +6,7 @@ import 'package:la_toolkit/components/lintProject.dart';
 import 'package:la_toolkit/components/termsDrawer.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
+import 'package:la_toolkit/models/brandingDeployCmd.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
@@ -66,14 +67,14 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     context: context,
                     store: store,
                     project: project,
-                    deployCmd: PreDeployCmd());
+                    commonCmd: PreDeployCmd());
               },
               onPostDeployTasks: (project) {
                 DeployUtils.doDeploy(
                     context: context,
                     store: store,
                     project: project,
-                    deployCmd: PostDeployCmd());
+                    commonCmd: PostDeployCmd());
               },
               onViewLogs: (project) {
                 store.dispatch(OnViewLogs(project));
@@ -84,7 +85,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     context: context,
                     store: store,
                     project: project,
-                    deployCmd: DeployCmd());
+                    commonCmd: DeployCmd());
               },
               onDelProject: (project) {
                 store.dispatch(DelProject(project));
@@ -112,6 +113,13 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 }, () {
                   //  if (!silence) context.loaderOverlay.hide();
                 }));
+              },
+              onDeployBranding: (LAProject project) {
+                DeployUtils.doDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    commonCmd: BrandingDeployCmd());
               });
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
@@ -153,7 +161,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.format_paint),
                 title: "Branding Deploy",
-                action: () => {}),
+                enabled: project.isCreated &&
+                        project.allServersWithServicesReady() ||
+                    project.allServersWithSshReady(),
+                action: () => vm.onDeployBranding(project)),
             Tool(
                 icon: const Icon(Mdi.rocketLaunch),
                 title: "Deploy",
@@ -330,6 +341,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onTuneProject;
   final void Function(LAProject project) onDeployProject;
   final void Function(LAProject project) onDelProject;
+  final void Function(LAProject project) onDeployBranding;
   final void Function(LAProject project) onGenInvProject;
   final void Function(LAProject project) onViewLogs;
   final void Function(LAProject project, bool) onTestConnProject;
@@ -348,6 +360,7 @@ class _ProjectPageViewModel {
       required this.onDelProject,
       required this.onPreDeployTasks,
       required this.onPostDeployTasks,
+      required this.onDeployBranding,
       required this.onViewLogs,
       required this.onDeployProject,
       required this.onGenInvProject,

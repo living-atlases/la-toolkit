@@ -65,7 +65,7 @@ K _$enumDecode<K, V>(
 }
 
 const _$CmdTypeEnumMap = {
-  CmdType.ansible: 'ansible',
+  CmdType.brandingDeploy: 'brandingDeploy',
   CmdType.deploy: 'deploy',
   CmdType.preDeploy: 'preDeploy',
   CmdType.postDeploy: 'postDeploy',

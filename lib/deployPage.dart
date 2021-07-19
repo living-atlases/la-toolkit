@@ -42,7 +42,7 @@ class _DeployPageState extends State<DeployPage> {
       converter: (store) {
         return _DeployViewModel(
             project: store.state.currentProject,
-            cmd: store.state.repeatCmd,
+            cmd: store.state.repeatCmd as DeployCmd,
             onDeployProject: (project, cmd) => DeployUtils.deployActionLaunch(
                 context: context,
                 store: store,

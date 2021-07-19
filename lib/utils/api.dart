@@ -230,8 +230,11 @@ class Api {
     http
         .post(url,
             headers: {'Content-type': 'application/json'},
-            body: utf8.encode(json.encode(
-                {'logsPrefix': cmd.logsPrefix, 'logsSuffix': cmd.logsSuffix})))
+            body: utf8.encode(json.encode({
+              'cmdHistoryEntryId': cmd.id,
+              'logsPrefix': cmd.logsPrefix,
+              'logsSuffix': cmd.logsSuffix
+            })))
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> l = json.decode(response.body);
@@ -265,7 +268,7 @@ class Api {
       required String projectId,
       required String desc,
       required Map<String, dynamic> cmd,
-      required DeployProject action}) {
+      required DeployAction action}) {
     http
         .post(url,
             headers: {'Content-type': 'application/json'},
@@ -285,12 +288,12 @@ class Api {
     });
   }
 
-  static Future<CmdHistoryDetails?> getAnsiblewResults(
+  static Future<CmdHistoryDetails?> getCmdResults(
       {required cmdHistoryEntryId,
       required String logsPrefix,
       required String logsSuffix}) async {
     if (AppUtils.isDemo()) return null;
-    Uri url = uri(env['BACKEND']!, "/api/v1/ansiblew-results");
+    Uri url = uri(env['BACKEND']!, "/api/v1/cmd-results");
     Response response = await http.post(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({
@@ -447,5 +450,16 @@ class Api {
       return;
     }
     return;
+  }
+
+  static void deployBranding(BrandingDeploy action) {
+    if (AppUtils.isDemo()) return;
+    Uri url = uri(env['BACKEND']!, "/api/v1/branding-deploy");
+    doCmd(
+        url: url,
+        projectId: action.project.id,
+        desc: action.cmd.desc,
+        cmd: action.cmd.toJson(),
+        action: action);
   }
 }

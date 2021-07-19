@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/commonCmd.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
@@ -10,7 +11,7 @@ part 'deployCmd.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class DeployCmd {
+class DeployCmd extends CommonCmd {
   List<String> deployServices;
   List<String> limitToServers;
   List<String> skipTags;

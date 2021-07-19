@@ -7,14 +7,21 @@ part 'cmd.g.dart';
 
 // Base cmd
 
-enum CmdType { ansible, deploy, preDeploy, postDeploy, laPipelines, bash }
+enum CmdType {
+  brandingDeploy,
+  deploy,
+  preDeploy,
+  postDeploy,
+  laPipelines,
+  bash
+}
 
 extension ParseToString on CmdType {
   String toS() {
     return toString().split('.').last;
   }
 
-  bool get isDeploy =>
+  bool get isAnsibleDeploy =>
       this == CmdType.deploy ||
       this == CmdType.preDeploy ||
       this == CmdType.postDeploy;

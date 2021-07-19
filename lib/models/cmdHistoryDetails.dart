@@ -158,7 +158,8 @@ class CmdHistoryDetails {
   num? numFailures() {
     num? fails = resultsTotals[ResultType.failures.toS()];
     num? unReach = resultsTotals[ResultType.unreachable.toS()];
-    if (fails == null && unReach == null) return null;
+    // It's this needed now with non ansible cmds with no ansible results?
+    // if (fails == null && unReach == null) return null;
     return (fails ?? 0) + (unReach ?? 0);
   }
 

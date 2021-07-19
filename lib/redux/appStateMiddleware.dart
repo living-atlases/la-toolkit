@@ -316,14 +316,17 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         Api.ansiblew(action);
       }
     }
-    if (action is GetDeployProjectResults) {
+    if (action is BrandingDeploy) {
+      Api.deployBranding(action);
+    }
+    if (action is GetCmdResults) {
       CmdHistoryDetails? lastCmdDet = store.state.currentProject.lastCmdDetails;
       if (lastCmdDet != null &&
           lastCmdDet.cmd != null &&
           lastCmdDet.cmd!.id == action.cmdHistoryEntry.id) {
         // Don't load results again we have this already
       } else {
-        lastCmdDet = await Api.getAnsiblewResults(
+        lastCmdDet = await Api.getCmdResults(
             cmdHistoryEntryId: action.cmdHistoryEntry.id,
             logsPrefix: action.cmdHistoryEntry.logsPrefix,
             logsSuffix: action.cmdHistoryEntry.logsSuffix);
@@ -346,16 +349,16 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             onStart: (cmd, port, ttydPid) {
               lastCmdDet!.port = port;
               lastCmdDet.pid = ttydPid;
-              store.dispatch(ShowDeployProjectResults(
+              store.dispatch(ShowCmdResults(
                   action.cmdHistoryEntry, action.fstRetrieved, lastCmdDet));
               action.onReady();
             },
             onError: (error) {
-              store.dispatch(OnShowDeployProjectResultsFailed());
+              store.dispatch(OnShowCmdResultsFailed());
               action.onFailed();
             });
       } else {
-        store.dispatch(OnShowDeployProjectResultsFailed());
+        store.dispatch(OnShowCmdResultsFailed());
         action.onFailed();
       }
     }

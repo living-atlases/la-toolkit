@@ -10,7 +10,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'deployCmd.dart';
+import 'commonCmd.dart';
 
 part 'appState.g.dart';
 
@@ -54,7 +54,7 @@ class AppState {
   @JsonKey(ignore: true) //, nullable: true)
   final List<AppSnackBarMessage> appSnackBarMessages;
   @JsonKey(ignore: true)
-  final DeployCmd repeatCmd;
+  final CommonCmd repeatCmd;
   @JsonKey(ignore: true)
   final PackageInfo? pkgInfo;
   @JsonKey(ignore: true)
@@ -72,7 +72,7 @@ class AppState {
       List<String>? alaInstallReleases,
       List<String>? generatorReleases,
       List<AppSnackBarMessage>? appSnackBarMessages,
-      DeployCmd? repeatCmd,
+      CommonCmd? repeatCmd,
       this.pkgInfo,
       this.backendVersion,
       bool? loading,
@@ -83,7 +83,7 @@ class AppState {
         currentProject = currentProject ?? LAProject(),
         alaInstallReleases = alaInstallReleases ?? [],
         generatorReleases = generatorReleases ?? [],
-        repeatCmd = repeatCmd ?? DeployCmd(),
+        repeatCmd = repeatCmd ?? CommonCmd(),
         loading = loading ?? false,
         appSnackBarMessages = appSnackBarMessages ?? [];
 

@@ -19,7 +19,7 @@ extension AppStateCopyWith on AppState {
     bool? loading,
     PackageInfo? pkgInfo,
     List<LAProject>? projects,
-    DeployCmd? repeatCmd,
+    CommonCmd? repeatCmd,
     List<SshKey>? sshKeys,
     LAProjectViewStatus? status,
   }) {
