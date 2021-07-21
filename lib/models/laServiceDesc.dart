@@ -116,7 +116,7 @@ class LAServiceDesc {
         sample: "https://biocache.ala.org.au",
         icon: Icons.web,
         admin: true,
-        alaAdmin: false,
+        alaAdmin: true,
         path: ""),
     LAServiceName.biocache_service.toS(): LAServiceDesc(
         name: "records-ws",
@@ -137,7 +137,7 @@ class LAServiceDesc {
         icon: Mdi.beeFlower,
         sample: "https://bie.ala.org.au",
         admin: false,
-        alaAdmin: false,
+        alaAdmin: true,
         path: ""),
     LAServiceName.bie_index.toS(): LAServiceDesc(
         name: "species-ws",
@@ -149,7 +149,7 @@ class LAServiceDesc {
         optional: false,
         sample: "https://bie.ala.org.au/ws",
         admin: true,
-        alaAdmin: false,
+        alaAdmin: true,
         path: ""),
     LAServiceName.images.toS(): LAServiceDesc(
         name: "images",
@@ -158,6 +158,7 @@ class LAServiceDesc {
         desc: "images service",
         optional: true,
         initUse: true,
+        alaAdmin: true,
         sample: "https://images.ala.org.au",
         icon: Mdi.imageMultipleOutline,
         admin: true,
@@ -253,7 +254,10 @@ class LAServiceDesc {
         sample: "https://spatial.ala.org.au",
         subServices: [
           LASubServiceDesc(
-              name: 'Spatial Webservice', path: '/ws', icon: Mdi.layersPlus),
+              name: 'Spatial Webservice',
+              path: '/ws',
+              icon: Mdi.layersPlus,
+              alaAdmin: true),
           LASubServiceDesc(
               name: 'Geoserver', path: '/geoserver', icon: Mdi.layersSearch)
         ],
@@ -335,6 +339,7 @@ class LAServiceDesc {
         sample: "Styling-the-web-app",
         withoutUrl: false,
         optional: false,
+        alaAdmin: false,
         path: "brand-${DateTime.now().year}"),
     LAServiceName.biocache_cli.toS(): LAServiceDesc(
         name: "biocache-cli",
