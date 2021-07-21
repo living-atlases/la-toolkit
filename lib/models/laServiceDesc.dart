@@ -169,6 +169,7 @@ class LAServiceDesc {
         desc: "user provided species lists",
         depends: LAServiceName.ala_bie,
         optional: true,
+        alaAdmin: true,
         initUse: true,
         icon: Icons.playlist_add_outlined,
         sample: "https://lists.ala.org.au",
@@ -298,6 +299,7 @@ class LAServiceDesc {
         desc:
             "users can subscribe to notifications about new species occurrences they are interested, regions, etc",
         optional: true,
+        alaAdmin: true,
         initUse: false,
         sample: "https://alerts.ala.org.au",
         icon: Icons.notifications_active_outlined,
@@ -309,6 +311,7 @@ class LAServiceDesc {
         group: "doi-service",
         desc: "mainly used for generating DOIs of user downloads",
         optional: true,
+        alaAdmin: true,
         initUse: false,
         sample: "https://doi.ala.org.au",
         icon: Mdi.link,
