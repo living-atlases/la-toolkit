@@ -267,11 +267,12 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 - [X] Software dependencies release checking and notification of available upgrades
 - [X] Pre-deploy tasks (wip)
 - [X] Portal status tool
-- [~] Post-deploy tasks (wip)
-- [ ] Branding deployment (wip)
+- [X] Branding deployment
+- [X] Post-deploy tasks
 - [ ] Support additional hubs configuration
-- [ ] Services redundancy
+- [ ] SSL support via letsencrypt (work in progress)
 - [ ] LA pipelines support
+- [ ] Services redundancy
 - [ ] Improve ssh keys management
 
 ## Screenshots
