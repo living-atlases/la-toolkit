@@ -37,8 +37,13 @@ class ServiceWidget extends StatelessWidget {
       LAProject currentProject = vm.currentProject;
       LAService service = vm.currentProject.getService(serviceName);
       LAServiceDesc serviceDesc = LAServiceDesc.get(serviceName);
+      final bool isHub = currentProject.isHub;
       bool visible = (serviceDesc.depends == null ||
-              vm.currentProject.getServiceE(serviceDesc.depends!).use) &&
+              ((!isHub ||
+                      isHub &&
+                          LAServiceDesc.getE(serviceDesc.depends!)
+                              .hubCapable) &&
+                  vm.currentProject.getServiceE(serviceDesc.depends!).use)) &&
           !serviceDesc.withoutUrl;
       bool optional = serviceDesc.optional;
       bool canUseSubdomain =
@@ -55,6 +60,7 @@ class ServiceWidget extends StatelessWidget {
           vm.onEditService(service);
         }
       });
+      String prefix = currentProject.isHub ? "hubname-" : "";
       return visible
           ? Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
@@ -177,8 +183,8 @@ class ServiceWidget extends StatelessWidget {
                                           "http${vm.currentProject.useSSL ? 's' : ''}://",
                                           style: domainTextStyle)),
                                 if (!serviceDesc.withoutUrl && usesSubdomain)
-                                  _createSubUrlField(service, serviceDesc, vm,
-                                      'Invalid subdomain.'),
+                                  _createSubUrlField(service, serviceDesc,
+                                      prefix, vm, 'Invalid subdomain.'),
                                 if (!serviceDesc.withoutUrl && usesSubdomain)
                                   Text('.$domain/', style: domainTextStyle),
                                 if (!serviceDesc.withoutUrl && usesSubdomain)
@@ -187,8 +193,8 @@ class ServiceWidget extends StatelessWidget {
                                 if (!serviceDesc.withoutUrl && !usesSubdomain)
                                   Text('$domain/', style: domainTextStyle),
                                 if (!serviceDesc.withoutUrl && !usesSubdomain)
-                                  _createSubUrlField(service, serviceDesc, vm,
-                                      'Invalid path.'),
+                                  _createSubUrlField(service, serviceDesc,
+                                      prefix, vm, 'Invalid path.'),
                                 if (!serviceDesc.withoutUrl && !usesSubdomain)
                                   Text("/", style: domainTextStyle),
                                 /* SearchChoices.single(
@@ -231,10 +237,10 @@ class ServiceWidget extends StatelessWidget {
   }
 
   Widget _createSubUrlField(LAService service, LAServiceDesc serviceDesc,
-      _LAServiceViewModel vm, String error) {
+      String prefix, _LAServiceViewModel vm, String error) {
     return _wrapField(
         child: GenericTextFormField(
-            initialValue: service.suburl,
+            initialValue: prefix + service.suburl,
             focusNode: service.nameInt == LAServiceName.collectory.toS()
                 ? collectoryFocusNode
                 : null,

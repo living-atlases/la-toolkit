@@ -51,7 +51,9 @@ class OnFetchGeneratorReleases extends AppActions {
 class OnFetchGeneratorReleasesFailed extends AppActions {}
 
 class CreateProject extends AppActions {
-  CreateProject();
+  bool isHub;
+  LAProject? parent;
+  CreateProject({this.isHub = false, this.parent});
 }
 
 class ImportProject extends AppActions {

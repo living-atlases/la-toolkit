@@ -21,7 +21,8 @@ class LAAppBar extends AppBar {
       IconData? titleIcon,
       bool loading = false,
       VoidCallback? onBack,
-      String? tooltip})
+      String? tooltip,
+      VoidCallback? beforeBack})
       : super(
             /*
             // This breaks the Navigation
@@ -63,12 +64,15 @@ class LAAppBar extends AppBar {
                       icon: const Icon(Icons.arrow_back,
                           size: 28, color: Colors.black),
                       onPressed: () {
+                        if (beforeBack != null) beforeBack();
                         if (backLocation != null) {
                           BeamerCond.of(context, backLocation);
                         } else {
                           try {
                             context.beamBack();
                           } catch (e) {
+                            print('Error in beam back');
+                            print(e);
                             BeamerCond.of(context, HomeLocation());
                           }
                         }

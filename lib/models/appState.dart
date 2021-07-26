@@ -23,16 +23,16 @@ extension ParseToString on LAProjectViewStatus {
 }
 
 extension LAProjectStatusExtension on LAProjectViewStatus {
-  String get title {
+  String getTitle(bool isHub) {
     switch (this) {
       case LAProjectViewStatus.edit:
-        return 'Editing project';
+        return "Editing ${isHub ? 'Data Hub' : 'Project'}";
       case LAProjectViewStatus.create:
-        return 'Creating a new LA Project';
+        return "Creating a new LA ${isHub ? 'Data Hub' : 'Project'}";
       case LAProjectViewStatus.tune:
-        return 'Tune your LA Project';
+        return "Tune your LA ${isHub ? 'Data Hub' : 'Project'}";
       case LAProjectViewStatus.view:
-        return 'Project details';
+        return "${isHub ? 'Data Hub' : 'Project'} details";
     }
   }
 }

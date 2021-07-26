@@ -29,10 +29,10 @@ class LAProjectTimeline extends StatelessWidget {
               .where((element) => element.id == id)
               .toList();
           return _LAProjectTimelineViewModel(
-            status: ourProjects.isNotEmpty
-                ? ourProjects[0].status
-                : LAProjectStatus.created,
-          );
+              status: ourProjects.isNotEmpty
+                  ? ourProjects[0].status
+                  : LAProjectStatus.created,
+              isHub: ourProjects.isNotEmpty ? ourProjects[0].isHub : false);
         },
         builder: (BuildContext context, _LAProjectTimelineViewModel vm) {
           bool small = MediaQuery.of(context).size.width < 750;
@@ -74,7 +74,8 @@ class LAProjectTimeline extends StatelessWidget {
                               top: small ? 0 : _iconsVerticalPadding,
                               left: small ? 20 : 0),
                           child: Text(
-                            LAProjectStatus.values[index].title
+                            LAProjectStatus.values[index]
+                                .title(vm.isHub)
                                 .replaceAll(' ', '\n'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -196,8 +197,9 @@ class LAProjectTimeline extends StatelessWidget {
 
 class _LAProjectTimelineViewModel {
   final LAProjectStatus status;
+  final bool isHub;
 
-  _LAProjectTimelineViewModel({required this.status});
+  _LAProjectTimelineViewModel({required this.status, required this.isHub});
 
   @override
   bool operator ==(Object other) =>

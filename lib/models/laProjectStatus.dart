@@ -12,14 +12,14 @@ enum LAProjectStatus {
 }
 
 extension LAProjectStatusExtension on LAProjectStatus {
-  String get title {
+  String title(isHub) {
     switch (this) {
       case LAProjectStatus.created:
         return 'Creation';
       case LAProjectStatus.basicDefined:
         return 'Servers Definition';
       case LAProjectStatus.advancedDefined:
-        return 'Portal Configured';
+        return "${isHub ? 'Hub' : 'Portal'} Configured";
       case LAProjectStatus.reachable:
         return 'Servers Reachable';
       case LAProjectStatus.firstDeploy:

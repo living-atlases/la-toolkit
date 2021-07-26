@@ -85,7 +85,12 @@ class LAProjectEditPage extends StatelessWidget {
                 project.validateCreation();
                 if (store.state.status == LAProjectViewStatus.create) {
                   store.dispatch(AddProject(project));
-                  BeamerCond.of(context, HomeLocation());
+                  if (project.isHub) {
+                    store.dispatch(OpenProjectTools(project.parent!));
+                    BeamerCond.of(context, LAProjectViewLocation());
+                  } else {
+                    BeamerCond.of(context, HomeLocation());
+                  }
                 } else {
                   store.dispatch(UpdateProject(project));
                   store.dispatch(OpenProjectTools(project));
@@ -128,10 +133,15 @@ class LAProjectEditPage extends StatelessWidget {
           final int _step = vm.state.currentStep;
           print('Building project edit currentStep: $_step key: $_scaffoldKey');
           final List<Step> _steps = [];
+          String projectName = _project.projectName;
+          String portal = _project.portalName;
+          // ignore: non_constant_identifier_names
+          String Portal = _project.PortalName;
+          if (_project.isHub) _project.domain = _project.parent!.domain;
           _steps.add(Step(
               title: const Text('Basic information'),
-              subtitle: const Text(
-                  'Define the main information of your portal, like name, ...'),
+              subtitle: Text(
+                  'Define the main information of your $portal, like name, ...'),
               isActive: _setIsActive(_step, _basicStep),
               state: _setSetStatus(_step, _basicStep),
               content: Form(
@@ -142,11 +152,12 @@ class LAProjectEditPage extends StatelessWidget {
                         //_createTextField(
                         // LONG NAME
                         //  key: _formKeys[0],
-                        label: 'Your LA Project Long Name',
-                        hint:
-                            "Similar to e.g: 'Atlas of Living Australia', 'BioAtlas Sweden', 'NBN Atlas', ...",
+                        label: 'Your LA $projectName Long Name',
+                        hint: _project.isHub
+                            ? "Similar to e.g: 'The Australasian Virtual Herbarium', 'NBN Atlas Scotland', 'GBIF Togo', ..."
+                            : "Similar to e.g: 'Atlas of Living Australia', 'BioAtlas Sweden', 'NBN Atlas', ...",
                         wikipage: "Glossary#Long-name",
-                        error: 'Project name invalid.',
+                        error: '$projectName name invalid.',
                         initialValue: _project.longName,
                         regexp: LARegExp.projectNameRegexp,
                         focusNode: _focusNodes[_basicStep],
@@ -157,8 +168,9 @@ class LAProjectEditPage extends StatelessWidget {
                     GenericTextFormField(
                         // SHORT NAME
                         label: 'Short Name',
-                        hint:
-                            "Similar to for e.g.: 'ALA', 'GBIF.ES', 'NBN',...",
+                        hint: _project.isHub
+                            ? "Similar to for e.g.: 'AVH', 'NBN Scotland', ..."
+                            : "Similar to for e.g.: 'ALA', 'GBIF.ES', 'NBN',...",
                         wikipage: "Glossary#Short-name",
                         error: 'Project short name invalid.',
                         initialValue: _project.shortName,
@@ -184,23 +196,26 @@ class LAProjectEditPage extends StatelessWidget {
                             },
                           ),
                         )),
-                    GenericTextFormField(
-                        // DOMAIN
-                        label: 'The domain of your LA node',
-                        hint:
-                            " Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
-                        prefixText: _protocolToS(_project.useSSL),
-                        wikipage: "Glossary#Domain",
-                        error: 'Project short name invalid.',
-                        initialValue: _project.domain,
-                        regexp: LARegExp.domainRegexp,
-                        onChanged: (value) {
-                          _project.domain = value;
-                          vm.onSaveCurrentProject(_project);
-                        }),
-                    const SizedBox(height: 20),
+                    if (!_project.isHub)
+                      GenericTextFormField(
+                          // DOMAIN
+                          label:
+                              'The ${_project.isHub ? 'sub' : ''}domain of your LA $Portal',
+                          hint:
+                              "Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
+                          prefixText: _protocolToS(_project.useSSL),
+                          wikipage: "Glossary#Domain",
+                          error: '$projectName short name invalid.',
+                          initialValue: _project.domain,
+                          regexp: LARegExp.domainRegexp,
+                          onChanged: (value) {
+                            _project.domain = value;
+                            vm.onSaveCurrentProject(_project);
+                          }),
+                    if (!_project.isHub) const SizedBox(height: 20),
                     BrandingTile(
                         initialValue: _project.theme,
+                        portalName: Portal,
                         onChange: (String newTheme) =>
                             _project.theme = newTheme)
                   ],
@@ -210,11 +225,11 @@ class LAProjectEditPage extends StatelessWidget {
               isActive: _setIsActive(_step, _mapStep),
               state: _setSetStatus(_step, _mapStep),
               title: const Text('Location information'),
-              subtitle: const Text('Select the map area of your LA portal,...'),
+              subtitle: Text('Select the map area of your LA $Portal,...'),
               content: Column(children: [
                 _stepIntro(
                     text:
-                        "Tap in two points to select the default map area of your LA portal. Drag them to modify the area. This area is used in services like collections, regions and spatial in their main page.",
+                        "Tap in two points to select the default map area of your LA $portal. Drag them to modify the area. This area is used in services like collections, regions and spatial in their main page.",
                     helpPage: "Glossary#Services-map-area"),
                 const SizedBox(height: 20),
                 const MapAreaSelector(),
@@ -230,8 +245,7 @@ class LAProjectEditPage extends StatelessWidget {
               isActive: _setIsActive(_step, _serversStep),
               state: _setSetStatus(_step, _serversStep),
               title: const Text('Servers'),
-              subtitle:
-                  const Text('Inventory of the servers of your LA portal'),
+              subtitle: Text('Inventory of the servers of your LA $Portal'),
               content: Form(
                 key: _formKeys[_serversStep],
                 child: Column(
@@ -294,12 +308,13 @@ If you are unsure type something like "server1, server2, server3".
                   ],
                 ),
               )));
+          final availableServices = LAServiceDesc.list(_project.isHub);
           _steps.add(Step(
               isActive: _setIsActive(_step, _servicesStep),
               state: _setSetStatus(_step, _servicesStep),
               title: const Text('Services'),
-              subtitle: const Text(
-                  'Choose the services of your portal and how your services URLs will look like'),
+              subtitle: Text(
+                  'Choose the services of your $Portal and how your services URLs will look like'),
               // subtitle: const Text("Error!"),
               content: Form(
                   key: _formKeys[_servicesStep],
@@ -307,17 +322,17 @@ If you are unsure type something like "server1, server2, server3".
                     children: [
                       _stepIntro(
                           text:
-                              "Please select the services of your LA Portal. Some services are mandatory, and some services are optional and you can use them later.",
+                              "Please select the services of your LA $Portal. Some services are mandatory, and some services are optional and you can use them later.",
                           helpPage:
                               "Infrastructure-Requirements#core-components-for-a-living-atlas"),
                       ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          itemCount: LAServiceDesc.map.length,
+                          itemCount: availableServices.length,
                           // itemCount: appStateProv.appState.projects.length,
                           itemBuilder: (BuildContext context, int index) =>
                               ServiceWidget(
-                                  serviceName: LAServiceDesc.list
+                                  serviceName: availableServices
                                       .elementAt(index)
                                       .nameInt,
                                   collectoryFocusNode:
@@ -379,14 +394,15 @@ If you have doubts or need to ask for some information, save this project and co
                     ServersDetailsCardList(_focusNodes[_serversAdditional]!),
                   ]))));
           return Title(
-              title: "${_project.shortName}: ${vm.state.status.title}",
+              title:
+                  "${_project.shortName}: ${vm.state.status.getTitle(_project.isHub)}",
               color: LAColorTheme.laPalette,
               child: Scaffold(
                 key: _scaffoldKey,
                 appBar: LAAppBar(
                     context: context,
                     titleIcon: Icons.edit,
-                    title: vm.state.status.title,
+                    title: vm.state.status.getTitle(_project.isHub),
                     showLaIcon: false,
                     actions: <Widget>[
                       Tooltip(

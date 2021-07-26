@@ -99,8 +99,12 @@ class LAProjectEditLocation extends NamedBeamLocation {
 
 class LAProjectViewLocation extends NamedBeamLocation {
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
-      [BeamPage(key: ValueKey(route), child: const LAProjectViewPage())];
+  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
+        BeamPage(
+            key: ValueKey(route),
+            popToNamed: '/',
+            child: const LAProjectViewPage())
+      ];
 
   @override
   String get route => LAProjectViewPage.routeName;

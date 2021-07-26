@@ -73,6 +73,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
   List<CmdHistoryEntry> cmdHistoryEntries;
   List<LAServiceDeploy> serviceDeploys;
   List<LAVariable> variables;
+  List<LAProject> hubs;
+  @JsonKey(ignore: true)
+  LAProject? parent;
 
   // Logs history -----
   CmdHistoryEntry? lastCmdEntry;
@@ -85,7 +88,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       {String? id,
       this.longName = "",
       this.shortName = "",
-      this.domain = "",
+      String? domain,
       this.dirName = "",
       this.useSSL = true,
       this.isCreated = false,
@@ -108,13 +111,17 @@ class LAProject implements IsJsonSerializable<LAProject> {
       List<LAServer>? servers,
       List<LAService>? services,
       List<LAServiceDeploy>? serviceDeploys,
+      this.parent,
+      List<LAProject>? hubs,
       Map<String, List<String>>? serverServices,
       Map<String, dynamic>? checkResults})
       : id = id ?? ObjectId().toString(),
+        domain = domain ?? (isHub ? 'somehubname.' + parent!.domain : ''),
         servers = servers ?? [],
-        services = services ?? getInitialServices(),
+        services = services ?? getInitialServices(isHub),
         serviceDeploys = serviceDeploys ?? [],
         variables = variables ?? [],
+        hubs = hubs ?? [],
         checkResults = checkResults ?? {},
         serverServices = serverServices ?? {},
         advancedEdit = advancedEdit ?? false,
@@ -134,16 +141,20 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   init() async {
-    // Try to generate default CAS keys
-    String pac4jSignKey = await CASUtils.gen512CasKey();
-    String pac4jEncKey = await CASUtils.gen256CasKey();
-    String webflowSignKey = await CASUtils.gen512CasKey();
-    String webflowEncKey = await CASUtils.gen128CasKey();
-    setVariable(LAVariableDesc.get("pac4j_cookie_signing_key"), pac4jSignKey);
-    setVariable(LAVariableDesc.get("pac4j_cookie_encryption_key"), pac4jEncKey);
-    setVariable(LAVariableDesc.get("cas_webflow_signing_key"), webflowSignKey);
-    setVariable(
-        LAVariableDesc.get("cas_webflow_encryption_key"), webflowEncKey);
+    if (!isHub) {
+      // Try to generate default CAS keys
+      String pac4jSignKey = await CASUtils.gen512CasKey();
+      String pac4jEncKey = await CASUtils.gen256CasKey();
+      String webflowSignKey = await CASUtils.gen512CasKey();
+      String webflowEncKey = await CASUtils.gen128CasKey();
+      setVariable(LAVariableDesc.get("pac4j_cookie_signing_key"), pac4jSignKey);
+      setVariable(
+          LAVariableDesc.get("pac4j_cookie_encryption_key"), pac4jEncKey);
+      setVariable(
+          LAVariableDesc.get("cas_webflow_signing_key"), webflowSignKey);
+      setVariable(
+          LAVariableDesc.get("cas_webflow_encryption_key"), webflowEncKey);
+    }
   }
 
   int numServers() => servers.length;
@@ -319,7 +330,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       print("Error in toString: $e");
     }
     return '''PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, hub: $isHub, allWServReady: ___${allServersWithServicesReady()}___
-isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
+isHub: $isHub isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
 serviceDeploys (${serviceDeploys.length})
@@ -333,11 +344,12 @@ check results length: ${checkResults.length}''';
 
   //static List<LAService> initialServices = getInitialServices(id);
 
-  static List<LAService> getInitialServices() {
+  static List<LAService> getInitialServices(bool isHub) {
     final List<LAService> services = [];
-    LAServiceDesc.map.forEach((key, desc) {
+    List<LAServiceDesc> availableService = LAServiceDesc.list(isHub);
+    for (LAServiceDesc desc in availableService) {
       services.add(LAService.fromDesc(desc, ""));
-    });
+    }
     return services;
   }
 
@@ -354,6 +366,11 @@ check results length: ${checkResults.length}''';
     });
     return curService;
   }
+
+  String get projectName => isHub ? 'Data Hub' : 'Project';
+  String get portalName => isHub ? 'hub' : 'portal';
+  // ignore: non_constant_identifier_names
+  String get PortalName => isHub ? 'Hub' : 'Portal';
 
   LAVariable getVariable(String nameInt) {
     LAVariable laVar = variables.firstWhere((v) => v.nameInt == nameInt,
@@ -527,8 +544,9 @@ check results length: ${checkResults.length}''';
     service.use = use;
     updateService(service);
 
-    Iterable<LAServiceDesc> depends = LAServiceDesc.map.values.where((curSer) =>
-        (curSer.depends != null && curSer.depends!.toS() == serviceNameInt));
+    Iterable<LAServiceDesc> depends = LAServiceDesc.list(isHub).where(
+        (curSer) => (curSer.depends != null &&
+            curSer.depends!.toS() == serviceNameInt));
     if (!use) {
       // Remove
       serverServices.forEach((id, services) {
@@ -607,7 +625,7 @@ check results length: ${checkResults.length}''';
     String domain = p.domain;
     Map<String, List<String>> tempServerServices = {};
 
-    for (LAServiceDesc service in LAServiceDesc.list) {
+    for (LAServiceDesc service in LAServiceDesc.list(false)) {
       String n = service.nameInt == "cas" ? "CAS" : service.nameInt;
       // ala_bie and images was not optional in the past
       bool useIt = !service.optional
@@ -854,12 +872,14 @@ check results length: ${checkResults.length}''';
           mapBoundsSndPoint == other.mapBoundsSndPoint &&
           lastCmdEntry == other.lastCmdEntry &&
           lastCmdDetails == other.lastCmdDetails &&
+          parent == other.parent &&
           const ListEquality()
               .equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
           const ListEquality().equals(servers, other.servers) &&
           const ListEquality().equals(services, other.services) &&
           const ListEquality().equals(variables, other.variables) &&
           const ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
+          const ListEquality().equals(hubs, other.hubs) &&
           const DeepCollectionEquality.unordered()
               .equals(checkResults, other.checkResults) &&
           mapZoom == other.mapZoom;
@@ -885,6 +905,7 @@ check results length: ${checkResults.length}''';
       mapBoundsFstPoint.hashCode ^
       mapBoundsSndPoint.hashCode ^
       lastCmdDetails.hashCode ^
+      parent.hashCode ^
       const ListEquality().hash(cmdHistoryEntries) ^
       const ListEquality().hash(servers) ^
       const ListEquality().hash(services) ^

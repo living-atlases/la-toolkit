@@ -742,7 +742,7 @@ void main() {
     expect(p.shortName, equals('GBIF.ES'));
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
-    LAServiceDesc.list
+    LAServiceDesc.list(p.isHub)
         .where((s) => s.nameInt != LAServiceName.sds.toS())
         .toList()
         .forEach((service) {
@@ -771,7 +771,7 @@ void main() {
     expect(p.domain, equals('demo.gbif.es'));
     expect(p.useSSL, equals(true));
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
-    for (LAServiceDesc service in LAServiceDesc.list) {
+    for (LAServiceDesc service in LAServiceDesc.list(p.isHub)) {
       print(service.nameInt);
       if (![
         lists,
@@ -803,7 +803,7 @@ void main() {
     expect(p.domain, equals('canadensys.net'));
     expect(p.useSSL, equals(true));
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
-    for (var service in LAServiceDesc.list) {
+    for (var service in LAServiceDesc.list(p.isHub)) {
       // print("${service.nameInt}");
       if (![lists, webapi, doi, bie, regions, sds].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),

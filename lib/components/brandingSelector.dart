@@ -18,9 +18,13 @@ class Branding {
 class BrandingTile extends StatefulWidget {
   final String initialValue;
   final Function(String) onChange;
+  final String portalName;
 
   const BrandingTile(
-      {Key? key, required this.initialValue, required this.onChange})
+      {Key? key,
+      required this.initialValue,
+      required this.portalName,
+      required this.onChange})
       : super(key: key);
 
   @override
@@ -40,7 +44,7 @@ class _BrandingTileState extends State<BrandingTile> {
   Widget build(BuildContext context) {
     return ListTile(
       ///contentPadding: padding,
-      title: const Text("Portal branding"),
+      title: Text("${widget.portalName} branding"),
       subtitle: Text(initialValue),
       onTap: () => _showDialog(context),
       leading: const Icon(Icons.format_paint),

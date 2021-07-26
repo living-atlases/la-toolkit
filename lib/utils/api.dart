@@ -385,8 +385,9 @@ class Api {
     if (AppUtils.isDemo()) return [project.toJson()];
     Uri url = uri(env['BACKEND']!, "/api/v1/$op-project");
     Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
-    Map<String, dynamic> body = {'project': projectJ};
-
+    Map<String, dynamic> body = {
+      'project': projectJ,
+    };
     Response response = await (op == "add" ? http.post : http.patch)(url,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode(body)));
@@ -421,6 +422,7 @@ class Api {
     Map<String, dynamic> projectJ = project.toJson();
     Map<String, dynamic> projectGenJson = project.toGeneratorJson();
     projectJ['genConf'] = projectGenJson;
+    projectJ['parent'] = project.parent != null ? project.parent!.id : null;
     return projectJ;
   }
 

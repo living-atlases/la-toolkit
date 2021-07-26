@@ -103,7 +103,7 @@ AppState _onFetchGeneratorReleasesFailed(
 
 AppState _createProject(AppState state, CreateProject action) {
   return state.copyWith(
-      currentProject: LAProject(),
+      currentProject: LAProject(isHub: action.isHub, parent: action.parent),
       status: LAProjectViewStatus.create,
       currentStep: 0);
 }

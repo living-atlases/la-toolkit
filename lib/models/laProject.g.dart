@@ -18,6 +18,7 @@ extension LAProjectCopyWith on LAProject {
     String? domain,
     bool? fstDeployed,
     String? generatorRelease,
+    List<LAProject>? hubs,
     String? id,
     bool? isCreated,
     bool? isHub,
@@ -27,6 +28,7 @@ extension LAProjectCopyWith on LAProject {
     LALatLng? mapBoundsFstPoint,
     LALatLng? mapBoundsSndPoint,
     double? mapZoom,
+    LAProject? parent,
     Map<String, List<String>>? serverServices,
     List<LAServer>? servers,
     List<LAServiceDeploy>? serviceDeploys,
@@ -48,6 +50,7 @@ extension LAProjectCopyWith on LAProject {
       domain: domain ?? this.domain,
       fstDeployed: fstDeployed ?? this.fstDeployed,
       generatorRelease: generatorRelease ?? this.generatorRelease,
+      hubs: hubs ?? this.hubs,
       id: id ?? this.id,
       isCreated: isCreated ?? this.isCreated,
       isHub: isHub ?? this.isHub,
@@ -57,6 +60,7 @@ extension LAProjectCopyWith on LAProject {
       mapBoundsFstPoint: mapBoundsFstPoint ?? this.mapBoundsFstPoint,
       mapBoundsSndPoint: mapBoundsSndPoint ?? this.mapBoundsSndPoint,
       mapZoom: mapZoom ?? this.mapZoom,
+      parent: parent ?? this.parent,
       serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
       serviceDeploys: serviceDeploys ?? this.serviceDeploys,
@@ -79,7 +83,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     id: json['id'] as String?,
     longName: json['longName'] as String,
     shortName: json['shortName'] as String,
-    domain: json['domain'] as String,
+    domain: json['domain'] as String?,
     dirName: json['dirName'] as String?,
     useSSL: json['useSSL'] as bool,
     isCreated: json['isCreated'] as bool,
@@ -118,6 +122,9 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     serviceDeploys: (json['serviceDeploys'] as List<dynamic>?)
         ?.map((e) => LAServiceDeploy.fromJson(e as Map<String, dynamic>))
         .toList(),
+    hubs: (json['hubs'] as List<dynamic>?)
+        ?.map((e) => LAProject.fromJson(e as Map<String, dynamic>))
+        .toList(),
     serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
       (k, e) =>
           MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
@@ -152,6 +159,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
           instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),
       'serviceDeploys': instance.serviceDeploys.map((e) => e.toJson()).toList(),
       'variables': instance.variables.map((e) => e.toJson()).toList(),
+      'hubs': instance.hubs.map((e) => e.toJson()).toList(),
       'lastCmdEntry': instance.lastCmdEntry?.toJson(),
     };
 

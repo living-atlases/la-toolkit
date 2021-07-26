@@ -5,8 +5,9 @@ import 'package:test/test.dart';
 void main() {
   test('Compare services name and map', () {
     // +1 = all
-    expect(LAServiceDesc.map.length + 1, equals(LAServiceName.values.length));
-    expect(LAServiceDesc.list.length + 1, equals(LAServiceName.values.length));
+    // expect(LAServiceDesc.map.length + 1, equals(LAServiceName.values.length));
+    expect(LAServiceDesc.list(false).length + 1,
+        equals(LAServiceName.values.length));
     expect(LAServiceDepsDesc.v2_0_4.length + 1,
         equals(LAServiceName.values.length));
   });

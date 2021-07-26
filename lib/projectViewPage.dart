@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/alaInstallSelector.dart';
+import 'package:la_toolkit/components/hubButton.dart';
 import 'package:la_toolkit/components/lintProject.dart';
 import 'package:la_toolkit/components/termsDrawer.dart';
 import 'package:la_toolkit/components/tool.dart';
@@ -16,6 +18,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:mdi/mdi.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'components/generatorSelector.dart';
 import 'components/laAppBar.dart';
@@ -42,6 +45,7 @@ class LAProjectViewPage extends StatefulWidget {
 
 class _LAProjectViewPageState extends State<LAProjectViewPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(
@@ -120,11 +124,27 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     store: store,
                     project: project,
                     commonCmd: BrandingDeployCmd());
+              },
+              onCreateHub: (LAProject project) {
+                store.dispatch(CreateProject(isHub: true, parent: project));
+                BeamerCond.of(context, LAProjectEditLocation());
+              },
+              onOpenHub: (LAProject project, LAProject hub) {
+                hub.parent = project; // if not is null
+                store.dispatch(OpenProjectTools(hub));
+                BeamerCond.of(context, LAProjectViewLocation());
+              },
+              onOpenParent: (LAProject hub) {
+                // print(hub.parent);
+                store.dispatch(OpenProjectTools(hub.parent!));
               });
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           print("Building ProjectViewPage $_scaffoldKey");
           final LAProject project = vm.project;
+          String portal = project.portalName;
+          // ignore: non_constant_identifier_names
+          String Portal = project.PortalName;
           List<Tool> tools = [
             Tool(
                 icon: const Icon(Icons.edit),
@@ -136,7 +156,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 icon: const Icon(Icons.tune),
                 title: "Tune your\nConfiguration",
                 tooltip:
-                    "Fine tune the portal configuration with other options different than the basic ones.",
+                    "Fine tune the $portal configuration with other options different than the basic ones.",
                 enabled: vm.status.value >= LAProjectStatus.basicDefined.value,
                 action: () => vm.onTuneProject(project)),
             Tool(
@@ -168,7 +188,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Mdi.rocketLaunch),
                 title: "Deploy",
-                tooltip: "Install/update your LA Portal or some services",
+                tooltip: "Install/update your LA $Portal or some services",
                 grid: 12,
                 enabled:
                     project.isCreated && project.allServersWithServicesReady(),
@@ -181,15 +201,16 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     project.allServersWithServicesReady() &&
                     project.cmdHistoryEntries.isNotEmpty,
                 action: () => vm.onViewLogs(project)),
-            Tool(
-                icon: const Icon(Icons.house_siding),
-                title: "Post-Deploy Tasks",
-                enabled: project.isCreated && project.fstDeployed,
-                action: () => vm.onPostDeployTasks(project)),
+            if (!project.isHub)
+              Tool(
+                  icon: const Icon(Icons.house_siding),
+                  title: "Post-Deploy Tasks",
+                  enabled: project.isCreated && project.fstDeployed,
+                  action: () => vm.onPostDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.fact_check),
-                title: "Portal Status",
-                tooltip: "Check your portal servers and services status",
+                title: "$Portal Status",
+                tooltip: "Check your $portal servers and services status",
                 enabled:
                     project.isCreated && project.allServersWithServicesReady(),
                 action: () => vm.onPortalStatus(vm.project)),
@@ -197,14 +218,15 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 icon: const Icon(Icons.pie_chart),
                 title: "Stats",
                 action: () => {}), */
-            Tool(
-                icon: const Icon(Icons.file_download),
-                tooltip: AppUtils.isDemo()
-                    ? "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories."
-                    : "Download your inventories to share it.\n\nNote: this is a copy or your inventories with autogenerated different passwords.\nYou can share it without security problems.",
-                title: "Download Inventories",
-                enabled: project.isCreated,
-                action: () => vm.onGenInvProject(project)),
+            if (!project.isHub)
+              Tool(
+                  icon: const Icon(Icons.file_download),
+                  tooltip: AppUtils.isDemo()
+                      ? "This is just a web demo without deployment capabilities. Anyway you can generate & download your inventories."
+                      : "Download your inventories to share it.\n\nNote: this is a copy or your inventories with autogenerated different passwords.\nYou can share it without security problems.",
+                  title: "Download Inventories",
+                  enabled: project.isCreated,
+                  action: () => vm.onGenInvProject(project)),
             /*     action: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("In Development: come back soon!"),
                 ))), */
@@ -215,7 +237,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 enabled: true,
                 askConfirmation: true,
                 action: () => vm.onDelProject(project)),
-            if (AppUtils.isDev())
+            if (AppUtils.isDev() && !project.isHub)
               Tool(
                   icon: const Icon(Mdi.pipe),
                   title: "Data Processing Pipelines",
@@ -242,7 +264,15 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                       context: context,
                       showLaIcon: false,
                       loading: vm.loading,
-                      backLocation: HomeLocation(),
+                      // this does not work as with back after editing
+                      backLocation: !project.isHub
+                          ? HomeLocation()
+                          : LAProjectViewLocation(),
+                      beforeBack: () {
+                        if (vm.project.isHub) {
+                          vm.onOpenParent(project);
+                        }
+                      },
                       showBack: true,
                       // backRoute: HomePage.routeName,
                       projectIcon: projectIconUrl,
@@ -250,7 +280,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                         if (project.isCreated)
                           TermsDrawer.appBarIcon(vm.project, _scaffoldKey)
                       ],
-                      title: "Toolkit of ${project.shortName} Portal"),
+                      title: "Toolkit of ${project.shortName} $Portal"),
                   body: ScrollPanel(
                       child: Container(
                           margin: const EdgeInsets.symmetric(
@@ -286,9 +316,77 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                                     child: ToolShortcut(tool: tool),
                                   ));
                             }).toList()),
+                            const SizedBox(height: 10),
+                            if (!project.isHub)
+                              createHubWidget(context, vm, project),
                             const LintProjectPanel()
                           ])))));
         });
+  }
+
+  Stack createHubWidget(
+      BuildContext context, _ProjectPageViewModel vm, LAProject project) {
+    return Stack(children: <Widget>[
+      Container(
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: const BorderRadius.all(
+                Radius.circular(10.0) //                 <--- border radius here
+                ),
+          ),
+          child: ResponsiveGridRow(
+              children: project.hubs
+                      .map((LAProject hub) => ResponsiveGridCol(
+                          lg: 2,
+                          child: HubButton(
+                              text: hub.shortName,
+                              icon: Icons.data_saver_off,
+                              onPressed: () => vm.onOpenHub(project, hub),
+                              tooltip: "Open this Hub",
+                              isActionBtn: false)))
+                      .toList() +
+                  [
+                    ResponsiveGridCol(
+                      lg: 2,
+                      child: HubButton(
+                          text: "Add a Data Hub",
+                          icon: Icons.data_saver_on,
+                          onPressed: () {
+                            showAlertDialog(context, vm);
+                          },
+                          tooltip: "Add a new Data Hub to this portal",
+                          isActionBtn: true),
+                    )
+                  ])),
+      Positioned(
+        top: 5.0,
+        left: 30.0,
+        right: 0.0,
+        child: Row(
+          children: <Widget>[
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                ),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: const Text(
+                  'Hubs',
+                  style: TextStyle(
+                      color: Colors.black45,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
+    ]);
   }
 
   void _showServersStatus(BuildContext context, LAProject currentProject) {
@@ -329,6 +427,61 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           )
         ]).show();
   }
+
+  void onFinish(BuildContext context, bool withError) {
+    context.loaderOverlay.hide();
+    Navigator.pop(context);
+    if (withError) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Something goes wrong'),
+      ));
+    }
+  }
+
+  showAlertDialog(BuildContext context, _ProjectPageViewModel vm) {
+    AlertDialog alert = AlertDialog(
+      title: const Text('Data Hub Creation'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            const Text(
+                'A Data Hub is a front end of a LA portal showing a subset of the whole data.'),
+            const Text(
+                'This subset can be split by region, taxonomy, basisofrecord (specimen only), temporal lapse or by any other query.'),
+            const SizedBox(height: 20),
+            const Text('More info:'),
+            const SizedBox(height: 20),
+            SelectableLinkify(
+                linkStyle: const TextStyle(color: LAColorTheme.laPalette),
+                options: const LinkifyOptions(humanize: false),
+                text:
+                    'https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub',
+                onOpen: (link) async => await launch(link.url)),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+            child: const Text('CANCEL'),
+            onPressed: () async {
+              onFinish(context, false);
+            }),
+        TextButton(
+          child: const Text('CONTINUE'),
+          onPressed: () async {
+            vm.onCreateHub(vm.project);
+          },
+        ),
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }
 
 class _ProjectPageViewModel {
@@ -338,6 +491,7 @@ class _ProjectPageViewModel {
   List<String> alaInstallReleases;
   List<String> generatorReleases;
   final void Function(LAProject project) onOpenProject;
+  final void Function(LAProject project) onOpenParent;
   final void Function(LAProject project) onTuneProject;
   final void Function(LAProject project) onDeployProject;
   final void Function(LAProject project) onDelProject;
@@ -348,6 +502,8 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onPreDeployTasks;
   final void Function(LAProject project) onPostDeployTasks;
   final void Function(LAProject project) onPortalStatus;
+  final void Function(LAProject project) onCreateHub;
+  final void Function(LAProject project, LAProject hub) onOpenHub;
 
   _ProjectPageViewModel(
       {required this.project,
@@ -356,6 +512,8 @@ class _ProjectPageViewModel {
       required this.status,
       required this.loading,
       required this.onOpenProject,
+      required this.onOpenHub,
+      required this.onOpenParent,
       required this.onTuneProject,
       required this.onDelProject,
       required this.onPreDeployTasks,
@@ -365,7 +523,8 @@ class _ProjectPageViewModel {
       required this.onDeployProject,
       required this.onGenInvProject,
       required this.onTestConnProject,
-      required this.onPortalStatus});
+      required this.onPortalStatus,
+      required this.onCreateHub});
 
   @override
   bool operator ==(Object other) =>

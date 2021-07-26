@@ -124,6 +124,7 @@ class _DeployPageState extends State<DeployPage> {
                                               initialValue: cmd.deployServices,
                                               services: vm.project
                                                   .getServicesAssignedToServers(),
+                                              isHub: vm.project.isHub,
                                               onChange: (s) => setState(() =>
                                                   cmd.deployServices = s)),
                                           ListTile(

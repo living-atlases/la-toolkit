@@ -70,6 +70,7 @@ class LAServiceDesc {
   List<LASubServiceDesc> subServices;
   bool admin;
   bool alaAdmin;
+  bool hubCapable;
 
   LAServiceDesc(
       {required this.name,
@@ -91,10 +92,11 @@ class LAServiceDesc {
       subServices,
       this.admin = false,
       this.alaAdmin = false,
-      this.initUse = false})
+      this.initUse = false,
+      this.hubCapable = false})
       : subServices = subServices ?? [];
 
-  static final Map<String, LAServiceDesc> map = {
+  static final Map<String, LAServiceDesc> _map = {
     LAServiceName.collectory.toS(): LAServiceDesc(
         name: "collections",
         nameInt: "collectory",
@@ -117,6 +119,7 @@ class LAServiceDesc {
         icon: Icons.web,
         admin: true,
         alaAdmin: true,
+        hubCapable: true,
         path: ""),
     LAServiceName.biocache_service.toS(): LAServiceDesc(
         name: "records-ws",
@@ -138,6 +141,7 @@ class LAServiceDesc {
         sample: "https://bie.ala.org.au",
         admin: false,
         alaAdmin: true,
+        hubCapable: true,
         path: ""),
     LAServiceName.bie_index.toS(): LAServiceDesc(
         name: "species-ws",
@@ -188,6 +192,7 @@ class LAServiceDesc {
         icon: Mdi.foodSteak,
         sample: "https://regions.ala.org.au",
         alaAdmin: true,
+        hubCapable: true,
         path: ""),
     LAServiceName.logger.toS(): LAServiceDesc(
         name: "logger",
@@ -340,6 +345,7 @@ class LAServiceDesc {
         withoutUrl: false,
         optional: false,
         alaAdmin: false,
+        hubCapable: true,
         path: "brand-${DateTime.now().year}"),
     LAServiceName.biocache_cli.toS(): LAServiceDesc(
         name: "biocache-cli",
@@ -363,14 +369,19 @@ class LAServiceDesc {
   };
 
   static LAServiceDesc get(String nameInt) {
-    return map[nameInt]!;
+    return _map[nameInt]!;
   }
 
   static LAServiceDesc getE(LAServiceName nameInt) {
-    return map[nameInt.toS()]!;
+    return _map[nameInt.toS()]!;
   }
 
-  static List<LAServiceDesc> list = map.values.toList();
+  static List<LAServiceDesc> list(bool isHub) =>
+      isHub ? LAServiceDesc.listHubCapable : LAServiceDesc._list;
+
+  static final List<LAServiceDesc> _list = _map.values.toList();
+  static List<LAServiceDesc> listHubCapable =
+      _list.where((LAServiceDesc s) => s.hubCapable).toList();
 
   static List<String> internalServices = [
     LAServiceName.nameindexer.toS(),

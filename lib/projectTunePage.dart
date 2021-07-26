@@ -58,12 +58,17 @@ class LAProjectTunePage extends StatelessWidget {
         List<ListItem> items = [];
         LAServiceName? lastCategory;
         LAVariableSubcategory? lastSubcategory;
+        bool isHub = project.isHub;
         LAVariableDesc.map.entries
             .where((laVar) =>
                 laVar.value.inTunePage &&
                 // Show var where depend service is in use
                 (laVar.value.depends == null ||
                     (laVar.value.depends != null &&
+                        (!isHub ||
+                            isHub &&
+                                LAServiceDesc.getE(laVar.value.depends!)
+                                    .hubCapable) &&
                         project.getService(laVar.value.depends!.toS()).use)) &&
                 ((!project.advancedTune && !laVar.value.advanced) ||
                     project.advancedTune))
@@ -86,14 +91,15 @@ class LAProjectTunePage extends StatelessWidget {
           }));
         });
         return Title(
-            title: "${project.shortName}: ${LAProjectViewStatus.tune.title}",
+            title:
+                "${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}",
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
                 appBar: LAAppBar(
                     context: context,
                     titleIcon: Icons.edit,
-                    title: LAProjectViewStatus.tune.title,
+                    title: LAProjectViewStatus.tune.getTitle(project.isHub),
                     showLaIcon: false,
                     actions: [
                       TextButton(
@@ -247,7 +253,7 @@ ${_doLine()}
 ''' +
         currentProject.services.map((service) {
           String name = service.nameInt;
-          LAServiceDesc serviceDesc = LAServiceDesc.map[name]!;
+          LAServiceDesc serviceDesc = LAServiceDesc.get(name);
           final String title =
               " ${serviceDesc.name} ${serviceDesc.name != serviceDesc.nameInt ? '(' + serviceDesc.nameInt + ') ' : ''}extra variables ";
           return '''

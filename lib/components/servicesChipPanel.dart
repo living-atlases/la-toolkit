@@ -9,11 +9,13 @@ class ServicesChipPanel extends StatefulWidget {
   final Function(List<String>) onChange;
   final List<String> services;
   final List<String> initialValue;
+  final bool isHub;
   const ServicesChipPanel(
       {Key? key,
       required this.onChange,
       required this.services,
-      required this.initialValue})
+      required this.initialValue,
+      required this.isHub})
       : super(key: key);
 
   @override
@@ -90,7 +92,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                       },
                       runSpacing: -10,
                       choiceItems: C2Choice.listFrom<String, LAServiceDesc>(
-                          source: LAServiceDesc.list
+                          source: LAServiceDesc.list(widget.isHub)
                               .where((s) => widget.services.contains(s.nameInt))
                               .toList(),
                           value: (i, v) => v.nameInt,
