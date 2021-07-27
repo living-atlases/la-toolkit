@@ -72,6 +72,51 @@ class LAServiceDesc {
   bool alaAdmin;
   bool hubCapable;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LAServiceDesc &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          nameInt == other.nameInt &&
+          group == other.group &&
+          desc == other.desc &&
+          icon == other.icon &&
+          optional == other.optional &&
+          withoutUrl == other.withoutUrl &&
+          depends == other.depends &&
+          forceSubdomain == other.forceSubdomain &&
+          sample == other.sample &&
+          hint == other.hint &&
+          recommended == other.recommended &&
+          path == other.path &&
+          initUse == other.initUse &&
+          subServices == other.subServices &&
+          admin == other.admin &&
+          alaAdmin == other.alaAdmin &&
+          hubCapable == other.hubCapable;
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      nameInt.hashCode ^
+      group.hashCode ^
+      desc.hashCode ^
+      icon.hashCode ^
+      optional.hashCode ^
+      withoutUrl.hashCode ^
+      depends.hashCode ^
+      forceSubdomain.hashCode ^
+      sample.hashCode ^
+      hint.hashCode ^
+      recommended.hashCode ^
+      path.hashCode ^
+      initUse.hashCode ^
+      subServices.hashCode ^
+      admin.hashCode ^
+      alaAdmin.hashCode ^
+      hubCapable.hashCode;
+
   LAServiceDesc(
       {required this.name,
       required this.nameInt,

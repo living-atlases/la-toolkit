@@ -44,6 +44,8 @@ class LAVariableDesc {
   bool enabled;
   bool inTunePage;
   bool protected;
+  bool onlyHub;
+  bool allowEmpty;
 
   LAVariableDesc(
       {required this.name,
@@ -61,7 +63,9 @@ class LAVariableDesc {
       this.inTunePage = true,
       this.advanced = false,
       this.enabled = true,
-      this.protected = false});
+      this.protected = false,
+      this.onlyHub = false,
+      this.allowEmpty = true});
 
   @override
   bool operator ==(Object other) =>
@@ -79,7 +83,9 @@ class LAVariableDesc {
           advanced == other.advanced &&
           inTunePage == other.inTunePage &&
           protected == other.protected &&
-          enabled == other.enabled;
+          enabled == other.enabled &&
+          onlyHub == other.onlyHub &&
+          allowEmpty == other.allowEmpty;
 
   @override
   int get hashCode =>
@@ -94,7 +100,9 @@ class LAVariableDesc {
       advanced.hashCode ^
       inTunePage.hashCode ^
       protected.hashCode ^
-      enabled.hashCode;
+      enabled.hashCode ^
+      onlyHub.hashCode ^
+      allowEmpty.hashCode;
 
   static final Map<String, LAVariableDesc> map = {
     "ansible_user": LAVariableDesc(
@@ -116,6 +124,18 @@ class LAVariableDesc {
         error: 'Name of the map area invalid.',
         hint: "For e.g.: 'Australia', 'Vermont', 'United Kingdom', ...",
         inTunePage: false),
+    "biocache_query_context": LAVariableDesc(
+        name: "Biocache Query Context",
+        nameInt: "biocache_query_context",
+        defValue: (project) => 'data_hub_uid:dh1',
+        regExp: LARegExp.something,
+        help:
+            "Data-Hub#configure-the-web-app-to-show-the-records-of-the-new-hub",
+        error: "Invalid Hub Biocache Query Context",
+        onlyHub: true,
+        allowEmpty: false,
+        hint:
+            "Something like data_hub_uid:dh1 or cl1:\"Some Region Name\" does limits the query of your Portal to that Hub or Region,..."),
     "support_email": LAVariableDesc(
         name: "Support email",
         nameInt: "support_email",
@@ -141,7 +161,7 @@ class LAVariableDesc {
     "email_sender_password": LAVariableDesc(
         name: "Email password",
         nameInt: "email_sender_password",
-        regExp: LARegExp.anyThing,
+        regExp: LARegExp.anything,
         error: "Invalid password",
         inTunePage: false,
         protected: true,
@@ -209,7 +229,7 @@ class LAVariableDesc {
     ),
     "orgAddress": LAVariableDesc(
         name: "Organization address",
-        regExp: LARegExp.anyThing,
+        regExp: LARegExp.anything,
         nameInt: "orgAddress",
         hint: "like: Clunies Ross Street, ...",
         help: "Glossary#organization-address",
@@ -218,22 +238,22 @@ class LAVariableDesc {
         name: "City",
         nameInt: "orgCity",
         hint: 'like: Camberra, Madrid, Lisboa, ...',
-        regExp: LARegExp.anyThing,
+        regExp: LARegExp.anything,
         subcategory: LAVariableSubcategory.org),
     "orgStateProvince": LAVariableDesc(
         name: "State/Province",
         nameInt: "orgStateProvince",
-        regExp: LARegExp.anyThing,
+        regExp: LARegExp.anything,
         subcategory: LAVariableSubcategory.org),
     "orgPostcode": LAVariableDesc(
         name: "Postcode",
         nameInt: "orgPostcode",
-        regExp: LARegExp.anyThing,
+        regExp: LARegExp.anything,
         subcategory: LAVariableSubcategory.org),
     "orgCountry": LAVariableDesc(
         name: "Country",
         nameInt: "orgCountry",
-        regExp: LARegExp.anyThing,
+        regExp: LARegExp.anything,
         defValue: (LAProject project) =>
             project.getVariableValue('map_zone_name'),
         subcategory: LAVariableSubcategory.org),

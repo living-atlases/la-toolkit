@@ -62,9 +62,12 @@ class LAProjectTunePage extends StatelessWidget {
         LAVariableDesc.map.entries
             .where((laVar) =>
                 laVar.value.inTunePage &&
+                // add onlyHub vars if needed
+                (!laVar.value.onlyHub || (isHub && laVar.value.onlyHub)) &&
                 // Show var where depend service is in use
                 (laVar.value.depends == null ||
                     (laVar.value.depends != null &&
+                        // Only dep vars if is not a hub
                         (!isHub ||
                             isHub &&
                                 LAServiceDesc.getE(laVar.value.depends!)
@@ -332,7 +335,7 @@ class MessageItem implements ListItem {
                 label: varDesc.name,
                 hint: varDesc.hint,
                 initialValue: initialValue ?? defValue,
-                allowEmpty: true,
+                allowEmpty: varDesc.allowEmpty,
                 enabledBorder: false,
                 obscureText: varDesc.protected,
                 deployed: deployed,

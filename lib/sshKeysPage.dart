@@ -191,7 +191,7 @@ class SshKeyPage extends StatelessWidget {
             GenericTextFormField(
                 initialValue: "",
                 label: "Private ssh key",
-                regexp: LARegExp.anyThing,
+                regexp: LARegExp.anything,
                 error: "This is not a valid ssh private key",
                 keyboardType: TextInputType.multiline,
                 // filled: true,
@@ -210,7 +210,7 @@ class SshKeyPage extends StatelessWidget {
               if (name != null && publicKey != null && privateKey != null) {
                 if (LARegExp.hostnameRegexp.hasMatch(name!) &&
                     LARegExp.sshPubKey.hasMatch(publicKey!) &&
-                    LARegExp.anyThing.hasMatch(privateKey!)) {
+                    LARegExp.anything.hasMatch(privateKey!)) {
                   vm.onImportKey(name!, publicKey!, privateKey!);
                   Navigator.pop(context);
                 }

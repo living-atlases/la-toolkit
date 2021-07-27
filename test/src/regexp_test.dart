@@ -285,4 +285,18 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       );
     }
   });
+
+  test('test not empty fields', () {
+    List<String> emptyVars = [
+      '',
+      ' ',
+      '   ',
+    ];
+    for (String sub in emptyVars) {
+      expect(
+        LARegExp.something.hasMatch(sub),
+        equals(false),
+      );
+    }
+  });
 }
