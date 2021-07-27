@@ -292,15 +292,17 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                                 child: LAProjectTimeline(id: project.id)),
                             // Disabled for now
                             // ServicesChipPanel(),
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: const [
-                                  SizedBox(
-                                      width: 250, child: ALAInstallSelector()),
-                                  SizedBox(
-                                      width: 250, child: GeneratorSelector())
-                                ]),
-                            const SizedBox(height: 20),
+                            if (!project.isHub)
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: const [
+                                    SizedBox(
+                                        width: 250,
+                                        child: ALAInstallSelector()),
+                                    SizedBox(
+                                        width: 250, child: GeneratorSelector())
+                                  ]),
+                            if (!project.isHub) const SizedBox(height: 20),
                             ResponsiveGridRow(
                                 // desiredItemWidth: 120,
                                 // minSpacing: 20,
