@@ -846,6 +846,8 @@ check results length: ${checkResults.length}''';
     return list;
   }
 
+  bool get inProduction => status == LAProjectStatus.inProduction;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

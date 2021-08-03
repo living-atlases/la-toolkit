@@ -145,6 +145,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           String portal = project.portalName;
           // ignore: non_constant_identifier_names
           String Portal = project.PortalName;
+          bool isCreatedAndAccessibleOrInProduction =
+              (project.isCreated && project.allServersWithServicesReady() ||
+                      project.allServersWithSshReady()) ||
+                  project.inProduction;
           List<Tool> tools = [
             Tool(
                 icon: const Icon(Icons.edit),
@@ -163,7 +167,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 icon: const Icon(Icons.settings_ethernet),
                 tooltip: "Test if your servers are reachable from here",
                 title: "Test Connectivity",
-                enabled: project.isCreated,
+                enabled: project.isCreated || project.inProduction,
                 action: () {
                   /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
@@ -174,45 +178,38 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.foundation),
                 title: "Pre-Deploy Tasks",
-                enabled: project.isCreated &&
-                        project.allServersWithServicesReady() ||
-                    project.allServersWithSshReady(),
+                enabled: isCreatedAndAccessibleOrInProduction,
                 action: () => vm.onPreDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.format_paint),
                 title: "Branding Deploy",
-                enabled: project.isCreated &&
-                        project.allServersWithServicesReady() ||
-                    project.allServersWithSshReady(),
+                enabled: isCreatedAndAccessibleOrInProduction,
                 action: () => vm.onDeployBranding(project)),
             Tool(
                 icon: const Icon(Mdi.rocketLaunch),
                 title: "Deploy",
                 tooltip: "Install/update your LA $Portal or some services",
                 grid: 12,
-                enabled:
-                    project.isCreated && project.allServersWithServicesReady(),
+                enabled: isCreatedAndAccessibleOrInProduction,
                 action: () => vm.onDeployProject(project)),
             Tool(
                 icon: const Icon(Icons.receipt_long),
                 title: "Logs History",
                 tooltip: "Show deploy logs history",
-                enabled: project.isCreated &&
-                    project.allServersWithServicesReady() &&
+                enabled: isCreatedAndAccessibleOrInProduction &&
                     project.cmdHistoryEntries.isNotEmpty,
                 action: () => vm.onViewLogs(project)),
             if (!project.isHub)
               Tool(
                   icon: const Icon(Icons.house_siding),
                   title: "Post-Deploy Tasks",
-                  enabled: project.isCreated && project.fstDeployed,
+                  enabled: isCreatedAndAccessibleOrInProduction,
                   action: () => vm.onPostDeployTasks(project)),
             Tool(
                 icon: const Icon(Icons.fact_check),
                 title: "$Portal Status",
                 tooltip: "Check your $portal servers and services status",
-                enabled:
-                    project.isCreated && project.allServersWithServicesReady(),
+                enabled: isCreatedAndAccessibleOrInProduction,
                 action: () => vm.onPortalStatus(vm.project)),
             /* Tool(
                 icon: const Icon(Icons.pie_chart),
