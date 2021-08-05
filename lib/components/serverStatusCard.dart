@@ -129,17 +129,20 @@ class ConnectivityStatus extends StatelessWidget {
         children: [
           SimpleServerStatusItem(
               "REACHABLE",
-              server.reachable,
-              'Ping to this server works great',
+              server.reachable == ServiceStatus.success ||
+                  server.sshReachable == ServiceStatus.success,
+              server.sshReachable == ServiceStatus.success
+                  ? 'I cannot ping this server, although I can reach it by ssh. Is the ping filtered in your firewall?'
+                  : 'Ping to this server works great',
               'I cannot reach this server, review your IP and ssh configuration for this server'),
           SimpleServerStatusItem(
               "SSH",
-              server.sshReachable,
+              server.sshReachable == ServiceStatus.success,
               'SSH access to this server is ok',
               'I cannot SSH to this server, review your SSH config and keys for this server'),
           SimpleServerStatusItem(
               "SUDO",
-              server.sudoEnabled,
+              server.sudoEnabled == ServiceStatus.success,
               'SUDO is enabled for this server',
               'SUDO is not enabled in the server for this user')
         ]);
@@ -148,17 +151,16 @@ class ConnectivityStatus extends StatelessWidget {
 
 class SimpleServerStatusItem extends StatelessWidget {
   final String text;
-  final ServiceStatus status;
+  final bool ready;
   final String successHint;
   final String errorHint;
   const SimpleServerStatusItem(
-      this.text, this.status, this.successHint, this.errorHint,
+      this.text, this.ready, this.successHint, this.errorHint,
       {Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    bool ready = status == ServiceStatus.success;
     Color readyColor = ready ? LAColorTheme.up : LAColorTheme.down;
     return Tooltip(
         message: ready ? successHint : errorHint,
