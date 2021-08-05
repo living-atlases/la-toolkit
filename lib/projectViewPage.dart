@@ -316,7 +316,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                                   ));
                             }).toList()),
                             const SizedBox(height: 10),
-                            if (!project.isHub)
+                            if (AppUtils.isDev() && !project.isHub)
                               createHubWidget(context, vm, project),
                             const LintProjectPanel()
                           ])))));
