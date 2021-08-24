@@ -342,7 +342,7 @@ class LAServiceDesc {
         optional: true,
         initUse: false,
         sample: "https://sds.ala.org.au",
-        depends: LAServiceName.ala_bie,
+        depends: LAServiceName.species_lists,
         icon: Icons.blur_circular,
         alaAdmin: true,
         path: ""),
