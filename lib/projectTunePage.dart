@@ -67,12 +67,9 @@ class LAProjectTunePage extends StatelessWidget {
                 // Show var where depend service is in use
                 (laVar.value.depends == null ||
                     (laVar.value.depends != null &&
-                        // Only dep vars if is not a hub
-                        (!isHub ||
-                            isHub &&
-                                LAServiceDesc.getE(laVar.value.depends!)
-                                    .hubCapable) &&
-                        project.getService(laVar.value.depends!.toS()).use)) &&
+                        (isHub ? project.parent! : project)
+                            .getService(laVar.value.depends!.toS())
+                            .use)) &&
                 ((!project.advancedTune && !laVar.value.advanced) ||
                     project.advancedTune))
             .forEach((entry) {

@@ -39,11 +39,9 @@ class ServiceWidget extends StatelessWidget {
       LAServiceDesc serviceDesc = LAServiceDesc.get(serviceName);
       final bool isHub = currentProject.isHub;
       bool visible = (serviceDesc.depends == null ||
-              ((!isHub ||
-                      isHub &&
-                          LAServiceDesc.getE(serviceDesc.depends!)
-                              .hubCapable) &&
-                  vm.currentProject.getServiceE(serviceDesc.depends!).use)) &&
+              (isHub ? vm.currentProject.parent! : vm.currentProject)
+                  .getServiceE(serviceDesc.depends!)
+                  .use) &&
           !serviceDesc.withoutUrl;
       bool optional = serviceDesc.optional;
       bool canUseSubdomain =
