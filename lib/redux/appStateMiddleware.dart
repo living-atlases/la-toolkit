@@ -211,7 +211,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       try {
         List<dynamic> projects =
             await Api.updateProject(project: action.project);
-        store.dispatch(OnProjectUpdated(projects));
+        store.dispatch(OnProjectUpdated(action.project.id, projects));
         await genSshConf(action.project);
       } catch (e) {
         store.dispatch(

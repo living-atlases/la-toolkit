@@ -228,6 +228,7 @@ AppState _onDemoProjectsLoad(AppState state, OnDemoProjectsLoad action) {
 
 AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
   List<LAProject> ps = [];
+  LAProject nextProject;
   if (AppUtils.isDemo()) {
     LAProject updatedP = LAProject.fromJson(action.projectsJson[0]);
     ps = state.projects
@@ -238,7 +239,8 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
       ps.add(LAProject.fromJson(pJson));
     }
   }
-  return state.copyWith(currentProject: ps[0], projects: ps);
+  nextProject = ps.firstWhere((p) => p.id == action.projectId);
+  return state.copyWith(currentProject: nextProject, projects: ps);
 }
 
 AppState _editService(AppState state, EditService action) {

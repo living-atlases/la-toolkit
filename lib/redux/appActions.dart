@@ -96,8 +96,9 @@ class OnProjectDeleted extends AppActions {
 }
 
 class OnProjectUpdated extends AppActions {
+  String projectId;
   List<dynamic> projectsJson;
-  OnProjectUpdated(this.projectsJson);
+  OnProjectUpdated(this.projectId, this.projectsJson);
 }
 
 class ProjectsLoad extends AppActions {
