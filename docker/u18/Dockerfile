@@ -111,7 +111,7 @@ RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 
 # ala-install
 RUN echo "2021032402 (change this date to rebuild & repeat this and the following steps)"
-RUN su - ubuntu -c 'git clone --branch v2.0.7 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
+RUN su - ubuntu -c 'git clone --branch v2.0.10 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
