@@ -109,6 +109,10 @@ If you use a different directory, you'll have to update the `docker-compose.yml`
 
 This directories should be writable by your user and docker.
 
+### Clone or just download docker-compose.yml
+
+To continue you can git clone this repo or just copy the [`docker-compose.yml`](https://github.com/living-atlases/la-toolkit/blob/master/docker-compose.yml) and  [`mongo-init.sh`](https://github.com/living-atlases/la-toolkit/blob/master/mongo-init.sh) and adapt the first one to your needs (like changing the default passwords prior to start the toolkit via `docker-compose`).
+
 ## Running the la-toolkit
 
 ### Using docker-compose
@@ -169,7 +173,7 @@ TODO: Add the update task to the Windows script.
 
 ## Migrate your old inventories to the toolkit 
 
-If you were using other generated inventories, you can import it using the (+) button with some addiotional steps:
+If you were using other generated inventories, you can import it using the (+) button with some additional steps:
 - Tune your imported project in the Edit and Tune tools. For instance, add your servers IPs, etc. See that there is a "Advanced" mode. There you can copy in the bottom text area your inventory local-extras.
 - After enter in the Deploy Tool, some new inventories will be generated (and also a new password file). Substitute that generated local-password with your old one that you are using, to restore your passwords and not using new ones.
 
