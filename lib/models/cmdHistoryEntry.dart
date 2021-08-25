@@ -84,7 +84,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
       this.result = CmdResult.unknown})
       : id = id ?? ObjectId().toString(),
         invDir = invDir ?? "",
-        createdAt = createdAt ?? DateTime.now().millisecond,
+        createdAt = createdAt ?? DateTime.now().millisecondsSinceEpoch,
         date = createdAt != null
             ? DateTime.fromMillisecondsSinceEpoch(createdAt)
             : DateTime.now() {
