@@ -80,7 +80,7 @@ This repository is a the frontend of the LA Toolkit. It uses [this repo](https:/
 
 ### Docker 
 
-To run the `la-toolkit` you need to [install docker](https://docs.docker.com/engine/install/) in the computer you want to use to deploy your LA Portal (like your laptop, or similar computer). 
+To run the `la-toolkit` you need to [install docker](https://docs.docker.com/engine/install/) in the computer you want to use to deploy your LA Portal (like your laptop, or similar computer). Doublecheck that docker images runs in your common user (without root), for that follow [this post-install docker instructions](https://docs.docker.com/engine/install/linux-postinstall/).
 
 ### Docker compose
 
