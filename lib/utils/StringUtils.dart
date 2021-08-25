@@ -10,7 +10,7 @@ class StringUtils {
         .toLowerCase()
         .replaceAll(RegExp(r'[^\d.-\w]'), '')
         .replaceAll('.', '-');
-    return dirName.length <= 1 ? "la-${id.substring(0, 8)}" : dirName;
+    return dirName.length <= 1 ? "la_${id.substring(0, 8)}" : dirName;
   }
 }
 
