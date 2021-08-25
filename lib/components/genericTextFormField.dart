@@ -65,12 +65,22 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
   late GlobalKey<FormState> formKey;
   String? delayedValue;
   late bool obscureTextState;
+  late TextEditingController _controller;
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     formKey = GlobalKey<FormState>();
     obscureTextState = widget.obscureText;
     super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
   }
 
   void showPass(bool state) {
@@ -133,6 +143,9 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
             children: <Widget>[
               TextFormField(
                   decoration: decoration,
+                  controller: _controller,
+                  onTap: () => _controller.selection = TextSelection(
+                      baseOffset: 0, extentOffset: _controller.text.length),
                   onChanged: (String value) => onChange(value),
                   style: style,
                   focusNode: widget.focusNode,
@@ -140,7 +153,8 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
                   minLines: widget.minLines,
                   maxLines: widget.maxLines,
                   keyboardType: widget.keyboardType,
-                  initialValue: widget.initialValue,
+                  // Now moved to controller initialization
+                  // initialValue: widget.initialValue,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (_) => validator())
             ]));
