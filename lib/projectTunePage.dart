@@ -244,7 +244,7 @@ class LAProjectTunePage extends StatelessWidget {
   String _initialExtraAnsibleVariables(LAProject currentProject) {
     return '''
 ${_doTitle(" Other variables common to all services ")}
-[all:vars]
+[${currentProject.isHub ? 'hub-' + currentProject.dirName! : 'all'}:vars]
 
 # End of common variables
 ${_doLine()}
@@ -259,7 +259,7 @@ ${_doLine()}
           return '''
 
 ${_doTitle(title)} 
-${service.use ? '' : '# '}[${serviceDesc.group}:vars]${service.use ? '' : ' #uncomment this line if you enable this service to tune it'} 
+${service.use ? '' : '# '}[${serviceDesc.group}${currentProject.isHub ? '-' + currentProject.dirName! : ''}:vars]${service.use ? '' : ' #uncomment this line if you enable this service to tune it'} 
 
 # End of ${StringUtils.capitalize(serviceDesc.name)} variables
 ${_doLine()}

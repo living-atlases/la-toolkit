@@ -30,6 +30,8 @@ import 'models/laServiceDesc.dart';
 
 class LAProjectEditPage extends StatelessWidget {
   static const routeName = "project";
+  final int permissiveDirNamesDate =
+      DateTime(2021, 8, 25).microsecondsSinceEpoch;
 
   LAProjectEditPage({Key? key}) : super(key: key);
 
@@ -138,6 +140,7 @@ class LAProjectEditPage extends StatelessWidget {
           // ignore: non_constant_identifier_names
           String Portal = _project.PortalName;
           if (_project.isHub) _project.domain = _project.parent!.domain;
+
           _steps.add(Step(
               title: const Text('Basic information'),
               subtitle: Text(
@@ -177,6 +180,25 @@ class LAProjectEditPage extends StatelessWidget {
                         regexp: LARegExp.projectNameRegexp,
                         onChanged: (value) {
                           _project.shortName = value;
+                          vm.onSaveCurrentProject(_project);
+                        }),
+                    const SizedBox(height: 10),
+                    GenericTextFormField(
+                        // DIR NAME
+                        label:
+                            'Directory Name to store the generated directories and files',
+                        hint: _project.isHub
+                            ? "Similar to for e.g.: 'avh', 'nbn_scotland', ..."
+                            : "Similar to for e.g.: 'ala', 'gbif_es', 'nbn',...",
+                        wikipage: "Glossary#Directory-name",
+                        error:
+                            'Directory name invalid. Should be start by lowercase and should contain only lowercase characters, numbers and/or underscores',
+                        initialValue: _project.dirName,
+                        regexp: _project.createdAt < permissiveDirNamesDate
+                            ? LARegExp.ansibleDirnameRegexpPermissive
+                            : LARegExp.ansibleDirnameRegexp,
+                        onChanged: (value) {
+                          _project.dirName = value;
                           vm.onSaveCurrentProject(_project);
                         }),
                     Tooltip(

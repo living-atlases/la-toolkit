@@ -14,6 +14,7 @@ extension LAProjectCopyWith on LAProject {
     String? alaInstallRelease,
     Map<String, dynamic>? checkResults,
     List<CmdHistoryEntry>? cmdHistoryEntries,
+    int? createdAt,
     String? dirName,
     String? domain,
     bool? fstDeployed,
@@ -46,6 +47,7 @@ extension LAProjectCopyWith on LAProject {
       alaInstallRelease: alaInstallRelease ?? this.alaInstallRelease,
       checkResults: checkResults ?? this.checkResults,
       cmdHistoryEntries: cmdHistoryEntries ?? this.cmdHistoryEntries,
+      createdAt: createdAt ?? this.createdAt,
       dirName: dirName ?? this.dirName,
       domain: domain ?? this.domain,
       fstDeployed: fstDeployed ?? this.fstDeployed,
@@ -125,6 +127,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
     hubs: (json['hubs'] as List<dynamic>?)
         ?.map((e) => LAProject.fromJson(e as Map<String, dynamic>))
         .toList(),
+    createdAt: json['createdAt'] as int?,
     serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
       (k, e) =>
           MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
@@ -145,6 +148,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'mapBoundsSndPoint': instance.mapBoundsSndPoint.toJson(),
       'mapZoom': instance.mapZoom,
       'additionalVariables': instance.additionalVariables,
+      'createdAt': instance.createdAt,
       'alaInstallRelease': instance.alaInstallRelease,
       'generatorRelease': instance.generatorRelease,
       'status': _$LAProjectStatusEnumMap[instance.status],

@@ -50,6 +50,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   LALatLng mapBoundsSndPoint;
   double? mapZoom;
   String additionalVariables;
+  int createdAt;
 
   // Software -----
   String? alaInstallRelease;
@@ -113,6 +114,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       List<LAServiceDeploy>? serviceDeploys,
       this.parent,
       List<LAProject>? hubs,
+      int? createdAt,
       Map<String, List<String>>? serverServices,
       Map<String, dynamic>? checkResults})
       : id = id ?? ObjectId().toString(),
@@ -122,6 +124,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         serviceDeploys = serviceDeploys ?? [],
         variables = variables ?? [],
         hubs = hubs ?? [],
+        createdAt = createdAt ?? DateTime.now().microsecondsSinceEpoch,
         checkResults = checkResults ?? {},
         serverServices = serverServices ?? {},
         advancedEdit = advancedEdit ?? false,
@@ -580,7 +583,8 @@ check results length: ${checkResults.length}''';
       "LA_etc_hosts": etcHostsVar,
       "LA_ssh_keys": sshKeysInUse,
       "LA_hostnames": hostnames,
-      "LA_generate_branding": true
+      "LA_generate_branding": true,
+      "LA_is_hub": isHub
     };
     conf.addAll(MapUtils.toInvVariables(mapBoundsFstPoint, mapBoundsSndPoint));
 
@@ -604,6 +608,15 @@ check results length: ${checkResults.length}''';
 
     for (LAVariable variable in variables) {
       conf["LA_variable_${variable.nameInt}"] = variable.value;
+    }
+
+    // Hubs
+    if (hubs.isNotEmpty) {
+      List<Map<String, dynamic>> hubsConf = [];
+      for (LAProject hub in hubs) {
+        hubsConf.add(hub.toGeneratorJson());
+      }
+      conf['LA_hubs'] = hubsConf;
     }
     return conf;
   }
@@ -875,6 +888,7 @@ check results length: ${checkResults.length}''';
           lastCmdEntry == other.lastCmdEntry &&
           lastCmdDetails == other.lastCmdDetails &&
           parent == other.parent &&
+          createdAt == other.createdAt &&
           const ListEquality()
               .equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
           const ListEquality().equals(servers, other.servers) &&
@@ -914,5 +928,6 @@ check results length: ${checkResults.length}''';
       const ListEquality().hash(variables) ^
       const ListEquality().hash(serviceDeploys) ^
       const DeepCollectionEquality.unordered().hash(checkResults) ^
+      createdAt.hashCode ^
       mapZoom.hashCode;
 }
