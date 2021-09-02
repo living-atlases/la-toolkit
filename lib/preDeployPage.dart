@@ -128,14 +128,15 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                       cmd.etcHosts = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
-                                DeployTaskSwitch(
-                                    title:
-                                        "Adjust solr limits (increase the number of files and process allowed to create)",
-                                    initialValue: cmd.solrLimits,
-                                    help:
-                                        "Before-Start-Your-LA-Installation#solr-limits",
-                                    onChanged: (newValue) => setState(
-                                        () => cmd.solrLimits = newValue)),
+                                if (!vm.project.isHub)
+                                  DeployTaskSwitch(
+                                      title:
+                                          "Adjust solr limits (increase the number of files and process allowed to create)",
+                                      initialValue: cmd.solrLimits,
+                                      help:
+                                          "Before-Start-Your-LA-Installation#solr-limits",
+                                      onChanged: (newValue) => setState(
+                                          () => cmd.solrLimits = newValue)),
                                 DeployTaskSwitch(
                                     title:
                                         "Add additional package utils for monitoring and troubleshooting",
