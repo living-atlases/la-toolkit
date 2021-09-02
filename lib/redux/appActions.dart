@@ -100,7 +100,9 @@ class OnProjectDeleted extends AppActions {
 class OnProjectUpdated extends AppActions {
   String projectId;
   List<dynamic> projectsJson;
-  OnProjectUpdated(this.projectId, this.projectsJson);
+  bool updateCurrentProject;
+  OnProjectUpdated(
+      this.projectId, this.projectsJson, this.updateCurrentProject);
 }
 
 class ProjectsLoad extends AppActions {

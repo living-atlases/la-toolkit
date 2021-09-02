@@ -245,7 +245,12 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
       ps.add(LAProject.fromJson(pJson));
     }
   }
-  nextProject = ps.firstWhere((p) => p.id == action.projectId);
+  if (action.updateCurrentProject) {
+    nextProject = ps.firstWhere((p) => p.id == action.projectId);
+  } else {
+    // If we update a parent project, stay in hub project
+    nextProject = state.currentProject;
+  }
   return state.copyWith(currentProject: nextProject, projects: ps);
 }
 

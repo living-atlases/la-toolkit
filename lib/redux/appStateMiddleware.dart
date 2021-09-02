@@ -209,15 +209,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     if (action is UpdateProject) {
-      try {
-        List<dynamic> projects =
-            await Api.updateProject(project: action.project);
-        store.dispatch(OnProjectUpdated(action.project.id, projects));
-        await genSshConf(action.project);
-      } catch (e) {
-        store.dispatch(
-            ShowSnackBar(AppSnackBarMessage.ok("Failed to update project")));
-      }
+      LAProject project = action.project;
+      await _updateProject(project, store, true);
     }
     if (action is ProjectsLoad) {
       Api.getConf().then((projects) {
@@ -276,11 +269,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
               "Failed to prepare your configuration (in details, the dirName to store it)")));
         } else {
+          LAProject project = action.project;
           if (action.project.dirName != checkedDirName) {
-            LAProject updatedProject = action.project;
-            updatedProject.dirName = checkedDirName;
-            store.dispatch(UpdateProject(updatedProject));
+            project.dirName = checkedDirName;
           }
+          await _updateProject(project, store, true);
+          if (project.isHub) {
+            await _updateProject(project.parent!, store, false);
+          }
+          store.dispatch(UpdateProject(project));
 
           if (action.deployCmd.runtimeType != PreDeployCmd &&
               action.deployCmd.runtimeType != PostDeployCmd) {
@@ -376,6 +373,19 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     next(action);
+  }
+
+  Future<void> _updateProject(LAProject project, Store<AppState> store,
+      bool updateCurrentProject) async {
+    try {
+      List<dynamic> projects = await Api.updateProject(project: project);
+      store.dispatch(
+          OnProjectUpdated(project.id, projects, updateCurrentProject));
+      await genSshConf(project);
+    } catch (e) {
+      store.dispatch(
+          ShowSnackBar(AppSnackBarMessage.ok("Failed to update project")));
+    }
   }
 
   void scanSshKeys(store, VoidCallback onKeysScanned) {
