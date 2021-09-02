@@ -52,7 +52,9 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 const AlertCard(
                     message:
                         "The current supported OS version in Ubuntu 18.04"),
-              if (basicDefined && !project.allServicesAssignedToServers())
+              if (basicDefined &&
+                  project.servers.isNotEmpty &&
+                  !project.allServicesAssignedToServers())
                 const AlertCard(
                     message: "Some service is not assigned to a server"),
               if (basicDefined && !project.allServersWithIPs())
