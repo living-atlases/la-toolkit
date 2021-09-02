@@ -93,7 +93,7 @@ WORKDIR /home/ubuntu/ansible
 # base-branding
 RUN mkdir -p /home/ubuntu/base-branding
 RUN chown -R ubuntu:ubuntu /home/ubuntu/base-branding
-RUN echo "2021032402 (change this date to rebuild & repeat this and the following steps)"
+RUN echo "2021090201 (change this date to rebuild & repeat this and the following steps)"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/base-branding.git /home/ubuntu/base-branding'
 
 # yeoman, LA generator, sails and related
