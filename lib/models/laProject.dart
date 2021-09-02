@@ -501,17 +501,24 @@ check results length: ${checkResults.length}''';
 
   String get etcHostsVar {
     List<String> etcHostLines = [];
-    serversWithServices().forEach((server) {
-      String hostnames = getServerServicesFull(serverId: server.id)
-          .where((s) =>
-              s.nameInt != LAServiceName.biocache_cli.toS() &&
-              s.nameInt != LAServiceName.biocache_backend.toS() &&
-              s.nameInt != LAServiceName.nameindexer.toS())
-          .map((s) => s.url(domain))
-          .toList()
-          .join(' ');
-      etcHostLines.add("      ${server.ip} ${server.name} $hostnames");
-    });
+
+    LAProject p = isHub ? parent! : this;
+    List<LAProject> projects = [p, ...p.hubs];
+    for (LAProject current in projects) {
+      current.serversWithServices().forEach((server) {
+        String hostnames = current
+            .getServerServicesFull(serverId: server.id)
+            .where((s) =>
+                s.nameInt != LAServiceName.biocache_cli.toS() &&
+                s.nameInt != LAServiceName.biocache_backend.toS() &&
+                s.nameInt != LAServiceName.nameindexer.toS())
+            .map((s) => s.url(current.domain))
+            .toSet() // to remove dups
+            .toList()
+            .join(' ');
+        etcHostLines.add("      ${server.ip} ${server.name} $hostnames");
+      });
+    }
     return etcHostLines.join('\n');
   }
 
