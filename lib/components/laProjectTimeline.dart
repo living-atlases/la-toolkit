@@ -16,23 +16,17 @@ const _iconsVerticalPadding = 4.0;
 
 class LAProjectTimeline extends StatelessWidget {
   final int size = LAProjectStatus.values.length;
-  final String id;
+  final LAProject project;
 
-  LAProjectTimeline({Key? key, required this.id}) : super(key: key);
+  LAProjectTimeline({Key? key, required this.project}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _LAProjectTimelineViewModel>(
         distinct: true,
         converter: (store) {
-          List<LAProject> ourProjects = store.state.projects
-              .where((element) => element.id == id)
-              .toList();
           return _LAProjectTimelineViewModel(
-              status: ourProjects.isNotEmpty
-                  ? ourProjects[0].status
-                  : LAProjectStatus.created,
-              isHub: ourProjects.isNotEmpty ? ourProjects[0].isHub : false);
+              status: project.status, isHub: project.isHub);
         },
         builder: (BuildContext context, _LAProjectTimelineViewModel vm) {
           bool small = MediaQuery.of(context).size.width < 750;

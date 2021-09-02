@@ -234,7 +234,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 enabled: true,
                 askConfirmation: true,
                 action: () => vm.onDelProject(project)),
-            if (AppUtils.isDev() && !project.isHub)
+            if (AppUtils.isDev() && !project.isHub && false)
               Tool(
                   icon: const Icon(Mdi.pipe),
                   title: "Data Processing Pipelines",
@@ -286,7 +286,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                             Container(
                                 padding:
                                     const EdgeInsets.only(top: 80, bottom: 50),
-                                child: LAProjectTimeline(id: project.id)),
+                                child: LAProjectTimeline(project: project)),
                             // Disabled for now
                             // ServicesChipPanel(),
                             if (!project.isHub)
