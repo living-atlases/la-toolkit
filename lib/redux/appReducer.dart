@@ -195,10 +195,16 @@ AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
 }
 
 AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
-  return state.copyWith(
-      currentProject: LAProject(),
-      projects: List<LAProject>.from(state.projects)
-        ..removeWhere((item) => item.id == action.project.id));
+  List<LAProject> ps = [];
+  if (AppUtils.isDemo()) {
+    ps = List<LAProject>.from(state.projects)
+      ..removeWhere((item) => item.id == action.project.id);
+  } else {
+    for (var pJson in action.projectsJson) {
+      ps.add(LAProject.fromJson(pJson));
+    }
+  }
+  return state.copyWith(currentProject: LAProject(), projects: ps);
 }
 
 AppState _projectsLoad(AppState state, ProjectsLoad action) {

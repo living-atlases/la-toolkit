@@ -92,7 +92,9 @@ class DelProject extends AppActions {
 
 class OnProjectDeleted extends AppActions {
   LAProject project;
-  OnProjectDeleted(this.project);
+  List<dynamic> projectsJson;
+
+  OnProjectDeleted(this.project, this.projectsJson);
 }
 
 class OnProjectUpdated extends AppActions {

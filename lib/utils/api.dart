@@ -426,8 +426,9 @@ class Api {
     return projectJ;
   }
 
-  static Future<void> deleteProject({required LAProject project}) async {
-    if (AppUtils.isDemo()) return;
+  static Future<List<dynamic>> deleteProject(
+      {required LAProject project}) async {
+    if (AppUtils.isDemo()) [];
     Uri url = uri(env['BACKEND']!, "/api/v1/delete-project");
 
     Map<String, dynamic> body = {'id': project.id};
@@ -436,7 +437,7 @@ class Api {
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode(body)));
     if (response.statusCode == 200) {
-      return;
+      return retrieveProjectList(response);
     } else {
       throw "Failed to delete project";
     }

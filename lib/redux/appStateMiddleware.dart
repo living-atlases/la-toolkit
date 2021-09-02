@@ -199,8 +199,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is DelProject) {
       try {
-        await Api.deleteProject(project: action.project);
-        store.dispatch(OnProjectDeleted(action.project));
+        List<dynamic> projects =
+            await Api.deleteProject(project: action.project);
+        store.dispatch(OnProjectDeleted(action.project, projects));
       } catch (e) {
         print(e);
         store.dispatch(ShowSnackBar(
