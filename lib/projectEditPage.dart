@@ -288,6 +288,7 @@ class LAProjectEditPage extends StatelessWidget {
                           serversNameSplit(value).forEach((server) {
                         _addServer(server.trim(), _project,
                             (_project) => vm.onSaveCurrentProject(_project));
+                        _serverAddController.clear();
                       }),
                       focusNode: _focusNodes[_serversStep],
                       autovalidateMode: AutovalidateMode.onUserInteraction,
