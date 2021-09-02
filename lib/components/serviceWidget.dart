@@ -58,7 +58,6 @@ class ServiceWidget extends StatelessWidget {
           vm.onEditService(service);
         }
       });
-      String prefix = currentProject.isHub ? "hubname-" : "";
       return visible
           ? Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
@@ -181,8 +180,8 @@ class ServiceWidget extends StatelessWidget {
                                           "http${vm.currentProject.useSSL ? 's' : ''}://",
                                           style: domainTextStyle)),
                                 if (!serviceDesc.withoutUrl && usesSubdomain)
-                                  _createSubUrlField(service, serviceDesc,
-                                      prefix, vm, 'Invalid subdomain.'),
+                                  _createSubUrlField(service, serviceDesc, vm,
+                                      'Invalid subdomain.'),
                                 if (!serviceDesc.withoutUrl && usesSubdomain)
                                   Text('.$domain/', style: domainTextStyle),
                                 if (!serviceDesc.withoutUrl && usesSubdomain)
@@ -191,8 +190,8 @@ class ServiceWidget extends StatelessWidget {
                                 if (!serviceDesc.withoutUrl && !usesSubdomain)
                                   Text('$domain/', style: domainTextStyle),
                                 if (!serviceDesc.withoutUrl && !usesSubdomain)
-                                  _createSubUrlField(service, serviceDesc,
-                                      prefix, vm, 'Invalid path.'),
+                                  _createSubUrlField(service, serviceDesc, vm,
+                                      'Invalid path.'),
                                 if (!serviceDesc.withoutUrl && !usesSubdomain)
                                   Text("/", style: domainTextStyle),
                                 /* SearchChoices.single(
@@ -235,10 +234,10 @@ class ServiceWidget extends StatelessWidget {
   }
 
   Widget _createSubUrlField(LAService service, LAServiceDesc serviceDesc,
-      String prefix, _LAServiceViewModel vm, String error) {
+      _LAServiceViewModel vm, String error) {
     return _wrapField(
         child: GenericTextFormField(
-            initialValue: prefix + service.suburl,
+            initialValue: service.suburl,
             focusNode: service.nameInt == LAServiceName.collectory.toS()
                 ? collectoryFocusNode
                 : null,

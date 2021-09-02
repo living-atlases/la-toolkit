@@ -351,7 +351,12 @@ check results length: ${checkResults.length}''';
     final List<LAService> services = [];
     List<LAServiceDesc> availableService = LAServiceDesc.list(isHub);
     for (LAServiceDesc desc in availableService) {
-      services.add(LAService.fromDesc(desc, ""));
+      var initialService = LAService.fromDesc(desc, "");
+      if (isHub) {
+        initialService.iniPath = initialService.suburl;
+        initialService.suburl = 'hub';
+      }
+      services.add(initialService);
     }
     return services;
   }
