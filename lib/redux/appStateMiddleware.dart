@@ -288,13 +288,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
                     action.project.generatorRelease!, action.onError)
                 .then((_) => action.onReady());
             await Api.regenerateInv(
-                id: action.project.id, onError: action.onError);
+                project: action.project, onError: action.onError);
           } else {
             await Api.generatorSelect(
                     action.project.generatorRelease!, action.onError)
                 .then((_) => action.onReady());
             await Api.regenerateInv(
-                id: action.project.id, onError: action.onError);
+                project: action.project, onError: action.onError);
           }
           action.onReady();
         }

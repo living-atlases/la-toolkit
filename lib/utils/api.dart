@@ -181,8 +181,9 @@ class Api {
   }
 
   static Future<void> regenerateInv(
-      {required String id, required Function(String) onError}) async {
+      {required LAProject project, required Function(String) onError}) async {
     if (AppUtils.isDemo()) return;
+    String id = project.isHub ? project.parent!.id : project.id;
     const userError = 'Error generating your inventories';
     Uri url = uri(env['BACKEND']!, "/api/v1/gen/$id/false");
     http
