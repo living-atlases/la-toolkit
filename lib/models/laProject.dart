@@ -501,7 +501,6 @@ check results length: ${checkResults.length}''';
 
   String get etcHostsVar {
     List<String> etcHostLines = [];
-
     LAProject p = isHub ? parent! : this;
     List<LAProject> projects = [p, ...p.hubs];
     for (LAProject current in projects) {
@@ -519,7 +518,8 @@ check results length: ${checkResults.length}''';
         etcHostLines.add("      ${server.ip} ${server.name} $hostnames");
       });
     }
-    return etcHostLines.join('\n');
+    String etcHost = etcHostLines.join('\n');
+    return etcHost;
   }
 
   String get hostnames {
@@ -582,7 +582,8 @@ check results length: ${checkResults.length}''';
     }
   }
 
-  Map<String, dynamic> toGeneratorJson() {
+  // In Hubs we use the portal etcHost
+  Map<String, dynamic> toGeneratorJson({String? etcHosts}) {
     Map<String, dynamic> conf = {
       "LA_id": id,
       "LA_pkg_name": dirName,
@@ -592,7 +593,7 @@ check results length: ${checkResults.length}''';
       "LA_enable_ssl": useSSL,
       "LA_use_git": true,
       "LA_theme": theme,
-      "LA_etc_hosts": etcHostsVar,
+      "LA_etc_hosts": etcHosts ?? etcHostsVar,
       "LA_ssh_keys": sshKeysInUse,
       "LA_hostnames": hostnames,
       "LA_generate_branding": true,
@@ -626,7 +627,7 @@ check results length: ${checkResults.length}''';
     if (hubs.isNotEmpty) {
       List<Map<String, dynamic>> hubsConf = [];
       for (LAProject hub in hubs) {
-        hubsConf.add(hub.toGeneratorJson());
+        hubsConf.add(hub.toGeneratorJson(etcHosts: conf["LA_etc_hosts"]));
       }
       conf['LA_hubs'] = hubsConf;
     }
@@ -765,7 +766,8 @@ check results length: ${checkResults.length}''';
           ? serviceTooltip(name)
           : "This is protected by default, see our wiki for more info";
       if (nameInt == LAServiceName.solr.toS()) {
-        url = "${url.replaceFirst("https", "http")}:8983";
+        url =
+            "${StringUtils.removeLastSlash(url.replaceFirst("https", "http"))}:8983";
       }
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
       List<BasicService>? deps;

@@ -1,3 +1,4 @@
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:test/test.dart';
 
@@ -298,5 +299,10 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
         equals(false),
       );
     }
+  });
+
+  test('test correct slash removal', () {
+    expect(StringUtils.removeLastSlash('http://example.com/'),
+        equals('http://example.com'));
   });
 }

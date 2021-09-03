@@ -210,7 +210,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is UpdateProject) {
       LAProject project = action.project;
-      await _updateProject(project, store, true);
+      await _updateProject(project, store, true, true);
     }
     if (action is ProjectsLoad) {
       Api.getConf().then((projects) {
@@ -273,11 +273,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           if (action.project.dirName != checkedDirName) {
             project.dirName = checkedDirName;
           }
-          await _updateProject(project, store, true);
+
+          await _updateProject(project, store, true, false);
           if (project.isHub) {
-            await _updateProject(project.parent!, store, false);
+            await _updateProject(project.parent!, store, false, false);
           }
-          store.dispatch(UpdateProject(project));
 
           if (action.deployCmd.runtimeType != PreDeployCmd &&
               action.deployCmd.runtimeType != PostDeployCmd) {
@@ -376,13 +376,17 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   }
 
   Future<void> _updateProject(LAProject project, Store<AppState> store,
-      bool updateCurrentProject) async {
+      bool updateCurrentProject, bool openProjectView) async {
     try {
       List<dynamic> projects = await Api.updateProject(project: project);
+      await genSshConf(project);
       store.dispatch(
           OnProjectUpdated(project.id, projects, updateCurrentProject));
-      await genSshConf(project);
+      if (openProjectView) {
+        store.dispatch(OpenProjectTools(project));
+      }
     } catch (e) {
+      print(e);
       store.dispatch(
           ShowSnackBar(AppSnackBarMessage.ok("Failed to update project")));
     }

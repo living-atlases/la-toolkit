@@ -12,6 +12,10 @@ class StringUtils {
         .replaceAll('.', '-');
     return dirName.length <= 1 ? "la_${id.substring(0, 8)}" : dirName;
   }
+
+  static String removeLastSlash(String url) {
+    return url.replaceAll(RegExp('[/]+\$'), '');
+  }
 }
 
 // https://stackoverflow.com/a/21134081

@@ -83,7 +83,6 @@ class LAProjectEditPage extends StatelessWidget {
               ssl: store.state.currentProject.useSSL,
               advancedEdit: store.state.currentProject.advancedEdit,
               onFinish: (project) {
-                print('On Finish');
                 project.validateCreation();
                 if (store.state.status == LAProjectViewStatus.create) {
                   store.dispatch(AddProject(project));
@@ -95,7 +94,6 @@ class LAProjectEditPage extends StatelessWidget {
                   }
                 } else {
                   store.dispatch(UpdateProject(project));
-                  store.dispatch(OpenProjectTools(project));
                   BeamerCond.of(context, LAProjectViewLocation());
                 }
               },
