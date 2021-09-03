@@ -246,7 +246,8 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
     }
   }
   if (action.updateCurrentProject) {
-    nextProject = ps.firstWhere((p) => p.id == action.projectId);
+    nextProject = ps.firstWhere((p) => p.id == action.projectId,
+        orElse: () => state.currentProject);
   } else {
     // If we update a parent project, stay in hub project
     nextProject = state.currentProject;
