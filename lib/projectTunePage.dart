@@ -42,7 +42,6 @@ class LAProjectTunePage extends StatelessWidget {
           },
           onUpdateProject: (project) {
             store.dispatch(UpdateProject(project));
-            store.dispatch(OpenProjectTools(project));
             BeamerCond.of(context, LAProjectViewLocation());
           },
           onCancel: (project) {
@@ -67,9 +66,15 @@ class LAProjectTunePage extends StatelessWidget {
                 // Show var where depend service is in use
                 (laVar.value.depends == null ||
                     (laVar.value.depends != null &&
+                        (!isHub ||
+                            isHub &&
+                                LAServiceDesc.getE(laVar.value.depends!)
+                                    .hubCapable) &&
+                        project.getService(laVar.value.depends!.toS()).use)) &&
+                /* This gets parent deps vars also like CAS
                         (isHub ? project.parent! : project)
                             .getService(laVar.value.depends!.toS())
-                            .use)) &&
+                            .use)) && */
                 ((!project.advancedTune && !laVar.value.advanced) ||
                     project.advancedTune))
             .forEach((entry) {
@@ -141,8 +146,8 @@ class LAProjectTunePage extends StatelessWidget {
                               if (!AppUtils.isDemo() && project.advancedTune)
                                 ListTile(
                                     // contentPadding: EdgeInsets.zero,
-                                    title: const Text(
-                                      'This portal is in Production',
+                                    title: Text(
+                                      'This ${project.portalName} is in Production',
                                     ),
                                     trailing: Switch(
                                         value: vm.status ==
