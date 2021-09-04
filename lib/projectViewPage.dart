@@ -246,7 +246,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           ];
           String projectIconUrl =
               project.getVariableValue("favicon_url").toString();
-          var pageTitle = "${project.shortName} Toolkit";
+          String pageTitle = "${project.shortName} Toolkit";
           return Title(
               title: pageTitle,
               color: LAColorTheme.laPalette,

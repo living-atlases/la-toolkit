@@ -64,7 +64,7 @@ class _DeployPageState extends State<DeployPage> {
             cmd.limitToServers.isNotEmpty ||
             cmd.skipTags.isNotEmpty ||
             cmd.onlyProperties;
-        var pageTitle = "${vm.project.shortName} Deployment";
+        String pageTitle = "${vm.project.shortName} Deployment";
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,

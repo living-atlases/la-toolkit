@@ -73,7 +73,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                 subtitle: utf8.decode(base64.decode(check['msg']))));
           });
         }
-        var pageTitle = "${vm.project.shortName} Portal Status";
+        String pageTitle = "${vm.project.shortName} Portal Status";
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,

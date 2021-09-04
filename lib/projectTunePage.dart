@@ -95,16 +95,17 @@ class LAProjectTunePage extends StatelessWidget {
             vm.onSaveProject(project);
           }));
         });
+        String pageTitle =
+            "${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}";
         return Title(
-            title:
-                "${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}",
+            title: pageTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
                 appBar: LAAppBar(
                     context: context,
                     titleIcon: Icons.edit,
-                    title: LAProjectViewStatus.tune.getTitle(project.isHub),
+                    title: pageTitle,
                     showLaIcon: false,
                     actions: [
                       TextButton(

@@ -56,7 +56,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
         VoidCallback? onTap = cmd.configurePostfix
             ? () => vm.onDoPostDeployTasks(vm.project, cmd)
             : null;
-        var pageTitle = "${vm.project.shortName} Post-Deploy Tasks";
+        String pageTitle = "${vm.project.shortName} Post-Deploy Tasks";
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,

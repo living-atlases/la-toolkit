@@ -49,10 +49,9 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
         String execBtn = "Deploy branding";
         BrandingDeployCmd cmd = vm.cmd;
         VoidCallback? onTap() => vm.onDoDeployTaskSwitchs(vm.project, cmd);
-
-        var title2 = "Branding Deploy of ${vm.project.shortName} ";
+        String pagetTitle = "Branding Deploy of ${vm.project.shortName} ";
         return Title(
-            title: title2,
+            title: pagetTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
@@ -60,7 +59,7 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
                     context: context,
                     titleIcon: Icons.format_paint,
                     showBack: true,
-                    title: title2,
+                    title: pagetTitle,
                     showLaIcon: false,
                     actions: const []),
                 body: ScrollPanel(

@@ -54,15 +54,16 @@ class LogsHistoryPage extends StatelessWidget {
             });
       },
       builder: (BuildContext context, _ViewModel vm) {
+        String pageTitle = "${vm.project.shortName} Tasks Logs History";
         return Title(
-            title: "${vm.project.shortName} Tasks Logs History",
+            title: pageTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
                 appBar: LAAppBar(
                     context: context,
                     titleIcon: Icons.receipt_long,
-                    title: "Logs History",
+                    title: pageTitle,
                     showLaIcon: false,
                     showBack: true,
                     actions: const []),

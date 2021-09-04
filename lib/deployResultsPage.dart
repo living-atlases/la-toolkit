@@ -63,9 +63,9 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
           String title = cmdEntry.getTitle();
           String desc = cmdEntry.getDesc();
           bool isAnsibleDeploy = cmdEntry.isAnsibleDeploy();
-
+          String pageTitle = "${vm.project.shortName} $title";
           return Title(
-              title: "${vm.project.shortName}: $title",
+              title: pageTitle,
               color: LAColorTheme.laPalette,
               child: Scaffold(
                   key: _scaffoldKey,
@@ -74,7 +74,7 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                   appBar: LAAppBar(
                       context: context,
                       titleIcon: Icons.analytics_outlined,
-                      title: title,
+                      title: pageTitle,
                       showLaIcon: false,
                       showBack: true,
                       onBack: () => closeTerm(cmdHistoryDetails),
