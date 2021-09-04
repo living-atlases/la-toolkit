@@ -235,7 +235,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 enabled: true,
                 askConfirmation: true,
                 action: () => vm.onDelProject(project)),
-            if (AppUtils.isDev() && !project.isHub && false)
+            if (AppUtils.isDev() && !project.isHub)
               Tool(
                   icon: const Icon(Mdi.pipe),
                   title: "Data Processing Pipelines",
@@ -243,14 +243,12 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   enabled: false,
                   grid: 12,
                   action: () => {}),
-            // To think about:
-            // - Data generation
-            // - Inventories download
           ];
           String projectIconUrl =
               project.getVariableValue("favicon_url").toString();
+          var pageTitle = "${project.shortName} Toolkit";
           return Title(
-              title: "${project.shortName} Tools",
+              title: pageTitle,
               color: LAColorTheme.laPalette,
               child: Scaffold(
                   key: _scaffoldKey,
@@ -278,7 +276,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                         if (project.isCreated)
                           TermsDrawer.appBarIcon(vm.project, _scaffoldKey)
                       ],
-                      title: "Toolkit of ${project.shortName} $Portal"),
+                      title: pageTitle),
                   body: ScrollPanel(
                       child: Container(
                           margin: const EdgeInsets.symmetric(

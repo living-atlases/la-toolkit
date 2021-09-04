@@ -56,8 +56,9 @@ class _PostDeployPageState extends State<PostDeployPage> {
         VoidCallback? onTap = cmd.configurePostfix
             ? () => vm.onDoPostDeployTasks(vm.project, cmd)
             : null;
+        var pageTitle = "${vm.project.shortName} Post-Deploy Tasks";
         return Title(
-            title: "${vm.project.shortName} Post-Deploy Tasks",
+            title: pageTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
@@ -65,7 +66,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
                     context: context,
                     titleIcon: Icons.foundation,
                     showBack: true,
-                    title: "Post-Deploy Tasks",
+                    title: pageTitle,
                     showLaIcon: false,
                     actions: const []),
                 body: ScrollPanel(

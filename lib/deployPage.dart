@@ -64,8 +64,9 @@ class _DeployPageState extends State<DeployPage> {
             cmd.limitToServers.isNotEmpty ||
             cmd.skipTags.isNotEmpty ||
             cmd.onlyProperties;
+        var pageTitle = "${vm.project.shortName} Deployment";
         return Title(
-            title: "${vm.project.shortName} Deployment",
+            title: pageTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
@@ -74,7 +75,7 @@ class _DeployPageState extends State<DeployPage> {
                 appBar: LAAppBar(
                     context: context,
                     titleIcon: Mdi.rocketLaunch,
-                    title: "Deployment",
+                    title: pageTitle,
                     showLaIcon: false,
                     showBack: true,
                     leading: ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),

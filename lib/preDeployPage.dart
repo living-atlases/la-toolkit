@@ -60,8 +60,9 @@ class _PreDeployPageState extends State<PreDeployPage> {
             ? () => vm.onDoDeployTaskSwitchs(vm.project, cmd)
             : null;
         String defUser = vm.project.getVariableValue("ansible_user").toString();
+        var pageTitle = "${vm.project.shortName} Pre-Deploy Tasks";
         return Title(
-            title: "${vm.project.shortName} Pre-Deploy Tasks",
+            title: pageTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
@@ -69,7 +70,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
                     context: context,
                     titleIcon: Icons.foundation,
                     showBack: true,
-                    title: "Pre-Deploy Tasks",
+                    title: pageTitle,
                     showLaIcon: false,
                     actions: const []),
                 body: ScrollPanel(
