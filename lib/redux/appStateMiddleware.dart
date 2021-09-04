@@ -210,7 +210,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is UpdateProject) {
       LAProject project = action.project;
-      await _updateProject(project, store, true, true);
+      await _updateProject(
+          project, store, action.updateCurrentProject, action.openProjectView);
     }
     if (action is ProjectsLoad) {
       Api.getConf().then((projects) {

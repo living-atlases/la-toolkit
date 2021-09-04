@@ -240,8 +240,10 @@ class OpenProjectTools extends AppActions {
 
 class UpdateProject extends AppActions {
   LAProject project;
-
-  UpdateProject(this.project);
+  bool updateCurrentProject;
+  bool openProjectView;
+  UpdateProject(this.project,
+      [this.updateCurrentProject = true, this.openProjectView = true]);
 }
 
 class GenerateInvProject extends AppActions {
