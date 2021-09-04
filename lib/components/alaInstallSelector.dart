@@ -19,7 +19,9 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
         converter: (store) {
       return _ALAInstallSelectorViewModel(
           state: store.state,
-          onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
+          onUpdateProject: (project, updateCurrentProject, openProjectView) =>
+              store.dispatch(UpdateProject(
+                  project, updateCurrentProject, openProjectView)));
     }, builder: (BuildContext context, _ALAInstallSelectorViewModel vm) {
       LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
@@ -27,10 +29,13 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
           initialValue: currentProject.alaInstallRelease,
           versions: vm.state.alaInstallReleases,
           onChange: (String? value) {
-            print(value);
-            currentProject.alaInstallRelease =
-                value ?? vm.state.alaInstallReleases[0];
-            vm.onUpdateProject(currentProject);
+            String version = value ?? vm.state.alaInstallReleases[0];
+            currentProject.alaInstallRelease = version;
+            vm.onUpdateProject(currentProject, true, false);
+            for (LAProject hub in currentProject.hubs) {
+              hub.alaInstallRelease = version;
+              vm.onUpdateProject(hub, false, false);
+            }
           });
     });
   }
@@ -38,7 +43,9 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
 
 class _ALAInstallSelectorViewModel {
   final AppState state;
-  final void Function(LAProject project) onUpdateProject;
+  final void Function(
+          LAProject project, bool updateCurrentProject, bool openProjectView)
+      onUpdateProject;
 
   _ALAInstallSelectorViewModel(
       {required this.state, required this.onUpdateProject});

@@ -19,7 +19,10 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
         converter: (store) {
       return _GeneratorSelectorViewModel(
           state: store.state,
-          onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
+          onUpdateProject:
+              (project, bool updateCurrentProject, bool openProjectView) =>
+                  store.dispatch(UpdateProject(
+                      project, updateCurrentProject, openProjectView)));
     }, builder: (BuildContext context, _GeneratorSelectorViewModel vm) {
       LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
@@ -27,9 +30,13 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
           versions: vm.state.generatorReleases,
           initialValue: currentProject.generatorRelease,
           onChange: (String? value) {
-            currentProject.generatorRelease =
-                value ?? vm.state.generatorReleases[0];
-            vm.onUpdateProject(currentProject);
+            var version = value ?? vm.state.generatorReleases[0];
+            currentProject.generatorRelease = version;
+            vm.onUpdateProject(currentProject, true, false);
+            for (LAProject hub in currentProject.hubs) {
+              hub.generatorRelease = version;
+              vm.onUpdateProject(hub, false, false);
+            }
           });
     });
   }
@@ -37,7 +44,9 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
 
 class _GeneratorSelectorViewModel {
   final AppState state;
-  final void Function(LAProject project) onUpdateProject;
+  final void Function(
+          LAProject project, bool updateCurrentProject, bool openProjectView)
+      onUpdateProject;
 
   _GeneratorSelectorViewModel(
       {required this.state, required this.onUpdateProject});
