@@ -124,11 +124,15 @@ class LAProjectEditPage extends StatelessWidget {
           // Set default version of the project
           if (_project.alaInstallRelease == null &&
               vm.state.alaInstallReleases.isNotEmpty) {
-            _project.alaInstallRelease = vm.state.alaInstallReleases[0];
+            _project.alaInstallRelease = _project.isHub
+                ? _project.parent!.alaInstallRelease
+                : vm.state.alaInstallReleases[0];
           }
           if (_project.generatorRelease == null &&
               vm.state.generatorReleases.isNotEmpty) {
-            _project.generatorRelease = vm.state.generatorReleases[0];
+            _project.generatorRelease = _project.isHub
+                ? _project.parent!.generatorRelease
+                : vm.state.generatorReleases[0];
           }
           final int _step = vm.state.currentStep;
           print('Building project edit currentStep: $_step key: $_scaffoldKey');
