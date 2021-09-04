@@ -348,8 +348,20 @@ AppState _showDeployProjectResults(AppState state, ShowCmdResults action) {
 
 List<LAProject> replaceProject(AppState state, LAProject currentProject) {
   List<LAProject> projects = List<LAProject>.from(state.projects);
-  int index = projects.indexWhere((cur) => cur.id == currentProject.id);
-  projects.replaceRange(index, index + 1, [currentProject]);
+  int index;
+  LAProject updatedProject;
+  if (currentProject.isHub) {
+    index = projects.indexWhere((cur) => cur.id == currentProject.parent!.id);
+    int hubIndex = currentProject.parent!.hubs
+        .indexWhere((cur) => cur.id == currentProject.id);
+    currentProject.parent!.hubs
+        .replaceRange(hubIndex, hubIndex + 1, [currentProject]);
+    updatedProject = currentProject.parent!;
+  } else {
+    index = projects.indexWhere((cur) => cur.id == currentProject.id);
+    updatedProject = currentProject;
+  }
+  projects.replaceRange(index, index + 1, [updatedProject]);
   return projects;
 }
 
