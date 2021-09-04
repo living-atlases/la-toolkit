@@ -336,7 +336,17 @@ class LAVariableDesc {
         subcategory: LAVariableSubcategory.otherKeys,
         depends: LAServiceName.cas,
         advanced: true,
-        service: LAServiceName.cas)
+        service: LAServiceName.cas),
+    "sds_faq_url": LAVariableDesc(
+      name: "SDS FAQ web page",
+      nameInt: "sds_faq_url",
+      subcategory: LAVariableSubcategory.otherKeys,
+      depends: LAServiceName.sds,
+      service: LAServiceName.sds,
+      hint:
+          "Typically a link to a web page describing the SDS service and how it works",
+      defValue: (_) => "https://www.ala.org.au/faq/data-sensitivity/",
+    )
   };
   static LAVariableDesc get(String nameInt) {
     return map[nameInt]!;
