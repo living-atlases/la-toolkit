@@ -263,8 +263,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       try {
         String? currentDirName = action.project.dirName;
         currentDirName ??= action.project.suggestDirName();
-        String? checkedDirName = await Api.checkDirName(
-            dirName: currentDirName, id: action.project.id);
+        // verify that the dirName is not an Portal with the same dirname
+        // in case of hubs we avoid this security check as the hub inventories are located inside the portal
+        // configuration
+        String? checkedDirName = action.project.isHub
+            ? action.project.dirName
+            : await Api.checkDirName(
+                dirName: currentDirName, id: action.project.id);
         if (checkedDirName == null) {
           store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
               "Failed to prepare your configuration (in details, the dirName to store it)")));
