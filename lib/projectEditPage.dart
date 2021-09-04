@@ -181,24 +181,25 @@ class LAProjectEditPage extends StatelessWidget {
                           vm.onSaveCurrentProject(_project);
                         }),
                     const SizedBox(height: 10),
-                    GenericTextFormField(
-                        // DIR NAME
-                        label:
-                            'Directory Name to store the generated directories and files',
-                        hint: _project.isHub
-                            ? "Similar to for e.g.: 'avh', 'nbn_scotland', ..."
-                            : "Similar to for e.g.: 'ala', 'gbif_es', 'nbn',...",
-                        wikipage: "Glossary#Directory-name",
-                        error:
-                            'Directory name invalid. Should be start by lowercase and should contain only lowercase characters, numbers and/or underscores',
-                        initialValue: _project.dirName,
-                        regexp: _project.createdAt < permissiveDirNamesDate
-                            ? LARegExp.ansibleDirnameRegexpPermissive
-                            : LARegExp.ansibleDirnameRegexp,
-                        onChanged: (value) {
-                          _project.dirName = value;
-                          vm.onSaveCurrentProject(_project);
-                        }),
+                    if (_project.isHub)
+                      GenericTextFormField(
+                          // DIR NAME
+                          label:
+                              'Directory Name to store the generated directories and files',
+                          hint: _project.isHub
+                              ? "Similar to for e.g.: 'avh', 'nbn_scotland', ..."
+                              : "Similar to for e.g.: 'ala', 'gbif_es', 'nbn',...",
+                          wikipage: "Glossary#Directory-name",
+                          error:
+                              'Directory name invalid. Should be start by lowercase and should contain only lowercase characters, numbers and/or underscores',
+                          initialValue: _project.dirName,
+                          regexp: _project.createdAt < permissiveDirNamesDate
+                              ? LARegExp.ansibleDirnameRegexpPermissive
+                              : LARegExp.ansibleDirnameRegexp,
+                          onChanged: (value) {
+                            _project.dirName = value;
+                            vm.onSaveCurrentProject(_project);
+                          }),
                     Tooltip(
                         // SSL
                         message: "Quite recommended",
