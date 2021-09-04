@@ -140,8 +140,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               });
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
-          print("Building ProjectViewPage $_scaffoldKey");
           final LAProject project = vm.project;
+          print(
+              "Building ProjectViewPage $_scaffoldKey, ala-install: ${project.alaInstallRelease}, gen: ${project.generatorRelease}");
           String portal = project.portalName;
           // ignore: non_constant_identifier_names
           String Portal = project.PortalName;
@@ -316,7 +317,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                                   ));
                             }).toList()),
                             const SizedBox(height: 10),
-                            if (AppUtils.isDev() && !project.isHub)
+                            if (!project.isHub)
                               createHubWidget(context, vm, project),
                             const LintProjectPanel()
                           ])))));
@@ -533,6 +534,8 @@ class _ProjectPageViewModel {
           project == other.project &&
           status.value == other.status.value &&
           loading == other.loading &&
+          project.alaInstallRelease == other.project.alaInstallRelease &&
+          project.generatorRelease == other.project.generatorRelease &&
           const ListEquality()
               .equals(generatorReleases, other.generatorReleases) &&
           const ListEquality()
@@ -543,6 +546,8 @@ class _ProjectPageViewModel {
       project.hashCode ^
       status.value.hashCode ^
       loading.hashCode ^
+      project.alaInstallRelease.hashCode ^
+      project.generatorRelease.hashCode ^
       const ListEquality().hash(generatorReleases) ^
       const ListEquality().hash(alaInstallReleases);
 }
