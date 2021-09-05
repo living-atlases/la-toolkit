@@ -25,6 +25,7 @@ class Dependencies {
       generator: vc('>= 1.1.49')
     },
     vc('>= 1.1.26'): {alaInstall: vc('>= 2.0.10'), generator: vc('>= 1.1.51')},
+    vc('>= 1.2.0'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.0')},
   };
 
   static VersionConstraint vc(String c) => VersionConstraint.parse(c);
