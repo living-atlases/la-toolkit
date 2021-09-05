@@ -355,6 +355,9 @@ check results length: ${checkResults.length}''';
       if (isHub) {
         initialService.iniPath = initialService.suburl;
         initialService.suburl = 'hub';
+        if (initialService.nameInt == 'branding') {
+          initialService.iniPath = '';
+        }
       }
       services.add(initialService);
     }
