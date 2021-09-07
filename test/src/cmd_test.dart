@@ -2,6 +2,7 @@ import 'package:la_toolkit/models/cmd.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:test/test.dart';
@@ -131,5 +132,30 @@ void main() {
         cmdEntry.deployCmd!.desc,
         equals(
             "Pre-deploy tasks (setup solr limits, additional deps install in ala-install-test-1)"));
+  });
+
+  test('Test pipeline cmd to String', () {
+    PipelinesCmd cmd = PipelinesCmd();
+    cmd.allDrs = true;
+    expect(cmd.desc, equals("Pipelines data processing of all drs"));
+    cmd.steps = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    expect(
+        cmd.desc, equals("Pipelines data processing of all drs (some steps)"));
+    cmd.steps = ['interpret', 'validate', 'dwca-export'];
+    expect(
+        cmd.desc,
+        equals(
+            "Pipelines data processing of all drs (interpret, validate and dwca-export steps)"));
+    cmd.steps = ['interpret', 'validate'];
+    expect(
+        cmd.desc,
+        equals(
+            "Pipelines data processing of all drs (interpret and validate steps)"));
+    cmd.steps = ['interpret'];
+    expect(cmd.desc,
+        equals("Pipelines data processing of all drs (interpret step)"));
+    cmd.dryRun = true;
+    cmd.steps = [];
+    expect(cmd.desc, equals("Dry run of Pipelines data processing of all drs"));
   });
 }

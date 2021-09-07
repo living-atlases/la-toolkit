@@ -305,4 +305,24 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
     expect(StringUtils.removeLastSlash('http://example.com/'),
         equals('http://example.com'));
   });
+
+  test('test drs', () {
+    List<String> validValues = [
+      'dr1',
+      'dr234',
+      'dr2 dr3',
+      'dr3 dr4 dr5 dr6',
+      'dr3 dr4 dr5 dr6 ',
+      'dr1    '
+    ];
+    List<String> inValidValues = ['dr', '123', 'dr234 dr', 'dr2 dra3'];
+    for (String value in validValues) {
+      expect(LARegExp.drs.hasMatch(value), equals(true),
+          reason: '$value should match');
+    }
+    for (String value in inValidValues) {
+      expect(LARegExp.drs.hasMatch(value), equals(false),
+          reason: '$value should not match');
+    }
+  });
 }
