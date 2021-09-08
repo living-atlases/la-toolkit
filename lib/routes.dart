@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/cmdTermPage.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
 import 'package:la_toolkit/logsPage.dart';
+import 'package:la_toolkit/pipelinesPage.dart';
 import 'package:la_toolkit/portalStatusPage.dart';
 import 'package:la_toolkit/postDeployPage.dart';
 import 'package:la_toolkit/preDeployPage.dart';
@@ -48,6 +49,7 @@ class Routes {
               BrandingDeployLocation(),
               CmdResultsLocation(),
               PortalStatusLocation(),
+              PipelinesLocation()
               // disabled for now CmdTermLocation()
             ]));
 
@@ -238,4 +240,13 @@ class PortalStatusLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
       [BeamPage(key: ValueKey(route), child: const PortalStatusPage())];
+}
+
+class PipelinesLocation extends NamedBeamLocation {
+  @override
+  String get route => PipelinesPage.routeName;
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      [BeamPage(key: ValueKey(route), child: const PipelinesPage())];
 }

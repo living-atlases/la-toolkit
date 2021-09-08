@@ -23,6 +23,7 @@ class GenericTextFormField extends StatefulWidget {
   final int? maxLines;
   final TextInputType? keyboardType;
   final Color? fillColor;
+  final bool enabled;
   final bool enabledBorder;
   final bool monoSpaceFont;
   final bool deployed;
@@ -52,6 +53,7 @@ class GenericTextFormField extends StatefulWidget {
       this.obscureText = false,
       this.keyboardType,
       this.deployed = false,
+      this.enabled = true,
       this.contentPadding})
       : super(key: key);
 
@@ -143,6 +145,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
             children: <Widget>[
               TextFormField(
                   decoration: decoration,
+                  enabled: widget.enabled,
                   controller: _controller,
                   onTap: () => _controller.selection = TextSelection(
                       baseOffset: 0, extentOffset: _controller.text.length),

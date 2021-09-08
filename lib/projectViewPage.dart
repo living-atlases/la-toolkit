@@ -108,6 +108,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     () => {}));
                 BeamerCond.of(context, PortalStatusLocation());
               },
+              onPipelinesTasks: (project) {
+                BeamerCond.of(context, PipelinesLocation());
+              },
               onTestConnProject: (project, silence) {
                 // if (!silence) context.loaderOverlay.show();
                 store.dispatch(TestConnectivityProject(project, () {
@@ -240,9 +243,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   icon: const Icon(Mdi.pipe),
                   title: "Data Processing Pipelines",
                   tooltip: "Pipelines for data processing (Not yet developed)",
-                  enabled: false,
+                  enabled: isCreatedAndAccessibleOrInProduction,
                   grid: 12,
-                  action: () => {}),
+                  action: () => vm.onPipelinesTasks(project)),
           ];
           String projectIconUrl =
               project.getVariableValue("favicon_url").toString();
@@ -500,6 +503,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onPreDeployTasks;
   final void Function(LAProject project) onPostDeployTasks;
   final void Function(LAProject project) onPortalStatus;
+  final void Function(LAProject project) onPipelinesTasks;
   final void Function(LAProject project) onCreateHub;
   final void Function(LAProject project, LAProject hub) onOpenHub;
 
@@ -519,6 +523,7 @@ class _ProjectPageViewModel {
       required this.onDeployBranding,
       required this.onViewLogs,
       required this.onDeployProject,
+      required this.onPipelinesTasks,
       required this.onGenInvProject,
       required this.onTestConnProject,
       required this.onPortalStatus,

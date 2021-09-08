@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/pipelinesTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/brandingDeployCmd.dart';
 import 'package:la_toolkit/redux/appActions.dart';
-import 'package:la_toolkit/utils/utils.dart';
+import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
-import 'models/deployCmd.dart';
+import 'models/commonCmd.dart';
 import 'models/laProject.dart';
+import 'models/pipelinesCmd.dart';
 
-class BrandingDeployPage extends StatefulWidget {
-  static const routeName = "branding-deploy";
+class PipelinesPage extends StatefulWidget {
+  static const routeName = "pipelines";
 
-  const BrandingDeployPage({Key? key}) : super(key: key);
+  const PipelinesPage({Key? key}) : super(key: key);
 
   @override
-  _BrandingDeployPageState createState() => _BrandingDeployPageState();
+  _PipelinesPageState createState() => _PipelinesPageState();
 }
 
-class _BrandingDeployPageState extends State<BrandingDeployPage> {
+class _PipelinesPageState extends State<PipelinesPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -32,34 +33,41 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
         return _ViewModel(
             project: store.state.currentProject,
             onCancel: (project) {},
-            onSaveDeployCmd: (cmd) {
+            onSaveCmd: (cmd) {
               store.dispatch(SaveCurrentCmd(cmd: cmd));
             },
-            onDoDeployTaskSwitchs: (project, cmd) =>
-                DeployUtils.brandingDeployActionLaunch(
+            onRunPipelines: (project, cmd) {
+              /*
+                DeployUtils.deployActionLaunch(
                     context: context,
                     store: store,
                     project: project,
-                    deployCmd: cmd),
-            cmd: store.state.repeatCmd.runtimeType != BrandingDeployCmd
-                ? BrandingDeployCmd()
-                : store.state.repeatCmd as BrandingDeployCmd);
+                    deployCmd: cmd) */
+            },
+            cmd: store.state.repeatCmd.runtimeType != PipelinesCmd
+                ? PipelinesCmd()
+                : store.state.repeatCmd as PipelinesCmd);
       },
       builder: (BuildContext context, _ViewModel vm) {
-        String execBtn = "Deploy branding";
-        BrandingDeployCmd cmd = vm.cmd;
-        VoidCallback? onTap() => vm.onDoDeployTaskSwitchs(vm.project, cmd);
-        String pagetTitle = "Branding Deploy of ${vm.project.shortName} ";
+        String execBtn = "Run";
+        PipelinesCmd cmd = vm.cmd;
+        print("Building pipelines page for $cmd");
+        VoidCallback? onTap =
+            (cmd.allDrs || (cmd.drs != null && cmd.drs!.isNotEmpty)) &&
+                    (cmd.steps.isNotEmpty || cmd.allSteps)
+                ? () => vm.onRunPipelines(vm.project, cmd)
+                : null;
+        String pageTitle = "${vm.project.shortName} Pipelines";
         return Title(
-            title: pagetTitle,
+            title: pageTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
                 key: _scaffoldKey,
                 appBar: LAAppBar(
                     context: context,
-                    titleIcon: Icons.format_paint,
+                    titleIcon: Mdi.pipe,
                     showBack: true,
-                    title: pagetTitle,
+                    title: pageTitle,
                     showLaIcon: false,
                     actions: const []),
                 body: ScrollPanel(
@@ -74,11 +82,17 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
                             flex: 8, // 80%,
                             child: Column(
                               children: [
+                                PipelinesTimeline(
+                                    cmd: vm.cmd,
+                                    onChange: (changedCmd) {
+                                      cmd = changedCmd;
+                                      vm.onSaveCmd(cmd);
+                                    }),
                                 const SizedBox(height: 20),
-                                const Text(
-                                    'This task will build and deploy your branding.'),
-                                const SizedBox(height: 20),
-                                LaunchBtn(onTap: onTap, execBtn: execBtn),
+                                LaunchBtn(
+                                    onTap: onTap,
+                                    execBtn: execBtn,
+                                    icon: Mdi.pipe),
                               ],
                             )),
                         Expanded(
@@ -94,16 +108,16 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
 
 class _ViewModel {
   final LAProject project;
-  final Function(LAProject, BrandingDeployCmd) onDoDeployTaskSwitchs;
-  final BrandingDeployCmd cmd;
+  final Function(LAProject, PipelinesCmd) onRunPipelines;
+  final PipelinesCmd cmd;
   final Function(LAProject) onCancel;
-  final Function(DeployCmd) onSaveDeployCmd;
+  final Function(CommonCmd) onSaveCmd;
 
   _ViewModel(
       {required this.project,
-      required this.onDoDeployTaskSwitchs,
+      required this.onRunPipelines,
       required this.cmd,
-      required this.onSaveDeployCmd,
+      required this.onSaveCmd,
       required this.onCancel});
 
   @override

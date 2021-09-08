@@ -57,7 +57,7 @@ List<Reducer<AppState>> basic = [
   TypedReducer<AppState, ShowSnackBar>(_showSnackBar),
   TypedReducer<AppState, OnShowedSnackBar>(_onShowedSnackBar),
   TypedReducer<AppState, PrepareDeployProject>(_prepareDeployProject),
-  TypedReducer<AppState, SaveDeployCmd>(_saveDeployCmd),
+  TypedReducer<AppState, SaveCurrentCmd>(_saveCurrentCmd),
   TypedReducer<AppState, OnDeletedLog>(_onDeletedLog),
   TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
 ];
@@ -386,8 +386,8 @@ AppState _prepareDeployProject(AppState state, PrepareDeployProject action) {
   return state.copyWith(repeatCmd: action.deployCmd);
 }
 
-AppState _saveDeployCmd(AppState state, SaveDeployCmd action) {
-  return state.copyWith(repeatCmd: action.deployCmd);
+AppState _saveCurrentCmd(AppState state, SaveCurrentCmd action) {
+  return state.copyWith(repeatCmd: action.cmd);
 }
 
 AppState _onDeletedLog(AppState state, OnDeletedLog action) {

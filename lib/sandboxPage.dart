@@ -3,7 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:latlong2/latlong.dart';
 
-import 'components/defDivider.dart';
+import 'components/scrollPanel.dart';
 import 'models/appState.dart';
 
 class SandboxPage extends StatefulWidget {
@@ -40,26 +40,20 @@ class _SandboxPageState extends State<SandboxPage> {
             showBack: true,
             actions: const [],
           ),
-          body: Column(
-            children: [
-              Column(
-                children: const [
-                  // FilePickerDemo(),
-                  //  BrandingDialog(),
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  const SizedBox(height: 7),
-                  const DefDivider(),
-                  // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
-                  // BrandingSelector(),
-                  const SizedBox(height: 7),
-                  Container(),
-                ],
-              ),
-            ],
-          ));
+          body: ScrollPanel(
+              child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+            child: Column(
+              children: [
+                const SizedBox(height: 7),
+                // const DefDivider(),
+                // ServicesInServerChooser(server: "biocache-store-0.gbif.es"),
+                // BrandingSelector(),
+                const SizedBox(height: 7),
+                Container(),
+              ],
+            ),
+          )));
     });
   }
 }

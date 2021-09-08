@@ -10,42 +10,45 @@ part 'pipelinesCmd.g.dart';
 @CopyWith()
 class PipelinesCmd extends CommonCmd {
   String? drs;
-  List<String> steps;
+  Set<String> steps;
   bool allDrs;
+  bool allSteps;
   bool debug;
   bool dryRun;
 
   PipelinesCmd({
     this.drs,
-    List<String>? steps,
+    Set<String>? steps,
     this.debug = false,
     this.allDrs = false,
+    this.allSteps = false,
     this.dryRun = false,
-  }) : steps = steps ?? [];
+  }) : steps = steps ?? {};
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PipelinesCmd &&
           runtimeType == other.runtimeType &&
-          const ListEquality().equals(steps, other.steps) &&
+          const SetEquality().equals(steps, other.steps) &&
           debug == other.debug &&
           drs == other.drs &&
           allDrs == other.allDrs &&
+          allSteps == other.allSteps &&
           dryRun == other.dryRun;
 
   @override
   int get hashCode =>
-      const ListEquality().hash(steps) ^
+      const SetEquality().hash(steps) ^
       debug.hashCode ^
       dryRun.hashCode ^
       drs.hashCode ^
+      allSteps.hashCode ^
       allDrs.hashCode;
 
   String get desc {
     String stepsDesc = 'pipelines data processing of';
 
-    bool allSteps = const ListEquality().equals(steps, ['all']);
     if (allDrs) {
       stepsDesc += ' all drs';
     } else {
@@ -58,7 +61,7 @@ class PipelinesCmd extends CommonCmd {
       // nothing more
       stepsDesc += '';
     } else if (stepsLength <= 7) {
-      steps.asMap().forEach((i, value) => stepsDesc += i == 0
+      steps.toList().asMap().forEach((i, value) => stepsDesc += i == 0
           ? ' (' + value
           : i < stepsLength - 1
               ? ', ' + value

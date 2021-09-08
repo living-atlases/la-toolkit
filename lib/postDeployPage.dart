@@ -35,7 +35,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
             project: store.state.currentProject,
             onCancel: (project) {},
             onSaveDeployCmd: (cmd) {
-              store.dispatch(SaveDeployCmd(deployCmd: cmd));
+              store.dispatch(SaveCurrentCmd(cmd: cmd));
             },
             onUpdateProject: (project) {
               store.dispatch(UpdateProject(project));

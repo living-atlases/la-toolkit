@@ -36,7 +36,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
             project: store.state.currentProject,
             onCancel: (project) {},
             onSaveDeployCmd: (cmd) {
-              store.dispatch(SaveDeployCmd(deployCmd: cmd));
+              store.dispatch(SaveCurrentCmd(cmd: cmd));
             },
             onDoDeployTaskSwitchs: (project, cmd) =>
                 DeployUtils.deployActionLaunch(

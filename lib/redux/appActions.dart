@@ -174,9 +174,9 @@ class PrepareDeployProject extends AppActions {
       required this.onError});
 }
 
-class SaveDeployCmd extends AppActions {
-  DeployCmd deployCmd;
-  SaveDeployCmd({required this.deployCmd});
+class SaveCurrentCmd extends AppActions {
+  CommonCmd cmd;
+  SaveCurrentCmd({required this.cmd});
 }
 
 abstract class DeployAction extends AppActions {

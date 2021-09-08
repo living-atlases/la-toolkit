@@ -6,10 +6,12 @@ class LaunchBtn extends StatelessWidget {
     Key? key,
     this.onTap,
     required this.execBtn,
+    this.icon = Mdi.rocketLaunch,
   }) : super(key: key);
 
   final VoidCallback? onTap;
   final String execBtn;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,7 @@ class LaunchBtn extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30.0),
                         // side: BorderSide(color: Colors.red)),
                       )),
-                  icon: const Icon(Mdi.rocketLaunch, size: 30),
+                  icon: Icon(icon, size: 30),
                   label: Text(execBtn, style: const TextStyle(fontSize: 18))))
         ]));
   }
