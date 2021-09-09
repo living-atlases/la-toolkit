@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/pipelinesStepDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
@@ -12,15 +14,23 @@ import 'genericTextFormField.dart';
 
 class PipelinesTimeline extends StatefulWidget {
   static const double stepSize = 50;
+  static const double stepHeightNotVisible = 0;
   static const double iconSize = 26;
   static const EdgeInsets stepPadding = EdgeInsets.all(15);
+  static const EdgeInsets stepPaddingNotVisible = EdgeInsets.all(0);
   static const EdgeInsets stepIconPadding = EdgeInsets.all(4);
   static const EdgeInsets titlePadding = EdgeInsets.only(left: 10);
   static const String last = "solr";
+  static const animationDuration = Duration(milliseconds: 300);
 
+  final LAProject project;
   final PipelinesCmd cmd;
   final Function(PipelinesCmd) onChange;
-  const PipelinesTimeline({required this.cmd, required this.onChange, Key? key})
+  const PipelinesTimeline(
+      {required this.project,
+      required this.cmd,
+      required this.onChange,
+      Key? key})
       : super(key: key);
 
   @override
@@ -88,50 +98,52 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
     otherSteps.add(const SizedBox(height: 10));
 
     PipelinesStepDesc.list.asMap().forEach((int index, PipelinesStepDesc step) {
-      Widget stepWidget = _StepWidget(
-          cmd: cmd,
-          index: index,
-          step: step,
-          lastBuilt: lastBuilt,
-          onPressed: () {
-            print("lastclicked $lastClicked index: $index");
-            bool val = cmd.steps.contains(step.name);
-            setState(() {
-              if (isShiftPressed) {
-                if (lastClicked >= 0) {
-                  bool loopForward = lastClicked < index;
-                  if (loopForward) {
-                    for (int x = lastClicked; x < index; x++) {
-                      String el = PipelinesStepDesc.allStringList.elementAt(x);
-                      cmd.steps.add(el);
-                    }
-                  } else {
-                    for (int x = lastClicked; x > index; x--) {
-                      String el = PipelinesStepDesc.allStringList.elementAt(x);
-                      cmd.steps.add(el);
+      if (shouldWeUse(widget.project, step)) {
+        Widget stepWidget = _StepWidget(
+            cmd: cmd,
+            index: index,
+            step: step,
+            lastBuilt: lastBuilt,
+            onPressed: () {
+              // print("lastclicked $lastClicked index: $index");
+              bool val = cmd.steps.contains(step.name);
+              setState(() {
+                if (isShiftPressed) {
+                  if (lastClicked >= 0) {
+                    bool loopForward = lastClicked < index;
+                    if (loopForward) {
+                      for (int x = lastClicked; x < index; x++) {
+                        cmd.steps
+                            .add(PipelinesStepDesc.allStringList.elementAt(x));
+                      }
+                    } else {
+                      for (int x = lastClicked; x > index; x--) {
+                        cmd.steps
+                            .add(PipelinesStepDesc.allStringList.elementAt(x));
+                      }
                     }
                   }
-                }
-                String el = PipelinesStepDesc.allStringList.elementAt(index);
-                cmd.steps.add(el);
-              } else {
-                if (cmd.steps.contains(step.name)) {
-                  cmd.steps.remove(step.name);
+                  String el = PipelinesStepDesc.allStringList.elementAt(index);
+                  cmd.steps.add(el);
                 } else {
-                  cmd.steps.add(step.name);
+                  if (cmd.steps.contains(step.name)) {
+                    cmd.steps.remove(step.name);
+                  } else {
+                    cmd.steps.add(step.name);
+                  }
                 }
-              }
-              lastClicked = val ? -1 : index;
+                lastClicked = val ? -1 : index;
+              });
+              widget.onChange(cmd);
             });
-            widget.onChange(cmd);
-          });
 
-      if (!lastBuilt) {
-        commonSteps.add(stepWidget);
-      } else {
-        otherSteps.add(stepWidget);
-        otherStepsS.add(step.name);
-        otherStepsO.add(step);
+        if (!lastBuilt) {
+          commonSteps.add(stepWidget);
+        } else {
+          otherSteps.add(stepWidget);
+          otherStepsS.add(step.name);
+          otherStepsO.add(step);
+        }
       }
 
       if (PipelinesTimeline.last == step.name) {
@@ -178,21 +190,42 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
       ])
     ]);
   }
+
+  bool shouldWeUse(LAProject project, PipelinesStepDesc step) {
+    if (step.depends.isEmpty) {
+      return true;
+    } else {
+      bool add = true;
+      for (LAServiceName dep in step.depends) {
+        add = add && project.getService(dep.toS()).use;
+      }
+      return add;
+    }
+  }
 }
 
 class _StepTitle extends StatelessWidget {
-  const _StepTitle({Key? key, required this.text}) : super(key: key);
+  const _StepTitle({Key? key, required this.text, required this.visible})
+      : super(key: key);
 
   final String text;
+  final bool visible;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: PipelinesTimeline.stepPadding,
-      constraints: const BoxConstraints(
-          minHeight: PipelinesTimeline.stepSize, maxWidth: 100, minWidth: 100),
+    return AnimatedContainer(
+      padding: visible
+          ? PipelinesTimeline.stepPadding
+          : PipelinesTimeline.stepPaddingNotVisible,
+      constraints: BoxConstraints(
+          minHeight: visible
+              ? PipelinesTimeline.stepSize
+              : PipelinesTimeline.stepHeightNotVisible,
+          maxWidth: 100,
+          minWidth: 100),
+      duration: PipelinesTimeline.animationDuration,
       child: Text(
-        text,
+        visible ? text : "",
         textAlign: TextAlign.right,
       ),
     );
@@ -213,25 +246,52 @@ class _StepWidget extends StatelessWidget {
       required this.lastBuilt,
       required this.onPressed})
       : super(key: key);
+
+  static IndicatorStyle selectedIndicatorStyle = IndicatorStyle(
+    width: PipelinesTimeline.iconSize,
+    color: LAColorTheme.laPalette,
+    padding: PipelinesTimeline.stepIconPadding,
+    iconStyle: IconStyle(
+      color: Colors.white,
+      iconData: Icons.check,
+    ),
+  );
+  static IndicatorStyle notSelectedIndicatorStyle = IndicatorStyle(
+    width: PipelinesTimeline.iconSize,
+    padding: PipelinesTimeline.stepIconPadding,
+    iconStyle: IconStyle(
+      color: Colors.grey.shade400,
+      iconData: Icons.check,
+    ),
+  );
+  static IndicatorStyle noIndicatorStyle = IndicatorStyle(
+    width: PipelinesTimeline.iconSize,
+    padding: const EdgeInsets.all(2),
+    iconStyle: IconStyle(
+      color: Colors.transparent,
+      iconData: Icons.check,
+    ),
+  );
+  List<T> intersection<T>(Iterable<Iterable<T>> iterables) {
+    return iterables
+        .map((e) => e.toSet())
+        .reduce((a, b) => a.intersection(b))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    IndicatorStyle selectedIndicatorStyle = IndicatorStyle(
-      width: PipelinesTimeline.iconSize,
-      color: LAColorTheme.laPalette,
-      padding: PipelinesTimeline.stepIconPadding,
-      iconStyle: IconStyle(
-        color: Colors.white,
-        iconData: Icons.check,
-      ),
-    );
-    IndicatorStyle notSelectedIndicatorStyle = IndicatorStyle(
-      width: PipelinesTimeline.iconSize,
-      padding: PipelinesTimeline.stepIconPadding,
-      iconStyle: IconStyle(
-        color: Colors.grey.shade400,
-        iconData: Icons.check,
-      ),
-    );
+    bool stepsToMinimize = index > 1 && index <= 10;
+    bool somethingOfStepsSelected =
+        intersection([cmd.steps, PipelinesStepDesc.allStringList]).isNotEmpty ||
+            cmd.allSteps;
+    // bool somethingOfRestTasksSelected =
+    //  intersection([cmd.steps, PipelinesStepDesc.restStringList]).isNotEmpty;
+    bool allVisible = somethingOfStepsSelected || !stepsToMinimize;
+
+    IndicatorStyle onOffStStyle = !cmd.steps.contains(step.name)
+        ? notSelectedIndicatorStyle
+        : selectedIndicatorStyle;
     return InkWell(
         onTap: onPressed,
         child: TimelineTile(
@@ -240,26 +300,42 @@ class _StepWidget extends StatelessWidget {
           // This defines the size of left part (the title) and the BoxConstraint of _StepTittle
           lineXY: 0.3,
           alignment: TimelineAlign.manual,
-          // hasIndicator: index != 8,
-          indicatorStyle: !cmd.steps.contains(step.name)
-              ? notSelectedIndicatorStyle
-              : selectedIndicatorStyle,
-          endChild: _StepDescription(desc: step.desc),
-          startChild: _StepTitle(text: step.name),
+
+          /* beforeLineStyle: index == 3
+              ? const LineStyle(
+                  color: Colors.transparent,
+                  thickness: 6,
+                )
+              : const LineStyle(), */
+          indicatorStyle: index > PipelinesStepDesc.lastStep || !stepsToMinimize
+              ? onOffStStyle
+              : !somethingOfStepsSelected
+                  ? noIndicatorStyle
+                  : onOffStStyle,
+          endChild: _StepDescription(desc: step.desc, visible: allVisible),
+          startChild: _StepTitle(text: step.name, visible: allVisible),
         ));
   }
 }
 
 class _StepDescription extends StatelessWidget {
   final String desc;
-  const _StepDescription({Key? key, required this.desc}) : super(key: key);
+  final bool visible;
+  const _StepDescription({Key? key, required this.desc, required this.visible})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: PipelinesTimeline.stepPadding,
-      constraints: const BoxConstraints(minHeight: PipelinesTimeline.stepSize),
-      child: Text(StringUtils.capitalize(desc)),
+    return AnimatedContainer(
+      padding: visible
+          ? PipelinesTimeline.stepPadding
+          : PipelinesTimeline.stepPaddingNotVisible,
+      constraints: BoxConstraints(
+          minHeight: visible
+              ? PipelinesTimeline.stepSize
+              : PipelinesTimeline.stepHeightNotVisible),
+      duration: PipelinesTimeline.animationDuration,
+      child: Text(visible ? StringUtils.capitalize(desc) : ""),
     );
   }
 }

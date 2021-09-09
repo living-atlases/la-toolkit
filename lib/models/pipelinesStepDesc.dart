@@ -86,9 +86,13 @@ class PipelinesStepDesc {
   }
 
   static List<PipelinesStepDesc> get list => _map.values.toList();
-
+  static const int lastStep = 12;
   static List<PipelinesStepDesc> get allList =>
-      _map.values.toList().sublist(0, 14);
+      _map.values.toList().sublist(0, lastStep);
+  static List<PipelinesStepDesc> get restList =>
+      _map.values.toList().sublist(lastStep, _map.length);
 
   static List<String> get allStringList => allList.map((v) => v.name).toList();
+  static List<String> get restStringList =>
+      restList.map((v) => v.name).toList();
 }

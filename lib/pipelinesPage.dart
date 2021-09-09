@@ -83,6 +83,7 @@ class _PipelinesPageState extends State<PipelinesPage> {
                             child: Column(
                               children: [
                                 PipelinesTimeline(
+                                    project: vm.project,
                                     cmd: vm.cmd,
                                     onChange: (changedCmd) {
                                       cmd = changedCmd;
