@@ -7,6 +7,7 @@ import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/hostServicesChecks.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -202,6 +203,17 @@ class BrandingDeploy extends DeployAction {
   BrandingDeployCmd cmd;
 
   BrandingDeploy(
+      {required this.cmd,
+      required LAProject project,
+      required Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart,
+      required ErrorCallback onError})
+      : super(project: project, onStart: onStart, onError: onError);
+}
+
+class PipelinesRun extends DeployAction {
+  PipelinesCmd cmd;
+
+  PipelinesRun(
       {required this.cmd,
       required LAProject project,
       required Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart,

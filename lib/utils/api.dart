@@ -466,4 +466,15 @@ class Api {
         cmd: action.cmd.toJson(),
         action: action);
   }
+
+  static void pipelinesRun(PipelinesRun action) {
+    if (AppUtils.isDemo()) return;
+    Uri url = uri(env['BACKEND']!, "/api/v1/pipelines-run");
+    doCmd(
+        url: url,
+        projectId: action.project.id,
+        desc: action.cmd.desc,
+        cmd: action.cmd.toJson(),
+        action: action);
+  }
 }

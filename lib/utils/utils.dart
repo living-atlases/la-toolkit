@@ -10,6 +10,7 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/commonCmd.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
@@ -268,6 +269,39 @@ class DeployUtils {
               ),
               content: Text(
                   'Oooopss, some problem have arisen trying to deploy the branding: $error')));
+        }));
+  }
+
+  static pipelinesRun(
+      {required BuildContext context,
+      var store,
+      required LAProject project,
+      required PipelinesCmd cmd}) {
+    context.loaderOverlay.show();
+    store.dispatch(PipelinesRun(
+        project: project,
+        cmd: cmd,
+        onStart: (cmdEntry, port, ttydPid) {
+          context.loaderOverlay.hide();
+          /* Not used right now, maybe in the future
+          context.beamToNamed('/term/$port/$ttydPid'); */
+          TermDialog.show(context, port: port, pid: ttydPid, title: "Console",
+              onClose: () async {
+            // Show the results
+            store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
+          });
+        },
+        onError: (error) {
+          context.loaderOverlay.hide();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              action: SnackBarAction(
+                label: 'OK',
+                onPressed: () {
+                  // Some code to undo the change.
+                },
+              ),
+              content: Text(
+                  'Oooopss, some problem have arisen trying to run pipelines: $error')));
         }));
   }
 

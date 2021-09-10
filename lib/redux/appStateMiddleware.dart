@@ -323,6 +323,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is BrandingDeploy) {
       Api.deployBranding(action);
     }
+
+    if (action is PipelinesRun) {
+      Api.pipelinesRun(action);
+    }
+
     if (action is GetCmdResults) {
       CmdHistoryDetails? lastCmdDet = store.state.currentProject.lastCmdDetails;
       if (lastCmdDet != null &&

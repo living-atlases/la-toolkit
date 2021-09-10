@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/pipelinesTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
@@ -37,12 +38,8 @@ class _PipelinesPageState extends State<PipelinesPage> {
               store.dispatch(SaveCurrentCmd(cmd: cmd));
             },
             onRunPipelines: (project, cmd) {
-              /*
-                DeployUtils.deployActionLaunch(
-                    context: context,
-                    store: store,
-                    project: project,
-                    deployCmd: cmd) */
+              DeployUtils.pipelinesRun(
+                  context: context, store: store, project: project, cmd: cmd);
             },
             cmd: store.state.repeatCmd.runtimeType != PipelinesCmd
                 ? PipelinesCmd()
