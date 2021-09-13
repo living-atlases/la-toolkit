@@ -6,6 +6,7 @@ import 'package:la_toolkit/models/commonCmd.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/hostServicesChecks.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laReleases.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
@@ -39,6 +40,12 @@ class OnFetchAlaInstallReleases extends AppActions {
 class OnFetchBackendVersion extends AppActions {
   String version;
   OnFetchBackendVersion(this.version);
+}
+
+class OnLAVersionsSwCheck extends AppActions {
+  Map<String, LAReleases> releases;
+  DateTime time;
+  OnLAVersionsSwCheck(this.releases, this.time);
 }
 
 class OnFetchAlaInstallReleasesFailed extends AppActions {}

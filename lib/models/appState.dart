@@ -11,6 +11,7 @@ import 'package:la_toolkit/models/sshKey.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'commonCmd.dart';
+import 'laReleases.dart';
 
 part 'appState.g.dart';
 
@@ -50,6 +51,7 @@ class AppState {
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
+  final Map<String, LAReleases> laReleases;
   final List<SshKey> sshKeys;
   @JsonKey(ignore: true) //, nullable: true)
   final List<AppSnackBarMessage> appSnackBarMessages;
@@ -61,6 +63,7 @@ class AppState {
   final String? backendVersion;
   @JsonKey(ignore: true)
   final bool loading;
+  final DateTime? lastSwCheck;
 
   AppState(
       {List<LAProject>? projects,
@@ -72,9 +75,11 @@ class AppState {
       List<String>? alaInstallReleases,
       List<String>? generatorReleases,
       List<AppSnackBarMessage>? appSnackBarMessages,
+      Map<String, LAReleases>? laReleases,
       CommonCmd? repeatCmd,
       this.pkgInfo,
       this.backendVersion,
+      this.lastSwCheck,
       bool? loading,
       List<SshKey>? sshKeys})
       : projects = projects ?? [],
@@ -84,6 +89,7 @@ class AppState {
         alaInstallReleases = alaInstallReleases ?? [],
         generatorReleases = generatorReleases ?? [],
         repeatCmd = repeatCmd ?? CommonCmd(),
+        laReleases = laReleases ?? {},
         loading = loading ?? false,
         appSnackBarMessages = appSnackBarMessages ?? [];
 
@@ -106,10 +112,13 @@ class AppState {
           pkgInfo == other.pkgInfo &&
           loading == other.loading &&
           backendVersion == other.backendVersion &&
+          lastSwCheck == other.lastSwCheck &&
           listEquals(projects, other.projects) &&
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
           listEquals(generatorReleases, other.generatorReleases) &&
           listEquals(appSnackBarMessages, other.appSnackBarMessages) &&
+          const DeepCollectionEquality.unordered()
+              .equals(laReleases, other.laReleases) &&
           listEquals(sshKeys, other.sshKeys);
 
   @override
@@ -123,10 +132,12 @@ class AppState {
       pkgInfo.hashCode ^
       backendVersion.hashCode ^
       loading.hashCode ^
+      lastSwCheck.hashCode ^
       const ListEquality().hash(appSnackBarMessages) ^
       const ListEquality().hash(projects) ^
       const ListEquality().hash(alaInstallReleases) ^
       const ListEquality().hash(generatorReleases) ^
+      const DeepCollectionEquality.unordered().hash(laReleases) ^
       const ListEquality().hash(sshKeys);
 
   static LAProjectViewStatus statusFromString(String s) {

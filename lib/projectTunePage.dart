@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
 import 'package:la_toolkit/components/helpIcon.dart';
+import 'package:la_toolkit/laReleasesSelectors.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -19,6 +21,7 @@ import 'components/appSnackBar.dart';
 import 'components/laAppBar.dart';
 import 'components/lintProject.dart';
 import 'components/scrollPanel.dart';
+import 'models/laReleases.dart';
 import 'models/laServiceDesc.dart';
 import 'models/laVariable.dart';
 
@@ -36,6 +39,9 @@ class LAProjectTunePage extends StatelessWidget {
       converter: (store) {
         return _ProjectTuneViewModel(
           project: store.state.currentProject,
+          softwareRelasesReady:
+              AppUtils.isDev() && store.state.laReleases.isNotEmpty,
+          laReleases: store.state.laReleases,
           status: store.state.currentProject.status,
           onSaveProject: (project) {
             store.dispatch(SaveCurrentProject(project));
@@ -170,6 +176,13 @@ class LAProjectTunePage extends StatelessWidget {
                                             vm.onSaveProject(project);
                                           }
                                         })),
+                              if (vm.softwareRelasesReady)
+                                const SizedBox(height: 20),
+                              if (vm.softwareRelasesReady)
+                                HeadingItem("Component versions")
+                                    .buildTitle(context),
+                              if (vm.softwareRelasesReady)
+                                const LAReleasesSelectors(),
                               const SizedBox(height: 20),
                               ListView.builder(
                                 scrollDirection: Axis.vertical,
@@ -362,24 +375,36 @@ class MessageItem implements ListItem {
 class _ProjectTuneViewModel {
   final LAProject project;
   final LAProjectStatus status;
+  final Map<String, LAReleases> laReleases;
   final void Function(LAProject) onUpdateProject;
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
+  final bool softwareRelasesReady;
 
-  _ProjectTuneViewModel(
-      {required this.project,
-      required this.status,
-      required this.onUpdateProject,
-      required this.onSaveProject,
-      required this.onCancel});
+  _ProjectTuneViewModel({
+    required this.project,
+    required this.status,
+    required this.laReleases,
+    required this.onUpdateProject,
+    required this.softwareRelasesReady,
+    required this.onSaveProject,
+    required this.onCancel,
+  });
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is _ProjectTuneViewModel &&
           runtimeType == other.runtimeType &&
           project == other.project &&
+          softwareRelasesReady == other.softwareRelasesReady &&
+          const DeepCollectionEquality.unordered()
+              .equals(laReleases, other.laReleases) &&
           status == other.status;
 
   @override
-  int get hashCode => project.hashCode ^ status.hashCode;
+  int get hashCode =>
+      project.hashCode ^
+      status.hashCode ^
+      softwareRelasesReady.hashCode ^
+      const DeepCollectionEquality.unordered().hash(laReleases);
 }

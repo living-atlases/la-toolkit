@@ -71,6 +71,8 @@ class LAServiceDesc {
   bool admin;
   bool alaAdmin;
   bool hubCapable;
+  String? artifact;
+  String? artifactAnsibleVar;
 
   @override
   bool operator ==(Object other) =>
@@ -94,6 +96,8 @@ class LAServiceDesc {
           subServices == other.subServices &&
           admin == other.admin &&
           alaAdmin == other.alaAdmin &&
+          artifact == other.artifact &&
+          artifactAnsibleVar == other.artifactAnsibleVar &&
           hubCapable == other.hubCapable;
 
   @override
@@ -115,6 +119,8 @@ class LAServiceDesc {
       subServices.hashCode ^
       admin.hashCode ^
       alaAdmin.hashCode ^
+      artifact.hashCode ^
+      artifactAnsibleVar.hashCode ^
       hubCapable.hashCode;
 
   LAServiceDesc(
@@ -138,6 +144,8 @@ class LAServiceDesc {
       this.admin = false,
       this.alaAdmin = false,
       this.initUse = false,
+      this.artifact,
+      this.artifactAnsibleVar,
       this.hubCapable = false})
       : subServices = subServices ?? [];
 
@@ -152,12 +160,14 @@ class LAServiceDesc {
         icon: Mdi.formatListBulletedType,
         admin: true,
         alaAdmin: true,
+        artifact: 'ala-collectory',
+        artifactAnsibleVar: 'collectory_version',
         path: ""),
     LAServiceName.ala_hub.toS(): LAServiceDesc(
         name: "records",
         nameInt: "ala_hub",
         group: "biocache-hub",
-        desc: "occurrences search frontend",
+        desc: "occurrences search frontend (aka biocache-hub)",
         optional: false,
         hint: "Typically 'records' or similar",
         sample: "https://biocache.ala.org.au",
@@ -165,15 +175,19 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: true,
         hubCapable: true,
+        artifact: 'ala-hub',
+        artifactAnsibleVar: 'biocache_hub_version',
         path: ""),
     LAServiceName.biocache_service.toS(): LAServiceDesc(
         name: "records-ws",
         nameInt: "biocache_service",
         group: "biocache-service-clusterdb",
-        desc: "occurrences web service",
+        desc: "occurrences web service (aka biocache-service)",
         optional: false,
         icon: Mdi.databaseSearchOutline,
         sample: "https://biocache.ala.org.au/ws",
+        artifact: "biocache-service",
+        artifactAnsibleVar: 'biocache_service_version',
         path: ""),
     LAServiceName.ala_bie.toS(): LAServiceDesc(
         name: "species",
@@ -187,6 +201,8 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: true,
         hubCapable: true,
+        artifact: "ala-bie",
+        artifactAnsibleVar: 'bie_hub_version',
         path: ""),
     LAServiceName.bie_index.toS(): LAServiceDesc(
         name: "species-ws",
@@ -199,6 +215,8 @@ class LAServiceDesc {
         sample: "https://bie.ala.org.au/ws",
         admin: true,
         alaAdmin: true,
+        artifact: "bie-index",
+        artifactAnsibleVar: 'bie_index_version',
         path: ""),
     LAServiceName.images.toS(): LAServiceDesc(
         name: "images",
@@ -211,6 +229,8 @@ class LAServiceDesc {
         sample: "https://images.ala.org.au",
         icon: Mdi.imageMultipleOutline,
         admin: true,
+        artifact: "image-service",
+        artifactAnsibleVar: "image_service_version",
         path: ""),
     LAServiceName.species_lists.toS(): LAServiceDesc(
         name: "lists",
@@ -224,6 +244,8 @@ class LAServiceDesc {
         icon: Icons.playlist_add_outlined,
         sample: "https://lists.ala.org.au",
         admin: true,
+        artifact: "specieslist-webapp",
+        artifactAnsibleVar: "species_list_version",
         path: ""),
     LAServiceName.regions.toS(): LAServiceDesc(
         name: "regions",
@@ -238,6 +260,8 @@ class LAServiceDesc {
         sample: "https://regions.ala.org.au",
         alaAdmin: true,
         hubCapable: true,
+        artifact: "regions",
+        artifactAnsibleVar: "regions_version",
         path: ""),
     LAServiceName.logger.toS(): LAServiceDesc(
         name: "logger",
@@ -248,6 +272,8 @@ class LAServiceDesc {
         icon: Mdi.mathLog,
         sample: "https://logger.ala.org.au",
         admin: true,
+        artifact: "logger-service",
+        artifactAnsibleVar: "logger_version",
         path: ""),
     LAServiceName.solr.toS(): LAServiceDesc(
         name: "index",
@@ -275,6 +301,8 @@ class LAServiceDesc {
             name: "CAS",
             path: '/cas',
             icon: Mdi.accountCheckOutline,
+            artifact: "cas",
+            artifactAnsibleVar: "cas_version",
             admin: false,
             alaAdmin: false,
           ),
@@ -282,13 +310,22 @@ class LAServiceDesc {
             name: "User Details",
             path: '/userdetails',
             icon: Mdi.accountGroup,
+            artifact: "userdetails",
+            artifactAnsibleVar: "user_details_version",
             admin: true,
             alaAdmin: true,
           ),
-          LASubServiceDesc(name: "API keys", path: '/apikey', icon: Mdi.api),
+          LASubServiceDesc(
+              name: "API keys",
+              path: '/apikey',
+              icon: Mdi.api,
+              artifactAnsibleVar: "apikey_version",
+              artifact: "apikey"),
           LASubServiceDesc(
               name: "CAS Management",
               path: '/cas-management',
+              artifact: "cas-management",
+              artifactAnsibleVar: "cas_management_version",
               icon: Mdi.accountNetwork),
         ],
         path: ""),
@@ -302,10 +339,14 @@ class LAServiceDesc {
         forceSubdomain: true,
         icon: Mdi.layers,
         sample: "https://spatial.ala.org.au",
+        artifact: 'spatial-hub',
+        artifactAnsibleVar: "spatial_hub_version",
         subServices: [
           LASubServiceDesc(
               name: 'Spatial Webservice',
               path: '/ws',
+              artifact: 'spatial-service',
+              artifactAnsibleVar: "spatial_service_version",
               icon: Mdi.layersPlus,
               alaAdmin: true),
           LASubServiceDesc(
@@ -322,6 +363,8 @@ class LAServiceDesc {
         sample: "https://api.ala.org.au",
         icon: Icons.integration_instructions_outlined,
         admin: true,
+        artifact: 'webapi',
+        artifactAnsibleVar: "webapi_version",
         path: ""),
     LAServiceName.dashboard.toS(): LAServiceDesc(
         name: "dashboard",
@@ -333,6 +376,8 @@ class LAServiceDesc {
         sample: "https://dashboard.ala.org.au",
         icon: Mdi.tabletDashboard,
         alaAdmin: true,
+        artifact: 'dashboard',
+        artifactAnsibleVar: "dashboard_version",
         path: ""),
     LAServiceName.sds.toS(): LAServiceDesc(
         name: "sds",
@@ -345,6 +390,8 @@ class LAServiceDesc {
         depends: LAServiceName.species_lists,
         icon: Icons.blur_circular,
         alaAdmin: true,
+        artifact: "sds-webapp2",
+        artifactAnsibleVar: "sds_version",
         path: ""),
     LAServiceName.alerts.toS(): LAServiceDesc(
         name: "alerts",
@@ -358,6 +405,8 @@ class LAServiceDesc {
         sample: "https://alerts.ala.org.au",
         icon: Icons.notifications_active_outlined,
         admin: true,
+        artifact: "alerts",
+        artifactAnsibleVar: "alerts_version",
         path: ""),
     LAServiceName.doi.toS(): LAServiceDesc(
         name: "doi",
@@ -370,6 +419,8 @@ class LAServiceDesc {
         sample: "https://doi.ala.org.au",
         icon: Mdi.link,
         admin: true,
+        artifact: "doi-service",
+        artifactAnsibleVar: "doi_service_version",
         path: ""),
     LAServiceName.biocache_backend.toS(): LAServiceDesc(
         name: "biocache-backend",
@@ -401,6 +452,8 @@ class LAServiceDesc {
         optional: false,
         withoutUrl: true,
         icon: Mdi.powershell,
+        artifact: "biocache-store",
+        artifactAnsibleVar: "biocache_cli_version",
         path: ""),
     LAServiceName.nameindexer.toS(): LAServiceDesc(
         name: "nameindexer",
@@ -410,7 +463,12 @@ class LAServiceDesc {
         optional: false,
         withoutUrl: true,
         icon: Mdi.tournament,
+        artifact: "ala-name-matching",
+        artifactAnsibleVar: "namematching_service_version",
         path: "")
+/*    artifactAnsibleVar: "biocollect_version",
+    artifactAnsibleVar: "ecodata_version",
+    artifactAnsibleVar: "ecodata_version",*/
   };
 
   static LAServiceDesc get(String nameInt) {

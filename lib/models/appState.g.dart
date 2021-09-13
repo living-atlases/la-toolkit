@@ -16,6 +16,8 @@ extension AppStateCopyWith on AppState {
     bool? failedLoad,
     bool? firstUsage,
     List<String>? generatorReleases,
+    Map<String, LAReleases>? laReleases,
+    DateTime? lastSwCheck,
     bool? loading,
     PackageInfo? pkgInfo,
     List<LAProject>? projects,
@@ -32,6 +34,8 @@ extension AppStateCopyWith on AppState {
       failedLoad: failedLoad ?? this.failedLoad,
       firstUsage: firstUsage ?? this.firstUsage,
       generatorReleases: generatorReleases ?? this.generatorReleases,
+      laReleases: laReleases ?? this.laReleases,
+      lastSwCheck: lastSwCheck ?? this.lastSwCheck,
       loading: loading ?? this.loading,
       pkgInfo: pkgInfo ?? this.pkgInfo,
       projects: projects ?? this.projects,
@@ -63,6 +67,12 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) {
     generatorReleases: (json['generatorReleases'] as List<dynamic>?)
         ?.map((e) => e as String)
         .toList(),
+    laReleases: (json['laReleases'] as Map<String, dynamic>?)?.map(
+      (k, e) => MapEntry(k, LAReleases.fromJson(e as Map<String, dynamic>)),
+    ),
+    lastSwCheck: json['lastSwCheck'] == null
+        ? null
+        : DateTime.parse(json['lastSwCheck'] as String),
     sshKeys: (json['sshKeys'] as List<dynamic>?)
         ?.map((e) => SshKey.fromJson(e as Map<String, dynamic>))
         .toList(),
@@ -77,7 +87,9 @@ Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'projects': instance.projects.map((e) => e.toJson()).toList(),
       'alaInstallReleases': instance.alaInstallReleases,
       'generatorReleases': instance.generatorReleases,
+      'laReleases': instance.laReleases.map((k, e) => MapEntry(k, e.toJson())),
       'sshKeys': instance.sshKeys.map((e) => e.toJson()).toList(),
+      'lastSwCheck': instance.lastSwCheck?.toIso8601String(),
     };
 
 K _$enumDecode<K, V>(

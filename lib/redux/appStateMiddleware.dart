@@ -10,6 +10,9 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/laReleases.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laSubService.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -17,6 +20,7 @@ import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
@@ -158,6 +162,37 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         } else {
           store.dispatch(OnFetchGeneratorReleasesFailed());
         }
+      }
+
+      // ALA other Releases
+      if (store.state.lastSwCheck != null &&
+          (store.state.lastSwCheck!
+              .isAfter(DateTime.now().subtract(const Duration(days: 1))))) {
+        print(
+            "Not checking LA versions because we retrieved them already today");
+        print(store.state.laReleases);
+      } else {
+        Map<String, LAReleases> releases = {};
+        List<Tuple2<String, String>> servicesAndSub = [];
+
+        for (LAServiceDesc service in LAServiceDesc.list(false)) {
+          if (service.artifact != null) {
+            servicesAndSub.add(Tuple2(service.nameInt, service.artifact!));
+          }
+          for (LASubServiceDesc subService in service.subServices) {
+            if (subService.artifact != null) {
+              servicesAndSub.add(Tuple2(subService.name, subService.artifact!));
+            }
+          }
+        }
+        for (Tuple2 s in servicesAndSub) {
+          // https://nexus.ala.org.au/service/local/repositories/snapshots/content/au/org/ala/ala-hub/maven-metadata.xml
+          LAReleases? thisReleases = await getAlaNexusVersions(s);
+          if (thisReleases != null) {
+            releases[s.item1] = thisReleases;
+          }
+        }
+        store.dispatch(OnLAVersionsSwCheck(releases, DateTime.now()));
       }
     }
     if (action is AddProject) {
@@ -384,6 +419,49 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     next(action);
+  }
+
+  Future<LAReleases?> getAlaNexusVersions(Tuple2 service) async {
+    String? latest;
+    List<String> versions = [];
+    for (String repo in ['releases', 'snapshots']) {
+      Uri nexusUrl =
+          AppUtils.uri(env['BACKEND']!, "/api/v1/get-ala-nexus-versions");
+      Response response = await http.post(nexusUrl,
+          headers: {'Content-type': 'application/json'},
+          body: utf8
+              .encode(json.encode({'repo': repo, 'artifact': service.item2})));
+      Map<String, dynamic> jsonBody = json.decode(response.body);
+      try {
+        var thisVersions =
+            jsonBody['metadata']['versioning']['versions']['version'];
+        List<String> groupVersions = thisVersions.runtimeType == String
+            ? [thisVersions]
+            : thisVersions.cast<String>();
+        String groupLatest =
+            jsonBody['metadata']['versioning']['latest'].toString();
+        if (repo == "releases") {
+          latest = groupLatest;
+          // truncate the list
+          versions.addAll(groupVersions.reversed.toList().sublist(
+              0, 20 > groupVersions.length ? groupVersions.length : 20));
+        } else {
+          versions.addAll(groupVersions.reversed
+              .toList()
+              .sublist(0, 2 > groupVersions.length ? groupVersions.length : 2));
+        }
+        /* print(artifact);
+            print(versions);
+            print(latest); */
+      } catch (e) {
+        print('Cannot retrieve versions for ${service.item1} ($e)');
+      }
+    }
+    return LAReleases(
+        name: service.item1,
+        artifact: service.item2,
+        latest: latest,
+        versions: versions);
   }
 
   Future<void> _updateProject(LAProject project, Store<AppState> store,

@@ -20,6 +20,7 @@ List<Reducer<AppState>> basic = [
   TypedReducer<AppState, OnFetchSoftwareDepsState>(_onFetchState),
   TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
   TypedReducer<AppState, OnFetchAlaInstallReleases>(_onFetchAlaInstallReleases),
+  TypedReducer<AppState, OnLAVersionsSwCheck>(_onLAVersionsSwCheck),
   TypedReducer<AppState, OnFetchBackendVersion>(_onFetchBackendVersion),
   TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(
       _onFetchAlaInstallReleasesFailed),
@@ -80,6 +81,11 @@ AppState _onFetchStateFailed(AppState state, OnFetchStateFailed action) {
 AppState _onFetchAlaInstallReleases(
     AppState state, OnFetchAlaInstallReleases action) {
   return state.copyWith(alaInstallReleases: action.releases);
+}
+
+AppState _onLAVersionsSwCheck(AppState state, OnLAVersionsSwCheck action) {
+  print(action.releases);
+  return state.copyWith(laReleases: action.releases, lastSwCheck: action.time);
 }
 
 AppState _onFetchAlaInstallReleasesFailed(

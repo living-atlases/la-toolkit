@@ -6,13 +6,17 @@ class SoftwareSelector extends StatefulWidget {
   final String? initialValue;
   final Function(String?) onChange;
   final String label;
+  final bool roundStyle;
+  final bool useBadge;
 
   const SoftwareSelector(
       {Key? key,
       required this.label,
       required this.versions,
       this.initialValue,
-      required this.onChange})
+      required this.onChange,
+      this.useBadge = true,
+      this.roundStyle = true})
       : super(key: key);
 
   @override
@@ -54,7 +58,9 @@ Choose the latest release to update your portal.
           // filled: true,
           // fillColor: Colors.grey[500],
           labelText: widget.label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          border: widget.roundStyle
+              ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
+              : null,
         ),
         value: widget.initialValue != null && widget.initialValue!.isNotEmpty
             ? widget.initialValue
@@ -69,7 +75,7 @@ Choose the latest release to update your portal.
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Tooltip(
             message: outDated ? outdatedTooltip : updatedTooltip,
-            child: outDated
+            child: outDated && widget.useBadge
                 // https://pub.dev/packages/badges
                 ? Badge(
                     toAnimate: false,
