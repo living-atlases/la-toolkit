@@ -3,6 +3,9 @@ import 'package:la_toolkit/utils/regexp.dart';
 
 import 'laProject.dart';
 
+// Other option is to get variables from ala-install parsing the templates with
+// some regexp like {{([a-z A-Z0-9][^{}]+)}}
+
 // ignore: constant_identifier_names
 enum LAVariableType { String, int, double, bool }
 
