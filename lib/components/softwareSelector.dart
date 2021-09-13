@@ -31,6 +31,7 @@ Choose the latest release to update your portal.
 ''';
   static const String updatedTooltip = "This current version is up-to-date";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static const Color outdatedColor = Colors.orangeAccent;
 
   @override
   Widget build(BuildContext context) {
@@ -42,15 +43,24 @@ Choose the latest release to update your portal.
           child: Text(element.replaceFirst(RegExp(r'^v'), '')),
           value: element);
     }
+    bool emptyInitialValue =
+        widget.initialValue != null && widget.initialValue!.isEmpty;
     bool outDated = widget.initialValue != null &&
+        widget.initialValue!.isNotEmpty &&
         widget.versions.isNotEmpty &&
         (widget.versions.first != widget.initialValue &&
             (widget.initialValue != 'custom' &&
                 widget.initialValue != 'upstream'));
     List<DropdownMenuItem<String>> items = releases.values.toList();
+
     DropdownButtonFormField menu = DropdownButtonFormField(
         key: _formKey,
-        icon: const Icon(Icons.arrow_drop_down),
+        icon: Icon(Icons.arrow_drop_down,
+            color: !widget.useBadge
+                ? outDated
+                    ? outdatedColor
+                    : null
+                : null),
         iconSize: 32,
         // hint: Text("Recommended a recent version"),
         // underline: SizedBox(),
@@ -71,21 +81,25 @@ Choose the latest release to update your portal.
         onChanged: (value) {
           widget.onChange(value);
         });
+
+    Widget menuConditionalBadge = outDated && widget.useBadge
+        // https://pub.dev/packages/badges
+        ? Badge(
+            toAnimate: false,
+            shape: BadgeShape.square,
+            badgeColor: outdatedColor,
+            borderRadius: BorderRadius.circular(8),
+            badgeContent:
+                const Text('NEW', style: TextStyle(color: Colors.white)),
+            child: menu,
+          )
+        : menu;
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: Tooltip(
-            message: outDated ? outdatedTooltip : updatedTooltip,
-            child: outDated && widget.useBadge
-                // https://pub.dev/packages/badges
-                ? Badge(
-                    toAnimate: false,
-                    shape: BadgeShape.square,
-                    badgeColor: Colors.orangeAccent,
-                    borderRadius: BorderRadius.circular(8),
-                    badgeContent: const Text('NEW',
-                        style: TextStyle(color: Colors.white)),
-                    child: menu,
-                  )
-                : menu));
+        child: emptyInitialValue
+            ? menuConditionalBadge
+            : Tooltip(
+                message: outDated ? outdatedTooltip : updatedTooltip,
+                child: menuConditionalBadge));
   }
 }
