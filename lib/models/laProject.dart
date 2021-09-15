@@ -465,6 +465,19 @@ check results length: ${checkResults.length}''';
         !serviceIds.contains(sD.serviceId));
   }
 
+  List<LAServiceDeploy> getServiceDeploys(String sN) {
+    LAService service = services.firstWhere((s) => s.nameInt == sN);
+    return serviceDeploys
+        .where((sD) => sD.projectId == id && sD.serviceId == service.id)
+        .toList();
+  }
+
+  void setServiceDeployRelease(String sN, String release) {
+    for (LAServiceDeploy sd in getServiceDeploys(sN)) {
+      sd.softwareVersions[sN] = release;
+    }
+  }
+
   void delete(LAServer serverToDelete) {
     /* print(servers.length);
     print(serviceDeploys.length);
@@ -623,7 +636,7 @@ check results length: ${checkResults.length}''';
     }
 
     for (LAVariable variable in variables) {
-      conf["LA_variable_${variable.nameInt}"] = variable.value;
+      conf["${LAVariable.varInvPrefix}${variable.nameInt}"] = variable.value;
     }
 
     // Hubs

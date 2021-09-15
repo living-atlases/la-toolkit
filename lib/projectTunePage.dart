@@ -39,7 +39,7 @@ class LAProjectTunePage extends StatelessWidget {
       converter: (store) {
         return _ProjectTuneViewModel(
           project: store.state.currentProject,
-          softwareRelasesReady:
+          softwareReleasesReady:
               AppUtils.isDev() && store.state.laReleases.isNotEmpty,
           laReleases: store.state.laReleases,
           status: store.state.currentProject.status,
@@ -103,6 +103,8 @@ class LAProjectTunePage extends StatelessWidget {
         });
         String pageTitle =
             "${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}";
+        bool showSoftwareVersions =
+            project.advancedTune && vm.softwareReleasesReady;
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -176,12 +178,12 @@ class LAProjectTunePage extends StatelessWidget {
                                             vm.onSaveProject(project);
                                           }
                                         })),
-                              if (vm.softwareRelasesReady)
+                              if (showSoftwareVersions)
                                 const SizedBox(height: 20),
-                              if (vm.softwareRelasesReady)
+                              if (showSoftwareVersions)
                                 HeadingItem("Component versions")
                                     .buildTitle(context),
-                              if (vm.softwareRelasesReady)
+                              if (showSoftwareVersions)
                                 const LAReleasesSelectors(),
                               const SizedBox(height: 20),
                               ListView.builder(
@@ -379,14 +381,14 @@ class _ProjectTuneViewModel {
   final void Function(LAProject) onUpdateProject;
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
-  final bool softwareRelasesReady;
+  final bool softwareReleasesReady;
 
   _ProjectTuneViewModel({
     required this.project,
     required this.status,
     required this.laReleases,
     required this.onUpdateProject,
-    required this.softwareRelasesReady,
+    required this.softwareReleasesReady,
     required this.onSaveProject,
     required this.onCancel,
   });
@@ -396,7 +398,7 @@ class _ProjectTuneViewModel {
       other is _ProjectTuneViewModel &&
           runtimeType == other.runtimeType &&
           project == other.project &&
-          softwareRelasesReady == other.softwareRelasesReady &&
+          softwareReleasesReady == other.softwareReleasesReady &&
           const DeepCollectionEquality.unordered()
               .equals(laReleases, other.laReleases) &&
           status == other.status;
@@ -405,6 +407,6 @@ class _ProjectTuneViewModel {
   int get hashCode =>
       project.hashCode ^
       status.hashCode ^
-      softwareRelasesReady.hashCode ^
+      softwareReleasesReady.hashCode ^
       const DeepCollectionEquality.unordered().hash(laReleases);
 }

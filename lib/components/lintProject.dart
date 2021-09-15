@@ -41,7 +41,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                       generatorV: project.generatorRelease);
           return Column(
             children: [
-              if (lintVersionErrors != null) LintErrorPanel(lintVersionErrors),
+              LintErrorPanel(lintVersionErrors),
               if (vm.sshKeys.isEmpty)
                 AlertCard(
                     message: "You don't have any SSH key",

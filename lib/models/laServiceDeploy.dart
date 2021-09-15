@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
@@ -15,6 +16,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
   String serverId;
   String projectId;
   String additionalVariables;
+  Map<String, String> softwareVersions;
   ServiceStatus status;
   int? checkedAt;
 
@@ -24,9 +26,11 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       required this.serverId,
       this.additionalVariables = "",
       required this.projectId,
+      Map<String, String>? softwareVersions,
       this.checkedAt,
       ServiceStatus? status})
       : id = id ?? ObjectId().toString(),
+        softwareVersions = softwareVersions ?? {},
         status = status ?? ServiceStatus.unknown;
 
   factory LAServiceDeploy.fromJson(Map<String, dynamic> json) =>
@@ -50,6 +54,8 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
           projectId == other.projectId &&
           additionalVariables == other.additionalVariables &&
           checkedAt == other.checkedAt &&
+          const DeepCollectionEquality.unordered()
+              .equals(softwareVersions, other.softwareVersions) &&
           status == other.status;
 
   @override
@@ -60,6 +66,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       projectId.hashCode ^
       checkedAt.hashCode ^
       additionalVariables.hashCode ^
+      const DeepCollectionEquality.unordered().hash(softwareVersions) ^
       status.hashCode;
 
   @override

@@ -4,6 +4,24 @@ import 'package:la_toolkit/models/laServiceDepsDesc.dart';
 import 'package:la_toolkit/models/laSubService.dart';
 import 'package:mdi/mdi.dart';
 
+final lists = LAServiceName.species_lists.toS();
+final collectory = LAServiceName.collectory.toS();
+final bie = LAServiceName.ala_bie.toS();
+final bieIndex = LAServiceName.bie_index.toS();
+final alaHub = LAServiceName.ala_hub.toS();
+final biocacheService = LAServiceName.biocache_service.toS();
+final alerts = LAServiceName.alerts.toS();
+final images = LAServiceName.images.toS();
+final solr = LAServiceName.solr.toS();
+final webapi = LAServiceName.webapi.toS();
+final regions = LAServiceName.regions.toS();
+final spatial = LAServiceName.spatial.toS();
+final cas = LAServiceName.cas.toS();
+final sds = LAServiceName.sds.toS();
+final dashboard = LAServiceName.dashboard.toS();
+final branding = LAServiceName.branding.toS();
+final doi = LAServiceName.doi.toS();
+
 enum LAServiceName {
   all,
   collectory,
@@ -473,6 +491,10 @@ class LAServiceDesc {
 
   static LAServiceDesc get(String nameInt) {
     return _map[nameInt]!;
+  }
+
+  static bool isLAService(String nameInt) {
+    return _map.containsKey(nameInt);
   }
 
   static LAServiceDesc getE(LAServiceName nameInt) {

@@ -14,6 +14,7 @@ extension LAServiceDeployCopyWith on LAServiceDeploy {
     String? projectId,
     String? serverId,
     String? serviceId,
+    Map<String, String>? softwareVersions,
     ServiceStatus? status,
   }) {
     return LAServiceDeploy(
@@ -23,6 +24,7 @@ extension LAServiceDeployCopyWith on LAServiceDeploy {
       projectId: projectId ?? this.projectId,
       serverId: serverId ?? this.serverId,
       serviceId: serviceId ?? this.serviceId,
+      softwareVersions: softwareVersions ?? this.softwareVersions,
       status: status ?? this.status,
     );
   }
@@ -39,6 +41,9 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) {
     serverId: json['serverId'] as String,
     additionalVariables: json['additionalVariables'] as String,
     projectId: json['projectId'] as String,
+    softwareVersions: (json['softwareVersions'] as Map<String, dynamic>?)?.map(
+      (k, e) => MapEntry(k, e as String),
+    ),
     checkedAt: json['checkedAt'] as int?,
     status: _$enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
   );
@@ -51,6 +56,7 @@ Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) =>
       'serverId': instance.serverId,
       'projectId': instance.projectId,
       'additionalVariables': instance.additionalVariables,
+      'softwareVersions': instance.softwareVersions,
       'status': _$ServiceStatusEnumMap[instance.status],
       'checkedAt': instance.checkedAt,
     };

@@ -7,6 +7,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/laSubService.dart';
 
+import 'components/helpIcon.dart';
 import 'models/laReleases.dart';
 
 class LAReleasesSelectors extends StatefulWidget {
@@ -35,33 +36,52 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
         String serviceNameInt = service.nameInt;
         LAReleases? releases = vm.laReleases[serviceNameInt];
         if (project.getService(serviceNameInt).use && releases != null) {
-          Widget swWidget =
-              _createSoftwareSelector(service.name, releases.versions);
+          Widget swWidget = _createSoftwareSelector(
+              service.name,
+              releases.versions,
+              (String value) =>
+                  vm.project.setServiceDeployRelease(service.nameInt, value));
           selectors.add(swWidget);
           for (LASubServiceDesc subService in service.subServices) {
             String subServiceName = subService.name;
             LAReleases? releases = vm.laReleases[subServiceName];
             if (releases != null) {
               Widget swWidget = _createSoftwareSelector(
-                  subServiceName, vm.laReleases[subServiceName]!.versions);
+                  subServiceName,
+                  vm.laReleases[subServiceName]!.versions,
+                  (String value) => vm.project
+                      .setServiceDeployRelease(service.nameInt, value));
               selectors.add(swWidget);
             }
           }
         }
       }
 
-      return Wrap(children: selectors);
+      return Column(children: [
+        const SizedBox(height: 10),
+        ListTile(
+          title: const Text(
+              "Here you can select which version of each LA component do you want to deploy in order to keep your portal updated. You can verify also which versions are running other LA portals."),
+          trailing: HelpIcon(wikipage: "Components-versioning"),
+        ),
+        Wrap(children: selectors)
+      ]);
     });
   }
 
-  Widget _createSoftwareSelector(String serviceName, List<String> versions) {
+  Widget _createSoftwareSelector(
+      String serviceName, List<String> versions, Function(String) onChange) {
     Widget swWidget = SizedBox(
         width: 200,
         child: SoftwareSelector(
           label: serviceName,
           versions: versions,
           initialValue: "",
-          onChange: (value) {},
+          onChange: (String? value) {
+            if (value != null) {
+              onChange(value);
+            }
+          },
           roundStyle: false,
           useBadge: false,
         ));
