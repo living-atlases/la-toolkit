@@ -20,8 +20,8 @@ import 'homePage.dart';
 import 'main.dart';
 
 class Routes {
-  static final notFoundPage = BeamPage(
-    child: const Scaffold(
+  static const notFoundPage = BeamPage(
+    child: Scaffold(
       body: Center(
         child: Text('Not found'),
       ),
@@ -59,7 +59,7 @@ class Routes {
   }
 }
 
-abstract class NamedBeamLocation extends BeamLocation {
+abstract class NamedBeamLocation extends BeamLocation<BeamState> {
   String get route;
   @override
   List<String> get pathBlueprints => ['/' + route];
@@ -142,9 +142,8 @@ class PreDeployLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-            key: const ValueKey(PreDeployPage.routeName),
-            child: const PreDeployPage())
+        const BeamPage(
+            key: ValueKey(PreDeployPage.routeName), child: PreDeployPage())
       ];
 }
 
@@ -154,9 +153,9 @@ class BrandingDeployLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-            key: const ValueKey(BrandingDeployPage.routeName),
-            child: const BrandingDeployPage())
+        const BeamPage(
+            key: ValueKey(BrandingDeployPage.routeName),
+            child: BrandingDeployPage())
       ];
 }
 
@@ -166,9 +165,8 @@ class PostDeployLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
-        BeamPage(
-            key: const ValueKey(PostDeployPage.routeName),
-            child: const PostDeployPage())
+        const BeamPage(
+            key: ValueKey(PostDeployPage.routeName), child: PostDeployPage())
       ];
 }
 
@@ -206,7 +204,7 @@ class DeployLocation extends NamedBeamLocation {
       [BeamPage(key: ValueKey(route), child: const DeployPage())];
 }
 
-class CmdTermLocation extends BeamLocation {
+class CmdTermLocation extends BeamLocation<BeamState> {
   @override
   List<String> get pathBlueprints => ['/${CmdTermPage.routeName}/:port/:pid'];
 
