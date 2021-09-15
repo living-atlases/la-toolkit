@@ -44,14 +44,16 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
   bool isShiftPressed = false;
   int lastClicked = -1;
 
+  // Based in: https://stackoverflow.com/a/67363189/642847
   @override
   void initState() {
     super.initState();
     cmd = widget.cmd;
     focus = FocusNode(debugLabel: 'Button');
     _nodeAttachment = focus.attach(context, onKey: (node, event) {
-      isShiftPressed = event.isShiftPressed;
       // print("is shift: $isShiftPressed");
+      isShiftPressed = event.isShiftPressed;
+      return KeyEventResult.handled;
     });
     focus.requestFocus();
   }
