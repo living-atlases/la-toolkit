@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
 import 'package:la_toolkit/components/helpIcon.dart';
+import 'package:la_toolkit/components/lintErrorPanel.dart';
 import 'package:la_toolkit/laReleasesSelectors.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
@@ -21,6 +22,7 @@ import 'components/appSnackBar.dart';
 import 'components/laAppBar.dart';
 import 'components/lintProject.dart';
 import 'components/scrollPanel.dart';
+import 'models/dependencies.dart';
 import 'models/laReleases.dart';
 import 'models/laServiceDesc.dart';
 import 'models/laVariable.dart';
@@ -185,6 +187,10 @@ class LAProjectTunePage extends StatelessWidget {
                                     .buildTitle(context),
                               if (showSoftwareVersions)
                                 const LAReleasesSelectors(),
+                              if (showSoftwareVersions)
+                                LintErrorPanel(Dependencies.verifyLAReleases(
+                                    project.getServicesNameListInUse(),
+                                    project.getServiceDeployReleases())),
                               const SizedBox(height: 20),
                               ListView.builder(
                                 scrollDirection: Axis.vertical,

@@ -119,8 +119,8 @@ void main() {
         longName: "Living Atlas of Wakanda",
         shortName: "LAW",
         domain: "l-a.site",
-        alaInstallRelease: "",
-        generatorRelease: "");
+        alaInstallRelease: "2.0.0",
+        generatorRelease: "2.0.0");
     LAProject testProjectOther = testProject.copyWith();
 
     expect(
@@ -255,12 +255,12 @@ void main() {
     vm3.sshKey = SshKey(name: "k3", desc: "", encrypted: false);
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
     expect(testProject.getServicesNameListInUse().isNotEmpty, equals(true));
-
+/*
     print(testProject.getServicesNameListInUse().length);
     print(testProject.getServicesAssignedToServers().length);
     print(testProject.getServicesNameListInUse());
     print(testProject.getServicesAssignedToServers());
-    print(testProject);
+    print(testProject); */
     expect(
         testProject.getServicesNameListInUse().length ==
             testProject.getServicesAssignedToServers().length,
@@ -304,7 +304,7 @@ void main() {
   test('Test disable of services', () {
     var p = LAProject();
     p.domain = "l-a.site";
-
+    p.alaInstallRelease = "2.0.0";
     p.serviceInUse(bie, true);
     expect(p.getServicesNameListInUse().length, equals(16));
 
@@ -385,6 +385,11 @@ void main() {
         equals('      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site'));
     expect(p.serviceDeploys.length,
         equals(p.getServicesAssignedToServers().length));
+    // print(p.getServiceDefaultVersion(p.getService(bie)));
+    expect(
+        p.getServiceDefaultVersions(p.getService(bie)).isNotEmpty, equals(true));
+    expect(p.getServiceDeployReleases().isNotEmpty, equals(true));
+
     p.delete(vm1);
     expect(p.validateCreation(), equals(false));
     expect(p.servers.length, equals(0));
@@ -772,7 +777,7 @@ void main() {
     expect(p.useSSL, equals(true));
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
     for (LAServiceDesc service in LAServiceDesc.list(p.isHub)) {
-      print(service.nameInt);
+      // print(service.nameInt);
       if (![
         lists,
         webapi,

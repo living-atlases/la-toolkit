@@ -8,6 +8,7 @@ import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
 
 import 'alertCard.dart';
+import 'lintErrorPanel.dart';
 
 class LintProjectPanel extends StatefulWidget {
   const LintProjectPanel({Key? key}) : super(key: key);
@@ -72,16 +73,6 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             ],
           );
         });
-  }
-}
-
-class LintErrorPanel extends StatelessWidget {
-  final List<String> errors;
-
-  const LintErrorPanel(this.errors, {Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: errors.map((e) => AlertCard(message: e)).toList());
   }
 }
 

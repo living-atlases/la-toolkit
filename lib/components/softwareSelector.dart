@@ -36,6 +36,14 @@ Choose the latest release to update your portal.
   @override
   Widget build(BuildContext context) {
     Map<String, DropdownMenuItem<String>> releases = {};
+    bool emptyInitialValue =
+        widget.initialValue != null && widget.initialValue!.isEmpty;
+    String? initialValue = widget.initialValue;
+    if (!emptyInitialValue && !widget.versions.contains(widget.initialValue)) {
+      // A list that does not contains the initial value
+      initialValue = null;
+      emptyInitialValue = true;
+    }
     for (String element in widget.versions) {
       // remove dups
       releases[element] = DropdownMenuItem(
@@ -43,14 +51,12 @@ Choose the latest release to update your portal.
           child: Text(element.replaceFirst(RegExp(r'^v'), '')),
           value: element);
     }
-    bool emptyInitialValue =
-        widget.initialValue != null && widget.initialValue!.isEmpty;
-    bool outDated = widget.initialValue != null &&
-        widget.initialValue!.isNotEmpty &&
+
+    var initialValueNotEmpty = initialValue != null && initialValue.isNotEmpty;
+    bool outDated = initialValueNotEmpty &&
         widget.versions.isNotEmpty &&
-        (widget.versions.first != widget.initialValue &&
-            (widget.initialValue != 'custom' &&
-                widget.initialValue != 'upstream'));
+        (widget.versions.first != initialValue &&
+            (initialValue != 'custom' && initialValue != 'upstream'));
     List<DropdownMenuItem<String>> items = releases.values.toList();
 
     DropdownButtonFormField menu = DropdownButtonFormField(
@@ -72,8 +78,8 @@ Choose the latest release to update your portal.
               ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
               : null,
         ),
-        value: widget.initialValue != null && widget.initialValue!.isNotEmpty
-            ? widget.initialValue
+        value: initialValueNotEmpty
+            ? initialValue
             : items.isNotEmpty
                 ? items[0].value
                 : "",

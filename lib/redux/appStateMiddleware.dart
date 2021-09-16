@@ -181,7 +181,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           }
           for (LASubServiceDesc subService in service.subServices) {
             if (subService.artifact != null) {
-              servicesAndSub.add(Tuple2(subService.name, subService.artifact!));
+              servicesAndSub
+                  .add(Tuple2(subService.nameInt, subService.artifact!));
             }
           }
         }
@@ -444,7 +445,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           latest = groupLatest;
           // truncate the list
           versions.addAll(groupVersions.reversed.toList().sublist(
-              0, 20 > groupVersions.length ? groupVersions.length : 20));
+              0, 30 > groupVersions.length ? groupVersions.length : 30));
         } else {
           versions.addAll(groupVersions.reversed
               .toList()
@@ -461,7 +462,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         name: service.item1,
         artifact: service.item2,
         latest: latest,
-        versions: versions);
+        // remove dups
+        versions: versions.toSet().toList());
   }
 
   Future<void> _updateProject(LAProject project, Store<AppState> store,

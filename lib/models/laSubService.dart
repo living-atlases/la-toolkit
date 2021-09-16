@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 class LASubServiceDesc {
   String name;
+  String nameInt;
   String desc;
   IconData icon;
   String path;
@@ -12,6 +13,7 @@ class LASubServiceDesc {
 
   LASubServiceDesc(
       {required this.name,
+      required this.nameInt,
       this.desc = "",
       required this.path,
       required this.icon,

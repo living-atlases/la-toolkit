@@ -1,27 +1,17 @@
 import 'package:la_toolkit/models/dependencies.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final String lists = LAServiceName.species_lists.toS();
-  final String collectory = LAServiceName.collectory.toS();
   final String bie = LAServiceName.ala_bie.toS();
-  final String bieIndex = LAServiceName.bie_index.toS();
   final String alaHub = LAServiceName.ala_hub.toS();
   final String biocacheService = LAServiceName.biocache_service.toS();
   final String biocacheStore = LAServiceName.biocache_cli.toS();
   final String alerts = LAServiceName.alerts.toS();
-  final String images = LAServiceName.images.toS();
-  final String solr = LAServiceName.solr.toS();
-  final String webapi = LAServiceName.webapi.toS();
   final String regions = LAServiceName.regions.toS();
-  final String spatial = LAServiceName.spatial.toS();
-  final String cas = LAServiceName.cas.toS();
-  final String sds = LAServiceName.sds.toS();
-  final String dashboard = LAServiceName.dashboard.toS();
-  final String branding = LAServiceName.branding.toS();
-  final String doi = LAServiceName.doi.toS();
+  final String spatialService = LASubServiceName.spatial_service.toS();
 
   test('Compare versions', () {
     Version v123 = Version.parse('1.2.3');
@@ -94,22 +84,18 @@ void main() {
   test('Compare LA dependencies ', () {
     Map<String, String> softwareVersions = {
       alaHub: "1.0.0",
-      // alerts: "1.6.1",
       bie: "1.0.0",
-      biocacheService: "1.0.0",
+      biocacheService: "2.7.0",
     };
 
-    List<String> servicesInUse = [
-      alaHub,
-      // alerts,
-      bie,
-      biocacheService,
-      biocacheStore,
-    ];
+    List<String> servicesInUse = [alaHub, bie, biocacheService, biocacheStore];
 
     List<String> lintErrors =
         Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
-    expect(lintErrors[0], equals('records-ws depends on biocache-cli'));
+    expect(
+        lintErrors[0],
+        equals(
+            'records-ws (biocache-service) depends on biocache-cli (biocache-store)'));
     expect(lintErrors.length, equals(1));
 
     servicesInUse.add(alerts);
@@ -120,15 +106,68 @@ void main() {
     softwareVersions[biocacheStore] = "2.5.0";
 
     lintErrors = Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
-    expect(lintErrors[0], equals('alerts depends on records >=3.2.9'));
-    expect(lintErrors[1], equals('alerts depends on species >=1.5.0'));
-    expect(lintErrors[2], equals('biocache-cli depends on records-ws <3.0.0'));
-    expect(lintErrors.length, equals(3));
+    expect(
+        lintErrors[0],
+        equals(
+            'records-ws (biocache-service) depends on biocache-cli (biocache-store) >=2.6.1'));
+    expect(lintErrors[1],
+        equals('alerts depends on records (biocache-hub) >=3.2.9'));
+    expect(lintErrors[2], equals('alerts depends on species (bie) >=1.5.0'));
+    expect(
+        lintErrors[3],
+        equals(
+            'biocache-cli (biocache-store) depends on records-ws (biocache-service) <3.0.0'));
+    expect(lintErrors.length, equals(4));
 
     softwareVersions[bie] = "1.6.0";
     softwareVersions[biocacheService] = "2.5.0";
     softwareVersions[alaHub] = "3.3.0";
     lintErrors = Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
     expect(lintErrors.length, equals(0));
+
+    servicesInUse.add(regions);
+    lintErrors = Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
+    expect(lintErrors[0], equals('alerts depends on regions'));
+    expect(lintErrors.length, equals(1));
+
+    softwareVersions[regions] = "1.0.0";
+    lintErrors = Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
+    expect(lintErrors[0], equals('alerts depends on regions >=3.3.5'));
+    expect(lintErrors.length, equals(1));
+
+    softwareVersions[regions] = "3.3.5";
+    lintErrors = Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
+    expect(lintErrors.length, equals(0));
+
+    softwareVersions[regions] = "3.3.5";
+    lintErrors = Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
+    expect(lintErrors.length, equals(0));
+
+    // check subservices and other non ALA software
+    softwareVersions[spatialService] = "3.0.0";
+    lintErrors = Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
+    expect(lintErrors.length, equals(0));
+  });
+
+  test('LA versions should be parsable', () {
+    expect(StringUtils.semantize("1.0.0"), equals("1.0.0"));
+    expect(StringUtils.semantize("1.0"), equals("1.0.0"));
+    expect(StringUtils.semantize("v1.0.0"), equals("1.0.0"));
+    expect(StringUtils.semantize("9.0"), equals("9.0.0"));
+    expect(StringUtils.semantize("1.0-SNAPSHOT"), equals("1.0.0-SNAPSHOT"));
+    expect(StringUtils.semantize("2.4.PRERELEASE"), equals("2.4.0-PRERELEASE"));
+    expect(StringUtils.semantize("1.0.0.1"), equals("1.0.0-1"));
+    expect(StringUtils.semantize("9"), equals("9.0.0"));
+    expect(StringUtils.semantize(">= 1.5"), equals(">= 1.5.0"));
+    expect(StringUtils.semantize("> 1.5"), equals("> 1.5.0"));
+    expect(StringUtils.semantize("<= 9"), equals("<= 9.0.0"));
+    expect(Dependencies.v("1.0.0").major == 1, equals(true));
+    expect(Dependencies.v("1.0.0-SNAPSHOT").major == 1, equals(true));
+    expect(Dependencies.v("1.0-SNAPSHOT").major == 1, equals(true));
+
+    expect(Dependencies.v("1.0").major == 1, equals(true));
+    expect(Dependencies.v("1.0") == Dependencies.v("1.0.0"), equals(true));
+    expect(
+        Dependencies.v("1.0.0.1") == Dependencies.v("1.0.0-1"), equals(true));
   });
 }

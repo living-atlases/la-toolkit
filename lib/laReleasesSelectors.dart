@@ -5,10 +5,12 @@ import 'package:la_toolkit/components/softwareSelector.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/models/laSubService.dart';
+import 'package:la_toolkit/redux/appActions.dart';
 
 import 'components/helpIcon.dart';
 import 'models/laReleases.dart';
+import 'models/laService.dart';
+import 'models/laSubService.dart';
 
 class LAReleasesSelectors extends StatefulWidget {
   const LAReleasesSelectors({Key? key}) : super(key: key);
@@ -25,34 +27,43 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
       return _LAReleasesSelectorsViewModel(
           project: store.state.currentProject,
           laReleases: store.state.laReleases,
-          onUpdateProject: (project) {
-            // store.dispatch(UpdateProject(project)
-          });
+          onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _LAReleasesSelectorsViewModel vm) {
       LAProject project = vm.project;
       List<LAServiceDesc> services = LAServiceDesc.list(project.isHub);
       List<Widget> selectors = [];
-      for (LAServiceDesc service in services) {
-        String serviceNameInt = service.nameInt;
+      for (LAServiceDesc serviceDesc in services) {
+        String serviceNameInt = serviceDesc.nameInt;
         LAReleases? releases = vm.laReleases[serviceNameInt];
-        if (project.getService(serviceNameInt).use && releases != null) {
+        LAService service = project.getService(serviceNameInt);
+        if (service.use && serviceDesc.artifact != null && releases != null) {
           Widget swWidget = _createSoftwareSelector(
-              service.name,
-              releases.versions,
-              (String value) =>
-                  vm.project.setServiceDeployRelease(service.nameInt, value));
+              serviceDesc.name,
+              _getInitialValue(project, service, serviceNameInt),
+              releases.versions, (String value) {
+            project.setServiceDeployRelease(serviceDesc.nameInt, value);
+            vm.onUpdateProject(project);
+          });
           selectors.add(swWidget);
-          for (LASubServiceDesc subService in service.subServices) {
+          for (LASubServiceDesc subService in serviceDesc.subServices) {
             String subServiceName = subService.name;
-            LAReleases? releases = vm.laReleases[subServiceName];
-            if (releases != null) {
+            LAReleases? releases = vm.laReleases[subService.nameInt];
+            if (releases != null && subService.artifact != null) {
               Widget swWidget = _createSoftwareSelector(
                   subServiceName,
-                  vm.laReleases[subServiceName]!.versions,
-                  (String value) => vm.project
-                      .setServiceDeployRelease(service.nameInt, value));
+                  _getInitialValue(project, service, subService.nameInt),
+                  releases.versions, (String value) {
+                vm.project.setServiceDeployRelease(serviceDesc.nameInt, value);
+                vm.onUpdateProject(project);
+              });
               selectors.add(swWidget);
+            } else {
+              // print("No releases available for $subServiceName");
             }
+          }
+        } else {
+          if (releases == null) {
+            // print("No releases available for $serviceNameInt");
           }
         }
       }
@@ -69,14 +80,24 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
     });
   }
 
-  Widget _createSoftwareSelector(
-      String serviceName, List<String> versions, Function(String) onChange) {
+  String _getInitialValue(
+      LAProject project, LAService service, String subServiceName) {
+    return project
+        .getServiceDefaultVersions(service)
+        .entries
+        .firstWhere((e) => e.key == subServiceName,
+            orElse: () => const MapEntry("", ""))
+        .value;
+  }
+
+  Widget _createSoftwareSelector(String serviceName, String initialValue,
+      List<String> versions, Function(String) onChange) {
     Widget swWidget = SizedBox(
-        width: 200,
+        width: 230,
         child: SoftwareSelector(
           label: serviceName,
           versions: versions,
-          initialValue: "",
+          initialValue: initialValue,
           onChange: (String? value) {
             if (value != null) {
               onChange(value);

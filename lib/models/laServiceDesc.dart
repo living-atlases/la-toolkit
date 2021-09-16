@@ -70,10 +70,36 @@ extension EnumParser on String {
   }
 }
 
+enum LASubServiceName {
+  cas,
+  userdetails,
+  // ignore: constant_identifier_names
+  cas_management,
+  apikey,
+  // ignore: constant_identifier_names
+  spatial_service
+}
+
+extension SubParseToString on LASubServiceName {
+  String toS() {
+    return toString().split('.').last;
+  }
+}
+
+extension SubEnumParser on String {
+  LASubServiceName toSubServiceDescName() {
+    return LASubServiceName.values.firstWhere((e) =>
+        e.toString().toLowerCase() ==
+        '${(LASubServiceName).toString()}.$this'
+            .toLowerCase()); //return null if not found
+  }
+}
+
 class LAServiceDesc {
   String name;
   String nameInt;
   String group;
+  String? alias;
   String desc;
   IconData icon;
   bool optional;
@@ -91,55 +117,6 @@ class LAServiceDesc {
   bool hubCapable;
   String? artifact;
   String? artifactAnsibleVar;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is LAServiceDesc &&
-          runtimeType == other.runtimeType &&
-          name == other.name &&
-          nameInt == other.nameInt &&
-          group == other.group &&
-          desc == other.desc &&
-          icon == other.icon &&
-          optional == other.optional &&
-          withoutUrl == other.withoutUrl &&
-          depends == other.depends &&
-          forceSubdomain == other.forceSubdomain &&
-          sample == other.sample &&
-          hint == other.hint &&
-          recommended == other.recommended &&
-          path == other.path &&
-          initUse == other.initUse &&
-          subServices == other.subServices &&
-          admin == other.admin &&
-          alaAdmin == other.alaAdmin &&
-          artifact == other.artifact &&
-          artifactAnsibleVar == other.artifactAnsibleVar &&
-          hubCapable == other.hubCapable;
-
-  @override
-  int get hashCode =>
-      name.hashCode ^
-      nameInt.hashCode ^
-      group.hashCode ^
-      desc.hashCode ^
-      icon.hashCode ^
-      optional.hashCode ^
-      withoutUrl.hashCode ^
-      depends.hashCode ^
-      forceSubdomain.hashCode ^
-      sample.hashCode ^
-      hint.hashCode ^
-      recommended.hashCode ^
-      path.hashCode ^
-      initUse.hashCode ^
-      subServices.hashCode ^
-      admin.hashCode ^
-      alaAdmin.hashCode ^
-      artifact.hashCode ^
-      artifactAnsibleVar.hashCode ^
-      hubCapable.hashCode;
 
   LAServiceDesc(
       {required this.name,
@@ -164,8 +141,60 @@ class LAServiceDesc {
       this.initUse = false,
       this.artifact,
       this.artifactAnsibleVar,
+      this.alias,
       this.hubCapable = false})
       : subServices = subServices ?? [];
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LAServiceDesc &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          nameInt == other.nameInt &&
+          group == other.group &&
+          desc == other.desc &&
+          icon == other.icon &&
+          optional == other.optional &&
+          withoutUrl == other.withoutUrl &&
+          depends == other.depends &&
+          forceSubdomain == other.forceSubdomain &&
+          sample == other.sample &&
+          hint == other.hint &&
+          recommended == other.recommended &&
+          path == other.path &&
+          initUse == other.initUse &&
+          subServices == other.subServices &&
+          admin == other.admin &&
+          alaAdmin == other.alaAdmin &&
+          artifact == other.artifact &&
+          alias == other.alias &&
+          artifactAnsibleVar == other.artifactAnsibleVar &&
+          hubCapable == other.hubCapable;
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      nameInt.hashCode ^
+      group.hashCode ^
+      desc.hashCode ^
+      icon.hashCode ^
+      optional.hashCode ^
+      withoutUrl.hashCode ^
+      depends.hashCode ^
+      forceSubdomain.hashCode ^
+      sample.hashCode ^
+      hint.hashCode ^
+      recommended.hashCode ^
+      path.hashCode ^
+      initUse.hashCode ^
+      subServices.hashCode ^
+      admin.hashCode ^
+      alaAdmin.hashCode ^
+      artifact.hashCode ^
+      artifactAnsibleVar.hashCode ^
+      alias.hashCode ^
+      hubCapable.hashCode;
 
   static final Map<String, LAServiceDesc> _map = {
     LAServiceName.collectory.toS(): LAServiceDesc(
@@ -183,6 +212,7 @@ class LAServiceDesc {
         path: ""),
     LAServiceName.ala_hub.toS(): LAServiceDesc(
         name: "records",
+        alias: "biocache-hub",
         nameInt: "ala_hub",
         group: "biocache-hub",
         desc: "occurrences search frontend (aka biocache-hub)",
@@ -198,6 +228,7 @@ class LAServiceDesc {
         path: ""),
     LAServiceName.biocache_service.toS(): LAServiceDesc(
         name: "records-ws",
+        alias: "biocache-service",
         nameInt: "biocache_service",
         group: "biocache-service-clusterdb",
         desc: "occurrences web service (aka biocache-service)",
@@ -209,6 +240,7 @@ class LAServiceDesc {
         path: ""),
     LAServiceName.ala_bie.toS(): LAServiceDesc(
         name: "species",
+        alias: "bie",
         nameInt: "ala_bie",
         group: "bie-hub",
         desc: "species search frontend",
@@ -224,6 +256,7 @@ class LAServiceDesc {
         path: ""),
     LAServiceName.bie_index.toS(): LAServiceDesc(
         name: "species-ws",
+        alias: "bie-index",
         nameInt: "bie_index",
         group: "bie-index",
         desc: "species web service",
@@ -316,6 +349,7 @@ class LAServiceDesc {
         recommended: true,
         subServices: [
           LASubServiceDesc(
+            nameInt: LASubServiceName.cas.toS(),
             name: "CAS",
             path: '/cas',
             icon: Mdi.accountCheckOutline,
@@ -325,6 +359,7 @@ class LAServiceDesc {
             alaAdmin: false,
           ),
           LASubServiceDesc(
+            nameInt: LASubServiceName.userdetails.toS(),
             name: "User Details",
             path: '/userdetails',
             icon: Mdi.accountGroup,
@@ -334,12 +369,14 @@ class LAServiceDesc {
             alaAdmin: true,
           ),
           LASubServiceDesc(
+              nameInt: LASubServiceName.apikey.toS(),
               name: "API keys",
               path: '/apikey',
               icon: Mdi.api,
               artifactAnsibleVar: "apikey_version",
               artifact: "apikey"),
           LASubServiceDesc(
+              nameInt: LASubServiceName.cas_management.toS(),
               name: "CAS Management",
               path: '/cas-management',
               artifact: "cas-management",
@@ -362,13 +399,17 @@ class LAServiceDesc {
         subServices: [
           LASubServiceDesc(
               name: 'Spatial Webservice',
+              nameInt: LASubServiceName.spatial_service.toS(),
               path: '/ws',
               artifact: 'spatial-service',
               artifactAnsibleVar: "spatial_service_version",
               icon: Mdi.layersPlus,
               alaAdmin: true),
           LASubServiceDesc(
-              name: 'Geoserver', path: '/geoserver', icon: Mdi.layersSearch)
+              name: 'Geoserver',
+              nameInt: 'geoserver',
+              path: '/geoserver',
+              icon: Mdi.layersSearch)
         ],
         path: ""),
     LAServiceName.webapi.toS(): LAServiceDesc(
@@ -463,6 +504,7 @@ class LAServiceDesc {
         path: "brand-${DateTime.now().year}"),
     LAServiceName.biocache_cli.toS(): LAServiceDesc(
         name: "biocache-cli",
+        alias: "biocache-store",
         nameInt: "biocache_cli",
         group: "biocache-cli",
         desc:

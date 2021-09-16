@@ -16,12 +16,14 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:la_toolkit/utils/utils.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:objectid/objectid.dart';
 import 'package:tuple/tuple.dart';
 
 import 'basicService.dart';
 import 'cmdHistoryDetails.dart';
+import 'dependencies.dart';
 import 'hostServicesChecks.dart';
 import 'laServer.dart';
 import 'laService.dart';
@@ -31,6 +33,14 @@ import 'laVariable.dart';
 import 'laVariableDesc.dart';
 
 part 'laProject.g.dart';
+
+final String cas = LAServiceName.cas.toS();
+final String spatial = LAServiceName.spatial.toS();
+final String spatialWs = LASubServiceName.spatial_service.toS();
+final String casSub = LASubServiceName.cas.toS();
+final String casManagement = LASubServiceName.cas_management.toS();
+final String userDetails = LASubServiceName.userdetails.toS();
+final String apiKey = LASubServiceName.apikey.toS();
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
@@ -140,6 +150,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if ((dirName == null || dirName!.isEmpty) && shortName.isNotEmpty) {
       dirName = suggestDirName();
     }
+    // _setDefSwVersions();
     validateCreation();
   }
 
@@ -452,7 +463,10 @@ check results length: ${checkResults.length}''';
               sD.serverId == server.id &&
               sD.serviceId == service.id, orElse: () {
         LAServiceDeploy newSd = LAServiceDeploy(
-            projectId: id, serverId: server.id, serviceId: service.id);
+            projectId: id,
+            serverId: server.id,
+            serviceId: service.id,
+            softwareVersions: getServiceDefaultVersions(service));
         serviceDeploys.add(newSd);
         return newSd;
       });
@@ -465,17 +479,43 @@ check results length: ${checkResults.length}''';
         !serviceIds.contains(sD.serviceId));
   }
 
+  LAServiceDeploy getServiceDeploysById(String serviceId, String serverId) {
+    return serviceDeploys.firstWhere((sD) =>
+        sD.projectId == id &&
+        sD.serverId == serverId &&
+        sD.serviceId == serviceId);
+  }
+
   List<LAServiceDeploy> getServiceDeploys(String sN) {
-    LAService service = services.firstWhere((s) => s.nameInt == sN);
-    return serviceDeploys
-        .where((sD) => sD.projectId == id && sD.serviceId == service.id)
-        .toList();
+    List<LAServiceDeploy> sds = [];
+    List<LAService> servicesSub =
+        services.where((s) => s.nameInt == sN).toList();
+    for (LAService s in servicesSub) {
+      sds.addAll(serviceDeploys
+          .where((sD) => sD.projectId == id && sD.serviceId == s.id)
+          .toList());
+    }
+    return sds;
   }
 
   void setServiceDeployRelease(String sN, String release) {
-    for (LAServiceDeploy sd in getServiceDeploys(sN)) {
+    print(this);
+    List<LAServiceDeploy> sds = getServiceDeploys(sN);
+    if (AppUtils.isDev()) {
+      print(
+          "Setting ${sds.length} service deploys for service $sN and  release $release");
+    }
+    for (LAServiceDeploy sd in sds) {
       sd.softwareVersions[sN] = release;
     }
+  }
+
+  Map<String, String> getServiceDeployReleases() {
+    Map<String, String> versions = {};
+    for (LAServiceDeploy sd in serviceDeploys) {
+      versions.addAll(sd.softwareVersions);
+    }
+    return versions;
   }
 
   void delete(LAServer serverToDelete) {
@@ -960,4 +1000,44 @@ check results length: ${checkResults.length}''';
       const DeepCollectionEquality.unordered().hash(checkResults) ^
       createdAt.hashCode ^
       mapZoom.hashCode;
+
+  Map<String, String> getServiceDefaultVersions(LAService service) {
+    Map<String, String> defVersions = {};
+    String nameInt = service.nameInt;
+    if (alaInstallRelease != null) {
+      defVersions[nameInt] = _setDefSwVersion(nameInt);
+      if (nameInt == cas) {
+        defVersions[casSub] = _setDefSwVersion(casSub);
+        defVersions[casManagement] = _setDefSwVersion(casManagement);
+        defVersions[userDetails] = _setDefSwVersion(userDetails);
+        defVersions[apiKey] = _setDefSwVersion(apiKey);
+      }
+      if (nameInt == spatial) {
+        defVersions[spatialWs] = _setDefSwVersion(spatialWs);
+      }
+    }
+    defVersions.removeWhere((key, value) => value == "");
+    /* if (nameInt != branding && nameInt != solr) {
+      assert(defVersions.isNotEmpty,
+          "${service.nameInt} has no default sw versions");
+    } */
+    return defVersions;
+  }
+
+  String _setDefSwVersion(String nameInt) {
+    String? version = Dependencies.defaultVersions.entries
+        .firstWhere((e) => e.key.allows(Dependencies.v(alaInstallRelease!)))
+        .value[nameInt];
+    // print("$nameInt def version $version");
+    return version ?? "";
+  }
+/*
+  void _setDefSwVersions() {
+    for (LAServiceDeploy sd in serviceDeploys) {
+      if (sd.softwareVersions.isEmpty) {
+        sd.softwareVersions = getServiceDefaultVersions(
+            services.firstWhere((s) => s.id == sd.serviceId));
+      }
+    }
+  }*/
 }
