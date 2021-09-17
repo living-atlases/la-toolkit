@@ -38,8 +38,8 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
         LAService service = project.getService(serviceNameInt);
         if (service.use && serviceDesc.artifact != null && releases != null) {
           Widget swWidget = _createSoftwareSelector(
-              serviceDesc.name,
-              _getInitialValue(project, service, serviceNameInt),
+              LAServiceDesc.swNameWithAliasForHumans(serviceDesc.nameInt),
+              _getInitialValue(project, serviceNameInt),
               releases.versions, (String value) {
             project.setServiceDeployRelease(serviceDesc.nameInt, value);
             vm.onUpdateProject(project);
@@ -48,12 +48,14 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
           for (LASubServiceDesc subService in serviceDesc.subServices) {
             String subServiceName = subService.name;
             LAReleases? releases = vm.laReleases[subService.nameInt];
+            print(
+                "$subServiceName (${subService.nameInt}) has ${releases != null ? releases.versions.length : 0} releases");
             if (releases != null && subService.artifact != null) {
               Widget swWidget = _createSoftwareSelector(
-                  subServiceName,
-                  _getInitialValue(project, service, subService.nameInt),
+                  LAServiceDesc.swNameWithAliasForHumans(subServiceName),
+                  _getInitialValue(project, subService.nameInt),
                   releases.versions, (String value) {
-                vm.project.setServiceDeployRelease(serviceDesc.nameInt, value);
+                vm.project.setServiceDeployRelease(subService.nameInt, value);
                 vm.onUpdateProject(project);
               });
               selectors.add(swWidget);
@@ -80,14 +82,8 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
     });
   }
 
-  String _getInitialValue(
-      LAProject project, LAService service, String subServiceName) {
-    return project
-        .getServiceDefaultVersions(service)
-        .entries
-        .firstWhere((e) => e.key == subServiceName,
-            orElse: () => const MapEntry("", ""))
-        .value;
+  String _getInitialValue(LAProject project, String swName) {
+    return project.getServiceDeployRelease(swName) ?? "";
   }
 
   Widget _createSoftwareSelector(String serviceName, String initialValue,

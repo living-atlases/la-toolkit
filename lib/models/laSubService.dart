@@ -9,7 +9,6 @@ class LASubServiceDesc {
   bool admin;
   bool alaAdmin;
   String? artifact;
-  String? artifactAnsibleVar;
 
   LASubServiceDesc(
       {required this.name,
@@ -19,6 +18,5 @@ class LASubServiceDesc {
       required this.icon,
       this.admin = false,
       this.artifact,
-      this.artifactAnsibleVar,
       this.alaAdmin = false});
 }

@@ -44,6 +44,6 @@ class LAReleases {
 
   @override
   String toString() {
-    return 'LAReleases{name: $name, artifact: $artifact, latest: $latest, versions: (${versions.length}) [$versions]}';
+    return 'LAReleases{name: $name, artifact: $artifact, latest: $latest, versions: (${versions.length})}';
   }
 }

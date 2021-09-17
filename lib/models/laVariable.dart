@@ -23,7 +23,6 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
   // Status
   LAVariableStatus status = LAVariableStatus.undeployed;
   static const String varInvPrefix = "LA_variable_";
-  static const String varVersionsInvPrefix = "${varInvPrefix}_sw_";
 
   LAVariable(
       {String? id,

@@ -106,9 +106,13 @@ class Dependencies {
     dashboard: {
       vc(">= 2.2"): {alaInstall: vc(">= 2.0.5")}
     },
+    spatial: {
+      vc("> 0.3.12"): {spatialService: vc("> 0.3.12")}
+    }
   };
 
   static Map<VersionConstraint, Map<String, String>> defaultVersions = {
+    // ala-install vs rest of components
     vc('<= 2.0.11'): {
       // Newer versions of biocache-service require tomcat8/9
       alaHub: "3.2.9",
@@ -190,7 +194,7 @@ class Dependencies {
       if (debug) {
         print("Checking dependencies for $sw");
       }
-      final String swForHumans = swNameWithAliasForHumans(sw);
+      final String swForHumans = LAServiceDesc.swNameWithAliasForHumans(sw);
       Version versionP = v(version);
       if (laDeps[sw] != null) {
         laDeps[sw]!.forEach((VersionConstraint mainConstraint,
@@ -208,7 +212,7 @@ class Dependencies {
               }
               // Not use internal name for LA services
               String depForHumans = LAServiceDesc.isLAService(dependency)
-                  ? swNameWithAliasForHumans(dependency)
+                  ? LAServiceDesc.swNameWithAliasForHumans(dependency)
                   : dependency;
               if (selectedVersions[dependency] == null) {
                 if (serviceInUse.contains(dependency)) {
@@ -230,18 +234,5 @@ class Dependencies {
       }
     });
     return lintErrors;
-  }
-
-  static String swNameWithAliasForHumans(String sw) {
-    String name;
-    String? alias;
-    try {
-      final LAServiceDesc laServiceDesc = LAServiceDesc.get(sw);
-      name = laServiceDesc.name;
-      alias = laServiceDesc.alias;
-    } catch (e) {
-      name = sw;
-    }
-    return "$name${alias != null ? ' (' + alias + ')' : ''}";
   }
 }

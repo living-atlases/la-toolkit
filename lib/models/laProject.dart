@@ -499,15 +499,18 @@ check results length: ${checkResults.length}''';
   }
 
   void setServiceDeployRelease(String sN, String release) {
-    print(this);
     List<LAServiceDeploy> sds = getServiceDeploys(sN);
     if (AppUtils.isDev()) {
       print(
-          "Setting ${sds.length} service deploys for service $sN and  release $release");
+          "Setting ${sds.length} service deploys for service $sN and release $release");
     }
     for (LAServiceDeploy sd in sds) {
       sd.softwareVersions[sN] = release;
     }
+  }
+
+  String? getServiceDeployRelease(String serviceName) {
+    return getServiceDeployReleases()[serviceName];
   }
 
   Map<String, String> getServiceDeployReleases() {
@@ -519,9 +522,6 @@ check results length: ${checkResults.length}''';
   }
 
   void delete(LAServer serverToDelete) {
-    /* print(servers.length);
-    print(serviceDeploys.length);
-    print(serverServices.length); */
     serverServices.remove(serverToDelete.id);
     serviceDeploys =
         serviceDeploys.where((sd) => sd.serverId != serverToDelete.id).toList();
@@ -529,10 +529,6 @@ check results length: ${checkResults.length}''';
     // Remove serviceDeploy inconsistencies
     serviceDeploys.removeWhere(
         (sd) => (servers.firstWhereOrNull((s) => s.id == sd.serverId) == null));
-    /* print(servers.length);
-    print(serviceDeploys.length);
-    print(serverServices.length);
-    validateCreation(debug: true); */
   }
 
   String additionalVariablesDecoded() {
@@ -640,6 +636,7 @@ check results length: ${checkResults.length}''';
 
   // In Hubs we use the portal etcHost
   Map<String, dynamic> toGeneratorJson({String? etcHosts}) {
+    // Warn: new vars should be added also to transform.js map in backend
     Map<String, dynamic> conf = {
       "LA_id": id,
       "LA_pkg_name": dirName,
@@ -674,6 +671,17 @@ check results length: ${checkResults.length}''';
       conf["LA_${service.nameInt}_url"] = service.url(domain);
       conf["LA_${service.nameInt}_path"] = service.path;
     }
+
+    // Release versions
+    List<dynamic> swVersions = [];
+    for (LAServiceDeploy sd in serviceDeploys) {
+      sd.softwareVersions.forEach((sw, value) {
+        if (LAServiceDesc.swToAnsibleVars[sw] != null) {
+          swVersions.add([LAServiceDesc.swToAnsibleVars[sw]!, value]);
+        }
+      });
+    }
+    conf["LA_software_versions"] = swVersions;
 
     for (LAVariable variable in variables) {
       conf["${LAVariable.varInvPrefix}${variable.nameInt}"] = variable.value;
@@ -1017,10 +1025,6 @@ check results length: ${checkResults.length}''';
       }
     }
     defVersions.removeWhere((key, value) => value == "");
-    /* if (nameInt != branding && nameInt != solr) {
-      assert(defVersions.isNotEmpty,
-          "${service.nameInt} has no default sw versions");
-    } */
     return defVersions;
   }
 
@@ -1031,13 +1035,4 @@ check results length: ${checkResults.length}''';
     // print("$nameInt def version $version");
     return version ?? "";
   }
-/*
-  void _setDefSwVersions() {
-    for (LAServiceDeploy sd in serviceDeploys) {
-      if (sd.softwareVersions.isEmpty) {
-        sd.softwareVersions = getServiceDefaultVersions(
-            services.firstWhere((s) => s.id == sd.serviceId));
-      }
-    }
-  }*/
 }

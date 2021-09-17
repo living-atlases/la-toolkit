@@ -116,7 +116,6 @@ class LAServiceDesc {
   bool alaAdmin;
   bool hubCapable;
   String? artifact;
-  String? artifactAnsibleVar;
 
   LAServiceDesc(
       {required this.name,
@@ -140,7 +139,6 @@ class LAServiceDesc {
       this.alaAdmin = false,
       this.initUse = false,
       this.artifact,
-      this.artifactAnsibleVar,
       this.alias,
       this.hubCapable = false})
       : subServices = subServices ?? [];
@@ -169,7 +167,6 @@ class LAServiceDesc {
           alaAdmin == other.alaAdmin &&
           artifact == other.artifact &&
           alias == other.alias &&
-          artifactAnsibleVar == other.artifactAnsibleVar &&
           hubCapable == other.hubCapable;
 
   @override
@@ -192,7 +189,6 @@ class LAServiceDesc {
       admin.hashCode ^
       alaAdmin.hashCode ^
       artifact.hashCode ^
-      artifactAnsibleVar.hashCode ^
       alias.hashCode ^
       hubCapable.hashCode;
 
@@ -208,7 +204,6 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: true,
         artifact: 'ala-collectory',
-        artifactAnsibleVar: 'collectory_version',
         path: ""),
     LAServiceName.ala_hub.toS(): LAServiceDesc(
         name: "records",
@@ -224,7 +219,6 @@ class LAServiceDesc {
         alaAdmin: true,
         hubCapable: true,
         artifact: 'ala-hub',
-        artifactAnsibleVar: 'biocache_hub_version',
         path: ""),
     LAServiceName.biocache_service.toS(): LAServiceDesc(
         name: "records-ws",
@@ -236,7 +230,6 @@ class LAServiceDesc {
         icon: Mdi.databaseSearchOutline,
         sample: "https://biocache.ala.org.au/ws",
         artifact: "biocache-service",
-        artifactAnsibleVar: 'biocache_service_version',
         path: ""),
     LAServiceName.ala_bie.toS(): LAServiceDesc(
         name: "species",
@@ -252,7 +245,6 @@ class LAServiceDesc {
         alaAdmin: true,
         hubCapable: true,
         artifact: "ala-bie",
-        artifactAnsibleVar: 'bie_hub_version',
         path: ""),
     LAServiceName.bie_index.toS(): LAServiceDesc(
         name: "species-ws",
@@ -267,7 +259,6 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: true,
         artifact: "bie-index",
-        artifactAnsibleVar: 'bie_index_version',
         path: ""),
     LAServiceName.images.toS(): LAServiceDesc(
         name: "images",
@@ -281,7 +272,6 @@ class LAServiceDesc {
         icon: Mdi.imageMultipleOutline,
         admin: true,
         artifact: "image-service",
-        artifactAnsibleVar: "image_service_version",
         path: ""),
     LAServiceName.species_lists.toS(): LAServiceDesc(
         name: "lists",
@@ -296,7 +286,6 @@ class LAServiceDesc {
         sample: "https://lists.ala.org.au",
         admin: true,
         artifact: "specieslist-webapp",
-        artifactAnsibleVar: "species_list_version",
         path: ""),
     LAServiceName.regions.toS(): LAServiceDesc(
         name: "regions",
@@ -312,7 +301,6 @@ class LAServiceDesc {
         alaAdmin: true,
         hubCapable: true,
         artifact: "regions",
-        artifactAnsibleVar: "regions_version",
         path: ""),
     LAServiceName.logger.toS(): LAServiceDesc(
         name: "logger",
@@ -324,7 +312,6 @@ class LAServiceDesc {
         sample: "https://logger.ala.org.au",
         admin: true,
         artifact: "logger-service",
-        artifactAnsibleVar: "logger_version",
         path: ""),
     LAServiceName.solr.toS(): LAServiceDesc(
         name: "index",
@@ -338,6 +325,7 @@ class LAServiceDesc {
         path: ""),
     LAServiceName.cas.toS(): LAServiceDesc(
         name: "auth",
+        alias: "cas",
         nameInt: "cas",
         group: "cas-servers",
         desc: "CAS authentication system",
@@ -346,6 +334,7 @@ class LAServiceDesc {
         forceSubdomain: true,
         sample: "https://auth.ala.org.au/cas/",
         icon: Mdi.accountCheckOutline,
+        artifact: "cas",
         recommended: true,
         subServices: [
           LASubServiceDesc(
@@ -353,8 +342,6 @@ class LAServiceDesc {
             name: "CAS",
             path: '/cas',
             icon: Mdi.accountCheckOutline,
-            artifact: "cas",
-            artifactAnsibleVar: "cas_version",
             admin: false,
             alaAdmin: false,
           ),
@@ -364,7 +351,6 @@ class LAServiceDesc {
             path: '/userdetails',
             icon: Mdi.accountGroup,
             artifact: "userdetails",
-            artifactAnsibleVar: "user_details_version",
             admin: true,
             alaAdmin: true,
           ),
@@ -373,14 +359,12 @@ class LAServiceDesc {
               name: "API keys",
               path: '/apikey',
               icon: Mdi.api,
-              artifactAnsibleVar: "apikey_version",
               artifact: "apikey"),
           LASubServiceDesc(
               nameInt: LASubServiceName.cas_management.toS(),
               name: "CAS Management",
               path: '/cas-management',
               artifact: "cas-management",
-              artifactAnsibleVar: "cas_management_version",
               icon: Mdi.accountNetwork),
         ],
         path: ""),
@@ -395,14 +379,12 @@ class LAServiceDesc {
         icon: Mdi.layers,
         sample: "https://spatial.ala.org.au",
         artifact: 'spatial-hub',
-        artifactAnsibleVar: "spatial_hub_version",
         subServices: [
           LASubServiceDesc(
               name: 'Spatial Webservice',
               nameInt: LASubServiceName.spatial_service.toS(),
               path: '/ws',
               artifact: 'spatial-service',
-              artifactAnsibleVar: "spatial_service_version",
               icon: Mdi.layersPlus,
               alaAdmin: true),
           LASubServiceDesc(
@@ -423,7 +405,6 @@ class LAServiceDesc {
         icon: Icons.integration_instructions_outlined,
         admin: true,
         artifact: 'webapi',
-        artifactAnsibleVar: "webapi_version",
         path: ""),
     LAServiceName.dashboard.toS(): LAServiceDesc(
         name: "dashboard",
@@ -436,7 +417,6 @@ class LAServiceDesc {
         icon: Mdi.tabletDashboard,
         alaAdmin: true,
         artifact: 'dashboard',
-        artifactAnsibleVar: "dashboard_version",
         path: ""),
     LAServiceName.sds.toS(): LAServiceDesc(
         name: "sds",
@@ -450,7 +430,6 @@ class LAServiceDesc {
         icon: Icons.blur_circular,
         alaAdmin: true,
         artifact: "sds-webapp2",
-        artifactAnsibleVar: "sds_version",
         path: ""),
     LAServiceName.alerts.toS(): LAServiceDesc(
         name: "alerts",
@@ -465,7 +444,6 @@ class LAServiceDesc {
         icon: Icons.notifications_active_outlined,
         admin: true,
         artifact: "alerts",
-        artifactAnsibleVar: "alerts_version",
         path: ""),
     LAServiceName.doi.toS(): LAServiceDesc(
         name: "doi",
@@ -479,7 +457,6 @@ class LAServiceDesc {
         icon: Mdi.link,
         admin: true,
         artifact: "doi-service",
-        artifactAnsibleVar: "doi_service_version",
         path: ""),
     LAServiceName.biocache_backend.toS(): LAServiceDesc(
         name: "biocache-backend",
@@ -513,7 +490,6 @@ class LAServiceDesc {
         withoutUrl: true,
         icon: Mdi.powershell,
         artifact: "biocache-store",
-        artifactAnsibleVar: "biocache_cli_version",
         path: ""),
     LAServiceName.nameindexer.toS(): LAServiceDesc(
         name: "nameindexer",
@@ -524,7 +500,6 @@ class LAServiceDesc {
         withoutUrl: true,
         icon: Mdi.tournament,
         artifact: "ala-name-matching",
-        artifactAnsibleVar: "namematching_service_version",
         path: "")
 /*    artifactAnsibleVar: "biocollect_version",
     artifactAnsibleVar: "ecodata_version",
@@ -571,4 +546,42 @@ class LAServiceDesc {
     }
     return compatible;
   }
+
+  static String swNameWithAliasForHumans(String sw) {
+    String name;
+    String? alias;
+    try {
+      final LAServiceDesc laServiceDesc = LAServiceDesc.get(sw);
+      name = laServiceDesc.name;
+      alias = laServiceDesc.alias;
+    } catch (e) {
+      name = sw;
+    }
+    return "$name${alias != null ? ' (' + alias + ')' : ''}";
+  }
+
+  static final Map<String, String> swToAnsibleVars = {
+    "collectory": 'collectory_version',
+    "ala_hub": 'biocache_hub_version',
+    "biocache_service": 'biocache_service_version',
+    "ala_bie": 'bie_hub_version',
+    "bie_index": 'bie_index_version',
+    "images": "image_service_version",
+    "species_lists": "species_list_version",
+    "regions": "regions_version",
+    "logger": "logger_version",
+    "cas": "cas_version",
+    "userdetails": "user_details_version",
+    "apikey": "apikey_version",
+    "cas_management": "cas_management_version",
+    "spatial": "spatial_hub_version",
+    "spatial_service": "spatial_service_version",
+    "webapi": "webapi_version",
+    "dashboard": "dashboard_version",
+    "sds": "sds_version",
+    "alerts": "alerts_version",
+    "doi": "doi_service_version",
+    "biocache_cli": "biocache_cli_version",
+    "nameindexer": "namematching_service_version",
+  };
 }
