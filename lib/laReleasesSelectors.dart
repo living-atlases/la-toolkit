@@ -10,7 +10,6 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'components/helpIcon.dart';
 import 'models/laReleases.dart';
 import 'models/laService.dart';
-import 'models/laSubService.dart';
 
 class LAReleasesSelectors extends StatefulWidget {
   const LAReleasesSelectors({Key? key}) : super(key: key);
@@ -35,8 +34,12 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
       for (LAServiceDesc serviceDesc in services) {
         String serviceNameInt = serviceDesc.nameInt;
         LAReleases? releases = vm.laReleases[serviceNameInt];
-        LAService service = project.getService(serviceNameInt);
-        if (service.use && serviceDesc.artifact != null && releases != null) {
+        LAService serviceOrParent = !serviceDesc.isSubService
+            ? project.getService(serviceNameInt)
+            : project.getService(serviceDesc.parentService!.toS());
+        if (serviceOrParent.use &&
+            serviceDesc.artifact != null &&
+            releases != null) {
           Widget swWidget = _createSoftwareSelector(
               LAServiceDesc.swNameWithAliasForHumans(serviceDesc.nameInt),
               _getInitialValue(project, serviceNameInt),
@@ -45,24 +48,6 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
             vm.onUpdateProject(project);
           });
           selectors.add(swWidget);
-          for (LASubServiceDesc subService in serviceDesc.subServices) {
-            String subServiceName = subService.name;
-            LAReleases? releases = vm.laReleases[subService.nameInt];
-            print(
-                "$subServiceName (${subService.nameInt}) has ${releases != null ? releases.versions.length : 0} releases");
-            if (releases != null && subService.artifact != null) {
-              Widget swWidget = _createSoftwareSelector(
-                  LAServiceDesc.swNameWithAliasForHumans(subServiceName),
-                  _getInitialValue(project, subService.nameInt),
-                  releases.versions, (String value) {
-                vm.project.setServiceDeployRelease(subService.nameInt, value);
-                vm.onUpdateProject(project);
-              });
-              selectors.add(swWidget);
-            } else {
-              // print("No releases available for $subServiceName");
-            }
-          }
         } else {
           if (releases == null) {
             // print("No releases available for $serviceNameInt");

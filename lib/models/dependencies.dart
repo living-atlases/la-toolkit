@@ -8,14 +8,14 @@ class Dependencies {
   static const String generator = "laGenerator";
   static String alaHub = LAServiceName.ala_hub.toS();
   static String alerts = LAServiceName.alerts.toS();
-  static String apikey = LASubServiceName.apikey.toS();
+  static String apikey = LAServiceName.apikey.toS();
   static String bie = LAServiceName.ala_bie.toS();
   static String bieIndex = LAServiceName.bie_index.toS();
   static String biocacheService = LAServiceName.biocache_service.toS();
   static String biocacheStore = LAServiceName.biocache_cli.toS();
   static String branding = LAServiceName.branding.toS();
-  static String cas = LASubServiceName.cas.toS();
-  static String casManagement = LASubServiceName.cas_management.toS();
+  static String cas = LAServiceName.cas.toS();
+  static String casManagement = LAServiceName.cas_management.toS();
   static String collectory = LAServiceName.collectory.toS();
   static String dashboard = LAServiceName.dashboard.toS();
   static String doi = LAServiceName.doi.toS();
@@ -26,8 +26,8 @@ class Dependencies {
   static String sds = LAServiceName.sds.toS();
   static String solr = LAServiceName.solr.toS();
   static String spatial = LAServiceName.spatial.toS();
-  static String spatialService = LASubServiceName.spatial_service.toS();
-  static String userdetails = LASubServiceName.userdetails.toS();
+  static String spatialService = LAServiceName.spatial_service.toS();
+  static String userdetails = LAServiceName.userdetails.toS();
   static String webapi = LAServiceName.webapi.toS();
   static String pipelines = "pipelines";
   static String tomcat = "tomcat";
@@ -107,7 +107,7 @@ class Dependencies {
       vc(">= 2.2"): {alaInstall: vc(">= 2.0.5")}
     },
     spatial: {
-      vc("> 0.3.12"): {spatialService: vc("> 0.3.12")}
+      vc(">= 0.3.12"): {spatialService: vc("> 0.3.12")}
     }
   };
 
@@ -149,7 +149,7 @@ class Dependencies {
   static List<String> verify(Map<String, String> combo) {
     Version toolkitV = v(combo[toolkit]!);
     String alaInstallS = combo[alaInstall]!;
-    bool skipAlaInstall = alaInstallS == 'custom' || alaInstallS == 'upstream';
+    bool skipAlaInstall = alaInstallIsNotTagged(alaInstallS);
     Version generatorV = v(combo[generator]!);
     List<String>? lintError;
     try {
@@ -171,6 +171,9 @@ class Dependencies {
     }
     return lintError;
   }
+
+  static bool alaInstallIsNotTagged(String alaInstallS) =>
+      alaInstallS == 'custom' || alaInstallS == 'upstream';
 
   static List<String> check(
       {String? toolkitV, String? alaInstallV, String? generatorV}) {

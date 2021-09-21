@@ -255,12 +255,12 @@ void main() {
     vm3.sshKey = SshKey(name: "k3", desc: "", encrypted: false);
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
     expect(testProject.getServicesNameListInUse().isNotEmpty, equals(true));
-/*
+
     print(testProject.getServicesNameListInUse().length);
     print(testProject.getServicesAssignedToServers().length);
     print(testProject.getServicesNameListInUse());
     print(testProject.getServicesAssignedToServers());
-    print(testProject); */
+    print(testProject);
     expect(
         testProject.getServicesNameListInUse().length ==
             testProject.getServicesAssignedToServers().length,
@@ -306,7 +306,7 @@ void main() {
     p.domain = "l-a.site";
     p.alaInstallRelease = "2.0.0";
     p.serviceInUse(bie, true);
-    expect(p.getServicesNameListInUse().length, equals(16));
+    expect(p.getServicesNameListInUse().length, equals(21));
 
     p.serviceInUse(lists, true);
     expect(p.getService(bie).use, equals(true));
@@ -386,8 +386,8 @@ void main() {
     expect(p.serviceDeploys.length,
         equals(p.getServicesAssignedToServers().length));
     // print(p.getServiceDefaultVersion(p.getService(bie)));
-    expect(
-        p.getServiceDefaultVersions(p.getService(bie)).isNotEmpty, equals(true));
+    expect(p.getServiceDefaultVersions(p.getService(bie)).isNotEmpty,
+        equals(true));
     expect(p.getServiceDeployReleases().isNotEmpty, equals(true));
 
     p.delete(vm1);

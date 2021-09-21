@@ -334,7 +334,8 @@ If you are unsure type something like "server1, server2, server3".
                   ],
                 ),
               )));
-          final availableServices = LAServiceDesc.list(_project.isHub);
+          final availableServices = LAServiceDesc.listNoSub(_project.isHub)
+              .where((LAServiceDesc s) => s.isSubService == false);
           _steps.add(Step(
               isActive: _setIsActive(_step, _servicesStep),
               state: _setSetStatus(_step, _servicesStep),

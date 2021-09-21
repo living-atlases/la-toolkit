@@ -12,7 +12,6 @@ import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laReleases.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/models/laSubService.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -178,12 +177,6 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         for (LAServiceDesc service in LAServiceDesc.list(false)) {
           if (service.artifact != null) {
             servicesAndSub.add(Tuple2(service.nameInt, service.artifact!));
-          }
-          for (LASubServiceDesc subService in service.subServices) {
-            if (subService.artifact != null) {
-              servicesAndSub
-                  .add(Tuple2(subService.nameInt, subService.artifact!));
-            }
           }
         }
         for (Tuple2 s in servicesAndSub) {

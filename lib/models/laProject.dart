@@ -10,7 +10,6 @@ import 'package:la_toolkit/models/isJsonSerializable.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/models/laSubService.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/casUtils.dart';
@@ -36,11 +35,11 @@ part 'laProject.g.dart';
 
 final String cas = LAServiceName.cas.toS();
 final String spatial = LAServiceName.spatial.toS();
-final String spatialWs = LASubServiceName.spatial_service.toS();
-final String casSub = LASubServiceName.cas.toS();
-final String casManagement = LASubServiceName.cas_management.toS();
-final String userDetails = LASubServiceName.userdetails.toS();
-final String apiKey = LASubServiceName.apikey.toS();
+final String spatialWs = LAServiceName.spatial_service.toS();
+final String casSub = LAServiceName.cas.toS();
+final String casManagement = LAServiceName.cas_management.toS();
+final String userDetails = LAServiceName.userdetails.toS();
+final String apiKey = LAServiceName.apikey.toS();
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
@@ -150,8 +149,44 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if ((dirName == null || dirName!.isEmpty) && shortName.isNotEmpty) {
       dirName = suggestDirName();
     }
+    // Project pre migration from subServices to services
+    migrateSubServices();
     // _setDefSwVersions();
     validateCreation();
+  }
+
+  // Migrate old project from subservices (used for userdetails, apikey, etc) to
+  // services (like cas) with parent/child services. For now these kind of services
+  // are deployed together (cas, userdetails, etc).
+  void migrateSubServices() {
+    if ( // createdAt < DateTime(2021, 9, 21).microsecondsSinceEpoch &&
+        getServiceE(LAServiceName.cas).use &&
+            !getServiceE(LAServiceName.userdetails).use) {
+      if (AppUtils.isDev()) {
+        print("Migrating cas sub-services etc as services");
+      }
+      serviceInUse(LAServiceName.userdetails.toS(), true);
+      serviceInUse(LAServiceName.apikey.toS(), true);
+      serviceInUse(LAServiceName.cas_management.toS(), true);
+      _reAssignService(LAServiceName.cas.toS());
+      if (getServiceE(LAServiceName.spatial).use) {
+        serviceInUse(LAServiceName.spatial_service.toS(), true);
+        serviceInUse(LAServiceName.geoserver.toS(), true);
+      }
+      _reAssignService(LAServiceName.spatial.toS());
+    }
+  }
+
+  void _reAssignService(String serviceNameInt) {
+    List<LAServiceDeploy> deploys = getServiceDeploys(serviceNameInt);
+    if (deploys.isNotEmpty) {
+      // For now, we only support one deploy per service
+      LAServer server = servers.where((s) => s.id == deploys[0].serverId).first;
+      List<String> servicesInThatServer =
+          getServicesNameListInServer(server.id);
+      // re-assign to add sub-services
+      assign(server, servicesInThatServer);
+    }
   }
 
   init() async {
@@ -452,6 +487,15 @@ check results length: ${checkResults.length}''';
       newServices.add(LAServiceName.nameindexer.toS());
       newServices.add(LAServiceName.biocache_cli.toS());
     }
+    if (newServices.contains(LAServiceName.cas.toS())) {
+      newServices.add(LAServiceName.userdetails.toS());
+      newServices.add(LAServiceName.apikey.toS());
+      newServices.add(LAServiceName.cas_management.toS());
+    }
+    if (newServices.contains(LAServiceName.spatial.toS())) {
+      newServices.add(LAServiceName.spatial_service.toS());
+      newServices.add(LAServiceName.geoserver.toS());
+    }
     serverServices[server.id] = newServices.toList();
     List serviceIds = [];
     for (String sN in newServices) {
@@ -486,10 +530,10 @@ check results length: ${checkResults.length}''';
         sD.serviceId == serviceId);
   }
 
-  List<LAServiceDeploy> getServiceDeploys(String sN) {
+  List<LAServiceDeploy> getServiceDeploys(String serviceNameInt) {
     List<LAServiceDeploy> sds = [];
     List<LAService> servicesSub =
-        services.where((s) => s.nameInt == sN).toList();
+        services.where((s) => s.nameInt == serviceNameInt).toList();
     for (LAService s in servicesSub) {
       sds.addAll(serviceDeploys
           .where((sD) => sD.projectId == id && sD.serviceId == s.id)
@@ -499,12 +543,12 @@ check results length: ${checkResults.length}''';
   }
 
   void setServiceDeployRelease(String sN, String release) {
-    List<LAServiceDeploy> sds = getServiceDeploys(sN);
+    List<LAServiceDeploy> serviceDeploysForName = getServiceDeploys(sN);
     if (AppUtils.isDev()) {
       print(
-          "Setting ${sds.length} service deploys for service $sN and release $release");
+          "Setting ${serviceDeploysForName.length} service deploys for service $sN and release $release");
     }
-    for (LAServiceDeploy sd in sds) {
+    for (LAServiceDeploy sd in serviceDeploysForName) {
       sd.softwareVersions[sN] = release;
     }
   }
@@ -608,8 +652,13 @@ check results length: ${checkResults.length}''';
 
   void serviceInUse(String serviceNameInt, bool use) {
     LAService service = getService(serviceNameInt);
+    List<LAServiceDesc> childServices =
+        LAServiceDesc.childServices(serviceNameInt);
     service.use = use;
     updateService(service);
+    for (LAServiceDesc child in childServices) {
+      serviceInUse(child.nameInt, use);
+    }
 
     Iterable<LAServiceDesc> depends = LAServiceDesc.list(isHub).where(
         (curSer) => (curSer.depends != null &&
@@ -855,7 +904,7 @@ check results length: ${checkResults.length}''';
             status: st,
             help: help));
       }
-      // This is for userdetails, apikeys, etcetera
+      /* // This is for userdetails, apikeys, etcetera
       for (LASubServiceDesc sub in desc.subServices) {
         allServices.add(ProdServiceDesc(
           name: sub.name,
@@ -872,7 +921,7 @@ check results length: ${checkResults.length}''';
           status: st,
           // status: service.status,
         ));
-      }
+      }*/
     });
     return allServices;
   }
@@ -1029,8 +1078,10 @@ check results length: ${checkResults.length}''';
   }
 
   String _setDefSwVersion(String nameInt) {
-    String? version = Dependencies.defaultVersions.entries
-        .firstWhere((e) => e.key.allows(Dependencies.v(alaInstallRelease!)))
+    String? version = (Dependencies.alaInstallIsNotTagged(alaInstallRelease!)
+            ? Dependencies.defaultVersions.entries.first
+            : Dependencies.defaultVersions.entries.firstWhere(
+                (e) => e.key.allows(Dependencies.v(alaInstallRelease!))))
         .value[nameInt];
     // print("$nameInt def version $version");
     return version ?? "";

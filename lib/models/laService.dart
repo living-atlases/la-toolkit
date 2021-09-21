@@ -159,6 +159,11 @@ class LAService implements IsJsonSerializable<LAService> {
   static List<String> removeSimpleServices(List<String> services) {
     return services
         .where((nameInt) =>
+            nameInt != LAServiceName.apikey.toS() &&
+            nameInt != LAServiceName.userdetails.toS() &&
+            nameInt != LAServiceName.cas_management.toS() &&
+            nameInt != LAServiceName.spatial_service.toS() &&
+            nameInt != LAServiceName.geoserver.toS() &&
             nameInt != LAServiceName.biocache_cli.toS() &&
             nameInt != LAServiceName.nameindexer.toS())
         .toList();

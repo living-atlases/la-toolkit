@@ -11,7 +11,7 @@ void main() {
   final String biocacheStore = LAServiceName.biocache_cli.toS();
   final String alerts = LAServiceName.alerts.toS();
   final String regions = LAServiceName.regions.toS();
-  final String spatialService = LASubServiceName.spatial_service.toS();
+  final String spatialService = LAServiceName.spatial_service.toS();
 
   test('Compare versions', () {
     Version v123 = Version.parse('1.2.3');

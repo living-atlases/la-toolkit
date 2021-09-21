@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
-import 'package:la_toolkit/models/laSubService.dart';
 import 'package:mdi/mdi.dart';
 
 final lists = LAServiceName.species_lists.toS();
@@ -40,7 +39,14 @@ enum LAServiceName {
   logger,
   solr,
   cas,
+  userdetails,
+  // ignore: constant_identifier_names
+  cas_management,
+  apikey,
   spatial,
+  // ignore: constant_identifier_names
+  spatial_service,
+  geoserver,
   webapi,
   dashboard,
   sds,
@@ -70,31 +76,6 @@ extension EnumParser on String {
   }
 }
 
-enum LASubServiceName {
-  cas,
-  userdetails,
-  // ignore: constant_identifier_names
-  cas_management,
-  apikey,
-  // ignore: constant_identifier_names
-  spatial_service
-}
-
-extension SubParseToString on LASubServiceName {
-  String toS() {
-    return toString().split('.').last;
-  }
-}
-
-extension SubEnumParser on String {
-  LASubServiceName toSubServiceDescName() {
-    return LASubServiceName.values.firstWhere((e) =>
-        e.toString().toLowerCase() ==
-        '${(LASubServiceName).toString()}.$this'
-            .toLowerCase()); //return null if not found
-  }
-}
-
 class LAServiceDesc {
   String name;
   String nameInt;
@@ -111,11 +92,13 @@ class LAServiceDesc {
   bool recommended;
   String path;
   bool initUse;
-  List<LASubServiceDesc> subServices;
   bool admin;
   bool alaAdmin;
   bool hubCapable;
   String? artifact;
+  // used for spatial-service apikeys/userdetails/etc
+  bool isSubService;
+  LAServiceName? parentService;
 
   LAServiceDesc(
       {required this.name,
@@ -134,14 +117,14 @@ class LAServiceDesc {
       required this.path,
       this.depends,
       required this.icon,
-      subServices,
+      this.isSubService = false,
       this.admin = false,
       this.alaAdmin = false,
       this.initUse = false,
       this.artifact,
       this.alias,
-      this.hubCapable = false})
-      : subServices = subServices ?? [];
+      this.hubCapable = false,
+      this.parentService});
 
   @override
   bool operator ==(Object other) =>
@@ -162,11 +145,11 @@ class LAServiceDesc {
           recommended == other.recommended &&
           path == other.path &&
           initUse == other.initUse &&
-          subServices == other.subServices &&
           admin == other.admin &&
           alaAdmin == other.alaAdmin &&
           artifact == other.artifact &&
           alias == other.alias &&
+          parentService == other.parentService &&
           hubCapable == other.hubCapable;
 
   @override
@@ -185,11 +168,11 @@ class LAServiceDesc {
       recommended.hashCode ^
       path.hashCode ^
       initUse.hashCode ^
-      subServices.hashCode ^
       admin.hashCode ^
       alaAdmin.hashCode ^
       artifact.hashCode ^
       alias.hashCode ^
+      parentService.hashCode ^
       hubCapable.hashCode;
 
   static final Map<String, LAServiceDesc> _map = {
@@ -326,7 +309,7 @@ class LAServiceDesc {
     LAServiceName.cas.toS(): LAServiceDesc(
         name: "auth",
         alias: "cas",
-        nameInt: "cas",
+        nameInt: LAServiceName.cas.toS(),
         group: "cas-servers",
         desc: "CAS authentication system",
         optional: true,
@@ -336,38 +319,47 @@ class LAServiceDesc {
         icon: Mdi.accountCheckOutline,
         artifact: "cas",
         recommended: true,
-        subServices: [
-          LASubServiceDesc(
-            nameInt: LASubServiceName.cas.toS(),
-            name: "CAS",
-            path: '/cas',
-            icon: Mdi.accountCheckOutline,
-            admin: false,
-            alaAdmin: false,
-          ),
-          LASubServiceDesc(
-            nameInt: LASubServiceName.userdetails.toS(),
-            name: "User Details",
-            path: '/userdetails',
-            icon: Mdi.accountGroup,
-            artifact: "userdetails",
-            admin: true,
-            alaAdmin: true,
-          ),
-          LASubServiceDesc(
-              nameInt: LASubServiceName.apikey.toS(),
-              name: "API keys",
-              path: '/apikey',
-              icon: Mdi.api,
-              artifact: "apikey"),
-          LASubServiceDesc(
-              nameInt: LASubServiceName.cas_management.toS(),
-              name: "CAS Management",
-              path: '/cas-management',
-              artifact: "cas-management",
-              icon: Mdi.accountNetwork),
-        ],
-        path: ""),
+        admin: false,
+        alaAdmin: false,
+        path: "/cas"),
+    LAServiceName.userdetails.toS(): LAServiceDesc(
+        nameInt: LAServiceName.userdetails.toS(),
+        name: "User Details",
+        path: '/userdetails',
+        group: "cas-servers",
+        optional: true,
+        initUse: true,
+        desc: "",
+        icon: Mdi.accountGroup,
+        artifact: "userdetails",
+        admin: true,
+        alaAdmin: true,
+        parentService: LAServiceName.cas,
+        isSubService: true),
+    LAServiceName.apikey.toS(): LAServiceDesc(
+        nameInt: LAServiceName.apikey.toS(),
+        name: "API keys",
+        path: '/apikey',
+        icon: Mdi.api,
+        group: "cas-servers",
+        optional: true,
+        initUse: true,
+        isSubService: true,
+        parentService: LAServiceName.cas,
+        desc: "",
+        artifact: "apikey"),
+    LAServiceName.cas_management.toS(): LAServiceDesc(
+        nameInt: LAServiceName.cas_management.toS(),
+        name: "CAS Management",
+        path: '/cas-management',
+        artifact: "cas-management",
+        group: "cas-servers",
+        optional: true,
+        initUse: true,
+        desc: "",
+        parentService: LAServiceName.cas,
+        icon: Mdi.accountNetwork,
+        isSubService: true),
     LAServiceName.spatial.toS(): LAServiceDesc(
         name: "spatial",
         nameInt: "spatial",
@@ -379,21 +371,32 @@ class LAServiceDesc {
         icon: Mdi.layers,
         sample: "https://spatial.ala.org.au",
         artifact: 'spatial-hub',
-        subServices: [
-          LASubServiceDesc(
-              name: 'Spatial Webservice',
-              nameInt: LASubServiceName.spatial_service.toS(),
-              path: '/ws',
-              artifact: 'spatial-service',
-              icon: Mdi.layersPlus,
-              alaAdmin: true),
-          LASubServiceDesc(
-              name: 'Geoserver',
-              nameInt: 'geoserver',
-              path: '/geoserver',
-              icon: Mdi.layersSearch)
-        ],
         path: ""),
+    LAServiceName.spatial_service.toS(): LAServiceDesc(
+      name: 'Spatial Webservice',
+      nameInt: LAServiceName.spatial_service.toS(),
+      path: '/ws',
+      artifact: 'spatial-service',
+      icon: Mdi.layersPlus,
+      alaAdmin: true,
+      isSubService: true,
+      parentService: LAServiceName.spatial,
+      group: "spatial-service",
+      optional: true,
+      initUse: true,
+      desc: "",
+    ),
+    'geoserver': LAServiceDesc(
+        name: 'Geoserver',
+        nameInt: 'geoserver',
+        path: '/geoserver',
+        isSubService: true,
+        parentService: LAServiceName.spatial,
+        group: "geoserver",
+        optional: true,
+        initUse: true,
+        desc: "",
+        icon: Mdi.layersSearch),
     LAServiceName.webapi.toS(): LAServiceDesc(
         name: "webapi",
         nameInt: "webapi",
@@ -521,9 +524,18 @@ class LAServiceDesc {
   static List<LAServiceDesc> list(bool isHub) =>
       isHub ? LAServiceDesc.listHubCapable : LAServiceDesc._list;
 
+  static List<LAServiceDesc> listNoSub(bool isHub) => isHub
+      ? LAServiceDesc.listHubCapable
+      : LAServiceDesc._list.where((s) => s.isSubService != true).toList();
+
   static final List<LAServiceDesc> _list = _map.values.toList();
   static List<LAServiceDesc> listHubCapable =
       _list.where((LAServiceDesc s) => s.hubCapable).toList();
+
+  static List<LAServiceDesc> childServices(String parentNameInt) => _map.values
+      .where((s) =>
+          s.parentService != null && s.parentService!.toS() == parentNameInt)
+      .toList();
 
   static List<String> internalServices = [
     LAServiceName.nameindexer.toS(),

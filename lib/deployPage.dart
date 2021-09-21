@@ -21,6 +21,7 @@ import 'components/termsDrawer.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/laProject.dart';
+import 'models/laService.dart';
 
 class DeployPage extends StatefulWidget {
   static const routeName = "deploy";
@@ -40,6 +41,9 @@ class _DeployPageState extends State<DeployPage> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _DeployViewModel>(
       converter: (store) {
+        if (AppUtils.isDev()) {
+          print(store.state.repeatCmd);
+        }
         return _DeployViewModel(
             project: store.state.currentProject,
             cmd: store.state.repeatCmd as DeployCmd,
@@ -123,8 +127,10 @@ class _DeployPageState extends State<DeployPage> {
                                                       TextStyle(fontSize: 16))),
                                           ServicesChipPanel(
                                               initialValue: cmd.deployServices,
-                                              services: vm.project
-                                                  .getServicesAssignedToServers(),
+                                              services: LAService
+                                                  .removeSimpleServices(vm
+                                                      .project
+                                                      .getServicesAssignedToServers()),
                                               isHub: vm.project.isHub,
                                               onChange: (s) => setState(() =>
                                                   cmd.deployServices = s)),

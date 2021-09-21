@@ -78,15 +78,51 @@ class LAServiceDepsDesc {
         MySql.v5_7,
         Mongo.v4_0,
         Cas.def,
-        UserDetails.def,
-        CasManagement.def,
-        ApiKey.def,
         Postfix.def,
+      ],
+    ),
+    LAServiceName.userdetails.toS(): LAServiceDepsDesc(
+      nameInt: LAServiceName.userdetails.toS(),
+      serviceDepends: [
+        Java.v8,
+        Nginx.def,
+        MySql.v5_7,
+        Mongo.v4_0,
+        UserDetails.def,
+        Postfix.def,
+      ],
+    ),
+    LAServiceName.apikey.toS(): LAServiceDepsDesc(
+      nameInt: LAServiceName.apikey.toS(),
+      serviceDepends: [
+        Java.v8,
+        Nginx.def,
+        MySql.v5_7,
+        Cas.def,
+        ApiKey.def,
+      ],
+    ),
+    LAServiceName.cas_management.toS(): LAServiceDepsDesc(
+      nameInt: LAServiceName.cas_management.toS(),
+      serviceDepends: [
+        Java.v8,
+        Nginx.def,
+        MySql.v5_7,
+        Mongo.v4_0,
+        CasManagement.def,
       ],
     ),
     LAServiceName.spatial.toS(): LAServiceDepsDesc(
       nameInt: "spatial",
       serviceDepends: [Java.v8, Nginx.def, PostGis.v2_4, PostgresSql.v9_6],
+    ),
+    LAServiceName.spatial_service.toS(): LAServiceDepsDesc(
+      nameInt: LAServiceName.spatial_service.toS(),
+      serviceDepends: [Java.v8, Nginx.def, PostGis.v2_4, PostgresSql.v9_6],
+    ),
+    LAServiceName.geoserver.toS(): LAServiceDepsDesc(
+      nameInt: LAServiceName.geoserver.toS(),
+      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
     LAServiceName.webapi.toS(): LAServiceDepsDesc(
       nameInt: "webapi",
