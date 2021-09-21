@@ -870,7 +870,9 @@ check results length: ${checkResults.length}''';
     getServicesNameListInUse().forEach((nameInt) {
       LAServiceDesc desc = LAServiceDesc.get(nameInt);
       LAService service = getService(nameInt);
-      String url = getService(nameInt).fullUrl(useSSL, domain);
+      String url = desc.isSubService
+          ? getServiceE(desc.parentService!).fullUrl(useSSL, domain) + desc.path
+          : service.fullUrl(useSSL, domain);
       String name = StringUtils.capitalize(desc.name);
       String? help = nameInt == LAServiceName.solr.toS()
           ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
@@ -882,6 +884,9 @@ check results length: ${checkResults.length}''';
         url =
             "${StringUtils.removeLastSlash(url.replaceFirst("https", "http"))}:8983";
       }
+      if (nameInt == LAServiceName.cas.toS()) {
+        url += '/cas';
+      }
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
       List<BasicService>? deps;
       if (mainDeps != null) deps = getDeps()[nameInt]!.serviceDepends;
@@ -889,39 +894,20 @@ check results length: ${checkResults.length}''';
       List<LAServiceDeploy> sd =
           serviceDeploys.where((sd) => sd.serviceId == service.id).toList();
       ServiceStatus st = sd.isNotEmpty ? sd[0].status : ServiceStatus.unknown;
-      if (nameInt != LAServiceName.cas.toS()) {
-        allServices.add(ProdServiceDesc(
-            name: name,
-            nameInt: nameInt,
-            deps: deps,
-            tooltip: tooltip,
-            subtitle: hostnames.join(', '),
-            serviceDeploys: sd,
-            icon: desc.icon,
-            url: url,
-            admin: desc.admin,
-            alaAdmin: desc.alaAdmin,
-            status: st,
-            help: help));
-      }
-      /* // This is for userdetails, apikeys, etcetera
-      for (LASubServiceDesc sub in desc.subServices) {
-        allServices.add(ProdServiceDesc(
-          name: sub.name,
-          // This maybe is not correct
+      // if (nameInt != LAServiceName.cas.toS()) {
+      allServices.add(ProdServiceDesc(
+          name: name,
           nameInt: nameInt,
           deps: deps,
-          tooltip: serviceTooltip(name),
+          tooltip: tooltip,
           subtitle: hostnames.join(', '),
           serviceDeploys: sd,
-          icon: sub.icon,
-          url: url + sub.path,
-          admin: sub.admin,
-          alaAdmin: sub.alaAdmin,
+          icon: desc.icon,
+          url: url,
+          admin: desc.admin,
+          alaAdmin: desc.alaAdmin,
           status: st,
-          // status: service.status,
-        ));
-      }*/
+          help: help));
     });
     return allServices;
   }

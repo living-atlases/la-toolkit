@@ -537,11 +537,19 @@ class LAServiceDesc {
           s.parentService != null && s.parentService!.toS() == parentNameInt)
       .toList();
 
-  static List<String> internalServices = [
+  static final List<String> internalServices = [
     LAServiceName.nameindexer.toS(),
     LAServiceName.biocache_backend.toS(),
     LAServiceName.biocache_cli.toS(),
     LAServiceName.branding.toS(),
+  ];
+
+  static final List<String> subServices = [
+    LAServiceName.apikey.toS(),
+    LAServiceName.cas_management.toS(),
+    LAServiceName.userdetails.toS(),
+    LAServiceName.spatial_service.toS(),
+    LAServiceName.geoserver.toS(),
   ];
 
   bool isCompatibleWith(String? alaInstallVersion, LAServiceDesc otherService) {
