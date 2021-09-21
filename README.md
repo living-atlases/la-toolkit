@@ -370,6 +370,10 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 
 ![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s23.png)
 
+### Software releases selection
+
+![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s24.png)
+
 ### Console for the intrepids:
 
 ![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s14.png)
