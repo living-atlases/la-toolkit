@@ -39,26 +39,26 @@ void main() {
     dep['ala-install'] = "2.0.6";
 
     Map<String, String> combo = {
-      "laToolkit": '1.0.22',
-      "alaInstall": '2.0.6',
-      "laGenerator": '1.1.36'
+      Dependencies.toolkit: '1.0.22',
+      Dependencies.alaInstall: '2.0.6',
+      Dependencies.generator: '1.1.36'
     };
     List<String>? lintErrors = Dependencies.verify(combo);
     expect(lintErrors.length, equals(0));
 
     combo = {
-      "laToolkit": '1.0.21',
-      "alaInstall": '2.0.6',
-      "laGenerator": '1.1.36'
+      Dependencies.toolkit: '1.0.21',
+      Dependencies.alaInstall: '2.0.6',
+      Dependencies.generator: '1.1.36'
     };
 
     lintErrors = Dependencies.verify(combo);
     expect(lintErrors.isEmpty, equals(true));
 
     combo = {
-      "laToolkit": '1.0.22',
-      "alaInstall": '2.0.5',
-      "laGenerator": '1.1.34'
+      Dependencies.toolkit: '1.0.22',
+      Dependencies.alaInstall: '2.0.5',
+      Dependencies.generator: '1.1.34'
     };
     lintErrors = Dependencies.verify(combo);
     expect(lintErrors.length, equals(2));
@@ -68,9 +68,9 @@ void main() {
         equals('la-generator recommended version should be >=1.1.36'));
 
     combo = {
-      "laToolkit": '1.0.23',
-      "alaInstall": '2.0.6',
-      "laGenerator": '1.1.34'
+      Dependencies.toolkit: '1.0.23',
+      Dependencies.alaInstall: '2.0.6',
+      Dependencies.generator: '1.1.34'
     };
     lintErrors = Dependencies.verify(combo);
     expect(lintErrors.length, equals(1));
