@@ -63,7 +63,9 @@ class Dependencies {
       vc('>= 1.2.0'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.0')},
     },
 
-    // from here copy-pasted from the wiki
+    // From here copy-pasted from the wiki:
+    // https://github.com/AtlasOfLivingAustralia/documentation/wiki/Dependencies#dependencies-list
+
     alerts: {
       vc(">= 1.5.1"): {
         regions: vc(">= 3.3.5"),
