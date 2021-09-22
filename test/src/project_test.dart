@@ -22,6 +22,7 @@ void main() {
   final regions = LAServiceName.regions.toS();
   final spatial = LAServiceName.spatial.toS();
   final cas = LAServiceName.cas.toS();
+  final userdetails = LAServiceName.userdetails.toS();
   final sds = LAServiceName.sds.toS();
   final dashboard = LAServiceName.dashboard.toS();
   final branding = LAServiceName.branding.toS();
@@ -256,11 +257,11 @@ void main() {
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
     expect(testProject.getServicesNameListInUse().isNotEmpty, equals(true));
 
-    print(testProject.getServicesNameListInUse().length);
+    /*print(testProject.getServicesNameListInUse().length);
     print(testProject.getServicesAssignedToServers().length);
     print(testProject.getServicesNameListInUse());
     print(testProject.getServicesAssignedToServers());
-    print(testProject);
+    print(testProject); */
     expect(
         testProject.getServicesNameListInUse().length ==
             testProject.getServicesAssignedToServers().length,
@@ -275,6 +276,7 @@ void main() {
 /*    print(testProject); */
     expect(testProject.getServersNameList().length, equals(4));
     expect(testProject.status, equals(LAProjectStatus.advancedDefined));
+    expect(testProject.getService(userdetails).use, equals(true));
     // testProject.delete(vm1);
   });
 
@@ -753,7 +755,8 @@ void main() {
         .forEach((service) {
       if (![sds].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
-            reason: "${service.nameInt} should be in Use");
+            reason:
+                "${service.nameInt} should be in Use and is ${p.getService(service.nameInt).use}");
       }
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));
@@ -778,23 +781,31 @@ void main() {
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
     for (LAServiceDesc service in LAServiceDesc.list(p.isHub)) {
       // print(service.nameInt);
-      if (![
-        lists,
+      List<String> notUsedServices = [
         webapi,
         doi,
-        bie,
         regions,
         alerts,
         sds,
         cas,
+        apiKey,
+        userDetails,
+        casManagement,
         spatial,
+        spatialWs,
+        geoserver,
         dashboard,
-        branding
-      ].contains(service.nameInt)) {
+      ];
+      if (notUsedServices.contains(service.nameInt)) {
+        expect(p.getService(service.nameInt).use, equals(false),
+            reason: "${service.nameInt} should not be in Use");
+      }
+      if (!notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
-        if (!service.withoutUrl) {
-          expect(p.getService(service.nameInt).usesSubdomain, equals(false));
+        if (!service.withoutUrl && service.nameInt != branding) {
+          expect(p.getService(service.nameInt).usesSubdomain, equals(false),
+              reason: "${service.nameInt} should not use subdomain");
         }
         expect(p.getService(collectory).fullUrl(true, "demo.gbif.es"),
             equals('https://demo.gbif.es/colecciones'));

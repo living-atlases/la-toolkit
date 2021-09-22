@@ -36,7 +36,7 @@ part 'laProject.g.dart';
 final String cas = LAServiceName.cas.toS();
 final String spatial = LAServiceName.spatial.toS();
 final String spatialWs = LAServiceName.spatial_service.toS();
-final String casSub = LAServiceName.cas.toS();
+final String geoserver = LAServiceName.geoserver.toS();
 final String casManagement = LAServiceName.cas_management.toS();
 final String userDetails = LAServiceName.userdetails.toS();
 final String apiKey = LAServiceName.apikey.toS();
@@ -417,10 +417,15 @@ check results length: ${checkResults.length}''';
   LAService getService(String nameInt) {
     LAService curService =
         services.firstWhere((s) => s.nameInt == nameInt, orElse: () {
+      // print("Creating service $nameInt as is not present");
       LAService newService = LAService.fromDesc(LAServiceDesc.get(nameInt), id);
       services.add(newService);
       return newService;
     });
+    if (AppUtils.isDev()) {
+      assert(services.where((s) => s.nameInt == nameInt).length == 1,
+          "Warn, duplicate service $nameInt");
+    }
     return curService;
   }
 
@@ -483,19 +488,7 @@ check results length: ${checkResults.length}''';
     HashSet<String> newServices = HashSet<String>();
     newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
-    if (newServices.contains(LAServiceName.biocache_backend.toS())) {
-      newServices.add(LAServiceName.nameindexer.toS());
-      newServices.add(LAServiceName.biocache_cli.toS());
-    }
-    if (newServices.contains(LAServiceName.cas.toS())) {
-      newServices.add(LAServiceName.userdetails.toS());
-      newServices.add(LAServiceName.apikey.toS());
-      newServices.add(LAServiceName.cas_management.toS());
-    }
-    if (newServices.contains(LAServiceName.spatial.toS())) {
-      newServices.add(LAServiceName.spatial_service.toS());
-      newServices.add(LAServiceName.geoserver.toS());
-    }
+    newServices = _addSubServices(newServices);
     serverServices[server.id] = newServices.toList();
     List serviceIds = [];
     for (String sN in newServices) {
@@ -521,6 +514,24 @@ check results length: ${checkResults.length}''';
         sD.projectId == id &&
         sD.serverId == server.id &&
         !serviceIds.contains(sD.serviceId));
+  }
+
+  static HashSet<String> _addSubServices(HashSet<String> newServices) {
+    // In the same server nameindexer and biocache_cli
+    if (newServices.contains(LAServiceName.biocache_backend.toS())) {
+      newServices.add(LAServiceName.nameindexer.toS());
+      newServices.add(LAServiceName.biocache_cli.toS());
+    }
+    if (newServices.contains(LAServiceName.cas.toS())) {
+      newServices.add(LAServiceName.userdetails.toS());
+      newServices.add(LAServiceName.apikey.toS());
+      newServices.add(LAServiceName.cas_management.toS());
+    }
+    if (newServices.contains(LAServiceName.spatial.toS())) {
+      newServices.add(LAServiceName.spatial_service.toS());
+      newServices.add(LAServiceName.geoserver.toS());
+    }
+    return newServices;
   }
 
   LAServiceDeploy getServiceDeploysById(String serviceId, String serverId) {
@@ -652,13 +663,11 @@ check results length: ${checkResults.length}''';
 
   void serviceInUse(String serviceNameInt, bool use) {
     LAService service = getService(serviceNameInt);
-    List<LAServiceDesc> childServices =
-        LAServiceDesc.childServices(serviceNameInt);
     service.use = use;
     updateService(service);
-    for (LAServiceDesc child in childServices) {
-      serviceInUse(child.nameInt, use);
-    }
+
+    List<LAServiceDesc> childServices =
+        LAServiceDesc.childServices(serviceNameInt);
 
     Iterable<LAServiceDesc> depends = LAServiceDesc.list(isHub).where(
         (curSer) => (curSer.depends != null &&
@@ -680,6 +689,9 @@ check results length: ${checkResults.length}''';
           serviceInUse(serviceDesc.nameInt, use);
         }
       }
+    }
+    for (LAServiceDesc child in childServices) {
+      serviceInUse(child.nameInt, use);
     }
   }
 
@@ -764,20 +776,22 @@ check results length: ${checkResults.length}''';
     String domain = p.domain;
     Map<String, List<String>> tempServerServices = {};
 
-    for (LAServiceDesc service in LAServiceDesc.list(false)) {
-      String n = service.nameInt == "cas" ? "CAS" : service.nameInt;
+    for (LAServiceDesc serviceDesc in LAServiceDesc.list(false)) {
+      String n = serviceDesc.nameInt == "cas" ? "CAS" : serviceDesc.nameInt;
       // ala_bie and images was not optional in the past
-      bool useIt = !service.optional
+      bool useIt = !serviceDesc.optional
           ? true
           : a("use_$n") ?? n == 'ala_bie' || n == 'images'
               ? true
               : false;
-      LAService projectService = p.getService(service.nameInt);
-      p.serviceInUse(service.nameInt, useIt);
-      n = service.nameInt == "species_lists" ? "lists" : service.nameInt;
+      LAService service = p.getService(serviceDesc.nameInt);
+      p.serviceInUse(serviceDesc.nameInt, useIt);
+      n = serviceDesc.nameInt == "species_lists"
+          ? "lists"
+          : serviceDesc.nameInt;
       bool useSub =
-          service.forceSubdomain ? true : a("${n}_uses_subdomain") ?? true;
-      projectService.usesSubdomain = useSub;
+          serviceDesc.forceSubdomain ? true : a("${n}_uses_subdomain") ?? true;
+      service.usesSubdomain = useSub;
       if (debug) print("domain: $domain");
       if (debug) {
         print(
@@ -789,17 +803,17 @@ check results length: ${checkResults.length}''';
       String url = a("${n}_url") ?? a("${n}_hostname") ?? '';
 
       if (useSub) {
-        projectService.suburl = url.replaceFirst('.$domain', '');
-        projectService.iniPath = iniPath;
+        service.suburl = url.replaceFirst('.$domain', '');
+        service.iniPath = iniPath;
       } else {
-        projectService.suburl = iniPath;
+        service.suburl = iniPath;
       }
 
       String hostname = a("${n}_hostname") ?? '';
 
       if (debug) {
         print(
-            "$n: url: $url path: '$invPath' initPath: '${projectService.iniPath}' useSub: $useSub suburl: ${projectService.suburl} hostname: $hostname");
+            "$n: url: $url path: '$invPath' initPath: '${service.iniPath}' useSub: $useSub suburl: ${service.suburl} hostname: $hostname");
       }
 
       if (useIt && hostname.isNotEmpty) {
@@ -815,10 +829,13 @@ check results length: ${checkResults.length}''';
         if (!tempServerServices.containsKey(s.id)) {
           tempServerServices[s.id] = List<String>.empty(growable: true);
         }
-        tempServerServices[s.id]!.add(service.nameInt);
+        tempServerServices[s.id]!.add(serviceDesc.nameInt);
       }
     }
     for (LAServer server in p.servers) {
+      if (debug) {
+        // print("server ${server.name} has ${tempServerServices[server.id]!}");
+      }
       p.assign(server, tempServerServices[server.id]!);
     }
 
@@ -839,6 +856,16 @@ check results length: ${checkResults.length}''';
     }
     if (p.dirName == null || p.dirName!.isEmpty) {
       p.dirName = p.suggestDirName();
+    }
+
+    if (p.getService(cas).use) {
+      p.serviceInUse(apiKey, true);
+      p.serviceInUse(userDetails, true);
+      p.serviceInUse(casManagement, true);
+    }
+    if (p.getService(spatial).use) {
+      p.serviceInUse(spatialWs, true);
+      p.serviceInUse(geoserver, true);
     }
     // TODO mapzoom
     return p;
@@ -1050,7 +1077,7 @@ check results length: ${checkResults.length}''';
     if (alaInstallRelease != null) {
       defVersions[nameInt] = _setDefSwVersion(nameInt);
       if (nameInt == cas) {
-        defVersions[casSub] = _setDefSwVersion(casSub);
+        defVersions[cas] = _setDefSwVersion(cas);
         defVersions[casManagement] = _setDefSwVersion(casManagement);
         defVersions[userDetails] = _setDefSwVersion(userDetails);
         defVersions[apiKey] = _setDefSwVersion(apiKey);
