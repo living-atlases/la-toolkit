@@ -471,8 +471,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     } catch (e) {
       print(e);
-      store.dispatch(
-          ShowSnackBar(AppSnackBarMessage.ok("Failed to update project ($e)")));
+      if (AppUtils.isDev()) {
+        store.dispatch(ShowSnackBar(
+            AppSnackBarMessage.ok("Failed to update project ($e)")));
+      } else {
+        store.dispatch(
+            ShowSnackBar(AppSnackBarMessage.ok("Failed to update project")));
+      }
     }
   }
 
