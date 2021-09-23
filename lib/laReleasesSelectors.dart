@@ -12,7 +12,9 @@ import 'models/laReleases.dart';
 import 'models/laService.dart';
 
 class LAReleasesSelectors extends StatefulWidget {
-  const LAReleasesSelectors({Key? key}) : super(key: key);
+  final Function(String, String) onSoftwareSelected;
+  const LAReleasesSelectors({Key? key, required this.onSoftwareSelected})
+      : super(key: key);
 
   @override
   _LAReleasesSelectorsState createState() => _LAReleasesSelectorsState();
@@ -44,8 +46,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
               LAServiceDesc.swNameWithAliasForHumans(serviceDesc.nameInt),
               _getInitialValue(project, serviceNameInt),
               releases.versions, (String value) {
-            project.setServiceDeployRelease(serviceDesc.nameInt, value);
-            vm.onUpdateProject(project);
+            widget.onSoftwareSelected(serviceDesc.nameInt, value);
           });
           selectors.add(swWidget);
         } else {

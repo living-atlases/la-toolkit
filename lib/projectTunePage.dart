@@ -187,7 +187,11 @@ class LAProjectTunePage extends StatelessWidget {
                                 HeadingItem("Component versions")
                                     .buildTitle(context),
                               if (showSoftwareVersions)
-                                const LAReleasesSelectors(),
+                                LAReleasesSelectors(onSoftwareSelected:
+                                    (String sw, String version) {
+                                  project.setServiceDeployRelease(sw, version);
+                                  vm.onSaveProject(project);
+                                }),
                               if (showSoftwareVersions)
                                 LintErrorPanel(Dependencies.verifyLAReleases(
                                     project.getServicesNameListInUse(),
