@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
 import 'package:la_toolkit/components/helpIcon.dart';
-import 'package:la_toolkit/components/lintErrorPanel.dart';
 import 'package:la_toolkit/laReleasesSelectors.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/appState.dart';
@@ -18,11 +17,12 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
+import 'components/alaInstallSelector.dart';
 import 'components/appSnackBar.dart';
+import 'components/generatorSelector.dart';
 import 'components/laAppBar.dart';
-import 'components/lintProject.dart';
+import 'components/lintProjectPanel.dart';
 import 'components/scrollPanel.dart';
-import 'models/dependencies.dart';
 import 'models/laReleases.dart';
 import 'models/laServiceDesc.dart';
 import 'models/laVariable.dart';
@@ -45,6 +45,9 @@ class LAProjectTunePage extends StatelessWidget {
               AppUtils.isDev() && store.state.laReleases.isNotEmpty,
           laReleases: store.state.laReleases,
           status: store.state.currentProject.status,
+          alaInstallReleases: store.state.alaInstallReleases,
+          generatorReleases: store.state.generatorReleases,
+          backendVersion: store.state.backendVersion,
           onSaveProject: (project) {
             store.dispatch(SaveCurrentProject(project));
           },
@@ -109,6 +112,7 @@ class LAProjectTunePage extends StatelessWidget {
             project.allServicesAssignedToServers() &&
             project.advancedTune &&
             vm.softwareReleasesReady;
+        bool showToolkitDeps = !project.isHub;
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -182,10 +186,38 @@ class LAProjectTunePage extends StatelessWidget {
                                             vm.onSaveProject(project);
                                           }
                                         })),
+                              if (showToolkitDeps) const SizedBox(height: 20),
+                              if (showSoftwareVersions)
+                                HeadingItem("LA Toolkit dependencies")
+                                    .buildTitle(context),
+                              if (showToolkitDeps) const SizedBox(height: 20),
+                              if (showToolkitDeps)
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                          width: 250,
+                                          child: ALAInstallSelector(
+                                              onChange: (String? value) {
+                                            String version = value ??
+                                                vm.alaInstallReleases[0];
+                                            project.alaInstallRelease = version;
+                                            vm.onSaveProject(project);
+                                          })),
+                                      SizedBox(
+                                          width: 250,
+                                          child: GeneratorSelector(
+                                              onChange: (String? value) {
+                                            String version = value ??
+                                                vm.generatorReleases[0];
+                                            project.generatorRelease = version;
+                                            vm.onSaveProject(project);
+                                          }))
+                                    ]),
                               if (showSoftwareVersions)
                                 const SizedBox(height: 20),
                               if (showSoftwareVersions)
-                                HeadingItem("Component versions")
+                                HeadingItem("LA Component versions")
                                     .buildTitle(context),
                               if (showSoftwareVersions)
                                 LAReleasesSelectors(onSoftwareSelected:
@@ -193,10 +225,8 @@ class LAProjectTunePage extends StatelessWidget {
                                   project.setServiceDeployRelease(sw, version);
                                   vm.onSaveProject(project);
                                 }),
-                              if (showSoftwareVersions)
-                                LintErrorPanel(Dependencies.verifyLAReleases(
-                                    project.getServicesNameListInUse(),
-                                    project.getServiceDeployReleases())),
+                              if (showSoftwareVersions || showToolkitDeps)
+                                const LintProjectPanel(onlySoftware: true),
                               const SizedBox(height: 20),
                               ListView.builder(
                                 scrollDirection: Axis.vertical,
@@ -394,16 +424,21 @@ class _ProjectTuneViewModel {
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
   final bool softwareReleasesReady;
+  final List<String> alaInstallReleases;
+  final List<String> generatorReleases;
+  final String? backendVersion;
 
-  _ProjectTuneViewModel({
-    required this.project,
-    required this.status,
-    required this.laReleases,
-    required this.onUpdateProject,
-    required this.softwareReleasesReady,
-    required this.onSaveProject,
-    required this.onCancel,
-  });
+  _ProjectTuneViewModel(
+      {required this.project,
+      required this.status,
+      required this.laReleases,
+      required this.onUpdateProject,
+      required this.softwareReleasesReady,
+      required this.onSaveProject,
+      required this.onCancel,
+      required this.alaInstallReleases,
+      required this.generatorReleases,
+      required this.backendVersion});
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -413,6 +448,10 @@ class _ProjectTuneViewModel {
           softwareReleasesReady == other.softwareReleasesReady &&
           const DeepCollectionEquality.unordered()
               .equals(laReleases, other.laReleases) &&
+          const ListEquality()
+              .equals(generatorReleases, other.generatorReleases) &&
+          const ListEquality()
+              .equals(alaInstallReleases, other.alaInstallReleases) &&
           status == other.status;
 
   @override
@@ -420,5 +459,7 @@ class _ProjectTuneViewModel {
       project.hashCode ^
       status.hashCode ^
       softwareReleasesReady.hashCode ^
+      const ListEquality().hash(generatorReleases) ^
+      const ListEquality().hash(alaInstallReleases) ^
       const DeepCollectionEquality.unordered().hash(laReleases);
 }

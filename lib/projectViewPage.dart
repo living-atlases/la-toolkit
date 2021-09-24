@@ -1,10 +1,8 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/alaInstallSelector.dart';
 import 'package:la_toolkit/components/hubButton.dart';
-import 'package:la_toolkit/components/lintProject.dart';
+import 'package:la_toolkit/components/lintProjectPanel.dart';
 import 'package:la_toolkit/components/termsDrawer.dart';
 import 'package:la_toolkit/components/tool.dart';
 import 'package:la_toolkit/components/toolShortcut.dart';
@@ -20,7 +18,6 @@ import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'components/generatorSelector.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
@@ -55,8 +52,6 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               project: store.state.currentProject,
               /* sshKeys: store.state.sshKeys, -*/
               status: store.state.currentProject.status,
-              alaInstallReleases: store.state.alaInstallReleases,
-              generatorReleases: store.state.generatorReleases,
               loading: store.state.loading,
               onOpenProject: (project) {
                 store.dispatch(OpenProject(project));
@@ -291,17 +286,6 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                                 child: LAProjectTimeline(project: project)),
                             // Disabled for now
                             // ServicesChipPanel(),
-                            if (!project.isHub)
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: const [
-                                    SizedBox(
-                                        width: 250,
-                                        child: ALAInstallSelector()),
-                                    SizedBox(
-                                        width: 250, child: GeneratorSelector())
-                                  ]),
-                            if (!project.isHub) const SizedBox(height: 20),
                             ResponsiveGridRow(
                                 // desiredItemWidth: 120,
                                 // minSpacing: 20,
@@ -489,8 +473,6 @@ class _ProjectPageViewModel {
   final LAProject project;
   final LAProjectStatus status;
   final bool loading;
-  List<String> alaInstallReleases;
-  List<String> generatorReleases;
   final void Function(LAProject project) onOpenProject;
   final void Function(LAProject project) onOpenParent;
   final void Function(LAProject project) onTuneProject;
@@ -509,8 +491,6 @@ class _ProjectPageViewModel {
 
   _ProjectPageViewModel(
       {required this.project,
-      required this.alaInstallReleases,
-      required this.generatorReleases,
       required this.status,
       required this.loading,
       required this.onOpenProject,
@@ -536,21 +516,9 @@ class _ProjectPageViewModel {
           runtimeType == other.runtimeType &&
           project == other.project &&
           status.value == other.status.value &&
-          loading == other.loading &&
-          project.alaInstallRelease == other.project.alaInstallRelease &&
-          project.generatorRelease == other.project.generatorRelease &&
-          const ListEquality()
-              .equals(generatorReleases, other.generatorReleases) &&
-          const ListEquality()
-              .equals(alaInstallReleases, other.alaInstallReleases);
+          loading == other.loading;
 
   @override
   int get hashCode =>
-      project.hashCode ^
-      status.value.hashCode ^
-      loading.hashCode ^
-      project.alaInstallRelease.hashCode ^
-      project.generatorRelease.hashCode ^
-      const ListEquality().hash(generatorReleases) ^
-      const ListEquality().hash(alaInstallReleases);
+      project.hashCode ^ status.value.hashCode ^ loading.hashCode;
 }

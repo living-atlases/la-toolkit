@@ -16,7 +16,7 @@ import 'components/appSnackBar.dart';
 import 'components/genericTextFormField.dart';
 import 'components/helpIcon.dart';
 import 'components/laAppBar.dart';
-import 'components/lintProject.dart';
+import 'components/lintProjectPanel.dart';
 import 'components/scrollPanel.dart';
 import 'components/serviceWidget.dart';
 import 'components/servicesInServerSelector.dart';

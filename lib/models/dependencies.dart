@@ -60,8 +60,14 @@ class Dependencies {
         alaInstall: vc('>= 2.0.10'),
         generator: vc('>= 1.1.51')
       },
-      vc('>= 1.2.0'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.0')},
-      vc('>= 1.2.1'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.1')},
+      vc('>= 1.2.0 <1.2.1'): {
+        alaInstall: vc('>= 2.0.11'),
+        generator: vc('>= 1.2.0')
+      },
+      vc('>= 1.2.1 <1.2.2'): {
+        alaInstall: vc('>= 2.0.11'),
+        generator: vc('>= 1.2.1')
+      },
       vc('>= 1.2.2'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.1')},
     },
 
@@ -178,7 +184,7 @@ class Dependencies {
   static List<String> verifyLAReleases(
       List<String> serviceInUse, Map<String, String> selectedVersions,
       [bool debug = false]) {
-    List<String> lintErrors = [];
+    Set<String> lintErrors = {};
     try {
       selectedVersions.forEach((String sw, String version) {
         if (debug) {
@@ -224,10 +230,10 @@ class Dependencies {
           }
         }
       });
-      return lintErrors;
+      return lintErrors.toList();
     } catch (e) {
       print("Verify exception $e");
-      return lintErrors;
+      return lintErrors.toList();
     }
   }
 }
