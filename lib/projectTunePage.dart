@@ -105,7 +105,8 @@ class LAProjectTunePage extends StatelessWidget {
         });
         String pageTitle =
             "${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}";
-        bool showSoftwareVersions = project.allServicesAssignedToServers() &&
+        bool showSoftwareVersions = !project.isHub &&
+            project.allServicesAssignedToServers() &&
             project.advancedTune &&
             vm.softwareReleasesReady;
         return Title(

@@ -160,7 +160,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
   // are deployed together (cas, userdetails, etc).
   void migrateSubServices() {
     if ( // createdAt < DateTime(2021, 9, 21).microsecondsSinceEpoch &&
-        getServiceE(LAServiceName.cas).use &&
+        !isHub &&
+            getServiceE(LAServiceName.cas).use &&
             !getServiceE(LAServiceName.userdetails).use) {
       if (AppUtils.isDev()) {
         print("Migrating cas sub-services etc as services");
