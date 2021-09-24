@@ -151,6 +151,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     // Project pre migration from subServices to services
     migrateSubServices();
+    fixNonHubServices();
     // _setDefSwVersions();
     validateCreation();
   }
@@ -159,10 +160,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
   // services (like cas) with parent/child services. For now these kind of services
   // are deployed together (cas, userdetails, etc).
   void migrateSubServices() {
-    if ( // createdAt < DateTime(2021, 9, 21).microsecondsSinceEpoch &&
+    if (createdAt < DateTime(2021, 9, 21).millisecondsSinceEpoch &&
         !isHub &&
-            getServiceE(LAServiceName.cas).use &&
-            !getServiceE(LAServiceName.userdetails).use) {
+        getServiceE(LAServiceName.cas).use &&
+        !getServiceE(LAServiceName.userdetails).use) {
       if (AppUtils.isDev()) {
         print("Migrating cas sub-services etc as services");
       }
@@ -175,6 +176,37 @@ class LAProject implements IsJsonSerializable<LAProject> {
         serviceInUse(LAServiceName.geoserver.toS(), true);
       }
       _reAssignService(LAServiceName.spatial.toS());
+    }
+  }
+
+  void fixNonHubServices() {
+    if (createdAt < DateTime(2021, 9, 24).millisecondsSinceEpoch && isHub) {
+      print("Fixing non hub services");
+      List<LAService> sToDel = [];
+      List<String> allowedServices = LAServiceDesc.listS(isHub);
+      print(this);
+      for (LAService s in services) {
+        print(s);
+        if (!allowedServices.contains(s.nameInt)) {
+          print("Removing ${s.nameInt} from hub");
+          sToDel.add(s);
+        }
+      }
+      for (LAService sDel in sToDel) {
+        serviceDeploys.removeWhere(
+            (sd) => sDel.projectId == id && sd.serviceId == sDel.id);
+        services.removeWhere((s) => s.id == sDel.id);
+      }
+      serverServices.forEach((String serverId, List<String> services) {
+        for (String s in services) {
+          if (!allowedServices.contains(s)) {
+            print("Removing $s from hub");
+            services.remove(s);
+          }
+        }
+        serverServices[serverId] = services;
+      });
+      print(this);
     }
   }
 
@@ -383,6 +415,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
 isHub: $isHub isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
+services (${services.length})
 serviceDeploys (${serviceDeploys.length})
 servers-services (${serverServices.length}): 
 ${sToS ?? "Some error in serversToServices"}
@@ -416,6 +449,10 @@ check results length: ${checkResults.length}''';
   }
 
   LAService getService(String nameInt) {
+    if (AppUtils.isDev()) {
+      assert(LAServiceDesc.listS(isHub).contains(nameInt) == true,
+          "Trying to get $nameInt service while not present in service lists and hub=$isHub");
+    }
     LAService curService =
         services.firstWhere((s) => s.nameInt == nameInt, orElse: () {
       // print("Creating service $nameInt as is not present");

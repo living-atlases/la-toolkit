@@ -524,6 +524,9 @@ class LAServiceDesc {
   static List<LAServiceDesc> list(bool isHub) =>
       isHub ? LAServiceDesc.listHubCapable : LAServiceDesc._list;
 
+  static List<String> listS(bool isHub) =>
+      list(isHub).map((s) => s.nameInt).toList();
+
   static List<LAServiceDesc> listNoSub(bool isHub) => isHub
       ? LAServiceDesc.listHubCapable
       : LAServiceDesc._list.where((s) => s.isSubService != true).toList();
