@@ -187,7 +187,7 @@ class LAProjectTunePage extends StatelessWidget {
                                           }
                                         })),
                               if (showToolkitDeps) const SizedBox(height: 20),
-                              if (showSoftwareVersions)
+                              if (showToolkitDeps)
                                 HeadingItem("LA Toolkit dependencies")
                                     .buildTitle(context),
                               if (showToolkitDeps) const SizedBox(height: 20),

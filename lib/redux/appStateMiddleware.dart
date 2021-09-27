@@ -180,8 +180,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           }
         }
         for (Tuple2 s in servicesAndSub) {
-          // https://nexus.ala.org.au/service/local/repositories/snapshots/content/au/org/ala/ala-hub/maven-metadata.xml
-          LAReleases? thisReleases = await getAlaNexusVersions(s);
+          LAReleases? thisReleases = await getDepsVersions(s);
           if (thisReleases != null) {
             releases[s.item1] = thisReleases;
           }
@@ -415,13 +414,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     next(action);
   }
 
-  Future<LAReleases?> getAlaNexusVersions(Tuple2 service) async {
+  Future<LAReleases?> getDepsVersions(Tuple2 service) async {
     String? latest;
     List<String> versions = [];
     for (String repo in ['releases', 'snapshots']) {
-      Uri nexusUrl =
-          AppUtils.uri(env['BACKEND']!, "/api/v1/get-ala-nexus-versions");
-      Response response = await http.post(nexusUrl,
+      Uri depsBackUrl =
+          AppUtils.uri(env['BACKEND']!, "/api/v1/get-deps-versions");
+      Response response = await http.post(depsBackUrl,
           headers: {'Content-type': 'application/json'},
           body: utf8
               .encode(json.encode({'repo': repo, 'artifact': service.item2})));

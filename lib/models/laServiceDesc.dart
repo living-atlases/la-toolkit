@@ -1,3 +1,4 @@
+import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
@@ -516,6 +517,8 @@ class LAServiceDesc {
         withoutUrl: true,
         admin: false,
         alaAdmin: false,
+        // We use apt for check versions
+        artifact: "pipelines",
         icon: Mdi.pipe,
         path: ""),
     /*    artifactAnsibleVar: "biocollect_version",
@@ -540,6 +543,9 @@ class LAServiceDesc {
 
   static List<String> listS(bool isHub) =>
       list(isHub).map((s) => s.nameInt).toList();
+
+  static List<LAServiceDesc> listSorted(bool isHub) =>
+      list(isHub)..sort((a, b) => compareAsciiUpperCase(a.name, b.name));
 
   static List<LAServiceDesc> listNoSub(bool isHub) => isHub
       ? LAServiceDesc.listHubCapable

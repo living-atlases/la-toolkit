@@ -31,7 +31,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
           onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _LAReleasesSelectorsViewModel vm) {
       LAProject project = vm.project;
-      List<LAServiceDesc> services = LAServiceDesc.list(project.isHub);
+      List<LAServiceDesc> services = LAServiceDesc.listSorted(project.isHub);
       List<Widget> selectors = [];
       for (LAServiceDesc serviceDesc in services) {
         String serviceNameInt = serviceDesc.nameInt;
