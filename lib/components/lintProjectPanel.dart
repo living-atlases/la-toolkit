@@ -54,7 +54,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                   })))
       ];
       if (!widget.onlySoftware) {
-        [
+        lints.addAll([
           if (vm.sshKeys.isEmpty)
             AlertCard(
                 message: "You don't have any SSH key",
@@ -79,7 +79,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             const AlertCard(
                 message:
                     "The collections and the occurrences front-end (bioache-hub) services are in the same server. This can cause start-up problems when caches are enabled")
-        ];
+        ]);
       }
       return Column(children: lints);
     });
