@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
@@ -10,7 +11,6 @@ import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/hostServicesChecks.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -253,8 +253,7 @@ class Api {
     // use lists in ansiblew
     DeployCmd cmdTr = action.cmd.copyWith();
     cmdTr.deployServices = cmdTr.deployServices
-        .map((name) =>
-            name == LAServiceName.species_lists.toS() ? "lists" : name)
+        .map((name) => name == speciesLists ? "lists" : name)
         .toList();
     doCmd(
         url: url,

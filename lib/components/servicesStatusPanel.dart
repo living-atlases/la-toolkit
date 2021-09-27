@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/serviceStatusCard.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 
 class ServicesStatusPanel extends StatelessWidget {
@@ -12,9 +12,9 @@ class ServicesStatusPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     List<ProdServiceDesc> filteredServices = services
         .where((s) =>
-            s.nameInt != LAServiceName.branding.toS() &&
-            s.nameInt != LAServiceName.nameindexer.toS() &&
-            s.nameInt != LAServiceName.biocache_cli.toS())
+            s.nameInt != branding &&
+            s.nameInt != nameindexer &&
+            s.nameInt != biocacheStore)
         .toList();
     return Wrap(children: [
       for (var service in filteredServices) ServiceStatusCard(service)

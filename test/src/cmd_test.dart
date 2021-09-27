@@ -1,3 +1,4 @@
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/cmd.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
@@ -8,16 +9,10 @@ import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final collectory = LAServiceName.collectory.toS();
-  final bie = LAServiceName.ala_bie.toS();
-  final alaHub = LAServiceName.ala_hub.toS();
-  final biocacheService = LAServiceName.biocache_service.toS();
-  final solr = LAServiceName.solr.toS();
-  final spatial = LAServiceName.spatial.toS();
-  final all = LAServiceName.all.toS();
-
   test('Test cmd to String', () {
     DeployCmd cmd = DeployCmd();
+    final all = LAServiceName.all.toS();
+
     cmd.deployServices = [all];
     expect(cmd.desc, equals("Full deploy"));
     cmd.deployServices = [collectory];

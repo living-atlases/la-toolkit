@@ -1,18 +1,10 @@
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/dependencies.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final String bie = LAServiceName.ala_bie.toS();
-  final String alaHub = LAServiceName.ala_hub.toS();
-  final String biocacheService = LAServiceName.biocache_service.toS();
-  final String biocacheStore = LAServiceName.biocache_cli.toS();
-  final String alerts = LAServiceName.alerts.toS();
-  final String regions = LAServiceName.regions.toS();
-  final String spatialService = LAServiceName.spatial_service.toS();
-
   test('Compare versions', () {
     Version v123 = Version.parse('1.2.3');
     List<VersionConstraint> failConstraints = [
@@ -39,27 +31,19 @@ void main() {
     dep['ala-install'] = "2.0.6";
 
     Map<String, String> combo = {
-      Dependencies.toolkit: '1.0.22',
-      Dependencies.alaInstall: '2.0.6',
-      Dependencies.generator: '1.1.36'
+      toolkit: '1.0.22',
+      alaInstall: '2.0.6',
+      generator: '1.1.36'
     };
     List<String>? lintErrors = Dependencies.verify(combo);
     expect(lintErrors.length, equals(0));
 
-    combo = {
-      Dependencies.toolkit: '1.0.21',
-      Dependencies.alaInstall: '2.0.6',
-      Dependencies.generator: '1.1.36'
-    };
+    combo = {toolkit: '1.0.21', alaInstall: '2.0.6', generator: '1.1.36'};
 
     lintErrors = Dependencies.verify(combo);
     expect(lintErrors.isEmpty, equals(true));
 
-    combo = {
-      Dependencies.toolkit: '1.0.22',
-      Dependencies.alaInstall: '2.0.5',
-      Dependencies.generator: '1.1.34'
-    };
+    combo = {toolkit: '1.0.22', alaInstall: '2.0.5', generator: '1.1.34'};
     lintErrors = Dependencies.verify(combo);
     expect(lintErrors.length, equals(2));
     expect(lintErrors[0],
@@ -67,11 +51,7 @@ void main() {
     expect(lintErrors[1],
         equals('la-generator recommended version should be >=1.1.36'));
 
-    combo = {
-      Dependencies.toolkit: '1.0.23',
-      Dependencies.alaInstall: '2.0.6',
-      Dependencies.generator: '1.1.34'
-    };
+    combo = {toolkit: '1.0.23', alaInstall: '2.0.6', generator: '1.1.34'};
     lintErrors = Dependencies.verify(combo);
     expect(lintErrors.length, equals(1));
     expect(lintErrors[0],

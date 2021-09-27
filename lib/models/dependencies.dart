@@ -1,39 +1,11 @@
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 class Dependencies {
-  static const String toolkit = "laToolkit";
-  static const String alaInstall = "ala-install";
-  static const String generator = "la-generator";
   static const List<String> laTools = [alaInstall, generator, toolkit];
   static const List<String> laToolsNoAlaInstall = [generator, toolkit];
-  static String alaHub = LAServiceName.ala_hub.toS();
-  static String alerts = LAServiceName.alerts.toS();
-  static String apikey = LAServiceName.apikey.toS();
-  static String bie = LAServiceName.ala_bie.toS();
-  static String bieIndex = LAServiceName.bie_index.toS();
-  static String biocacheService = LAServiceName.biocache_service.toS();
-  static String biocacheStore = LAServiceName.biocache_cli.toS();
-  static String branding = LAServiceName.branding.toS();
-  static String cas = LAServiceName.cas.toS();
-  static String casManagement = LAServiceName.cas_management.toS();
-  static String collectory = LAServiceName.collectory.toS();
-  static String dashboard = LAServiceName.dashboard.toS();
-  static String doi = LAServiceName.doi.toS();
-  static String images = LAServiceName.images.toS();
-  static String lists = LAServiceName.species_lists.toS();
-  static String logger = LAServiceName.logger.toS();
-  static String regions = LAServiceName.regions.toS();
-  static String sds = LAServiceName.sds.toS();
-  static String solr = LAServiceName.solr.toS();
-  static String spatial = LAServiceName.spatial.toS();
-  static String spatialService = LAServiceName.spatial_service.toS();
-  static String userdetails = LAServiceName.userdetails.toS();
-  static String webapi = LAServiceName.webapi.toS();
-  static String pipelines = LAServiceName.pipelines.toS();
-  static String tomcat = "tomcat";
-  static String ansible = "ansible";
 
   static Map<String, Map<VersionConstraint, Map<String, VersionConstraint>>>
       laDeps = {
@@ -139,7 +111,7 @@ class Dependencies {
       dashboard: "2.2",
       doi: "1.1.1",
       images: "1.1.7",
-      lists: "3.5.9",
+      speciesLists: "3.5.9",
       logger: "2.4.0",
       regions: "3.3.5",
       sds: "1.6.2",

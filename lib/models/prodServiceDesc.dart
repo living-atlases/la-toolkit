@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laService.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
 
 import 'basicService.dart';
 import 'laServiceDeploy.dart';
@@ -34,9 +34,9 @@ class ProdServiceDesc {
       this.help,
       required this.deps,
       required this.status}) {
-    if (nameInt != LAServiceName.biocache_backend.toS() &&
-        nameInt != LAServiceName.nameindexer.toS() &&
-        nameInt != LAServiceName.biocache_cli.toS()) {
+    if (nameInt != biocacheBackend &&
+        nameInt != nameindexer &&
+        nameInt != biocacheStore) {
       urls.add(url);
       if (alaAdmin) urls.add(url + '/alaAdmin/');
       if (admin) urls.add(url + '/admin/');

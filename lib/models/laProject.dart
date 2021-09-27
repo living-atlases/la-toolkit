@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/isJsonSerializable.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
@@ -32,14 +33,6 @@ import 'laVariable.dart';
 import 'laVariableDesc.dart';
 
 part 'laProject.g.dart';
-
-final String cas = LAServiceName.cas.toS();
-final String spatial = LAServiceName.spatial.toS();
-final String spatialWs = LAServiceName.spatial_service.toS();
-final String geoserver = LAServiceName.geoserver.toS();
-final String casManagement = LAServiceName.cas_management.toS();
-final String userDetails = LAServiceName.userdetails.toS();
-final String apiKey = LAServiceName.apikey.toS();
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
@@ -167,15 +160,15 @@ class LAProject implements IsJsonSerializable<LAProject> {
       if (AppUtils.isDev()) {
         print("Migrating cas sub-services etc as services");
       }
-      serviceInUse(LAServiceName.userdetails.toS(), true);
-      serviceInUse(LAServiceName.apikey.toS(), true);
-      serviceInUse(LAServiceName.cas_management.toS(), true);
-      _reAssignService(LAServiceName.cas.toS());
-      if (getServiceE(LAServiceName.spatial).use) {
-        serviceInUse(LAServiceName.spatial_service.toS(), true);
-        serviceInUse(LAServiceName.geoserver.toS(), true);
+      serviceInUse(userdetails, true);
+      serviceInUse(apikey, true);
+      serviceInUse(casManagement, true);
+      _reAssignService(cas);
+      if (getService(spatial).use) {
+        serviceInUse(spatialService, true);
+        serviceInUse(geoserver, true);
       }
-      _reAssignService(LAServiceName.spatial.toS());
+      _reAssignService(spatial);
     }
   }
 
@@ -556,18 +549,18 @@ check results length: ${checkResults.length}''';
 
   static HashSet<String> _addSubServices(HashSet<String> newServices) {
     // In the same server nameindexer and biocache_cli
-    if (newServices.contains(LAServiceName.biocache_backend.toS())) {
-      newServices.add(LAServiceName.nameindexer.toS());
-      newServices.add(LAServiceName.biocache_cli.toS());
+    if (newServices.contains(biocacheBackend)) {
+      newServices.add(nameindexer);
+      newServices.add(biocacheStore);
     }
-    if (newServices.contains(LAServiceName.cas.toS())) {
-      newServices.add(LAServiceName.userdetails.toS());
-      newServices.add(LAServiceName.apikey.toS());
-      newServices.add(LAServiceName.cas_management.toS());
+    if (newServices.contains(cas)) {
+      newServices.add(userdetails);
+      newServices.add(apikey);
+      newServices.add(casManagement);
     }
-    if (newServices.contains(LAServiceName.spatial.toS())) {
-      newServices.add(LAServiceName.spatial_service.toS());
-      newServices.add(LAServiceName.geoserver.toS());
+    if (newServices.contains(spatial)) {
+      newServices.add(spatialService);
+      newServices.add(geoserver);
     }
     return newServices;
   }
@@ -653,9 +646,9 @@ check results length: ${checkResults.length}''';
         String hostnames = current
             .getServerServicesFull(serverId: server.id)
             .where((s) =>
-                s.nameInt != LAServiceName.biocache_cli.toS() &&
-                s.nameInt != LAServiceName.biocache_backend.toS() &&
-                s.nameInt != LAServiceName.nameindexer.toS())
+                s.nameInt != biocacheStore &&
+                s.nameInt != biocacheBackend &&
+                s.nameInt != nameindexer)
             .map((s) => s.url(current.domain))
             .toSet() // to remove dups
             .toList()
@@ -685,8 +678,8 @@ check results length: ${checkResults.length}''';
   }
 
   bool collectoryAndBiocacheDifferentServers() {
-    List<String> colHosts = getHostname(LAServiceName.collectory.toS());
-    List<String> biocacheHubHosts = getHostname(LAServiceName.ala_hub.toS());
+    List<String> colHosts = getHostname(collectory);
+    List<String> biocacheHubHosts = getHostname(alaHub);
     List<String> common = List.from(colHosts);
     common.removeWhere((item) => biocacheHubHosts.contains(item));
     return const ListEquality().equals(common, colHosts);
@@ -897,18 +890,18 @@ check results length: ${checkResults.length}''';
     }
 
     if (p.getService(cas).use) {
-      p.serviceInUse(apiKey, true);
-      p.serviceInUse(userDetails, true);
+      p.serviceInUse(apikey, true);
+      p.serviceInUse(userdetails, true);
       p.serviceInUse(casManagement, true);
     }
     if (p.getService(spatial).use) {
-      p.serviceInUse(spatialWs, true);
+      p.serviceInUse(spatialService, true);
       p.serviceInUse(geoserver, true);
     }
     String? biocacheHostname = a('biocache_backend_hostname');
     if (biocacheHostname != null) {
-      p.getServiceE(LAServiceName.biocache_backend).use = true;
-      p.getServiceE(LAServiceName.pipelines).use = false;
+      p.getService(biocacheBackend).use = true;
+      p.getService(pipelines).use = false;
     }
     // TODO mapzoom
 
@@ -945,17 +938,17 @@ check results length: ${checkResults.length}''';
           ? getServiceE(desc.parentService!).fullUrl(useSSL, domain) + desc.path
           : service.fullUrl(useSSL, domain);
       String name = StringUtils.capitalize(desc.name);
-      String? help = nameInt == LAServiceName.solr.toS()
+      String? help = nameInt == solr
           ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
           : null;
       String tooltip = name != "Index"
           ? serviceTooltip(name)
           : "This is protected by default, see our wiki for more info";
-      if (nameInt == LAServiceName.solr.toS()) {
+      if (nameInt == solr) {
         url =
             "${StringUtils.removeLastSlash(url.replaceFirst("https", "http"))}:8983";
       }
-      if (nameInt == LAServiceName.cas.toS()) {
+      if (nameInt == cas) {
         url += '/cas';
       }
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
@@ -965,7 +958,7 @@ check results length: ${checkResults.length}''';
       List<LAServiceDeploy> sd =
           serviceDeploys.where((sd) => sd.serviceId == service.id).toList();
       ServiceStatus st = sd.isNotEmpty ? sd[0].status : ServiceStatus.unknown;
-      // if (nameInt != LAServiceName.cas.toS()) {
+      // if (nameInt != cas) {
       allServices.add(ProdServiceDesc(
           name: name,
           nameInt: nameInt,
@@ -1123,11 +1116,11 @@ check results length: ${checkResults.length}''';
       if (nameInt == cas) {
         defVersions[cas] = _setDefSwVersion(cas);
         defVersions[casManagement] = _setDefSwVersion(casManagement);
-        defVersions[userDetails] = _setDefSwVersion(userDetails);
-        defVersions[apiKey] = _setDefSwVersion(apiKey);
+        defVersions[userdetails] = _setDefSwVersion(userdetails);
+        defVersions[apikey] = _setDefSwVersion(apikey);
       }
       if (nameInt == spatial) {
-        defVersions[spatialWs] = _setDefSwVersion(spatialWs);
+        defVersions[spatialService] = _setDefSwVersion(spatialService);
       }
     }
     defVersions.removeWhere((key, value) => value == "");

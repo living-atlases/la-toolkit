@@ -1,5 +1,6 @@
+import 'package:la_toolkit/models/LAServiceConstants.dart';
+
 import 'basicService.dart';
-import 'laServiceDesc.dart';
 
 class LAServiceDepsDesc {
   String nameInt;
@@ -11,36 +12,36 @@ class LAServiceDepsDesc {
   });
 
   static final Map<String, LAServiceDepsDesc> v2_0_4 = {
-    LAServiceName.collectory.toS(): LAServiceDepsDesc(
-      nameInt: "collectory",
+    collectory: LAServiceDepsDesc(
+      nameInt: collectory,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
     ),
-    LAServiceName.ala_hub.toS(): LAServiceDepsDesc(
-      nameInt: "ala_hub",
+    alaHub: LAServiceDepsDesc(
+      nameInt: alaHub,
       serviceDepends: [
         Java.v8,
         Nginx.def,
         Tomcat.v8,
       ],
     ),
-    LAServiceName.biocache_service.toS(): LAServiceDepsDesc(
-      nameInt: "biocache_service",
+    biocacheService: LAServiceDepsDesc(
+      nameInt: biocacheService,
       serviceDepends: [
         Java.v8,
         Nginx.def,
         Tomcat.v8,
       ],
     ),
-    LAServiceName.ala_bie.toS(): LAServiceDepsDesc(
-      nameInt: "ala_bie",
+    bie: LAServiceDepsDesc(
+      nameInt: bie,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
-    LAServiceName.bie_index.toS(): LAServiceDepsDesc(
-      nameInt: "bie_index",
+    bieIndex: LAServiceDepsDesc(
+      nameInt: bieIndex,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
-    LAServiceName.images.toS(): LAServiceDepsDesc(
-      nameInt: "images",
+    images: LAServiceDepsDesc(
+      nameInt: images,
       serviceDepends: [
         Java.v8,
         Nginx.def,
@@ -49,8 +50,8 @@ class LAServiceDepsDesc {
         PostgresSql.v10
       ],
     ),
-    LAServiceName.species_lists.toS(): LAServiceDepsDesc(
-      nameInt: "species_lists",
+    speciesLists: LAServiceDepsDesc(
+      nameInt: speciesLists,
       serviceDepends: [
         Java.v8,
         Nginx.def,
@@ -58,19 +59,19 @@ class LAServiceDepsDesc {
         MySql.v5_7,
       ],
     ),
-    LAServiceName.regions.toS(): LAServiceDepsDesc(
+    regions: LAServiceDepsDesc(
       nameInt: "regions",
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
-    LAServiceName.logger.toS(): LAServiceDepsDesc(
+    logger: LAServiceDepsDesc(
       nameInt: "logger",
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
     ),
-    LAServiceName.solr.toS(): LAServiceDepsDesc(
+    solr: LAServiceDepsDesc(
       nameInt: "solr",
       serviceDepends: [Java.v8, Solr.v7],
     ),
-    LAServiceName.cas.toS(): LAServiceDepsDesc(
+    cas: LAServiceDepsDesc(
       nameInt: "cas",
       serviceDepends: [
         Java.v8,
@@ -81,8 +82,8 @@ class LAServiceDepsDesc {
         Postfix.def,
       ],
     ),
-    LAServiceName.userdetails.toS(): LAServiceDepsDesc(
-      nameInt: LAServiceName.userdetails.toS(),
+    userdetails: LAServiceDepsDesc(
+      nameInt: userdetails,
       serviceDepends: [
         Java.v8,
         Nginx.def,
@@ -92,8 +93,8 @@ class LAServiceDepsDesc {
         Postfix.def,
       ],
     ),
-    LAServiceName.apikey.toS(): LAServiceDepsDesc(
-      nameInt: LAServiceName.apikey.toS(),
+    apikey: LAServiceDepsDesc(
+      nameInt: apikey,
       serviceDepends: [
         Java.v8,
         Nginx.def,
@@ -102,8 +103,8 @@ class LAServiceDepsDesc {
         ApiKey.def,
       ],
     ),
-    LAServiceName.cas_management.toS(): LAServiceDepsDesc(
-      nameInt: LAServiceName.cas_management.toS(),
+    casManagement: LAServiceDepsDesc(
+      nameInt: casManagement,
       serviceDepends: [
         Java.v8,
         Nginx.def,
@@ -112,36 +113,36 @@ class LAServiceDepsDesc {
         CasManagement.def,
       ],
     ),
-    LAServiceName.spatial.toS(): LAServiceDepsDesc(
-      nameInt: "spatial",
+    spatial: LAServiceDepsDesc(
+      nameInt: spatial,
       serviceDepends: [Java.v8, Nginx.def, PostGis.v2_4, PostgresSql.v9_6],
     ),
-    LAServiceName.spatial_service.toS(): LAServiceDepsDesc(
-      nameInt: LAServiceName.spatial_service.toS(),
+    spatialService: LAServiceDepsDesc(
+      nameInt: spatialService,
       serviceDepends: [Java.v8, Nginx.def, PostGis.v2_4, PostgresSql.v9_6],
     ),
-    LAServiceName.geoserver.toS(): LAServiceDepsDesc(
-      nameInt: LAServiceName.geoserver.toS(),
+    geoserver: LAServiceDepsDesc(
+      nameInt: geoserver,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
-    LAServiceName.webapi.toS(): LAServiceDepsDesc(
-      nameInt: "webapi",
+    webapi: LAServiceDepsDesc(
+      nameInt: webapi,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
     ),
-    LAServiceName.dashboard.toS(): LAServiceDepsDesc(
-      nameInt: "dashboard",
+    dashboard: LAServiceDepsDesc(
+      nameInt: dashboard,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
-    LAServiceName.sds.toS(): LAServiceDepsDesc(
-      nameInt: "sds",
+    sds: LAServiceDepsDesc(
+      nameInt: sds,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
-    LAServiceName.alerts.toS(): LAServiceDepsDesc(
-      nameInt: "alerts",
+    alerts: LAServiceDepsDesc(
+      nameInt: alerts,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, Postfix.def, MySql.v5_7],
     ),
-    LAServiceName.doi.toS(): LAServiceDepsDesc(
-      nameInt: "doi",
+    doi: LAServiceDepsDesc(
+      nameInt: doi,
       serviceDepends: [
         Java.v8,
         Nginx.def,
@@ -151,22 +152,22 @@ class LAServiceDepsDesc {
         Doi.def,
       ],
     ),
-    LAServiceName.biocache_backend.toS(): LAServiceDepsDesc(
-      nameInt: "biocache_backend",
+    biocacheBackend: LAServiceDepsDesc(
+      nameInt: biocacheBackend,
       serviceDepends: [Java.v8, Cassandra.v3],
     ),
-    LAServiceName.branding.toS():
+    branding:
         LAServiceDepsDesc(nameInt: "branding", serviceDepends: [Nginx.def]),
-    LAServiceName.biocache_cli.toS(): LAServiceDepsDesc(
-      nameInt: "biocache_cli",
+    biocacheStore: LAServiceDepsDesc(
+      nameInt: biocacheStore,
       serviceDepends: [Java.v8],
     ),
-    LAServiceName.nameindexer.toS(): LAServiceDepsDesc(
-      nameInt: "nameindexer",
+    nameindexer: LAServiceDepsDesc(
+      nameInt: nameindexer,
       serviceDepends: [Java.v8],
     ),
-    LAServiceName.pipelines.toS(): LAServiceDepsDesc(
-      nameInt: LAServiceName.pipelines.toS(),
+    pipelines: LAServiceDepsDesc(
+      nameInt: pipelines,
       serviceDepends: [Java.v8],
     )
   };

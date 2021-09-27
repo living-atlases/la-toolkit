@@ -3,6 +3,7 @@ import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
 import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
@@ -45,8 +46,7 @@ class ServiceWidget extends StatelessWidget {
       bool withoutUrl = serviceDesc.withoutUrl;
       bool visible = noDependsOrInUse &&
           (!withoutUrl ||
-              (serviceName == LAServiceName.biocache_backend.toS() ||
-                  serviceName == LAServiceName.pipelines.toS()));
+              (serviceName == biocacheBackend || serviceName == pipelines));
       bool optional = serviceDesc.optional;
       bool canUseSubdomain = !serviceDesc.forceSubdomain && !withoutUrl;
 
@@ -133,7 +133,7 @@ class ServiceWidget extends StatelessWidget {
                                       "${serviceDesc.name}: ${StringUtils.capitalize(serviceDesc.desc)}")
                               ]),
                           trailing: serviceDesc.sample != null
-                              ? serviceDesc.name == LAServiceName.branding.toS()
+                              ? serviceDesc.name == branding
                                   ? HelpIcon(wikipage: "Styling-the-web-app")
                                   : HelpIcon.url(
                                       url: serviceDesc.sample!,
@@ -240,9 +240,8 @@ class ServiceWidget extends StatelessWidget {
     return _wrapField(
         child: GenericTextFormField(
             initialValue: service.suburl,
-            focusNode: service.nameInt == LAServiceName.collectory.toS()
-                ? collectoryFocusNode
-                : null,
+            focusNode:
+                service.nameInt == collectory ? collectoryFocusNode : null,
             // This
             // hint: serviceDesc.hint,
             allowEmpty: false,
@@ -263,8 +262,7 @@ class ServiceWidget extends StatelessWidget {
     return _wrapField(
         child: GenericTextFormField(
             initialValue: service.iniPath,
-            focusNode: service.nameInt == LAServiceName.collectory.toS() &&
-                    !service.usesSubdomain
+            focusNode: service.nameInt == collectory && !service.usesSubdomain
                 ? collectoryFocusNode
                 : null,
             isDense: false,

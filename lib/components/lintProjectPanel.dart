@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/dependencies.dart';
 import 'package:la_toolkit/models/laProject.dart';
@@ -47,10 +48,10 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 {}
                   ..addAll(project.getServiceDeployReleases())
                   ..addAll({
-                    Dependencies.toolkit: vm.backendVersion!,
-                    Dependencies.alaInstall:
+                    toolkit: vm.backendVersion!,
+                    alaInstall:
                         project.alaInstallRelease ?? vm.alaInstallReleases[0],
-                    Dependencies.generator:
+                    generator:
                         project.generatorRelease ?? vm.generatorReleases[0]
                   })))
       ];
@@ -79,7 +80,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           if (!project.collectoryAndBiocacheDifferentServers())
             const AlertCard(
                 message:
-                    "The collections and the occurrences front-end (bioache-hub) services are in the same server. This can cause start-up problems when caches are enabled"),
+                    "The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled"),
           if (!project.getServiceE(LAServiceName.pipelines).use &&
               !project.getServiceE(LAServiceName.biocache_backend).use)
             const AlertCard(
