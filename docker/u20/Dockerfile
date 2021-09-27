@@ -16,7 +16,7 @@ RUN python3 -m pip install --upgrade pip cffi \
     pip install mitogen ansible-lint
 
 # Install node via APT
-RUN curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - && \
         DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
 
 # go install (needed by assh)
@@ -132,8 +132,9 @@ RUN apt-get -y update && \
         apt-get install -y -q la-pipelines  # 2021090901
 # Enable bash autocompletion by default, useful for la-pipelines cmd autocompletion and others
 RUN sed -i '/^#.*\. \/etc\/bash_completion/s/^#//' /etc/bash.bashrc
-RUN curl -o /data/pipelines-shp/pipelines-shapefiles.zip -O https://pipelines-shp.s3-ap-southeast-2.amazonaws.com/pipelines-shapefiles.zip
-RUN (cd /data/pipelines-shp/ && unzip pipelines-shapefiles.zip)
+# This part is disabled for disk usage reasons
+# RUN curl -o /data/pipelines-shp/pipelines-shapefiles.zip -O https://pipelines-shp.s3-ap-southeast-2.amazonaws.com/pipelines-shapefiles.zip
+# RUN (cd /data/pipelines-shp/ && unzip pipelines-shapefiles.zip)
 RUN chown -R ubuntu:ubuntu /data/la-pipelines
 RUN chown -R ubuntu:ubuntu /data/pipelines*
 RUN chown -R ubuntu:ubuntu /data/dwca-imports
