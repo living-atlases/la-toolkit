@@ -12,8 +12,10 @@ class LALatLng extends LatLng {
 
   LALatLng.from(double latitude, double longitude) : super(latitude, longitude);
 
+  @override
   factory LALatLng.fromJson(Map<String, dynamic> json) =>
       _$LALatLngFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$LALatLngToJson(this);
 }
