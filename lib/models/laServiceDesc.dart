@@ -59,6 +59,7 @@ enum LAServiceName {
   biocache_cli,
   // ignore: constant_identifier_names
   nameindexer,
+  pipelines
 }
 
 extension ParseToString on LAServiceName {
@@ -461,15 +462,6 @@ class LAServiceDesc {
         admin: true,
         artifact: "doi-service",
         path: ""),
-    LAServiceName.biocache_backend.toS(): LAServiceDesc(
-        name: "biocache-backend",
-        nameInt: "biocache_backend",
-        group: "biocache-db",
-        desc: "cassandra and biocache-store backend",
-        withoutUrl: true,
-        optional: false,
-        icon: Mdi.eyeOutline,
-        path: ""),
     LAServiceName.branding.toS(): LAServiceDesc(
         name: "branding",
         nameInt: "branding",
@@ -503,8 +495,30 @@ class LAServiceDesc {
         withoutUrl: true,
         icon: Mdi.tournament,
         artifact: "ala-name-matching",
-        path: "")
-/*    artifactAnsibleVar: "biocollect_version",
+        path: ""),
+    LAServiceName.biocache_backend.toS(): LAServiceDesc(
+        name: "biocache-backend",
+        nameInt: "biocache_backend",
+        group: "biocache-db",
+        desc: "cassandra and biocache-store backend",
+        withoutUrl: true,
+        optional: true,
+        initUse: true,
+        icon: Mdi.eyeOutline,
+        path: ""),
+    LAServiceName.pipelines.toS(): LAServiceDesc(
+        name: LAServiceName.pipelines.toS(),
+        nameInt: LAServiceName.pipelines.toS(),
+        group: "pipelines",
+        desc:
+            "Pipelines for data processing and indexing of biodiversity data (replacement to biocache-store)",
+        optional: true,
+        withoutUrl: true,
+        admin: false,
+        alaAdmin: false,
+        icon: Mdi.pipe,
+        path: ""),
+    /*    artifactAnsibleVar: "biocollect_version",
     artifactAnsibleVar: "ecodata_version",
     artifactAnsibleVar: "ecodata_version",*/
   };

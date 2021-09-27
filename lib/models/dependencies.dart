@@ -31,7 +31,7 @@ class Dependencies {
   static String spatialService = LAServiceName.spatial_service.toS();
   static String userdetails = LAServiceName.userdetails.toS();
   static String webapi = LAServiceName.webapi.toS();
-  static String pipelines = "pipelines";
+  static String pipelines = LAServiceName.pipelines.toS();
   static String tomcat = "tomcat";
   static String ansible = "ansible";
 
@@ -96,7 +96,7 @@ class Dependencies {
       // biocache-service 2.x - uses biocache-store
       vc(">=2.7.0"): {biocacheStore: vc(">= 2.6.1")},
       // biocache-service 3.x - uses pipelines
-      vc(">= 3.0.0"): {"pipelines": vc("any")}
+      vc(">= 3.0.0"): {pipelines: vc("any")}
     },
     /* biocacheStore: {
       vc("any"): {biocacheService: vc("< 3.0.0")}

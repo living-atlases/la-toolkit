@@ -27,6 +27,7 @@ void main() {
   final dashboard = LAServiceName.dashboard.toS();
   final branding = LAServiceName.branding.toS();
   final doi = LAServiceName.doi.toS();
+  final pipelines = LAServiceName.pipelines.toS();
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('Test step 0 of creation, longname', () {
@@ -753,7 +754,7 @@ void main() {
         .where((s) => s.nameInt != LAServiceName.sds.toS())
         .toList()
         .forEach((service) {
-      if (![sds].contains(service.nameInt)) {
+      if (![sds, pipelines].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason:
                 "${service.nameInt} should be in Use and is ${p.getService(service.nameInt).use}");
@@ -795,6 +796,7 @@ void main() {
         spatialWs,
         geoserver,
         dashboard,
+        pipelines
       ];
       if (notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(false),
@@ -821,7 +823,8 @@ void main() {
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
     for (var service in LAServiceDesc.list(p.isHub)) {
       // print("${service.nameInt}");
-      if (![lists, webapi, doi, bie, regions, sds].contains(service.nameInt)) {
+      if (![lists, webapi, doi, bie, regions, sds, pipelines]
+          .contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
       }

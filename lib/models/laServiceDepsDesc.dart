@@ -164,6 +164,10 @@ class LAServiceDepsDesc {
     LAServiceName.nameindexer.toS(): LAServiceDepsDesc(
       nameInt: "nameindexer",
       serviceDepends: [Java.v8],
+    ),
+    LAServiceName.pipelines.toS(): LAServiceDepsDesc(
+      nameInt: LAServiceName.pipelines.toS(),
+      serviceDepends: [Java.v8],
     )
   };
 /*

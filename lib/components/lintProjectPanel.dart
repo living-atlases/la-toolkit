@@ -5,6 +5,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/dependencies.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
 
@@ -78,7 +79,12 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           if (!project.collectoryAndBiocacheDifferentServers())
             const AlertCard(
                 message:
-                    "The collections and the occurrences front-end (bioache-hub) services are in the same server. This can cause start-up problems when caches are enabled")
+                    "The collections and the occurrences front-end (bioache-hub) services are in the same server. This can cause start-up problems when caches are enabled"),
+          if (!project.getServiceE(LAServiceName.pipelines).use &&
+              !project.getServiceE(LAServiceName.biocache_backend).use)
+            const AlertCard(
+                message:
+                    "You should use biocache-store or the new pipelines as backend")
         ]);
       }
       return Column(children: lints);

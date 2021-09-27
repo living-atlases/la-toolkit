@@ -905,7 +905,13 @@ check results length: ${checkResults.length}''';
       p.serviceInUse(spatialWs, true);
       p.serviceInUse(geoserver, true);
     }
+    String? biocacheHostname = a('biocache_backend_hostname');
+    if (biocacheHostname != null) {
+      p.getServiceE(LAServiceName.biocache_backend).use = true;
+      p.getServiceE(LAServiceName.pipelines).use = false;
+    }
     // TODO mapzoom
+
     return p;
   }
 
