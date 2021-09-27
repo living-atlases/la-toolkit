@@ -2,7 +2,7 @@ import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/cmd.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';

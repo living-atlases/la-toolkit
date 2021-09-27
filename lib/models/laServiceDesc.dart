@@ -5,61 +5,7 @@ import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
 import 'package:mdi/mdi.dart';
 
-enum LAServiceName {
-  all,
-  collectory,
-  // ignore: constant_identifier_names
-  ala_hub,
-  // ignore: constant_identifier_names
-  biocache_service,
-  // ignore: constant_identifier_names
-  ala_bie,
-  // ignore: constant_identifier_names
-  bie_index,
-  images,
-  // ignore: constant_identifier_names
-  species_lists,
-  regions,
-  logger,
-  solr,
-  cas,
-  userdetails,
-  // ignore: constant_identifier_names
-  cas_management,
-  apikey,
-  spatial,
-  // ignore: constant_identifier_names
-  spatial_service,
-  geoserver,
-  webapi,
-  dashboard,
-  sds,
-  alerts,
-  doi,
-  // ignore: constant_identifier_names
-  biocache_backend,
-  branding,
-  // ignore: constant_identifier_names
-  biocache_cli,
-  // ignore: constant_identifier_names
-  nameindexer,
-  pipelines
-}
-
-extension ParseToString on LAServiceName {
-  String toS() {
-    return toString().split('.').last;
-  }
-}
-
-extension EnumParser on String {
-  LAServiceName toServiceDescName() {
-    return LAServiceName.values.firstWhere((e) =>
-        e.toString().toLowerCase() ==
-        '${(LAServiceName).toString()}.$this'
-            .toLowerCase()); //return null if not found
-  }
-}
+import 'laServiceName.dart';
 
 class LAServiceDesc {
   String name;
@@ -163,7 +109,7 @@ class LAServiceDesc {
   static final Map<String, LAServiceDesc> _map = {
     collectory: LAServiceDesc(
         name: "collections",
-        nameInt: "collectory",
+        nameInt: collectory,
         group: "collectory",
         desc: "biodiversity collections",
         optional: false,
@@ -256,9 +202,9 @@ class LAServiceDesc {
         artifact: "specieslist-webapp",
         path: ""),
     regions: LAServiceDesc(
-        name: "regions",
-        nameInt: "regions",
-        group: "regions",
+        name: regions,
+        nameInt: regions,
+        group: regions,
         desc: "regional data frontend",
         depends: LAServiceName.spatial,
         optional: true,

@@ -6,7 +6,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/dependencies.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/pipelinesStepDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';

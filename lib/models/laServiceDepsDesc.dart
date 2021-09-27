@@ -60,19 +60,19 @@ class LAServiceDepsDesc {
       ],
     ),
     regions: LAServiceDepsDesc(
-      nameInt: "regions",
+      nameInt: regions,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
     ),
     logger: LAServiceDepsDesc(
-      nameInt: "logger",
+      nameInt: logger,
       serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
     ),
     solr: LAServiceDepsDesc(
-      nameInt: "solr",
+      nameInt: solr,
       serviceDepends: [Java.v8, Solr.v7],
     ),
     cas: LAServiceDepsDesc(
-      nameInt: "cas",
+      nameInt: cas,
       serviceDepends: [
         Java.v8,
         Nginx.def,
@@ -187,7 +187,4 @@ class LAServiceDepsDesc {
         return v2_0_4;
     }
   }
-
-  // use https://pub.dev/packages/pub_semver/example
-  // toolkit 1.0.22, ala-install 2.0.6 - gen 1.1.36
 }

@@ -25,6 +25,7 @@ import 'components/lintProjectPanel.dart';
 import 'components/scrollPanel.dart';
 import 'models/laReleases.dart';
 import 'models/laServiceDesc.dart';
+import 'models/laServiceName.dart';
 import 'models/laVariable.dart';
 
 class LAProjectTunePage extends StatelessWidget {

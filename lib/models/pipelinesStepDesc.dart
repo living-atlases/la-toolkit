@@ -1,4 +1,4 @@
-import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'laServiceName.dart';
 
 class PipelinesStepDesc {
   String name;
