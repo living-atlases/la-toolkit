@@ -51,7 +51,7 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
     cmd = widget.cmd;
     focus = FocusNode(debugLabel: 'Button');
     _nodeAttachment = focus.attach(context, onKey: (node, event) {
-      // print("is shift: $isShiftPressed");
+      print("Was shift: $isShiftPressed");
       isShiftPressed = event.isShiftPressed;
       return KeyEventResult.handled;
     });
