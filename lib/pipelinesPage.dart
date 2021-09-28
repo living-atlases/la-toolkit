@@ -13,6 +13,7 @@ import 'laTheme.dart';
 import 'models/commonCmd.dart';
 import 'models/laProject.dart';
 import 'models/pipelinesCmd.dart';
+import 'models/pipelinesStepName.dart';
 
 class PipelinesPage extends StatefulWidget {
   static const routeName = "pipelines";
@@ -51,12 +52,12 @@ class _PipelinesPageState extends State<PipelinesPage> {
         print("Building pipelines page for $cmd");
         bool isACmdForAll = cmd.steps
             .where((String step) => [
-                  'archive-list',
-                  'dataset-list',
-                  'prune-datasets',
-                  'validation-report',
-                  'jackknife',
-                  'clustering',
+                  archiveList,
+                  datasetList,
+                  pruneDatasets,
+                  validationReport,
+                  jackknife,
+                  clustering
                 ].contains(step))
             .toList()
             .isNotEmpty;
