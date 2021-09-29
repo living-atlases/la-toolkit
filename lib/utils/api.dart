@@ -476,4 +476,25 @@ class Api {
         cmd: action.cmd.toJson(),
         action: action);
   }
+
+  static Future<Map<String, String>> getServiceDetailsForVersionCheck(
+      LAProject project) async {
+    Map<String, dynamic> services = project.getServiceDetailsForVersionCheck();
+    if (AppUtils.isDemo()) return {};
+    Uri url = uri(env['BACKEND']!, "/api/v1/get-service-versions");
+    Response response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({
+          'services': services,
+        })));
+    if (response.statusCode == 200) {
+      Map<String, String> l = json.decode(response.body);
+      // for (var element in l.keys) {
+      // print("out: ${l[element]['out']}");
+      // }
+      return l;
+    } else {
+      return {};
+    }
+  }
 }

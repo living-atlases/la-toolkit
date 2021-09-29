@@ -72,6 +72,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   // Relations -----
   List<LAServer> servers;
   List<LAService> services;
+
   // Mapped by server.id
   Map<String, List<String>> serverServices;
   List<CmdHistoryEntry> cmdHistoryEntries;
@@ -462,7 +463,9 @@ check results length: ${checkResults.length}''';
   }
 
   String get projectName => isHub ? 'Data Hub' : 'Project';
+
   String get portalName => isHub ? 'hub' : 'portal';
+
   // ignore: non_constant_identifier_names
   String get PortalName => isHub ? 'Hub' : 'Portal';
 
@@ -935,9 +938,7 @@ check results length: ${checkResults.length}''';
     getServicesNameListInUse().forEach((nameInt) {
       LAServiceDesc desc = LAServiceDesc.get(nameInt);
       LAService service = getService(nameInt);
-      String url = desc.isSubService
-          ? getServiceE(desc.parentService!).fullUrl(useSSL, domain) + desc.path
-          : service.fullUrl(useSSL, domain);
+      String url = serviceFullUrl(desc, service);
       String name = StringUtils.capitalize(desc.name);
       String? help = nameInt == solr
           ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
@@ -975,6 +976,14 @@ check results length: ${checkResults.length}''';
           help: help));
     });
     return allServices;
+  }
+
+  String serviceFullUrl(LAServiceDesc desc, LAService service) {
+    String url = desc.isSubService
+        ? getServiceE(desc.parentService!).fullUrl(useSSL, domain) +
+            desc.path.replaceFirst(RegExp(r'^/'), '')
+        : service.fullUrl(useSSL, domain);
+    return url;
   }
 
   String serviceTooltip(String name) => "Open the $name service";
@@ -1136,5 +1145,28 @@ check results length: ${checkResults.length}''';
         .value[nameInt];
     // print("$nameInt def version $version");
     return version ?? "";
+  }
+
+  Map<String, dynamic> getServiceDetailsForVersionCheck() {
+    Map<String, dynamic> versions = {};
+    for (LAServiceDeploy sd in serviceDeploys) {
+      LAService service =
+          services.firstWhere((s) => s.id == sd.serviceId, orElse: () {
+        String msg = 'Missing serviceId ${sd.serviceId}';
+        print(msg);
+        throw Exception(msg);
+      });
+      String serviceName = service.nameInt;
+      LAServiceDesc desc = LAServiceDesc.get(serviceName);
+      if (!desc.withoutUrl) {
+        versions[serviceName] = {
+          "server": sd.serviceId,
+          "url": serviceName == cas
+              ? serviceFullUrl(desc, service) + '/cas/'
+              : serviceFullUrl(desc, service)
+        };
+      }
+    }
+    return versions;
   }
 }
