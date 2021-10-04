@@ -311,6 +311,12 @@ class OnTestConnectivityResults extends AppActions {
   OnTestConnectivityResults(this.results);
 }
 
+class OnPortalRunningVersionsRetrieved extends AppActions {
+  Map<String, String> versions;
+
+  OnPortalRunningVersionsRetrieved(this.versions);
+}
+
 class OnSshKeysScan extends AppActions {
   VoidCallback onKeysScanned;
 

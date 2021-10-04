@@ -81,6 +81,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
   List<LAProject> hubs;
   @JsonKey(ignore: true)
   LAProject? parent;
+  @JsonKey(ignore: true)
+  Map<String, String> runningVersions;
 
   // Logs history -----
   CmdHistoryEntry? lastCmdEntry;
@@ -120,7 +122,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
       List<LAProject>? hubs,
       int? createdAt,
       Map<String, List<String>>? serverServices,
-      Map<String, dynamic>? checkResults})
+      Map<String, dynamic>? checkResults,
+      Map<String, String>? runningVersions})
       : id = id ?? ObjectId().toString(),
         domain = domain ?? (isHub ? 'somehubname.' + parent!.domain : ''),
         servers = servers ?? [],
@@ -131,6 +134,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         createdAt = createdAt ?? DateTime.now().microsecondsSinceEpoch,
         checkResults = checkResults ?? {},
         serverServices = serverServices ?? {},
+        runningVersions = runningVersions ?? {},
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
         cmdHistoryEntries = cmdHistoryEntries ?? [],
@@ -206,7 +210,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   void _reAssignService(String serviceNameInt) {
-    List<LAServiceDeploy> deploys = getServiceDeploys(serviceNameInt);
+    List<LAServiceDeploy> deploys =
+        getServiceDeploysForSomeService(serviceNameInt);
     if (deploys.isNotEmpty) {
       // For now, we only support one deploy per service
       LAServer server = servers.where((s) => s.id == deploys[0].serverId).first;
@@ -576,11 +581,11 @@ check results length: ${checkResults.length}''';
         sD.serviceId == serviceId);
   }
 
-  List<LAServiceDeploy> getServiceDeploys(String serviceNameInt) {
+  List<LAServiceDeploy> getServiceDeploysForSomeService(String serviceNameInt) {
     List<LAServiceDeploy> sds = [];
-    List<LAService> servicesSub =
+    List<LAService> serviceSubset =
         services.where((s) => s.nameInt == serviceNameInt).toList();
-    for (LAService s in servicesSub) {
+    for (LAService s in serviceSubset) {
       sds.addAll(serviceDeploys
           .where((sD) => sD.projectId == id && sD.serviceId == s.id)
           .toList());
@@ -588,21 +593,36 @@ check results length: ${checkResults.length}''';
     return sds;
   }
 
-  void setServiceDeployRelease(String sN, String release) {
-    List<LAServiceDeploy> serviceDeploysForName = getServiceDeploys(sN);
+  void setServiceDeployRelease(String serviceName, String release) {
+    List<LAServiceDeploy> serviceDeploysForName =
+        getServiceDeploysForSomeService(serviceName);
     if (AppUtils.isDev()) {
       print(
-          "Setting ${serviceDeploysForName.length} service deploys for service $sN and release $release");
+          "Setting ${serviceDeploysForName.length} service deploys for service $serviceName and release $release");
     }
     for (LAServiceDeploy sd in serviceDeploysForName) {
-      sd.softwareVersions[sN] = release;
+      sd.softwareVersions[serviceName] = release;
     }
   }
 
+  // Retrieve first sd with some software version setted for some serviceName
   String? getServiceDeployRelease(String serviceName) {
-    return getServiceDeployReleases()[serviceName];
+    String? version;
+    for (LAServiceDeploy sd in serviceDeploys) {
+      version = sd.softwareVersions[serviceName];
+      if (version != null) {
+        return version;
+      }
+    }
   }
 
+  // Each serviceDeploy has a Map of software/versions
+  // This list can differ from the runtime version of that software depending on
+  // the portal status of deployment:
+  // 1) at creation time
+  // 2) prior to update a service
+  // 3) after a deploy/update a service
+  // TODO
   Map<String, String> getServiceDeployReleases() {
     Map<String, String> versions = {};
     for (LAServiceDeploy sd in serviceDeploys) {
@@ -1085,6 +1105,8 @@ check results length: ${checkResults.length}''';
           const ListEquality().equals(hubs, other.hubs) &&
           const DeepCollectionEquality.unordered()
               .equals(checkResults, other.checkResults) &&
+          const DeepCollectionEquality.unordered()
+              .equals(runningVersions, other.runningVersions) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -1115,6 +1137,7 @@ check results length: ${checkResults.length}''';
       const ListEquality().hash(variables) ^
       const ListEquality().hash(serviceDeploys) ^
       const DeepCollectionEquality.unordered().hash(checkResults) ^
+      const DeepCollectionEquality.unordered().hash(runningVersions) ^
       createdAt.hashCode ^
       mapZoom.hashCode;
 

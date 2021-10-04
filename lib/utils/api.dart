@@ -488,11 +488,13 @@ class Api {
           'services': services,
         })));
     if (response.statusCode == 200) {
-      Map<String, String> l = json.decode(response.body);
+      Map<String, dynamic> l = json.decode(response.body);
+      Map<String, String> versions =
+          l.map((key, value) => MapEntry(key, value.toString()));
       // for (var element in l.keys) {
       // print("out: ${l[element]['out']}");
       // }
-      return l;
+      return versions;
     } else {
       return {};
     }

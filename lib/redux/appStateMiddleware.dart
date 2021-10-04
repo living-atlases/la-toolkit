@@ -236,6 +236,19 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             AppSnackBarMessage.ok("Failed to delete project ($e)")));
       }
     }
+
+    if (action is OpenProjectTools) {
+      if (action.project.allServicesAssignedToServers() ||
+          action.project.inProduction) {
+        Map<String, String> serviceVersions =
+            await Api.getServiceDetailsForVersionCheck(action.project);
+        store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
+        if (AppUtils.isDev()) {
+          print(serviceVersions);
+        }
+      }
+    }
+
     if (action is UpdateProject) {
       LAProject project = action.project;
       await _updateProject(

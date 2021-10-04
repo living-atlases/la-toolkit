@@ -61,6 +61,8 @@ List<Reducer<AppState>> basic = [
   TypedReducer<AppState, SaveCurrentCmd>(_saveCurrentCmd),
   TypedReducer<AppState, OnDeletedLog>(_onDeletedLog),
   TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
+  TypedReducer<AppState, OnPortalRunningVersionsRetrieved>(
+      _onPortalRunningVersionsRetrieved),
 ];
 
 final appReducer =
@@ -434,4 +436,11 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   }
   // for (String serverName in response.keys) {}
   return state;
+}
+
+AppState _onPortalRunningVersionsRetrieved(
+    AppState state, OnPortalRunningVersionsRetrieved action) {
+  LAProject cp = state.currentProject;
+  cp.runningVersions = action.versions;
+  return state.copyWith(currentProject: cp);
 }
