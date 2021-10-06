@@ -238,8 +238,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
 
     if (action is OpenProjectTools || action is TuneProject) {
-      if (action.project.allServicesAssignedToServers() ||
-          action.project.inProduction) {
+      if (!action.project.isHub &&
+          (action.project.allServicesAssignedToServers() ||
+              action.project.inProduction)) {
         Api.getServiceDetailsForVersionCheck(action.project)
             .then((serviceVersions) {
           store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
@@ -482,8 +483,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (openProjectView) {
         store.dispatch(OpenProjectTools(project));
       }
-    } catch (e) {
+    } catch (e, stacktrace) {
       print(e);
+      print(stacktrace);
       if (AppUtils.isDev()) {
         store.dispatch(ShowSnackBar(
             AppSnackBarMessage.ok("Failed to update project ($e)")));
