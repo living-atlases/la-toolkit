@@ -92,7 +92,8 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             const AlertCard(
                 message:
                     "The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled"),
-          if (!project.getServiceE(LAServiceName.pipelines).use &&
+          if (!project.isHub &&
+              !project.getServiceE(LAServiceName.pipelines).use &&
               !project.getServiceE(LAServiceName.biocache_backend).use)
             const AlertCard(
                 message:
