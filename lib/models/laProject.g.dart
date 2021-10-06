@@ -134,7 +134,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
       (k, e) =>
           MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
     ),
-  );
+  )..clientMigration = json['clientMigration'] as int?;
 }
 
 Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
@@ -167,6 +167,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'variables': instance.variables.map((e) => e.toJson()).toList(),
       'hubs': instance.hubs.map((e) => e.toJson()).toList(),
       'lastCmdEntry': instance.lastCmdEntry?.toJson(),
+      'clientMigration': instance.clientMigration,
     };
 
 K _$enumDecode<K, V>(
