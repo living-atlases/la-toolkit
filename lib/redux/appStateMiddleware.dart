@@ -237,15 +237,16 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
 
-    if (action is OpenProjectTools) {
+    if (action is OpenProjectTools || action is TuneProject) {
       if (action.project.allServicesAssignedToServers() ||
           action.project.inProduction) {
-        Map<String, String> serviceVersions =
-            await Api.getServiceDetailsForVersionCheck(action.project);
-        store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
-        if (AppUtils.isDev()) {
-          print(serviceVersions);
-        }
+        Api.getServiceDetailsForVersionCheck(action.project)
+            .then((serviceVersions) {
+          store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
+          if (AppUtils.isDev()) {
+            print(serviceVersions);
+          }
+        });
       }
     }
 
