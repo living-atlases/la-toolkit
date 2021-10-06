@@ -53,6 +53,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               /* sshKeys: store.state.sshKeys, -*/
               status: store.state.currentProject.status,
               loading: store.state.loading,
+              softwareReleasesReady: store.state.laReleases.isNotEmpty,
               onOpenProject: (project) {
                 store.dispatch(OpenProject(project));
                 BeamerCond.of(context, LAProjectEditLocation());
@@ -245,6 +246,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           String projectIconUrl =
               project.getVariableValue("favicon_url").toString();
           String pageTitle = "${project.shortName} Toolkit";
+          bool showSoftwareVersions =
+              project.showSoftwareVersions && vm.softwareReleasesReady;
+          bool showToolkitDeps = project.showToolkitDeps;
           return Title(
               title: pageTitle,
               color: LAColorTheme.laPalette,
@@ -304,7 +308,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                             const SizedBox(height: 10),
                             if (!project.isHub)
                               createHubWidget(context, vm, project),
-                            const LintProjectPanel()
+                            LintProjectPanel(
+                                showLADeps: showSoftwareVersions,
+                                showToolkitDeps: showToolkitDeps)
                           ])))));
         });
   }
@@ -473,6 +479,7 @@ class _ProjectPageViewModel {
   final LAProject project;
   final LAProjectStatus status;
   final bool loading;
+  final bool softwareReleasesReady;
   final void Function(LAProject project) onOpenProject;
   final void Function(LAProject project) onOpenParent;
   final void Function(LAProject project) onTuneProject;
@@ -493,6 +500,7 @@ class _ProjectPageViewModel {
       {required this.project,
       required this.status,
       required this.loading,
+      required this.softwareReleasesReady,
       required this.onOpenProject,
       required this.onOpenHub,
       required this.onOpenParent,
@@ -516,9 +524,14 @@ class _ProjectPageViewModel {
           runtimeType == other.runtimeType &&
           project == other.project &&
           status.value == other.status.value &&
+          softwareReleasesReady &&
+          other.softwareReleasesReady &&
           loading == other.loading;
 
   @override
   int get hashCode =>
-      project.hashCode ^ status.value.hashCode ^ loading.hashCode;
+      project.hashCode ^
+      status.value.hashCode ^
+      loading.hashCode ^
+      softwareReleasesReady.hashCode;
 }

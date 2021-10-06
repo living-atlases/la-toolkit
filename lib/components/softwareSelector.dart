@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class SoftwareSelector extends StatefulWidget {
   final List<String> versions;
-  final Map<String, Color> highlight;
+  final Map<String, TextStyle> highlight;
   final String? initialValue;
   final Function(String?) onChange;
   final String label;
@@ -14,7 +14,7 @@ class SoftwareSelector extends StatefulWidget {
       {Key? key,
       required this.label,
       required this.versions,
-      Map<String, Color>? highlight,
+      Map<String, TextStyle>? highlight,
       this.initialValue,
       required this.onChange,
       this.useBadge = true,
@@ -49,11 +49,10 @@ Choose the latest release to update your portal.
     }
     // remove dups
     for (String version in widget.versions.toSet().toList()) {
-      Color? color = widget.highlight[version];
+      TextStyle? style = widget.highlight[version];
       releases[version] = DropdownMenuItem(
           // remove starting 'v' from git tags
-          child: Text(version.replaceFirst(RegExp(r'^v'), ''),
-              style: color != null ? TextStyle(color: color) : null),
+          child: Text(version.replaceFirst(RegExp(r'^v'), ''), style: style),
           value: version);
     }
 

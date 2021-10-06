@@ -502,7 +502,8 @@ If you have doubts or need to ask for some information, save this project and co
                           ],
                         );
                       }),
-                  const LintProjectPanel()
+                  const LintProjectPanel(
+                      showToolkitDeps: false, showLADeps: false)
                 ]))),
                 //     ])
               ));

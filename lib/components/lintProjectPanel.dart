@@ -14,9 +14,15 @@ import 'alertCard.dart';
 import 'lintErrorPanel.dart';
 
 class LintProjectPanel extends StatefulWidget {
-  final bool onlySoftware;
+  final bool showLADeps;
+  final bool showToolkitDeps;
+  final bool showOthers;
 
-  const LintProjectPanel({Key? key, this.onlySoftware = false})
+  const LintProjectPanel(
+      {Key? key,
+      this.showLADeps = true,
+      this.showToolkitDeps = true,
+      this.showOthers = true})
       : super(key: key);
 
   @override
@@ -40,22 +46,27 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
       LAProject project = vm.project;
       final bool basicDefined =
           vm.status.value >= LAProjectStatus.basicDefined.value;
+      Map<String, String> selectedVersions = {};
+      if (widget.showLADeps) {
+        selectedVersions.addAll(project.getServiceDeployReleases());
+      }
+      // we need also the toolkit deps
+      if ((widget.showToolkitDeps || widget.showLADeps) &&
+          vm.backendVersion != null) {
+        selectedVersions.addAll({
+          toolkit: vm.backendVersion!,
+          alaInstall: project.alaInstallRelease ?? vm.alaInstallReleases[0],
+          generator: project.generatorRelease ?? vm.generatorReleases[0]
+        });
+      }
       List<Widget> lints = [
         LintErrorPanel(vm.backendVersion == null // AppUtils.isDemo()
             ? []
             : Dependencies.verifyLAReleases(
                 project.getServicesNameListInUse() + Dependencies.laTools,
-                {}
-                  ..addAll(project.getServiceDeployReleases())
-                  ..addAll({
-                    toolkit: vm.backendVersion!,
-                    alaInstall:
-                        project.alaInstallRelease ?? vm.alaInstallReleases[0],
-                    generator:
-                        project.generatorRelease ?? vm.generatorReleases[0]
-                  })))
+                selectedVersions))
       ];
-      if (!widget.onlySoftware) {
+      if (widget.showOthers) {
         lints.addAll([
           if (vm.sshKeys.isEmpty)
             AlertCard(

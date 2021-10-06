@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -29,72 +30,86 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _LAReleasesSelectorsViewModel>(
+        distinct: false,
         converter: (store) {
-      return _LAReleasesSelectorsViewModel(
-          project: store.state.currentProject,
-          laReleases: store.state.laReleases,
-          onSaveProject: (project) {
-            debouncer.run(() => store.dispatch(SaveCurrentProject(project)));
-          });
-    }, builder: (BuildContext context, _LAReleasesSelectorsViewModel vm) {
-      LAProject project = vm.project;
-      List<LAServiceDesc> services = LAServiceDesc.listSorted(project.isHub);
-      List<Widget> selectors = [];
+          return _LAReleasesSelectorsViewModel(
+              project: store.state.currentProject,
+              runningVersionsRetrieved:
+                  store.state.currentProject.runningVersions.isNotEmpty,
+              laReleases: store.state.laReleases,
+              onSaveProject: (project) {
+                debouncer
+                    .run(() => store.dispatch(SaveCurrentProject(project)));
+              });
+        },
+        builder: (BuildContext context, _LAReleasesSelectorsViewModel vm) {
+          LAProject project = vm.project;
+          List<LAServiceDesc> services =
+              LAServiceDesc.listSorted(project.isHub);
+          List<Widget> selectors = [];
 
-      for (LAServiceDesc serviceDesc in services) {
-        String serviceNameInt = serviceDesc.nameInt;
-        LAReleases? releases = vm.laReleases[serviceNameInt];
-        void onChange(String value) {
-          widget.onSoftwareSelected(serviceNameInt, value);
-        }
-
-        LAService serviceOrParent = !serviceDesc.isSubService
-            ? project.getService(serviceNameInt)
-            : project.getService(serviceDesc.parentService!.toS());
-        if (serviceOrParent.use &&
-            serviceDesc.artifact != null &&
-            releases != null) {
-          Map<String, Color> highlight = {};
-          String initialValue =
-              _getInitialValue(project, serviceNameInt, releases, onChange);
-          String? runningVersion = project.runningVersions[serviceNameInt];
-          for (String version in releases.versions) {
-            if (version == initialValue) {
-              highlight[version] = Colors.red;
+          for (LAServiceDesc serviceDesc in services) {
+            String serviceNameInt = serviceDesc.nameInt;
+            LAReleases? releases = vm.laReleases[serviceNameInt];
+            void onChange(String value) {
+              widget.onSoftwareSelected(serviceNameInt, value);
             }
 
-            if (version == runningVersion) {
-              highlight[version] = LAColorTheme.laPalette;
-            } else if (version == releases.latest) {
-              // Current latest marked versions are quite outdated and unuseful
-              //  highlight[version] = Colors.orange;
+            LAService serviceOrParent = !serviceDesc.isSubService
+                ? project.getService(serviceNameInt)
+                : project.getService(serviceDesc.parentService!.toS());
+            if (serviceOrParent.use &&
+                serviceDesc.artifact != null &&
+                releases != null) {
+              Map<String, TextStyle> highlight = {};
+              String initialValue =
+                  _getInitialValue(project, serviceNameInt, releases, onChange);
+              if (vm.runningVersionsRetrieved) {
+                String? runningVersion =
+                    project.runningVersions[serviceNameInt];
+                for (String version in releases.versions) {
+                  if (version == initialValue) {
+                    highlight[version] = TextStyle(
+                      color: LAColorTheme.unDeployedColor,
+                      // fontStyle: FontStyle.italic
+                    );
+                  }
+
+                  if (version == runningVersion) {
+                    highlight[version] = TextStyle(
+                        color: LAColorTheme.deployedColor,
+                        fontWeight: FontWeight.w400);
+                  } else if (version == releases.latest) {
+                    // Current latest marked versions are quite outdated and unuseful
+                    //  highlight[version] = Colors.orange;
+                  }
+                }
+              }
+              Widget swWidget = _createSoftwareSelector(
+                  serviceName: LAServiceDesc.swNameWithAliasForHumans(
+                      serviceDesc.nameInt),
+                  initialValue: initialValue,
+                  highlight: highlight,
+                  versions: releases.versions,
+                  onChange: onChange);
+              selectors.add(swWidget);
+            } else {
+              if (releases == null) {
+                // print("No releases available for $serviceNameInt");
+              }
             }
           }
-          Widget swWidget = _createSoftwareSelector(
-              serviceName:
-                  LAServiceDesc.swNameWithAliasForHumans(serviceDesc.nameInt),
-              initialValue: initialValue,
-              highlight: highlight,
-              versions: releases.versions,
-              onChange: onChange);
-          selectors.add(swWidget);
-        } else {
-          if (releases == null) {
-            // print("No releases available for $serviceNameInt");
-          }
-        }
-      }
 
-      return Column(children: [
-        const SizedBox(height: 10),
-        ListTile(
-          title: Text(
-              "Here you can select which version of each LA component do you want to deploy in order to keep your portal updated. ${(project.inProduction || project.allServicesAssignedToServers()) ? 'In green we try to show your current running versions. ' : ''}You can verify also which versions are running other LA portals."),
-          trailing: HelpIcon(wikipage: "Components-versioning"),
-        ),
-        Wrap(children: selectors)
-      ]);
-    });
+          return Column(children: [
+            const SizedBox(height: 10),
+            ListTile(
+              title: Text(
+                  "Here you can select which version of each LA component do you want to deploy in order to keep your portal updated. ${(project.inProduction || project.allServicesAssignedToServers()) ? 'In green services that need to be deployed, and in blue your current running versions. ' : ''}You can verify also which versions are running other LA portals."),
+              trailing: HelpIcon(wikipage: "Components-versioning"),
+            ),
+            Wrap(children: selectors)
+          ]);
+        });
   }
 
   String _getInitialValue(LAProject project, String swName, LAReleases releases,
@@ -114,7 +129,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
   Widget _createSoftwareSelector(
       {required String serviceName,
       required String initialValue,
-      Map<String, Color>? highlight,
+      Map<String, TextStyle>? highlight,
       required List<String> versions,
       required Function(String) onChange}) {
     Widget swWidget = SizedBox(
@@ -139,10 +154,30 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
 class _LAReleasesSelectorsViewModel {
   final Map<String, LAReleases> laReleases;
   final LAProject project;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _LAReleasesSelectorsViewModel &&
+          runtimeType == other.runtimeType &&
+          const DeepCollectionEquality.unordered()
+              .equals(laReleases, other.laReleases) &&
+          project == other.project &&
+          runningVersionsRetrieved == other.runningVersionsRetrieved;
+
+  @override
+  int get hashCode =>
+      laReleases.hashCode ^
+      project.hashCode ^
+      runningVersionsRetrieved.hashCode ^
+      const DeepCollectionEquality.unordered().hash(laReleases);
+
+  final bool runningVersionsRetrieved;
   final void Function(LAProject project) onSaveProject;
 
   _LAReleasesSelectorsViewModel(
       {required this.laReleases,
       required this.project,
+      required this.runningVersionsRetrieved,
       required this.onSaveProject});
 }

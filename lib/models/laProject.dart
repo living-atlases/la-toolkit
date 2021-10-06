@@ -793,11 +793,13 @@ check results length: ${checkResults.length}''';
     for (LAServiceDeploy sd in serviceDeploys) {
       sd.softwareVersions.forEach((sw, value) {
         if (LAServiceDesc.swToAnsibleVars[sw] != null) {
+          // LAServer server = servers.firstWhere((s) => s.id == sd.serverId);
           swVersions.add([LAServiceDesc.swToAnsibleVars[sw]!, value]);
         }
       });
     }
-    conf["LA_software_versions"] = swVersions;
+    conf["LA_software_versions"] = swVersions
+      ..sort((a, b) => compareAsciiUpperCase(a[0], b[0]));
 
     for (LAVariable variable in variables) {
       conf["${LAVariable.varInvPrefix}${variable.nameInt}"] = variable.value;
@@ -1146,15 +1148,6 @@ check results length: ${checkResults.length}''';
     String nameInt = service.nameInt;
     if (alaInstallRelease != null) {
       defVersions[nameInt] = _setDefSwVersion(nameInt);
-      if (nameInt == cas) {
-        defVersions[cas] = _setDefSwVersion(cas);
-        defVersions[casManagement] = _setDefSwVersion(casManagement);
-        defVersions[userdetails] = _setDefSwVersion(userdetails);
-        defVersions[apikey] = _setDefSwVersion(apikey);
-      }
-      if (nameInt == spatial) {
-        defVersions[spatialService] = _setDefSwVersion(spatialService);
-      }
     }
     defVersions.removeWhere((key, value) => value == "");
     return defVersions;
@@ -1166,7 +1159,6 @@ check results length: ${checkResults.length}''';
             : Dependencies.defaultVersions.entries.firstWhere(
                 (e) => e.key.allows(Dependencies.v(alaInstallRelease!))))
         .value[nameInt];
-    // print("$nameInt def version $version");
     return version ?? "";
   }
 
@@ -1192,4 +1184,7 @@ check results length: ${checkResults.length}''';
     }
     return versions;
   }
+
+  bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();
+  bool get showToolkitDeps => !isHub;
 }

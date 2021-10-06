@@ -42,8 +42,7 @@ class LAProjectTunePage extends StatelessWidget {
       converter: (store) {
         return _ProjectTuneViewModel(
           project: store.state.currentProject,
-          softwareReleasesReady:
-              AppUtils.isDev() && store.state.laReleases.isNotEmpty,
+          softwareReleasesReady: store.state.laReleases.isNotEmpty,
           laReleases: store.state.laReleases,
           status: store.state.currentProject.status,
           alaInstallReleases: store.state.alaInstallReleases,
@@ -109,11 +108,9 @@ class LAProjectTunePage extends StatelessWidget {
         });
         String pageTitle =
             "${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}";
-        bool showSoftwareVersions = !project.isHub &&
-            project.allServicesAssignedToServers() &&
-            project.advancedTune &&
-            vm.softwareReleasesReady;
-        bool showToolkitDeps = !project.isHub;
+        bool showSoftwareVersions =
+            project.showSoftwareVersions && vm.softwareReleasesReady;
+        bool showToolkitDeps = project.showToolkitDeps;
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -227,7 +224,10 @@ class LAProjectTunePage extends StatelessWidget {
                                   vm.onSaveProject(project);
                                 }),
                               if (showSoftwareVersions || showToolkitDeps)
-                                const LintProjectPanel(onlySoftware: true),
+                                LintProjectPanel(
+                                    showLADeps: showSoftwareVersions,
+                                    showToolkitDeps: showToolkitDeps,
+                                    showOthers: false),
                               const SizedBox(height: 20),
                               ListView.builder(
                                 scrollDirection: Axis.vertical,
@@ -425,6 +425,7 @@ class _ProjectTuneViewModel {
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
   final bool softwareReleasesReady;
+
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
   final String? backendVersion;
