@@ -91,6 +91,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
   @JsonKey(ignore: true)
   Tuple2<List<ProdServiceDesc>, HostsServicesChecks>? servicesToMonitor;
 
+  int? clientMigration;
+
   LAProject(
       {String? id,
       this.longName = "",
@@ -148,33 +150,50 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if ((dirName == null || dirName!.isEmpty) && shortName.isNotEmpty) {
       dirName = suggestDirName();
     }
-    // Project pre migration from subServices to services
-    migrateSubServices();
-    fixNonHubServices();
+    migrate();
     // _setDefSwVersions();
     validateCreation();
+  }
+
+  void migrate() {
+    try {
+      if (clientMigration == null) {
+        // Project pre migration from subServices to services
+        print('Migrating non hub services $shortName');
+        fixNonHubServices();
+        clientMigration = 0;
+      }
+      if (clientMigration == 0) {
+        print('Migrating to use subservices $shortName');
+        migrateSubServices();
+        clientMigration = 1;
+      }
+    } catch (e, stacktrace) {
+      print('Client migration of project failed $e');
+      print(stacktrace);
+    }
   }
 
   // Migrate old project from subservices (used for userdetails, apikey, etc) to
   // services (like cas) with parent/child services. For now these kind of services
   // are deployed together (cas, userdetails, etc).
   void migrateSubServices() {
-    if (createdAt < DateTime(2021, 9, 21).millisecondsSinceEpoch &&
-        !isHub &&
-        getServiceE(LAServiceName.cas).use &&
-        !getServiceE(LAServiceName.userdetails).use) {
+    if (createdAt < DateTime(2021, 9, 24).millisecondsSinceEpoch && !isHub) {
       if (AppUtils.isDev()) {
         print("Migrating cas sub-services etc as services");
       }
-      serviceInUse(userdetails, true);
-      serviceInUse(apikey, true);
-      serviceInUse(casManagement, true);
-      _reAssignService(cas);
+      if (getService(cas).use) {
+        serviceInUse(userdetails, true);
+        serviceInUse(apikey, true);
+        serviceInUse(casManagement, true);
+        _reAssignService(cas);
+      }
+
       if (getService(spatial).use) {
         serviceInUse(spatialService, true);
         serviceInUse(geoserver, true);
+        _reAssignService(spatial);
       }
-      _reAssignService(spatial);
     }
   }
 
@@ -183,7 +202,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       print("Fixing non hub services");
       List<LAService> sToDel = [];
       List<String> allowedServices = LAServiceDesc.listS(isHub);
-      print(this);
+      // print(this);
       for (LAService s in services) {
         print(s);
         if (!allowedServices.contains(s.nameInt)) {
@@ -205,7 +224,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         }
         serverServices[serverId] = services;
       });
-      print(this);
+      // print(this);
     }
   }
 
@@ -218,6 +237,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       List<String> servicesInThatServer =
           getServicesNameListInServer(server.id);
       // re-assign to add sub-services
+      print("reassigning $servicesInThatServer to ${server.name}");
       assign(server, servicesInThatServer);
     }
   }
@@ -532,7 +552,7 @@ check results length: ${checkResults.length}''';
     serverServices[server.id] = newServices.toList();
     List serviceIds = [];
     for (String sN in newServices) {
-      LAService service = services.firstWhere((s) => s.nameInt == sN);
+      LAService service = getService(sN);
       serviceIds.add(service.id);
       serviceDeploys.firstWhere(
           (sD) =>
