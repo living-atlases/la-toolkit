@@ -236,9 +236,11 @@ class LAProjectTunePage extends StatelessWidget {
                                     .buildTitle(context),
                               if (showSoftwareVersions)
                                 LAReleasesSelectors(onSoftwareSelected:
-                                    (String sw, String version) {
+                                    (String sw, String version, bool save) {
                                   project.setServiceDeployRelease(sw, version);
-                                  vm.onSaveProject(project);
+                                  if (save) {
+                                    vm.onSaveProject(project);
+                                  }
                                 }),
                               if (showSoftwareVersions || showToolkitDeps)
                                 LintProjectPanel(

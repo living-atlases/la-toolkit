@@ -16,7 +16,7 @@ import 'models/laReleases.dart';
 import 'models/laService.dart';
 
 class LAReleasesSelectors extends StatefulWidget {
-  final Function(String, String) onSoftwareSelected;
+  final Function(String, String, bool) onSoftwareSelected;
   const LAReleasesSelectors({Key? key, required this.onSoftwareSelected})
       : super(key: key);
 
@@ -51,8 +51,8 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
           for (LAServiceDesc serviceDesc in services) {
             String serviceNameInt = serviceDesc.nameInt;
             LAReleases? releases = vm.laReleases[serviceNameInt];
-            void onChange(String value) {
-              widget.onSoftwareSelected(serviceNameInt, value);
+            void onChange(String value, bool save) {
+              widget.onSoftwareSelected(serviceNameInt, value, save);
             }
 
             LAService serviceOrParent = !serviceDesc.isSubService
@@ -62,11 +62,12 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                 serviceDesc.artifact != null &&
                 releases != null) {
               Map<String, TextStyle> highlight = {};
-              String initialValue =
-                  _getInitialValue(project, serviceNameInt, releases, onChange);
+              String? runningVersion = vm.runningVersionsRetrieved
+                  ? project.runningVersions[serviceNameInt]
+                  : null;
+              String initialValue = _getInitialValue(
+                  project, serviceNameInt, releases, runningVersion, onChange);
               if (vm.runningVersionsRetrieved) {
-                String? runningVersion =
-                    project.runningVersions[serviceNameInt];
                 for (String version in releases.versions) {
                   if (version == initialValue) {
                     highlight[version] = TextStyle(
@@ -74,7 +75,6 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                       // fontStyle: FontStyle.italic
                     );
                   }
-
                   if (version == runningVersion) {
                     highlight[version] = TextStyle(
                         color: LAColorTheme.deployedColor,
@@ -113,13 +113,16 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
   }
 
   String _getInitialValue(LAProject project, String swName, LAReleases releases,
-      Function(String value) onChange) {
+      String? currentVersion, Function(String value, bool save) onChange) {
     String? storedVersion = project.getServiceDeployRelease(swName);
     if (storedVersion == null) {
       assert(releases.versions.isNotEmpty,
           "There is not releases for $swName for some reason");
-      String defVersion = releases.versions[0];
-      onChange(defVersion);
+      bool setCurrentVersion =
+          currentVersion != null && releases.versions.contains(currentVersion);
+      String defVersion =
+          setCurrentVersion ? currentVersion : releases.versions[0];
+      onChange(defVersion, true);
       return defVersion;
     } else {
       return storedVersion;
@@ -131,7 +134,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
       required String initialValue,
       Map<String, TextStyle>? highlight,
       required List<String> versions,
-      required Function(String) onChange}) {
+      required Function(String, bool) onChange}) {
     Widget swWidget = SizedBox(
         width: 230,
         child: SoftwareSelector(
@@ -141,7 +144,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
           initialValue: initialValue,
           onChange: (String? value) {
             if (value != null) {
-              onChange(value);
+              onChange(value, true);
             }
           },
           roundStyle: false,
