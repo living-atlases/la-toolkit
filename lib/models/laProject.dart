@@ -642,7 +642,6 @@ check results length: ${checkResults.length}''';
   // 1) at creation time
   // 2) prior to update a service
   // 3) after a deploy/update a service
-  // TODO
   Map<String, String> getServiceDeployReleases() {
     Map<String, String> versions = {};
     for (LAServiceDeploy sd in serviceDeploys) {
