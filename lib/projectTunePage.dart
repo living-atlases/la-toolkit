@@ -184,6 +184,23 @@ class LAProjectTunePage extends StatelessWidget {
                                             vm.onSaveProject(project);
                                           }
                                         })),
+                              const SizedBox(height: 20),
+                              ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                // Let the ListView know how many items it needs to build.
+                                itemCount: items.length,
+                                // Provide a builder function. This is where the magic happens.
+                                // Convert each item into a widget based on the type of item it is.
+                                itemBuilder: (context, index) {
+                                  final item = items[index];
+                                  return ListTile(
+                                    // contentPadding: EdgeInsets.zero,
+                                    title: item.buildTitle(context),
+                                    subtitle: item.buildSubtitle(context),
+                                  );
+                                },
+                              ),
                               if (showToolkitDeps) const SizedBox(height: 20),
                               if (showToolkitDeps)
                                 HeadingItem("LA Toolkit dependencies")
@@ -228,23 +245,6 @@ class LAProjectTunePage extends StatelessWidget {
                                     showLADeps: showSoftwareVersions,
                                     showToolkitDeps: showToolkitDeps,
                                     showOthers: false),
-                              const SizedBox(height: 20),
-                              ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                // Let the ListView know how many items it needs to build.
-                                itemCount: items.length,
-                                // Provide a builder function. This is where the magic happens.
-                                // Convert each item into a widget based on the type of item it is.
-                                itemBuilder: (context, index) {
-                                  final item = items[index];
-                                  return ListTile(
-                                    // contentPadding: EdgeInsets.zero,
-                                    title: item.buildTitle(context),
-                                    subtitle: item.buildSubtitle(context),
-                                  );
-                                },
-                              ),
                               if (project.advancedTune)
                                 const SizedBox(height: 20),
                               if (project.advancedTune)
@@ -288,7 +288,6 @@ class LAProjectTunePage extends StatelessWidget {
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
                               const SizedBox(height: 20),
-                              const LintProjectPanel(),
                               if (_endNoteEnabled)
                                 Row(children: [
                                   const Text(
