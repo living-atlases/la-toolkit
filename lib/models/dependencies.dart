@@ -97,7 +97,6 @@ class Dependencies {
   static Map<VersionConstraint, Map<String, String>> defaultVersions = {
     // ala-install vs rest of components
     vc('<= 2.0.11'): {
-      // Newer versions of biocache-service require tomcat8/9
       alaHub: "3.2.9",
       alerts: "1.5.1",
       bie: "1.5.0",
