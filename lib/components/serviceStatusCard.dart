@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/adminIconButton.dart';
 import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laService.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
@@ -66,7 +66,7 @@ class ServiceSmallLinks extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (service.nameInt != LAServiceName.biocache_backend.toS())
+          if (service.nameInt != biocacheBackend)
             SimpleServiceStatusItem(
                 icon: Tooltip(
                     message: service.tooltip,

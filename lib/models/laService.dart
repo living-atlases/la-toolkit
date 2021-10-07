@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
@@ -159,13 +160,13 @@ class LAService implements IsJsonSerializable<LAService> {
   static List<String> removeSimpleServices(List<String> services) {
     return services
         .where((nameInt) =>
-            nameInt != LAServiceName.apikey.toS() &&
-            nameInt != LAServiceName.userdetails.toS() &&
-            nameInt != LAServiceName.cas_management.toS() &&
-            nameInt != LAServiceName.spatial_service.toS() &&
-            nameInt != LAServiceName.geoserver.toS() &&
-            nameInt != LAServiceName.biocache_cli.toS() &&
-            nameInt != LAServiceName.nameindexer.toS())
+            nameInt != apikey &&
+            nameInt != userdetails &&
+            nameInt != casManagement &&
+            nameInt != spatialService &&
+            nameInt != geoserver &&
+            nameInt != biocacheStore &&
+            nameInt != nameindexer)
         .toList();
   }
 

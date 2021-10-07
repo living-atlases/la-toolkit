@@ -3,6 +3,7 @@ import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
 import 'package:la_toolkit/laTheme.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laService.dart';
@@ -38,17 +39,19 @@ class ServiceWidget extends StatelessWidget {
       LAService service = vm.currentProject.getService(serviceName);
       LAServiceDesc serviceDesc = LAServiceDesc.get(serviceName);
       final bool isHub = currentProject.isHub;
-      bool visible = (serviceDesc.depends == null ||
-              (isHub ? vm.currentProject.parent! : vm.currentProject)
-                  .getServiceE(serviceDesc.depends!)
-                  .use) &&
-          !serviceDesc.withoutUrl;
+      bool noDependsOrInUse = serviceDesc.depends == null ||
+          (isHub ? vm.currentProject.parent! : vm.currentProject)
+              .getServiceE(serviceDesc.depends!)
+              .use;
+      bool withoutUrl = serviceDesc.withoutUrl;
+      bool visible = noDependsOrInUse &&
+          (!withoutUrl ||
+              (serviceName == biocacheBackend || serviceName == pipelines));
       bool optional = serviceDesc.optional;
-      bool canUseSubdomain =
-          !serviceDesc.forceSubdomain && !serviceDesc.withoutUrl;
+      bool canUseSubdomain = !serviceDesc.forceSubdomain && !withoutUrl;
 
       String domain = vm.currentProject.domain;
-      bool usesSubdomain = !serviceDesc.withoutUrl && service.usesSubdomain;
+      bool usesSubdomain = !withoutUrl && service.usesSubdomain;
       AdvancedSwitchController domainSwitchController =
           AdvancedSwitchController();
       domainSwitchController.value = !service.usesSubdomain;
@@ -127,10 +130,10 @@ class ServiceWidget extends StatelessWidget {
                                       ]),
                                 if (!optional)
                                   Text(
-                                      "${StringUtils.capitalize(serviceDesc.desc)}:")
+                                      "${serviceDesc.name}: ${StringUtils.capitalize(serviceDesc.desc)}")
                               ]),
                           trailing: serviceDesc.sample != null
-                              ? serviceDesc.name == LAServiceName.branding.toS()
+                              ? serviceDesc.name == branding
                                   ? HelpIcon(wikipage: "Styling-the-web-app")
                                   : HelpIcon.url(
                                       url: serviceDesc.sample!,
@@ -138,8 +141,7 @@ class ServiceWidget extends StatelessWidget {
                                           "See a similar service in production")
                               : null,
                         ),
-
-                        if (!optional || service.use)
+                        if (!withoutUrl && (!optional || service.use))
                           Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,27 +174,27 @@ class ServiceWidget extends StatelessWidget {
                                   vm.onEditService(service);
                                 },
                               ) */
-                                if (!serviceDesc.withoutUrl)
+                                if (!withoutUrl)
                                   Container(
                                       padding: EdgeInsets.fromLTRB(
                                           0, 0, usesSubdomain ? 0 : 0, 0),
                                       child: Text(
                                           "http${vm.currentProject.useSSL ? 's' : ''}://",
                                           style: domainTextStyle)),
-                                if (!serviceDesc.withoutUrl && usesSubdomain)
+                                if (!withoutUrl && usesSubdomain)
                                   _createSubUrlField(service, serviceDesc, vm,
                                       'Invalid subdomain.'),
-                                if (!serviceDesc.withoutUrl && usesSubdomain)
+                                if (!withoutUrl && usesSubdomain)
                                   Text('.$domain/', style: domainTextStyle),
-                                if (!serviceDesc.withoutUrl && usesSubdomain)
+                                if (!withoutUrl && usesSubdomain)
                                   _createPathField(service, serviceDesc, vm,
                                       'Invalid path.'),
-                                if (!serviceDesc.withoutUrl && !usesSubdomain)
+                                if (!withoutUrl && !usesSubdomain)
                                   Text('$domain/', style: domainTextStyle),
-                                if (!serviceDesc.withoutUrl && !usesSubdomain)
+                                if (!withoutUrl && !usesSubdomain)
                                   _createSubUrlField(service, serviceDesc, vm,
                                       'Invalid path.'),
-                                if (!serviceDesc.withoutUrl && !usesSubdomain)
+                                if (!withoutUrl && !usesSubdomain)
                                   Text("/", style: domainTextStyle),
                                 /* SearchChoices.single(
                               items: searchServerList,
@@ -238,9 +240,8 @@ class ServiceWidget extends StatelessWidget {
     return _wrapField(
         child: GenericTextFormField(
             initialValue: service.suburl,
-            focusNode: service.nameInt == LAServiceName.collectory.toS()
-                ? collectoryFocusNode
-                : null,
+            focusNode:
+                service.nameInt == collectory ? collectoryFocusNode : null,
             // This
             // hint: serviceDesc.hint,
             allowEmpty: false,
@@ -261,8 +262,7 @@ class ServiceWidget extends StatelessWidget {
     return _wrapField(
         child: GenericTextFormField(
             initialValue: service.iniPath,
-            focusNode: service.nameInt == LAServiceName.collectory.toS() &&
-                    !service.usesSubdomain
+            focusNode: service.nameInt == collectory && !service.usesSubdomain
                 ? collectoryFocusNode
                 : null,
             isDense: false,

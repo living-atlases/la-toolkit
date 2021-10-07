@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/pipelinesStepDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
@@ -51,7 +51,7 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
     cmd = widget.cmd;
     focus = FocusNode(debugLabel: 'Button');
     _nodeAttachment = focus.attach(context, onKey: (node, event) {
-      // print("is shift: $isShiftPressed");
+      print("Was shift: $isShiftPressed");
       isShiftPressed = event.isShiftPressed;
       return KeyEventResult.handled;
     });

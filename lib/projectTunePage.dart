@@ -25,6 +25,7 @@ import 'components/lintProjectPanel.dart';
 import 'components/scrollPanel.dart';
 import 'models/laReleases.dart';
 import 'models/laServiceDesc.dart';
+import 'models/laServiceName.dart';
 import 'models/laVariable.dart';
 
 class LAProjectTunePage extends StatelessWidget {
@@ -41,8 +42,7 @@ class LAProjectTunePage extends StatelessWidget {
       converter: (store) {
         return _ProjectTuneViewModel(
           project: store.state.currentProject,
-          softwareReleasesReady:
-              AppUtils.isDev() && store.state.laReleases.isNotEmpty,
+          softwareReleasesReady: store.state.laReleases.isNotEmpty,
           laReleases: store.state.laReleases,
           status: store.state.currentProject.status,
           alaInstallReleases: store.state.alaInstallReleases,
@@ -108,11 +108,9 @@ class LAProjectTunePage extends StatelessWidget {
         });
         String pageTitle =
             "${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}";
-        bool showSoftwareVersions = !project.isHub &&
-            project.allServicesAssignedToServers() &&
-            project.advancedTune &&
-            vm.softwareReleasesReady;
-        bool showToolkitDeps = !project.isHub;
+        bool showSoftwareVersions =
+            project.showSoftwareVersions && vm.softwareReleasesReady;
+        bool showToolkitDeps = project.showToolkitDeps;
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -186,8 +184,25 @@ class LAProjectTunePage extends StatelessWidget {
                                             vm.onSaveProject(project);
                                           }
                                         })),
+                              const SizedBox(height: 20),
+                              ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                // Let the ListView know how many items it needs to build.
+                                itemCount: items.length,
+                                // Provide a builder function. This is where the magic happens.
+                                // Convert each item into a widget based on the type of item it is.
+                                itemBuilder: (context, index) {
+                                  final item = items[index];
+                                  return ListTile(
+                                    // contentPadding: EdgeInsets.zero,
+                                    title: item.buildTitle(context),
+                                    subtitle: item.buildSubtitle(context),
+                                  );
+                                },
+                              ),
                               if (showToolkitDeps) const SizedBox(height: 20),
-                              if (showSoftwareVersions)
+                              if (showToolkitDeps)
                                 HeadingItem("LA Toolkit dependencies")
                                     .buildTitle(context),
                               if (showToolkitDeps) const SizedBox(height: 20),
@@ -221,29 +236,17 @@ class LAProjectTunePage extends StatelessWidget {
                                     .buildTitle(context),
                               if (showSoftwareVersions)
                                 LAReleasesSelectors(onSoftwareSelected:
-                                    (String sw, String version) {
+                                    (String sw, String version, bool save) {
                                   project.setServiceDeployRelease(sw, version);
-                                  vm.onSaveProject(project);
+                                  if (save) {
+                                    vm.onSaveProject(project);
+                                  }
                                 }),
                               if (showSoftwareVersions || showToolkitDeps)
-                                const LintProjectPanel(onlySoftware: true),
-                              const SizedBox(height: 20),
-                              ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                // Let the ListView know how many items it needs to build.
-                                itemCount: items.length,
-                                // Provide a builder function. This is where the magic happens.
-                                // Convert each item into a widget based on the type of item it is.
-                                itemBuilder: (context, index) {
-                                  final item = items[index];
-                                  return ListTile(
-                                    // contentPadding: EdgeInsets.zero,
-                                    title: item.buildTitle(context),
-                                    subtitle: item.buildSubtitle(context),
-                                  );
-                                },
-                              ),
+                                LintProjectPanel(
+                                    showLADeps: showSoftwareVersions,
+                                    showToolkitDeps: showToolkitDeps,
+                                    showOthers: false),
                               if (project.advancedTune)
                                 const SizedBox(height: 20),
                               if (project.advancedTune)
@@ -287,7 +290,6 @@ class LAProjectTunePage extends StatelessWidget {
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
                               const SizedBox(height: 20),
-                              const LintProjectPanel(),
                               if (_endNoteEnabled)
                                 Row(children: [
                                   const Text(
@@ -424,6 +426,7 @@ class _ProjectTuneViewModel {
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
   final bool softwareReleasesReady;
+
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
   final String? backendVersion;

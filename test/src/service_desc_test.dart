@@ -1,5 +1,7 @@
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -40,6 +42,6 @@ void main() {
   });
 
   test('Compare services enum', () {
-    expect(LAServiceName.collectory.toS() == "collectory", equals(true));
+    expect(collectory == "collectory", equals(true));
   });
 }

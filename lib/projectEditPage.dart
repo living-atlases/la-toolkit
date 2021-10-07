@@ -334,8 +334,9 @@ If you are unsure type something like "server1, server2, server3".
                   ],
                 ),
               )));
-          final availableServices = LAServiceDesc.listNoSub(_project.isHub)
-              .where((LAServiceDesc s) => s.isSubService == false);
+          final Iterable<LAServiceDesc> availableServices =
+              LAServiceDesc.listNoSub(_project.isHub)
+                  .where((LAServiceDesc s) => s.isSubService == false);
           _steps.add(Step(
               isActive: _setIsActive(_step, _servicesStep),
               state: _setSetStatus(_step, _servicesStep),
@@ -501,7 +502,8 @@ If you have doubts or need to ask for some information, save this project and co
                           ],
                         );
                       }),
-                  const LintProjectPanel()
+                  const LintProjectPanel(
+                      showToolkitDeps: false, showLADeps: false)
                 ]))),
                 //     ])
               ));

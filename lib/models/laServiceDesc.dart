@@ -1,80 +1,11 @@
+import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
 import 'package:mdi/mdi.dart';
 
-final lists = LAServiceName.species_lists.toS();
-final collectory = LAServiceName.collectory.toS();
-final bie = LAServiceName.ala_bie.toS();
-final bieIndex = LAServiceName.bie_index.toS();
-final alaHub = LAServiceName.ala_hub.toS();
-final biocacheService = LAServiceName.biocache_service.toS();
-final alerts = LAServiceName.alerts.toS();
-final images = LAServiceName.images.toS();
-final solr = LAServiceName.solr.toS();
-final webapi = LAServiceName.webapi.toS();
-final regions = LAServiceName.regions.toS();
-final spatial = LAServiceName.spatial.toS();
-final cas = LAServiceName.cas.toS();
-final sds = LAServiceName.sds.toS();
-final dashboard = LAServiceName.dashboard.toS();
-final branding = LAServiceName.branding.toS();
-final doi = LAServiceName.doi.toS();
-
-enum LAServiceName {
-  all,
-  collectory,
-  // ignore: constant_identifier_names
-  ala_hub,
-  // ignore: constant_identifier_names
-  biocache_service,
-  // ignore: constant_identifier_names
-  ala_bie,
-  // ignore: constant_identifier_names
-  bie_index,
-  images,
-  // ignore: constant_identifier_names
-  species_lists,
-  regions,
-  logger,
-  solr,
-  cas,
-  userdetails,
-  // ignore: constant_identifier_names
-  cas_management,
-  apikey,
-  spatial,
-  // ignore: constant_identifier_names
-  spatial_service,
-  geoserver,
-  webapi,
-  dashboard,
-  sds,
-  alerts,
-  doi,
-  // ignore: constant_identifier_names
-  biocache_backend,
-  branding,
-  // ignore: constant_identifier_names
-  biocache_cli,
-  // ignore: constant_identifier_names
-  nameindexer,
-}
-
-extension ParseToString on LAServiceName {
-  String toS() {
-    return toString().split('.').last;
-  }
-}
-
-extension EnumParser on String {
-  LAServiceName toServiceDescName() {
-    return LAServiceName.values.firstWhere((e) =>
-        e.toString().toLowerCase() ==
-        '${(LAServiceName).toString()}.$this'
-            .toLowerCase()); //return null if not found
-  }
-}
+import 'laServiceName.dart';
 
 class LAServiceDesc {
   String name;
@@ -95,6 +26,7 @@ class LAServiceDesc {
   bool admin;
   bool alaAdmin;
   bool hubCapable;
+  bool allowMultipleDeploys;
   String? artifact;
   // used for spatial-service apikeys/userdetails/etc
   bool isSubService;
@@ -123,6 +55,7 @@ class LAServiceDesc {
       this.initUse = false,
       this.artifact,
       this.alias,
+      this.allowMultipleDeploys = false,
       this.hubCapable = false,
       this.parentService});
 
@@ -149,6 +82,7 @@ class LAServiceDesc {
           alaAdmin == other.alaAdmin &&
           artifact == other.artifact &&
           alias == other.alias &&
+          allowMultipleDeploys == other.allowMultipleDeploys &&
           parentService == other.parentService &&
           hubCapable == other.hubCapable;
 
@@ -173,12 +107,13 @@ class LAServiceDesc {
       artifact.hashCode ^
       alias.hashCode ^
       parentService.hashCode ^
+      allowMultipleDeploys.hashCode ^
       hubCapable.hashCode;
 
   static final Map<String, LAServiceDesc> _map = {
-    LAServiceName.collectory.toS(): LAServiceDesc(
+    collectory: LAServiceDesc(
         name: "collections",
-        nameInt: "collectory",
+        nameInt: collectory,
         group: "collectory",
         desc: "biodiversity collections",
         optional: false,
@@ -187,8 +122,9 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: true,
         artifact: 'ala-collectory',
+        allowMultipleDeploys: false,
         path: ""),
-    LAServiceName.ala_hub.toS(): LAServiceDesc(
+    alaHub: LAServiceDesc(
         name: "records",
         alias: "biocache-hub",
         nameInt: "ala_hub",
@@ -202,8 +138,9 @@ class LAServiceDesc {
         alaAdmin: true,
         hubCapable: true,
         artifact: 'ala-hub',
+        allowMultipleDeploys: true,
         path: ""),
-    LAServiceName.biocache_service.toS(): LAServiceDesc(
+    biocacheService: LAServiceDesc(
         name: "records-ws",
         alias: "biocache-service",
         nameInt: "biocache_service",
@@ -213,8 +150,9 @@ class LAServiceDesc {
         icon: Mdi.databaseSearchOutline,
         sample: "https://biocache.ala.org.au/ws",
         artifact: "biocache-service",
+        allowMultipleDeploys: true,
         path: ""),
-    LAServiceName.ala_bie.toS(): LAServiceDesc(
+    bie: LAServiceDesc(
         name: "species",
         alias: "bie",
         nameInt: "ala_bie",
@@ -227,9 +165,10 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: true,
         hubCapable: true,
+        allowMultipleDeploys: true,
         artifact: "ala-bie",
         path: ""),
-    LAServiceName.bie_index.toS(): LAServiceDesc(
+    bieIndex: LAServiceDesc(
         name: "species-ws",
         alias: "bie-index",
         nameInt: "bie_index",
@@ -242,8 +181,9 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: true,
         artifact: "bie-index",
+        allowMultipleDeploys: true,
         path: ""),
-    LAServiceName.images.toS(): LAServiceDesc(
+    images: LAServiceDesc(
         name: "images",
         nameInt: "images",
         group: "image-service",
@@ -255,8 +195,9 @@ class LAServiceDesc {
         icon: Mdi.imageMultipleOutline,
         admin: true,
         artifact: "image-service",
+        allowMultipleDeploys: false,
         path: ""),
-    LAServiceName.species_lists.toS(): LAServiceDesc(
+    speciesLists: LAServiceDesc(
         name: "lists",
         nameInt: "species_lists",
         group: "species-list",
@@ -269,11 +210,12 @@ class LAServiceDesc {
         sample: "https://lists.ala.org.au",
         admin: true,
         artifact: "specieslist-webapp",
+        allowMultipleDeploys: false,
         path: ""),
-    LAServiceName.regions.toS(): LAServiceDesc(
-        name: "regions",
-        nameInt: "regions",
-        group: "regions",
+    regions: LAServiceDesc(
+        name: regions,
+        nameInt: regions,
+        group: regions,
         desc: "regional data frontend",
         depends: LAServiceName.spatial,
         optional: true,
@@ -283,9 +225,10 @@ class LAServiceDesc {
         sample: "https://regions.ala.org.au",
         alaAdmin: true,
         hubCapable: true,
+        allowMultipleDeploys: true, // ALA does not have this service redundant
         artifact: "regions",
         path: ""),
-    LAServiceName.logger.toS(): LAServiceDesc(
+    logger: LAServiceDesc(
         name: "logger",
         nameInt: "logger",
         group: "logger-service",
@@ -295,8 +238,9 @@ class LAServiceDesc {
         sample: "https://logger.ala.org.au",
         admin: true,
         artifact: "logger-service",
+        allowMultipleDeploys: false,
         path: ""),
-    LAServiceName.solr.toS(): LAServiceDesc(
+    solr: LAServiceDesc(
         name: "index",
         nameInt: "solr",
         group: "solr7-server",
@@ -305,11 +249,12 @@ class LAServiceDesc {
         icon: Mdi.weatherSunny,
         admin: false,
         alaAdmin: false,
+        allowMultipleDeploys: true,
         path: ""),
-    LAServiceName.cas.toS(): LAServiceDesc(
+    cas: LAServiceDesc(
         name: "auth",
         alias: "cas",
-        nameInt: LAServiceName.cas.toS(),
+        nameInt: cas,
         group: "cas-servers",
         desc: "CAS authentication system",
         optional: true,
@@ -322,8 +267,8 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: false,
         path: "/cas"),
-    LAServiceName.userdetails.toS(): LAServiceDesc(
-        nameInt: LAServiceName.userdetails.toS(),
+    userdetails: LAServiceDesc(
+        nameInt: userdetails,
         name: "User Details",
         path: '/userdetails',
         group: "cas-servers",
@@ -336,8 +281,8 @@ class LAServiceDesc {
         alaAdmin: true,
         parentService: LAServiceName.cas,
         isSubService: true),
-    LAServiceName.apikey.toS(): LAServiceDesc(
-        nameInt: LAServiceName.apikey.toS(),
+    apikey: LAServiceDesc(
+        nameInt: apikey,
         name: "API keys",
         path: '/apikey',
         icon: Mdi.api,
@@ -348,8 +293,8 @@ class LAServiceDesc {
         parentService: LAServiceName.cas,
         desc: "",
         artifact: "apikey"),
-    LAServiceName.cas_management.toS(): LAServiceDesc(
-        nameInt: LAServiceName.cas_management.toS(),
+    casManagement: LAServiceDesc(
+        nameInt: casManagement,
         name: "CAS Management",
         path: '/cas-management',
         artifact: "cas-management",
@@ -360,7 +305,7 @@ class LAServiceDesc {
         parentService: LAServiceName.cas,
         icon: Mdi.accountNetwork,
         isSubService: true),
-    LAServiceName.spatial.toS(): LAServiceDesc(
+    spatial: LAServiceDesc(
         name: "spatial",
         nameInt: "spatial",
         group: "spatial",
@@ -372,9 +317,9 @@ class LAServiceDesc {
         sample: "https://spatial.ala.org.au",
         artifact: 'spatial-hub',
         path: ""),
-    LAServiceName.spatial_service.toS(): LAServiceDesc(
+    spatialService: LAServiceDesc(
       name: 'Spatial Webservice',
-      nameInt: LAServiceName.spatial_service.toS(),
+      nameInt: spatialService,
       path: '/ws',
       artifact: 'spatial-service',
       icon: Mdi.layersPlus,
@@ -397,7 +342,7 @@ class LAServiceDesc {
         initUse: true,
         desc: "",
         icon: Mdi.layersSearch),
-    LAServiceName.webapi.toS(): LAServiceDesc(
+    webapi: LAServiceDesc(
         name: "webapi",
         nameInt: "webapi",
         group: "webapi_standalone",
@@ -409,7 +354,7 @@ class LAServiceDesc {
         admin: true,
         artifact: 'webapi',
         path: ""),
-    LAServiceName.dashboard.toS(): LAServiceDesc(
+    dashboard: LAServiceDesc(
         name: "dashboard",
         nameInt: "dashboard",
         group: "dashboard",
@@ -420,8 +365,9 @@ class LAServiceDesc {
         icon: Mdi.tabletDashboard,
         alaAdmin: true,
         artifact: 'dashboard',
+        allowMultipleDeploys: false,
         path: ""),
-    LAServiceName.sds.toS(): LAServiceDesc(
+    sds: LAServiceDesc(
         name: "sds",
         nameInt: "sds",
         group: "sds",
@@ -432,9 +378,10 @@ class LAServiceDesc {
         depends: LAServiceName.species_lists,
         icon: Icons.blur_circular,
         alaAdmin: true,
+        allowMultipleDeploys: false,
         artifact: "sds-webapp2",
         path: ""),
-    LAServiceName.alerts.toS(): LAServiceDesc(
+    alerts: LAServiceDesc(
         name: "alerts",
         nameInt: "alerts",
         group: "alerts-service",
@@ -447,8 +394,9 @@ class LAServiceDesc {
         icon: Icons.notifications_active_outlined,
         admin: true,
         artifact: "alerts",
+        allowMultipleDeploys: false,
         path: ""),
-    LAServiceName.doi.toS(): LAServiceDesc(
+    doi: LAServiceDesc(
         name: "doi",
         nameInt: "doi",
         group: "doi-service",
@@ -459,18 +407,10 @@ class LAServiceDesc {
         sample: "https://doi.ala.org.au",
         icon: Mdi.link,
         admin: true,
+        allowMultipleDeploys: false,
         artifact: "doi-service",
         path: ""),
-    LAServiceName.biocache_backend.toS(): LAServiceDesc(
-        name: "biocache-backend",
-        nameInt: "biocache_backend",
-        group: "biocache-db",
-        desc: "cassandra and biocache-store backend",
-        withoutUrl: true,
-        optional: false,
-        icon: Mdi.eyeOutline,
-        path: ""),
-    LAServiceName.branding.toS(): LAServiceDesc(
+    branding: LAServiceDesc(
         name: "branding",
         nameInt: "branding",
         group: "branding",
@@ -480,9 +420,10 @@ class LAServiceDesc {
         withoutUrl: false,
         optional: false,
         alaAdmin: false,
+        allowMultipleDeploys: false,
         hubCapable: true,
         path: "brand-${DateTime.now().year}"),
-    LAServiceName.biocache_cli.toS(): LAServiceDesc(
+    biocacheStore: LAServiceDesc(
         name: "biocache-cli",
         alias: "biocache-store",
         nameInt: "biocache_cli",
@@ -493,8 +434,9 @@ class LAServiceDesc {
         withoutUrl: true,
         icon: Mdi.powershell,
         artifact: "biocache-store",
+        allowMultipleDeploys: true,
         path: ""),
-    LAServiceName.nameindexer.toS(): LAServiceDesc(
+    nameindexer: LAServiceDesc(
         name: "nameindexer",
         nameInt: "nameindexer",
         group: "nameindexer",
@@ -503,8 +445,34 @@ class LAServiceDesc {
         withoutUrl: true,
         icon: Mdi.tournament,
         artifact: "ala-name-matching",
-        path: "")
-/*    artifactAnsibleVar: "biocollect_version",
+        path: ""),
+    biocacheBackend: LAServiceDesc(
+        name: "biocache-backend",
+        nameInt: "biocache_backend",
+        group: "biocache-db",
+        desc: "cassandra and biocache-store backend",
+        withoutUrl: true,
+        optional: true,
+        initUse: true,
+        allowMultipleDeploys: true,
+        icon: Mdi.eyeOutline,
+        path: ""),
+    pipelines: LAServiceDesc(
+        name: pipelines,
+        nameInt: pipelines,
+        group: "pipelines",
+        desc:
+            "Pipelines for data processing and indexing of biodiversity data (replacement to biocache-store)",
+        optional: true,
+        withoutUrl: true,
+        admin: false,
+        alaAdmin: false,
+        // We use apt for check versions
+        artifact: "pipelines",
+        icon: Mdi.pipe,
+        allowMultipleDeploys: true,
+        path: ""),
+    /*    artifactAnsibleVar: "biocollect_version",
     artifactAnsibleVar: "ecodata_version",
     artifactAnsibleVar: "ecodata_version",*/
   };
@@ -527,6 +495,9 @@ class LAServiceDesc {
   static List<String> listS(bool isHub) =>
       list(isHub).map((s) => s.nameInt).toList();
 
+  static List<LAServiceDesc> listSorted(bool isHub) =>
+      list(isHub)..sort((a, b) => compareAsciiUpperCase(a.name, b.name));
+
   static List<LAServiceDesc> listNoSub(bool isHub) => isHub
       ? LAServiceDesc.listHubCapable
       : LAServiceDesc._list.where((s) => s.isSubService != true).toList();
@@ -541,18 +512,18 @@ class LAServiceDesc {
       .toList();
 
   static final List<String> internalServices = [
-    LAServiceName.nameindexer.toS(),
-    LAServiceName.biocache_backend.toS(),
-    LAServiceName.biocache_cli.toS(),
-    LAServiceName.branding.toS(),
+    nameindexer,
+    biocacheBackend,
+    biocacheStore,
+    branding,
   ];
 
   static final List<String> subServices = [
-    LAServiceName.apikey.toS(),
-    LAServiceName.cas_management.toS(),
-    LAServiceName.userdetails.toS(),
-    LAServiceName.spatial_service.toS(),
-    LAServiceName.geoserver.toS(),
+    apikey,
+    casManagement,
+    userdetails,
+    spatialService,
+    geoserver,
   ];
 
   bool isCompatibleWith(String? alaInstallVersion, LAServiceDesc otherService) {

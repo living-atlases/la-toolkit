@@ -1,39 +1,11 @@
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 class Dependencies {
-  static const String toolkit = "laToolkit";
-  static const String alaInstall = "ala-install";
-  static const String generator = "la-generator";
   static const List<String> laTools = [alaInstall, generator, toolkit];
   static const List<String> laToolsNoAlaInstall = [generator, toolkit];
-  static String alaHub = LAServiceName.ala_hub.toS();
-  static String alerts = LAServiceName.alerts.toS();
-  static String apikey = LAServiceName.apikey.toS();
-  static String bie = LAServiceName.ala_bie.toS();
-  static String bieIndex = LAServiceName.bie_index.toS();
-  static String biocacheService = LAServiceName.biocache_service.toS();
-  static String biocacheStore = LAServiceName.biocache_cli.toS();
-  static String branding = LAServiceName.branding.toS();
-  static String cas = LAServiceName.cas.toS();
-  static String casManagement = LAServiceName.cas_management.toS();
-  static String collectory = LAServiceName.collectory.toS();
-  static String dashboard = LAServiceName.dashboard.toS();
-  static String doi = LAServiceName.doi.toS();
-  static String images = LAServiceName.images.toS();
-  static String lists = LAServiceName.species_lists.toS();
-  static String logger = LAServiceName.logger.toS();
-  static String regions = LAServiceName.regions.toS();
-  static String sds = LAServiceName.sds.toS();
-  static String solr = LAServiceName.solr.toS();
-  static String spatial = LAServiceName.spatial.toS();
-  static String spatialService = LAServiceName.spatial_service.toS();
-  static String userdetails = LAServiceName.userdetails.toS();
-  static String webapi = LAServiceName.webapi.toS();
-  static String pipelines = "pipelines";
-  static String tomcat = "tomcat";
-  static String ansible = "ansible";
 
   static Map<String, Map<VersionConstraint, Map<String, VersionConstraint>>>
       laDeps = {
@@ -60,15 +32,16 @@ class Dependencies {
         alaInstall: vc('>= 2.0.10'),
         generator: vc('>= 1.1.51')
       },
-      vc('>= 1.2.0 <1.2.1'): {
+      vc('>= 1.2.0 < 1.2.1'): {
         alaInstall: vc('>= 2.0.11'),
         generator: vc('>= 1.2.0')
       },
-      vc('>= 1.2.1 <1.2.2'): {
+      vc('>= 1.2.1 < 1.2.2'): {
         alaInstall: vc('>= 2.0.11'),
         generator: vc('>= 1.2.1')
       },
-      vc('>= 1.2.2'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.1')},
+      vc('>= 1.2.2 < 1.2.6'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.1')},
+      vc('>= 1.2.6'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.2')},
     },
 
     // From here copy-pasted from the wiki:
@@ -96,7 +69,7 @@ class Dependencies {
       // biocache-service 2.x - uses biocache-store
       vc(">=2.7.0"): {biocacheStore: vc(">= 2.6.1")},
       // biocache-service 3.x - uses pipelines
-      vc(">= 3.0.0"): {"pipelines": vc("any")}
+      vc(">= 3.0.0"): {pipelines: vc("any")}
     },
     /* biocacheStore: {
       vc("any"): {biocacheService: vc("< 3.0.0")}
@@ -125,7 +98,6 @@ class Dependencies {
   static Map<VersionConstraint, Map<String, String>> defaultVersions = {
     // ala-install vs rest of components
     vc('<= 2.0.11'): {
-      // Newer versions of biocache-service require tomcat8/9
       alaHub: "3.2.9",
       alerts: "1.5.1",
       bie: "1.5.0",
@@ -139,7 +111,7 @@ class Dependencies {
       dashboard: "2.2",
       doi: "1.1.1",
       images: "1.1.7",
-      lists: "3.5.9",
+      speciesLists: "3.5.9",
       logger: "2.4.0",
       regions: "3.3.5",
       sds: "1.6.2",
@@ -191,48 +163,54 @@ class Dependencies {
           print("Checking dependencies for $sw");
         }
         final String swForHumans = LAServiceDesc.swNameWithAliasForHumans(sw);
-        Version versionP = v(version);
-        if (laDeps[sw] != null) {
-          laDeps[sw]!.forEach((VersionConstraint mainConstraint,
-              Map<String, VersionConstraint> constraints) {
-            if (mainConstraint.allows(versionP)) {
-              // Now we verify the rest of constraints dependencies
-              if (debug) {
-                print("$mainConstraint applies to $sw");
-              }
-              constraints
-                  .forEach((String dependency, VersionConstraint constraint) {
+        if (version != 'custom' && version != 'upstream') {
+          if (laDeps[sw] != null) {
+            Version versionP = v(version);
+            laDeps[sw]!.forEach((VersionConstraint mainConstraint,
+                Map<String, VersionConstraint> constraints) {
+              if (mainConstraint.allows(versionP)) {
+                // Now we verify the rest of constraints dependencies
                 if (debug) {
-                  print(
-                      "testing $swForHumans $versionP with $mainConstraint that depends on $dependency $constraint and uses ${selectedVersions[dependency] ?? 'none'}");
+                  print("$mainConstraint applies to $sw");
                 }
-                // Not use internal name for LA services
-                String depForHumans = LAServiceDesc.isLAService(dependency)
-                    ? LAServiceDesc.swNameWithAliasForHumans(dependency)
-                    : dependency;
-                if (selectedVersions[dependency] == null) {
-                  if (serviceInUse.contains(dependency)) {
-                    lintErrors.add('$swForHumans depends on $depForHumans');
+                constraints
+                    .forEach((String dependency, VersionConstraint constraint) {
+                  String? versionOfDep = selectedVersions[dependency];
+                  if (debug) {
+                    print(
+                        "testing $swForHumans $versionP with $mainConstraint that depends on $dependency $constraint and uses ${versionOfDep ?? 'none'}");
                   }
-                } else {
-                  if (!constraint.allows(v(selectedVersions[dependency]!))) {
-                    lintErrors.add(sw == toolkit
-                        ? '$dependency recommended version should be $constraint'
-                        : '$swForHumans depends on $depForHumans $constraint');
+                  // Not use internal name for LA services
+                  String depForHumans = LAServiceDesc.isLAService(dependency)
+                      ? LAServiceDesc.swNameWithAliasForHumans(dependency)
+                      : dependency;
+                  if (versionOfDep == null) {
+                    if (serviceInUse.contains(dependency)) {
+                      lintErrors.add('$swForHumans depends on $depForHumans');
+                    }
+                  } else {
+                    if (versionOfDep != 'custom' &&
+                        versionOfDep != 'upstream' &&
+                        !constraint.allows(v(versionOfDep))) {
+                      lintErrors.add(sw == toolkit
+                          ? '$dependency recommended version should be $constraint'
+                          : '$swForHumans depends on $depForHumans $constraint');
+                    }
                   }
-                }
-              });
+                });
+              }
+            });
+          } else {
+            if (debug) {
+              print("No dependencies for $sw");
             }
-          });
-        } else {
-          if (debug) {
-            print("No dependencies for $sw");
           }
         }
       });
       return lintErrors.toList();
-    } catch (e) {
+    } catch (e, stacktrace) {
       print("Verify exception $e");
+      print(stacktrace);
       return lintErrors.toList();
     }
   }

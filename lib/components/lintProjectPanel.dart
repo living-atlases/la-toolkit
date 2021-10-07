@@ -1,10 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/dependencies.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
+import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
 
@@ -12,9 +14,15 @@ import 'alertCard.dart';
 import 'lintErrorPanel.dart';
 
 class LintProjectPanel extends StatefulWidget {
-  final bool onlySoftware;
+  final bool showLADeps;
+  final bool showToolkitDeps;
+  final bool showOthers;
 
-  const LintProjectPanel({Key? key, this.onlySoftware = false})
+  const LintProjectPanel(
+      {Key? key,
+      this.showLADeps = true,
+      this.showToolkitDeps = true,
+      this.showOthers = true})
       : super(key: key);
 
   @override
@@ -38,22 +46,27 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
       LAProject project = vm.project;
       final bool basicDefined =
           vm.status.value >= LAProjectStatus.basicDefined.value;
+      Map<String, String> selectedVersions = {};
+      if (widget.showLADeps) {
+        selectedVersions.addAll(project.getServiceDeployReleases());
+      }
+      // we need also the toolkit deps
+      if ((widget.showToolkitDeps || widget.showLADeps) &&
+          vm.backendVersion != null) {
+        selectedVersions.addAll({
+          toolkit: vm.backendVersion!,
+          alaInstall: project.alaInstallRelease ?? vm.alaInstallReleases[0],
+          generator: project.generatorRelease ?? vm.generatorReleases[0]
+        });
+      }
       List<Widget> lints = [
         LintErrorPanel(vm.backendVersion == null // AppUtils.isDemo()
             ? []
             : Dependencies.verifyLAReleases(
                 project.getServicesNameListInUse() + Dependencies.laTools,
-                {}
-                  ..addAll(project.getServiceDeployReleases())
-                  ..addAll({
-                    Dependencies.toolkit: vm.backendVersion!,
-                    Dependencies.alaInstall:
-                        project.alaInstallRelease ?? vm.alaInstallReleases[0],
-                    Dependencies.generator:
-                        project.generatorRelease ?? vm.generatorReleases[0]
-                  })))
+                selectedVersions))
       ];
-      if (!widget.onlySoftware) {
+      if (widget.showOthers) {
         lints.addAll([
           if (vm.sshKeys.isEmpty)
             AlertCard(
@@ -78,7 +91,13 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           if (!project.collectoryAndBiocacheDifferentServers())
             const AlertCard(
                 message:
-                    "The collections and the occurrences front-end (bioache-hub) services are in the same server. This can cause start-up problems when caches are enabled")
+                    "The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled"),
+          if (!project.isHub &&
+              !project.getServiceE(LAServiceName.pipelines).use &&
+              !project.getServiceE(LAServiceName.biocache_backend).use)
+            const AlertCard(
+                message:
+                    "You should use biocache-store or the new pipelines as backend")
         ]);
       }
       return Column(children: lints);

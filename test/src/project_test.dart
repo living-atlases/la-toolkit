@@ -1,32 +1,16 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:latlong2/latlong.dart';
 
 void main() {
-  final lists = LAServiceName.species_lists.toS();
-  final collectory = LAServiceName.collectory.toS();
-  final bie = LAServiceName.ala_bie.toS();
-  final bieIndex = LAServiceName.bie_index.toS();
-  final alaHub = LAServiceName.ala_hub.toS();
-  final biocacheService = LAServiceName.biocache_service.toS();
-  final alerts = LAServiceName.alerts.toS();
-  final images = LAServiceName.images.toS();
-  final solr = LAServiceName.solr.toS();
-  final webapi = LAServiceName.webapi.toS();
-  final regions = LAServiceName.regions.toS();
-  final spatial = LAServiceName.spatial.toS();
-  final cas = LAServiceName.cas.toS();
-  final userdetails = LAServiceName.userdetails.toS();
-  final sds = LAServiceName.sds.toS();
-  final dashboard = LAServiceName.dashboard.toS();
-  final branding = LAServiceName.branding.toS();
-  final doi = LAServiceName.doi.toS();
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('Test step 0 of creation, longname', () {
@@ -200,53 +184,32 @@ void main() {
     testProject.upsertServer(vm3);
     testProject.upsertServer(vm4);
     expect(testProject == testProjectCopy, equals(false));
-    testProject.assign(vm1, [LAServiceName.collectory.toS()]);
+    testProject.assign(vm1, [collectory]);
     expect(testProject == testProjectCopy, equals(false));
 
-    expect(
-        testProject
-            .getServicesNameListInUse()
-            .contains(LAServiceName.collectory.toS()),
+    expect(testProject.getServicesNameListInUse().contains(collectory),
         equals(true));
-    expect(
-        testProject.getHostname(LAServiceName.collectory.toS())[0] == vm1.name,
-        equals(true));
+    expect(testProject.getHostname(collectory)[0] == vm1.name, equals(true));
     /* print(testProject);
     print(testProject.servers);
     print(testProject.services);
     print(testProject.getServiceE(LAServiceName.collectory)); */
 
-    expect(testProject.getHostname(LAServiceName.regions.toS()).isEmpty,
-        equals(true));
+    expect(testProject.getHostname(regions).isEmpty, equals(true));
 
-    testProject
-        .assign(vm1, [alaHub, regions, bie, LAServiceName.branding.toS()]);
+    testProject.assign(vm1, [alaHub, regions, bie, branding]);
 
     testProject.assign(vm2, [collectory, bieIndex, biocacheService]);
 
-    testProject.assign(
-        vm3, [LAServiceName.solr.toS(), LAServiceName.logger.toS(), lists]);
+    testProject.assign(vm3, [solr, logger, speciesLists]);
 
-    testProject.assign(vm4, [
-      LAServiceName.spatial.toS(),
-      LAServiceName.cas.toS(),
-      LAServiceName.images.toS(),
-      LAServiceName.biocache_backend.toS(),
-      LAServiceName.biocache_cli.toS(),
-      LAServiceName.nameindexer.toS()
-    ]);
+    testProject.assign(vm4,
+        [spatial, cas, images, biocacheBackend, biocacheStore, nameindexer]);
 
-    expect(
-        testProject
-            .getServicesNameListInUse()
-            .contains(LAServiceName.collectory.toS()),
+    expect(testProject.getServicesNameListInUse().contains(collectory),
         equals(true));
-    expect(
-        testProject.getHostname(LAServiceName.collectory.toS())[0] == vm2.name,
-        equals(true));
-    expect(
-        testProject.getHostname(LAServiceName.collectory.toS())[0] == vm1.name,
-        equals(false));
+    expect(testProject.getHostname(collectory)[0] == vm2.name, equals(true));
+    expect(testProject.getHostname(collectory)[0] == vm1.name, equals(false));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(4));
     // no ssh keys
@@ -310,15 +273,15 @@ void main() {
     p.serviceInUse(bie, true);
     expect(p.getServicesNameListInUse().length, equals(21));
 
-    p.serviceInUse(lists, true);
+    p.serviceInUse(speciesLists, true);
     expect(p.getService(bie).use, equals(true));
-    expect(p.getService(lists).use, equals(true));
+    expect(p.getService(speciesLists).use, equals(true));
     var pBis = p.copyWith();
 
     expect(p == pBis, equals(true));
     LAServer vm1 = LAServer(name: "vm1", projectId: p.id);
     p.upsertServer(vm1);
-    p.assign(vm1, [collectory, bie, bieIndex, lists]);
+    p.assign(vm1, [collectory, bie, bieIndex, speciesLists]);
     expect(p.getServicesAssignedToServers().length, equals(4));
     expect(p.serviceDeploys.length,
         equals(p.getServicesAssignedToServers().length));
@@ -335,7 +298,8 @@ void main() {
     expect(p.getServerServices(serverId: vm1.id).contains(collectory),
         equals(true));
     expect(p.getServerServices(serverId: vm1.id).contains(bie), equals(true));
-    expect(p.getServerServices(serverId: vm1.id).contains(lists), equals(true));
+    expect(p.getServerServices(serverId: vm1.id).contains(speciesLists),
+        equals(true));
     var vm1Updated =
         p.servers.where((element) => element.id == vm1.id).toList()[0];
     expect(vm1Updated.sshUser == "john" && vm1Updated.sshPort == 22001,
@@ -343,14 +307,14 @@ void main() {
     p.serviceInUse(bie, false);
     expect(p.getService(bie).use, equals(false));
     expect(p.getService(bieIndex).use, equals(false));
-    expect(p.getService(lists).use, equals(false));
+    expect(p.getService(speciesLists).use, equals(false));
     expect(p.getServerServices(serverId: vm1.id).contains(collectory),
         equals(true));
     expect(p.getServerServices(serverId: vm1.id).contains(bie), equals(false));
     expect(p.getServerServices(serverId: vm1.id).contains(bieIndex),
         equals(false));
-    expect(
-        p.getServerServices(serverId: vm1.id).contains(lists), equals(false));
+    expect(p.getServerServices(serverId: vm1.id).contains(speciesLists),
+        equals(false));
     int numServices = p.getServersNameList().length;
     p.serviceInUse(bie, true);
     p.serviceInUse(bie, false);
@@ -750,10 +714,10 @@ void main() {
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
     LAServiceDesc.list(p.isHub)
-        .where((s) => s.nameInt != LAServiceName.sds.toS())
+        .where((s) => s.nameInt != sds)
         .toList()
         .forEach((service) {
-      if (![sds].contains(service.nameInt)) {
+      if (![sds, pipelines].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason:
                 "${service.nameInt} should be in Use and is ${p.getService(service.nameInt).use}");
@@ -769,7 +733,7 @@ void main() {
     expect(p.getService(bie).suburl, equals('especies'));
     expect(p.getService(spatial).suburl, equals('espacial'));
     expect(p.getService(cas).suburl, equals('auth'));
-    expect(p.getService(lists).suburl, equals('listas'));
+    expect(p.getService(speciesLists).suburl, equals('listas'));
     expect(p.getService(solr).fullUrl(p.useSSL, p.domain),
         equals('https://index.gbif.es/'));
 
@@ -788,13 +752,14 @@ void main() {
         alerts,
         sds,
         cas,
-        apiKey,
-        userDetails,
+        apikey,
+        userdetails,
         casManagement,
         spatial,
-        spatialWs,
+        spatialService,
         geoserver,
         dashboard,
+        pipelines
       ];
       if (notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(false),
@@ -821,7 +786,8 @@ void main() {
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
     for (var service in LAServiceDesc.list(p.isHub)) {
       // print("${service.nameInt}");
-      if (![lists, webapi, doi, bie, regions, sds].contains(service.nameInt)) {
+      if (![speciesLists, webapi, doi, bie, regions, sds, pipelines]
+          .contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
       }

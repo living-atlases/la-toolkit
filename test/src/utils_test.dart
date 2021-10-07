@@ -1,3 +1,4 @@
+import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:latlong2/latlong.dart';
@@ -108,5 +109,14 @@ void main() {
       expect(dirName.length >= 2, equals(true));
       expect(dirName == pair[1], equals(true));
     }
+  });
+
+  test('LatLng to from json', () {
+    LALatLng mapBounds1stPoint = LALatLng(latitude: 40.0, longitude: 20.0);
+    // print(mapBounds1stPoint.toJson());
+    expect(mapBounds1stPoint.toJson().toString().contains('latitude'),
+        equals(true));
+    expect(LALatLng.fromJson(mapBounds1stPoint.toJson()) == mapBounds1stPoint,
+        equals(true));
   });
 }

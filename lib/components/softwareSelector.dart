@@ -3,21 +3,24 @@ import 'package:flutter/material.dart';
 
 class SoftwareSelector extends StatefulWidget {
   final List<String> versions;
+  final Map<String, TextStyle> highlight;
   final String? initialValue;
   final Function(String?) onChange;
   final String label;
   final bool roundStyle;
   final bool useBadge;
 
-  const SoftwareSelector(
+  SoftwareSelector(
       {Key? key,
       required this.label,
       required this.versions,
+      Map<String, TextStyle>? highlight,
       this.initialValue,
       required this.onChange,
       this.useBadge = true,
       this.roundStyle = true})
-      : super(key: key);
+      : highlight = highlight ?? {},
+        super(key: key);
 
   @override
   _SoftwareSelectorState createState() => _SoftwareSelectorState();
@@ -44,12 +47,13 @@ Choose the latest release to update your portal.
       initialValue = null;
       emptyInitialValue = true;
     }
-    for (String element in widget.versions) {
-      // remove dups
-      releases[element] = DropdownMenuItem(
+    // remove dups
+    for (String version in widget.versions.toSet().toList()) {
+      TextStyle? style = widget.highlight[version];
+      releases[version] = DropdownMenuItem(
           // remove starting 'v' from git tags
-          child: Text(element.replaceFirst(RegExp(r'^v'), '')),
-          value: element);
+          child: Text(version.replaceFirst(RegExp(r'^v'), ''), style: style),
+          value: version);
     }
 
     var initialValueNotEmpty = initialValue != null && initialValue.isNotEmpty;

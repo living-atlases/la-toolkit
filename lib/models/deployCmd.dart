@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/commonCmd.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
@@ -35,8 +36,7 @@ class DeployCmd extends CommonCmd {
   })  : deployServices = deployServices ?? [],
         limitToServers = limitToServers ?? [],
         skipTags = skipTags ?? [],
-        tags = tags ?? []
-  /* super(type: CmdType.deploy, properties: {} )*/;
+        tags = tags ?? [] /* super(type: CmdType.deploy, properties: {} )*/;
 
   @override
   bool operator ==(Object other) =>
@@ -80,7 +80,7 @@ class DeployCmd extends CommonCmd {
     } else if (serviceLength <= 5) {
       List<String> servicesForHuman = deployServices
           .map((serviceName) => serviceName == "lists"
-              ? LAServiceDesc.get(LAServiceName.species_lists.toS()).name
+              ? LAServiceDesc.get(speciesLists).name
               : LAServiceDesc.get(serviceName).name)
           .toList();
       servicesForHuman.asMap().forEach((i, value) => services += i == 0

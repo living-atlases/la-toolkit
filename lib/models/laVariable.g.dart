@@ -102,6 +102,7 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.branding: 'branding',
   LAServiceName.biocache_cli: 'biocache_cli',
   LAServiceName.nameindexer: 'nameindexer',
+  LAServiceName.pipelines: 'pipelines',
 };
 
 const _$LAVariableStatusEnumMap = {

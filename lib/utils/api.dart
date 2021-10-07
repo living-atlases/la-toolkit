@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
@@ -10,7 +11,6 @@ import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/hostServicesChecks.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -253,8 +253,7 @@ class Api {
     // use lists in ansiblew
     DeployCmd cmdTr = action.cmd.copyWith();
     cmdTr.deployServices = cmdTr.deployServices
-        .map((name) =>
-            name == LAServiceName.species_lists.toS() ? "lists" : name)
+        .map((name) => name == speciesLists ? "lists" : name)
         .toList();
     doCmd(
         url: url,
@@ -476,5 +475,28 @@ class Api {
         desc: action.cmd.desc,
         cmd: action.cmd.toJson(),
         action: action);
+  }
+
+  static Future<Map<String, String>> getServiceDetailsForVersionCheck(
+      LAProject project) async {
+    Map<String, dynamic> services = project.getServiceDetailsForVersionCheck();
+    if (AppUtils.isDemo()) return {};
+    Uri url = uri(env['BACKEND']!, "/api/v1/get-service-versions");
+    Response response = await http.post(url,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({
+          'services': services,
+        })));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> l = json.decode(response.body);
+      Map<String, String> versions =
+          l.map((key, value) => MapEntry(key, value.toString()));
+      // for (var element in l.keys) {
+      // print("out: ${l[element]['out']}");
+      // }
+      return versions;
+    } else {
+      return {};
+    }
   }
 }

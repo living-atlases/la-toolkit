@@ -30,6 +30,7 @@ extension LAProjectCopyWith on LAProject {
     LALatLng? mapBoundsSndPoint,
     double? mapZoom,
     LAProject? parent,
+    Map<String, String>? runningVersions,
     Map<String, List<String>>? serverServices,
     List<LAServer>? servers,
     List<LAServiceDeploy>? serviceDeploys,
@@ -63,6 +64,7 @@ extension LAProjectCopyWith on LAProject {
       mapBoundsSndPoint: mapBoundsSndPoint ?? this.mapBoundsSndPoint,
       mapZoom: mapZoom ?? this.mapZoom,
       parent: parent ?? this.parent,
+      runningVersions: runningVersions ?? this.runningVersions,
       serverServices: serverServices ?? this.serverServices,
       servers: servers ?? this.servers,
       serviceDeploys: serviceDeploys ?? this.serviceDeploys,
@@ -132,7 +134,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) {
       (k, e) =>
           MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
     ),
-  );
+  )..clientMigration = json['clientMigration'] as int?;
 }
 
 Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
@@ -165,6 +167,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'variables': instance.variables.map((e) => e.toJson()).toList(),
       'hubs': instance.hubs.map((e) => e.toJson()).toList(),
       'lastCmdEntry': instance.lastCmdEntry?.toJson(),
+      'clientMigration': instance.clientMigration,
     };
 
 K _$enumDecode<K, V>(

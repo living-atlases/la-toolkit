@@ -180,8 +180,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           }
         }
         for (Tuple2 s in servicesAndSub) {
-          // https://nexus.ala.org.au/service/local/repositories/snapshots/content/au/org/ala/ala-hub/maven-metadata.xml
-          LAReleases? thisReleases = await getAlaNexusVersions(s);
+          LAReleases? thisReleases = await getDepsVersions(s);
           if (thisReleases != null) {
             releases[s.item1] = thisReleases;
           }
@@ -237,6 +236,21 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             AppSnackBarMessage.ok("Failed to delete project ($e)")));
       }
     }
+
+    if (action is OpenProjectTools || action is TuneProject) {
+      if (!action.project.isHub &&
+          (action.project.allServicesAssignedToServers() ||
+              action.project.inProduction)) {
+        Api.getServiceDetailsForVersionCheck(action.project)
+            .then((serviceVersions) {
+          store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
+          if (AppUtils.isDev()) {
+            print(serviceVersions);
+          }
+        });
+      }
+    }
+
     if (action is UpdateProject) {
       LAProject project = action.project;
       await _updateProject(
@@ -415,13 +429,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     next(action);
   }
 
-  Future<LAReleases?> getAlaNexusVersions(Tuple2 service) async {
+  Future<LAReleases?> getDepsVersions(Tuple2 service) async {
     String? latest;
     List<String> versions = [];
     for (String repo in ['releases', 'snapshots']) {
-      Uri nexusUrl =
-          AppUtils.uri(env['BACKEND']!, "/api/v1/get-ala-nexus-versions");
-      Response response = await http.post(nexusUrl,
+      Uri depsBackUrl =
+          AppUtils.uri(env['BACKEND']!, "/api/v1/get-deps-versions");
+      Response response = await http.post(depsBackUrl,
           headers: {'Content-type': 'application/json'},
           body: utf8
               .encode(json.encode({'repo': repo, 'artifact': service.item2})));
@@ -469,8 +483,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (openProjectView) {
         store.dispatch(OpenProjectTools(project));
       }
-    } catch (e) {
+    } catch (e, stacktrace) {
       print(e);
+      print(stacktrace);
       if (AppUtils.isDev()) {
         store.dispatch(ShowSnackBar(
             AppSnackBarMessage.ok("Failed to update project ($e)")));

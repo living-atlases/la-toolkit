@@ -13,6 +13,7 @@ import 'laTheme.dart';
 import 'models/commonCmd.dart';
 import 'models/laProject.dart';
 import 'models/pipelinesCmd.dart';
+import 'models/pipelinesStepName.dart';
 
 class PipelinesPage extends StatefulWidget {
   static const routeName = "pipelines";
@@ -49,11 +50,22 @@ class _PipelinesPageState extends State<PipelinesPage> {
         String execBtn = "Run";
         PipelinesCmd cmd = vm.cmd;
         print("Building pipelines page for $cmd");
-        VoidCallback? onTap =
-            (cmd.allDrs || (cmd.drs != null && cmd.drs!.isNotEmpty)) &&
-                    (cmd.steps.isNotEmpty || cmd.allSteps)
-                ? () => vm.onRunPipelines(vm.project, cmd)
-                : null;
+        bool isACmdForAll = cmd.steps
+            .where((String step) => [
+                  archiveList,
+                  datasetList,
+                  pruneDatasets,
+                  validationReport,
+                  jackknife,
+                  clustering
+                ].contains(step))
+            .toList()
+            .isNotEmpty;
+        VoidCallback? onTap = isACmdForAll ||
+                ((cmd.allDrs || (cmd.drs != null && cmd.drs!.isNotEmpty)) &&
+                    (cmd.steps.isNotEmpty || cmd.allSteps))
+            ? () => vm.onRunPipelines(vm.project, cmd)
+            : null;
         String pageTitle = "${vm.project.shortName} Pipelines";
         return Title(
             title: pageTitle,

@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/cmdHistoryEntry.dart';
 import 'package:la_toolkit/models/isJsonSerializable.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
@@ -28,18 +29,11 @@ import 'laServer.dart';
 import 'laService.dart';
 import 'laServiceDeploy.dart';
 import 'laServiceDepsDesc.dart';
+import 'laServiceName.dart';
 import 'laVariable.dart';
 import 'laVariableDesc.dart';
 
 part 'laProject.g.dart';
-
-final String cas = LAServiceName.cas.toS();
-final String spatial = LAServiceName.spatial.toS();
-final String spatialWs = LAServiceName.spatial_service.toS();
-final String geoserver = LAServiceName.geoserver.toS();
-final String casManagement = LAServiceName.cas_management.toS();
-final String userDetails = LAServiceName.userdetails.toS();
-final String apiKey = LAServiceName.apikey.toS();
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
@@ -78,6 +72,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   // Relations -----
   List<LAServer> servers;
   List<LAService> services;
+
   // Mapped by server.id
   Map<String, List<String>> serverServices;
   List<CmdHistoryEntry> cmdHistoryEntries;
@@ -86,6 +81,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
   List<LAProject> hubs;
   @JsonKey(ignore: true)
   LAProject? parent;
+  @JsonKey(ignore: true)
+  Map<String, String> runningVersions;
 
   // Logs history -----
   CmdHistoryEntry? lastCmdEntry;
@@ -93,6 +90,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
   CmdHistoryDetails? lastCmdDetails;
   @JsonKey(ignore: true)
   Tuple2<List<ProdServiceDesc>, HostsServicesChecks>? servicesToMonitor;
+
+  int? clientMigration;
 
   LAProject(
       {String? id,
@@ -125,7 +124,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
       List<LAProject>? hubs,
       int? createdAt,
       Map<String, List<String>>? serverServices,
-      Map<String, dynamic>? checkResults})
+      Map<String, dynamic>? checkResults,
+      Map<String, String>? runningVersions})
       : id = id ?? ObjectId().toString(),
         domain = domain ?? (isHub ? 'somehubname.' + parent!.domain : ''),
         servers = servers ?? [],
@@ -136,6 +136,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         createdAt = createdAt ?? DateTime.now().microsecondsSinceEpoch,
         checkResults = checkResults ?? {},
         serverServices = serverServices ?? {},
+        runningVersions = runningVersions ?? {},
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
         cmdHistoryEntries = cmdHistoryEntries ?? [],
@@ -149,33 +150,50 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if ((dirName == null || dirName!.isEmpty) && shortName.isNotEmpty) {
       dirName = suggestDirName();
     }
-    // Project pre migration from subServices to services
-    migrateSubServices();
-    fixNonHubServices();
+    migrate();
     // _setDefSwVersions();
     validateCreation();
+  }
+
+  void migrate() {
+    try {
+      if (clientMigration == null) {
+        // Project pre migration from subServices to services
+        print('Migrating non hub services $shortName');
+        fixNonHubServices();
+        clientMigration = 0;
+      }
+      if (clientMigration == 0) {
+        print('Migrating to use subservices $shortName');
+        migrateSubServices();
+        clientMigration = 1;
+      }
+    } catch (e, stacktrace) {
+      print('Client migration of project failed $e');
+      print(stacktrace);
+    }
   }
 
   // Migrate old project from subservices (used for userdetails, apikey, etc) to
   // services (like cas) with parent/child services. For now these kind of services
   // are deployed together (cas, userdetails, etc).
   void migrateSubServices() {
-    if (createdAt < DateTime(2021, 9, 21).millisecondsSinceEpoch &&
-        !isHub &&
-        getServiceE(LAServiceName.cas).use &&
-        !getServiceE(LAServiceName.userdetails).use) {
+    if (createdAt < DateTime(2021, 9, 24).millisecondsSinceEpoch && !isHub) {
       if (AppUtils.isDev()) {
         print("Migrating cas sub-services etc as services");
       }
-      serviceInUse(LAServiceName.userdetails.toS(), true);
-      serviceInUse(LAServiceName.apikey.toS(), true);
-      serviceInUse(LAServiceName.cas_management.toS(), true);
-      _reAssignService(LAServiceName.cas.toS());
-      if (getServiceE(LAServiceName.spatial).use) {
-        serviceInUse(LAServiceName.spatial_service.toS(), true);
-        serviceInUse(LAServiceName.geoserver.toS(), true);
+      if (getService(cas).use) {
+        serviceInUse(userdetails, true);
+        serviceInUse(apikey, true);
+        serviceInUse(casManagement, true);
+        _reAssignService(cas);
       }
-      _reAssignService(LAServiceName.spatial.toS());
+
+      if (getService(spatial).use) {
+        serviceInUse(spatialService, true);
+        serviceInUse(geoserver, true);
+        _reAssignService(spatial);
+      }
     }
   }
 
@@ -184,7 +202,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       print("Fixing non hub services");
       List<LAService> sToDel = [];
       List<String> allowedServices = LAServiceDesc.listS(isHub);
-      print(this);
+      // print(this);
       for (LAService s in services) {
         print(s);
         if (!allowedServices.contains(s.nameInt)) {
@@ -206,18 +224,20 @@ class LAProject implements IsJsonSerializable<LAProject> {
         }
         serverServices[serverId] = services;
       });
-      print(this);
+      // print(this);
     }
   }
 
   void _reAssignService(String serviceNameInt) {
-    List<LAServiceDeploy> deploys = getServiceDeploys(serviceNameInt);
+    List<LAServiceDeploy> deploys =
+        getServiceDeploysForSomeService(serviceNameInt);
     if (deploys.isNotEmpty) {
       // For now, we only support one deploy per service
       LAServer server = servers.where((s) => s.id == deploys[0].serverId).first;
       List<String> servicesInThatServer =
           getServicesNameListInServer(server.id);
       // re-assign to add sub-services
+      print("reassigning $servicesInThatServer to ${server.name}");
       assign(server, servicesInThatServer);
     }
   }
@@ -468,7 +488,9 @@ check results length: ${checkResults.length}''';
   }
 
   String get projectName => isHub ? 'Data Hub' : 'Project';
+
   String get portalName => isHub ? 'hub' : 'portal';
+
   // ignore: non_constant_identifier_names
   String get PortalName => isHub ? 'Hub' : 'Portal';
 
@@ -530,7 +552,7 @@ check results length: ${checkResults.length}''';
     serverServices[server.id] = newServices.toList();
     List serviceIds = [];
     for (String sN in newServices) {
-      LAService service = services.firstWhere((s) => s.nameInt == sN);
+      LAService service = getService(sN);
       serviceIds.add(service.id);
       serviceDeploys.firstWhere(
           (sD) =>
@@ -556,18 +578,18 @@ check results length: ${checkResults.length}''';
 
   static HashSet<String> _addSubServices(HashSet<String> newServices) {
     // In the same server nameindexer and biocache_cli
-    if (newServices.contains(LAServiceName.biocache_backend.toS())) {
-      newServices.add(LAServiceName.nameindexer.toS());
-      newServices.add(LAServiceName.biocache_cli.toS());
+    if (newServices.contains(biocacheBackend)) {
+      newServices.add(nameindexer);
+      newServices.add(biocacheStore);
     }
-    if (newServices.contains(LAServiceName.cas.toS())) {
-      newServices.add(LAServiceName.userdetails.toS());
-      newServices.add(LAServiceName.apikey.toS());
-      newServices.add(LAServiceName.cas_management.toS());
+    if (newServices.contains(cas)) {
+      newServices.add(userdetails);
+      newServices.add(apikey);
+      newServices.add(casManagement);
     }
-    if (newServices.contains(LAServiceName.spatial.toS())) {
-      newServices.add(LAServiceName.spatial_service.toS());
-      newServices.add(LAServiceName.geoserver.toS());
+    if (newServices.contains(spatial)) {
+      newServices.add(spatialService);
+      newServices.add(geoserver);
     }
     return newServices;
   }
@@ -579,11 +601,11 @@ check results length: ${checkResults.length}''';
         sD.serviceId == serviceId);
   }
 
-  List<LAServiceDeploy> getServiceDeploys(String serviceNameInt) {
+  List<LAServiceDeploy> getServiceDeploysForSomeService(String serviceNameInt) {
     List<LAServiceDeploy> sds = [];
-    List<LAService> servicesSub =
+    List<LAService> serviceSubset =
         services.where((s) => s.nameInt == serviceNameInt).toList();
-    for (LAService s in servicesSub) {
+    for (LAService s in serviceSubset) {
       sds.addAll(serviceDeploys
           .where((sD) => sD.projectId == id && sD.serviceId == s.id)
           .toList());
@@ -591,21 +613,35 @@ check results length: ${checkResults.length}''';
     return sds;
   }
 
-  void setServiceDeployRelease(String sN, String release) {
-    List<LAServiceDeploy> serviceDeploysForName = getServiceDeploys(sN);
+  void setServiceDeployRelease(String serviceName, String release) {
+    List<LAServiceDeploy> serviceDeploysForName =
+        getServiceDeploysForSomeService(serviceName);
     if (AppUtils.isDev()) {
       print(
-          "Setting ${serviceDeploysForName.length} service deploys for service $sN and release $release");
+          "Setting ${serviceDeploysForName.length} service deploys for service $serviceName and release $release");
     }
     for (LAServiceDeploy sd in serviceDeploysForName) {
-      sd.softwareVersions[sN] = release;
+      sd.softwareVersions[serviceName] = release;
     }
   }
 
+  // Retrieve first sd with some software version setted for some serviceName
   String? getServiceDeployRelease(String serviceName) {
-    return getServiceDeployReleases()[serviceName];
+    String? version;
+    for (LAServiceDeploy sd in serviceDeploys) {
+      version = sd.softwareVersions[serviceName];
+      if (version != null) {
+        return version;
+      }
+    }
   }
 
+  // Each serviceDeploy has a Map of software/versions
+  // This list can differ from the runtime version of that software depending on
+  // the portal status of deployment:
+  // 1) at creation time
+  // 2) prior to update a service
+  // 3) after a deploy/update a service
   Map<String, String> getServiceDeployReleases() {
     Map<String, String> versions = {};
     for (LAServiceDeploy sd in serviceDeploys) {
@@ -653,9 +689,9 @@ check results length: ${checkResults.length}''';
         String hostnames = current
             .getServerServicesFull(serverId: server.id)
             .where((s) =>
-                s.nameInt != LAServiceName.biocache_cli.toS() &&
-                s.nameInt != LAServiceName.biocache_backend.toS() &&
-                s.nameInt != LAServiceName.nameindexer.toS())
+                s.nameInt != biocacheStore &&
+                s.nameInt != biocacheBackend &&
+                s.nameInt != nameindexer)
             .map((s) => s.url(current.domain))
             .toSet() // to remove dups
             .toList()
@@ -685,8 +721,8 @@ check results length: ${checkResults.length}''';
   }
 
   bool collectoryAndBiocacheDifferentServers() {
-    List<String> colHosts = getHostname(LAServiceName.collectory.toS());
-    List<String> biocacheHubHosts = getHostname(LAServiceName.ala_hub.toS());
+    List<String> colHosts = getHostname(collectory);
+    List<String> biocacheHubHosts = getHostname(alaHub);
     List<String> common = List.from(colHosts);
     common.removeWhere((item) => biocacheHubHosts.contains(item));
     return const ListEquality().equals(common, colHosts);
@@ -776,11 +812,13 @@ check results length: ${checkResults.length}''';
     for (LAServiceDeploy sd in serviceDeploys) {
       sd.softwareVersions.forEach((sw, value) {
         if (LAServiceDesc.swToAnsibleVars[sw] != null) {
+          // LAServer server = servers.firstWhere((s) => s.id == sd.serverId);
           swVersions.add([LAServiceDesc.swToAnsibleVars[sw]!, value]);
         }
       });
     }
-    conf["LA_software_versions"] = swVersions;
+    conf["LA_software_versions"] = swVersions
+      ..sort((a, b) => compareAsciiUpperCase(a[0], b[0]));
 
     for (LAVariable variable in variables) {
       conf["${LAVariable.varInvPrefix}${variable.nameInt}"] = variable.value;
@@ -897,15 +935,21 @@ check results length: ${checkResults.length}''';
     }
 
     if (p.getService(cas).use) {
-      p.serviceInUse(apiKey, true);
-      p.serviceInUse(userDetails, true);
+      p.serviceInUse(apikey, true);
+      p.serviceInUse(userdetails, true);
       p.serviceInUse(casManagement, true);
     }
     if (p.getService(spatial).use) {
-      p.serviceInUse(spatialWs, true);
+      p.serviceInUse(spatialService, true);
       p.serviceInUse(geoserver, true);
     }
+    String? biocacheHostname = a('biocache_backend_hostname');
+    if (biocacheHostname != null) {
+      p.getService(biocacheBackend).use = true;
+      p.getService(pipelines).use = false;
+    }
     // TODO mapzoom
+
     return p;
   }
 
@@ -935,21 +979,19 @@ check results length: ${checkResults.length}''';
     getServicesNameListInUse().forEach((nameInt) {
       LAServiceDesc desc = LAServiceDesc.get(nameInt);
       LAService service = getService(nameInt);
-      String url = desc.isSubService
-          ? getServiceE(desc.parentService!).fullUrl(useSSL, domain) + desc.path
-          : service.fullUrl(useSSL, domain);
+      String url = serviceFullUrl(desc, service);
       String name = StringUtils.capitalize(desc.name);
-      String? help = nameInt == LAServiceName.solr.toS()
+      String? help = nameInt == solr
           ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
           : null;
       String tooltip = name != "Index"
           ? serviceTooltip(name)
           : "This is protected by default, see our wiki for more info";
-      if (nameInt == LAServiceName.solr.toS()) {
+      if (nameInt == solr) {
         url =
             "${StringUtils.removeLastSlash(url.replaceFirst("https", "http"))}:8983";
       }
-      if (nameInt == LAServiceName.cas.toS()) {
+      if (nameInt == cas) {
         url += '/cas';
       }
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
@@ -959,7 +1001,7 @@ check results length: ${checkResults.length}''';
       List<LAServiceDeploy> sd =
           serviceDeploys.where((sd) => sd.serviceId == service.id).toList();
       ServiceStatus st = sd.isNotEmpty ? sd[0].status : ServiceStatus.unknown;
-      // if (nameInt != LAServiceName.cas.toS()) {
+      // if (nameInt != cas) {
       allServices.add(ProdServiceDesc(
           name: name,
           nameInt: nameInt,
@@ -975,6 +1017,14 @@ check results length: ${checkResults.length}''';
           help: help));
     });
     return allServices;
+  }
+
+  String serviceFullUrl(LAServiceDesc desc, LAService service) {
+    String url = desc.isSubService
+        ? getServiceE(desc.parentService!).fullUrl(useSSL, domain) +
+            desc.path.replaceFirst(RegExp(r'^/'), '')
+        : service.fullUrl(useSSL, domain);
+    return url;
   }
 
   String serviceTooltip(String name) => "Open the $name service";
@@ -1076,6 +1126,8 @@ check results length: ${checkResults.length}''';
           const ListEquality().equals(hubs, other.hubs) &&
           const DeepCollectionEquality.unordered()
               .equals(checkResults, other.checkResults) &&
+          const DeepCollectionEquality.unordered()
+              .equals(runningVersions, other.runningVersions) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -1106,6 +1158,7 @@ check results length: ${checkResults.length}''';
       const ListEquality().hash(variables) ^
       const ListEquality().hash(serviceDeploys) ^
       const DeepCollectionEquality.unordered().hash(checkResults) ^
+      const DeepCollectionEquality.unordered().hash(runningVersions) ^
       createdAt.hashCode ^
       mapZoom.hashCode;
 
@@ -1114,15 +1167,6 @@ check results length: ${checkResults.length}''';
     String nameInt = service.nameInt;
     if (alaInstallRelease != null) {
       defVersions[nameInt] = _setDefSwVersion(nameInt);
-      if (nameInt == cas) {
-        defVersions[cas] = _setDefSwVersion(cas);
-        defVersions[casManagement] = _setDefSwVersion(casManagement);
-        defVersions[userDetails] = _setDefSwVersion(userDetails);
-        defVersions[apiKey] = _setDefSwVersion(apiKey);
-      }
-      if (nameInt == spatial) {
-        defVersions[spatialWs] = _setDefSwVersion(spatialWs);
-      }
     }
     defVersions.removeWhere((key, value) => value == "");
     return defVersions;
@@ -1134,7 +1178,32 @@ check results length: ${checkResults.length}''';
             : Dependencies.defaultVersions.entries.firstWhere(
                 (e) => e.key.allows(Dependencies.v(alaInstallRelease!))))
         .value[nameInt];
-    // print("$nameInt def version $version");
     return version ?? "";
   }
+
+  Map<String, dynamic> getServiceDetailsForVersionCheck() {
+    Map<String, dynamic> versions = {};
+    for (LAServiceDeploy sd in serviceDeploys) {
+      LAService service =
+          services.firstWhere((s) => s.id == sd.serviceId, orElse: () {
+        String msg = 'Missing serviceId ${sd.serviceId}';
+        print(msg);
+        throw Exception(msg);
+      });
+      String serviceName = service.nameInt;
+      LAServiceDesc desc = LAServiceDesc.get(serviceName);
+      if (!desc.withoutUrl) {
+        versions[serviceName] = {
+          "server": sd.serviceId,
+          "url": serviceName == cas
+              ? serviceFullUrl(desc, service) + '/cas/'
+              : serviceFullUrl(desc, service)
+        };
+      }
+    }
+    return versions;
+  }
+
+  bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();
+  bool get showToolkitDeps => !isHub;
 }
