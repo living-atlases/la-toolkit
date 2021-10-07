@@ -163,48 +163,54 @@ class Dependencies {
           print("Checking dependencies for $sw");
         }
         final String swForHumans = LAServiceDesc.swNameWithAliasForHumans(sw);
-        Version versionP = v(version);
-        if (laDeps[sw] != null) {
-          laDeps[sw]!.forEach((VersionConstraint mainConstraint,
-              Map<String, VersionConstraint> constraints) {
-            if (mainConstraint.allows(versionP)) {
-              // Now we verify the rest of constraints dependencies
-              if (debug) {
-                print("$mainConstraint applies to $sw");
-              }
-              constraints
-                  .forEach((String dependency, VersionConstraint constraint) {
+        if (version != 'custom' && version != 'upstream') {
+          if (laDeps[sw] != null) {
+            Version versionP = v(version);
+            laDeps[sw]!.forEach((VersionConstraint mainConstraint,
+                Map<String, VersionConstraint> constraints) {
+              if (mainConstraint.allows(versionP)) {
+                // Now we verify the rest of constraints dependencies
                 if (debug) {
-                  print(
-                      "testing $swForHumans $versionP with $mainConstraint that depends on $dependency $constraint and uses ${selectedVersions[dependency] ?? 'none'}");
+                  print("$mainConstraint applies to $sw");
                 }
-                // Not use internal name for LA services
-                String depForHumans = LAServiceDesc.isLAService(dependency)
-                    ? LAServiceDesc.swNameWithAliasForHumans(dependency)
-                    : dependency;
-                if (selectedVersions[dependency] == null) {
-                  if (serviceInUse.contains(dependency)) {
-                    lintErrors.add('$swForHumans depends on $depForHumans');
+                constraints
+                    .forEach((String dependency, VersionConstraint constraint) {
+                  String? versionOfDep = selectedVersions[dependency];
+                  if (debug) {
+                    print(
+                        "testing $swForHumans $versionP with $mainConstraint that depends on $dependency $constraint and uses ${versionOfDep ?? 'none'}");
                   }
-                } else {
-                  if (!constraint.allows(v(selectedVersions[dependency]!))) {
-                    lintErrors.add(sw == toolkit
-                        ? '$dependency recommended version should be $constraint'
-                        : '$swForHumans depends on $depForHumans $constraint');
+                  // Not use internal name for LA services
+                  String depForHumans = LAServiceDesc.isLAService(dependency)
+                      ? LAServiceDesc.swNameWithAliasForHumans(dependency)
+                      : dependency;
+                  if (versionOfDep == null) {
+                    if (serviceInUse.contains(dependency)) {
+                      lintErrors.add('$swForHumans depends on $depForHumans');
+                    }
+                  } else {
+                    if (versionOfDep != 'custom' &&
+                        versionOfDep != 'upstream' &&
+                        !constraint.allows(v(versionOfDep))) {
+                      lintErrors.add(sw == toolkit
+                          ? '$dependency recommended version should be $constraint'
+                          : '$swForHumans depends on $depForHumans $constraint');
+                    }
                   }
-                }
-              });
+                });
+              }
+            });
+          } else {
+            if (debug) {
+              print("No dependencies for $sw");
             }
-          });
-        } else {
-          if (debug) {
-            print("No dependencies for $sw");
           }
         }
       });
       return lintErrors.toList();
-    } catch (e) {
+    } catch (e, stacktrace) {
       print("Verify exception $e");
+      print(stacktrace);
       return lintErrors.toList();
     }
   }
