@@ -706,7 +706,7 @@ check results length: ${checkResults.length}''';
   String get hostnames {
     List<String> hostList = [];
     serversWithServices().forEach((server) => hostList.add(server.name));
-    return hostList.join('|');
+    return hostList.join(', ');
   }
 
   String get sshKeysInUse {
