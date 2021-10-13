@@ -497,7 +497,8 @@ class LAServiceDesc {
       list(isHub).map((s) => s.nameInt).toList();
 
   static List<LAServiceDesc> listSorted(bool isHub) =>
-      list(isHub)..sort((a, b) => compareAsciiUpperCase(a.name, b.name));
+      List<LAServiceDesc>.from(list(isHub))
+        ..sort((a, b) => compareAsciiUpperCase(a.name, b.name));
 
   static List<LAServiceDesc> listNoSub(bool isHub) => isHub
       ? LAServiceDesc.listHubCapable
