@@ -40,7 +40,10 @@ class Dependencies {
         alaInstall: vc('>= 2.0.11'),
         generator: vc('>= 1.2.1')
       },
-      vc('>= 1.2.2 < 1.2.6'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.1')},
+      vc('>= 1.2.2 < 1.2.6'): {
+        alaInstall: vc('>= 2.0.11'),
+        generator: vc('>= 1.2.1')
+      },
       vc('>= 1.2.6'): {alaInstall: vc('>= 2.0.11'), generator: vc('>= 1.2.2')},
     },
 
@@ -95,32 +98,35 @@ class Dependencies {
     }
   };
 
+  static final Map<String, String> defVersions2_0_11 = {
+    alaHub: "3.2.9",
+    alerts: "1.5.1",
+    bie: "1.5.0",
+    bieIndex: "1.4.11",
+    biocacheService: "2.4.2",
+    biocacheStore: "2.6.0",
+    // branding: "",
+    cas: "5.3.12-2",
+    casManagement: "5.3.6-1",
+    collectory: "1.6.4",
+    dashboard: "2.2",
+    doi: "1.1.1",
+    images: "1.1.7",
+    speciesLists: "3.5.9",
+    logger: "2.4.0",
+    regions: "3.3.5",
+    sds: "1.6.2",
+    // solr: "",
+    spatial: "0.4",
+    spatialService: "0.4",
+    userdetails: "2.3.0",
+    webapi: "2.0",
+  };
+
   static Map<VersionConstraint, Map<String, String>> defaultVersions = {
     // ala-install vs rest of components
-    vc('<= 2.0.11'): {
-      alaHub: "3.2.9",
-      alerts: "1.5.1",
-      bie: "1.5.0",
-      bieIndex: "1.4.11",
-      biocacheService: "2.4.2",
-      biocacheStore: "2.6.0",
-      // branding: "",
-      cas: "5.3.12-2",
-      casManagement: "5.3.6-1",
-      collectory: "1.6.4",
-      dashboard: "2.2",
-      doi: "1.1.1",
-      images: "1.1.7",
-      speciesLists: "3.5.9",
-      logger: "2.4.0",
-      regions: "3.3.5",
-      sds: "1.6.2",
-      // solr: "",
-      spatial: "0.4",
-      spatialService: "0.4",
-      userdetails: "2.3.0",
-      webapi: "2.0",
-    }
+    vc('<= 2.0.11'): defVersions2_0_11,
+    vc('> 2.0.11'): defVersions2_0_11
   };
 
 // biocollect_version=5.1.2
