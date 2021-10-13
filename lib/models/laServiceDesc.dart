@@ -445,6 +445,7 @@ class LAServiceDesc {
         withoutUrl: true,
         icon: Mdi.tournament,
         artifact: "ala-name-matching",
+        allowMultipleDeploys: true,
         path: ""),
     biocacheBackend: LAServiceDesc(
         name: "biocache-backend",
