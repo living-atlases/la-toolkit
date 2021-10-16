@@ -420,7 +420,7 @@ class LAServiceDesc {
         withoutUrl: false,
         optional: false,
         alaAdmin: false,
-        allowMultipleDeploys: false,
+        allowMultipleDeploys: true,
         hubCapable: true,
         path: "brand-${DateTime.now().year}"),
     biocacheStore: LAServiceDesc(
@@ -430,7 +430,7 @@ class LAServiceDesc {
         group: "biocache-cli",
         desc:
             "manages the loading, sampling, processing and indexing of occurrence records",
-        optional: false,
+        optional: true,
         withoutUrl: true,
         icon: Mdi.powershell,
         artifact: "biocache-store",
@@ -441,7 +441,7 @@ class LAServiceDesc {
         nameInt: "nameindexer",
         group: "nameindexer",
         desc: "nameindexer",
-        optional: false,
+        optional: true,
         withoutUrl: true,
         icon: Mdi.tournament,
         artifact: "ala-name-matching",
