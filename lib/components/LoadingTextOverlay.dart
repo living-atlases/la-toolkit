@@ -9,10 +9,11 @@ class LoadingTextOverlay extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: const [
             CircularProgressIndicator(),
-            SizedBox(height: 12),
-            Text(
-              'Loading...',
-            ),
+            // SizedBox(height: 12),
+            // Remove til we found a nice way to do it
+            // Text(
+            // 'Loading...',
+            //),
           ],
         ),
       );
