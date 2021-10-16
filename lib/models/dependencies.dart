@@ -90,6 +90,12 @@ class Dependencies {
     pipelines: {
       vc("any"): {biocacheService: vc(">= 3.0.0")}
     },
+    pipelines: {
+      vc("any"): {alaInstall: vc(">= 2.1.0")}
+    },
+    pipelines: {
+      vc("any"): {alaNameMatchingService: vc(">= 1.0.0")}
+    },
     dashboard: {
       vc(">= 2.2"): {alaInstall: vc(">= 2.0.5")}
     },
