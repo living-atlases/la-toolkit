@@ -196,11 +196,15 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                       style: UiUtils.subtitleStyle),
                                   const SizedBox(height: 20),
                                   // ignore: sized_box_for_whitespace
-                                  Container(
-                                      height: 600,
-                                      width: 1000,
-                                      child: TermDialog.termArea(
-                                          cmdHistoryDetails.port!)),
+                                  if (cmdHistoryDetails.port != null)
+                                    SizedBox(
+                                        height: 600,
+                                        width: 1000,
+                                        child: TermDialog.termArea(
+                                            cmdHistoryDetails.port!)),
+                                  if (cmdHistoryDetails.port == null)
+                                    const Text(
+                                        "For some reason, we couldn't open a terminal with these logs. Possible fix: restart your la-toolkit container"),
                                   TipsCard(text: """## Tips with the logs
 This logs are located in the file `logs/${cmdHistoryDetails.cmd!.logsPrefix}-${cmdHistoryDetails.cmd!.logsSuffix}.log`.
 
