@@ -169,7 +169,19 @@ class LAServiceDepsDesc {
     pipelines: LAServiceDepsDesc(
       nameInt: pipelines,
       serviceDepends: [Java.v8],
-    )
+    ),
+    spark: LAServiceDepsDesc(
+      nameInt: spark,
+      serviceDepends: [Java.v8, Spark.def],
+    ),
+    hadoop: LAServiceDepsDesc(
+      nameInt: hadoop,
+      serviceDepends: [Java.v8, Hadoop.def],
+    ),
+    pipelinesJenkins: LAServiceDepsDesc(
+      nameInt: pipelinesJenkins,
+      serviceDepends: [Java.v8],
+    ),
   };
 /*
   static final Map<String, Map<String, LAServiceDepsDesc>> map = {

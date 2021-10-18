@@ -36,7 +36,10 @@ enum LAServiceName {
   biocache_cli,
   // ignore: constant_identifier_names
   nameindexer,
-  pipelines
+  pipelines,
+  spark,
+  hadoop,
+  pipelinesJenkins
 }
 
 extension ParseToString on LAServiceName {

@@ -103,6 +103,9 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.biocache_cli: 'biocache_cli',
   LAServiceName.nameindexer: 'nameindexer',
   LAServiceName.pipelines: 'pipelines',
+  LAServiceName.spark: 'spark',
+  LAServiceName.hadoop: 'hadoop',
+  LAServiceName.pipelinesJenkins: 'pipelinesJenkins',
 };
 
 const _$LAVariableStatusEnumMap = {

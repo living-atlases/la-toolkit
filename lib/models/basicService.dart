@@ -161,5 +161,22 @@ class ElasticSearch extends BasicService {
   static final v7_3_0 = ElasticSearch("7.3.0");
 }
 
+class Spark extends BasicService {
+  Spark(version)
+      : super(name: "spark", version: version, tcp: [
+          8081,
+          7077,
+          65000,
+          8080,
+          8085,
+        ]);
+  static final def = Spark("");
+}
+
+class Hadoop extends Tcp {
+  Hadoop(version) : super("hadoop", version, 9000);
+  static final def = Hadoop("");
+}
+
 // Playbooks
 // ala-demo-basic.yml collectory-standalone.yml biocache-hub-standalone.yml biocache-service-clusterdb.yml bie-hub.yml bie-index.yml image-service.yml species-list-standalone.yml regions-standalone.yml logger-standalone.yml solr7-standalone.yml cas5-standalone.yml biocache-db.yml biocache-cli.yml spatial.yml webapi_standalone.yml dashboard.yml alerts-standalone.yml doi-service-standalone.yml nameindexer-standalone.yml

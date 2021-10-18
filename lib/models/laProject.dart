@@ -326,9 +326,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   bool allServicesAssignedToServers({debug = false}) {
-    bool ok = getServicesNameListInUse().isNotEmpty &&
-        getServicesNameListInUse().length ==
-            getServicesAssignedToServers().length;
+    List<String> difference = servicesNotAssigned();
+    bool ok = difference.isEmpty;
+
     if (!ok && debug) {
       print(
           "Not the same services in use ${getServicesNameListInUse().length} as assigned to servers ${getServicesAssignedToServers().length}");
@@ -339,6 +339,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
       ok && getHostname(service).isNotEmpty;
     });
     return ok;
+  }
+
+  List<String> servicesNotAssigned() {
+    List<String> difference = getServicesNameListInUse()
+        .toSet()
+        .difference(getServicesAssignedToServers().toSet())
+        .toList();
+    return difference;
   }
 
   List<LAServer> serversWithServices() {
@@ -518,8 +526,8 @@ check results length: ${checkResults.length}''';
     variables.add(cur);
   }
 
-  List<String> getServicesNameListInServer(String serverName) {
-    return serverServices[serverName] ?? [];
+  List<String> getServicesNameListInServer(String serverId) {
+    return serverServices[serverId] ?? [];
   }
 
   void upsertServer(LAServer laServer) {
@@ -590,6 +598,10 @@ check results length: ${checkResults.length}''';
     if (newServices.contains(spatial)) {
       newServices.add(spatialService);
       newServices.add(geoserver);
+    }
+    if (newServices.contains(pipelines)) {
+      newServices.add(spark);
+      newServices.add(hadoop);
     }
     return newServices;
   }
@@ -857,7 +869,12 @@ check results length: ${checkResults.length}''';
       // ala_bie and images was not optional in the past
       bool useIt = !serviceDesc.optional
           ? true
-          : a("use_$n") ?? n == 'ala_bie' || n == 'images'
+          : a("use_$n") ??
+                  n == 'ala_bie' ||
+                      n == 'images' ||
+                      n == biocacheStore ||
+                      n == biocacheBackend ||
+                      n == nameindexer
               ? true
               : false;
       LAService service = p.getService(serviceDesc.nameInt);
@@ -942,6 +959,10 @@ check results length: ${checkResults.length}''';
     if (p.getService(spatial).use) {
       p.serviceInUse(spatialService, true);
       p.serviceInUse(geoserver, true);
+    }
+    if (p.getService(pipelines).use) {
+      p.serviceInUse(spark, true);
+      p.serviceInUse(hadoop, true);
     }
     String? biocacheHostname = a('biocache_backend_hostname');
     if (biocacheHostname != null) {

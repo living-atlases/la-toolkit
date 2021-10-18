@@ -432,6 +432,7 @@ class LAServiceDesc {
             "manages the loading, sampling, processing and indexing of occurrence records",
         optional: true,
         withoutUrl: true,
+        initUse: true,
         icon: Mdi.powershell,
         artifact: "biocache-store",
         allowMultipleDeploys: true,
@@ -443,6 +444,7 @@ class LAServiceDesc {
         desc: "nameindexer",
         optional: true,
         withoutUrl: true,
+        initUse: true,
         icon: Mdi.tournament,
         artifact: "ala-name-matching",
         allowMultipleDeploys: true,
@@ -469,10 +471,54 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: false,
         // We use apt for check versions
-        artifact: "pipelines",
+        artifact: pipelines,
         icon: Mdi.pipe,
         allowMultipleDeploys: true,
         path: ""),
+    spark: LAServiceDesc(
+        name: spark,
+        nameInt: spark,
+        group: spark,
+        desc: "Spark cluster for Pipelines",
+        optional: true,
+        withoutUrl: true,
+        admin: false,
+        alaAdmin: false,
+        // We use apt for check versions
+        artifact: spark,
+        icon: Mdi.shape,
+        allowMultipleDeploys: true,
+        path: ""),
+    hadoop: LAServiceDesc(
+        name: hadoop,
+        nameInt: hadoop,
+        group: hadoop,
+        desc: "Hadoop cluster for Pipelines",
+        optional: true,
+        withoutUrl: true,
+        admin: false,
+        alaAdmin: false,
+        // We use apt for check versions
+        artifact: spark,
+        icon: Mdi.elephant,
+        allowMultipleDeploys: true,
+        path: ""),
+    pipelinesJenkins: LAServiceDesc(
+        name: pipelinesJenkins,
+        nameInt: pipelinesJenkins,
+        group: pipelinesJenkins,
+        desc: "Jenkins for pipelines",
+        optional: true,
+        withoutUrl: true,
+        admin: false,
+        alaAdmin: false,
+        // We use apt for check versions
+        artifact: spark,
+        icon: Mdi.accountMinusOutline,
+        allowMultipleDeploys: true,
+        path: ""),
+    //spark: LAServiceDesc(name: spark, nameIn),
+
     /*    artifactAnsibleVar: "biocollect_version",
     artifactAnsibleVar: "ecodata_version",
     artifactAnsibleVar: "ecodata_version",*/
@@ -518,6 +564,9 @@ class LAServiceDesc {
     biocacheBackend,
     biocacheStore,
     branding,
+    spark,
+    pipelines,
+    hadoop,
   ];
 
   static final List<String> subServices = [
@@ -535,9 +584,22 @@ class LAServiceDesc {
     Map<String, LAServiceDepsDesc> deps =
         LAServiceDepsDesc.getDeps(alaInstallVersion);
 
+    if (name == cas && otherService == LAServiceDesc.get(pipelines) ||
+        name == pipelines && otherService == LAServiceDesc.get(cas)) {
+      // As it uses the same port cas and hadoop (9000)
+      return false;
+    }
+
     for (var service in deps[nameInt]!.serviceDepends) {
       for (var otherService in deps[otherService.nameInt]!.serviceDepends) {
         compatible = compatible && service.isCompatible(otherService);
+        /* This fails for http port etc
+        for (var port in service.tcp) {
+          compatible = compatible && !otherService.tcp.contains(port);
+        }
+        for (var port in service.udp) {
+          compatible = compatible && !otherService.udp.contains(port);
+        } */
       }
     }
     return compatible;

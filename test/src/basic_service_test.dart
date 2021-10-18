@@ -33,6 +33,14 @@ void main() {
         equals(false));
   });
 
+  test('LAServicesDesc cas and pipelines are incompatible', () {
+    // port collision
+    expect(
+        LAServiceDesc.getE(LAServiceName.pipelines)
+            .isCompatibleWith(alaInstallVersion, LAServiceDesc.get("cas")),
+        equals(false));
+  });
+
   test('LAServicesDesc spatial and images are incompatible', () {
     expect(
         LAServiceDesc.getE(LAServiceName.spatial).isCompatibleWith(

@@ -140,6 +140,7 @@ void main() {
         LAServer(name: "vm4", ip: "10.0.0.4", projectId: testProject.id);
     LAProject testProjectCopy =
         testProject.copyWith(servers: [], serverServices: {});
+    expect(testProject.getService(biocacheStore).use, equals(true));
     testProject.upsertServer(vm1);
     testProjectCopy.upsertServer(vm1);
     expect(testProject.getServerServicesForTest().length, equals(1));
@@ -220,11 +221,12 @@ void main() {
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
     expect(testProject.getServicesNameListInUse().isNotEmpty, equals(true));
 
-    /*print(testProject.getServicesNameListInUse().length);
+    print(testProject.getServicesNameListInUse().length);
     print(testProject.getServicesAssignedToServers().length);
     print(testProject.getServicesNameListInUse());
     print(testProject.getServicesAssignedToServers());
-    print(testProject); */
+    print(testProject);
+    print(testProject.servicesNotAssigned());
     expect(
         testProject.getServicesNameListInUse().length ==
             testProject.getServicesAssignedToServers().length,
@@ -713,11 +715,13 @@ void main() {
     expect(p.shortName, equals('GBIF.ES'));
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
+    print(p);
     LAServiceDesc.list(p.isHub)
         .where((s) => s.nameInt != sds)
         .toList()
         .forEach((service) {
-      if (![sds, pipelines].contains(service.nameInt)) {
+      if (![sds, pipelines, spark, hadoop, pipelinesJenkins]
+          .contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason:
                 "${service.nameInt} should be in Use and is ${p.getService(service.nameInt).use}");
@@ -759,7 +763,10 @@ void main() {
         spatialService,
         geoserver,
         dashboard,
-        pipelines
+        pipelines,
+        spark,
+        hadoop,
+        pipelinesJenkins
       ];
       if (notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(false),
@@ -786,8 +793,18 @@ void main() {
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
     for (var service in LAServiceDesc.list(p.isHub)) {
       // print("${service.nameInt}");
-      if (![speciesLists, webapi, doi, bie, regions, sds, pipelines]
-          .contains(service.nameInt)) {
+      if (![
+        speciesLists,
+        webapi,
+        doi,
+        bie,
+        regions,
+        sds,
+        pipelines,
+        spark,
+        hadoop,
+        pipelinesJenkins
+      ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
       }
@@ -870,5 +887,27 @@ void main() {
         expect(p.mapBoundsFstPoint.latitude != -44, equals(true));
       }
     }
+  });
+
+  test('P multi service assign', () async {
+    LAProject p = LAProject();
+    LAServer vm1 = LAServer(name: "vm1", ip: "10.0.0.1", projectId: p.id);
+    LAServer vm2 = LAServer(name: "vm2", ip: "10.0.0.2", projectId: p.id);
+    LAServer vm3 = LAServer(name: "vm3", ip: "10.0.0.3", projectId: p.id);
+    p.upsertServer(vm1);
+    p.upsertServer(vm2);
+    p.upsertServer(vm3);
+    p.assign(vm1, [collectory, alaHub]);
+    p.assign(vm2, [alaHub]);
+    expect(
+        const ListEquality()
+            .equals(p.getServicesNameListInServer(vm2.id), [alaHub]),
+        equals(true),
+        reason: "Services in vm2: ${p.getServicesNameListInServer(vm2.name)}");
+    expect(
+        const ListEquality().equals(
+            p.getServicesNameListInServer(vm1.id), [collectory, alaHub]),
+        equals(true),
+        reason: "Services in vm1: ${p.getServicesNameListInServer(vm1.name)}");
   });
 }

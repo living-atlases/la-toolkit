@@ -166,6 +166,8 @@ class LAService implements IsJsonSerializable<LAService> {
             nameInt != spatialService &&
             nameInt != geoserver &&
             nameInt != biocacheStore &&
+            nameInt != spark &&
+            nameInt != hadoop &&
             nameInt != nameindexer)
         .toList();
   }
