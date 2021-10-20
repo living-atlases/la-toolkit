@@ -6,6 +6,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/dependencies.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
+import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
@@ -66,8 +67,18 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 project.getServicesNameListInUse() + Dependencies.laTools,
                 selectedVersions))
       ];
+      List<String> notAssigned = project.servicesNotAssigned();
+      String notAssignedMessage = notAssigned.length < 5
+          ? ' (' +
+              notAssigned
+                  .map((s) => LAServiceDesc.get(s).name)
+                  .toList()
+                  .join(', ') +
+              ')'
+          : '';
       if (widget.showOthers) {
         lints.addAll([
+          // TODO: verify that servers of pipelines does not have underscore
           if (vm.sshKeys.isEmpty)
             AlertCard(
                 message: "You don't have any SSH key",
@@ -80,8 +91,12 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           if (basicDefined &&
               project.servers.isNotEmpty &&
               !project.allServicesAssignedToServers())
-            const AlertCard(
-                message: "Some service is not assigned to a server"),
+            AlertCard(
+                message:
+                    "Some service is not assigned to a server$notAssignedMessage"),
+          /* AlertCard(
+                message:
+                    "Some service is not assigned to a server${notAssigned.length > 3 ? '' : ' (' + notAssigned.join(', ') + ')'}"),*/
           if (basicDefined && !project.allServersWithIPs())
             const AlertCard(
                 message: "All servers should have configured their IP address"),
