@@ -19,7 +19,6 @@ import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
@@ -172,17 +171,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         print(store.state.laReleases);
       } else {
         Map<String, LAReleases> releases = {};
-        List<Tuple2<String, String>> servicesAndSub = [];
+        Map<String, String> servicesAndSub = {};
 
-        for (LAServiceDesc service in LAServiceDesc.list(false)) {
-          if (service.artifact != null) {
-            servicesAndSub.add(Tuple2(service.nameInt, service.artifact!));
-          }
+        for (LAServiceDesc service in LAServiceDesc.listWithArtifact()) {
+          servicesAndSub[service.nameInt] = service.artifact!;
         }
-        for (Tuple2 s in servicesAndSub) {
-          LAReleases? thisReleases = await getDepsVersions(s);
+        for (var s in servicesAndSub.entries) {
+          LAReleases? thisReleases = await getDepsVersions(s.key, s.value);
           if (thisReleases != null) {
-            releases[s.item1] = thisReleases;
+            releases[s.key] = thisReleases;
           }
         }
         store.dispatch(OnLAVersionsSwCheck(releases, DateTime.now()));
@@ -429,7 +426,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     next(action);
   }
 
-  Future<LAReleases?> getDepsVersions(Tuple2 service) async {
+  Future<LAReleases?> getDepsVersions(String service, String artifact) async {
     String? latest;
     List<String> versions = [];
     for (String repo in ['releases', 'snapshots']) {
@@ -437,8 +434,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           AppUtils.uri(env['BACKEND']!, "/api/v1/get-deps-versions");
       Response response = await http.post(depsBackUrl,
           headers: {'Content-type': 'application/json'},
-          body: utf8
-              .encode(json.encode({'repo': repo, 'artifact': service.item2})));
+          body: utf8.encode(json.encode({'repo': repo, 'artifact': artifact})));
       Map<String, dynamic> jsonBody = json.decode(response.body);
       try {
         var thisVersions =
@@ -462,12 +458,12 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             print(versions);
             print(latest); */
       } catch (e) {
-        print('Cannot retrieve versions for ${service.item1} ($e)');
+        print('Cannot retrieve versions for $service ($e)');
       }
     }
     return LAReleases(
-        name: service.item1,
-        artifact: service.item2,
+        name: service,
+        artifact: artifact,
         latest: latest,
         // remove dups
         versions: versions.toSet().toList());
