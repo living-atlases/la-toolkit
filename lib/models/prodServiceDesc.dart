@@ -36,7 +36,7 @@ class ProdServiceDesc {
       required this.status}) {
     if (nameInt != biocacheBackend &&
         nameInt != nameindexer &&
-        nameInt != biocacheStore) {
+        nameInt != biocacheCli) {
       urls.add(url);
       if (alaAdmin) urls.add(url + '/alaAdmin/');
       if (admin) urls.add(url + '/admin/');

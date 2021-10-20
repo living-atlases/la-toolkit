@@ -5,6 +5,7 @@ import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -140,7 +141,7 @@ void main() {
         LAServer(name: "vm4", ip: "10.0.0.4", projectId: testProject.id);
     LAProject testProjectCopy =
         testProject.copyWith(servers: [], serverServices: {});
-    expect(testProject.getService(biocacheStore).use, equals(true));
+    expect(testProject.getService(biocacheCli).use, equals(true));
     testProject.upsertServer(vm1);
     testProjectCopy.upsertServer(vm1);
     expect(testProject.getServerServicesForTest().length, equals(1));
@@ -204,8 +205,8 @@ void main() {
 
     testProject.assign(vm3, [solr, logger, speciesLists]);
 
-    testProject.assign(vm4,
-        [spatial, cas, images, biocacheBackend, biocacheStore, nameindexer]);
+    testProject.assign(
+        vm4, [spatial, cas, images, biocacheBackend, biocacheCli, nameindexer]);
 
     expect(testProject.getServicesNameListInUse().contains(collectory),
         equals(true));
@@ -899,15 +900,42 @@ void main() {
     p.upsertServer(vm3);
     p.assign(vm1, [collectory, alaHub]);
     p.assign(vm2, [alaHub]);
+    Map<String, List<LAService>> assignable = p.getServerServicesAssignable();
+
+    expect(assignable[vm1.id]!.isNotEmpty, equals(true));
+    expect(assignable[vm2.id]!.isNotEmpty, equals(true));
+    expect(assignable[vm2.id]!.isNotEmpty, equals(true));
+    expect(
+        assignable[vm1.id]!.contains(p.getService(collectory)), equals(false));
+    expect(assignable[vm2.id]!.contains(p.getService(alaHub)), equals(false));
+    expect(assignable[vm2.id]!.contains(p.getService(alaHub)), equals(false));
+    expect(assignable[vm3.id]!.contains(p.getService(alaHub)), equals(true));
+    expect(
+        assignable[vm1.id]!.contains(p.getService(speciesLists)), equals(true));
+    expect(
+        assignable[vm2.id]!.contains(p.getService(speciesLists)), equals(true));
+    p.assign(vm1, [collectory, alaHub, speciesLists]);
+    assignable = p.getServerServicesAssignable();
+    expect(assignable[vm1.id]!.contains(p.getService(speciesLists)),
+        equals(false));
+    expect(assignable[vm2.id]!.contains(p.getService(speciesLists)),
+        equals(false));
     expect(
         const ListEquality()
             .equals(p.getServicesNameListInServer(vm2.id), [alaHub]),
         equals(true),
-        reason: "Services in vm2: ${p.getServicesNameListInServer(vm2.name)}");
+        reason: "Services in vm2: ${p.getServicesNameListInServer(vm2.id)}");
     expect(
-        const ListEquality().equals(
-            p.getServicesNameListInServer(vm1.id), [collectory, alaHub]),
+        const ListEquality().equals(p.getServicesNameListInServer(vm1.id), [
+          speciesLists,
+          collectory,
+          alaHub,
+        ]),
         equals(true),
-        reason: "Services in vm1: ${p.getServicesNameListInServer(vm1.name)}");
+        reason: "Services in vm1: ${p.getServicesNameListInServer(vm1.id)}");
+    LAServer vm4 = LAServer(name: "vm3", ip: "10.0.0.4", projectId: p.id);
+    p.upsertServer(vm4);
+    assignable = p.getServerServicesAssignable();
+    expect(assignable[vm4.id]!.contains(p.getService(alaHub)), equals(true));
   });
 }

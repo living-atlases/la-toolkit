@@ -159,12 +159,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
     try {
       if (clientMigration == null) {
         // Project pre migration from subServices to services
-        print('Migrating non hub services $shortName');
         fixNonHubServices();
         clientMigration = 0;
       }
       if (clientMigration == 0) {
-        print('Migrating to use subservices $shortName');
         migrateSubServices();
         clientMigration = 1;
       }
@@ -416,9 +414,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   List<String> getServicesAssignedToServers() {
-    List<String> selected = [];
+    Set<String> selected = {};
     serverServices.forEach((id, service) => selected.addAll(service));
-    return selected;
+    return selected.toList();
   }
 
   factory LAProject.fromJson(Map<String, dynamic> json) =>
@@ -588,7 +586,7 @@ check results length: ${checkResults.length}''';
     // In the same server nameindexer and biocache_cli
     if (newServices.contains(biocacheBackend)) {
       newServices.add(nameindexer);
-      newServices.add(biocacheStore);
+      newServices.add(biocacheCli);
     }
     if (newServices.contains(cas)) {
       newServices.add(userdetails);
@@ -701,9 +699,9 @@ check results length: ${checkResults.length}''';
         String hostnames = current
             .getServerServicesFull(serverId: server.id)
             .where((s) =>
-                s.nameInt != biocacheStore &&
+                !LAServiceDesc.subServices.contains(s.nameInt) &&
                 s.nameInt != biocacheBackend &&
-                s.nameInt != nameindexer)
+                s.nameInt != pipelines)
             .map((s) => s.url(current.domain))
             .toSet() // to remove dups
             .toList()
@@ -813,7 +811,7 @@ check results length: ${checkResults.length}''';
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
       conf["LA_${service.nameInt}_hostname"] =
           getHostname(service.nameInt).isNotEmpty
-              ? getHostname(service.nameInt)[0]
+              ? getHostname(service.nameInt).join(', ')
               : "";
       conf["LA_${service.nameInt}_url"] = service.url(domain);
       conf["LA_${service.nameInt}_path"] = service.path;
@@ -872,7 +870,7 @@ check results length: ${checkResults.length}''';
           : a("use_$n") ??
                   n == 'ala_bie' ||
                       n == 'images' ||
-                      n == biocacheStore ||
+                      n == biocacheCli ||
                       n == biocacheBackend ||
                       n == nameindexer
               ? true
@@ -984,6 +982,32 @@ check results length: ${checkResults.length}''';
   List<LAService> getServerServicesFull({required String serverId}) {
     List<String> listS = getServerServices(serverId: serverId);
     return services.where((s) => listS.contains(s.nameInt)).toList();
+  }
+
+  Map<String, List<LAService>> getServerServicesAssignable() {
+    List<String> canBeRedeployed = getServicesAssignedToServers()
+        .where((s) =>
+            LAServiceDesc.get(s).allowMultipleDeploys &&
+            LAServiceDesc.get(s).parentService == null)
+        .toList();
+    List<String> notAssigned = servicesNotAssigned();
+    List<LAService> eligible = services
+        .where((s) =>
+            canBeRedeployed.contains(s.nameInt) ||
+            notAssigned.contains(s.nameInt))
+        .toList();
+    Map<String, List<LAService>> results = {};
+    for (LAServer server in servers) {
+      List<String> currentServerServicesIds =
+          getServerServicesFull(serverId: server.id)
+              .map((service) => service.id)
+              .toList();
+      results[server.id] = eligible
+          .where((sv) => !currentServerServicesIds.contains(sv.id))
+          .toList();
+    }
+
+    return results;
   }
 
   Map<String, List<String>> getServerServicesForTest() {

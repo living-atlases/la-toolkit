@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/brandingSelector.dart';
 import 'package:la_toolkit/components/serverDetailsCardList.dart';
 import 'package:la_toolkit/components/serversCardList.dart';
+import 'package:la_toolkit/components/serversServicesEditPanel.dart';
 import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -19,7 +20,6 @@ import 'components/laAppBar.dart';
 import 'components/lintProjectPanel.dart';
 import 'components/scrollPanel.dart';
 import 'components/serviceWidget.dart';
-import 'components/servicesInServerSelector.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
@@ -372,12 +372,15 @@ If you are unsure type something like "server1, server2, server3".
               state: _setSetStatus(_step, _serverToServiceStep),
               title:
                   const Text('Define which services will run in which servers'),
-              // subtitle: const Text("Compatibilities"),
+              subtitle: const Text(
+                  "Some service can be deployed in several servers for web redundancy or to conform a cluster. Note: the la-toolkit does not configure load balancing in redundant web services."),
               content: Column(
                   children: (_project.numServers() > 0)
-                      ? (_project.servers
+                      ? /* (_project.servers
                           .map((s) => ServicesInServerSelector(server: s))
                           .toList())
+                      : */
+                      [const ServersServicesEditPanel()]
                       : [
                           const Text(
                               'You need to add some server before to this step...')

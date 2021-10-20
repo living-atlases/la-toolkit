@@ -158,8 +158,8 @@ class LAServiceDepsDesc {
     ),
     branding:
         LAServiceDepsDesc(nameInt: "branding", serviceDepends: [Nginx.def]),
-    biocacheStore: LAServiceDepsDesc(
-      nameInt: biocacheStore,
+    biocacheCli: LAServiceDepsDesc(
+      nameInt: biocacheCli,
       serviceDepends: [Java.v8],
     ),
     nameindexer: LAServiceDepsDesc(

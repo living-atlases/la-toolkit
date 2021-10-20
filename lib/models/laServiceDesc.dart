@@ -423,7 +423,7 @@ class LAServiceDesc {
         allowMultipleDeploys: true,
         hubCapable: true,
         path: "brand-${DateTime.now().year}"),
-    biocacheStore: LAServiceDesc(
+    biocacheCli: LAServiceDesc(
         name: "biocache-cli",
         alias: "biocache-store",
         nameInt: "biocache_cli",
@@ -450,8 +450,8 @@ class LAServiceDesc {
         allowMultipleDeploys: true,
         path: ""),
     biocacheBackend: LAServiceDesc(
-        name: "biocache-backend",
-        nameInt: "biocache_backend",
+        name: "biocache-store",
+        nameInt: biocacheBackend,
         group: "biocache-db",
         desc: "cassandra and biocache-store backend",
         withoutUrl: true,
@@ -471,7 +471,7 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: false,
         // We use apt for check versions
-        artifact: pipelines,
+        // artifact: pipelines,
         icon: Mdi.pipe,
         allowMultipleDeploys: true,
         path: ""),
@@ -484,10 +484,9 @@ class LAServiceDesc {
         withoutUrl: true,
         admin: false,
         alaAdmin: false,
-        // We use apt for check versions
-        artifact: spark,
         icon: Mdi.shape,
         allowMultipleDeploys: true,
+        parentService: LAServiceName.pipelines,
         path: ""),
     hadoop: LAServiceDesc(
         name: hadoop,
@@ -498,10 +497,9 @@ class LAServiceDesc {
         withoutUrl: true,
         admin: false,
         alaAdmin: false,
-        // We use apt for check versions
-        artifact: spark,
         icon: Mdi.elephant,
         allowMultipleDeploys: true,
+        parentService: LAServiceName.pipelines,
         path: ""),
     pipelinesJenkins: LAServiceDesc(
         name: pipelinesJenkins,
@@ -513,9 +511,9 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: false,
         // We use apt for check versions
-        artifact: spark,
         icon: Mdi.accountMinusOutline,
         allowMultipleDeploys: true,
+        depends: LAServiceName.pipelines,
         path: ""),
     //spark: LAServiceDesc(name: spark, nameIn),
 
@@ -539,12 +537,20 @@ class LAServiceDesc {
   static List<LAServiceDesc> list(bool isHub) =>
       isHub ? LAServiceDesc.listHubCapable : LAServiceDesc._list;
 
+  static List<LAServiceDesc> listWithArtifact() =>
+      list(true).where((sd) => sd.artifact != null).toList();
+
   static List<String> listS(bool isHub) =>
       list(isHub).map((s) => s.nameInt).toList();
 
   static List<LAServiceDesc> listSorted(bool isHub) =>
       List<LAServiceDesc>.from(list(isHub))
         ..sort((a, b) => compareAsciiUpperCase(a.name, b.name));
+
+  static List<LAServiceDesc> listRedundant(bool isHub) => LAServiceDesc._list
+      .where((s) =>
+          s.allowMultipleDeploys == true && (!isHub || (isHub && s.hubCapable)))
+      .toList();
 
   static List<LAServiceDesc> listNoSub(bool isHub) => isHub
       ? LAServiceDesc.listHubCapable
@@ -562,7 +568,7 @@ class LAServiceDesc {
   static final List<String> internalServices = [
     nameindexer,
     biocacheBackend,
-    biocacheStore,
+    biocacheCli,
     branding,
     spark,
     pipelines,
@@ -575,6 +581,11 @@ class LAServiceDesc {
     userdetails,
     spatialService,
     geoserver,
+    spark,
+    hadoop,
+    pipelinesJenkins,
+    nameindexer,
+    biocacheCli
   ];
 
   bool isCompatibleWith(String? alaInstallVersion, LAServiceDesc otherService) {
@@ -642,4 +653,9 @@ class LAServiceDesc {
     "biocache_cli": "biocache_cli_version",
     "nameindexer": "namematching_service_version",
   };
+
+  @override
+  String toString() {
+    return 'LAServiceDesc{nameInt: $nameInt, alias: $alias, hubCapable: $hubCapable, allowMultipleDeploys: $allowMultipleDeploys, artifact: $artifact}';
+  }
 }

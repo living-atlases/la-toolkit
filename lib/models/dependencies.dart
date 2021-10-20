@@ -70,14 +70,14 @@ class Dependencies {
     biocacheService: {
       vc(">= 2.5.0"): {tomcat: vc(">= 9.0.0")},
       // biocache-service 2.x - uses biocache-store
-      vc(">=2.7.0"): {biocacheStore: vc(">= 2.6.1")},
+      vc(">=2.7.0"): {biocacheCli: vc(">= 2.6.1")},
       // biocache-service 3.x - uses pipelines
       vc(">= 3.0.0"): {pipelines: vc("any")}
     },
     /* biocacheStore: {
       vc("any"): {biocacheService: vc("< 3.0.0")}
     }, */
-    biocacheStore: {
+    biocacheCli: {
       vc(">= 2.4.5"): {images: vc(">= 1.0.7")},
       vc("< 3.0.0"): {biocacheService: vc("< 3.0.0")}
     },
@@ -110,7 +110,7 @@ class Dependencies {
     bie: "1.5.0",
     bieIndex: "1.4.11",
     biocacheService: "2.4.2",
-    biocacheStore: "2.6.0",
+    biocacheCli: "2.6.0",
     // branding: "",
     cas: "5.3.12-2",
     casManagement: "5.3.6-1",

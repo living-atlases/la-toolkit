@@ -68,7 +68,7 @@ void main() {
       biocacheService: "2.7.0",
     };
 
-    List<String> servicesInUse = [alaHub, bie, biocacheService, biocacheStore];
+    List<String> servicesInUse = [alaHub, bie, biocacheService, biocacheCli];
 
     List<String> lintErrors =
         Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
@@ -81,9 +81,9 @@ void main() {
     servicesInUse.add(alerts);
     softwareVersions[alerts] = "1.6.1";
 
-    servicesInUse.add(biocacheStore);
+    servicesInUse.add(biocacheCli);
     softwareVersions[biocacheService] = "3.1.0";
-    softwareVersions[biocacheStore] = "2.5.0";
+    softwareVersions[biocacheCli] = "2.5.0";
 
     lintErrors = Dependencies.verifyLAReleases(servicesInUse, softwareVersions);
     expect(
