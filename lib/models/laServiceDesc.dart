@@ -538,7 +538,7 @@ class LAServiceDesc {
       isHub ? LAServiceDesc.listHubCapable : LAServiceDesc._list;
 
   static List<LAServiceDesc> listWithArtifact() =>
-      list(true).where((sd) => sd.artifact != null).toList();
+      list(false).where((sd) => sd.artifact != null).toList();
 
   static List<String> listS(bool isHub) =>
       list(isHub).map((s) => s.nameInt).toList();

@@ -95,7 +95,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
               selectors.add(swWidget);
             } else {
               if (releases == null) {
-                // print("No releases available for $serviceNameInt");
+                print("No releases available for $serviceNameInt");
               }
             }
           }

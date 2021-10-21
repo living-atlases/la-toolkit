@@ -44,4 +44,8 @@ void main() {
   test('Compare services enum', () {
     expect(collectory == "collectory", equals(true));
   });
+
+  test('Compare services name and map', () {
+    expect(LAServiceDesc.listWithArtifact().length, equals(22));
+  });
 }
