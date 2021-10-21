@@ -1,11 +1,22 @@
 FROM ubuntu:20.04
 
 # Install some dependencies via APT
+#RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+#        apt-get install -y software-properties-common python-docopt sudo curl byobu jq rsync && \
+#        apt-get install -y python-dev git 'python.*-pip' python3-minimal 'python2.*-minimal' && \
+#        apt-get install -y python-docopt nagios-plugins iputils-ping openjdk-8-jre zip unzip && \
+#        apt-get install -y gnupg2 sshpass openssh-client openssh-server vim netcat expect && \
+#        rm -rf /var/lib/apt/lists/* && \
+#        apt-get clean
+#        #apt-get install -y bash-completion less && \
+# --no-install-recommends \
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-        apt-get install -y software-properties-common python-docopt sudo curl byobu jq rsync && \
-        apt-get install -y python-dev git 'python.*-pip' python3-minimal 'python2.*-minimal' && \
-        apt-get install -y python-docopt nagios-plugins iputils-ping openjdk-8-jre zip unzip && \
-        apt-get install -y gnupg2 sshpass openssh-client openssh-server vim netcat expect && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        software-properties-common python-docopt sudo curl byobu jq rsync \
+        python-dev git 'python.*-pip' python3-minimal 'python2.*-minimal' \
+        python-docopt nagios-plugins iputils-ping openjdk-8-jre zip unzip \
+        gnupg2 sshpass openssh-client openssh-server vim netcat expect less \
+        bash-completion && \
         rm -rf /var/lib/apt/lists/* && \
         apt-get clean
 
@@ -16,8 +27,10 @@ RUN python3 -m pip install --upgrade pip cffi \
     pip install mitogen ansible-lint
 
 # Install node via APT
-RUN curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash - && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+        DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y nodejs && \
+        rm -rf /var/lib/apt/lists/* && \
+        apt-get clean
 
 # go install (needed by assh)
 # https://golang.org/doc/install
@@ -116,28 +129,36 @@ RUN su - ubuntu -c 'git clone --branch v2.0.10 https://github.com/AtlasOfLivingA
 # apt.gbif.es LA pipelines and deps
 RUN echo "deb [arch=amd64] https://apt.gbif.es/ bionic main" > /etc/apt/sources.list.d/ala.list && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F697D8D2ADB9E24A
-# la-pipelines dependencies
+
+# la-pipelines dependencies (commented right now as we only need to check the la-pipelines available)
 # yq
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64 && \
-        add-apt-repository ppa:rmescandon/yq && \
-        apt-get -y update && \
-        apt-get install -y -q yq
+# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64 && \
+#         add-apt-repository ppa:rmescandon/yq && \
+#         apt-get -y update && \
+#         apt-get install --no-install-recommends -y -q yq && \
+#         rm -rf /var/lib/apt/lists/* && \
+#         apt-get clean
+
 # docopts
-RUN curl -o /usr/local/bin/docopts -LJO https://github.com/docopt/docopts/releases/download/v0.6.3-rc2/docopts_linux_amd64
-RUN chmod +x /usr/local/bin/docopts
-RUN mkdir -p /data/pipelines-data
-RUN mkdir -p /data/pipelines-shp
-RUN mkdir -p /data/dwca-imports
-RUN apt-get -y update && \
-        apt-get install -y -q la-pipelines  # 2021090901
+# RUN curl -o /usr/local/bin/docopts -LJO https://github.com/docopt/docopts/releases/download/v0.6.3-rc2/docopts_linux_amd64
+# RUN chmod +x /usr/local/bin/docopts
+# RUN mkdir -p /data/pipelines-data
+# RUN mkdir -p /data/pipelines-shp
+# RUN mkdir -p /data/dwca-imports
+# # 2021090901
+# RUN apt-get -y update && \
+#         apt-get install -y -q --no-install-recommends la-pipelines && \
+#         rm -rf /var/lib/apt/lists/* && \
+#         apt-get clean
+
 # Enable bash autocompletion by default, useful for la-pipelines cmd autocompletion and others
 RUN sed -i '/^#.*\. \/etc\/bash_completion/s/^#//' /etc/bash.bashrc
 # This part is disabled for disk usage reasons
 # RUN curl -o /data/pipelines-shp/pipelines-shapefiles.zip -O https://pipelines-shp.s3-ap-southeast-2.amazonaws.com/pipelines-shapefiles.zip
 # RUN (cd /data/pipelines-shp/ && unzip pipelines-shapefiles.zip)
-RUN chown -R ubuntu:ubuntu /data/la-pipelines
-RUN chown -R ubuntu:ubuntu /data/pipelines*
-RUN chown -R ubuntu:ubuntu /data/dwca-imports
+# RUN chown -R ubuntu:ubuntu /data/la-pipelines
+# RUN chown -R ubuntu:ubuntu /data/pipelines*
+# RUN chown -R ubuntu:ubuntu /data/dwca-imports
 
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
