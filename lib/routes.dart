@@ -131,7 +131,7 @@ class LAProjectTuneLocation extends NamedBeamLocation {
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
             key: ValueKey(route),
-            child: LAProjectTunePage(),
+            child: const LAProjectTunePage(),
             title: "${MyApp.appName}: Tune your project")
       ];
 }
