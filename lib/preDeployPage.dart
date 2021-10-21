@@ -4,7 +4,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
@@ -165,7 +165,7 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                         .serversWithServices()
                                         .map((e) => e.name)
                                         .toList(),
-                                    icon: Mdi.server,
+                                    icon: MdiIcons.server,
                                     onChange: (limitToServers) => setState(() =>
                                         cmd.limitToServers = limitToServers)),
                                 const SizedBox(height: 20),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/genericTextFormField.dart';
@@ -16,6 +17,7 @@ import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'components/alaInstallSelector.dart';
 import 'components/appSnackBar.dart';
@@ -28,13 +30,21 @@ import 'models/laServiceDesc.dart';
 import 'models/laServiceName.dart';
 import 'models/laVariable.dart';
 
-class LAProjectTunePage extends StatelessWidget {
-  LAProjectTunePage({Key? key}) : super(key: key);
+class LAProjectTunePage extends StatefulWidget {
+  const LAProjectTunePage({Key? key}) : super(key: key);
 
   static const routeName = "tune";
+
+  @override
+  _LAProjectTunePageState createState() => _LAProjectTunePageState();
+}
+
+class _LAProjectTunePageState extends State<LAProjectTunePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final bool _endNoteEnabled = false;
+  int _tab = 0;
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectTuneViewModel>(
@@ -111,6 +121,7 @@ class LAProjectTunePage extends StatelessWidget {
         bool showSoftwareVersions =
             project.showSoftwareVersions && vm.softwareReleasesReady;
         bool showToolkitDeps = project.showToolkitDeps;
+
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -138,6 +149,23 @@ class LAProjectTunePage extends StatelessWidget {
                         },
                       )
                     ]),
+                bottomNavigationBar: ConvexAppBar(
+                  backgroundColor: LAColorTheme.laPalette.shade300,
+                  color: Colors.black,
+                  activeColor: Colors.black,
+                  style: TabStyle.react,
+                  items: const [
+                    TabItem(icon: MdiIcons.formatListGroup, title: "Variables"),
+                    TabItem(
+                        icon: MdiIcons.autorenew, title: "Software versions"),
+                    TabItem(
+                        icon: MdiIcons.formTextbox, title: "Ansible Extras"),
+                  ],
+                  initialActiveIndex: 0, //optional, default as 0
+                  onTap: (int i) => setState(() => _tab = i),
+                ),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.centerDocked,
                 body: AppSnackBar(ScrollPanel(
                     withPadding: true,
                     child: Form(
@@ -145,20 +173,25 @@ class LAProjectTunePage extends StatelessWidget {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              ListTile(
-                                  // contentPadding: EdgeInsets.zero,
-                                  title: const Text(
-                                    'Advanced options',
-                                  ),
-                                  trailing: Switch(
-                                      value: project.advancedTune,
-                                      onChanged: (value) {
-                                        project.advancedTune = value;
-                                        vm.onSaveProject(project);
-                                      })),
-                              if (!AppUtils.isDemo() && project.advancedTune)
+                              if (_tab == 0)
+                                ListTile(
+                                    // contentPadding: EdgeInsets.zero,
+                                    title: const Text(
+                                      'Advanced options',
+                                    ),
+                                    trailing: Switch(
+                                        value: project.advancedTune,
+                                        onChanged: (value) {
+                                          project.advancedTune = value;
+                                          vm.onSaveProject(project);
+                                        })),
+                              if (_tab == 0 &&
+                                  !AppUtils.isDemo() &&
+                                  project.advancedTune)
                                 const SizedBox(height: 20),
-                              if (!AppUtils.isDemo() && project.advancedTune)
+                              if (_tab == 0 &&
+                                  !AppUtils.isDemo() &&
+                                  project.advancedTune)
                                 ListTile(
                                     // contentPadding: EdgeInsets.zero,
                                     title: Text(
@@ -184,123 +217,144 @@ class LAProjectTunePage extends StatelessWidget {
                                             vm.onSaveProject(project);
                                           }
                                         })),
-                              const SizedBox(height: 20),
-                              ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                // Let the ListView know how many items it needs to build.
-                                itemCount: items.length,
-                                // Provide a builder function. This is where the magic happens.
-                                // Convert each item into a widget based on the type of item it is.
-                                itemBuilder: (context, index) {
-                                  final item = items[index];
-                                  return ListTile(
-                                    // contentPadding: EdgeInsets.zero,
-                                    title: item.buildTitle(context),
-                                    subtitle: item.buildSubtitle(context),
-                                  );
-                                },
-                              ),
-                              if (showToolkitDeps) const SizedBox(height: 20),
-                              if (showToolkitDeps)
-                                HeadingItem("LA Toolkit dependencies")
-                                    .buildTitle(context),
-                              if (showToolkitDeps) const SizedBox(height: 20),
-                              if (showToolkitDeps)
-                                Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                          width: 250,
-                                          child: ALAInstallSelector(
-                                              onChange: (String? value) {
-                                            String version = value ??
-                                                vm.alaInstallReleases[0];
-                                            project.alaInstallRelease = version;
-                                            vm.onSaveProject(project);
-                                          })),
-                                      SizedBox(
-                                          width: 250,
-                                          child: GeneratorSelector(
-                                              onChange: (String? value) {
-                                            String version = value ??
-                                                vm.generatorReleases[0];
-                                            project.generatorRelease = version;
-                                            vm.onSaveProject(project);
-                                          }))
-                                    ]),
-                              if (showSoftwareVersions)
-                                const SizedBox(height: 20),
-                              if (showSoftwareVersions)
-                                HeadingItem("LA Component versions")
-                                    .buildTitle(context),
-                              if (showSoftwareVersions)
-                                LAReleasesSelectors(onSoftwareSelected:
-                                    (String sw, String version, bool save) {
-                                  project.setServiceDeployRelease(sw, version);
-                                  if (save) {
-                                    vm.onSaveProject(project);
-                                  }
-                                }),
-                              if (showSoftwareVersions || showToolkitDeps)
-                                LintProjectPanel(
-                                    showLADeps: showSoftwareVersions,
-                                    showToolkitDeps: showToolkitDeps,
-                                    showOthers: false),
-                              if (project.advancedTune)
-                                const SizedBox(height: 20),
-                              if (project.advancedTune)
-                                HeadingItem("Other variables")
-                                    .buildTitle(context),
-                              if (project.advancedTune)
-                                const SizedBox(height: 30),
-                              if (project.advancedTune)
-                                const Text(
-                                  "Write here other extra ansible variables that are not configurable in the previous forms:",
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.black54),
+                              if (_tab == 0) const SizedBox(height: 20),
+                              if (_tab == 0)
+                                ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  // Let the ListView know how many items it needs to build.
+                                  itemCount: items.length,
+                                  // Provide a builder function. This is where the magic happens.
+                                  // Convert each item into a widget based on the type of item it is.
+                                  itemBuilder: (context, index) {
+                                    final item = items[index];
+                                    return ListTile(
+                                      // contentPadding: EdgeInsets.zero,
+                                      title: item.buildTitle(context),
+                                      subtitle: item.buildSubtitle(context),
+                                    );
+                                  },
                                 ),
-                              if (project.advancedTune)
-                                const SizedBox(height: 20),
-                              if (project.advancedTune)
-                                // This breaks the newline enter key:
-                                //ListTile(
-                                //                        title:
-                                GenericTextFormField(
-                                    initialValue:
-                                        project.additionalVariables.isNotEmpty
-                                            ? utf8.decode(base64.decode(
-                                                project.additionalVariables))
-                                            : _initialExtraAnsibleVariables(
-                                                project),
-                                    minLines: 100,
-                                    maxLines: null,
-                                    fillColor: Colors.grey[100],
-                                    enabledBorder: true,
-                                    allowEmpty: true,
-                                    keyboardType: TextInputType.multiline,
-                                    monoSpaceFont: true,
-                                    error: "",
-                                    onChanged: (value) {
-                                      project.additionalVariables =
-                                          base64.encode(utf8.encode(value));
+                              if (_tab == 1)
+                                if (showToolkitDeps) const SizedBox(height: 20),
+                              if (_tab == 1)
+                                if (showToolkitDeps)
+                                  HeadingItem("LA Toolkit dependencies")
+                                      .buildTitle(context),
+                              if (_tab == 1)
+                                if (showToolkitDeps) const SizedBox(height: 20),
+                              if (_tab == 1)
+                                if (showToolkitDeps)
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                            width: 250,
+                                            child: ALAInstallSelector(
+                                                onChange: (String? value) {
+                                              String version = value ??
+                                                  vm.alaInstallReleases[0];
+                                              project.alaInstallRelease =
+                                                  version;
+                                              vm.onSaveProject(project);
+                                            })),
+                                        SizedBox(
+                                            width: 250,
+                                            child: GeneratorSelector(
+                                                onChange: (String? value) {
+                                              String version = value ??
+                                                  vm.generatorReleases[0];
+                                              project.generatorRelease =
+                                                  version;
+                                              vm.onSaveProject(project);
+                                            }))
+                                      ]),
+                              if (_tab == 1)
+                                if (showSoftwareVersions)
+                                  const SizedBox(height: 20),
+                              if (_tab == 1)
+                                if (showSoftwareVersions)
+                                  HeadingItem("LA Component versions")
+                                      .buildTitle(context),
+                              if (_tab == 1)
+                                if (showSoftwareVersions)
+                                  LAReleasesSelectors(onSoftwareSelected:
+                                      (String sw, String version, bool save) {
+                                    project.setServiceDeployRelease(
+                                        sw, version);
+                                    if (save) {
                                       vm.onSaveProject(project);
-                                    }),
+                                    }
+                                  }),
+                              if (_tab == 1)
+                                if (showSoftwareVersions || showToolkitDeps)
+                                  LintProjectPanel(
+                                      showLADeps: showSoftwareVersions,
+                                      showToolkitDeps: showToolkitDeps,
+                                      showOthers: false),
+                              if (_tab == 2)
+                                if (project.advancedTune)
+                                  const SizedBox(height: 20),
+                              if (_tab == 2)
+                                if (project.advancedTune)
+                                  HeadingItem("Other variables")
+                                      .buildTitle(context),
+                              if (_tab == 2)
+                                if (project.advancedTune)
+                                  const SizedBox(height: 30),
+                              if (_tab == 2)
+                                if (project.advancedTune)
+                                  const Text(
+                                    "Write here other extra ansible variables that are not configurable in the previous forms:",
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.black54),
+                                  ),
+                              if (_tab == 2)
+                                if (project.advancedTune)
+                                  const SizedBox(height: 20),
+                              if (_tab == 2)
+                                if (project.advancedTune)
+                                  // This breaks the newline enter key:
+                                  //ListTile(
+                                  //                        title:
+                                  GenericTextFormField(
+                                      initialValue:
+                                          project.additionalVariables.isNotEmpty
+                                              ? utf8.decode(base64.decode(
+                                                  project.additionalVariables))
+                                              : _initialExtraAnsibleVariables(
+                                                  project),
+                                      minLines: 100,
+                                      maxLines: null,
+                                      fillColor: Colors.grey[100],
+                                      enabledBorder: true,
+                                      allowEmpty: true,
+                                      keyboardType: TextInputType.multiline,
+                                      monoSpaceFont: true,
+                                      error: "",
+                                      onChanged: (value) {
+                                        project.additionalVariables =
+                                            base64.encode(utf8.encode(value));
+                                        vm.onSaveProject(project);
+                                      }),
                               /* trailing: HelpIcon(
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
-                              const SizedBox(height: 20),
-                              if (_endNoteEnabled)
-                                Row(children: [
-                                  const Text(
-                                      "Note: the colors of the variables values indicate if these values are "),
-                                  Text("already deployed",
-                                      style: LAColorTheme.deployedTextStyle),
-                                  const Text(" in your servers or "),
-                                  Text("they are not deployed yet",
-                                      style: LAColorTheme.unDeployedTextStyle),
-                                  const Text("."),
-                                ]),
+                              if (_tab == 2) const SizedBox(height: 20),
+                              if (_tab == 2)
+                                if (_endNoteEnabled)
+                                  Row(children: [
+                                    const Text(
+                                        "Note: the colors of the variables values indicate if these values are "),
+                                    Text("already deployed",
+                                        style: LAColorTheme.deployedTextStyle),
+                                    const Text(" in your servers or "),
+                                    Text("they are not deployed yet",
+                                        style:
+                                            LAColorTheme.unDeployedTextStyle),
+                                    const Text("."),
+                                  ]),
                             ]))))));
       },
     );

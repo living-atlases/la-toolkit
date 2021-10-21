@@ -10,7 +10,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'adminIconButton.dart';
 
@@ -20,7 +20,7 @@ class TermsDrawer extends StatelessWidget {
   static Widget appBarIcon(LAProject project, GlobalKey<ScaffoldState> key) {
     return IconButton(
       color: Colors.white,
-      icon: const Icon(Mdi.console),
+      icon: const Icon(MdiIcons.console),
       tooltip: "${project.shortName} terminals",
       onPressed: () => key.currentState?.openEndDrawer(),
     );
@@ -79,7 +79,7 @@ class TermsDrawer extends StatelessWidget {
               Tooltip(
                   message: "Open a terminal in ${server.name}",
                   child: ListTile(
-                      leading: const Icon(Mdi.console),
+                      leading: const Icon(MdiIcons.console),
                       title: Text(server.name),
                       onTap: () =>
                           vm.openTerm(vm.state.currentProject, server))),

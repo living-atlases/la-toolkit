@@ -5,7 +5,7 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'embedWebView.dart';
@@ -28,7 +28,7 @@ class TermDialog {
               child: Scaffold(
                 appBar: AppBar(
                   leading: const Icon(
-                    Mdi.console,
+                    MdiIcons.console,
                     color: Colors.white,
                   ),
                   title: Text(
@@ -84,7 +84,7 @@ class TermDialog {
 
   static ListTile drawerItem(BuildContext context) {
     return ListTile(
-      leading: const Icon(Mdi.console),
+      leading: const Icon(MdiIcons.console),
       title: const Text('Console'),
       onTap: () {
         openTerm(context);

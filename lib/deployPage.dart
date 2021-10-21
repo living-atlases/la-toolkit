@@ -7,7 +7,7 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/debounce.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'components/defDivider.dart';
 import 'components/deployBtn.dart';
@@ -78,7 +78,7 @@ class _DeployPageState extends State<DeployPage> {
                 endDrawer: const TermsDrawer(),
                 appBar: LAAppBar(
                     context: context,
-                    titleIcon: Mdi.rocketLaunch,
+                    titleIcon: MdiIcons.rocketLaunch,
                     title: pageTitle,
                     showLaIcon: false,
                     showBack: true,
@@ -157,7 +157,7 @@ class _DeployPageState extends State<DeployPage> {
                                                     .serversWithServices()
                                                     .map((e) => e.name)
                                                     .toList(),
-                                                icon: Mdi.server,
+                                                icon: MdiIcons.server,
                                                 onChange: (limitToServers) =>
                                                     setState(() =>
                                                         cmd.limitToServers =
@@ -170,7 +170,7 @@ class _DeployPageState extends State<DeployPage> {
                                                 tags: TagsConstants.getTagsFor(
                                                     vm.project
                                                         .alaInstallRelease),
-                                                icon: Mdi.tagPlusOutline,
+                                                icon: MdiIcons.tagPlusOutline,
                                                 title: "Tags:",
                                                 placeHolder: "All",
                                                 modalTitle:
@@ -185,7 +185,7 @@ class _DeployPageState extends State<DeployPage> {
                                                 tags: TagsConstants.getTagsFor(
                                                     vm.project
                                                         .alaInstallRelease),
-                                                icon: Mdi.tagOffOutline,
+                                                icon: MdiIcons.tagOffOutline,
                                                 title: "Skip tags:",
                                                 placeHolder: "None",
                                                 modalTitle:

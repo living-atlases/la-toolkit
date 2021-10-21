@@ -5,7 +5,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'serverSelector.dart';
 
@@ -38,7 +38,7 @@ class GatewaySelector extends StatelessWidget {
             initialValue: initialValue,
             hosts: vm.project.getServersNameList(),
             title: "SSH Gateway",
-            icon: Mdi.doorClosedLock,
+            icon: MdiIcons.doorClosedLock,
             modalTitle:
                 "Select the server (or servers) that is used as gateway to access to this server:",
             placeHolder: "Direct connection",

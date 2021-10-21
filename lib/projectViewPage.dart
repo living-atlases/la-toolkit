@@ -13,7 +13,7 @@ import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -186,7 +186,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 enabled: isCreatedAndAccessibleOrInProduction,
                 action: () => vm.onDeployBranding(project)),
             Tool(
-                icon: const Icon(Mdi.rocketLaunch),
+                icon: const Icon(MdiIcons.rocketLaunch),
                 title: "Deploy",
                 tooltip: "Install/update your LA $Portal or some services",
                 grid: 12,
@@ -236,7 +236,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 action: () => vm.onDelProject(project)),
             if (AppUtils.isDev() && !project.isHub)
               Tool(
-                  icon: const Icon(Mdi.pipe),
+                  icon: const Icon(MdiIcons.pipe),
                   title: "Data Processing Pipelines",
                   tooltip: "Pipelines for data processing (Not yet developed)",
                   enabled: isCreatedAndAccessibleOrInProduction,
@@ -387,7 +387,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
         context: context,
         closeIcon: const Icon(Icons.close),
         image: Icon(
-            allReady ? Mdi.checkboxMarkedCircleOutline : Icons.remove_done,
+            allReady ? MdiIcons.checkboxMarkedCircleOutline : Icons.remove_done,
             size: 60,
             color: allReady ? LAColorTheme.up : LAColorTheme.down),
         title: "Servers Status",

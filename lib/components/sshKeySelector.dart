@@ -4,7 +4,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SshKeySelector extends StatefulWidget {
   final LAServer server;
@@ -46,7 +46,7 @@ class _SshKeySelectorState extends State<SshKeySelector> {
       hint: Row(
         children: [
           if (_sshKey != null)
-            const Icon(Mdi.key, color: LAColorTheme.laPalette),
+            const Icon(MdiIcons.key, color: LAColorTheme.laPalette),
           if (_sshKey != null) const SizedBox(width: 5),
           Text(_sshKey != null ? _sshKey!.name : "No SSH key selected"),
         ],
@@ -60,7 +60,7 @@ class _SshKeySelectorState extends State<SshKeySelector> {
           value: sshKey,
           child: Row(
             children: [
-              const Icon(Mdi.key),
+              const Icon(MdiIcons.key),
               const SizedBox(
                 width: 10,
               ),

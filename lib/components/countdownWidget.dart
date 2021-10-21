@@ -1,6 +1,6 @@
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../laTheme.dart';
 
@@ -101,7 +101,7 @@ class _CountDownWidgetState extends State<CountDownWidget> {
             ),
             _button(
                 title: "Refresh",
-                icon: Mdi.reload,
+                icon: MdiIcons.reload,
                 onPressed: () {
                   _controller.restart();
                   widget.onReload();
