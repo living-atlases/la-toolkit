@@ -506,6 +506,11 @@ check results length: ${checkResults.length}''';
     return laVar;
   }
 
+  LAVariable? getVariableOrNull(String nameInt) {
+    LAVariable? laVar = variables.firstWhereOrNull((v) => v.nameInt == nameInt);
+    return laVar;
+  }
+
   Object? getVariableValue(String nameInt) {
     LAVariable variable = getVariable(nameInt);
     bool isEmpty = variable.value == null;
@@ -798,6 +803,21 @@ check results length: ${checkResults.length}''';
       "LA_is_hub": isHub
     };
     conf.addAll(MapUtils.toInvVariables(mapBoundsFstPoint, mapBoundsSndPoint));
+
+    if (!isHub &&
+        getService(pipelines).use &&
+        getVariableOrNull("pipelines_master") != null) {
+      // && getServiceDeploysForSomeService(pipelines).length > 0) {
+      String? masterName =
+          getVariableOrNull("pipelines_master")!.value as String?;
+      if (masterName != null) {
+        LAServer? masterServer = getServerByName(masterName);
+        if (masterServer != null && masterServer.sshKey != null) {
+          conf["${LAVariable.varInvPrefix}pipelines_ssh_key"] =
+              masterServer.sshKey!.name;
+        }
+      }
+    }
 
     List<String> ips = List.empty(growable: true);
     serversWithServices().forEach((server) => ips.add(server.ip));
@@ -1247,6 +1267,10 @@ check results length: ${checkResults.length}''';
       }
     }
     return versions;
+  }
+
+  LAServer? getServerByName(String name) {
+    return servers.firstWhereOrNull((LAServer s) => s.name == name);
   }
 
   bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();

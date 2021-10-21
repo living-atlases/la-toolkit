@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/components/GenericSelector.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -51,6 +52,12 @@ class _SandboxPageState extends State<SandboxPage> {
                 // BrandingSelector(),
                 const SizedBox(height: 7),
                 Container(),
+                GenericSelector<String>(
+                    values: const ["a", "b", "c"],
+                    currentValue: "b",
+                    onChange: (String v) {
+                      print(v);
+                    }),
               ],
             ),
           )));

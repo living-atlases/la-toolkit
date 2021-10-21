@@ -12,6 +12,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
+import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
@@ -19,6 +20,7 @@ import 'package:la_toolkit/utils/regexp.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import 'components/GenericSelector.dart';
 import 'components/alaInstallSelector.dart';
 import 'components/appSnackBar.dart';
 import 'components/generatorSelector.dart';
@@ -58,6 +60,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
           alaInstallReleases: store.state.alaInstallReleases,
           generatorReleases: store.state.generatorReleases,
           backendVersion: store.state.backendVersion,
+          sshKeys: store.state.sshKeys,
           onSaveProject: (project) {
             store.dispatch(SaveCurrentProject(project));
           },
@@ -425,6 +428,7 @@ class HeadingItem implements ListItem {
 class MessageItem implements ListItem {
   LAVariableDesc varDesc;
   LAProject project;
+
   ValueChanged<Object> onChanged;
   MessageItem(this.project, this.varDesc, this.onChanged);
 
@@ -447,23 +451,32 @@ class MessageItem implements ListItem {
                 onChanged: (bool newValue) {
                   onChanged(newValue);
                 })
-            : GenericTextFormField(
-                label: varDesc.name,
-                hint: varDesc.hint,
-                initialValue: initialValue ?? defValue,
-                allowEmpty: varDesc.allowEmpty,
-                enabledBorder: false,
-                obscureText: varDesc.protected,
-                deployed: deployed,
-                regexp: varDesc.type == LAVariableType.int
-                    ? LARegExp.int
-                    : varDesc.type == LAVariableType.double
-                        ? LARegExp.double
-                        : varDesc.regExp,
-                error: varDesc.error,
-                onChanged: (newValue) {
-                  onChanged(newValue);
-                }),
+            : varDesc.type == LAVariableType.select
+                ? Row(children: [
+                    Text("${varDesc.name}: "),
+                    const SizedBox(width: 20),
+                    GenericSelector<String>(
+                        values: varDesc.defValue!(project),
+                        currentValue: "$initialValue",
+                        onChange: (String newValue) => {onChanged(newValue)})
+                  ])
+                : GenericTextFormField(
+                    label: varDesc.name,
+                    hint: varDesc.hint,
+                    initialValue: initialValue ?? defValue,
+                    allowEmpty: varDesc.allowEmpty,
+                    enabledBorder: false,
+                    obscureText: varDesc.protected,
+                    deployed: deployed,
+                    regexp: varDesc.type == LAVariableType.int
+                        ? LARegExp.int
+                        : varDesc.type == LAVariableType.double
+                            ? LARegExp.double
+                            : varDesc.regExp,
+                    error: varDesc.error,
+                    onChanged: (newValue) {
+                      onChanged(newValue);
+                    }),
         trailing:
             varDesc.help != null ? HelpIcon(wikipage: varDesc.help!) : null);
   }
@@ -484,6 +497,7 @@ class _ProjectTuneViewModel {
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
   final String? backendVersion;
+  final List<SshKey> sshKeys;
 
   _ProjectTuneViewModel(
       {required this.project,
@@ -495,7 +509,8 @@ class _ProjectTuneViewModel {
       required this.onCancel,
       required this.alaInstallReleases,
       required this.generatorReleases,
-      required this.backendVersion});
+      required this.backendVersion,
+      required this.sshKeys});
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -509,6 +524,7 @@ class _ProjectTuneViewModel {
               .equals(generatorReleases, other.generatorReleases) &&
           const ListEquality()
               .equals(alaInstallReleases, other.alaInstallReleases) &&
+          const ListEquality().equals(sshKeys, other.sshKeys) &&
           status == other.status;
 
   @override
@@ -516,6 +532,7 @@ class _ProjectTuneViewModel {
       project.hashCode ^
       status.hashCode ^
       softwareReleasesReady.hashCode ^
+      const ListEquality().hash(sshKeys) ^
       const ListEquality().hash(generatorReleases) ^
       const ListEquality().hash(alaInstallReleases) ^
       const DeepCollectionEquality.unordered().hash(laReleases);

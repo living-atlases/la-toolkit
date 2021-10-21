@@ -6,14 +6,14 @@ import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class SshKeySelector extends StatefulWidget {
+class ServerSshKeySelector extends StatefulWidget {
   final LAServer server;
   final SshKey? currentSshKey;
   final List<SshKey> sshKeys;
   final bool isFirst;
   final LAProject project;
   final Function(LAProject) onSave;
-  const SshKeySelector(
+  const ServerSshKeySelector(
       {Key? key,
       required this.project,
       required this.server,
@@ -24,10 +24,10 @@ class SshKeySelector extends StatefulWidget {
       : super(key: key);
 
   @override
-  _SshKeySelectorState createState() => _SshKeySelectorState();
+  _ServerSshKeySelectorState createState() => _ServerSshKeySelectorState();
 }
 
-class _SshKeySelectorState extends State<SshKeySelector> {
+class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
   SshKey? _sshKey;
   @override
   void initState() {

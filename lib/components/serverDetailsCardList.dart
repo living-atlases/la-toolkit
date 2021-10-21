@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/renameServerIcon.dart';
-import 'package:la_toolkit/components/sshKeySelector.dart';
+import 'package:la_toolkit/components/serverSshKeySelector.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -65,7 +65,7 @@ class ServersDetailsCardList extends StatelessWidget {
                                       (LAProject project) =>
                                           vm.onSaveCurrentProject(project)),
                                   const SizedBox(width: 40),
-                                  SshKeySelector(
+                                  ServerSshKeySelector(
                                       key: ValueKey(
                                           _project.servers[index].name +
                                               _project.servers[index].sshKey

@@ -1,3 +1,5 @@
+import 'package:la_toolkit/models/LAServiceConstants.dart';
+import 'package:la_toolkit/models/laServiceDeploy.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 
 import 'laProject.dart';
@@ -7,9 +9,17 @@ import 'laServiceName.dart';
 // some regexp like {{([a-z A-Z0-9][^{}]+)}}
 
 // ignore: constant_identifier_names
-enum LAVariableType { String, int, double, bool }
+enum LAVariableType { String, int, double, bool, select }
 
-enum LAVariableSubcategory { org, cache, downloads, apikeys, otherKeys, ssl }
+enum LAVariableSubcategory {
+  org,
+  cache,
+  downloads,
+  apikeys,
+  otherKeys,
+  ssl,
+  pipelines
+}
 
 extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
   String get title {
@@ -26,6 +36,8 @@ extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
         return 'API Keys';
       case LAVariableSubcategory.otherKeys:
         return 'Other keys';
+      case LAVariableSubcategory.pipelines:
+        return 'Pipelines configuration';
     }
   }
 }
@@ -42,7 +54,6 @@ class LAVariableDesc {
   String? help;
   LAServiceName? depends;
   Function? defValue;
-  String? confName;
   bool advanced;
   bool enabled;
   bool inTunePage;
@@ -60,7 +71,6 @@ class LAVariableDesc {
       this.error,
       this.regExp,
       this.help,
-      this.confName,
       this.defValue,
       this.depends,
       this.inTunePage = true,
@@ -82,7 +92,6 @@ class LAVariableDesc {
           error == other.error &&
           regExp == other.regExp &&
           help == other.help &&
-          confName == other.confName &&
           advanced == other.advanced &&
           inTunePage == other.inTunePage &&
           protected == other.protected &&
@@ -99,7 +108,6 @@ class LAVariableDesc {
       error.hashCode ^
       regExp.hashCode ^
       help.hashCode ^
-      confName.hashCode ^
       advanced.hashCode ^
       inTunePage.hashCode ^
       protected.hashCode ^
@@ -349,7 +357,22 @@ class LAVariableDesc {
       hint:
           "Typically a link to a web page describing the SDS service and how it works",
       defValue: (_) => "https://www.ala.org.au/faq/data-sensitivity/",
-    )
+    ),
+    "pipelines_master": LAVariableDesc(
+        name: "Pipelines master server",
+        nameInt: "pipelines_master",
+        subcategory: LAVariableSubcategory.pipelines,
+        depends: LAServiceName.pipelines,
+        service: LAServiceName.pipelines,
+        defValue: (LAProject p) {
+          List<String> options = [];
+          for (LAServiceDeploy sd
+              in p.getServiceDeploysForSomeService(pipelines)) {
+            options.add(p.servers.firstWhere((s) => s.id == sd.serverId).name);
+          }
+          return options;
+        },
+        type: LAVariableType.select)
   };
   static LAVariableDesc get(String nameInt) {
     return map[nameInt]!;
