@@ -78,7 +78,6 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           : '';
       if (widget.showOthers) {
         lints.addAll([
-          // TODO: verify that servers of pipelines does not have underscore
           if (vm.sshKeys.isEmpty)
             AlertCard(
                 message: "You don't have any SSH key",
@@ -94,9 +93,6 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             AlertCard(
                 message:
                     "Some service is not assigned to a server$notAssignedMessage"),
-          /* AlertCard(
-                message:
-                    "Some service is not assigned to a server${notAssigned.length > 3 ? '' : ' (' + notAssigned.join(', ') + ')'}"),*/
           if (basicDefined && !project.allServersWithIPs())
             const AlertCard(
                 message: "All servers should have configured their IP address"),
@@ -108,11 +104,30 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 message:
                     "The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled"),
           if (!project.isHub &&
-              !project.getServiceE(LAServiceName.pipelines).use &&
+              !project.isPipelinesInUse &&
               !project.getServiceE(LAServiceName.biocache_backend).use)
             const AlertCard(
                 message:
-                    "You should use biocache-store or the new pipelines as backend")
+                    "You should use biocache-store or the new pipelines as backend"),
+          if (project.isPipelinesInUse && project.masterPipelinesServer == null)
+            AlertCard(
+                message: "You should select a master server for pipelines",
+                actionText: "SOLVE",
+                action: () => BeamerCond.of(context, LAProjectTuneLocation())),
+          if (project.isPipelinesInUse &&
+              project.getHostnames(pipelines).length < 3)
+            AlertCard(
+                message: "A pipelines cluster should have at least 3 servers",
+                actionText: "SOLVE",
+                action: () => BeamerCond.of(context, LAProjectEditLocation())),
+          if (project.isPipelinesInUse &&
+              project.getHostnames(pipelines).isNotEmpty &&
+              project.getHostnames(pipelines).join(" ").contains("_"))
+            AlertCard(
+                message:
+                    "Pipelines server names should not contain underscores",
+                actionText: "SOLVE",
+                action: () => BeamerCond.of(context, LAProjectEditLocation()))
         ]);
       }
       return Column(children: lints);

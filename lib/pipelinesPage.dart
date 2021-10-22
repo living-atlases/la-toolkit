@@ -13,7 +13,6 @@ import 'laTheme.dart';
 import 'models/commonCmd.dart';
 import 'models/laProject.dart';
 import 'models/pipelinesCmd.dart';
-import 'models/pipelinesStepName.dart';
 
 class PipelinesPage extends StatefulWidget {
   static const routeName = "pipelines";
@@ -43,25 +42,20 @@ class _PipelinesPageState extends State<PipelinesPage> {
                   context: context, store: store, project: project, cmd: cmd);
             },
             cmd: store.state.repeatCmd.runtimeType != PipelinesCmd
-                ? PipelinesCmd()
+                ? PipelinesCmd(
+                    master:
+                        store.state.currentProject.getPipelinesMaster()!.name)
                 : store.state.repeatCmd as PipelinesCmd);
       },
       builder: (BuildContext context, _ViewModel vm) {
         String execBtn = "Run";
         PipelinesCmd cmd = vm.cmd;
         print("Building pipelines page for $cmd");
-        bool isACmdForAll = cmd.steps
-            .where((String step) => [
-                  archiveList,
-                  datasetList,
-                  pruneDatasets,
-                  validationReport,
-                  jackknife,
-                  clustering
-                ].contains(step))
-            .toList()
-            .isNotEmpty;
-        VoidCallback? onTap = isACmdForAll ||
+
+        if (vm.project.getPipelinesMaster() != null) {
+          cmd.master = vm.project.masterPipelinesServer!.name;
+        }
+        VoidCallback? onTap = cmd.isACmdForAll ||
                 ((cmd.allDrs || (cmd.drs != null && cmd.drs!.isNotEmpty)) &&
                     (cmd.steps.isNotEmpty || cmd.allSteps))
             ? () => vm.onRunPipelines(vm.project, cmd)

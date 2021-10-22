@@ -130,7 +130,7 @@ void main() {
   });
 
   test('Test pipeline cmd to String', () {
-    PipelinesCmd cmd = PipelinesCmd();
+    PipelinesCmd cmd = PipelinesCmd(master: "test");
     cmd.allDrs = true;
     expect(cmd.desc, equals("Pipelines data processing of all drs"));
     cmd.steps = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};

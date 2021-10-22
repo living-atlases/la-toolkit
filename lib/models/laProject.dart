@@ -73,7 +73,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   List<LAServer> servers;
   List<LAService> services;
 
-  // Mapped by server.id
+  // Mapped by server.id - serviceNames
   Map<String, List<String>> serverServices;
   List<CmdHistoryEntry> cmdHistoryEntries;
   List<LAServiceDeploy> serviceDeploys;
@@ -92,6 +92,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
   Tuple2<List<ProdServiceDesc>, HostsServicesChecks>? servicesToMonitor;
 
   int? clientMigration;
+
+  @JsonKey(ignore: true)
+  LAServer? masterPipelinesServer;
 
   LAProject(
       {String? id,
@@ -334,7 +337,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
           "Services unassigned: ${getServicesNameListInUse().where((s) => !getServicesAssignedToServers().contains(s)).toList().join(',')}");
     }
     getServicesNameListInUse().forEach((service) {
-      ok && getHostname(service).isNotEmpty;
+      ok && getHostnames(service).isNotEmpty;
     });
     return ok;
   }
@@ -681,12 +684,12 @@ check results length: ${checkResults.length}''';
         : "";
   }
 
-  List<String> getHostname(String service) {
+  List<String> getHostnames(String serviceName) {
     List<String> hostnames = [];
 
-    serverServices.forEach((id, services) {
-      for (String currentService in services) {
-        if (service == currentService) {
+    serverServices.forEach((id, serviceNames) {
+      for (String currentService in serviceNames) {
+        if (serviceName == currentService) {
           LAServer server = servers.firstWhere((s) => s.id == id);
           hostnames.add(server.name);
         }
@@ -736,8 +739,8 @@ check results length: ${checkResults.length}''';
   }
 
   bool collectoryAndBiocacheDifferentServers() {
-    List<String> colHosts = getHostname(collectory);
-    List<String> biocacheHubHosts = getHostname(alaHub);
+    List<String> colHosts = getHostnames(collectory);
+    List<String> biocacheHubHosts = getHostnames(alaHub);
     List<String> common = List.from(colHosts);
     common.removeWhere((item) => biocacheHubHosts.contains(item));
     return const ListEquality().equals(common, colHosts);
@@ -804,18 +807,13 @@ check results length: ${checkResults.length}''';
     };
     conf.addAll(MapUtils.toInvVariables(mapBoundsFstPoint, mapBoundsSndPoint));
 
-    if (!isHub &&
-        getService(pipelines).use &&
-        getVariableOrNull("pipelines_master") != null) {
-      // && getServiceDeploysForSomeService(pipelines).length > 0) {
-      String? masterName =
-          getVariableOrNull("pipelines_master")!.value as String?;
-      if (masterName != null) {
-        LAServer? masterServer = getServerByName(masterName);
-        if (masterServer != null && masterServer.sshKey != null) {
-          conf["${LAVariable.varInvPrefix}pipelines_ssh_key"] =
-              masterServer.sshKey!.name;
-        }
+    // pipelines vars
+    if (!isHub) {
+      LAServer? masterServer = getPipelinesMaster();
+      if (masterServer != null && masterServer.sshKey != null) {
+        masterPipelinesServer = masterServer;
+        conf["${LAVariable.varInvPrefix}pipelines_ssh_key"] =
+            masterServer.sshKey!.name;
       }
     }
 
@@ -830,8 +828,8 @@ check results length: ${checkResults.length}''';
       conf["LA_use_${service.nameInt}"] = service.use;
       conf["LA_${service.nameInt}_uses_subdomain"] = service.usesSubdomain;
       conf["LA_${service.nameInt}_hostname"] =
-          getHostname(service.nameInt).isNotEmpty
-              ? getHostname(service.nameInt).join(', ')
+          getHostnames(service.nameInt).isNotEmpty
+              ? getHostnames(service.nameInt).join(', ')
               : "";
       conf["LA_${service.nameInt}_url"] = service.url(domain);
       conf["LA_${service.nameInt}_path"] = service.path;
@@ -1062,7 +1060,7 @@ check results length: ${checkResults.length}''';
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
       List<BasicService>? deps;
       if (mainDeps != null) deps = getDeps()[nameInt]!.serviceDepends;
-      List<String> hostnames = getHostname(nameInt);
+      List<String> hostnames = getHostnames(nameInt);
       List<LAServiceDeploy> sd =
           serviceDeploys.where((sd) => sd.serviceId == service.id).toList();
       ServiceStatus st = sd.isNotEmpty ? sd[0].status : ServiceStatus.unknown;
@@ -1271,6 +1269,20 @@ check results length: ${checkResults.length}''';
 
   LAServer? getServerByName(String name) {
     return servers.firstWhereOrNull((LAServer s) => s.name == name);
+  }
+
+  bool get isPipelinesInUse => !isHub && getService(pipelines).use;
+
+  LAServer? getPipelinesMaster() {
+    if (isPipelinesInUse && getVariableOrNull("pipelines_master") != null) {
+      // && getServiceDeploysForSomeService(pipelines).length > 0) {
+      String? masterName =
+          getVariableOrNull("pipelines_master")!.value as String?;
+      if (masterName != null) {
+        masterPipelinesServer = getServerByName(masterName);
+        return masterPipelinesServer;
+      }
+    }
   }
 
   bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();

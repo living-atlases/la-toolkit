@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/brandingDeployCmd.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
+import 'package:la_toolkit/models/pipelinesCmd.dart';
 import 'package:la_toolkit/models/postDeployCmd.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
@@ -69,6 +70,8 @@ class CmdHistoryEntry implements IsJsonSerializable {
   DeployCmd? parsedDeployCmd;
   @JsonKey(ignore: true)
   BrandingDeployCmd? parsedBrandingDeployCmd;
+  @JsonKey(ignore: true)
+  PipelinesCmd? pipelinesCmd;
   double? duration;
 
   CmdHistoryEntry(
@@ -99,6 +102,8 @@ class CmdHistoryEntry implements IsJsonSerializable {
       }
     } else if (cmd.type == CmdType.brandingDeploy) {
       parsedBrandingDeployCmd = BrandingDeployCmd.fromJson(cmd.properties);
+    } else if (cmd.type == CmdType.laPipelines) {
+      pipelinesCmd = PipelinesCmd.fromJson(cmd.properties);
     }
   }
 
@@ -154,7 +159,9 @@ class CmdHistoryEntry implements IsJsonSerializable {
         ? deployCmd!.getTitle()
         : cmd.type == CmdType.brandingDeploy
             ? parsedBrandingDeployCmd!.getTitle()
-            : "TODO FIXME";
+            : cmd.type == CmdType.laPipelines
+                ? pipelinesCmd!.getTitle()
+                : "TODO FIXME";
   }
 
   String getDesc() {
@@ -162,6 +169,8 @@ class CmdHistoryEntry implements IsJsonSerializable {
         ? deployCmd!.desc
         : cmd.type == CmdType.brandingDeploy
             ? parsedBrandingDeployCmd!.desc
-            : "TODO FIXME";
+            : cmd.type == CmdType.laPipelines
+                ? pipelinesCmd!.desc
+                : "TODO FIXME";
   }
 }

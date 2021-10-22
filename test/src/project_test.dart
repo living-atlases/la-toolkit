@@ -191,13 +191,13 @@ void main() {
 
     expect(testProject.getServicesNameListInUse().contains(collectory),
         equals(true));
-    expect(testProject.getHostname(collectory)[0] == vm1.name, equals(true));
+    expect(testProject.getHostnames(collectory)[0] == vm1.name, equals(true));
     /* print(testProject);
     print(testProject.servers);
     print(testProject.services);
     print(testProject.getServiceE(LAServiceName.collectory)); */
 
-    expect(testProject.getHostname(regions).isEmpty, equals(true));
+    expect(testProject.getHostnames(regions).isEmpty, equals(true));
 
     testProject.assign(vm1, [alaHub, regions, bie, branding]);
 
@@ -210,8 +210,8 @@ void main() {
 
     expect(testProject.getServicesNameListInUse().contains(collectory),
         equals(true));
-    expect(testProject.getHostname(collectory)[0] == vm2.name, equals(true));
-    expect(testProject.getHostname(collectory)[0] == vm1.name, equals(false));
+    expect(testProject.getHostnames(collectory)[0] == vm2.name, equals(true));
+    expect(testProject.getHostnames(collectory)[0] == vm1.name, equals(false));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(4));
     // no ssh keys
@@ -233,7 +233,7 @@ void main() {
             testProject.getServicesAssignedToServers().length,
         equals(true));
     testProject.getServicesNameListInUse().forEach((service) {
-      expect(testProject.getHostname(service).isNotEmpty, equals(true));
+      expect(testProject.getHostnames(service).isNotEmpty, equals(true));
     });
     expect(testProject.validateCreation(debug: true), equals(true));
     expect(
@@ -347,8 +347,8 @@ void main() {
     p.assign(vm1, [bie, bieIndex]);
     expect(p.getServicesAssignedToServers().contains(bie), equals(true));
     expect(p.getServicesAssignedToServers().contains(bieIndex), equals(true));
-    expect(p.getHostname(bieIndex), equals(['vm1']));
-    expect(p.getHostname(bie), equals(['vm1']));
+    expect(p.getHostnames(bieIndex), equals(['vm1']));
+    expect(p.getHostnames(bie), equals(['vm1']));
     p.getService(bie).iniPath = "/species";
     expect(p.etcHostsVar,
         equals('      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site'));
@@ -832,8 +832,8 @@ void main() {
     expect(p.getService(cas).suburl, equals('auth'));
 
     expect(p.getServerServicesForTest().keys.contains("vm-013"), equals(false));
-    expect(p.getHostname(images), equals(["vm-013"]));
-    expect(p.getHostname(regions), equals([]));
+    expect(p.getHostnames(images), equals(["vm-013"]));
+    expect(p.getHostnames(regions), equals([]));
     // Missing branding url etc
 
     p = LAProject.import(yoRcJson: yoRcJsonAt);

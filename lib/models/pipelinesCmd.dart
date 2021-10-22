@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/commonCmd.dart';
+import 'package:la_toolkit/models/pipelinesStepName.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 
 part 'pipelinesCmd.g.dart';
@@ -11,6 +12,7 @@ part 'pipelinesCmd.g.dart';
 class PipelinesCmd extends CommonCmd {
   String? drs;
   Set<String> steps;
+  String master;
   bool allDrs;
   bool allSteps;
   bool debug;
@@ -19,6 +21,7 @@ class PipelinesCmd extends CommonCmd {
   PipelinesCmd({
     this.drs,
     Set<String>? steps,
+    required this.master,
     this.debug = false,
     this.allDrs = false,
     this.allSteps = false,
@@ -35,6 +38,7 @@ class PipelinesCmd extends CommonCmd {
           drs == other.drs &&
           allDrs == other.allDrs &&
           allSteps == other.allSteps &&
+          master == other.master &&
           dryRun == other.dryRun;
 
   @override
@@ -44,14 +48,18 @@ class PipelinesCmd extends CommonCmd {
       dryRun.hashCode ^
       drs.hashCode ^
       allSteps.hashCode ^
+      master.hashCode ^
       allDrs.hashCode;
 
   String get desc {
-    String stepsDesc = 'pipelines data processing of';
+    String stepsDesc = 'pipelines data processing';
 
     if (allDrs) {
-      stepsDesc += ' all drs';
+      stepsDesc += ' of all drs';
+    } else if (isACmdForAll) {
+      // nothing to add
     } else {
+      stepsDesc += ' of ';
       String drsList = drs!.replaceAll('[ ]+', ', ');
       stepsDesc += ' $drsList';
     }
@@ -82,4 +90,16 @@ class PipelinesCmd extends CommonCmd {
   Map<String, dynamic> toJson() => _$PipelinesCmdToJson(this);
 
   String getTitle() => "Pipelines Data Processing Results";
+
+  bool get isACmdForAll => steps
+      .where((String step) => [
+            archiveList,
+            datasetList,
+            pruneDatasets,
+            validationReport,
+            jackknife,
+            clustering
+          ].contains(step))
+      .toList()
+      .isNotEmpty;
 }
