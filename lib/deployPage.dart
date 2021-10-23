@@ -20,6 +20,7 @@ import 'components/tagsSelector.dart';
 import 'components/termsDrawer.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
+import 'models/commonCmd.dart';
 import 'models/laProject.dart';
 import 'models/laService.dart';
 
@@ -46,7 +47,7 @@ class _DeployPageState extends State<DeployPage> {
         }
         return _DeployViewModel(
             project: store.state.currentProject,
-            cmd: store.state.repeatCmd as DeployCmd,
+            cmd: store.state.repeatCmd,
             onDeployProject: (project, cmd) => DeployUtils.deployActionLaunch(
                 context: context,
                 store: store,
@@ -59,7 +60,12 @@ class _DeployPageState extends State<DeployPage> {
       },
       builder: (BuildContext context, _DeployViewModel vm) {
         String execBtn = "Deploy";
-        DeployCmd cmd = vm.cmd;
+        late DeployCmd cmd;
+        try {
+          cmd = vm.cmd as DeployCmd;
+        } catch (e) {
+          cmd = DeployCmd();
+        }
         VoidCallback? onTap = cmd.deployServices.isEmpty
             ? null
             : () => vm.onDeployProject(vm.project, cmd);
@@ -232,7 +238,7 @@ class _DeployPageState extends State<DeployPage> {
 
 class _DeployViewModel {
   final LAProject project;
-  final DeployCmd cmd;
+  final CommonCmd cmd;
   final Function(LAProject) onCancel;
   final Function(LAProject, DeployCmd) onDeployProject;
 
