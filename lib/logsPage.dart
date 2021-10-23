@@ -13,6 +13,7 @@ import 'package:la_toolkit/utils/utils.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/statusIcon.dart';
+import 'models/cmd.dart';
 
 class LogsHistoryPage extends StatelessWidget {
   static const routeName = "logs";
@@ -42,7 +43,8 @@ class LogsHistoryPage extends StatelessWidget {
                   project: project,
                   commonCmd: cmdHistory.isAnsibleDeploy()
                       ? cmdHistory.deployCmd!
-                      : cmdHistory.parsedBrandingDeployCmd!));
+                      : cmdHistory.cmd.type == CmdType.laPipelines? cmdHistory.pipelinesCmd!:
+                          cmdHistory.parsedBrandingDeployCmd!));
             },
             onOpenDeployResults: (cmdHistory) {
               store.dispatch(

@@ -168,6 +168,8 @@ class DeployUtils {
             BeamerCond.of(context, PostDeployLocation());
           } else if (commonCmd is BrandingDeployCmd) {
             BeamerCond.of(context, BrandingDeployLocation());
+          } else if (commonCmd is PipelinesCmd) {
+            BeamerCond.of(context, PipelinesLocation());
           } else {
             BeamerCond.of(context, DeployLocation());
           }
