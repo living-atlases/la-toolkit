@@ -109,7 +109,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             const AlertCard(
                 message:
                     "You should use biocache-store or the new pipelines as backend"),
-          if (project.isPipelinesInUse && project.masterPipelinesServer == null)
+          if (project.isPipelinesInUse && project.getPipelinesMaster() == null)
             AlertCard(
                 message: "You should select a master server for pipelines",
                 actionText: "SOLVE",
