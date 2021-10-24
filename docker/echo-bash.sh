@@ -10,8 +10,8 @@ colrst='\033[0m'    # Text Reset
 
 echo -e ${colblu}"\$ "${colrst}${colgrn}"$@ "${colgre}"### This is the command we've executed"${colrst} 
 
-echo $BASH_LOG_FILE_COLORIZED
-echo $BASH_LOG_FILE
+# echo $BASH_LOG_FILE_COLORIZED
+# echo $BASH_LOG_FILE
 
 if [[ -n "${BASH_LOG_FILE_COLORIZED}" ]]; then
   # unbuffer preserve colors with tee
