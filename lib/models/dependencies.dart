@@ -92,13 +92,12 @@ class Dependencies {
       vc(">= 1.1"): {alaInstall: vc(">= 2.0.8")}
     },
     pipelines: {
-      vc("any"): {biocacheService: vc(">= 3.0.0")}
-    },
-    pipelines: {
-      vc("any"): {alaInstall: vc(">= 2.1.0")}
-    },
-    pipelines: {
-      vc("any"): {alaNameMatchingService: vc(">= 1.0.0")}
+      // Again, don't dup service keys or vc keys or dependencies will be overwritten
+      vc("any"): {
+        biocacheService: vc(">= 3.0.0"),
+        alaInstall: vc(">= 2.1.0"),
+        alaNameMatchingService: vc(">= 1.0.0")
+      }
     },
     dashboard: {
       vc(">= 2.2"): {alaInstall: vc(">= 2.0.5")}
