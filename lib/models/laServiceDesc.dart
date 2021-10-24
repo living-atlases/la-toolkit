@@ -470,8 +470,8 @@ class LAServiceDesc {
         withoutUrl: true,
         admin: false,
         alaAdmin: false,
-        // We use apt for check versions
-        // artifact: pipelines,
+        // We use apt for check versions, but we set this to get the version
+        artifact: pipelines,
         icon: MdiIcons.pipe,
         allowMultipleDeploys: true,
         path: ""),
