@@ -173,6 +173,19 @@ class LAService implements IsJsonSerializable<LAService> {
         .toList();
   }
 
+  static List<String> removeServicesDeployedTogether(List<String> services) {
+    return services
+        .where((nameInt) =>
+            nameInt != apikey &&
+            nameInt != userdetails &&
+            nameInt != casManagement &&
+            nameInt != spatialService &&
+            nameInt != geoserver &&
+            nameInt != spark &&
+            nameInt != hadoop)
+        .toList();
+  }
+
   static String servicesForHumans(List<LAService> services) {
     return services
         .map((service) =>
