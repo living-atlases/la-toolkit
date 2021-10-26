@@ -112,7 +112,8 @@ class LAService implements IsJsonSerializable<LAService> {
       : suburl.startsWith("/")
           ? suburl
           : "/" + suburl;
-  String url(domain) => usesSubdomain ? suburl + "." + domain : domain;
+  String url(domain) =>
+      usesSubdomain ? (suburl.isNotEmpty ? suburl + "." : '') + domain : domain;
   String fullUrl(ssl, domain) => 'http${ssl ? "s" : ""}://${url(domain)}$path';
 
   factory LAService.fromJson(Map<String, dynamic> json) =>
