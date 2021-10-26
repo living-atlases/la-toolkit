@@ -372,7 +372,15 @@ class LAVariableDesc {
           }
           return options;
         },
-        type: LAVariableType.select)
+        type: LAVariableType.select),
+    "pipelines_jenkins_use": LAVariableDesc(
+        name: "Use Jenkins with pipelines?",
+        nameInt: "pipelines_jenkins_use",
+        subcategory: LAVariableSubcategory.pipelines,
+        depends: LAServiceName.pipelines,
+        service: LAServiceName.pipelines,
+        defValue: (_) => false,
+        type: LAVariableType.bool)
   };
   static LAVariableDesc get(String nameInt) {
     return map[nameInt]!;
