@@ -269,7 +269,7 @@ void main() {
     expect(p.getServiceE(LAServiceName.logger).use, equals(true));
   });
 
-  test('Test disable of services', () {
+  test('Test disable of services and other project props', () {
     var p = LAProject();
     p.domain = "l-a.site";
     p.alaInstallRelease = "2.0.0";
@@ -344,16 +344,26 @@ void main() {
     p.getServicesNameListInUse().contains(bieIndex);
     expect(p.getServicesAssignedToServers().contains(bie), equals(true));
     expect(p.getServicesAssignedToServers().contains(bieIndex), equals(false));
-    p.assign(vm1, [bie, bieIndex]);
+    p.assign(vm1, [bie, bieIndex, branding]);
     expect(p.getServicesAssignedToServers().contains(bie), equals(true));
     expect(p.getServicesAssignedToServers().contains(bieIndex), equals(true));
     expect(p.getHostnames(bieIndex), equals(['vm1']));
     expect(p.getHostnames(bie), equals(['vm1']));
     p.getService(bie).iniPath = "/species";
-    expect(p.etcHostsVar,
-        equals('      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site'));
+    expect(
+        p.etcHostsVar,
+        equals(
+            '      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site branding.l-a.site'));
+
+    p.getService(branding).iniPath = "/";
+    p.getService(branding).suburl = "";
+    expect(
+        p.etcHostsVar,
+        equals(
+            '      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site l-a.site'));
     expect(p.serviceDeploys.length,
         equals(p.getServicesAssignedToServers().length));
+
     // print(p.getServiceDefaultVersion(p.getService(bie)));
     expect(p.getServiceDefaultVersions(p.getService(bie)).isNotEmpty,
         equals(true));
