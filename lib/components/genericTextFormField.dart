@@ -28,6 +28,7 @@ class GenericTextFormField extends StatefulWidget {
   final bool monoSpaceFont;
   final bool deployed;
   final bool obscureText;
+  final bool selected;
   final EdgeInsets? contentPadding;
 
   const GenericTextFormField(
@@ -54,6 +55,7 @@ class GenericTextFormField extends StatefulWidget {
       this.keyboardType,
       this.deployed = false,
       this.enabled = true,
+      this.selected = true,
       this.contentPadding})
       : super(key: key);
 
@@ -147,8 +149,10 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
                   decoration: decoration,
                   enabled: widget.enabled,
                   controller: _controller,
-                  onTap: () => _controller.selection = TextSelection(
-                      baseOffset: 0, extentOffset: _controller.text.length),
+                  onTap: () => widget.selected
+                      ? _controller.selection = TextSelection(
+                          baseOffset: 0, extentOffset: _controller.text.length)
+                      : null,
                   onChanged: (String value) => onChange(value),
                   style: style,
                   focusNode: widget.focusNode,

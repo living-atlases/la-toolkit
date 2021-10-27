@@ -336,6 +336,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                       keyboardType: TextInputType.multiline,
                                       monoSpaceFont: true,
                                       error: "",
+                                      selected: false,
                                       onChanged: (value) {
                                         project.additionalVariables =
                                             base64.encode(utf8.encode(value));
