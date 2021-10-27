@@ -274,11 +274,12 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 - [X] Branding deployment
 - [X] Post-deploy tasks
 - [X] Support additional hubs configuration
+- [X] Services redundancy
+- [~] Better ALA software versions control
 - [~] LA pipelines support (work in progress)
-- [~] Better ALA software versions control (work in progress)
 - [~] SSL support via letsencrypt (work in progress)
-- [ ] Services redundancy
 - [ ] Improve ssh keys management
+- [ ] multi-user support
 
 ## Screenshots
 
