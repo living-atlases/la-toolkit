@@ -358,6 +358,23 @@ class LAVariableDesc {
           "Typically a link to a web page describing the SDS service and how it works",
       defValue: (_) => "https://www.ala.org.au/faq/data-sensitivity/",
     ),
+    "sds_spatial_layers": LAVariableDesc(
+      name: "SDS Spatial Layers",
+      nameInt: "sds_spatial_layers",
+      subcategory: LAVariableSubcategory.otherKeys,
+      depends: LAServiceName.sds,
+      service: LAServiceName.sds,
+      defValue: (_) =>
+          "cl932,cl927,cl23,cl937,cl941,cl938,cl939,cl936,cl940,cl963,cl962,cl961,cl960,cl964,cl965,cl22,cl10925",
+    ),
+    "sds_flag_rules": LAVariableDesc(
+      name: "SDS Flag Rules",
+      nameInt: "sds_flag_rules",
+      subcategory: LAVariableSubcategory.otherKeys,
+      depends: LAServiceName.sds,
+      service: LAServiceName.sds,
+      defValue: (_) => "PBC7,PBC8,PBC9",
+    ),
     "pipelines_master": LAVariableDesc(
         name: "Pipelines master server",
         nameInt: "pipelines_master",
