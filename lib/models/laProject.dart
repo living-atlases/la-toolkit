@@ -1301,8 +1301,9 @@ check results length: ${checkResults.length}''';
           }
         }
         if (incompatible.isNotEmpty) {
-          allIncompatibilities.add(
-              "Services ${incompatible.join(', ')} can't be installed together");
+          allIncompatibilities.add(incompatible.length == 2
+              ? "Services ${incompatible.join(' and ')} can't be installed together"
+              : "Services ${incompatible.join(', ')} can't be installed together");
         }
       }
     }
