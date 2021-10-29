@@ -241,7 +241,7 @@ class LAServiceDesc {
         allowMultipleDeploys: false,
         path: ""),
     solr: LAServiceDesc(
-        name: "index",
+        name: "solr",
         nameInt: "solr",
         group: "solr7-server",
         desc: "indexing (Solr)",
@@ -249,6 +249,7 @@ class LAServiceDesc {
         icon: MdiIcons.weatherSunny,
         admin: false,
         alaAdmin: false,
+        artifact: 'solr',
         allowMultipleDeploys: true,
         path: ""),
     cas: LAServiceDesc(
@@ -652,6 +653,7 @@ class LAServiceDesc {
     "doi": "doi_service_version",
     "biocache_cli": "biocache_cli_version",
     "nameindexer": "namematching_service_version",
+    "solr": "solr_version"
   };
 
   @override
