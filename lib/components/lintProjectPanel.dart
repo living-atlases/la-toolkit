@@ -93,6 +93,11 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             AlertCard(
                 message:
                     "Some service is not assigned to a server$notAssignedMessage"),
+          if (basicDefined &&
+              project.servers.isNotEmpty &&
+              project.getIncompatibilities().isNotEmpty)
+            for (String i in project.getIncompatibilities())
+              AlertCard(message: i),
           if (basicDefined && !project.allServersWithIPs())
             const AlertCard(
                 message: "All servers should have configured their IP address"),
@@ -109,12 +114,15 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             const AlertCard(
                 message:
                     "You should use biocache-store or the new pipelines as backend"),
-          if (project.isPipelinesInUse && project.getPipelinesMaster() == null)
+          if (basicDefined &&
+              project.isPipelinesInUse &&
+              project.getPipelinesMaster() == null)
             AlertCard(
                 message: "You should select a master server for pipelines",
                 actionText: "SOLVE",
                 action: () => BeamerCond.of(context, LAProjectTuneLocation())),
-          if (project.isPipelinesInUse &&
+          if (basicDefined &&
+              project.isPipelinesInUse &&
               project.getHostnames(pipelines).length < 3)
             AlertCard(
                 message: "A pipelines cluster should have at least 3 servers",
@@ -127,7 +135,9 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 message:
                     "Pipelines server names should not contain underscores",
                 actionText: "SOLVE",
-                action: () => BeamerCond.of(context, LAProjectEditLocation()))
+                action: project.isCreated
+                    ? () => BeamerCond.of(context, LAProjectEditLocation())
+                    : null)
         ]);
       }
       return Column(children: lints);

@@ -1285,6 +1285,30 @@ check results length: ${checkResults.length}''';
     }
   }
 
+  List<String> getIncompatibilities() {
+    List<String> allIncompatibilities = [];
+    for (var serverServices in serverServices.values) {
+      if (serverServices.isNotEmpty) {
+        Set<String> incompatible = {};
+        for (var first in serverServices) {
+          for (var second in serverServices) {
+            // print("$first compatible with $second");
+            if (first != second &&
+                !LAServiceDesc.get(first).isCompatibleWith(
+                    alaInstallRelease, LAServiceDesc.get(second))) {
+              incompatible.addAll({first, second});
+            }
+          }
+        }
+        if (incompatible.isNotEmpty) {
+          allIncompatibilities.add(
+              "Services ${incompatible.join(', ')} can't be installed together");
+        }
+      }
+    }
+    return allIncompatibilities;
+  }
+
   bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();
   bool get showToolkitDeps => !isHub;
 }
