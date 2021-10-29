@@ -947,5 +947,11 @@ void main() {
     p.upsertServer(vm4);
     assignable = p.getServerServicesAssignable();
     expect(assignable[vm4.id]!.contains(p.getService(alaHub)), equals(true));
+    p.alaInstallRelease = "1.2.1";
+    p.getServiceDetailsForVersionCheck();
+    p.setServiceDeployRelease(
+        alaHub, p.getServiceDefaultVersions(p.getService(alaHub))[alaHub]!);
+    expect(
+        p.toGeneratorJson()['LA_software_versions'].length == 1, equals(true));
   });
 }

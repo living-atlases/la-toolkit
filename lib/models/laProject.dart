@@ -836,16 +836,16 @@ check results length: ${checkResults.length}''';
     }
 
     // Release versions
-    List<dynamic> swVersions = [];
+    Map<String, List<dynamic>> swVersions = {};
     for (LAServiceDeploy sd in serviceDeploys) {
       sd.softwareVersions.forEach((sw, value) {
         if (LAServiceDesc.swToAnsibleVars[sw] != null) {
           // LAServer server = servers.firstWhere((s) => s.id == sd.serverId);
-          swVersions.add([LAServiceDesc.swToAnsibleVars[sw]!, value]);
+          swVersions[sw] = ([LAServiceDesc.swToAnsibleVars[sw]!, value]);
         }
       });
     }
-    conf["LA_software_versions"] = swVersions
+    conf["LA_software_versions"] = swVersions.values.toList()
       ..sort((a, b) => compareAsciiUpperCase(a[0], b[0]));
 
     for (LAVariable variable in variables) {
