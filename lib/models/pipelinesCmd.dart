@@ -17,16 +17,18 @@ class PipelinesCmd extends CommonCmd {
   bool allSteps;
   bool debug;
   bool dryRun;
+  int mode; // 0,1,2 for local/embedded/cluster
 
-  PipelinesCmd({
-    this.drs,
-    Set<String>? steps,
-    required this.master,
-    this.debug = false,
-    this.allDrs = false,
-    this.allSteps = false,
-    this.dryRun = false,
-  }) : steps = steps ?? {};
+  PipelinesCmd(
+      {this.drs,
+      Set<String>? steps,
+      required this.master,
+      this.debug = false,
+      this.allDrs = false,
+      this.allSteps = false,
+      this.dryRun = false,
+      this.mode = 1})
+      : steps = steps ?? {};
 
   @override
   bool operator ==(Object other) =>
@@ -39,6 +41,7 @@ class PipelinesCmd extends CommonCmd {
           allDrs == other.allDrs &&
           allSteps == other.allSteps &&
           master == other.master &&
+          mode == other.mode &&
           dryRun == other.dryRun;
 
   @override
@@ -49,6 +52,7 @@ class PipelinesCmd extends CommonCmd {
       drs.hashCode ^
       allSteps.hashCode ^
       master.hashCode ^
+      mode.hashCode ^
       allDrs.hashCode;
 
   String get desc {

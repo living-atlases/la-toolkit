@@ -5,6 +5,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
@@ -44,7 +45,11 @@ class _PipelinesPageState extends State<PipelinesPage> {
             cmd: store.state.repeatCmd.runtimeType != PipelinesCmd
                 ? PipelinesCmd(
                     master:
-                        store.state.currentProject.getPipelinesMaster()!.name)
+                        store.state.currentProject.getPipelinesMaster()!.name,
+                    mode: store.state.currentProject.inProduction &&
+                            !AppUtils.isDev()
+                        ? 2
+                        : 1)
                 : store.state.repeatCmd as PipelinesCmd);
       },
       builder: (BuildContext context, _ViewModel vm) {
@@ -93,6 +98,34 @@ class _PipelinesPageState extends State<PipelinesPage> {
                                       vm.onSaveCmd(cmd);
                                     }),
                                 const SizedBox(height: 20),
+                                Tooltip(
+                                    message:
+                                        "Run locally, in spark embedded or in the spark cluster",
+                                    child: ToggleSwitch(
+                                      minWidth: 90.0,
+                                      cornerRadius: 20.0,
+                                      activeBgColors: [
+                                        [LAColorTheme.laPalette.shade200],
+                                        [LAColorTheme.laPalette.shade400],
+                                        [LAColorTheme.laPalette.shade800],
+                                      ],
+                                      activeFgColor: Colors.white,
+                                      inactiveBgColor: Colors.grey,
+                                      inactiveFgColor: Colors.white,
+                                      initialLabelIndex: cmd.mode,
+                                      totalSwitches: 3,
+                                      labels: const [
+                                        'Local',
+                                        'Embedded',
+                                        'Cluster'
+                                      ],
+                                      radiusStyle: true,
+                                      onToggle: (index) {
+                                        print("Current mode $index");
+                                        cmd = cmd.copyWith(mode: index);
+                                        vm.onSaveCmd(cmd);
+                                      },
+                                    )),
                                 LaunchBtn(
                                     onTap: onTap,
                                     execBtn: execBtn,

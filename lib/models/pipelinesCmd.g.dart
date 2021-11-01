@@ -14,6 +14,7 @@ extension PipelinesCmdCopyWith on PipelinesCmd {
     String? drs,
     bool? dryRun,
     String? master,
+    int? mode,
     Set<String>? steps,
   }) {
     return PipelinesCmd(
@@ -23,6 +24,7 @@ extension PipelinesCmdCopyWith on PipelinesCmd {
       drs: drs ?? this.drs,
       dryRun: dryRun ?? this.dryRun,
       master: master ?? this.master,
+      mode: mode ?? this.mode,
       steps: steps ?? this.steps,
     );
   }
@@ -41,6 +43,7 @@ PipelinesCmd _$PipelinesCmdFromJson(Map<String, dynamic> json) {
     allDrs: json['allDrs'] as bool,
     allSteps: json['allSteps'] as bool,
     dryRun: json['dryRun'] as bool,
+    mode: json['mode'] as int,
   );
 }
 
@@ -53,4 +56,5 @@ Map<String, dynamic> _$PipelinesCmdToJson(PipelinesCmd instance) =>
       'allSteps': instance.allSteps,
       'debug': instance.debug,
       'dryRun': instance.dryRun,
+      'mode': instance.mode,
     };
