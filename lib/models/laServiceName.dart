@@ -15,6 +15,8 @@ enum LAServiceName {
   regions,
   logger,
   solr,
+  solrcloud,
+  zookeeper,
   cas,
   userdetails,
   // ignore: constant_identifier_names

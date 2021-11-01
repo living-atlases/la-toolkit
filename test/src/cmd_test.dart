@@ -32,7 +32,7 @@ void main() {
     expect(
         cmd.desc,
         equals(
-            "Deploy of collections, species, spatial and index services in vm1 (tags: tomcat, properties, nginx)"));
+            "Deploy of collections, species, spatial and solr services in vm1 (tags: tomcat, properties, nginx)"));
     cmd.deployServices = [
       collectory,
       bie,

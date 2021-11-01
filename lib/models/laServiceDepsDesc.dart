@@ -71,6 +71,14 @@ class LAServiceDepsDesc {
       nameInt: solr,
       serviceDepends: [Java.v8, Solr.v7],
     ),
+    solrcloud: LAServiceDepsDesc(
+      nameInt: solrcloud,
+      serviceDepends: [Java.v11, SolrCloud.v8],
+    ),
+    zookeeper: LAServiceDepsDesc(
+      nameInt: zookeeper,
+      serviceDepends: [Java.v8],
+    ),
     cas: LAServiceDepsDesc(
       nameInt: cas,
       serviceDepends: [

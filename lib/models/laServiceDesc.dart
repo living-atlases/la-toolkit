@@ -241,16 +241,17 @@ class LAServiceDesc {
         allowMultipleDeploys: false,
         path: ""),
     solr: LAServiceDesc(
-        name: "solr",
-        nameInt: "solr",
+        name: solr,
+        nameInt: solr,
         group: "solr7-server",
-        desc: "indexing (Solr)",
-        optional: false,
+        desc: "species and/or biocache-store indexing",
+        optional: true,
         icon: MdiIcons.weatherSunny,
         admin: false,
         alaAdmin: false,
+        initUse: true,
         artifact: 'solr',
-        allowMultipleDeploys: true,
+        allowMultipleDeploys: false,
         path: ""),
     cas: LAServiceDesc(
         name: "auth",
@@ -458,7 +459,7 @@ class LAServiceDesc {
         withoutUrl: true,
         optional: true,
         initUse: true,
-        allowMultipleDeploys: true,
+        allowMultipleDeploys: false,
         icon: MdiIcons.eyeOutline,
         path: ""),
     pipelines: LAServiceDesc(
@@ -515,6 +516,34 @@ class LAServiceDesc {
         icon: MdiIcons.accountMinusOutline,
         allowMultipleDeploys: true,
         depends: LAServiceName.pipelines,
+        path: ""),
+    solrcloud: LAServiceDesc(
+        name: solrcloud,
+        nameInt: solrcloud,
+        group: solrcloud,
+        desc: "pipelines indexing",
+        optional: true,
+        icon: MdiIcons.weatherSunny,
+        admin: false,
+        alaAdmin: false,
+        artifact: solrcloud,
+        allowMultipleDeploys: true,
+        depends: LAServiceName.pipelines,
+        withoutUrl: true,
+        path: ""),
+    zookeeper: LAServiceDesc(
+        name: zookeeper,
+        nameInt: zookeeper,
+        group: zookeeper,
+        desc: "zookeeper, for solrcloud coordination",
+        optional: true,
+        icon: MdiIcons.shovel,
+        admin: false,
+        alaAdmin: false,
+        // artifact: 'solr',
+        depends: LAServiceName.pipelines,
+        withoutUrl: true,
+        allowMultipleDeploys: true,
         path: ""),
     //spark: LAServiceDesc(name: spark, nameIn),
 
@@ -653,7 +682,8 @@ class LAServiceDesc {
     "doi": "doi_service_version",
     "biocache_cli": "biocache_cli_version",
     "nameindexer": "namematching_service_version",
-    "solr": "solr_version"
+    "solr": "solr_version",
+    "solrcloud": "solrcloud_version"
   };
 
   @override

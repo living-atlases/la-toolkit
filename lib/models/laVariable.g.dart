@@ -86,6 +86,8 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.regions: 'regions',
   LAServiceName.logger: 'logger',
   LAServiceName.solr: 'solr',
+  LAServiceName.solrcloud: 'solrcloud',
+  LAServiceName.zookeeper: 'zookeeper',
   LAServiceName.cas: 'cas',
   LAServiceName.userdetails: 'userdetails',
   LAServiceName.cas_management: 'cas_management',

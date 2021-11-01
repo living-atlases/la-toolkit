@@ -97,7 +97,7 @@ class Dependencies {
       vc("any"): {
         biocacheService: vc(">= 3.0.0"),
         alaInstall: vc(">= 2.1.0"),
-        solr: vc(">= 8.9.0"),
+        solrcloud: vc(">= 8.9.0"),
         alaNameMatchingService: vc(">= 1.0.0")
       }
     },
@@ -152,7 +152,8 @@ class Dependencies {
     logger: "2.4.0",
     regions: "3.3.5",
     sds: "1.6.2",
-    solr: "8.9.0",
+    solr: "7.7.3",
+    solrcloud: "8.9.0",
     spatial: "0.4",
     spatialService: "0.4",
     userdetails: "2.3.0",

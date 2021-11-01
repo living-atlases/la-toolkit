@@ -114,6 +114,28 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             const AlertCard(
                 message:
                     "You should use biocache-store or the new pipelines as backend"),
+          if (!project.isHub &&
+              project.getService(biocacheBackend).use &&
+              !project.getService(solr).use)
+            const AlertCard(
+                message:
+                    "You should use solr standalone for indexing biocache-store"),
+          if (!project.isHub &&
+              project.getService(bie).use &&
+              !project.getService(solr).use)
+            const AlertCard(
+                message: "You should use solr standalone for indexing species"),
+          if (!project.isHub &&
+              project.getService(pipelines).use &&
+              !project.getService(solrcloud).use)
+            const AlertCard(
+                message: "You should use solrcloud for indexing pipelines"),
+          if (!project.isHub &&
+              project.getService(pipelines).use &&
+              project.getService(solrcloud).use &&
+              !project.getService(zookeeper).use)
+            const AlertCard(
+                message: "You should use zookeeper for solrcloud coordination"),
           if (basicDefined &&
               project.isPipelinesInUse &&
               project.getPipelinesMaster() == null)
@@ -126,6 +148,26 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               project.getHostnames(pipelines).length < 3)
             AlertCard(
                 message: "A pipelines cluster should have at least 3 servers",
+                actionText: "SOLVE",
+                action: () => BeamerCond.of(context, LAProjectEditLocation())),
+          if (basicDefined &&
+              project.isPipelinesInUse &&
+              project.getService(solrcloud).use &&
+              project.getHostnames(solrcloud).isNotEmpty &&
+              project.getHostnames(solrcloud).length.isEven)
+            AlertCard(
+                message:
+                    "A solrcloud cluster should have a odd number of servers",
+                actionText: "SOLVE",
+                action: () => BeamerCond.of(context, LAProjectEditLocation())),
+          if (basicDefined &&
+              project.isPipelinesInUse &&
+              project.getService(zookeeper).use &&
+              project.getHostnames(zookeeper).isNotEmpty &&
+              project.getHostnames(zookeeper).length.isEven)
+            AlertCard(
+                message:
+                    "A zookeeper cluster should have a odd number of servers",
                 actionText: "SOLVE",
                 action: () => BeamerCond.of(context, LAProjectEditLocation())),
           if (project.isPipelinesInUse &&
