@@ -1,15 +1,6 @@
 FROM ubuntu:20.04
 
 # Install some dependencies via APT
-#RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-#        apt-get install -y software-properties-common python-docopt sudo curl byobu jq rsync && \
-#        apt-get install -y python-dev git 'python.*-pip' python3-minimal 'python2.*-minimal' && \
-#        apt-get install -y python-docopt nagios-plugins iputils-ping openjdk-8-jre zip unzip && \
-#        apt-get install -y gnupg2 sshpass openssh-client openssh-server vim netcat expect && \
-#        rm -rf /var/lib/apt/lists/* && \
-#        apt-get clean
-#        #apt-get install -y bash-completion less && \
-# --no-install-recommends \
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         DEBIAN_FRONTEND=noninteractive apt-get install -y \
         software-properties-common python-docopt sudo curl byobu jq rsync \
@@ -163,12 +154,12 @@ RUN sed -i '/^#.*\. \/etc\/bash_completion/s/^#//' /etc/bash.bashrc
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-RUN echo "1.2.7"
+RUN echo "1.3.0"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 # la-toolkit frontend
-RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.2.7/flutter-web-1.2.7.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
+RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.3.0/flutter-web-1.3.0.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
 # RUN echo "2021032402"
 # COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt

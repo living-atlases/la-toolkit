@@ -48,7 +48,8 @@ class Dependencies {
         alaInstall: vc('>= 2.0.11'),
         generator: vc('>= 1.2.2')
       },
-      vc('>= 1.2.8'): {alaInstall: vc('>= 2.1.1'), generator: vc('>= 1.2.7')},
+      vc('>= 1.2.8 < 1.3.0'): {alaInstall: vc('>= 2.1.1'), generator: vc('>= 1.2.7')},
+      vc('>= 1.3.0'): {alaInstall: vc('>= 2.1.2'), generator: vc('>= 1.2.8')},
     },
 
     // From here copy-pasted from the wiki:
@@ -98,7 +99,8 @@ class Dependencies {
         biocacheService: vc(">= 3.0.0"),
         alaInstall: vc(">= 2.1.0"),
         solrcloud: vc(">= 8.9.0"),
-        alaNameMatchingService: vc(">= 1.0.0")
+        alaNameMatchingService: vc(">= 1.0.0"),
+        images: vc(">= 1.1.0")
       }
     },
     dashboard: {
