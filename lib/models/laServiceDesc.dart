@@ -245,7 +245,7 @@ class LAServiceDesc {
         nameInt: solr,
         group: "solr7-server",
         desc: "species and/or biocache-store indexing",
-        optional: true,
+        optional: false,
         icon: MdiIcons.weatherSunny,
         admin: false,
         alaAdmin: false,

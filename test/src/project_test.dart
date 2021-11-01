@@ -731,8 +731,15 @@ void main() {
         .where((s) => s.nameInt != sds)
         .toList()
         .forEach((service) {
-      if (![sds, pipelines, spark, hadoop, pipelinesJenkins]
-          .contains(service.nameInt)) {
+      if (![
+        sds,
+        pipelines,
+        spark,
+        hadoop,
+        pipelinesJenkins,
+        solrcloud,
+        zookeeper
+      ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason:
                 "${service.nameInt} should be in Use and is ${p.getService(service.nameInt).use}");
@@ -777,7 +784,9 @@ void main() {
         pipelines,
         spark,
         hadoop,
-        pipelinesJenkins
+        pipelinesJenkins,
+        solrcloud,
+        zookeeper
       ];
       if (notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(false),
@@ -814,7 +823,9 @@ void main() {
         pipelines,
         spark,
         hadoop,
-        pipelinesJenkins
+        pipelinesJenkins,
+        solrcloud,
+        zookeeper
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
