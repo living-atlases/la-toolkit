@@ -45,6 +45,7 @@ class Java extends BasicService {
   Java(version)
       : super(name: "java", version: version, reachableFromOtherServers: false);
   static final v8 = Java("8");
+  static final v11 = Java("11");
 }
 
 abstract class Tcp extends BasicService {
@@ -104,6 +105,17 @@ class Solr extends BasicService {
             tcp: [8983],
             reachableFromOtherServers: true);
   static final v7 = Solr("7");
+  static final v8 = Solr("8");
+}
+
+class SolrCloud extends BasicService {
+  SolrCloud(version)
+      : super(
+            name: "solrcloud",
+            version: version,
+            tcp: [8983, 2181],
+            reachableFromOtherServers: true);
+  static final v8 = Solr("8");
 }
 
 class Cassandra extends BasicService {
