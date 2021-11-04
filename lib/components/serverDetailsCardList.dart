@@ -9,7 +9,7 @@ import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/regexp.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 
 import 'gatewaySelector.dart';
 import 'genericTextFormField.dart';
@@ -49,7 +49,7 @@ class ServersDetailsCardList extends StatelessWidget {
                         // margin: EdgeInsets.fromLTRB(30, 12, 20, 30),
                         children: [
                           ListTile(
-                            leading: const Icon(MdiIcons.server),
+                            leading: const Icon(Mdi.server),
                             // tileColor: Colors.black12,
                             title: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,

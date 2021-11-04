@@ -13,7 +13,7 @@ import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:tuple/tuple.dart';
 
 class ServerStatusCard extends StatelessWidget {
@@ -57,7 +57,7 @@ class ServerStatusCard extends StatelessWidget {
                         message: "Open a terminal in ${server.name}",
                         child: ElevatedButton(
                           child: Icon(
-                            MdiIcons.console,
+                            Mdi.console,
                             color: statusUpDownColor(),
                             size: 36,
                           ),

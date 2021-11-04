@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'defDivider.dart';
@@ -102,7 +102,7 @@ class ListTileLink extends StatelessWidget {
           url: "https://ala.org.au"),
       const DefDivider(),
       const ListTileLink(
-          icon: Icon(MdiIcons.github),
+          icon: Icon(Mdi.github),
           title: 'This software on GitHub',
           url: "https://github.com/living-atlases/la-toolkit/")
     ];

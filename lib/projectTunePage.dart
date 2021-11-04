@@ -19,6 +19,7 @@ import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 
 import 'components/GenericSelector.dart';
 import 'components/alaInstallSelector.dart';
@@ -159,10 +160,8 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                   style: TabStyle.react,
                   items: const [
                     TabItem(icon: MdiIcons.formatListGroup, title: "Variables"),
-                    TabItem(
-                        icon: MdiIcons.autorenew, title: "Software versions"),
-                    TabItem(
-                        icon: MdiIcons.formTextbox, title: "Ansible Extras"),
+                    TabItem(icon: Mdi.autorenew, title: "Software versions"),
+                    TabItem(icon: Mdi.formTextbox, title: "Ansible Extras"),
                   ],
                   initialActiveIndex: 0, //optional, default as 0
                   onTap: (int i) => setState(() => _tab = i),

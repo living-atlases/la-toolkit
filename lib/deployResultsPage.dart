@@ -7,7 +7,7 @@ import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 
 import 'components/laAppBar.dart';
 import 'components/projectDrawer.dart';
@@ -116,10 +116,10 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                         if (isAnsibleDeploy)
                                           Icon(
                                               noFailedButDone
-                                                  ? MdiIcons
+                                                  ? Mdi
                                                       .checkboxMarkedCircleOutline
                                                   : result == CmdResult.aborted
-                                                      ? MdiIcons.heartBroken
+                                                      ? Mdi.heartBroken
                                                       : Icons.remove_done,
                                               size: 60,
                                               color: noFailedButDone
@@ -132,7 +132,7 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                         if (!isAnsibleDeploy)
                                           Icon(
                                               !failed
-                                                  ? MdiIcons
+                                                  ? Mdi
                                                       .checkboxMarkedCircleOutline
                                                   : Icons.remove_done,
                                               size: 60,

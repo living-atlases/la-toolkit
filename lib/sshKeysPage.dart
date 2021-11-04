@@ -6,7 +6,7 @@ import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'components/appSnackBar.dart';
@@ -41,7 +41,7 @@ class SshKeyPage extends StatelessWidget {
             key: _scaffoldKey,
             appBar: LAAppBar(
                 context: context,
-                titleIcon: MdiIcons.key,
+                titleIcon: Mdi.key,
                 title: "SSH KEYS",
                 showLaIcon: false,
                 showBack: true,
@@ -57,7 +57,7 @@ class SshKeyPage extends StatelessWidget {
                       onPressed: () => _importKeysDialog(context, vm),
                       label: const Text("UPLOAD KEYS")),
                   TextButton.icon(
-                      icon: const Icon(MdiIcons.refresh),
+                      icon: const Icon(Mdi.refresh),
                       style: TextButton.styleFrom(primary: Colors.white),
                       onPressed: () {
                         context.loaderOverlay.show();
@@ -93,7 +93,7 @@ class SshKeyPage extends StatelessWidget {
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
-        image: const Icon(MdiIcons.key, size: 60, color: LAColorTheme.inactive),
+        image: const Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
         title: "SSH Key Generation",
         style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
@@ -144,7 +144,7 @@ class SshKeyPage extends StatelessWidget {
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
-        image: const Icon(MdiIcons.key, size: 60, color: LAColorTheme.inactive),
+        image: const Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
         title: "SSH Key Import",
         style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
@@ -272,10 +272,10 @@ class SshKeysTable extends StatelessWidget {
                           ? const Tooltip(
                               message:
                                   "SSH Key password encrypted, no supported right now",
-                              child: Icon(MdiIcons.lockOutline))
+                              child: Icon(Mdi.lockOutline))
                           : const Tooltip(
                               message: "SSH Key without password",
-                              child: Icon(MdiIcons.lockOpenVariantOutline,
+                              child: Icon(Mdi.lockOpenVariantOutline,
                                   color: Colors.grey)))),
                   DataCell(Padding(
                       padding: const EdgeInsets.only(left: 15),

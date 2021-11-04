@@ -73,7 +73,7 @@ class _ChoicesSelectorState extends State<ChoicesSelector> {
                       widget.onChange(values);
                     },
                     chipDisplay: MultiSelectChipDisplay<String>(
-                      // icon: Icon(MdiIcons.tag, size: 6, color: Colors.white),
+                      // icon: Icon(Mdi.tag, size: 6, color: Colors.white),
                       chipColor: Theme.of(context).primaryColor.withOpacity(.8),
                       textStyle: const TextStyle(color: Colors.white),
                       onTap: (value) {

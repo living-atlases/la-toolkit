@@ -9,7 +9,7 @@ import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class ServicesInServerSelector extends StatefulWidget {
@@ -79,8 +79,8 @@ class _ServicesInServerSelectorState extends State<ServicesInServerSelector> {
                           searchable: false,
                           initialValue: _selected,
                           // shape: StadiumBorder(side: BorderSide()),
-                          buttonIcon: const Icon(MdiIcons.serverPlus,
-                              color: Colors.black45),
+                          buttonIcon:
+                              const Icon(Mdi.serverPlus, color: Colors.black45),
                           // Remove the lines
                           decoration: const BoxDecoration(
                               // color: Colors.black12

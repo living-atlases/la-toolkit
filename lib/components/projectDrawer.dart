@@ -11,7 +11,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 
 import '../routes.dart';
 import 'adminIconButton.dart';
@@ -22,7 +22,7 @@ class ProjectDrawer extends StatelessWidget {
   static Widget appBarIcon(LAProject project, GlobalKey<ScaffoldState> key) {
     return IconButton(
       color: Colors.white,
-      icon: const Icon(MdiIcons.vectorLink),
+      icon: const Icon(Mdi.vectorLink),
       tooltip: "${project.shortName} links drawer",
       onPressed: () => key.currentState?.openDrawer(),
     );
@@ -84,7 +84,7 @@ class ProjectDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(MdiIcons.key),
+              leading: const Icon(Mdi.key),
               title: const Text('SSH Keys'),
               onTap: () {
                 BeamerCond.of(context, SshKeysLocation());

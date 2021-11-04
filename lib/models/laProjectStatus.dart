@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 
 enum LAProjectStatus {
   created,
@@ -42,7 +42,7 @@ extension LAProjectStatusIconExtension on LAProjectStatus {
       case LAProjectStatus.reachable:
         return Icons.settings_ethernet;
       case LAProjectStatus.firstDeploy:
-        return MdiIcons.rocketLaunch;
+        return Mdi.rocketLaunch;
       case LAProjectStatus.inProduction:
         return Icons.cached;
     }

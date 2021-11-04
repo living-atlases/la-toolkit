@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/termDialog.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../routes.dart';
@@ -64,7 +64,7 @@ class _MainDrawerState extends State<MainDrawer> {
             ),
           ),
           ListTile(
-            leading: const Icon(MdiIcons.key),
+            leading: const Icon(Mdi.key),
             title: const Text('SSH Keys'),
             onTap: () {
               BeamerCond.of(context, SshKeysLocation());

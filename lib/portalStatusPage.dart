@@ -8,10 +8,9 @@ import 'package:la_toolkit/components/checkResultCard.dart';
 import 'package:la_toolkit/components/serversStatusPanel.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/appActions.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:tuple/tuple.dart';
 
-import 'components/appSnackBar.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/servicesStatusPanel.dart';
@@ -79,100 +78,94 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
             title: pageTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
-                key: _scaffoldKey,
-                appBar: LAAppBar(
-                    context: context,
-                    titleIcon: Icons.fact_check,
-                    title: pageTitle,
-                    showLaIcon: false,
-                    showBack: true,
-                    loading: vm.loading,
-                    actions: [
-                      IconButton(
-                        icon: const Tooltip(
-                            child: Icon(Icons.pause, color: Colors.white),
-                            message: "Pause to check services"),
-                        onPressed: () {
-                          //
-                        },
+              key: _scaffoldKey,
+              appBar: LAAppBar(
+                  context: context,
+                  titleIcon: Icons.fact_check,
+                  title: pageTitle,
+                  showLaIcon: false,
+                  showBack: true,
+                  loading: vm.loading,
+                  actions: [
+                    IconButton(
+                      icon: const Tooltip(
+                          child: Icon(Icons.pause, color: Colors.white),
+                          message: "Pause to check services"),
+                      onPressed: () {
+                        //
+                      },
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(right: 10.0),
+                        child: IconButton(
+                          icon: const Tooltip(
+                              child: Icon(Mdi.reload, color: Colors.white),
+                              message: "Recheck the status of the portal"),
+                          onPressed: () {
+                            vm.checkServices(vm.serverServicesToMonitor.item2);
+                          },
+                        ))
+                  ]),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              // TODO: use here badges
+              // https://github.com/hacktons/convex_bottom_bar/
+              // {0: '99+', 1: Icons.assistant_photo, 2: Colors.redAccent},
+              bottomNavigationBar: ConvexAppBar(
+                backgroundColor: LAColorTheme.laPalette.shade500,
+                style: TabStyle.react,
+                items: const [
+                  TabItem(icon: Mdi.server, title: "Servers"),
+                  TabItem(icon: Icons.fact_check, title: "Services"),
+                  TabItem(icon: Icons.receipt_long, title: "Details"),
+                ],
+                initialActiveIndex: 0, //optional, default as 0
+                onTap: (int i) => setState(() => _tab = i),
+              ),
+              body: ScrollPanel(
+                  withPadding: true,
+                  padding: 40,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 0, // 10%
+                        child: Container(),
                       ),
-                      Container(
-                          margin: const EdgeInsets.only(right: 10.0),
-                          child: IconButton(
-                            icon: const Tooltip(
-                                child:
-                                    Icon(MdiIcons.reload, color: Colors.white),
-                                message: "Recheck the status of the portal"),
-                            onPressed: () {
-                              vm.checkServices(
-                                  vm.serverServicesToMonitor.item2);
-                            },
-                          ))
-                    ]),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerDocked,
-                // TODO: use here badges
-                // https://github.com/hacktons/convex_bottom_bar/
-                // {0: '99+', 1: Icons.assistant_photo, 2: Colors.redAccent},
-                bottomNavigationBar: ConvexAppBar(
-                  backgroundColor: LAColorTheme.laPalette.shade300,
-                  color: Colors.black,
-                  activeColor: Colors.black,
-                  style: TabStyle.react,
-                  items: const [
-                    TabItem(icon: MdiIcons.server, title: "Servers"),
-                    TabItem(icon: Icons.fact_check, title: "Services"),
-                    TabItem(icon: Icons.receipt_long, title: "Details"),
-                  ],
-                  initialActiveIndex: 0, //optional, default as 0
-                  onTap: (int i) => setState(() => _tab = i),
-                ),
-                body: AppSnackBar(
-                  ScrollPanel(
-                      withPadding: true,
-                      padding: 40,
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 0, // 10%
-                            child: Container(),
-                          ),
-                          Expanded(
-                              flex: 10, // 80%,
-                              child: Column(children: [
-                                // Add
-                                // https://pub.dev/packages/circular_countdown_timer
-                                // or similar and a sliderdesc
-                                if (_tab == 0) const TextTitle(text: "Servers"),
-                                if (_tab == 0)
-                                  ServersStatusPanel(
-                                      extendedStatus: true,
-                                      results: vm.checkResults),
-                                if (_tab == 1)
-                                  const TextTitle(
-                                      text: "Services", separator: false),
-                                if (_tab == 1)
-                                  ServicesStatusPanel(
-                                      services:
-                                          vm.serverServicesToMonitor.item1),
-                                if (_tab == 2)
-                                  const TextTitle(
-                                      text: "Details", separator: false),
-                                if (_tab == 2)
-                                  for (Widget w in resultWidgets) w
-                              ])),
-                          Expanded(
-                            flex: 0, // 10%
-                            child: Container(),
-                          )
-                        ],
-                      )),
-                  /* floatingActionButton: ReCheckBtns(
+                      Expanded(
+                          flex: 10, // 80%,
+                          child: Column(children: [
+                            // Add
+                            // https://pub.dev/packages/circular_countdown_timer
+                            // or similar and a sliderdesc
+                            if (_tab == 0) const TextTitle(text: "Servers"),
+                            if (_tab == 0)
+                              ServersStatusPanel(
+                                  extendedStatus: true,
+                                  results: vm.checkResults),
+                            if (_tab == 1)
+                              const TextTitle(
+                                  text: "Services", separator: false),
+                            if (_tab == 1)
+                              ServicesStatusPanel(
+                                  services: vm.serverServicesToMonitor.item1),
+                            if (_tab == 2)
+                              const TextTitle(
+                                  text: "Details", separator: false),
+                            if (_tab == 2)
+                              for (Widget w in resultWidgets) w
+                          ])),
+                      Expanded(
+                        flex: 0, // 10%
+                        child: Container(),
+                      )
+                    ],
+                  )),
+              /* floatingActionButton: ReCheckBtns(
               () => vm.checkServices(vm.serverServicesToMonitor.item2)), */
-                  /* floatingActionButton:  CountDownWidget(
+              /* floatingActionButton:  CountDownWidget(
               onReload: () =>
                   vm.checkServices(vm.serverServicesToMonitor.item2)), */
-                )));
+            ));
       },
     );
   }
