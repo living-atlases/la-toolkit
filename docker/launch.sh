@@ -25,6 +25,18 @@ PARSED_HOST="$(echo ${PARSED_URL/$PARSED_PATH/})"
 # Remove the ":" from the PORT
 PARSED_PORT="$(echo $PARSED_PORT | cut -d ":" -f 2)"
 
+# Fix container perms on launch (issue #3)
+for DIR in /home/ubuntu/ansible/la-inventories /home/ubuntu/ansible/logs /home/ubuntu/.ssh /home/ubuntu/ansible/ala-install
+do
+    DIR_USER=$(stat -c '%U' $DIR)
+    DIR_GROUP=$(stat -c '%G' $DIR)
+    if [[ "$DIR_USER" != 'ubuntu' || "$DIR_GROUP" != "ubuntu" ]]
+    then
+        echo Fixing owner of $DIR
+        sudo chown ubuntu:ubuntu $DIR
+    fi
+done
+
 # Wait til mongo is up
 until nc -z $PARSED_HOST $PARSED_PORT
 do
