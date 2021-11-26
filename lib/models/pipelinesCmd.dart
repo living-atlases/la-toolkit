@@ -106,4 +106,9 @@ class PipelinesCmd extends CommonCmd {
           ].contains(step))
       .toList()
       .isNotEmpty;
+
+  @override
+  String toString() {
+    return 'PipelinesCmd{drs: $drs, steps: $steps, master: $master, allDrs: $allDrs, allSteps: $allSteps, debug: $debug, dryRun: $dryRun, mode: $mode}';
+  }
 }
