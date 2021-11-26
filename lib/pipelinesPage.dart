@@ -47,6 +47,13 @@ class _PipelinesPageState extends State<PipelinesPage> {
                   .toList()
                   .toSet();
               cmd.steps = sortedSteps;
+              // if do-all, we don't add these steps
+              if (cmd.allSteps) {
+                cmd.steps.removeWhere(
+                    (String s) => PipelinesStepDesc.allStringList.contains(s));
+                cmd.steps.add("do-all");
+              }
+              print(cmd);
               DeployUtils.pipelinesRun(
                   context: context, store: store, project: project, cmd: cmd);
             },
