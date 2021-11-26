@@ -106,7 +106,7 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                   Text(desc, style: UiUtils.cmdTitleStyle),
                                   const SizedBox(height: 20),
                                   Text(
-                                      "${LADateUtils.formatDate(cmdEntry.date)} ${cmdEntry.duration != null ? ', duration: ' + LADateUtils.formatDuration(cmdEntry.duration!) : ''}",
+                                      "${LADateUtils.formatDate(cmdEntry.date)}${cmdEntry.duration != null ? ', duration: ' + LADateUtils.formatDuration(cmdEntry.duration!) : ''}",
                                       style: UiUtils.dateStyle),
                                   const SizedBox(height: 20),
                                   Row(
