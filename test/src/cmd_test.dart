@@ -152,5 +152,9 @@ void main() {
     cmd.dryRun = true;
     cmd.steps = {};
     expect(cmd.desc, equals("Dry run of Pipelines data processing of all drs"));
+    cmd.dryRun = true;
+    cmd.steps = {};
+    cmd.allSteps = true;
+    expect(cmd.desc, equals("Dry run of Pipelines data processing of all drs"));
   });
 }
