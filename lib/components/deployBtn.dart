@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LaunchBtn extends StatelessWidget {
   const LaunchBtn({
     Key? key,
     this.onTap,
     required this.execBtn,
-    this.icon = Mdi.rocketLaunch,
+    this.icon = MdiIcons.rocketLaunch,
   }) : super(key: key);
 
   final VoidCallback? onTap;

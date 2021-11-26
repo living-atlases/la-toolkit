@@ -3,7 +3,7 @@ import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/utils/regexp.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'genericTextFormField.dart';
@@ -39,7 +39,7 @@ class RenameServerIcon extends StatelessWidget {
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
-        image: const Icon(Mdi.key, size: 60, color: LAColorTheme.inactive),
+        image: const Icon(MdiIcons.key, size: 60, color: LAColorTheme.inactive),
         title: "Server rename",
         style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),

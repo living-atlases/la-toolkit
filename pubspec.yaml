@@ -83,8 +83,8 @@ dependencies:
   tap_debouncer: ^2.0.0
 
   # icon
-  mdi: ^5.0.0-nullsafety.0
-  # material_design_icons_flutter: ^5.0.6295
+  # mdi: ^5.0.0-nullsafety.0
+  material_design_icons_flutter: ^5.0.6295
   # font_awesome_flutter: ^8.11.0
 
   # data

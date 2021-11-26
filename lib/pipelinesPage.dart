@@ -4,8 +4,8 @@ import 'package:la_toolkit/components/pipelinesTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:toggle_switch/toggle_switch.dart';
-import 'package:mdi/mdi.dart';
 
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
@@ -73,7 +73,7 @@ class _PipelinesPageState extends State<PipelinesPage> {
                 key: _scaffoldKey,
                 appBar: LAAppBar(
                     context: context,
-                    titleIcon: Mdi.pipe,
+                    titleIcon: MdiIcons.pipe,
                     showBack: true,
                     title: pageTitle,
                     showLaIcon: false,
@@ -129,7 +129,7 @@ class _PipelinesPageState extends State<PipelinesPage> {
                                 LaunchBtn(
                                     onTap: onTap,
                                     execBtn: execBtn,
-                                    icon: Mdi.pipe),
+                                    icon: MdiIcons.pipe),
                               ],
                             )),
                         Expanded(

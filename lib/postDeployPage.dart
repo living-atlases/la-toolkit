@@ -4,7 +4,7 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/utils.dart';
-import 'package:mdi/mdi.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
@@ -106,7 +106,7 @@ class _PostDeployPageState extends State<PostDeployPage> {
                                         .serversWithServices()
                                         .map((e) => e.name)
                                         .toList(),
-                                    icon: Mdi.server,
+                                    icon: MdiIcons.server,
                                     onChange: (limitToServers) {
                                       cmd.limitToServers = limitToServers;
                                       vm.onSaveDeployCmd(cmd);
