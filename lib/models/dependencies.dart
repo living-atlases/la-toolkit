@@ -48,8 +48,15 @@ class Dependencies {
         alaInstall: vc('>= 2.0.11'),
         generator: vc('>= 1.2.2')
       },
-      vc('>= 1.2.8 < 1.3.0'): {alaInstall: vc('>= 2.1.1'), generator: vc('>= 1.2.7')},
-      vc('>= 1.3.0'): {alaInstall: vc('>= 2.1.2'), generator: vc('>= 1.2.8')},
+      vc('>= 1.2.8 < 1.3.0'): {
+        alaInstall: vc('>= 2.1.1'),
+        generator: vc('>= 1.2.7')
+      },
+      vc('>= 1.3.0 < 1.3.1'): {
+        alaInstall: vc('>= 2.1.2'),
+        generator: vc('>= 1.2.9')
+      },
+      vc('>= 1.3.1'): {alaInstall: vc('>= 2.1.3'), generator: vc('>= 1.2.16')},
     },
 
     // From here copy-pasted from the wiki:
