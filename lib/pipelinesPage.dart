@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/pipelinesTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
+import 'package:la_toolkit/models/pipelinesStepDesc.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -39,6 +40,13 @@ class _PipelinesPageState extends State<PipelinesPage> {
               store.dispatch(SaveCurrentCmd(cmd: cmd));
             },
             onRunPipelines: (project, cmd) {
+              // We order the steps in the same order expected by pipelines
+              Set<String> sortedSteps = PipelinesStepDesc.list
+                  .where((step) => cmd.steps.contains(step.name))
+                  .map((step) => step.name)
+                  .toList()
+                  .toSet();
+              cmd.steps = sortedSteps;
               DeployUtils.pipelinesRun(
                   context: context, store: store, project: project, cmd: cmd);
             },
