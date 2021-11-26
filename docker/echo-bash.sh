@@ -8,22 +8,28 @@ colgre='\033[0;90m' # Grey
 colblu='\033[0;34m' # Blue
 colrst='\033[0m'    # Text Reset
 
-echo -e ${colblu}"\$ "${colrst}${colgrn}"$@ "${colgre}"### This is the command we've executed"${colrst} 
+echo -e ${colblu}"\$ "${colrst}${colgrn}"$@ "${colgre}"\n### ⤴  This is the command we've executed"${colrst}
 
 # echo $BASH_LOG_FILE_COLORIZED
 # echo $BASH_LOG_FILE
+
+trap 'rm -f "$TMPFILE"' EXIT
+TMPFILE=$(mktemp)
 
 if [[ -n "${BASH_LOG_FILE_COLORIZED}" ]]; then
   # unbuffer preserve colors with tee
   ((
     unbuffer "$@" ;
+    echo $? > $TMPFILE
   ) 2>&1) | tee "${BASH_LOG_FILE_COLORIZED}"
   cat "${BASH_LOG_FILE_COLORIZED}" | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g" > "${BASH_LOG_FILE}"
 else
-  "$@" ;
+  "$@"
+  echo $? > $TMPFILE
 fi
 
-RESULT=$?
+RESULT=`cat $TMPFILE`
+
 echo
 if [[ $RESULT -eq 0 ]]; then
   echo -e "${colgrn}This command ended correctly${colrst}"
