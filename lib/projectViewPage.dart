@@ -237,8 +237,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             if (!project.isHub && project.getPipelinesMaster() != null)
               Tool(
                   icon: const Icon(MdiIcons.pipe),
-                  title: "Data Processing Pipelines",
-                  tooltip: "Pipelines for data processing (Not yet developed)",
+                  title: "Pipelines Data Processing",
+                  // tooltip: "Pipelines for data processing",
                   enabled: isCreatedAndAccessibleOrInProduction,
                   grid: 12,
                   action: () => vm.onPipelinesTasks(project)),
