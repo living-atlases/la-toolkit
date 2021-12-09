@@ -107,7 +107,7 @@ class Dependencies {
         alaInstall: vc(">= 2.1.0"),
         solrcloud: vc(">= 8.9.0"),
         alaNameMatchingService: vc(">= 1.0.0"),
-        images: vc(">= 1.1.0")
+        images: vc(">= 1.1.1-7")
       }
     },
     dashboard: {
