@@ -38,6 +38,10 @@ enum LAServiceName {
   biocache_cli,
   // ignore: constant_identifier_names
   nameindexer,
+  // ignore: constant_identifier_names
+  namematching_service,
+  // ignore: constant_identifier_names
+  data_quality,
   pipelines,
   spark,
   hadoop,

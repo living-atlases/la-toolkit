@@ -82,6 +82,13 @@ class Doi extends Tcp {
   static final def = Doi("");
 }
 
+class NameMatchingService extends BasicService {
+  NameMatchingService(version)
+      : super(
+            name: "namematching-service", version: version, tcp: [8880, 8881]);
+  static final def = NameMatchingService("");
+}
+
 class Nginx extends BasicService {
   Nginx(version)
       : super(
@@ -149,6 +156,7 @@ class PostgresSql extends BasicService {
   static final v8 = PostgresSql("8");
   static final v9_6 = PostgresSql("9.6");
   static final v10 = PostgresSql("10");
+  static final v13 = PostgresSql("13");
 }
 
 class PostGis extends BasicService {

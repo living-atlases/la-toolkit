@@ -738,7 +738,9 @@ void main() {
         hadoop,
         pipelinesJenkins,
         solrcloud,
-        zookeeper
+        zookeeper,
+        namematchingService,
+        dataQuality
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason:
@@ -786,7 +788,9 @@ void main() {
         hadoop,
         pipelinesJenkins,
         solrcloud,
-        zookeeper
+        zookeeper,
+        namematchingService,
+        dataQuality
       ];
       if (notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(false),
@@ -825,7 +829,9 @@ void main() {
         hadoop,
         pipelinesJenkins,
         solrcloud,
-        zookeeper
+        zookeeper,
+        namematchingService,
+        dataQuality
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
