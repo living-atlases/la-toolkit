@@ -463,6 +463,8 @@ class LAServiceDesc {
         artifact: "ala-namematching-server",
         sample: "https://namematching-ws.ala.org.au/",
         allowMultipleDeploys: false,
+        admin: false,
+        alaAdmin: false,
         path: ""),
     dataQuality: LAServiceDesc(
         name: "data-quality",
@@ -477,6 +479,8 @@ class LAServiceDesc {
         artifact: "data-quality-filter-service",
         sample: "https://data-quality-service.ala.org.au",
         allowMultipleDeploys: false,
+        alaAdmin: true,
+        admin: false,
         path: ""),
     biocacheBackend: LAServiceDesc(
         name: "biocache-store",
