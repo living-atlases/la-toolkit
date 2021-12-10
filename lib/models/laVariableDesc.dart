@@ -13,8 +13,9 @@ enum LAVariableType { String, int, double, bool, select }
 
 enum LAVariableSubcategory {
   org,
-  cache,
+  dataQuality,
   downloads,
+  cache,
   apikeys,
   otherKeys,
   ssl,
@@ -26,6 +27,8 @@ extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
     switch (this) {
       case LAVariableSubcategory.org:
         return 'Organization details';
+      case LAVariableSubcategory.dataQuality:
+        return 'Data Quality';
       case LAVariableSubcategory.cache:
         return 'Cache';
       case LAVariableSubcategory.downloads:
@@ -306,6 +309,16 @@ class LAVariableDesc {
         nameInt: "caches_layers_enabled",
         subcategory: LAVariableSubcategory.cache,
         type: LAVariableType.bool),
+    "enable_data_quality": LAVariableDesc(
+        name: "Enable Data Profiles Quality filter of occurrences?",
+        nameInt: "enable_data_quality",
+        subcategory: LAVariableSubcategory.dataQuality,
+        depends: LAServiceName.data_quality,
+        service: LAServiceName.ala_hub,
+        defValue: (_) => false,
+        help:
+            "https://support.ala.org.au/support/solutions/articles/6000240256-getting-started-with-the-data-quality-filters",
+        type: LAVariableType.bool),
     "maxmind_account_id": LAVariableDesc(
         name: "MaxMind Account ID",
         nameInt: "maxmind_account_id",
@@ -397,7 +410,7 @@ class LAVariableDesc {
         depends: LAServiceName.pipelines,
         service: LAServiceName.pipelines,
         defValue: (_) => false,
-        type: LAVariableType.bool)
+        type: LAVariableType.bool),
   };
   static LAVariableDesc get(String nameInt) {
     return map[nameInt]!;

@@ -478,8 +478,7 @@ class MessageItem implements ListItem {
                     onChanged: (newValue) {
                       onChanged(newValue);
                     }),
-        trailing:
-            varDesc.help != null ? HelpIcon(wikipage: varDesc.help!) : null);
+        trailing: varDesc.help != null ? HelpIcon.from(varDesc.help!) : null);
   }
 
   @override

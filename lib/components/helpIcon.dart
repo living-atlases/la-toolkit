@@ -5,6 +5,18 @@ class HelpIcon extends StatelessWidget {
   final String url;
   final String? tooltip;
 
+  HelpIcon.from(String wikipageOrUrl, [Key? key, String? tooltip])
+      : url = wikipageOrUrl.startsWith('http')
+            ? wikipageOrUrl
+            : "https://github.com/AtlasOfLivingAustralia/documentation/wiki/${wikipageOrUrl.replaceAll(' ', '-')}",
+        // ignore: prefer_if_null_operators
+        tooltip = tooltip != null
+            ? tooltip
+            : !wikipageOrUrl.startsWith('http')
+                ? "Read more in our Wiki"
+                : null,
+        super(key: key);
+
   HelpIcon({Key? key, required String wikipage, String? tooltip})
       : url =
             "https://github.com/AtlasOfLivingAustralia/documentation/wiki/${wikipage.replaceAll(' ', '-')}",
