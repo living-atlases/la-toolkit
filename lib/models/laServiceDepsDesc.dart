@@ -165,7 +165,7 @@ class LAServiceDepsDesc {
         serviceDepends: [Java.v8, Nginx.def, NameMatchingService.def]),
     dataQuality: LAServiceDepsDesc(
         nameInt: dataQuality,
-        serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, PostgresSql.v13]),
+        serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, PostgresSql.v10]),
     biocacheBackend: LAServiceDepsDesc(
       nameInt: biocacheBackend,
       serviceDepends: [Java.v8, Cassandra.v3],
