@@ -1044,9 +1044,11 @@ check results length: ${checkResults.length}''';
       LAService service = getService(nameInt);
       String url = serviceFullUrl(desc, service);
       String name = StringUtils.capitalize(desc.name);
-      String? help = nameInt == solr
+      String? help = nameInt == solr || nameInt == solrcloud
           ? "Secure-your-LA-infrastructure#protect-you-solr-admin-interface"
-          : null;
+          : nameInt == pipelines || nameInt == zookeeper
+              ? "Accessing-your-internal-web-interfaces"
+              : null;
       String tooltip = name != "Index"
           ? serviceTooltip(name)
           : "This is protected by default, see our wiki for more info";
