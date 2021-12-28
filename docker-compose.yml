@@ -34,6 +34,7 @@ services:
       - /data/la-toolkit/config/:/home/ubuntu/ansible/la-inventories/:rw
       - /data/la-toolkit/logs/:/home/ubuntu/ansible/logs/:rw
       - /data/la-toolkit/ssh:/home/ubuntu/.ssh/:rw
+      - /home/ubuntu/.npm-packages
       # For 'custom' ala-install
       # Take into account that if your change from 'custom' to other ala-install version
       # code changes will be git stashed

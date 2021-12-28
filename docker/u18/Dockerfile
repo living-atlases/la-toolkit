@@ -99,6 +99,7 @@ RUN mkdir -p /home/ubuntu/base-branding
 RUN chown -R ubuntu:ubuntu /home/ubuntu/base-branding
 RUN echo "2021090201 (change this date to rebuild & repeat this and the following steps)"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/base-branding.git /home/ubuntu/base-branding'
+RUN su - ubuntu -c 'cd /home/ubuntu/base-branding && git submodule update --init --recursive'
 
 # yeoman, LA generator, sails and related
 RUN su - ubuntu -c 'mkdir -p "/home/ubuntu/.npm-packages/lib"'
@@ -112,6 +113,9 @@ RUN su - ubuntu -c 'npm install -g db-migrate'
 RUN su - ubuntu -c 'npm install -g db-migrate-mongodb'
 RUN echo "2021060901"
 RUN su - ubuntu -c 'npm install -g generator-living-atlas'
+
+# base-branding deps
+RUN su - ubuntu -c 'cd /home/ubuntu/base-branding && yarn install'
 
 # ala-install
 RUN echo "2021032402 (change this date to rebuild & repeat this and the following steps)"
