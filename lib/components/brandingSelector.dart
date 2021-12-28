@@ -158,7 +158,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
         children: <Widget>[
           MultiSelectChipField<Branding>(
             items: _items,
-            scrollBar: HorizontalScrollBar(),
+            scrollBar: HorizontalScrollBar(isAlwaysShown: true),
             scroll: true,
             showHeader: false,
             decoration: BoxDecoration(
@@ -178,52 +178,59 @@ class _BrandingSelectorState extends State<BrandingSelector> {
             title: const Text("Select your branding"),
             initialValue: _selected,
             key: _multiSelectKey,
-            height: 330,
+            height: 360,
             headerColor: Colors.white,
             itemBuilder: (item, state) {
               // return your custom widget here
               return /* Tooltip(
                 message: item.value.desc,
                 child: */
-                  InkWell(
-                child: Container(
-                    // height: 100,
-                    width: 220,
-                    color: _selected.contains(item.value)
-                        ? LAColorTheme.laPalette
-                        : Colors.black54,
-                    margin: const EdgeInsets.all(5),
-                    child: Column(
-                        // mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          item.value.name != 'custom'
-                              ? Image.asset(
-                                  "assets/images/themes/${item.value.name}.png",
-                                  width: 210)
-                              : Container(),
-                          Column(
-                              // mainAxisSize: MainAxisSize.max,
-                              /*  crossAxisAlignment: CrossAxisAlignment.center,
+                  Padding(
+                      // Scroll padding
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: InkWell(
+                        child: Container(
+                            // height: 100,
+                            width: 250,
+                            color: _selected.contains(item.value)
+                                ? LAColorTheme.laPalette
+                                : Colors.black54,
+                            margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
+                            child: Column(
+                                // mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  const SizedBox(height: 10),
+                                  item.value.name != 'custom'
+                                      ? Image.asset(
+                                          "assets/images/themes/${item.value.name}.png",
+                                          width: 210)
+                                      : Container(),
+                                  const SizedBox(height: 10),
+                                  Column(
+                                      // mainAxisSize: MainAxisSize.max,
+                                      /*  crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween, */
-                              children: <Widget>[
-                                Text(item.value.name,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal))
-                              ])
-                        ])),
-                onTap: () {
-                  setState(() {
-                    _selected = [item.value];
-                    widget.onChange(item.value.name);
-                  });
-                },
-                // child: Text(item.value.name),
-              );
+                                      children: <Widget>[
+                                        Text(item.value.name,
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.normal)),
+                                        const SizedBox(height: 10),
+                                      ])
+                                ])),
+                        onTap: () {
+                          setState(() {
+                            _selected = [item.value];
+                            widget.onChange(item.value.name);
+                          });
+                        },
+                        // child: Text(item.value.name),
+                      ));
             },
           ),
         ],
