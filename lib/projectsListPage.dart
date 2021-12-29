@@ -1,6 +1,4 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -140,19 +138,18 @@ class ProjectCard extends StatelessWidget {
                                       Tooltip(
                                           message: "Delete this project",
                                           child: IconButton(
-                                            padding: EdgeInsets.zero,
-                                            constraints: const BoxConstraints(),
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.grey,
-                                            ),
-                                            onPressed: () => !AppUtils.isDev()
-                                                ? UiUtils.showAlertDialog(
-                                                    context,
-                                                    () => onDelete(),
-                                                    () => {})
-                                                : onDelete(),
-                                          )),
+                                              padding: EdgeInsets.zero,
+                                              constraints:
+                                                  const BoxConstraints(),
+                                              icon: const Icon(
+                                                Icons.delete,
+                                                color: Colors.grey,
+                                              ),
+                                              onPressed: () =>
+                                                  UiUtils.showAlertDialog(
+                                                      context,
+                                                      () => onDelete(),
+                                                      () => {}))),
                                       const SizedBox(width: 20),
                                       Tooltip(
                                           message: "Configure this project",
