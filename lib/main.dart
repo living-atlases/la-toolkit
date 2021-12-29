@@ -14,10 +14,13 @@ import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/redux/appReducer.dart';
 import 'package:la_toolkit/redux/appStateMiddleware.dart';
 import 'package:la_toolkit/redux/loggingMiddleware.dart';
+import 'package:la_toolkit/utils/debounce.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:sails_io/sails_io.dart';
+import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
 
 import 'components/appSnackBarMessage.dart';
 import 'laTheme.dart';
@@ -56,6 +59,26 @@ Future<void> main() async {
     print("Backend: ${env['BACKEND']}");
   }
 
+  var io = SailsIOClient(socket_io_client.io(
+      "${AppUtils.scheme}://${env['BACKEND']}?__sails_io_sdk_version=0.11.0",
+      socket_io_client.OptionBuilder().setTransports(['websocket']).build()));
+
+  io.socket.onConnect((_) {
+    print('sails websocket: Connected to backend');
+  });
+
+  io.socket.onError((e) {
+    print('sails websocket: Error connecting to backend');
+    print(e);
+  });
+
+  io.get(
+      url: "${AppUtils.scheme}://${env['BACKEND']}/api/v1/projects-subs",
+      cb: (body, jwrResponse) {
+        print(body);
+        print(jwrResponse.toJson());
+      });
+
   AppState initialState = await appStateMiddleware.getState();
   // print("Loaded prefs: $state");
 
@@ -81,6 +104,15 @@ Future<void> main() async {
   });
   store.dispatch(ProjectsLoad());
   store.dispatch(OnFetchSoftwareDepsState());
+
+  // https://sailsjs.com/documentation/reference/web-sockets/socket-client/io-socket-on
+  final debouncer = Debouncer(milliseconds: 1000);
+  io.socket.on('project', (projects) {
+    debouncer.run(() {
+      print('sails websocket: projects call');
+      store.dispatch(OnProjectsLoad(projects));
+    });
+  });
 
   final cron = Cron();
   cron.schedule(Schedule.parse('0 */3 * * *'), () async {
