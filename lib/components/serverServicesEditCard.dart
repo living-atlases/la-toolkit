@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:la_toolkit/components/renameServerIcon.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
+import 'package:la_toolkit/utils/utils.dart';
 
-class ServerServicesEditCard extends StatelessWidget {
+class ServerServicesEditCard extends StatefulWidget {
   final LAServer server;
   final List<String> currentServerServices;
   final List<LAService> availableServicesForServer;
   final bool isHub;
   final List<LAService> allServices;
   final Function(List<String>) onAssigned;
+  final Function(LAServer) onDeleted;
+  final Function(String) onRename;
 
   const ServerServicesEditCard(
       {Key? key,
@@ -20,24 +24,33 @@ class ServerServicesEditCard extends StatelessWidget {
       required this.availableServicesForServer,
       required this.isHub,
       required this.allServices,
-      required this.onAssigned})
+      required this.onAssigned,
+      required this.onDeleted,
+      required this.onRename})
       : super(key: key);
 
   @override
+  _ServerServicesEditCardState createState() => _ServerServicesEditCardState();
+}
+
+class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
+  @override
   Widget build(BuildContext context) {
     List<Widget> chips = [];
-    for (LAService service in allServices) {
+    for (LAService service in widget.allServices) {
       LAServiceDesc serviceDesc = LAServiceDesc.get(service.nameInt);
-      bool isInThisServer = currentServerServices.contains(serviceDesc.nameInt);
+      bool isInThisServer =
+          widget.currentServerServices.contains(serviceDesc.nameInt);
       if (!LAServiceDesc.subServices.contains(service.nameInt) &&
-          (availableServicesForServer.contains(service) || isInThisServer)) {
+          (widget.availableServicesForServer.contains(service) ||
+              isInThisServer)) {
         chips.add(_ServiceChip(
             service: serviceDesc,
             isSelected: isInThisServer,
-            onSelected: () =>
-                onAssigned(currentServerServices..add(serviceDesc.nameInt)),
-            onDeleted: () => onAssigned(
-                currentServerServices..remove(serviceDesc.nameInt))));
+            onSelected: () => widget.onAssigned(
+                widget.currentServerServices..add(serviceDesc.nameInt)),
+            onDeleted: () => widget.onAssigned(
+                widget.currentServerServices..remove(serviceDesc.nameInt))));
       }
     }
     return IntrinsicWidth(
@@ -46,32 +59,44 @@ class ServerServicesEditCard extends StatelessWidget {
             // color: Colors.black12,
             margin: const EdgeInsets.all(10),
             child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(server.name,
+              padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(widget.server.name,
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      const SizedBox(height: 10),
-                      // ignore: sized_box_for_whitespace
-                      Container(
-                          width: 300,
-                          child: Wrap(
-                            children: chips,
-                            spacing: 3.0, // spacing between adjacent chips
-                            runSpacing: 5.0,
-                          ))
-                      /*  ServicesChipPanel(
-                        services: services.map((s) => s.nameInt).toList(),
-                        initialValue: [],
-                        onChange: (list) => {},
-                        isHub: isHub,
-                      ) */
-                    ],
-                  ),
-                ]))));
+                              color: LAColorTheme.inactive, fontSize: 20)),
+                      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                        RenameServerIcon(widget.server,
+                            (String newName) => widget.onRename(newName)),
+                        Tooltip(
+                            message: "Delete this server",
+                            child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () => UiUtils.showAlertDialog(
+                                    context,
+                                    () => widget.onDeleted(widget.server),
+                                    () => {}))),
+                      ])),
+                  const SizedBox(height: 10),
+                  // ignore: sized_box_for_whitespace
+                  Container(
+                      width: 300,
+                      child: Wrap(
+                        children: chips,
+                        spacing: 3.0, // spacing between adjacent chips
+                        runSpacing: 5.0,
+                      ))
+                ],
+              ),
+            )));
   }
 }
 

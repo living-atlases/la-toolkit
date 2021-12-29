@@ -57,7 +57,8 @@ class LAProjectEditPage extends StatelessWidget {
 
   static const _serverHint =
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
-  final _serverAddController = TextEditingController();
+  final _serverTextFieldController = TextEditingController();
+  final _serverAdditionalTextFieldController = TextEditingController();
   static const _basicStep = 0;
   static const _mapStep = 1;
   static const _serversStep = 2;
@@ -280,53 +281,8 @@ class LAProjectEditPage extends StatelessWidget {
                     // ignore: prefer_const_constructors
                     ServersCardList(),
                     // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
-                    TextFormField(
-                      controller: _serverAddController,
-                      showCursor: true,
-                      cursorColor: Colors.orange,
-                      // TODO: When deployed change this
-                      style: LAColorTheme.unDeployedTextStyle,
-                      initialValue: null,
-                      onFieldSubmitted: (value) =>
-                          serversNameSplit(value).forEach((server) {
-                        _addServer(server.trim(), _project,
-                            (_project) => vm.onSaveCurrentProject(_project));
-                        _serverAddController.clear();
-                      }),
-                      focusNode: _focusNodes[_serversStep],
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String? value) {
-                        return value != null &&
-                                    LARegExp.hostnameRegexp.hasMatch(value) ||
-                                LARegExp.multiHostnameRegexp.hasMatch(value!)
-                            ? null
-                            : 'Invalid server name.';
-                      },
-                      decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                              icon: const Icon(Icons.add_circle),
-                              onPressed: () {
-                                if (_formKeys[_serversStep].currentState !=
-                                        null &&
-                                    _formKeys[_serversStep]
-                                        .currentState!
-                                        .validate()) {
-                                  serversNameSplit(
-                                    _serverAddController.text,
-                                  ).forEach((server) {
-                                    _addServer(
-                                        server,
-                                        _project,
-                                        (_project) =>
-                                            vm.onSaveCurrentProject(_project));
-                                  });
-                                }
-                              },
-                              color: LAColorTheme.inactive),
-                          hintText: _serverHint,
-                          labelText:
-                              'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
-                    ),
+                    _serverAddTextField(_serverAdditionalTextFieldController,
+                        _focusNodes[_serversStep]!, vm),
                     const TipsCard(text: """## Tips
 See the [infrastructure requirements page](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Infrastructure-Requirements) and other portals infrastructure in [our documentation wiki](https://github.com/AtlasOfLivingAustralia/documentation/wiki/) to dimension your LA portal. For a test portal a big server can host the main basic LA services.
 If you are unsure type something like "server1, server2, server3".
@@ -375,12 +331,18 @@ If you are unsure type something like "server1, server2, server3".
               subtitle: const Text(
                   "Some service can be deployed in several servers for web redundancy or to conform a cluster. Note: the la-toolkit does not configure load balancing in redundant web services."),
               content: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: (_project.numServers() > 0)
-                      ? /* (_project.servers
-                          .map((s) => ServicesInServerSelector(server: s))
-                          .toList())
-                      : */
-                      [const ServersServicesEditPanel()]
+                      ? [
+                          const ServersServicesEditPanel(),
+                          const SizedBox(height: 10),
+                          const Text("Add more servers:",
+                              style: TextStyle(fontSize: 18)),
+                          _serverAddTextField(
+                              _serverAdditionalTextFieldController,
+                              _focusNodes[_servicesStep]!,
+                              vm)
+                        ]
                       : [
                           const Text(
                               'You need to add some server before to this step...')
@@ -502,11 +464,11 @@ If you have doubts or need to ask for some information, save this project and co
                             // empty and custom in the AppBar
                             /* TextButton(
                               onPressed: details.onStepContinue,
-                              child: const Text('NNEXT'),
+                              child: const Text('NEXT'),
                             ),
                             TextButton(
                               onPressed: details.onStepCancel,
-                              child: const Text('NCANCEL'),
+                              child: const Text('CANCEL'),
                             ), */
                           ],
                         );
@@ -517,6 +479,51 @@ If you have doubts or need to ask for some information, save this project and co
                 //     ])
               ));
         });
+  }
+
+  TextFormField _serverAddTextField(TextEditingController controller,
+      FocusNode focusNode, _ProjectPageViewModel vm) {
+    return TextFormField(
+      controller: controller,
+      showCursor: true,
+      cursorColor: Colors.orange,
+      // TODO: When deployed change this
+      style: LAColorTheme.unDeployedTextStyle,
+      initialValue: null,
+      onFieldSubmitted: (value) => serversNameSplit(value).forEach((server) {
+        _addServer(server.trim(), vm.project,
+            (_project) => vm.onSaveCurrentProject(_project));
+        controller.clear();
+      }),
+      focusNode: focusNode,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (String? value) {
+        return value != null &&
+                (LARegExp.hostnameRegexp.hasMatch(value) ||
+                    LARegExp.multiHostnameRegexp.hasMatch(value) ||
+                    value.isEmpty)
+            ? null
+            : 'Invalid server name.';
+      },
+      decoration: InputDecoration(
+          suffixIcon: IconButton(
+              icon: const Icon(Icons.add_circle),
+              onPressed: () {
+                if (_formKeys[_serversStep].currentState != null &&
+                    _formKeys[_serversStep].currentState!.validate()) {
+                  serversNameSplit(
+                    controller.text,
+                  ).forEach((server) {
+                    _addServer(server, vm.project,
+                        (_project) => vm.onSaveCurrentProject(_project));
+                  });
+                }
+              },
+              color: LAColorTheme.inactive),
+          hintText: _serverHint,
+          labelText:
+              'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
+    );
   }
 
   List<String> serversNameSplit(String value) => value.split(RegExp(r"[, ]+"));
@@ -534,7 +541,8 @@ If you have doubts or need to ask for some information, save this project and co
   void _addServer(String value, LAProject project,
       void Function(LAProject) onSaveCurrentProject) {
     project.upsertServer(LAServer(name: value, projectId: project.id));
-    _serverAddController.clear();
+    _serverTextFieldController.clear();
+    _serverAdditionalTextFieldController.clear();
     _formKeys[_serversStep].currentState!.reset();
     _focusNodes[_serversStep]!.requestFocus();
     onSaveCurrentProject(project);

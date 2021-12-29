@@ -3,7 +3,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/renameServerIcon.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
@@ -50,11 +49,12 @@ class ServersCardList extends StatelessWidget {
                                 trailing:
                                     Wrap(spacing: 12, // space between two icons
                                         children: <Widget>[
-                                      RenameServerIcon(
-                                          _project,
-                                          _project.servers[index],
-                                          (LAProject project) =>
-                                              vm.onSaveCurrentProject(project)),
+                                      RenameServerIcon(_project.servers[index],
+                                          (String newName) {
+                                        _project.serverRename(
+                                            _project.servers[index], newName);
+                                        vm.onSaveCurrentProject(_project);
+                                      }),
                                       Tooltip(
                                           message: "Delete this server",
                                           child: IconButton(
@@ -62,22 +62,8 @@ class ServersCardList extends StatelessWidget {
                                               onPressed: () =>
                                                   UiUtils.showAlertDialog(
                                                       context, () {
-                                                    String deletedId = _project
-                                                        .servers[index].id;
                                                     _project.delete(_project
                                                         .servers[index]);
-                                                    // Remove server from others gateways
-                                                    for (LAServer s
-                                                        in _project.servers) {
-                                                      if (s.gateways.contains(
-                                                          deletedId)) {
-                                                        s.gateways
-                                                            .remove(deletedId);
-                                                        _project
-                                                            .upsertServer(s);
-                                                      }
-                                                    }
-                                                    _project.validateCreation();
                                                     vm.onSaveCurrentProject(
                                                         _project);
                                                   }, () => {},

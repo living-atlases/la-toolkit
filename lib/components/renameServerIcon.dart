@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -9,32 +8,29 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'genericTextFormField.dart';
 
 class RenameServerIcon extends StatelessWidget {
-  final LAProject project;
-  final Function(LAProject) onRename;
+  final Function(String) onRename;
   final LAServer server;
 
-  const RenameServerIcon(this.project, this.server, this.onRename, {Key? key})
+  const RenameServerIcon(this.server, this.onRename, {Key? key})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Tooltip(
         message: "Rename the server",
         child: IconButton(
-          icon: const Icon(Icons.edit, size: 18),
+          icon: const Icon(Icons.edit, size: 18, color: Colors.grey),
           color: LAColorTheme.inactive,
           onPressed: () => _generateRenameDialog(
               context: context,
-              onRename: (LAProject project) => onRename(project),
-              server: server,
-              project: project),
+              onRename: (String newName) => onRename(newName),
+              server: server),
         ));
   }
 
   _generateRenameDialog(
       {required BuildContext context,
-      required Function(LAProject) onRename,
-      required LAServer server,
-      required LAProject project}) {
+      required Function(String) onRename,
+      required LAServer server}) {
     String? name;
     Alert(
         context: context,
@@ -67,9 +63,7 @@ class RenameServerIcon extends StatelessWidget {
             onPressed: () {
               if (name != null) {
                 if (LARegExp.hostnameRegexp.hasMatch(name!)) {
-                  server.name = name!;
-                  project.upsertById(server);
-                  onRename(project);
+                  onRename(name!);
                   Navigator.pop(context);
                 }
               }

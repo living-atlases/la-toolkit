@@ -676,6 +676,15 @@ check results length: ${checkResults.length}''';
     // Remove serviceDeploy inconsistencies
     serviceDeploys.removeWhere(
         (sd) => (servers.firstWhereOrNull((s) => s.id == sd.serverId) == null));
+    // Remove server from others gateways
+    String deletedId = serverToDelete.id;
+    for (LAServer s in servers) {
+      if (s.gateways.contains(deletedId)) {
+        s.gateways.remove(deletedId);
+        upsertServer(s);
+      }
+    }
+    validateCreation();
   }
 
   String additionalVariablesDecoded() {
@@ -1314,4 +1323,9 @@ check results length: ${checkResults.length}''';
 
   bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();
   bool get showToolkitDeps => !isHub;
+
+  void serverRename(LAServer server, String newName) {
+    server.name = newName;
+    upsertServer(server);
+  }
 }

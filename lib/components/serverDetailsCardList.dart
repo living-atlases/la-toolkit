@@ -58,11 +58,12 @@ class ServersDetailsCardList extends StatelessWidget {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w500,
                                           fontSize: 16)),
-                                  RenameServerIcon(
-                                      _project,
-                                      _project.servers[index],
-                                      (LAProject project) =>
-                                          vm.onSaveCurrentProject(project)),
+                                  RenameServerIcon(_project.servers[index],
+                                      (String newName) {
+                                    _project.serverRename(
+                                        _project.servers[index], newName);
+                                    vm.onSaveCurrentProject(_project);
+                                  }),
                                   const SizedBox(width: 40),
                                   ServerSshKeySelector(
                                       key: ValueKey(
