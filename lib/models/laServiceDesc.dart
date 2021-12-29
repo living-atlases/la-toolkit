@@ -1,6 +1,5 @@
 import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

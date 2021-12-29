@@ -1,5 +1,4 @@
 import 'package:chips_choice/chips_choice.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';

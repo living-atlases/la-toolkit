@@ -1,6 +1,5 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_toolkit/models/cmdHistoryDetails.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
