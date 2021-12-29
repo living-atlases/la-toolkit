@@ -495,13 +495,19 @@ If you have doubts or need to ask for some information, save this project and co
                         onStepCancel(vm, _project);
                       },
                       // https://github.com/flutter/flutter/issues/11133
-                      controlsBuilder: (BuildContext context,
-                          {VoidCallback? onStepContinue,
-                          VoidCallback? onStepCancel}) {
-                        return const ButtonBar(
-                          alignment: MainAxisAlignment.start,
-                          children: <Widget>[
+                      controlsBuilder:
+                          (BuildContext context, ControlsDetails details) {
+                        return Row(
+                          children: const <Widget>[
                             // empty and custom in the AppBar
+                            /* TextButton(
+                              onPressed: details.onStepContinue,
+                              child: const Text('NNEXT'),
+                            ),
+                            TextButton(
+                              onPressed: details.onStepCancel,
+                              child: const Text('NCANCEL'),
+                            ), */
                           ],
                         );
                       }),
