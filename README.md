@@ -277,9 +277,11 @@ docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (
 - [X] Services redundancy
 - [X] Better ALA software versions control
 - [X] LA pipelines support
+- [X] Concurrent user support
 - [ ] SSL support via letsencrypt (work in progress)
+- [ ] Toolkit users management (work in progress)
 - [ ] Improve ssh keys management
-- [ ] multi-user support
+
 
 ## Screenshots
 
