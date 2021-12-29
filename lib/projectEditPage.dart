@@ -36,6 +36,8 @@ class LAProjectEditPage extends StatelessWidget {
   LAProjectEditPage({Key? key}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  static List<String> serversNameSplit(String value) =>
+      value.split(RegExp(r"[, ]+"));
   static const int totalSteps = 6;
 
   final List<GlobalKey<FormState>> _formKeys = [
@@ -51,11 +53,11 @@ class LAProjectEditPage extends StatelessWidget {
     null,
     FocusNode(),
     FocusNode(),
-    null,
+    FocusNode(),
     FocusNode(),
   ];
 
-  static const _serverHint =
+  static const serverHint =
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
   final _serverTextFieldController = TextEditingController();
   final _serverAdditionalTextFieldController = TextEditingController();
@@ -281,8 +283,11 @@ class LAProjectEditPage extends StatelessWidget {
                     // ignore: prefer_const_constructors
                     ServersCardList(),
                     // https://stackoverflow.com/questions/54860198/detect-enter-key-press-in-flutter
-                    _serverAddTextField(_serverAdditionalTextFieldController,
-                        _focusNodes[_serversStep]!, vm),
+                    ServerTextField(
+                        controller: _serverTextFieldController,
+                        focusNode: _focusNodes[_serversStep]!,
+                        formKey: _formKeys[_serversStep],
+                        onAddServer: (name) => _addServer(name.trim(), vm)),
                     const TipsCard(text: """## Tips
 See the [infrastructure requirements page](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Infrastructure-Requirements) and other portals infrastructure in [our documentation wiki](https://github.com/AtlasOfLivingAustralia/documentation/wiki/) to dimension your LA portal. For a test portal a big server can host the main basic LA services.
 If you are unsure type something like "server1, server2, server3".
@@ -338,10 +343,12 @@ If you are unsure type something like "server1, server2, server3".
                           const SizedBox(height: 10),
                           const Text("Add more servers:",
                               style: TextStyle(fontSize: 18)),
-                          _serverAddTextField(
-                              _serverAdditionalTextFieldController,
-                              _focusNodes[_servicesStep]!,
-                              vm)
+                          ServerTextField(
+                              controller: _serverAdditionalTextFieldController,
+                              focusNode: _focusNodes[_serverToServiceStep]!,
+                              formKey: _formKeys[_serverToServiceStep],
+                              onAddServer: (name) =>
+                                  _addServer(name.trim(), vm)),
                         ]
                       : [
                           const Text(
@@ -481,53 +488,6 @@ If you have doubts or need to ask for some information, save this project and co
         });
   }
 
-  TextFormField _serverAddTextField(TextEditingController controller,
-      FocusNode focusNode, _ProjectPageViewModel vm) {
-    return TextFormField(
-      controller: controller,
-      showCursor: true,
-      cursorColor: Colors.orange,
-      // TODO: When deployed change this
-      style: LAColorTheme.unDeployedTextStyle,
-      initialValue: null,
-      onFieldSubmitted: (value) => serversNameSplit(value).forEach((server) {
-        _addServer(server.trim(), vm.project,
-            (_project) => vm.onSaveCurrentProject(_project));
-        controller.clear();
-      }),
-      focusNode: focusNode,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (String? value) {
-        return value != null &&
-                (LARegExp.hostnameRegexp.hasMatch(value) ||
-                    LARegExp.multiHostnameRegexp.hasMatch(value) ||
-                    value.isEmpty)
-            ? null
-            : 'Invalid server name.';
-      },
-      decoration: InputDecoration(
-          suffixIcon: IconButton(
-              icon: const Icon(Icons.add_circle),
-              onPressed: () {
-                if (_formKeys[_serversStep].currentState != null &&
-                    _formKeys[_serversStep].currentState!.validate()) {
-                  serversNameSplit(
-                    controller.text,
-                  ).forEach((server) {
-                    _addServer(server, vm.project,
-                        (_project) => vm.onSaveCurrentProject(_project));
-                  });
-                }
-              },
-              color: LAColorTheme.inactive),
-          hintText: _serverHint,
-          labelText:
-              'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
-    );
-  }
-
-  List<String> serversNameSplit(String value) => value.split(RegExp(r"[, ]+"));
-
   void onStepCancel(_ProjectPageViewModel vm, LAProject project) {
     vm.onPrevious();
     vm.onSaveCurrentProject(project);
@@ -538,14 +498,13 @@ If you have doubts or need to ask for some information, save this project and co
     vm.onSaveCurrentProject(project);
   }
 
-  void _addServer(String value, LAProject project,
-      void Function(LAProject) onSaveCurrentProject) {
-    project.upsertServer(LAServer(name: value, projectId: project.id));
+  void _addServer(String value, _ProjectPageViewModel vm) {
+    vm.project.upsertServer(LAServer(name: value, projectId: vm.project.id));
     _serverTextFieldController.clear();
     _serverAdditionalTextFieldController.clear();
     _formKeys[_serversStep].currentState!.reset();
     _focusNodes[_serversStep]!.requestFocus();
-    onSaveCurrentProject(project);
+    vm.onSaveCurrentProject(vm.project);
   }
 
   bool _setIsActive(currentStep, step) {
@@ -620,6 +579,64 @@ class HostHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [Text(title), if (help != null) HelpIcon(wikipage: help!)],
+    );
+  }
+}
+
+class ServerTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final FocusNode focusNode;
+
+  final GlobalKey<FormState> formKey;
+  final Function(String) onAddServer;
+
+  const ServerTextField(
+      {Key? key,
+      required this.controller,
+      required this.focusNode,
+      required this.formKey,
+      required this.onAddServer})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      showCursor: true,
+      cursorColor: Colors.orange,
+      style: LAColorTheme.unDeployedTextStyle,
+      initialValue: null,
+      onFieldSubmitted: (value) =>
+          LAProjectEditPage.serversNameSplit(value).forEach((server) {
+        onAddServer(server.trim());
+        controller.clear();
+      }),
+      focusNode: focusNode,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (String? value) {
+        return value != null &&
+                (LARegExp.hostnameRegexp.hasMatch(value) ||
+                    LARegExp.multiHostnameRegexp.hasMatch(value) ||
+                    value.isEmpty)
+            ? null
+            : 'Invalid server name.';
+      },
+      decoration: InputDecoration(
+          suffixIcon: IconButton(
+              icon: const Icon(Icons.add_circle),
+              onPressed: () {
+                if (formKey.currentState != null &&
+                    formKey.currentState!.validate()) {
+                  LAProjectEditPage.serversNameSplit(
+                    controller.text,
+                  ).forEach((server) {
+                    onAddServer(server);
+                  });
+                }
+              },
+              color: LAColorTheme.inactive),
+          hintText: LAProjectEditPage.serverHint,
+          labelText:
+              'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
     );
   }
 }
