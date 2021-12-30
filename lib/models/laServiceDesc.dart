@@ -682,11 +682,15 @@ class LAServiceDesc {
     String name;
     String? alias;
     try {
-      final LAServiceDesc laServiceDesc = LAServiceDesc.get(sw);
-      name = laServiceDesc.name;
-      alias = laServiceDesc.alias;
+      if ([toolkit, alaInstall, generator].contains(sw)) {
+        name = sw;
+      } else {
+        final LAServiceDesc laServiceDesc = LAServiceDesc.get(sw);
+        name = laServiceDesc.name;
+        alias = laServiceDesc.alias;
+      }
     } catch (e) {
-      print(e);
+      print("Processing software $sw: $e");
       name = sw;
     }
     return "$name${alias != null ? ' (' + alias + ')' : ''}";
