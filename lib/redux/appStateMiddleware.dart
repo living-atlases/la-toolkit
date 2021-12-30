@@ -172,16 +172,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       } else {
         Map<String, LAReleases> releases = {};
         Map<String, String> servicesAndSub = {};
-
         for (LAServiceDesc service in LAServiceDesc.listWithArtifact()) {
           servicesAndSub[service.nameInt] = service.artifact!;
         }
-        for (var s in servicesAndSub.entries) {
-          LAReleases? thisReleases = await getDepsVersions(s.key, s.value);
-          if (thisReleases != null) {
-            releases[s.key] = thisReleases;
-          }
-        }
+        releases = await getDepsVersions(servicesAndSub);
         store.dispatch(OnLAVersionsSwCheck(releases, DateTime.now()));
       }
     }
@@ -228,7 +222,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             await Api.deleteProject(project: action.project);
         store.dispatch(OnProjectDeleted(action.project, projects));
       } catch (e) {
-        print(e);
+        print("Failed to delete project $e");
         store.dispatch(ShowSnackBar(
             AppSnackBarMessage.ok("Failed to delete project ($e)")));
       }
@@ -426,47 +420,84 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     next(action);
   }
 
-  Future<LAReleases?> getDepsVersions(String service, String artifact) async {
-    String? latest;
-    List<String> versions = [];
-    for (String repo in ['releases', 'snapshots']) {
-      Uri depsBackUrl =
-          AppUtils.uri(env['BACKEND']!, "/api/v1/get-deps-versions");
-      Response response = await http.post(depsBackUrl,
-          headers: {'Content-type': 'application/json'},
-          body: utf8.encode(json.encode({'repo': repo, 'artifact': artifact})));
-      Map<String, dynamic> jsonBody = json.decode(response.body);
-      try {
-        var thisVersions =
-            jsonBody['metadata']['versioning']['versions']['version'];
-        List<String> groupVersions = thisVersions.runtimeType == String
-            ? [thisVersions]
-            : thisVersions.cast<String>();
-        String groupLatest =
-            jsonBody['metadata']['versioning']['latest'].toString();
-        if (repo == "releases") {
-          latest = groupLatest;
-          // truncate the list
-          versions.addAll(groupVersions.reversed.toList().sublist(
-              0, 30 > groupVersions.length ? groupVersions.length : 30));
-        } else {
-          versions.addAll(groupVersions.reversed
-              .toList()
-              .sublist(0, 2 > groupVersions.length ? groupVersions.length : 2));
-        }
-        /* print(artifact);
-            print(versions);
-            print(latest); */
-      } catch (e) {
-        print('Cannot retrieve versions for $service ($e)');
+  Future<Map<String, LAReleases>> getDepsVersions(
+      Map<String, String> deps) async {
+    Uri depsBackUrl =
+        AppUtils.uri(env['BACKEND']!, "/api/v1/get-deps-versions");
+    Response response = await http.post(depsBackUrl,
+        headers: {'Content-type': 'application/json'},
+        body: utf8.encode(json.encode({'deps': deps})));
+    Map<String, dynamic> jsonBody = json.decode(response.body);
+    Map<String, LAReleases> releases = {};
+    try {
+      for (String service in jsonBody.keys) {
+        List<String> versions = [];
+        List<String> releasesVersions =
+            getResponseVersions(jsonBody, "releases", service);
+        List<String> snapshotVersions =
+            getResponseVersions(jsonBody, "snapshots", service);
+        String latest = jsonBody[service]['releases']['metadata']['versioning']
+                ['latest']
+            .toString();
+        versions.addAll(releasesVersions.reversed.toList().sublist(
+            0, 30 > releasesVersions.length ? releasesVersions.length : 30));
+        versions.addAll(snapshotVersions.reversed.toList().sublist(
+            0, 2 > snapshotVersions.length ? snapshotVersions.length : 2));
+        LAReleases servReleases = LAReleases(
+            name: service,
+            artifact: deps[service]!,
+            latest: latest,
+            // remove dups
+            versions: versions.toSet().toList());
+        releases[service] = servReleases;
       }
+    } catch (e) {
+      print('Error getting deps ($e)');
     }
-    return LAReleases(
-        name: service,
-        artifact: artifact,
-        latest: latest,
-        // remove dups
-        versions: versions.toSet().toList());
+    return releases;
+  }
+
+  /* jsonBodyMap.forEach((service, jsonBody) {
+        try {
+          String? latest;
+          List<String> versions = [];
+          var thisVersions =
+              jsonBody['metadata']['versioning']['versions']['version'];
+          List<String> groupVersions = thisVersions.runtimeType == String
+              ? [thisVersions]
+              : thisVersions.cast<String>();
+          String groupLatest =
+              jsonBody['metadata']['versioning']['latest'].toString();
+          for (String repo in ['releases', 'snapshots']) {
+          if (repo == "releases") {
+            latest = groupLatest;
+            // truncate the list
+            versions.addAll(groupVersions.reversed.toList().sublist(
+                0, 30 > groupVersions.length ? groupVersions.length : 30));
+          } else {
+            versions.addAll(groupVersions.reversed.toList().sublist(
+                0, 2 > groupVersions.length ? groupVersions.length : 2));
+          }
+          /* LAReleases release = LAReleases(
+              name: service,
+              artifact: artifact,
+              latest: latest,
+              // remove dups
+              versions: versions.toSet().toList()); */
+        } catch (e) {
+          print('Cannot retrieve versions for $service ($e)');
+        }
+      });
+    } */
+
+  List<String> getResponseVersions(
+      Map<String, dynamic> jsonBody, String repo, String service) {
+    var thisVersions = jsonBody[service][repo]['metadata']['versioning']
+        ['versions']['version'];
+    List<String> groupVersions = thisVersions.runtimeType == String
+        ? [thisVersions]
+        : thisVersions.cast<String>();
+    return groupVersions;
   }
 
   Future<void> _updateProject(LAProject project, Store<AppState> store,
@@ -480,7 +511,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         store.dispatch(OpenProjectTools(project));
       }
     } catch (e, stacktrace) {
-      print(e);
+      print("Failed to update project $e");
       print(stacktrace);
       if (AppUtils.isDev()) {
         store.dispatch(ShowSnackBar(
