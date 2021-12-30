@@ -10,8 +10,8 @@ import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
 import 'components/laAppBar.dart';
-import 'components/scrollPanel.dart';
 import 'components/statusIcon.dart';
+import 'logsList.dart';
 import 'models/cmd.dart';
 
 class LogsHistoryPage extends StatelessWidget {
@@ -42,8 +42,9 @@ class LogsHistoryPage extends StatelessWidget {
                   project: project,
                   commonCmd: cmdHistory.isAnsibleDeploy()
                       ? cmdHistory.deployCmd!
-                      : cmdHistory.cmd.type == CmdType.laPipelines? cmdHistory.pipelinesCmd!:
-                          cmdHistory.parsedBrandingDeployCmd!));
+                      : cmdHistory.cmd.type == CmdType.laPipelines
+                          ? cmdHistory.pipelinesCmd!
+                          : cmdHistory.parsedBrandingDeployCmd!));
             },
             onOpenDeployResults: (cmdHistory) {
               store.dispatch(
@@ -60,19 +61,21 @@ class LogsHistoryPage extends StatelessWidget {
             title: pageTitle,
             color: LAColorTheme.laPalette,
             child: Scaffold(
-                key: _scaffoldKey,
-                appBar: LAAppBar(
-                    context: context,
-                    titleIcon: Icons.receipt_long,
-                    title: pageTitle,
-                    showLaIcon: false,
-                    showBack: true,
-                    actions: const []),
-                body: ScrollPanel(
-                    child: Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 80, vertical: 20),
-                        child: Column(children: <Widget>[
+              key: _scaffoldKey,
+              appBar: LAAppBar(
+                  context: context,
+                  titleIcon: Icons.receipt_long,
+                  title: pageTitle,
+                  showLaIcon: false,
+                  showBack: true,
+                  actions: const []),
+              body: LogList(
+                  projectId: vm.project.id,
+                  onTap: (cmd) => vm.onOpenDeployResults(cmd),
+                  onRepeat: (cmd) => vm.onRepeatCmd(vm.project, cmd),
+                  onDelete: (cmd) => vm.onDeleteCmd(cmd),
+                  onUpdateDesc: (cmd, desc) => vm.onUpdateDesc(cmd, desc)),
+              /* const Text("Antiguo:"),
                           ListView.builder(
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
@@ -92,8 +95,8 @@ class LogsHistoryPage extends StatelessWidget {
                                           vm.project.cmdHistoryEntries[index]),
                                       (desc) => vm.onUpdateDesc(
                                           vm.project.cmdHistoryEntries[index],
-                                          desc)))
-                        ])))));
+                                          desc))) */
+            ));
       },
     );
   }
