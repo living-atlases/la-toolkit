@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class CardConstants {
   static EdgeInsets defaultSeparation = const EdgeInsets.fromLTRB(0, 0, 0, 30);
