@@ -104,6 +104,8 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.branding: 'branding',
   LAServiceName.biocache_cli: 'biocache_cli',
   LAServiceName.nameindexer: 'nameindexer',
+  LAServiceName.namematching_service: 'namematching_service',
+  LAServiceName.data_quality: 'data_quality',
   LAServiceName.pipelines: 'pipelines',
   LAServiceName.spark: 'spark',
   LAServiceName.hadoop: 'hadoop',
