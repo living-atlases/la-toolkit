@@ -64,7 +64,7 @@ Future<void> main() async {
       socket_io_client.OptionBuilder().setTransports(['websocket']).build()));
 
   io.socket.onConnect((_) {
-    print('sails websocket: Connected to backend');
+    // print('sails websocket: Connected to backend');
   });
 
   io.socket.onError((e) {
@@ -75,8 +75,8 @@ Future<void> main() async {
   io.get(
       url: "${AppUtils.scheme}://${env['BACKEND']}/api/v1/projects-subs",
       cb: (body, jwrResponse) {
-        print(body);
-        print(jwrResponse.toJson());
+        // print(body);
+        // print(jwrResponse.toJson());
       });
 
   AppState initialState = await appStateMiddleware.getState();
@@ -109,7 +109,7 @@ Future<void> main() async {
   final debouncer = Debouncer(milliseconds: 1000);
   io.socket.on('project', (projects) {
     debouncer.run(() {
-      print('sails websocket: projects call');
+      print('sails websocket: projects subs call');
       store.dispatch(OnProjectsLoad(projects));
     });
   });
