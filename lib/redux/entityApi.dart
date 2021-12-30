@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:la_toolkit/models/isJsonSerializable.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:tuple/tuple.dart';
 
 class EntityApi<T extends IsJsonSerializable> {
   final String model;
@@ -45,7 +46,7 @@ class EntityApi<T extends IsJsonSerializable> {
   }
 
   Future<List<dynamic>> find(
-      {String? filter,
+      {Tuple2<String, String>? filter,
       String? where,
       int? limit,
       int? skip,
@@ -53,11 +54,11 @@ class EntityApi<T extends IsJsonSerializable> {
       String? select,
       String? omit,
       String populate = ""}) async {
-    Map<String, dynamic> queryParam = {};
-    if (filter != null) queryParam["filter"] = filter;
+    Map<String, String> queryParam = {};
+    if (filter != null) queryParam[filter.item1] = filter.item2;
     if (where != null) queryParam["where"] = where;
-    if (limit != null) queryParam["limit"] = limit;
-    if (skip != null) queryParam["skip"] = skip;
+    if (limit != null) queryParam["limit"] = limit.toString();
+    if (skip != null) queryParam["skip"] = skip.toString();
     if (sort != null) queryParam["sort"] = sort;
     if (select != null) queryParam["select"] = select;
     if (omit != null) queryParam["omit"] = omit;
@@ -112,7 +113,7 @@ class EntityApi<T extends IsJsonSerializable> {
     }
   }
 
-  Uri baseUri([String path = "", Map<String, dynamic>? queryParameters]) =>
+  Uri baseUri([String path = "", Map<String, String>? queryParameters]) =>
       AppUtils.uri(env['BACKEND']!, "/$model${path != "" ? '/' + path : ''}",
           queryParameters);
 
