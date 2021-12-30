@@ -207,6 +207,7 @@ class DeployUtils {
           TermDialog.show(context,
               port: port,
               pid: ttydPid,
+              notify: true,
               title: "Ansible console", onClose: () async {
             if (!deployCmd.dryRun) {
               // Show the results
@@ -243,8 +244,11 @@ class DeployUtils {
           context.loaderOverlay.hide();
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
-          TermDialog.show(context, port: port, pid: ttydPid, title: "Console",
-              onClose: () async {
+          TermDialog.show(context,
+              port: port,
+              pid: ttydPid,
+              title: "Console",
+              notify: false, onClose: () async {
             // Show the results
             store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
           });
@@ -276,8 +280,11 @@ class DeployUtils {
           context.loaderOverlay.hide();
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
-          TermDialog.show(context, port: port, pid: ttydPid, title: "Console",
-              onClose: () async {
+          TermDialog.show(context,
+              port: port,
+              pid: ttydPid,
+              title: "Console",
+              notify: true, onClose: () async {
             // Show the results
             store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
           });

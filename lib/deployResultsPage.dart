@@ -201,7 +201,7 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                         height: 600,
                                         width: 1000,
                                         child: TermDialog.termArea(
-                                            cmdHistoryDetails.port!)),
+                                            cmdHistoryDetails.port!, false)),
                                   if (cmdHistoryDetails.port == null)
                                     const Text(
                                         "For some reason, we couldn't open a terminal with these logs. Possible fix: restart your la-toolkit container"),

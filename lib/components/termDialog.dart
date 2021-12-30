@@ -14,6 +14,7 @@ class TermDialog {
       {title = 'Console',
       required int port,
       required int pid,
+      required bool notify,
       VoidCallback? onClose}) async {
     // print("${getInitialUrl(port)}");
     await showFloatingModalBottomSheet(
@@ -44,7 +45,7 @@ class TermDialog {
                             })),
                   ],
                 ),
-                body: termArea(port),
+                body: termArea(port, notify),
               ),
             ));
     Api.termClose(port: port, pid: pid);
@@ -58,11 +59,11 @@ class TermDialog {
           ? '${AppUtils.scheme}://${env['BACKEND']!.split(":")[0]}/ttyd$port'
           : '${AppUtils.scheme}://${env['BACKEND']!.split(":")[0]}:$port/';
 
-  static Widget termArea(int port) {
+  static Widget termArea(int port, bool notify) {
     return InteractiveViewer(
         child: Container(
             alignment: Alignment.center,
-            child: EmbedWebView(src: getInitialUrl(port))));
+            child: EmbedWebView(src: getInitialUrl(port), notify: notify)));
   }
 
   static Future<T> showFloatingModalBottomSheet<T>({
@@ -86,20 +87,20 @@ class TermDialog {
       leading: const Icon(MdiIcons.console),
       title: const Text('Console'),
       onTap: () {
-        openTerm(context);
+        openTerm(context, false);
       },
     );
   }
 
   // Opens a bash or a ssh on server
-  static void openTerm(BuildContext context,
+  static void openTerm(BuildContext context, bool notify,
       [String? projectId, String? server]) {
     // context.loaderOverlay.show();
     context.loaderOverlay.show();
     Api.term(
         onStart: (String cmd, int port, int ttydPid) {
           context.loaderOverlay.hide();
-          TermDialog.show(context, port: port, pid: ttydPid);
+          TermDialog.show(context, port: port, pid: ttydPid, notify: notify);
         },
         onError: (error) {
           context.loaderOverlay.hide();

@@ -26,7 +26,7 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
           return _ServersStatusPanelViewModel(
             project: store.state.currentProject,
             openTerm: (project, server) =>
-                TermDialog.openTerm(context, project.id, server.name),
+                TermDialog.openTerm(context, false, project.id, server.name),
           );
         },
         builder: (BuildContext context, _ServersStatusPanelViewModel vm) {
