@@ -21,7 +21,6 @@ import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:sails_io/sails_io.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
-import 'package:universal_html/html.dart' as html;
 
 import 'components/appSnackBarMessage.dart';
 import 'laTheme.dart';
@@ -114,13 +113,6 @@ Future<void> main() async {
       store.dispatch(OnProjectsLoad(projects));
     });
   });
-
-  if (!AppUtils.isDemo()) {
-    String perm = await html.Notification.requestPermission();
-    if (perm == "granted") {
-      print("Notification granted");
-    }
-  }
 
   final cron = Cron();
   cron.schedule(Schedule.parse('0 */3 * * *'), () async {

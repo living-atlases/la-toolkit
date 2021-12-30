@@ -16,6 +16,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/laAppBar.dart';
@@ -142,6 +143,11 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           final LAProject project = vm.project;
           print(
               "Building ProjectViewPage $_scaffoldKey, ala-install: ${project.alaInstallRelease}, gen: ${project.generatorRelease}");
+
+          if (project.isCreated && !AppUtils.isDemo()) {
+            html.Notification.requestPermission();
+          }
+
           String portal = project.portalName;
           // ignore: non_constant_identifier_names
           String Portal = project.PortalName;
