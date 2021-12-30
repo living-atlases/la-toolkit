@@ -75,27 +75,6 @@ class LogsHistoryPage extends StatelessWidget {
                   onRepeat: (cmd) => vm.onRepeatCmd(vm.project, cmd),
                   onDelete: (cmd) => vm.onDeleteCmd(cmd),
                   onUpdateDesc: (cmd, desc) => vm.onUpdateDesc(cmd, desc)),
-              /* const Text("Antiguo:"),
-                          ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: vm.logsNum,
-                              // itemCount: appStateProv.appState.projects.length,
-                              itemBuilder: (BuildContext context, int index) =>
-                                  LogItem(
-                                      vm.project.cmdHistoryEntries[index],
-                                      () => vm.onOpenDeployResults(
-                                          vm.project.cmdHistoryEntries[index]),
-                                      () =>
-                                          vm.onRepeatCmd(
-                                              vm.project,
-                                              vm.project
-                                                  .cmdHistoryEntries[index]),
-                                      () => vm.onDeleteCmd(
-                                          vm.project.cmdHistoryEntries[index]),
-                                      (desc) => vm.onUpdateDesc(
-                                          vm.project.cmdHistoryEntries[index],
-                                          desc))) */
             ));
       },
     );

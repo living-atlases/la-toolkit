@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:la_toolkit/logSearchInput.dart';
 import 'package:la_toolkit/redux/entityApi.dart';
 import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -58,7 +59,18 @@ class _LogListState extends State<LogList> {
           sort: "createdAt DESC",
           where: _searchTerm != null
               ? jsonEncode({
-                  "desc": {"contains": _searchTerm}
+                  "or": _searchTerm!
+                          .split(' ')
+                          .map((s) => {
+                                "desc": {"contains": s}
+                              })
+                          .toList() +
+                      _searchTerm!
+                          .split(' ')
+                          .map((s) => {
+                                "result": {"contains": s}
+                              })
+                          .toList(),
                 })
               : null,
           limit: _pageSize);
@@ -92,10 +104,9 @@ class _LogListState extends State<LogList> {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           slivers: <Widget>[
-/*  CharacterSearchInputSliver(
-  onChanged: _updateSearchTerm,
-  ), */
-
+            LogSearchInput(
+              onChanged: _updateSearchTerm,
+            ),
             PagedSliverList<int, CmdHistoryEntry>.separated(
                 pagingController: _pagingController,
                 separatorBuilder: (context, index) => const Divider(),
