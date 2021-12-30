@@ -114,8 +114,8 @@ class EntityApi<T extends IsJsonSerializable> {
   }
 
   Uri baseUri([String path = "", Map<String, String>? queryParameters]) =>
-      AppUtils.uri(env['BACKEND']!, "/$model${path != "" ? '/' + path : ''}",
-          queryParameters);
+      AppUtils.uri(dotenv.env['BACKEND']!,
+          "/$model${path != "" ? '/' + path : ''}", queryParameters);
 
 /*
 -- create

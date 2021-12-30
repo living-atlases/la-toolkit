@@ -1,6 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:feedback/feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -59,7 +56,7 @@ class ListTileLink extends StatelessWidget {
           leading: const Icon(Icons.feedback),
           title: const Text('Feedback'),
           onTap: () {
-            BetterFeedback.of(context)?.show(
+            /* BetterFeedback.of(context).show(
               (
                 String feedbackText,
                 Uint8List? feedbackScreenshot,
@@ -69,7 +66,7 @@ class ListTileLink extends StatelessWidget {
                 alertFeedbackFunction(
                     context, feedbackText, feedbackScreenshot);
               },
-            );
+            ); */
           },
         ),
       // TODO:

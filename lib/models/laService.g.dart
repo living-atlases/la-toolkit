@@ -6,8 +6,19 @@ part of 'laService.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-extension LAServiceCopyWith on LAService {
-  LAService copyWith({
+/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAService.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfLAService.copyWith.fieldName(...)`
+class _LAServiceCWProxy {
+  final LAService _value;
+
+  const _LAServiceCWProxy(this._value);
+
+  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `LAService(...).copyWithNull(...)` to set certain fields to `null`. Prefer `LAService(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// LAService(...).copyWith(id: 12, name: "My name")
+  /// ````
+  LAService call({
     String? id,
     String? iniPath,
     String? nameInt,
@@ -18,14 +29,55 @@ extension LAServiceCopyWith on LAService {
     bool? usesSubdomain,
   }) {
     return LAService(
-      id: id ?? this.id,
-      iniPath: iniPath ?? this.iniPath,
-      nameInt: nameInt ?? this.nameInt,
-      projectId: projectId ?? this.projectId,
-      status: status ?? this.status,
-      suburl: suburl ?? this.suburl,
-      use: use ?? this.use,
-      usesSubdomain: usesSubdomain ?? this.usesSubdomain,
+      id: id ?? _value.id,
+      iniPath: iniPath ?? _value.iniPath,
+      nameInt: nameInt ?? _value.nameInt,
+      projectId: projectId ?? _value.projectId,
+      status: status ?? _value.status,
+      suburl: suburl ?? _value.suburl,
+      use: use ?? _value.use,
+      usesSubdomain: usesSubdomain ?? _value.usesSubdomain,
+    );
+  }
+
+  LAService id(String? id) =>
+      id == null ? _value._copyWithNull(id: true) : this(id: id);
+
+  LAService status(ServiceStatus? status) => status == null
+      ? _value._copyWithNull(status: true)
+      : this(status: status);
+
+  LAService iniPath(String iniPath) => this(iniPath: iniPath);
+
+  LAService nameInt(String nameInt) => this(nameInt: nameInt);
+
+  LAService projectId(String projectId) => this(projectId: projectId);
+
+  LAService suburl(String suburl) => this(suburl: suburl);
+
+  LAService use(bool use) => this(use: use);
+
+  LAService usesSubdomain(bool usesSubdomain) =>
+      this(usesSubdomain: usesSubdomain);
+}
+
+extension LAServiceCopyWith on LAService {
+  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass LAService implements IsJsonSerializable<LAService>.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass LAService implements IsJsonSerializable<LAService>.name.copyWith.fieldName(...)`
+  _LAServiceCWProxy get copyWith => _LAServiceCWProxy(this);
+
+  LAService _copyWithNull({
+    bool id = false,
+    bool status = false,
+  }) {
+    return LAService(
+      id: id == true ? null : this.id,
+      iniPath: iniPath,
+      nameInt: nameInt,
+      projectId: projectId,
+      status: status == true ? null : this.status,
+      suburl: suburl,
+      use: use,
+      usesSubdomain: usesSubdomain,
     );
   }
 }
@@ -34,18 +86,16 @@ extension LAServiceCopyWith on LAService {
 // JsonSerializableGenerator
 // **************************************************************************
 
-LAService _$LAServiceFromJson(Map<String, dynamic> json) {
-  return LAService(
-    id: json['id'] as String?,
-    nameInt: json['nameInt'] as String,
-    iniPath: json['iniPath'] as String,
-    use: json['use'] as bool,
-    usesSubdomain: json['usesSubdomain'] as bool,
-    status: _$enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
-    suburl: json['suburl'] as String,
-    projectId: json['projectId'] as String,
-  );
-}
+LAService _$LAServiceFromJson(Map<String, dynamic> json) => LAService(
+      id: json['id'] as String?,
+      nameInt: json['nameInt'] as String,
+      iniPath: json['iniPath'] as String,
+      use: json['use'] as bool,
+      usesSubdomain: json['usesSubdomain'] as bool,
+      status: $enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
+      suburl: json['suburl'] as String,
+      projectId: json['projectId'] as String,
+    );
 
 Map<String, dynamic> _$LAServiceToJson(LAService instance) => <String, dynamic>{
       'id': instance.id,
@@ -57,43 +107,6 @@ Map<String, dynamic> _$LAServiceToJson(LAService instance) => <String, dynamic>{
       'status': _$ServiceStatusEnumMap[instance.status],
       'projectId': instance.projectId,
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-K? _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
-  dynamic source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
-}
 
 const _$ServiceStatusEnumMap = {
   ServiceStatus.unknown: 'unknown',

@@ -61,6 +61,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
   String logsSuffix;
   String rawCmd;
   String invDir;
+  String? cwd;
   Cmd cmd;
   @JsonKey(ignore: true)
   DateTime date;
@@ -80,6 +81,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
       required this.logsSuffix,
       required this.desc,
       String? invDir,
+      String? cwd,
       required this.rawCmd,
       required this.cmd,
       int? createdAt,
@@ -130,6 +132,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
           logsSuffix == other.logsSuffix &&
           rawCmd == other.rawCmd &&
           cmd == other.cmd &&
+          cwd == other.cwd &&
           date == other.date &&
           invDir == other.invDir &&
           desc == other.desc &&
@@ -146,6 +149,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
       rawCmd.hashCode ^
       date.hashCode ^
       cmd.hashCode ^
+      cwd.hashCode ^
       duration.hashCode ^
       result.hashCode;
 

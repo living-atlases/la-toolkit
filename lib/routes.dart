@@ -61,7 +61,7 @@ class Routes {
 abstract class NamedBeamLocation extends BeamLocation<BeamState> {
   String get route;
   @override
-  List<String> get pathBlueprints => ['/' + route];
+  List<String> get pathPatterns => ['/' + route];
 }
 
 class BeamerCond {
@@ -72,7 +72,7 @@ class BeamerCond {
 
 class HomeLocation extends NamedBeamLocation {
   @override
-  List<String> get pathBlueprints => ['/'];
+  List<String> get pathPatterns => ['/'];
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
@@ -205,7 +205,7 @@ class DeployLocation extends NamedBeamLocation {
 
 class CmdTermLocation extends BeamLocation<BeamState> {
   @override
-  List<String> get pathBlueprints => ['/${CmdTermPage.routeName}/:port/:pid'];
+  List<String> get pathPatterns => ['/${CmdTermPage.routeName}/:port/:pid'];
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [

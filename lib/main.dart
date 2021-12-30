@@ -5,7 +5,6 @@ import 'package:cron/cron.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // ignore: library_prefixes
-import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
@@ -30,7 +29,7 @@ import 'routes.dart';
 Future<void> main() async {
   AppStateMiddleware appStateMiddleware = AppStateMiddleware();
 
-  await DotEnv.load(
+  await dotenv.load(
       fileName: kReleaseMode ? 'env.production.txt' : '.env.development');
 
   print("Uri base: ${Uri.base.toString()}");
@@ -45,7 +44,7 @@ Future<void> main() async {
     Response response = await http.get(url);
     if (response.statusCode == 200) {
       Map<String, String> jsonResponse = jsonDecode(response.body);
-      await DotEnv.load(
+      await dotenv.load(
           fileName: 'env.production.txt', mergeWith: jsonResponse);
     }
   }
@@ -53,14 +52,14 @@ Future<void> main() async {
   if (kReleaseMode) {
     // is Release Mode ??
     print('Running in release mode');
-    print("Backend: ${env['BACKEND']}");
+    print("Backend: ${dotenv.env['BACKEND']}");
   } else {
     print('Running in debug mode');
-    print("Backend: ${env['BACKEND']}");
+    print("Backend: ${dotenv.env['BACKEND']}");
   }
 
   var io = SailsIOClient(socket_io_client.io(
-      "${AppUtils.scheme}://${env['BACKEND']}?__sails_io_sdk_version=0.11.0",
+      "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",
       socket_io_client.OptionBuilder().setTransports(['websocket']).build()));
 
   io.socket.onConnect((_) {
@@ -73,7 +72,7 @@ Future<void> main() async {
   });
 
   io.get(
-      url: "${AppUtils.scheme}://${env['BACKEND']}/api/v1/projects-subs",
+      url: "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
       cb: (body, jwrResponse) {
         // print(body);
         // print(jwrResponse.toJson());

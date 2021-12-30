@@ -169,7 +169,8 @@ AppState _openProjectTools(AppState state, OpenProjectTools action) {
 AppState _generateInvProject(AppState state, GenerateInvProject action) {
   if (AppUtils.isDemo()) return state;
   String id = action.project.id;
-  String url = "${AppUtils.scheme}://${env['BACKEND']}/api/v1/gen/$id/true";
+  String url =
+      "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/gen/$id/true";
   html.AnchorElement anchorElement = html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();

@@ -27,18 +27,18 @@ class AppUtils {
   }
 
   static bool isDemo() {
-    return (env['DEMO'] ?? "false").parseBool();
+    return (dotenv.env['DEMO'] ?? "false").parseBool();
   }
 
-  static bool https = (env['HTTPS'] ?? "false").parseBool();
+  static bool https = (dotenv.env['HTTPS'] ?? "false").parseBool();
 
   static uri(String a, String p, [Map<String, String>? query]) =>
       https ? Uri.https(a, p, query) : Uri.http(a, p, query);
   static String scheme =
-      (env['HTTPS'] ?? "false").parseBool() ? "https" : "http";
+      (dotenv.env['HTTPS'] ?? "false").parseBool() ? "https" : "http";
 
   static String proxyImg(imgUrl) {
-    return "$scheme://${env['BACKEND']}/api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
+    return "$scheme://${dotenv.env['BACKEND']}/api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
   }
 }
 

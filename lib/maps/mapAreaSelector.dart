@@ -80,7 +80,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                       ScaleLayerPlugin(),
                       DragMarkerPlugin(),
                     ],
-                    onTap: (latLng) {
+                    onTap: (tapPosition, latLng) {
                       if (firstPoint) {
                         area = [latLng, null, null, null, latLng];
                       } else {

@@ -131,8 +131,9 @@ class _HomePageState extends State<HomePage> {
     return SpeedDial(
 
         /// both default to 16
-        marginEnd: 18,
-        marginBottom: 20,
+        childMargin: const EdgeInsets.fromLTRB(0, 18, 0, 20),
+        //marginEnd: 18,
+        //marginBottom: 20,
         // animatedIcon: AnimatedIcons.menu_close,
         // animatedIconTheme: IconThemeData(size: 22.0),
         /// This is ignored if animatedIcon is non null
@@ -147,7 +148,7 @@ class _HomePageState extends State<HomePage> {
         /// Transition Builder between label and activeLabel, defaults to FadeTransition.
         // labelTransitionBuilder: (widget, animation) => ScaleTransition(scale: animation,child: widget),
         /// The below button size defaults to 56 itself, its the FAB size + It also affects relative padding and other elements
-        buttonSize: 56.0,
+        buttonSize: const Size(56.0, 56.0),
         visible: true,
 
         /// If true user is forced to close dial manually

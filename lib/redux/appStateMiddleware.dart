@@ -140,8 +140,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         // generatorReleasesApiUrl =
         //  "https://registry.npmjs.org/generator-living-atlas";
         // As this does not have CORS enabled we use a proxy
-        Uri generatorReleasesApiUrl =
-            AppUtils.uri(env['BACKEND']!, "/api/v1/get-generator-versions");
+        Uri generatorReleasesApiUrl = AppUtils.uri(
+            dotenv.env['BACKEND']!, "/api/v1/get-generator-versions");
         Response generatorReleasesResponse = await http.get(
           generatorReleasesApiUrl,
           //  headers: {'Accept': 'application/vnd.npm.install-v1+json'},
@@ -423,7 +423,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   Future<Map<String, LAReleases>> getDepsVersions(
       Map<String, String> deps) async {
     Uri depsBackUrl =
-        AppUtils.uri(env['BACKEND']!, "/api/v1/get-deps-versions");
+        AppUtils.uri(dotenv.env['BACKEND']!, "/api/v1/get-deps-versions");
     Response response = await http.post(depsBackUrl,
         headers: {'Content-type': 'application/json'},
         body: utf8.encode(json.encode({'deps': deps})));

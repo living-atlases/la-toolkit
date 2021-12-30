@@ -54,10 +54,10 @@ class TermDialog {
     }
   }
 
-  static String getInitialUrl(int port) =>
-      (env['TERM_PROXY'] ?? "false").parseBool()
-          ? '${AppUtils.scheme}://${env['BACKEND']!.split(":")[0]}/ttyd$port'
-          : '${AppUtils.scheme}://${env['BACKEND']!.split(":")[0]}:$port/';
+  static String getInitialUrl(int port) => (dotenv.env['TERM_PROXY'] ?? "false")
+          .parseBool()
+      ? '${AppUtils.scheme}://${dotenv.env['BACKEND']!.split(":")[0]}/ttyd$port'
+      : '${AppUtils.scheme}://${dotenv.env['BACKEND']!.split(":")[0]}:$port/';
 
   static Widget termArea(int port, bool notify) {
     return InteractiveViewer(
