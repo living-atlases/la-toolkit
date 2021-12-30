@@ -686,6 +686,7 @@ class LAServiceDesc {
       name = laServiceDesc.name;
       alias = laServiceDesc.alias;
     } catch (e) {
+      print(e);
       name = sw;
     }
     return "$name${alias != null ? ' (' + alias + ')' : ''}";
