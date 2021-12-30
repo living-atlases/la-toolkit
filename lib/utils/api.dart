@@ -160,7 +160,7 @@ class Api {
         .then(
             (response) => response.statusCode != 200 ? onError(userError) : {})
         .catchError((error) {
-      print(error);
+      print("ala-install select error $error");
       onError(userError);
     });
   }
@@ -175,7 +175,7 @@ class Api {
         .then(
             (response) => response.statusCode != 200 ? onError(userError) : {})
         .catchError((error) {
-      print(error);
+      print("generator select error $error");
       onError(userError);
     });
   }
@@ -191,7 +191,7 @@ class Api {
         .then(
             (response) => response.statusCode != 200 ? onError(userError) : {})
         .catchError((error) {
-      print(error);
+      print("regenerateInv select error $error");
       onError(userError);
     });
   }
@@ -283,7 +283,7 @@ class Api {
         action.onError(response.statusCode);
       }
     }).catchError((error) {
-      print(error);
+      print("cmd error $error");
       action.onError(error);
     });
   }
