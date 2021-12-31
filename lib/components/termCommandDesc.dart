@@ -19,7 +19,13 @@ class TermCommandDesc extends StatelessWidget {
     String cmd = cmdHistoryDetails.cmd!.rawCmd;
     Widget? subtitle;
     const subColor = Colors.grey;
-    if (cmdHistoryDetails.cmd!.invDir != "") {
+    String cwd = cmdHistoryDetails.cmd!.invDir.isNotEmpty
+        ? cmdHistoryDetails.cmd!.invDir
+        : cmdHistoryDetails.cmd!.cwd != null &&
+                cmdHistoryDetails.cmd!.cwd!.isNotEmpty
+            ? cmdHistoryDetails.cmd!.cwd!
+            : "";
+    if (cwd.isNotEmpty) {
       subtitle = RichText(
           overflow: TextOverflow.visible,
           textAlign: TextAlign.left,
@@ -28,9 +34,7 @@ class TermCommandDesc extends StatelessWidget {
             const TextSpan(
                 text: 'Executed in directory: ',
                 style: TextStyle(color: subColor)),
-            TextSpan(
-                text: cmdHistoryDetails.cmd!.invDir,
-                style: GoogleFonts.robotoMono(color: subColor)),
+            TextSpan(text: cwd, style: GoogleFonts.robotoMono(color: subColor)),
             // TextSpan(text: ""),
           ]));
     }
