@@ -44,7 +44,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
                       show: false,
                     ),
                     sectionsSpace: 0,
-                    centerSpaceRadius: 40,
+                    centerSpaceRadius: 50,
                     sections: showingSections()),
               ),
             ),
@@ -70,15 +70,16 @@ class ResultsPieChartState extends State<ResultsPieChart> {
     );
   }
 
-  List<PieChartSectionData> showingSections2() {
-    const isTouched = false; // i == touchedIndex;
-    const double fontSize = isTouched ? 20 : 12;
-    const double radius = isTouched ? 60 : 50;
-
+  List<PieChartSectionData> showingSections() {
+    int i = 0;
     return ResultType.values
         .where((t) =>
             widget.results[t.toS()] != null && widget.results[t.toS()] != 0)
         .map((type) {
+      final bool isTouched = i == touchedIndex;
+      i += 1;
+      final double fontSize = isTouched ? 12 : 12;
+      final double radius = isTouched ? 60 : 50;
       return PieChartSectionData(
           color: type.color,
           value: 0.0 + (widget.results[type.toS()] ?? 0.0),
@@ -91,7 +92,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
     }).toList();
   }
 
-  List<PieChartSectionData> showingSections() {
+  List<PieChartSectionData> showingSectionsExample() {
     return List.generate(4, (i) {
       final isTouched = i == touchedIndex;
       final double fontSize = isTouched ? 25 : 16;
