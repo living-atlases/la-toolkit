@@ -10,6 +10,7 @@ import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
 
@@ -79,6 +80,9 @@ class LAProjectEditPage extends StatelessWidget {
     return StoreConnector<AppState, _ProjectPageViewModel>(
         // with true fails ssl y ssh advanced, and delete
         distinct: false,
+        onInitialBuild: (_) {
+          context.loaderOverlay.hide();
+        },
         converter: (store) {
           return _ProjectPageViewModel(
               state: store.state,

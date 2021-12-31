@@ -51,7 +51,6 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
         converter: (store) {
           return _ProjectPageViewModel(
               project: store.state.currentProject,
-              /* sshKeys: store.state.sshKeys, -*/
               status: store.state.currentProject.status,
               loading: store.state.loading,
               softwareReleasesReady: store.state.laReleases.isNotEmpty,
@@ -109,13 +108,13 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 BeamerCond.of(context, PipelinesLocation());
               },
               onTestConnProject: (project, silence) {
-                // if (!silence) context.loaderOverlay.show();
+                if (!silence) context.loaderOverlay.show();
                 store.dispatch(TestConnectivityProject(project, () {
                   if (!silence) {
                     _showServersStatus(context, store.state.currentProject);
                   }
                 }, () {
-                  //  if (!silence) context.loaderOverlay.hide();
+                  if (!silence) context.loaderOverlay.hide();
                 }));
               },
               onDeployBranding: (LAProject project) {
@@ -161,7 +160,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 title: "Edit",
                 tooltip: "Edit the basic configuration",
                 enabled: true,
-                action: () => vm.onOpenProject(project)),
+                action: () {
+                  context.loaderOverlay.show();
+                  vm.onOpenProject(project);
+                }),
             Tool(
                 icon: const Icon(Icons.tune),
                 title: "Tune your\nConfiguration",
