@@ -85,6 +85,11 @@ class _HomePageState extends State<HomePage> {
                 "------------------------------------------------------------${_packageInfo.version} ------------------------------");
             vm.onAppPackageInfo(_packageInfo);
           }
+          if (vm.state.loading) {
+            context.loaderOverlay.show();
+          } else {
+            context.loaderOverlay.hide();
+          }
           return !vm.state.firstUsage
               ? Scaffold(
                   key: _scaffoldKey,
@@ -113,16 +118,7 @@ class _HomePageState extends State<HomePage> {
                           )
                       ]),
                   body: const AppSnackBar(LAProjectsList()),
-                  floatingActionButton:
-                      /*
-                          FloatingActionButton.extended(
-                            onPressed: () {
-                              vm.onAddProject();
-                            },
-                            label: Text('Create a new LA Project'),
-                            icon: Icon(Icons.add_circle_outline),
-                          ) */
-                      _moreBtn(vm))
+                  floatingActionButton: vm.state.loading ? null : _moreBtn(vm))
               : const Intro();
         });
   }

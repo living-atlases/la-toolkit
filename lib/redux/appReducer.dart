@@ -27,6 +27,7 @@ List<Reducer<AppState>> basic = [
   TypedReducer<AppState, OnFetchGeneratorReleases>(_onFetchGeneratorReleases),
   TypedReducer<AppState, OnFetchGeneratorReleasesFailed>(
       _onFetchGeneratorReleasesFailed),
+  TypedReducer<AppState, Loading>(_loading),
   TypedReducer<AppState, CreateProject>(_createProject),
   TypedReducer<AppState, ImportProject>(_importProject),
   TypedReducer<AppState, AddTemplateProjects>(_addTemplateProjects),
@@ -109,10 +110,17 @@ AppState _onFetchGeneratorReleasesFailed(
   return state;
 }
 
+AppState _loading(AppState state, Loading action) {
+  return state.copyWith(
+    loading: true,
+  );
+}
+
 AppState _createProject(AppState state, CreateProject action) {
   return state.copyWith(
       currentProject: LAProject(isHub: action.isHub, parent: action.parent),
       status: LAProjectViewStatus.create,
+      loading: true,
       currentStep: 0);
 }
 
@@ -123,12 +131,13 @@ AppState _importProject(AppState state, ImportProject action) {
   return state.copyWith(
       currentProject: newProjectAndHubs[0],
       status: LAProjectViewStatus.create,
+      loading: true,
       projects: projects..addAll(newProjectAndHubs),
       currentStep: 0);
 }
 
 AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
-  return state;
+  return state.copyWith(loading: true);
 }
 
 AppState _openProject(AppState state, OpenProject action) {
@@ -182,7 +191,7 @@ AppState _generateInvProject(AppState state, GenerateInvProject action) {
 }
 
 AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
-  return state.copyWith(currentProject: action.project);
+  return state.copyWith(currentProject: action.project, loading: true);
 }
 
 AppState _onDemoAddProjects(AppState state, OnDemoAddProjects action) {
@@ -204,7 +213,10 @@ AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
     }
   }
   return state.copyWith(
-      currentProject: ps[0], status: LAProjectViewStatus.view, projects: ps);
+      currentProject: ps[0],
+      status: LAProjectViewStatus.view,
+      projects: ps,
+      loading: false);
 }
 
 AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
@@ -217,7 +229,8 @@ AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
       ps.add(LAProject.fromJson(pJson));
     }
   }
-  return state.copyWith(currentProject: LAProject(), projects: ps);
+  return state.copyWith(
+      currentProject: LAProject(), projects: ps, loading: false);
 }
 
 AppState _projectsLoad(AppState state, ProjectsLoad action) {
@@ -266,7 +279,8 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
     // If we update a parent project, stay in hub project
     nextProject = state.currentProject;
   }
-  return state.copyWith(currentProject: nextProject, projects: ps);
+  return state.copyWith(
+      currentProject: nextProject, projects: ps, loading: false);
 }
 
 AppState _editService(AppState state, EditService action) {

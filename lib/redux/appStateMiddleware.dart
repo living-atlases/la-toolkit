@@ -183,6 +183,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       try {
         action.project.dirName = action.project.suggestDirName();
         if (!AppUtils.isDemo()) {
+          store.dispatch(Loading());
           List<LAProject> projects = [action.project, ...action.project.hubs];
           List<dynamic> addedProjects = await Api.addProjects(projects);
           store.dispatch(OnProjectsAdded(addedProjects));
@@ -201,6 +202,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           AssetsUtils.pathWorkaround('la-toolkit-templates.json'));
       try {
         if (!AppUtils.isDemo()) {
+          store.dispatch(Loading());
           List<dynamic> projectsAdded =
               await Api.addProjects(projects.reversed.toList());
           store.dispatch(OnProjectsAdded(projectsAdded));
@@ -218,6 +220,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is DelProject) {
       try {
+        store.dispatch(Loading());
         List<dynamic> projects =
             await Api.deleteProject(project: action.project);
         store.dispatch(OnProjectDeleted(action.project, projects));
@@ -243,11 +246,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
 
     if (action is UpdateProject) {
+      store.dispatch(Loading());
       LAProject project = action.project;
       await _updateProject(
           project, store, action.updateCurrentProject, action.openProjectView);
     }
     if (action is ProjectsLoad) {
+      store.dispatch(Loading());
       Api.getConf().then((projects) {
         if (!AppUtils.isDemo()) {
           store.dispatch(OnProjectsLoad(projects));

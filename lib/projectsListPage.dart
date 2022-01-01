@@ -25,6 +25,7 @@ class LAProjectsList extends StatelessWidget {
         converter: (store) {
           return _ProjectsPageViewModel(
             state: store.state,
+            loading: store.state.loading,
             onCreateProject: () {
               store.dispatch(CreateProject());
               BeamerCond.of(context, LAProjectEditLocation());
@@ -76,7 +77,7 @@ class LAProjectsList extends StatelessWidget {
                                                         .state
                                                         .projects[index])))))))
                       ])))
-              : Center(
+              : vm.loading? Container(): Center(
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -240,12 +241,14 @@ class ProjectCard extends StatelessWidget {
 
 class _ProjectsPageViewModel {
   final AppState state;
+  final bool loading;
   final void Function(LAProject project) onOpenProjectTools;
   final void Function(LAProject project) onDeleteProject;
   final void Function() onCreateProject;
 
   _ProjectsPageViewModel(
       {required this.state,
+        required this.loading,
       required this.onOpenProjectTools,
       required this.onCreateProject,
       required this.onDeleteProject});

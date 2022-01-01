@@ -58,6 +58,8 @@ class OnFetchGeneratorReleases extends AppActions {
 
 class OnFetchGeneratorReleasesFailed extends AppActions {}
 
+class Loading extends AppActions {}
+
 class CreateProject extends AppActions {
   bool isHub;
   LAProject? parent;
