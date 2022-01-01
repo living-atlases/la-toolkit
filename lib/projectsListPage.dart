@@ -8,6 +8,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/formattedTitle.dart';
@@ -31,6 +32,7 @@ class LAProjectsList extends StatelessWidget {
             onDeleteProject: (project) {
               store.dispatch(DelProject(project));
               BeamerCond.of(context, HomeLocation());
+              context.loaderOverlay.hide();
               //context.beamToNamed(HomePage.routeName);
             },
             onOpenProjectTools: (project) {
@@ -145,11 +147,17 @@ class ProjectCard extends StatelessWidget {
                                                 Icons.delete,
                                                 color: Colors.grey,
                                               ),
-                                              onPressed: () =>
+                                              onPressed: () {
+                                                if (AppUtils.isDev()) {
+                                                  context.loaderOverlay.show();
+                                                  onDelete();
+                                                } else {
                                                   UiUtils.showAlertDialog(
                                                       context,
                                                       () => onDelete(),
-                                                      () => {}))),
+                                                      () => {});
+                                                }
+                                              })),
                                       const SizedBox(width: 20),
                                       Tooltip(
                                           message: "Configure this project",

@@ -377,6 +377,401 @@ void main() {
   });
 
   test('Import yo-rc.json', () {
+    var yoRcJsonALA = r'''
+    {
+  "generator-living-atlas": {
+    "promptValues": {
+      "LA_id": "61cf297a0062311ea4e8e105",
+      "LA_project_name": "Atlas of Living Australia",
+      "LA_project_shortname": "ALA",
+      "LA_pkg_name": "ala",
+      "LA_domain": "ala.org.au",
+      "LA_use_species": true,
+      "LA_use_spatial": true,
+      "LA_use_regions": true,
+      "LA_use_species_lists": true,
+      "LA_use_CAS": true,
+      "LA_use_images": true,
+      "LA_use_alerts": true,
+      "LA_use_doi": true,
+      "LA_use_webapi": true,
+      "LA_use_dashboard": true,
+      "LA_use_biocache_store": true,
+      "LA_use_pipelines": true,
+      "LA_use_solrcloud": true,
+      "LA_use_sds": true,
+      "LA_use_namematching_service": true,
+      "LA_use_data_quality": true,
+      "LA_enable_ssl": true,
+      "LA_use_git": true,
+      "LA_generate_branding": true,
+      "LA_cas_hostname": "cloud-vm-11",
+      "LA_cas_url": "auth.ala.org.au",
+      "LA_spatial_hostname": "cloud-vm-12",
+      "LA_spatial_url": "spatial.ala.org.au",
+      "LA_branding_uses_subdomain": true,
+      "LA_branding_hostname": "cloud-vm-25",
+      "LA_branding_url": "ala.org.au",
+      "LA_branding_path": "/commonui-bs3-2019",
+      "LA_collectory_uses_subdomain": true,
+      "LA_collectory_hostname": "cloud-vm-01",
+      "LA_collectory_url": "collections.ala.org.au",
+      "LA_collectory_path": "/",
+      "LA_ala_hub_uses_subdomain": true,
+      "LA_ala_hub_hostname": "cloud-vm-02, cloud-vm-03",
+      "LA_ala_hub_url": "biocache.ala.org.au",
+      "LA_ala_hub_path": "/",
+      "LA_biocache_service_uses_subdomain": true,
+      "LA_biocache_service_hostname": "cloud-vm-04, cloud-vm-05, cloud-vm-06",
+      "LA_biocache_service_url": "biocache-ws.ala.org.au",
+      "LA_biocache_service_path": "/ws",
+      "LA_ala_bie_uses_subdomain": true,
+      "LA_ala_bie_hostname": "cloud-vm-17, cloud-vm-18",
+      "LA_ala_bie_url": "bie.ala.org.au",
+      "LA_ala_bie_path": "/",
+      "LA_bie_index_uses_subdomain": true,
+      "LA_bie_index_hostname": "cloud-vm-19, cloud-vm-20",
+      "LA_bie_index_url": "bie-ws.ala.org.au",
+      "LA_bie_index_path": "/ws",
+      "LA_images_uses_subdomain": true,
+      "LA_images_hostname": "cloud-vm-22",
+      "LA_images_url": "images.ala.org.au",
+      "LA_images_path": "/",
+      "LA_lists_uses_subdomain": true,
+      "LA_lists_hostname": "cloud-vm-21",
+      "LA_lists_url": "lists.ala.org.au",
+      "LA_lists_path": "/",
+      "LA_regions_uses_subdomain": true,
+      "LA_regions_hostname": "cloud-vm-08",
+      "LA_regions_url": "regions.ala.org.au",
+      "LA_regions_path": "/",
+      "LA_logger_uses_subdomain": true,
+      "LA_logger_hostname": "cloud-vm-09",
+      "LA_logger_url": "logger.ala.org.au",
+      "LA_logger_path": "/",
+      "LA_solr_uses_subdomain": true,
+      "LA_solr_hostname": "cloud-vm-10",
+      "LA_solr_url": "index.ala.org.au",
+      "LA_solr_path": "/",
+      "LA_biocache_backend_hostname": "cloud-vm-07",
+      "LA_webapi_uses_subdomain": true,
+      "LA_webapi_hostname": "cloud-vm-23",
+      "LA_webapi_url": "api.ala.org.au",
+      "LA_webapi_path": "/",
+      "LA_dashboard_uses_subdomain": true,
+      "LA_dashboard_hostname": "cloud-vm-15",
+      "LA_dashboard_path": "/",
+      "LA_dashboard_url": "dashboard.ala.org.au",
+      "LA_sds_uses_subdomain": true,
+      "LA_sds_hostname": "cloud-vm-24",
+      "LA_sds_path": "/",
+      "LA_sds_url": "sds.ala.org.au",
+      "LA_namematching_service_hostname": "cloud-vm-46",
+      "LA_namematching_service_path": "/",
+      "LA_namematching_service_url": "name-matching-ws.ala.org.au",
+      "LA_data_quality_hostname": "cloud-vm-47",
+      "LA_data_quality_path": "/",
+      "LA_data_quality_url": "data-quality-service.ala.org.au",
+      "LA_alerts_uses_subdomain": true,
+      "LA_alerts_hostname": "cloud-vm-13",
+      "LA_alerts_path": "/",
+      "LA_alerts_url": "alerts.ala.org.au",
+      "LA_doi_uses_subdomain": true,
+      "LA_doi_hostname": "cloud-vm-14",
+      "LA_doi_path": "/",
+      "LA_doi_url": "doi.ala.org.au",
+      "LA_server_ips": ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+      "LA_theme": "clean",
+      "LA_collectory_map_centreMapLat": -26.5,
+      "LA_collectory_map_centreMapLng": 133,
+      "LA_spatial_map_lan": -26.5,
+      "LA_spatial_map_lng": 133,
+      "LA_regions_map_bounds": "[-44, 112, -9, 154]",
+      "LA_spatial_map_bbox": "[-44, 112, -9, 154]",
+      "LA_spatial_map_areaSqKm": 12147183.349007064,
+      "LA_etc_hosts": "       cloud-vm-01 collections.ala.org.au\n       cloud-vm-02 biocache.ala.org.au\n       cloud-vm-03 biocache.ala.org.au\n       cloud-vm-04 biocache-ws.ala.org.au\n       cloud-vm-05 biocache-ws.ala.org.au\n       cloud-vm-06 biocache-ws.ala.org.au\n       cloud-vm-07 \n       cloud-vm-08 regions.ala.org.au\n       cloud-vm-09 logger.ala.org.au\n       cloud-vm-10 index.ala.org.au\n       cloud-vm-11 auth.ala.org.au\n       cloud-vm-12 spatial.ala.org.au\n       cloud-vm-15 dashboard.ala.org.au\n       cloud-vm-13 alerts.ala.org.au\n       cloud-vm-14 doi.ala.org.au\n       cloud-vm-17 bie.ala.org.au\n       cloud-vm-18 bie.ala.org.au\n       cloud-vm-19 bie-ws.ala.org.au\n       cloud-vm-20 bie-ws.ala.org.au\n       cloud-vm-21 lists.ala.org.au\n       cloud-vm-22 images.ala.org.au\n       cloud-vm-23 api.ala.org.au\n       cloud-vm-24 sds.ala.org.au\n       cloud-vm-25 ala.org.au\n       cloud-vm-26 \n       cloud-vm-27 \n       cloud-vm-28 \n       cloud-vm-29 \n       cloud-vm-30 \n       cloud-vm-31 \n       cloud-vm-32 \n       cloud-vm-33 ala.org.au\n       cloud-vm-34 ala.org.au\n       cloud-vm-35 ala.org.au\n       cloud-vm-36 ala.org.au\n       cloud-vm-37 ala.org.au\n       cloud-vm-38 ala.org.au\n       cloud-vm-39 ala.org.au\n       cloud-vm-40 ala.org.au\n       cloud-vm-41 ala.org.au\n       cloud-vm-42 ala.org.au\n       cloud-vm-43 ala.org.au\n       cloud-vm-44 ala.org.au\n       cloud-vm-45 ala.org.au\n       cloud-vm-46 name-matching-ws.ala.org.au\n       cloud-vm-47 data-quality-service.ala.org.au\n       avh-hub-1 avh.ala.org.au\n       mdba-hub-1 mdba.ala.org.au mdba-regiones.ala.org.au\n       ozcam-hub-1 ozcam.ala.org.au",
+      "LA_hostnames": "cloud-vm-01, cloud-vm-02, cloud-vm-03, cloud-vm-04, cloud-vm-05, cloud-vm-06, cloud-vm-07, cloud-vm-08, cloud-vm-09, cloud-vm-10, cloud-vm-11, cloud-vm-12, cloud-vm-15, cloud-vm-13, cloud-vm-14, cloud-vm-17, cloud-vm-18, cloud-vm-19, cloud-vm-20, cloud-vm-21, cloud-vm-22, cloud-vm-23, cloud-vm-24, cloud-vm-25, cloud-vm-26, cloud-vm-27, cloud-vm-28, cloud-vm-29, cloud-vm-30, cloud-vm-31, cloud-vm-32, cloud-vm-33, cloud-vm-34, cloud-vm-35, cloud-vm-36, cloud-vm-37, cloud-vm-38, cloud-vm-39, cloud-vm-40, cloud-vm-41, cloud-vm-42, cloud-vm-43, cloud-vm-44, cloud-vm-45, cloud-vm-46, cloud-vm-47",
+      "LA_ssh_keys": "",
+      "LA_variable_ansible_user": "ubuntu",
+      "LA_variable_caches_auth_enabled": true,
+      "LA_variable_caches_collections_enabled": true,
+      "LA_variable_caches_layers_enabled": true,
+      "LA_variable_caches_logs_enabled": true,
+      "LA_variable_email_sender": "noreply@ala.org.au",
+      "LA_variable_favicon_url": "https://www.ala.org.au/app/uploads/2019/01/cropped-favicon-32x32.png",
+      "LA_variable_map_zone_name": "Australia",
+      "LA_variable_orgCountry": "Australia",
+      "LA_variable_orgEmail": "info@ala.org.au",
+      "LA_variable_support_email": "support@ala.org.au",
+      "LA_variable_sds_faq_url": "https://www.ala.org.au/faq/data-sensitivity/",
+      "LA_variable_sds_flag_rules": "PBC7,PBC8,PBC9",
+      "LA_is_hub": false,
+      "LA_software_versions": [
+        [
+          "ala_name_matching_version",
+          "4.0"
+        ],
+        [
+          "alerts_version",
+          "1.5.3"
+        ],
+        [
+          "apikey_version",
+          "1.6.0"
+        ],
+        [
+          "bie_hub_version",
+          "1.5.2"
+        ],
+        [
+          "bie_index_version",
+          "1.5"
+        ],
+        [
+          "biocache_cli_version",
+          "2.6.1"
+        ],
+        [
+          "biocache_hub_version",
+          "4.0.8"
+        ],
+        [
+          "biocache_service_version",
+          "3.0.23"
+        ],
+        [
+          "cas_management_version",
+          "5.3.6-3"
+        ],
+        [
+          "cas_version",
+          "5.3.12-5"
+        ],
+        [
+          "collectory_version",
+          "1.6.6"
+        ],
+        [
+          "dashboard_version",
+          "2.2"
+        ],
+        [
+          "data_quality_filter_service_version",
+          "1.0.0"
+        ],
+        [
+          "doi_service_version",
+          "1.1.5"
+        ],
+        [
+          "image_service_version",
+          "1.1.7-5"
+        ],
+        [
+          "logger_version",
+          "4.0.1"
+        ],
+        [
+          "regions_version",
+          "3.3.5"
+        ],
+        [
+          "sds_version",
+          "1.6.2"
+        ],
+        [
+          "solrcloud_version",
+          "8.9.0"
+        ],
+        [
+          "solr_version",
+          "7.7.3"
+        ],
+        [
+          "spatial_hub_version",
+          "1.0.1"
+        ],
+        [
+          "spatial_service_version",
+          "1.0.1"
+        ],
+        [
+          "species_list_version",
+          "3.5.9"
+        ],
+        [
+          "user_details_version",
+          "2.4.0"
+        ],
+        [
+          "webapi_version",
+          "2.0.1"
+        ]
+      ],
+      "LA_pipelines_hostname": "cloud-vm-26, cloud-vm-27, cloud-vm-28, cloud-vm-29, cloud-vm-30, cloud-vm-31, cloud-vm-32",
+      "LA_solrcloud_hostname": "cloud-vm-33, cloud-vm-34, cloud-vm-35, cloud-vm-36, cloud-vm-37, cloud-vm-38, cloud-vm-39, cloud-vm-40",
+      "LA_zookeeper_hostname": "cloud-vm-41, cloud-vm-42, cloud-vm-43, cloud-vm-44, cloud-vm-45",
+      "LA_variable_pipelines_master": "cloud-vm-26",
+      "LA_use_pipelines_jenkins": true,
+      "LA_enable_data_quality": false,
+      "LA_hubs": [
+        {
+          "LA_id": "61cf33900062311ea4e8e60d",
+          "LA_project_name": "The Australasian Virtual Herbarium",
+          "LA_project_shortname": "AVH",
+          "LA_pkg_name": "avh",
+          "LA_domain": "ala.org.au",
+          "LA_use_species": false,
+          "LA_use_regions": false,
+          "LA_enable_ssl": true,
+          "LA_use_git": true,
+          "LA_generate_branding": true,
+          "LA_branding_uses_subdomain": true,
+          "LA_branding_hostname": "avh-hub-1",
+          "LA_branding_url": "avh.ala.org.au",
+          "LA_branding_path": "/branding",
+          "LA_ala_hub_uses_subdomain": true,
+          "LA_ala_hub_hostname": "avh-hub-1",
+          "LA_ala_hub_url": "avh.ala.org.au",
+          "LA_ala_hub_path": "/",
+          "LA_ala_bie_uses_subdomain": true,
+          "LA_ala_bie_hostname": "",
+          "LA_ala_bie_url": "hub.ala.org.au",
+          "LA_ala_bie_path": "/species",
+          "LA_regions_uses_subdomain": true,
+          "LA_regions_hostname": "",
+          "LA_regions_url": "hub.ala.org.au",
+          "LA_regions_path": "/regions",
+          "LA_server_ips": "",
+          "LA_theme": "clean",
+          "LA_collectory_map_centreMapLat": -26.5,
+          "LA_collectory_map_centreMapLng": 133,
+          "LA_spatial_map_lan": -26.5,
+          "LA_spatial_map_lng": 133,
+          "LA_regions_map_bounds": "[-44, 112, -9, 154]",
+          "LA_spatial_map_bbox": "[-44, 112, -9, 154]",
+          "LA_spatial_map_areaSqKm": 12147183.349007064,
+          "LA_etc_hosts": "       cloud-vm-01 collections.ala.org.au\n       cloud-vm-02 biocache.ala.org.au\n       cloud-vm-03 biocache.ala.org.au\n       cloud-vm-04 biocache-ws.ala.org.au\n       cloud-vm-05 biocache-ws.ala.org.au\n       cloud-vm-06 biocache-ws.ala.org.au\n       cloud-vm-07 \n       cloud-vm-08 regions.ala.org.au\n       cloud-vm-09 logger.ala.org.au\n       cloud-vm-10 index.ala.org.au\n       cloud-vm-11 auth.ala.org.au\n       cloud-vm-12 spatial.ala.org.au\n       cloud-vm-15 dashboard.ala.org.au\n       cloud-vm-13 alerts.ala.org.au\n       cloud-vm-14 doi.ala.org.au\n       cloud-vm-17 bie.ala.org.au\n       cloud-vm-18 bie.ala.org.au\n       cloud-vm-19 bie-ws.ala.org.au\n       cloud-vm-20 bie-ws.ala.org.au\n       cloud-vm-21 lists.ala.org.au\n       cloud-vm-22 images.ala.org.au\n       cloud-vm-23 api.ala.org.au\n       cloud-vm-24 sds.ala.org.au\n       cloud-vm-25 ala.org.au\n       cloud-vm-26 \n       cloud-vm-27 \n       cloud-vm-28 \n       cloud-vm-29 \n       cloud-vm-30 \n       cloud-vm-31 \n       cloud-vm-32 \n       cloud-vm-33 ala.org.au\n       cloud-vm-34 ala.org.au\n       cloud-vm-35 ala.org.au\n       cloud-vm-36 ala.org.au\n       cloud-vm-37 ala.org.au\n       cloud-vm-38 ala.org.au\n       cloud-vm-39 ala.org.au\n       cloud-vm-40 ala.org.au\n       cloud-vm-41 ala.org.au\n       cloud-vm-42 ala.org.au\n       cloud-vm-43 ala.org.au\n       cloud-vm-44 ala.org.au\n       cloud-vm-45 ala.org.au\n       cloud-vm-46 name-matching-ws.ala.org.au\n       cloud-vm-47 data-quality-service.ala.org.au\n       avh-hub-1 avh.ala.org.au\n       mdba-hub-1 mdba.ala.org.au mdba-regiones.ala.org.au\n       ozcam-hub-1 ozcam.ala.org.au",
+          "LA_hostnames": "avh-hub-1",
+          "LA_ssh_keys": "",
+          "LA_variable_ansible_user": "ubuntu",
+          "LA_variable_favicon_url": "https://raw.githubusercontent.com/living-atlases/artwork/master/favicon.ico",
+          "LA_is_hub": true,
+          "LA_software_versions": [
+            [
+              "biocache_hub_version",
+              "3.2.9"
+            ]
+          ]
+        },
+        {
+          "LA_id": "61cf34770062311ea4e8e6ac",
+          "LA_project_name": "Murray-Darling Basin Authority",
+          "LA_project_shortname": "MDBA",
+          "LA_pkg_name": "mdba",
+          "LA_domain": "ala.org.au",
+          "LA_use_species": false,
+          "LA_use_regions": true,
+          "LA_enable_ssl": true,
+          "LA_use_git": true,
+          "LA_generate_branding": true,
+          "LA_branding_uses_subdomain": true,
+          "LA_branding_hostname": "mdba-hub-1",
+          "LA_branding_url": "mdba.ala.org.au",
+          "LA_branding_path": "/branding",
+          "LA_ala_hub_uses_subdomain": true,
+          "LA_ala_hub_hostname": "mdba-hub-1",
+          "LA_ala_hub_url": "mdba.ala.org.au",
+          "LA_ala_hub_path": "/",
+          "LA_ala_bie_uses_subdomain": true,
+          "LA_ala_bie_hostname": "",
+          "LA_ala_bie_url": "hub.ala.org.au",
+          "LA_ala_bie_path": "/species",
+          "LA_regions_uses_subdomain": true,
+          "LA_regions_hostname": "mdba-hub-1",
+          "LA_regions_url": "mdba-regiones.ala.org.au",
+          "LA_regions_path": "/",
+          "LA_server_ips": "",
+          "LA_theme": "clean",
+          "LA_collectory_map_centreMapLat": -26.5,
+          "LA_collectory_map_centreMapLng": 133,
+          "LA_spatial_map_lan": -26.5,
+          "LA_spatial_map_lng": 133,
+          "LA_regions_map_bounds": "[-44, 112, -9, 154]",
+          "LA_spatial_map_bbox": "[-44, 112, -9, 154]",
+          "LA_spatial_map_areaSqKm": 12147183.349007064,
+          "LA_etc_hosts": "       cloud-vm-01 collections.ala.org.au\n       cloud-vm-02 biocache.ala.org.au\n       cloud-vm-03 biocache.ala.org.au\n       cloud-vm-04 biocache-ws.ala.org.au\n       cloud-vm-05 biocache-ws.ala.org.au\n       cloud-vm-06 biocache-ws.ala.org.au\n       cloud-vm-07 \n       cloud-vm-08 regions.ala.org.au\n       cloud-vm-09 logger.ala.org.au\n       cloud-vm-10 index.ala.org.au\n       cloud-vm-11 auth.ala.org.au\n       cloud-vm-12 spatial.ala.org.au\n       cloud-vm-15 dashboard.ala.org.au\n       cloud-vm-13 alerts.ala.org.au\n       cloud-vm-14 doi.ala.org.au\n       cloud-vm-17 bie.ala.org.au\n       cloud-vm-18 bie.ala.org.au\n       cloud-vm-19 bie-ws.ala.org.au\n       cloud-vm-20 bie-ws.ala.org.au\n       cloud-vm-21 lists.ala.org.au\n       cloud-vm-22 images.ala.org.au\n       cloud-vm-23 api.ala.org.au\n       cloud-vm-24 sds.ala.org.au\n       cloud-vm-25 ala.org.au\n       cloud-vm-26 \n       cloud-vm-27 \n       cloud-vm-28 \n       cloud-vm-29 \n       cloud-vm-30 \n       cloud-vm-31 \n       cloud-vm-32 \n       cloud-vm-33 ala.org.au\n       cloud-vm-34 ala.org.au\n       cloud-vm-35 ala.org.au\n       cloud-vm-36 ala.org.au\n       cloud-vm-37 ala.org.au\n       cloud-vm-38 ala.org.au\n       cloud-vm-39 ala.org.au\n       cloud-vm-40 ala.org.au\n       cloud-vm-41 ala.org.au\n       cloud-vm-42 ala.org.au\n       cloud-vm-43 ala.org.au\n       cloud-vm-44 ala.org.au\n       cloud-vm-45 ala.org.au\n       cloud-vm-46 name-matching-ws.ala.org.au\n       cloud-vm-47 data-quality-service.ala.org.au\n       avh-hub-1 avh.ala.org.au\n       mdba-hub-1 mdba.ala.org.au mdba-regiones.ala.org.au\n       ozcam-hub-1 ozcam.ala.org.au",
+          "LA_hostnames": "mdba-hub-1",
+          "LA_ssh_keys": "",
+          "LA_variable_ansible_user": "ubuntu",
+          "LA_variable_favicon_url": "https://raw.githubusercontent.com/living-atlases/artwork/master/favicon.ico",
+          "LA_is_hub": true,
+          "LA_software_versions": [
+            [
+              "biocache_hub_version",
+              "3.2.9"
+            ],
+            [
+              "regions_version",
+              "3.3.5"
+            ]
+          ]
+        },
+        {
+          "LA_id": "61cf35690062311ea4e8e721",
+          "LA_project_name": "Online Zoological Collections of Australian Museums",
+          "LA_project_shortname": "OZCAM",
+          "LA_pkg_name": "ozcam",
+          "LA_domain": "ala.org.au",
+          "LA_use_species": false,
+          "LA_use_regions": false,
+          "LA_enable_ssl": true,
+          "LA_use_git": true,
+          "LA_generate_branding": true,
+          "LA_branding_uses_subdomain": true,
+          "LA_branding_hostname": "ozcam-hub-1",
+          "LA_branding_url": "ozcam.ala.org.au",
+          "LA_branding_path": "/branding",
+          "LA_ala_hub_uses_subdomain": true,
+          "LA_ala_hub_hostname": "ozcam-hub-1",
+          "LA_ala_hub_url": "ozcam.ala.org.au",
+          "LA_ala_hub_path": "/",
+          "LA_ala_bie_uses_subdomain": true,
+          "LA_ala_bie_hostname": "",
+          "LA_ala_bie_url": "hub.ala.org.au",
+          "LA_ala_bie_path": "/species",
+          "LA_regions_uses_subdomain": true,
+          "LA_regions_hostname": "",
+          "LA_regions_url": "hub.ala.org.au",
+          "LA_regions_path": "/regions",
+          "LA_server_ips": "",
+          "LA_theme": "clean",
+          "LA_collectory_map_centreMapLat": -26.5,
+          "LA_collectory_map_centreMapLng": 133,
+          "LA_spatial_map_lan": -26.5,
+          "LA_spatial_map_lng": 133,
+          "LA_regions_map_bounds": "[-44, 112, -9, 154]",
+          "LA_spatial_map_bbox": "[-44, 112, -9, 154]",
+          "LA_spatial_map_areaSqKm": 12147183.349007064,
+          "LA_etc_hosts": "       cloud-vm-01 collections.ala.org.au\n       cloud-vm-02 biocache.ala.org.au\n       cloud-vm-03 biocache.ala.org.au\n       cloud-vm-04 biocache-ws.ala.org.au\n       cloud-vm-05 biocache-ws.ala.org.au\n       cloud-vm-06 biocache-ws.ala.org.au\n       cloud-vm-07 \n       cloud-vm-08 regions.ala.org.au\n       cloud-vm-09 logger.ala.org.au\n       cloud-vm-10 index.ala.org.au\n       cloud-vm-11 auth.ala.org.au\n       cloud-vm-12 spatial.ala.org.au\n       cloud-vm-15 dashboard.ala.org.au\n       cloud-vm-13 alerts.ala.org.au\n       cloud-vm-14 doi.ala.org.au\n       cloud-vm-17 bie.ala.org.au\n       cloud-vm-18 bie.ala.org.au\n       cloud-vm-19 bie-ws.ala.org.au\n       cloud-vm-20 bie-ws.ala.org.au\n       cloud-vm-21 lists.ala.org.au\n       cloud-vm-22 images.ala.org.au\n       cloud-vm-23 api.ala.org.au\n       cloud-vm-24 sds.ala.org.au\n       cloud-vm-25 ala.org.au\n       cloud-vm-26 \n       cloud-vm-27 \n       cloud-vm-28 \n       cloud-vm-29 \n       cloud-vm-30 \n       cloud-vm-31 \n       cloud-vm-32 \n       cloud-vm-33 ala.org.au\n       cloud-vm-34 ala.org.au\n       cloud-vm-35 ala.org.au\n       cloud-vm-36 ala.org.au\n       cloud-vm-37 ala.org.au\n       cloud-vm-38 ala.org.au\n       cloud-vm-39 ala.org.au\n       cloud-vm-40 ala.org.au\n       cloud-vm-41 ala.org.au\n       cloud-vm-42 ala.org.au\n       cloud-vm-43 ala.org.au\n       cloud-vm-44 ala.org.au\n       cloud-vm-45 ala.org.au\n       cloud-vm-46 name-matching-ws.ala.org.au\n       cloud-vm-47 data-quality-service.ala.org.au\n       avh-hub-1 avh.ala.org.au\n       mdba-hub-1 mdba.ala.org.au mdba-regiones.ala.org.au\n       ozcam-hub-1 ozcam.ala.org.au",
+          "LA_hostnames": "ozcam-hub-1",
+          "LA_ssh_keys": "",
+          "LA_variable_ansible_user": "ubuntu",
+          "LA_variable_favicon_url": "https://raw.githubusercontent.com/living-atlases/artwork/master/favicon.ico",
+          "LA_is_hub": true,
+          "LA_software_versions": [
+            [
+              "biocache_hub_version",
+              "3.2.9"
+            ]
+          ]
+        }
+      ]
+    },
+    "firstRun": false
+  }
+}
+    ''';
     var yoRcJson = '''
 {
   "generator-living-atlas": {
@@ -721,12 +1116,21 @@ void main() {
   }
 }
 ''';
-    var p = LAProject.import(yoRcJson: yoRcJson);
+    var p = LAProject.import(yoRcJson: yoRcJsonALA)[0];
+    expect(p.longName, equals('Atlas of Living Australia'));
+    expect(p.shortName, equals('ALA'));
+    expect(p.domain, equals('ala.org.au'));
+    expect(p.useSSL, equals(true));
+    expect(p.hubs.isNotEmpty, equals(true));
+    expect(p.hubs[0].longName, equals('The Australasian Virtual Herbarium'));
+    expect(p.hubs[0].shortName, equals('AVH'));
+    expect(p.hubs[0].isHub, equals(true));
+
+    p = LAProject.import(yoRcJson: yoRcJson)[0];
     expect(p.longName, equals('Portal de Datos de GBIF.ES'));
     expect(p.shortName, equals('GBIF.ES'));
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
-    print(p);
     LAServiceDesc.list(p.isHub)
         .where((s) => s.nameInt != sds)
         .toList()
@@ -761,7 +1165,7 @@ void main() {
     expect(p.getService(solr).fullUrl(p.useSSL, p.domain),
         equals('https://index.gbif.es/'));
 
-    p = LAProject.import(yoRcJson: yoRcJsonDemo);
+    p = LAProject.import(yoRcJson: yoRcJsonDemo)[0];
     expect(p.longName, equals('Demo de GBIF.ES'));
     expect(p.shortName, equals('GBIF.ES'));
     expect(p.domain, equals('demo.gbif.es'));
@@ -809,7 +1213,7 @@ void main() {
       }
     }
 
-    p = LAProject.import(yoRcJson: yoRcJsonCa);
+    p = LAProject.import(yoRcJson: yoRcJsonCa)[0];
     expect(p.longName, equals('Canadensys'));
     expect(p.shortName, equals('Canadensys'));
     expect(p.domain, equals('canadensys.net'));
@@ -863,7 +1267,7 @@ void main() {
     expect(p.getHostnames(regions), equals([]));
     // Missing branding url etc
 
-    p = LAProject.import(yoRcJson: yoRcJsonAt);
+    p = LAProject.import(yoRcJson: yoRcJsonAt)[0];
     expect(p.getService(doi).use, equals(false));
     expect(p.getService(alerts).use, equals(false));
     expect(p.getServicesNameListNotInUse().contains(doi), equals(true));
@@ -902,7 +1306,7 @@ void main() {
   test('Template import', () async {
     List<LAProject> templates = await LAProject.importTemplates(
         "../../assets/la-toolkit-templates.json");
-    expect(templates.length, equals(6));
+    expect(templates.length, equals(9));
     for (LAProject p in templates) {
       expect(p.servers.isNotEmpty, equals(true));
       expect(p.services.isNotEmpty, equals(true));
@@ -910,9 +1314,12 @@ void main() {
       expect(p.serviceDeploys.isNotEmpty, equals(true));
       expect(p.toString().isNotEmpty, equals(true));
       expect(p.variables.isNotEmpty, equals(true));
-      if (p.shortName != 'ALA') {
+      if (p.shortName != 'ALA' &&
+          p.shortName != 'AVH' &&
+          p.shortName != 'MDBA' &&
+          p.shortName != 'OZCAM') {
         // The default value
-        expect(p.mapBoundsFstPoint.latitude != -44, equals(true));
+        expect(p.mapBoundsFstPoint.latitude, isNot(equals(-44)));
       }
     }
   });

@@ -183,9 +183,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       try {
         action.project.dirName = action.project.suggestDirName();
         if (!AppUtils.isDemo()) {
-          List<dynamic> projects =
-              await Api.addProject(project: action.project);
-          store.dispatch(OnProjectsAdded(projects));
+          List<LAProject> projects = [action.project, ...action.project.hubs];
+          List<dynamic> addedProjects = await Api.addProjects(projects);
+          store.dispatch(OnProjectsAdded(addedProjects));
           await genSshConf(action.project);
         } else {
           // We just add to the store

@@ -872,12 +872,6 @@ check results length: ${checkResults.length}''';
     return conf;
   }
 
-  factory LAProject.import({required String yoRcJson}) {
-    Map<String, dynamic> yoRc =
-        json.decode(yoRcJson)["generator-living-atlas"]["promptValues"];
-    return LAProject.fromObject(yoRc);
-  }
-
   factory LAProject.fromObject(Map<String, dynamic> yoRc, {debug = false}) {
     a(String tag) => yoRc["LA_$tag"];
     LAProject p = LAProject(
@@ -927,27 +921,29 @@ check results length: ${checkResults.length}''';
         service.suburl = iniPath;
       }
 
-      String hostname = a("${n}_hostname") ?? '';
+      String hostnames = a("${n}_hostname") ?? '';
 
       if (debug) {
         print(
-            "$n: url: $url path: '$invPath' initPath: '${service.iniPath}' useSub: $useSub suburl: ${service.suburl} hostname: $hostname");
+            "$n: url: $url path: '$invPath' initPath: '${service.iniPath}' useSub: $useSub suburl: ${service.suburl} hostname: $hostnames");
       }
 
-      if (useIt && hostname.isNotEmpty) {
+      if (useIt && hostnames.isNotEmpty) {
         LAServer s;
-        if (!p.getServersNameList().contains(hostname)) {
-          // id is empty when is new
-          s = LAServer(
-              id: ObjectId().toString(), name: hostname, projectId: p.id);
-          p.upsertServer(s);
-        } else {
-          s = p.servers.where((c) => c.name == hostname).toList()[0];
+        for (String hostname in hostnames.split((RegExp(r"[, ]+")))) {
+          if (!p.getServersNameList().contains(hostname)) {
+            // id is empty when is new
+            s = LAServer(
+                id: ObjectId().toString(), name: hostname, projectId: p.id);
+            p.upsertServer(s);
+          } else {
+            s = p.servers.where((c) => c.name == hostname).toList()[0];
+          }
+          if (!tempServerServices.containsKey(s.id)) {
+            tempServerServices[s.id] = List<String>.empty(growable: true);
+          }
+          tempServerServices[s.id]!.add(serviceDesc.nameInt);
         }
-        if (!tempServerServices.containsKey(s.id)) {
-          tempServerServices[s.id] = List<String>.empty(growable: true);
-        }
-        tempServerServices[s.id]!.add(serviceDesc.nameInt);
       }
     }
     for (LAServer server in p.servers) {
@@ -1143,6 +1139,18 @@ check results length: ${checkResults.length}''';
     assert(serviceInUse == getServicesNameListInUse().length);
   }
 
+  static List<LAProject> import({required String yoRcJson}) {
+    List<LAProject> list = [];
+    Map<String, dynamic> yoRc =
+        json.decode(yoRcJson)["generator-living-atlas"]["promptValues"];
+    LAProject p = LAProject.fromObject(yoRc);
+    List<LAProject> hubs = _importHubs(yoRc, p);
+    p.hubs = hubs;
+    list.add(p);
+    list.addAll(hubs);
+    return list;
+  }
+
   static Future<List<LAProject>> importTemplates(String file) async {
     // https://flutter.dev/docs/development/ui/assets-and-images#loading-text-assets
 
@@ -1155,10 +1163,26 @@ check results length: ${checkResults.length}''';
           genJson['generator-living-atlas']['promptValues'];
       pJson['LA_id'] = null;
       LAProject p = LAProject.fromObject(pJson);
+      List<LAProject> hubs = _importHubs(pJson, p);
+      p.hubs = hubs;
       list.add(p);
+      list.addAll(hubs);
     }
-
     return list;
+  }
+
+  static List<LAProject> _importHubs(
+      Map<String, dynamic> pJson, LAProject parent) {
+    List<LAProject> hubs = [];
+    if (pJson['LA_hubs'] != null) {
+      for (Map<String, dynamic> hubJson in pJson['LA_hubs']) {
+        LAProject hub = LAProject.fromObject(hubJson);
+        hub.isHub = true;
+        hub.parent = parent;
+        hubs.add(hub);
+      }
+    }
+    return hubs;
   }
 
   bool get inProduction => status == LAProjectStatus.inProduction;

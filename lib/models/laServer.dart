@@ -3,6 +3,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/models/sshKey.dart';
+import 'package:la_toolkit/utils/regexp.dart';
 import 'package:objectid/objectid.dart';
 
 import 'isJsonSerializable.dart';
@@ -56,7 +57,10 @@ class LAServer implements IsJsonSerializable<LAServer> {
       : id = id ?? ObjectId().toString(),
         aliases = aliases ?? [],
         gateways = gateways ?? [],
-        ip = ip ?? "";
+        ip = ip ?? "" {
+    assert(LARegExp.hostnameRegexp.hasMatch(name),
+        "'$name' is a invalid server name");
+  }
 
   factory LAServer.fromJson(Map<String, dynamic> json) =>
       _$LAServerFromJson(json);

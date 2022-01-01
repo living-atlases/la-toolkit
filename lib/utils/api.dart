@@ -372,10 +372,6 @@ class Api {
     }
   }
 
-  static Future<List<dynamic>> addProject({required LAProject project}) async {
-    return await addOrUpdateProject(project, "add");
-  }
-
   static Future<List<dynamic>> updateProject(
       {required LAProject project}) async {
     return await addOrUpdateProject(project, "update");
