@@ -222,12 +222,13 @@ void main() {
     vm4.sshKey = SshKey(name: "k4", desc: "", encrypted: false);
     expect(testProject.getServicesNameListInUse().isNotEmpty, equals(true));
 
+    /*
     print(testProject.getServicesNameListInUse().length);
     print(testProject.getServicesAssignedToServers().length);
     print(testProject.getServicesNameListInUse());
     print(testProject.getServicesAssignedToServers());
     print(testProject);
-    print(testProject.servicesNotAssigned());
+    print(testProject.servicesNotAssigned()); */
     expect(
         testProject.getServicesNameListInUse().length ==
             testProject.getServicesAssignedToServers().length,

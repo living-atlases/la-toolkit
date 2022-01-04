@@ -10,7 +10,7 @@ void main() {
     // expect(LAServiceDesc.map.length + 1, equals(LAServiceName.values.length));
     Set<String> list1 = LAServiceDesc.list(false).map((s) => s.nameInt).toSet();
     Set<String> list2 = LAServiceName.values.map((s) => s.toS()).toSet();
-    print("List difference: ${list2.difference(list1).toList().toString()}");
+    // print("List difference: ${list2.difference(list1).toList().toString()}");
     expect(LAServiceDesc.list(false).toSet().length,
         equals(LAServiceDesc.list(false).length));
     // +1 because 'all'

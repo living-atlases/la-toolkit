@@ -80,7 +80,8 @@ void main() {
     for (var e in laVariablesList) {
       list = list + "LA_variable_$e: 'LA_variable_$e',\n";
     }
-    print(list);
+    // LIST variables for backend transform
+    // print(list);
     expect(list.length, greaterThan(0));
   });
 }
