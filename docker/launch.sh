@@ -44,4 +44,5 @@ do
     sleep 3
 done
 cd /home/ubuntu/la-toolkit && db-migrate up
-cd /home/ubuntu/la-toolkit && forever app.js --prod --port 2010 --verbose
+# log more in cause of startup issues adding --verbose
+cd /home/ubuntu/la-toolkit && forever -w app.js --prod --port 2010
