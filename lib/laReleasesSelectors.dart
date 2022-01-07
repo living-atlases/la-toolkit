@@ -65,7 +65,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                   ? project.runningVersions[serviceNameInt]
                   : null;
               String initialValue = _getInitialValue(
-                  project, serviceNameInt, releases, runningVersion, onChange);
+                  project, serviceNameInt, releases, runningVersion);
               if (vm.runningVersionsRetrieved) {
                 for (String version in releases.versions) {
                   if (version == initialValue) {
@@ -84,14 +84,22 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                   }
                 }
               }
-              Widget swWidget = _createSoftwareSelector(
-                  serviceName: LAServiceDesc.swNameWithAliasForHumans(
-                      serviceDesc.nameInt),
-                  initialValue: initialValue,
-                  highlight: highlight,
-                  versions: releases.versions,
-                  onChange: onChange);
-              selectors.add(swWidget);
+              selectors.add(SizedBox(
+                  width: 230,
+                  child: SoftwareSelector(
+                    label: LAServiceDesc.swNameWithAliasForHumans(
+                        serviceDesc.nameInt),
+                    highlight: highlight,
+                    versions: releases.versions,
+                    initialValue: initialValue,
+                    onChange: (String? value) {
+                      if (value != null) {
+                        onChange(value, true);
+                      }
+                    },
+                    roundStyle: false,
+                    useBadge: false,
+                  )));
             } else {
               if (releases == null) {
                 print("No releases available for $serviceNameInt");
@@ -112,7 +120,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
   }
 
   String _getInitialValue(LAProject project, String swName, LAReleases releases,
-      String? currentVersion, Function(String value, bool save) onChange) {
+      String? currentVersion) {
     String? storedVersion = project.getServiceDeployRelease(swName);
     if (storedVersion == null) {
       assert(releases.versions.isNotEmpty,
@@ -121,35 +129,10 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
           currentVersion != null && releases.versions.contains(currentVersion);
       String defVersion =
           setCurrentVersion ? currentVersion : releases.versions[0];
-      onChange(defVersion, true);
       return defVersion;
     } else {
       return storedVersion;
     }
-  }
-
-  Widget _createSoftwareSelector(
-      {required String serviceName,
-      required String initialValue,
-      Map<String, TextStyle>? highlight,
-      required List<String> versions,
-      required Function(String, bool) onChange}) {
-    Widget swWidget = SizedBox(
-        width: 230,
-        child: SoftwareSelector(
-          label: serviceName,
-          highlight: highlight,
-          versions: versions,
-          initialValue: initialValue,
-          onChange: (String? value) {
-            if (value != null) {
-              onChange(value, true);
-            }
-          },
-          roundStyle: false,
-          useBadge: false,
-        ));
-    return swWidget;
   }
 }
 
