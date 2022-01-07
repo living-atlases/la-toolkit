@@ -45,4 +45,5 @@ do
 done
 cd /home/ubuntu/la-toolkit && db-migrate up
 # log more in cause of startup issues adding --verbose
-cd /home/ubuntu/la-toolkit && forever -w app.js --prod --port 2010
+# -w needs to increase file opened limits
+cd /home/ubuntu/la-toolkit && forever app.js --prod --port 2010
