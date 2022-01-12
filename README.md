@@ -115,13 +115,16 @@ To continue you can git clone this repo or just copy the [`docker-compose.yml`](
 
 ## Running the la-toolkit
 
-### Using docker-compose
+### Using docker-compose helper
 
 ```
 ./dockerTask.sh compose
 ```
 
-or directly:
+
+Note that you'll need to have installed `xdg-utils` (`sudo apt install xgd-utils`).
+
+### or directly using docker-compose
 
 ```
 docker-compose up -d
