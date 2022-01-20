@@ -851,6 +851,11 @@ check results length: ${checkResults.length}''';
         if (LAServiceDesc.swToAnsibleVars[sw] != null) {
           // LAServer server = servers.firstWhere((s) => s.id == sd.serverId);
           swVersions[sw] = ([LAServiceDesc.swToAnsibleVars[sw]!, value]);
+
+          if (sw == "collectory") {
+            conf["LA_collectory_version_ge_3"] =
+                Dependencies.vc(">= 3.0.0").allows(Dependencies.v(value));
+          }
         }
       });
     }
