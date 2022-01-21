@@ -88,7 +88,7 @@ dependencies:
   # font_awesome_flutter: ^8.11.0
 
   # data
-  json_annotation: ^4.0.1
+  json_annotation: ^4.4.0
   copy_with_extension: ^3.0.0
   # uuid: ^3.0.2
   objectid: 2.0.0
