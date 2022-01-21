@@ -173,7 +173,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         Map<String, LAReleases> releases = {};
         Map<String, String> servicesAndSub = {};
         for (LAServiceDesc service in LAServiceDesc.listWithArtifact()) {
-          servicesAndSub[service.nameInt] = service.artifact!;
+          servicesAndSub[service.nameInt] = service.artifacts!;
         }
         releases = await getDepsVersions(servicesAndSub);
         store.dispatch(OnLAVersionsSwCheck(releases, DateTime.now()));
@@ -434,6 +434,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         body: utf8.encode(json.encode({'deps': deps})));
     Map<String, dynamic> jsonBody = json.decode(response.body);
     Map<String, LAReleases> releases = {};
+    Map<String, dynamic> excludeList = jsonBody['excludeList'];
     try {
       for (String service in jsonBody.keys) {
         List<String> versions = [];
@@ -448,9 +449,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             0, 30 > releasesVersions.length ? releasesVersions.length : 30));
         versions.addAll(snapshotVersions.reversed.toList().sublist(
             0, 2 > snapshotVersions.length ? snapshotVersions.length : 2));
+        // exclude
+        List<dynamic> serviceExcludeList = excludeList[service];
+        versions.removeWhere((v) =>
+            excludeList[service] != null && serviceExcludeList.contains(v));
         LAReleases servReleases = LAReleases(
             name: service,
-            artifact: deps[service]!,
+            artifacts: deps[service]!,
             latest: latest,
             // remove dups
             versions: versions.toSet().toList());

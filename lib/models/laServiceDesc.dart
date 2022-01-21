@@ -26,7 +26,7 @@ class LAServiceDesc {
   bool alaAdmin;
   bool hubCapable;
   bool allowMultipleDeploys;
-  String? artifact;
+  String? artifacts;
   // used for spatial-service apikeys/userdetails/etc
   bool isSubService;
   LAServiceName? parentService;
@@ -52,7 +52,7 @@ class LAServiceDesc {
       this.admin = false,
       this.alaAdmin = false,
       this.initUse = false,
-      this.artifact,
+      this.artifacts,
       this.alias,
       this.allowMultipleDeploys = false,
       this.hubCapable = false,
@@ -79,7 +79,7 @@ class LAServiceDesc {
           initUse == other.initUse &&
           admin == other.admin &&
           alaAdmin == other.alaAdmin &&
-          artifact == other.artifact &&
+          artifacts == other.artifacts &&
           alias == other.alias &&
           allowMultipleDeploys == other.allowMultipleDeploys &&
           parentService == other.parentService &&
@@ -103,7 +103,7 @@ class LAServiceDesc {
       initUse.hashCode ^
       admin.hashCode ^
       alaAdmin.hashCode ^
-      artifact.hashCode ^
+      artifacts.hashCode ^
       alias.hashCode ^
       parentService.hashCode ^
       allowMultipleDeploys.hashCode ^
@@ -120,7 +120,8 @@ class LAServiceDesc {
         icon: MdiIcons.formatListBulletedType,
         admin: true,
         alaAdmin: true,
-        artifact: 'ala-collectory',
+        // multiple with last with precedence
+        artifacts: 'ala-collectory collectory',
         allowMultipleDeploys: false,
         path: ""),
     alaHub: LAServiceDesc(
@@ -136,7 +137,7 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: true,
         hubCapable: true,
-        artifact: 'ala-hub',
+        artifacts: 'ala-hub',
         allowMultipleDeploys: true,
         path: ""),
     biocacheService: LAServiceDesc(
@@ -148,7 +149,7 @@ class LAServiceDesc {
         optional: false,
         icon: MdiIcons.databaseSearchOutline,
         sample: "https://biocache.ala.org.au/ws",
-        artifact: "biocache-service",
+        artifacts: "biocache-service",
         allowMultipleDeploys: true,
         path: ""),
     bie: LAServiceDesc(
@@ -165,7 +166,7 @@ class LAServiceDesc {
         alaAdmin: true,
         hubCapable: true,
         allowMultipleDeploys: true,
-        artifact: "ala-bie",
+        artifacts: "ala-bie",
         path: ""),
     bieIndex: LAServiceDesc(
         name: "species-ws",
@@ -179,7 +180,7 @@ class LAServiceDesc {
         sample: "https://bie.ala.org.au/ws",
         admin: true,
         alaAdmin: true,
-        artifact: "bie-index",
+        artifacts: "bie-index",
         allowMultipleDeploys: true,
         path: ""),
     images: LAServiceDesc(
@@ -193,7 +194,7 @@ class LAServiceDesc {
         sample: "https://images.ala.org.au",
         icon: MdiIcons.imageMultipleOutline,
         admin: true,
-        artifact: "image-service",
+        artifacts: "image-service",
         allowMultipleDeploys: false,
         path: ""),
     speciesLists: LAServiceDesc(
@@ -208,7 +209,7 @@ class LAServiceDesc {
         icon: Icons.playlist_add_outlined,
         sample: "https://lists.ala.org.au",
         admin: true,
-        artifact: "specieslist-webapp",
+        artifacts: "specieslist-webapp",
         allowMultipleDeploys: false,
         path: ""),
     regions: LAServiceDesc(
@@ -225,7 +226,7 @@ class LAServiceDesc {
         alaAdmin: true,
         hubCapable: true,
         allowMultipleDeploys: true, // ALA does not have this service redundant
-        artifact: "regions",
+        artifacts: "regions",
         path: ""),
     logger: LAServiceDesc(
         name: "logger",
@@ -237,7 +238,7 @@ class LAServiceDesc {
         sample: "https://logger.ala.org.au",
         admin: true,
         alaAdmin: true,
-        artifact: "logger-service",
+        artifacts: "logger-service",
         allowMultipleDeploys: false,
         path: ""),
     solr: LAServiceDesc(
@@ -250,7 +251,7 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: false,
         initUse: true,
-        artifact: 'solr',
+        artifacts: 'solr',
         allowMultipleDeploys: false,
         path: ""),
     cas: LAServiceDesc(
@@ -264,7 +265,7 @@ class LAServiceDesc {
         forceSubdomain: true,
         sample: "https://auth.ala.org.au/cas/",
         icon: MdiIcons.accountCheckOutline,
-        artifact: "cas",
+        artifacts: "cas",
         recommended: true,
         admin: false,
         alaAdmin: false,
@@ -278,7 +279,7 @@ class LAServiceDesc {
         initUse: true,
         desc: "",
         icon: MdiIcons.accountGroup,
-        artifact: "userdetails",
+        artifacts: "userdetails",
         admin: true,
         alaAdmin: true,
         parentService: LAServiceName.cas,
@@ -294,12 +295,12 @@ class LAServiceDesc {
         isSubService: true,
         parentService: LAServiceName.cas,
         desc: "",
-        artifact: "apikey"),
+        artifacts: "apikey"),
     casManagement: LAServiceDesc(
         nameInt: casManagement,
         name: "CAS Management",
         path: '/cas-management',
-        artifact: "cas-management",
+        artifacts: "cas-management",
         group: "cas-servers",
         optional: true,
         initUse: true,
@@ -317,13 +318,13 @@ class LAServiceDesc {
         forceSubdomain: true,
         icon: MdiIcons.layers,
         sample: "https://spatial.ala.org.au",
-        artifact: 'spatial-hub',
+        artifacts: 'spatial-hub',
         path: ""),
     spatialService: LAServiceDesc(
       name: 'Spatial Webservice',
       nameInt: spatialService,
       path: '/ws',
-      artifact: 'spatial-service',
+      artifacts: 'spatial-service',
       icon: MdiIcons.layersPlus,
       alaAdmin: true,
       isSubService: true,
@@ -354,7 +355,7 @@ class LAServiceDesc {
         sample: "https://api.ala.org.au",
         icon: Icons.integration_instructions_outlined,
         admin: true,
-        artifact: 'webapi',
+        artifacts: 'webapi',
         path: ""),
     dashboard: LAServiceDesc(
         name: "dashboard",
@@ -366,7 +367,7 @@ class LAServiceDesc {
         sample: "https://dashboard.ala.org.au",
         icon: MdiIcons.tabletDashboard,
         alaAdmin: true,
-        artifact: 'dashboard',
+        artifacts: 'dashboard',
         allowMultipleDeploys: false,
         path: ""),
     sds: LAServiceDesc(
@@ -382,7 +383,7 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: true,
         allowMultipleDeploys: false,
-        artifact: "sds-webapp2",
+        artifacts: "sds-webapp2",
         path: ""),
     alerts: LAServiceDesc(
         name: "alerts",
@@ -396,7 +397,7 @@ class LAServiceDesc {
         sample: "https://alerts.ala.org.au",
         icon: Icons.notifications_active_outlined,
         admin: true,
-        artifact: "alerts",
+        artifacts: "alerts",
         allowMultipleDeploys: false,
         path: ""),
     doi: LAServiceDesc(
@@ -411,7 +412,7 @@ class LAServiceDesc {
         icon: MdiIcons.link,
         admin: true,
         allowMultipleDeploys: false,
-        artifact: "doi-service",
+        artifacts: "doi-service",
         path: ""),
     branding: LAServiceDesc(
         name: "branding",
@@ -437,7 +438,7 @@ class LAServiceDesc {
         withoutUrl: true,
         initUse: true,
         icon: MdiIcons.powershell,
-        artifact: "biocache-store",
+        artifacts: "biocache-store",
         allowMultipleDeploys: true,
         path: ""),
     nameindexer: LAServiceDesc(
@@ -449,7 +450,7 @@ class LAServiceDesc {
         withoutUrl: true,
         initUse: true,
         icon: MdiIcons.tournament,
-        artifact: "ala-name-matching",
+        artifacts: "ala-name-matching",
         allowMultipleDeploys: true,
         path: ""),
     namematchingService: LAServiceDesc(
@@ -461,7 +462,7 @@ class LAServiceDesc {
         withoutUrl: false,
         initUse: false,
         icon: MdiIcons.textSearch,
-        artifact: "ala-namematching-server",
+        artifacts: "ala-namematching-server",
         sample: "https://namematching-ws.ala.org.au/",
         allowMultipleDeploys: false,
         admin: false,
@@ -477,7 +478,7 @@ class LAServiceDesc {
         initUse: false,
         // icon: MdiIcons.airFilter,
         icon: MdiIcons.filterPlusOutline,
-        artifact: "data-quality-filter-service",
+        artifacts: "data-quality-filter-service",
         sample: "https://data-quality-service.ala.org.au",
         allowMultipleDeploys: false,
         alaAdmin: true,
@@ -505,7 +506,7 @@ class LAServiceDesc {
         admin: false,
         alaAdmin: false,
         // We use apt for check versions, but we set this to get the version
-        artifact: pipelines,
+        artifacts: pipelines,
         icon: MdiIcons.pipe,
         allowMultipleDeploys: true,
         path: ""),
@@ -558,7 +559,7 @@ class LAServiceDesc {
         icon: MdiIcons.weatherSunny,
         admin: false,
         alaAdmin: false,
-        artifact: solrcloud,
+        artifacts: solrcloud,
         allowMultipleDeploys: true,
         depends: LAServiceName.pipelines,
         withoutUrl: true,
@@ -600,7 +601,7 @@ class LAServiceDesc {
       isHub ? LAServiceDesc.listHubCapable : LAServiceDesc._list;
 
   static List<LAServiceDesc> listWithArtifact() =>
-      list(false).where((sd) => sd.artifact != null).toList();
+      list(false).where((sd) => sd.artifacts != null).toList();
 
   static List<String> listS(bool isHub) =>
       list(isHub).map((s) => s.nameInt).toList();
@@ -727,6 +728,6 @@ class LAServiceDesc {
 
   @override
   String toString() {
-    return 'LAServiceDesc{nameInt: $nameInt, alias: $alias, hubCapable: $hubCapable, allowMultipleDeploys: $allowMultipleDeploys, artifact: $artifact}';
+    return 'LAServiceDesc{nameInt: $nameInt, alias: $alias, hubCapable: $hubCapable, allowMultipleDeploys: $allowMultipleDeploys, artifact: $artifacts}';
   }
 }

@@ -10,13 +10,13 @@ part 'laReleases.g.dart';
 @CopyWith()
 class LAReleases {
   final String name;
-  final String artifact;
+  final String artifacts;
   final String? latest;
   final List<String> versions;
 
   const LAReleases(
       {required this.name,
-      required this.artifact,
+      required this.artifacts,
       required this.latest,
       required this.versions});
 
@@ -30,7 +30,7 @@ class LAReleases {
       identical(this, other) ||
       other is LAReleases &&
           runtimeType == other.runtimeType &&
-          artifact == other.artifact &&
+          artifacts == other.artifacts &&
           name == other.name &&
           latest == other.latest &&
           const ListEquality().equals(versions, other.versions);
@@ -38,12 +38,12 @@ class LAReleases {
   @override
   int get hashCode =>
       name.hashCode ^
-      artifact.hashCode ^
+      artifacts.hashCode ^
       latest.hashCode ^
       const ListEquality().hash(versions);
 
   @override
   String toString() {
-    return 'LAReleases{name: $name, artifact: $artifact, latest: $latest, versions: (${versions.length})}';
+    return 'LAReleases{name: $name, artifacts: $artifacts, latest: $latest, versions: (${versions.length})}';
   }
 }

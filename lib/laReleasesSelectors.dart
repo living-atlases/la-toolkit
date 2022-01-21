@@ -58,7 +58,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                 ? project.getService(serviceNameInt)
                 : project.getService(serviceDesc.parentService!.toS());
             if (serviceOrParent.use &&
-                serviceDesc.artifact != null &&
+                serviceDesc.artifacts != null &&
                 releases != null) {
               Map<String, TextStyle> highlight = {};
               String? runningVersion = vm.runningVersionsRetrieved

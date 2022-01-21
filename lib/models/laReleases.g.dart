@@ -19,13 +19,13 @@ class _LAReleasesCWProxy {
   /// LAReleases(...).copyWith(id: 12, name: "My name")
   /// ````
   LAReleases call({
-    String? artifact,
+    String? artifacts,
     String? latest,
     String? name,
     List<String>? versions,
   }) {
     return LAReleases(
-      artifact: artifact ?? _value.artifact,
+      artifacts: artifacts ?? _value.artifacts,
       latest: latest ?? _value.latest,
       name: name ?? _value.name,
       versions: versions ?? _value.versions,
@@ -36,7 +36,7 @@ class _LAReleasesCWProxy {
       ? _value._copyWithNull(latest: true)
       : this(latest: latest);
 
-  LAReleases artifact(String artifact) => this(artifact: artifact);
+  LAReleases artifacts(String artifacts) => this(artifacts: artifacts);
 
   LAReleases name(String name) => this(name: name);
 
@@ -51,7 +51,7 @@ extension LAReleasesCopyWith on LAReleases {
     bool latest = false,
   }) {
     return LAReleases(
-      artifact: artifact,
+      artifacts: artifacts,
       latest: latest == true ? null : this.latest,
       name: name,
       versions: versions,
@@ -65,7 +65,7 @@ extension LAReleasesCopyWith on LAReleases {
 
 LAReleases _$LAReleasesFromJson(Map<String, dynamic> json) => LAReleases(
       name: json['name'] as String,
-      artifact: json['artifact'] as String,
+      artifacts: json['artifacts'] as String,
       latest: json['latest'] as String?,
       versions:
           (json['versions'] as List<dynamic>).map((e) => e as String).toList(),
@@ -74,7 +74,7 @@ LAReleases _$LAReleasesFromJson(Map<String, dynamic> json) => LAReleases(
 Map<String, dynamic> _$LAReleasesToJson(LAReleases instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'artifact': instance.artifact,
+      'artifacts': instance.artifacts,
       'latest': instance.latest,
       'versions': instance.versions,
     };
