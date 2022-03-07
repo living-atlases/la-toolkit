@@ -1067,7 +1067,7 @@ check results length: ${checkResults.length}''';
             "${StringUtils.removeLastSlash(url.replaceFirst("https", "http"))}:8983";
       }
       if (nameInt == cas) {
-        url += '/cas';
+        url += 'cas';
       }
       LAServiceDepsDesc? mainDeps = depsDesc[nameInt];
       List<BasicService>? deps;

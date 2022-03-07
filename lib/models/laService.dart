@@ -97,7 +97,7 @@ class LAService implements IsJsonSerializable<LAService> {
   LAService.fromDesc(LAServiceDesc desc, this.projectId)
       : id = ObjectId().toString(),
         nameInt = desc.nameInt,
-        iniPath = desc.path,
+        iniPath = desc.iniPath ?? desc.path,
         use = !desc.optional ? true : desc.initUse,
         usesSubdomain = true,
         status = ServiceStatus.unknown,

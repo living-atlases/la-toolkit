@@ -21,6 +21,7 @@ class LAServiceDesc {
   String? hint;
   bool recommended;
   String path;
+  String? iniPath;
   bool initUse;
   bool admin;
   bool alaAdmin;
@@ -46,6 +47,8 @@ class LAServiceDesc {
       this.hint,
       this.recommended = false,
       required this.path,
+      // Used only when creating the service (useful for /cas).
+      this.iniPath,
       this.depends,
       required this.icon,
       this.isSubService = false,
@@ -269,6 +272,8 @@ class LAServiceDesc {
         recommended: true,
         admin: false,
         alaAdmin: false,
+        // Issue https://github.com/living-atlases/la-toolkit/issues/8
+        iniPath: "",
         path: "/cas"),
     userdetails: LAServiceDesc(
         nameInt: userdetails,
