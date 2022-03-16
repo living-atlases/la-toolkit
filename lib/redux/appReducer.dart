@@ -137,7 +137,7 @@ AppState _importProject(AppState state, ImportProject action) {
 }
 
 AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
-  return state.copyWith(loading: true);
+  return state.copyWith(loading: !AppUtils.isDemo());
 }
 
 AppState _openProject(AppState state, OpenProject action) {
@@ -197,7 +197,8 @@ AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
 AppState _onDemoAddProjects(AppState state, OnDemoAddProjects action) {
   return state.copyWith(
       projects: List<LAProject>.from(state.projects)
-        ..insertAll(0, action.projects));
+        ..insertAll(0, action.projects),
+      loading: false);
 }
 
 AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {

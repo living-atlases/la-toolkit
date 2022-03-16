@@ -44,7 +44,9 @@ class LAProjectsList extends StatelessWidget {
           );
         },
         builder: (BuildContext context, _ProjectsPageViewModel vm) {
-          int num = vm.state.projects.length;
+          List<LAProject> pjs =
+              vm.state.projects.where((p) => !p.isHub).toList();
+          int num = pjs.length;
           return num > 0
               ? ScrollPanel(
                   child: Container(
@@ -57,7 +59,8 @@ class LAProjectsList extends StatelessWidget {
                                 shrinkWrap: true,
                                 itemCount: num,
                                 // itemCount: appStateProv.appState.projects.length,
-                                itemBuilder: (BuildContext context, int index) =>
+                                itemBuilder: (BuildContext context,
+                                        int index) =>
                                     AnimationConfiguration.staggeredList(
                                         position: index,
                                         delay: const Duration(milliseconds: 0),
@@ -69,35 +72,36 @@ class LAProjectsList extends StatelessWidget {
                                                 duration: const Duration(
                                                     milliseconds: 750),
                                                 child: ProjectCard(
-                                                    vm.state.projects[index],
+                                                    pjs[index],
                                                     () => vm.onOpenProjectTools(
-                                                        vm.state
-                                                            .projects[index]),
-                                                    () => vm.onDeleteProject(vm
-                                                        .state
-                                                        .projects[index])))))))
+                                                        pjs[index]),
+                                                    () => vm.onDeleteProject(
+                                                        pjs[index])))))))
                       ])))
-              : vm.loading? Container(): Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                      ButtonTheme(
-                          child: ElevatedButton.icon(
-                              onPressed: () => vm.onCreateProject(),
-                              style: TextButton.styleFrom(
-                                  minimumSize: const Size(100, 50),
-                                  primary: Colors.white,
-                                  // padding: const EdgeInsets.all(8.0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    // side: BorderSide(color: Colors.red)),
-                                  )),
-                              icon: const Icon(Icons.add_circle_outline,
-                                  size: 30),
-                              label: const Text("Create a New LA Project",
-                                  style: TextStyle(fontSize: 18))))
-                    ]));
+              : vm.loading
+                  ? Container()
+                  : Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                          ButtonTheme(
+                              child: ElevatedButton.icon(
+                                  onPressed: () => vm.onCreateProject(),
+                                  style: TextButton.styleFrom(
+                                      minimumSize: const Size(100, 50),
+                                      primary: Colors.white,
+                                      // padding: const EdgeInsets.all(8.0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30.0),
+                                        // side: BorderSide(color: Colors.red)),
+                                      )),
+                                  icon: const Icon(Icons.add_circle_outline,
+                                      size: 30),
+                                  label: const Text("Create a New LA Project",
+                                      style: TextStyle(fontSize: 18))))
+                        ]));
         });
   }
 }
@@ -248,7 +252,7 @@ class _ProjectsPageViewModel {
 
   _ProjectsPageViewModel(
       {required this.state,
-        required this.loading,
+      required this.loading,
       required this.onOpenProjectTools,
       required this.onCreateProject,
       required this.onDeleteProject});

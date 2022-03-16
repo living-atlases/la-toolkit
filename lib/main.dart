@@ -58,26 +58,6 @@ Future<void> main() async {
     print("Backend: ${dotenv.env['BACKEND']}");
   }
 
-  var io = SailsIOClient(socket_io_client.io(
-      "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",
-      socket_io_client.OptionBuilder().setTransports(['websocket']).build()));
-
-  io.socket.onConnect((_) {
-    // print('sails websocket: Connected to backend');
-  });
-
-  io.socket.onError((e) {
-    print('sails websocket: Error connecting to backend');
-    print(e);
-  });
-
-  io.get(
-      url: "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
-      cb: (body, jwrResponse) {
-        // print(body);
-        // print(jwrResponse.toJson());
-      });
-
   AppState initialState = await appStateMiddleware.getState();
   // print("Loaded prefs: $state");
 
@@ -104,14 +84,37 @@ Future<void> main() async {
   store.dispatch(ProjectsLoad());
   store.dispatch(OnFetchSoftwareDepsState());
 
-  // https://sailsjs.com/documentation/reference/web-sockets/socket-client/io-socket-on
-  final debouncer = Debouncer(milliseconds: 1000);
-  io.socket.on('project', (projects) {
-    debouncer.run(() {
-      print('sails websocket: projects subs call');
-      store.dispatch(OnProjectsLoad(projects));
+  if (!AppUtils.isDemo()) {
+    var io = SailsIOClient(socket_io_client.io(
+        "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",
+        socket_io_client.OptionBuilder().setTransports(['websocket']).build()));
+
+    io.socket.onConnect((_) {
+      // print('sails websocket: Connected to backend');
     });
-  });
+
+    io.socket.onError((e) {
+      print('sails websocket: Error connecting to backend');
+      print(e);
+    });
+
+    io.get(
+        url:
+            "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
+        cb: (body, jwrResponse) {
+          // print(body);
+          // print(jwrResponse.toJson());
+        });
+
+    // https://sailsjs.com/documentation/reference/web-sockets/socket-client/io-socket-on
+    final debouncer = Debouncer(milliseconds: 1000);
+    io.socket.on('project', (projects) {
+      debouncer.run(() {
+        print('sails websocket: projects subs call');
+        store.dispatch(OnProjectsLoad(projects));
+      });
+    });
+  }
 
   final cron = Cron();
   cron.schedule(Schedule.parse('0 */3 * * *'), () async {

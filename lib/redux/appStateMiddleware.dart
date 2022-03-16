@@ -135,7 +135,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       // GENERATOR RELEASES
       if (AppUtils.isDemo()) {
         store.dispatch(
-            OnFetchGeneratorReleases(['1.1.49', '1.1.48', '1.1.47', '1.1.46']));
+            OnFetchGeneratorReleases(['1.2.29', '1.2.28', '1.2.27', '1.2.26']));
       } else {
         // generatorReleasesApiUrl =
         //  "https://registry.npmjs.org/generator-living-atlas";
@@ -162,21 +162,23 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         }
       }
 
-      // ALA other Releases
-      if (store.state.lastSwCheck != null &&
-          (store.state.lastSwCheck!
-              .isAfter(DateTime.now().subtract(const Duration(days: 1))))) {
-        print(
-            "Not checking LA versions because we retrieved them already today");
-        print(store.state.laReleases);
-      } else {
-        Map<String, LAReleases> releases = {};
-        Map<String, String> servicesAndSub = {};
-        for (LAServiceDesc service in LAServiceDesc.listWithArtifact()) {
-          servicesAndSub[service.nameInt] = service.artifacts!;
+      if (!AppUtils.isDemo()) {
+        // ALA other Releases
+        if (store.state.lastSwCheck != null &&
+            (store.state.lastSwCheck!
+                .isAfter(DateTime.now().subtract(const Duration(days: 1))))) {
+          print(
+              "Not checking LA versions because we retrieved them already today");
+          print(store.state.laReleases);
+        } else {
+          Map<String, LAReleases> releases = {};
+          Map<String, String> servicesAndSub = {};
+          for (LAServiceDesc service in LAServiceDesc.listWithArtifact()) {
+            servicesAndSub[service.nameInt] = service.artifacts!;
+          }
+          releases = await getDepsVersions(servicesAndSub);
+          store.dispatch(OnLAVersionsSwCheck(releases, DateTime.now()));
         }
-        releases = await getDepsVersions(servicesAndSub);
-        store.dispatch(OnLAVersionsSwCheck(releases, DateTime.now()));
       }
     }
     if (action is AddProject) {
@@ -221,8 +223,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is DelProject) {
       try {
         store.dispatch(Loading());
-        List<dynamic> projects =
-            await Api.deleteProject(project: action.project);
+        List<dynamic> projects = AppUtils.isDemo()
+            ? store.state.projects
+                .where((p) => p.id != action.project.id)
+                .toList()
+            : await Api.deleteProject(project: action.project);
         store.dispatch(OnProjectDeleted(action.project, projects));
       } catch (e) {
         print("Failed to delete project $e");
