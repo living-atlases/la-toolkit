@@ -22,7 +22,9 @@ class FetchState extends AppActions {}
 class OnIntroEnd extends AppActions {}
 
 class OnFetchSoftwareDepsState extends AppActions {
-  OnFetchSoftwareDepsState();
+  bool force;
+  VoidCallback? onReady;
+  OnFetchSoftwareDepsState({this.force: false, this.onReady});
 }
 
 class OnFetchStateFailed extends AppActions {

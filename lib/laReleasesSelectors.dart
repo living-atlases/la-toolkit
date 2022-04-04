@@ -25,6 +25,13 @@ class LAReleasesSelectors extends StatefulWidget {
 
 class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
   final debouncer = Debouncer(milliseconds: 1000);
+  late bool _loading;
+
+  @override
+  void initState() {
+    super.initState();
+    _loading = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +46,18 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
               onSaveProject: (project) {
                 debouncer
                     .run(() => store.dispatch(SaveCurrentProject(project)));
-              });
+              },
+              refreshSWVersions: () => store.dispatch(OnFetchSoftwareDepsState(
+                  force: true,
+                  onReady: () => setState(() {
+                        _loading = false;
+                      }))));
         },
         builder: (BuildContext context, _LAReleasesSelectorsViewModel vm) {
           LAProject project = vm.project;
           List<LAServiceDesc> services =
               LAServiceDesc.listSorted(project.isHub);
           List<Widget> selectors = [];
-
           for (LAServiceDesc serviceDesc in services) {
             String serviceNameInt = serviceDesc.nameInt;
             LAReleases? releases = vm.laReleases[serviceNameInt];
@@ -114,7 +125,13 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                   "Here you can select which version of each LA component do you want to deploy in order to keep your portal updated. ${(project.inProduction || project.allServicesAssignedToServers()) ? 'In green services that need to be deployed, and in blue your current running versions. ' : ''}You can verify also which versions are running other LA portals."),
               trailing: HelpIcon(wikipage: "Components-versioning"),
             ),
-            Wrap(children: selectors)
+            Wrap(children: selectors),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                child: TextButton.icon(
+                    onPressed: _loading ? null : () => _onPressed(vm),
+                    label: const Text("Refresh"),
+                    icon: const Icon(Icons.refresh)))
           ]);
         });
   }
@@ -134,11 +151,21 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
       return storedVersion;
     }
   }
+
+  _onPressed(vm) {
+    setState(() {
+      _loading = true;
+    });
+    vm.refreshSWVersions();
+  }
 }
 
 class _LAReleasesSelectorsViewModel {
   final Map<String, LAReleases> laReleases;
+  final Function() refreshSWVersions;
   final LAProject project;
+  final bool runningVersionsRetrieved;
+  final void Function(LAProject project) onSaveProject;
 
   @override
   bool operator ==(Object other) =>
@@ -157,12 +184,10 @@ class _LAReleasesSelectorsViewModel {
       runningVersionsRetrieved.hashCode ^
       const DeepCollectionEquality.unordered().hash(laReleases);
 
-  final bool runningVersionsRetrieved;
-  final void Function(LAProject project) onSaveProject;
-
   _LAReleasesSelectorsViewModel(
       {required this.laReleases,
       required this.project,
       required this.runningVersionsRetrieved,
+      required this.refreshSWVersions,
       required this.onSaveProject});
 }

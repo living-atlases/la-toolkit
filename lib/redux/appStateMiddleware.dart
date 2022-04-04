@@ -164,7 +164,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
       if (!AppUtils.isDemo()) {
         // ALA other Releases
-        if (store.state.lastSwCheck != null &&
+        if (!action.force &&
+            store.state.lastSwCheck != null &&
             (store.state.lastSwCheck!
                 .isAfter(DateTime.now().subtract(const Duration(days: 1))))) {
           print(
@@ -178,6 +179,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           }
           releases = await getDepsVersions(servicesAndSub);
           store.dispatch(OnLAVersionsSwCheck(releases, DateTime.now()));
+          if (action.onReady != null) action.onReady!();
         }
       }
     }
@@ -442,6 +444,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     Map<String, dynamic> excludeList = jsonBody['excludeList'];
     try {
       for (String service in jsonBody.keys) {
+        print("Processing $service deps");
+        if (service == "excludeList") continue;
         List<String> versions = [];
         List<String> releasesVersions =
             getResponseVersions(jsonBody, "releases", service);
