@@ -111,7 +111,7 @@ Future<void> main() async {
     io.socket.on('project', (projects) {
       debouncer.run(() {
         print('sails websocket: projects subs call');
-        store.dispatch(OnProjectsLoad(projects));
+        store.dispatch(OnProjectsLoad(projects, false));
       });
     });
   }

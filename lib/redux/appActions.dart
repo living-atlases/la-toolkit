@@ -123,8 +123,9 @@ class ProjectsLoad extends AppActions {
 
 class OnProjectsLoad extends AppActions {
   List<dynamic> projectsJson;
+  bool setCurrentProject;
 
-  OnProjectsLoad(this.projectsJson);
+  OnProjectsLoad(this.projectsJson, [this.setCurrentProject = true]);
 }
 
 class OnDemoProjectsLoad extends AppActions {

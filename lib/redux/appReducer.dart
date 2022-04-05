@@ -248,9 +248,11 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
       print(pJson);
     }
   }
-  LAProject currentProject = ps.firstWhere(
-      (p) => p.id == state.currentProject.id,
-      orElse: () => ps.isNotEmpty ? ps[0] : LAProject());
+  LAProject currentProject = action.setCurrentProject
+      ? ps.firstWhere((p) => p.id == state.currentProject.id,
+          orElse: () => ps.isNotEmpty ? ps[0] : LAProject())
+      : state.currentProject;
+  // print("Next project ${currentProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
   return state.copyWith(
       currentProject: currentProject, projects: ps, loading: false);
 }
@@ -280,6 +282,7 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
     // If we update a parent project, stay in hub project
     nextProject = state.currentProject;
   }
+  // print("Next project ${nextProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
   return state.copyWith(
       currentProject: nextProject, projects: ps, loading: false);
 }
