@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:beamer/beamer.dart';
@@ -19,6 +20,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:sails_io/sails_io.dart';
+import 'package:sentry/sentry.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
 
 import 'components/appSnackBarMessage.dart';
@@ -49,85 +51,93 @@ Future<void> main() async {
     }
   }
 
-  if (kReleaseMode) {
-    // is Release Mode ??
-    print('Running in release mode');
-    print("Backend: ${dotenv.env['BACKEND']}");
-  } else {
-    print('Running in debug mode');
-    print("Backend: ${dotenv.env['BACKEND']}");
-  }
+  runZonedGuarded(() async {
+    await Sentry.init(
+      (options) {
+        options.dsn = "${dotenv.env['SENTRY_DSN']}";
+      },
+    );
 
-  AppState initialState = await appStateMiddleware.getState();
-  // print("Loaded prefs: $state");
-
-  Store<AppState> store = Store<AppState>(
-    appReducer,
-    initialState: initialState,
-    middleware: [
-      customLogPrinter(),
-      appStateMiddleware,
-    ],
-  );
-  store.onChange.listen((state) {
-    // Disable for now
-    // print("On store change: $state");
-    try {
-      appStateMiddleware.saveAppState(state);
-    } catch (e) {
-      store.dispatch(ShowSnackBar(
-        AppSnackBarMessage.ok(
-            "Something failed when trying to save your configuration"),
-      ));
+    if (kReleaseMode) {
+      // is Release Mode ??
+      print('Running in release mode');
+      print("Backend: ${dotenv.env['BACKEND']}");
+    } else {
+      print('Running in debug mode');
+      print("Backend: ${dotenv.env['BACKEND']}");
     }
-  });
-  store.dispatch(ProjectsLoad());
-  store.dispatch(OnFetchSoftwareDepsState());
 
-  if (!AppUtils.isDemo()) {
-    var io = SailsIOClient(socket_io_client.io(
-        "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",
-        socket_io_client.OptionBuilder().setTransports(['websocket']).build()));
+    AppState initialState = await appStateMiddleware.getState();
+    // print("Loaded prefs: $state");
 
-    io.socket.onConnect((_) {
-      // print('sails websocket: Connected to backend');
+    Store<AppState> store = Store<AppState>(
+      appReducer,
+      initialState: initialState,
+      middleware: [
+        customLogPrinter(),
+        appStateMiddleware,
+      ],
+    );
+    store.onChange.listen((state) {
+      // Disable for now
+      // print("On store change: $state");
+      try {
+        appStateMiddleware.saveAppState(state);
+      } catch (e) {
+        store.dispatch(ShowSnackBar(
+          AppSnackBarMessage.ok(
+              "Something failed when trying to save your configuration"),
+        ));
+      }
     });
-
-    io.socket.onError((e) {
-      print('sails websocket: Error connecting to backend');
-      print(e);
-    });
-
-    io.get(
-        url:
-            "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
-        cb: (body, jwrResponse) {
-          // print(body);
-          // print(jwrResponse.toJson());
-        });
-
-    // https://sailsjs.com/documentation/reference/web-sockets/socket-client/io-socket-on
-    final debouncer = Debouncer(milliseconds: 1000);
-    io.socket.on('project', (projects) {
-      debouncer.run(() {
-        print('sails websocket: projects subs call');
-        store.dispatch(OnProjectsLoad(projects, false));
-      });
-    });
-  }
-
-  final cron = Cron();
-  cron.schedule(Schedule.parse('0 */3 * * *'), () async {
-    // Every 3 hours check for new versions
+    store.dispatch(ProjectsLoad());
     store.dispatch(OnFetchSoftwareDepsState());
-  });
 
-  // https://github.com/slovnicki/beamer/tree/master/package#tips-and-common-issues
-  // This does not work in production as /project is a sails blueprint path also
-  // Beamer.setPathUrlStrategy();
+    if (!AppUtils.isDemo()) {
+      var io = SailsIOClient(socket_io_client.io(
+          "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",
+          socket_io_client.OptionBuilder()
+              .setTransports(['websocket']).build()));
 
-  runApp(MyApp(store: store));
-  /* runApp(BetterFeedback(
+      io.socket.onConnect((_) {
+        // print('sails websocket: Connected to backend');
+      });
+
+      io.socket.onError((e) {
+        print('sails websocket: Error connecting to backend');
+        print(e);
+      });
+
+      io.get(
+          url:
+              "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
+          cb: (body, jwrResponse) {
+            // print(body);
+            // print(jwrResponse.toJson());
+          });
+
+      // https://sailsjs.com/documentation/reference/web-sockets/socket-client/io-socket-on
+      final debouncer = Debouncer(milliseconds: 1000);
+      io.socket.on('project', (projects) {
+        debouncer.run(() {
+          print('sails websocket: projects subs call');
+          store.dispatch(OnProjectsLoad(projects, false));
+        });
+      });
+    }
+
+    final cron = Cron();
+    cron.schedule(Schedule.parse('0 */3 * * *'), () async {
+      // Every 3 hours check for new versions
+      store.dispatch(OnFetchSoftwareDepsState());
+    });
+
+    // https://github.com/slovnicki/beamer/tree/master/package#tips-and-common-issues
+    // This does not work in production as /project is a sails blueprint path also
+    // Beamer.setPathUrlStrategy();
+
+    runApp(MyApp(store: store));
+    /* runApp(BetterFeedback(
     // key: _mainKey,
     child: MyApp(store: store),
     /*  onFeedback: (
@@ -144,13 +154,16 @@ Future<void> main() async {
     }, */
   )); */
 
-  if (initialState.failedLoad) {
-    store.dispatch(OnFetchStateFailed());
-    store.dispatch(ShowSnackBar(
-        AppSnackBarMessage.ok("Failed to retrieve your configuration")));
-  }
-  /*
+    if (initialState.failedLoad) {
+      store.dispatch(OnFetchStateFailed());
+      store.dispatch(ShowSnackBar(
+          AppSnackBarMessage.ok("Failed to retrieve your configuration")));
+    }
+    /*
   Does not work because creates an additional new MaterialApp and this breaks the navigation */
+  }, (exception, stackTrace) async {
+    await Sentry.captureException(exception, stackTrace: stackTrace);
+  });
 }
 
 // https://stackoverflow.com/questions/50303441/flutter-redux-navigator-globalkey-currentstate-returns-null
