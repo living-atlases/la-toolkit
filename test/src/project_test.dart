@@ -1145,7 +1145,11 @@ void main() {
         solrcloud,
         zookeeper,
         namematchingService,
-        dataQuality
+        dataQuality,
+        biocollect,
+        pdfgen,
+        ecodata,
+        ecodataReporting
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason:
@@ -1195,7 +1199,11 @@ void main() {
         solrcloud,
         zookeeper,
         namematchingService,
-        dataQuality
+        dataQuality,
+        biocollect,
+        pdfgen,
+        ecodata,
+        ecodataReporting
       ];
       if (notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(false),
@@ -1236,7 +1244,11 @@ void main() {
         solrcloud,
         zookeeper,
         namematchingService,
-        dataQuality
+        dataQuality,
+        biocollect,
+        pdfgen,
+        ecodata,
+        ecodataReporting
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");

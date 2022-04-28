@@ -179,6 +179,7 @@ class ElasticSearch extends BasicService {
   static final v5_6_6 = ElasticSearch("5.6.6");
   static final v7_7_1 = ElasticSearch("7.7.1");
   static final v7_3_0 = ElasticSearch("7.3.0");
+  static final v7_14_1 = ElasticSearch("7.14.1");
 }
 
 class Spark extends BasicService {
@@ -196,6 +197,21 @@ class Spark extends BasicService {
 class Hadoop extends Tcp {
   Hadoop(version) : super("hadoop", version, 9000);
   static final def = Hadoop("");
+}
+
+class Biocollect extends Tcp {
+  Biocollect(version) : super("biocollect", version, 9003, false);
+  static final def = Biocollect("");
+}
+
+class Ecodata extends Tcp {
+  Ecodata(version) : super("ecodata", version, 9004, false);
+  static final def = Ecodata("");
+}
+
+class EcodataReporting extends Tcp {
+  EcodataReporting(version) : super("ecodata-reporting", version, 9005, false);
+  static final def = EcodataReporting("");
 }
 
 // Playbooks

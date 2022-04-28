@@ -583,11 +583,53 @@ class LAServiceDesc {
         withoutUrl: true,
         allowMultipleDeploys: true,
         path: ""),
-    //spark: LAServiceDesc(name: spark, nameIn),
-
-    /*    artifactAnsibleVar: "biocollect_version",
-    artifactAnsibleVar: "ecodata_version",
-    artifactAnsibleVar: "ecodata_version",*/
+    biocollect: LAServiceDesc(
+        name: biocollect,
+        nameInt: biocollect,
+        group: biocollect,
+        forceSubdomain: true,
+        allowMultipleDeploys: false,
+        icon: Icons.compost,
+        desc: 'advanced data collection tool for biodiversity science',
+        sample: "https://biocollect.ala.org.au/acsa",
+        artifacts: "biocollect_version",
+        optional: true,
+        path: ""),
+    pdfgen: LAServiceDesc(
+        name: pdfgen,
+        nameInt: pdfgen,
+        group: pdfgen,
+        allowMultipleDeploys: false,
+        desc: 'Service for turning .docs into .pdfs (used by biocollect)',
+        icon: MdiIcons.filePdfBox,
+        depends: LAServiceName.biocollect,
+        artifacts: "pdf_service_version",
+        optional: true,
+        path: ""),
+    ecodata: LAServiceDesc(
+        name: ecodata,
+        nameInt: ecodata,
+        group: ecodata,
+        forceSubdomain: true,
+        icon: Icons.playlist_add_circle,
+        allowMultipleDeploys: false,
+        depends: LAServiceName.biocollect,
+        artifacts: "ecodata_version",
+        desc: 'provides primarily data services for BioCollect applications',
+        optional: true,
+        path: ""),
+    ecodataReporting: LAServiceDesc(
+        name: 'ecodata-reporting',
+        nameInt: ecodataReporting,
+        group: 'ecodata-reporting',
+        forceSubdomain: true,
+        icon: Icons.playlist_add_check_circle,
+        allowMultipleDeploys: false,
+        artifacts: "ecodata_version",
+        depends: LAServiceName.biocollect,
+        desc: 'provides reporting service for ecodata',
+        optional: true,
+        path: "")
   };
 
   static LAServiceDesc get(String nameInt) {

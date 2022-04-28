@@ -45,7 +45,11 @@ enum LAServiceName {
   pipelines,
   spark,
   hadoop,
-  pipelinesJenkins
+  pipelinesJenkins,
+  biocollect,
+  pdfgen,
+  ecodata,
+  ecodata_reporting
 }
 
 extension ParseToString on LAServiceName {

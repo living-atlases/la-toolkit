@@ -165,6 +165,9 @@ class Dependencies {
     spatialService: "0.4",
     userdetails: "2.3.0",
     webapi: "2.0",
+    biocollect: "5.2.6",
+    pdfgen: "1.3",
+    ecodata: "3.3.1",
   };
 
   static final Map<String, String> defVersions2_1_0 = {

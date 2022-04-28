@@ -196,6 +196,32 @@ class LAServiceDepsDesc {
       nameInt: pipelinesJenkins,
       serviceDepends: [Java.v8],
     ),
+    biocollect: LAServiceDepsDesc(
+      nameInt: biocollect,
+      serviceDepends: [Java.v8, Nginx.def, Biocollect.def],
+    ),
+    pdfgen: LAServiceDepsDesc(
+      nameInt: pdfgen,
+      serviceDepends: [
+        Java.v8,
+        Nginx.def,
+        Tomcat.v8,
+      ],
+    ),
+    ecodata: LAServiceDepsDesc(
+      nameInt: ecodata,
+      serviceDepends: [
+        Java.v8,
+        Nginx.def,
+        Ecodata.def,
+        Mongo.v4_0,
+        ElasticSearch.v7_14_1
+      ],
+    ),
+    ecodataReporting: LAServiceDepsDesc(
+      nameInt: ecodataReporting,
+      serviceDepends: [Java.v8, Nginx.def, EcodataReporting.def],
+    ),
   };
 /*
   static final Map<String, Map<String, LAServiceDepsDesc>> map = {

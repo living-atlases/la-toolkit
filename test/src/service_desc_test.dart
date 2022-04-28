@@ -46,6 +46,6 @@ void main() {
   });
 
   test('Compare services name and map', () {
-    expect(LAServiceDesc.listWithArtifact().length, equals(27));
+    expect(LAServiceDesc.listWithArtifact().length, equals(31));
   });
 }
