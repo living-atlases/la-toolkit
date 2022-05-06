@@ -180,6 +180,13 @@ If you were using other generated inventories, you can import it using the (+) b
 - Tune your imported project in the Edit and Tune tools. For instance, add your servers IPs, etc. See that there is a "Advanced" mode. There you can copy in the bottom text area your inventory local-extras.
 - After enter in the Deploy Tool, some new inventories will be generated (and also a new password file). Substitute that generated local-password with your old one that you are using, to restore your passwords and not using new ones.
 
+## Migrate your la-toolkit to other location
+
+You should:
+
+- copy [all your volumes](https://github.com/living-atlases/la-toolkit#data-directories) to the new server.
+- restore a recent [mongo db backup](https://github.com/living-atlases/la-toolkit/blob/b423827c384b456e4334eb541212c6507437c474/docker-compose.yml#L62).
+
 ## Logs and debugging
 
 Startup errors can be debuged running `docker-compose` without `-d`:
