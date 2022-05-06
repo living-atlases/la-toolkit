@@ -185,7 +185,7 @@ If you were using other generated inventories, you can import it using the (+) b
 You should:
 
 - copy [all your volumes](https://github.com/living-atlases/la-toolkit#data-directories) to the new server.
-- restore a recent [mongo db backup](https://github.com/living-atlases/la-toolkit/blob/b423827c384b456e4334eb541212c6507437c474/docker-compose.yml#L62).
+- restore a recent [mongo db backup](https://github.com/living-atlases/la-toolkit/blob/b423827c384b456e4334eb541212c6507437c474/docker-compose.yml#L62). Something like `mongorestore --drop  -u your_la_toolkit_mongo_admin -p your_mongo_admin_pass your-backup-directory` should restore it.
 
 ## Logs and debugging
 
