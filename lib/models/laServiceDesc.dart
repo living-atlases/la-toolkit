@@ -169,7 +169,7 @@ class LAServiceDesc {
         alaAdmin: true,
         hubCapable: true,
         allowMultipleDeploys: true,
-        artifacts: "ala-bie",
+        artifacts: "ala-bie ala-bie-hub",
         path: ""),
     bieIndex: LAServiceDesc(
         name: "species-ws",
@@ -592,7 +592,7 @@ class LAServiceDesc {
         icon: Icons.compost,
         desc: 'advanced data collection tool for biodiversity science',
         sample: "https://biocollect.ala.org.au/acsa",
-        artifacts: "biocollect_version",
+        artifacts: "biocollect",
         optional: true,
         path: ""),
     pdfgen: LAServiceDesc(
@@ -603,7 +603,7 @@ class LAServiceDesc {
         desc: 'Service for turning .docs into .pdfs (used by biocollect)',
         icon: MdiIcons.filePdfBox,
         depends: LAServiceName.biocollect,
-        artifacts: "pdf_service_version",
+        artifacts: "pdfgen",
         optional: true,
         path: ""),
     ecodata: LAServiceDesc(
@@ -614,7 +614,7 @@ class LAServiceDesc {
         icon: Icons.playlist_add_circle,
         allowMultipleDeploys: false,
         depends: LAServiceName.biocollect,
-        artifacts: "ecodata_version",
+        artifacts: "ecodata",
         desc: 'provides primarily data services for BioCollect applications',
         optional: true,
         path: ""),
@@ -625,7 +625,7 @@ class LAServiceDesc {
         forceSubdomain: true,
         icon: Icons.playlist_add_check_circle,
         allowMultipleDeploys: false,
-        artifacts: "ecodata_version",
+        artifacts: "ecodata",
         depends: LAServiceName.biocollect,
         desc: 'provides reporting service for ecodata',
         optional: true,
@@ -770,7 +770,10 @@ class LAServiceDesc {
     "namemaching_service": "namematching_service_version",
     "data_quality": "data_quality_filter_service_version",
     "solr": "solr_version",
-    "solrcloud": "solrcloud_version"
+    "solrcloud": "solrcloud_version",
+    biocollect: "biocollect_version",
+    ecodata: "ecodata_version",
+    pdfgen: "pdf_service_version"
   };
 
   @override

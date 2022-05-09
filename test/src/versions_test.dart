@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 void main() {
   test('Compare versions', () {
     Version v123 = Version.parse('1.2.3');
+    Version v123SNAP = Version.parse('1.2.3-SNAPSHOT');
     List<VersionConstraint> failConstraints = [
       VersionConstraint.parse('^2.0.0'),
       VersionConstraint.parse('>1.2.4'),
@@ -23,6 +24,16 @@ void main() {
     }
     for (VersionConstraint cont in validConstraints) {
       expect(cont.allows(v123), equals(true));
+    }
+    for (VersionConstraint cont in failConstraints) {
+      expect(cont.allows(v123SNAP), equals(false));
+    }
+    for (VersionConstraint cont in validConstraints) {
+      expect(cont.allows(v123SNAP), equals(true),
+          // 1.2.3-SNAPSHOT < 1.2.3, so skip for now
+          // https://semver.org/#spec-item-11
+          reason: "$cont fails with $v123SNAP",
+          skip: true);
     }
   });
 

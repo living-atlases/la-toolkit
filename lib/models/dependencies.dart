@@ -113,10 +113,16 @@ class Dependencies {
     /* biocacheStore: {
       vc("any"): {biocacheService: vc("< 3.0.0")}
     }, */
+    biocollect: {
+      vc("any"): {alaInstall: vc(">= 2.1.7"), generator: vc(">= 1.2.32")},
+    },
     biocacheCli: {
       vc("any"): {solr: vc("< 8.0.0")},
       vc(">= 2.4.5"): {images: vc(">= 1.0.7")},
       vc("< 3.0.0"): {biocacheService: vc("< 3.0.0")}
+    },
+    dashboard: {
+      vc(">= 2.2"): {alaInstall: vc(">= 2.0.5")}
     },
     doi: {
       vc(">= 1.1"): {biocacheService: vc(">= 2.5.0"), regions: vc(">= 3.3.4")}
@@ -134,11 +140,12 @@ class Dependencies {
         images: vc(">= 1.1.1-7")
       }
     },
-    dashboard: {
-      vc(">= 2.2"): {alaInstall: vc(">= 2.0.5")}
-    },
     spatial: {
       vc(">= 0.3.12"): {spatialService: vc("> 0.3.12")}
+    },
+    speciesLists: {
+      vc("< 4.0.0"): {nameindexer: vc("any")},
+      vc(">= 4.0.0"): {namematchingService: vc("any")}
     }
   };
 
@@ -194,6 +201,9 @@ class Dependencies {
     spatialService: "0.4",
     userdetails: "2.3.0",
     webapi: "2.0",
+    biocollect: "5.2.6",
+    pdfgen: "1.3",
+    ecodata: "3.3.1",
   };
 
   static Map<VersionConstraint, Map<String, String>> defaultVersions = {
@@ -202,8 +212,6 @@ class Dependencies {
     vc('> 2.0.11 < 2.1.0'): defVersions2_0_11,
     vc('>= 2.1.0'): defVersions2_1_0
   };
-
-// biocollect_version=5.1.2
 
   static VersionConstraint vc(String c) =>
       VersionConstraint.parse(StringUtils.semantize(c));
