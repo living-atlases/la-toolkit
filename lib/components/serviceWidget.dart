@@ -188,7 +188,9 @@ class ServiceWidget extends StatelessWidget {
                                       'Invalid subdomain.'),
                                 if (!withoutUrl && usesSubdomain)
                                   Text('.$domain/', style: domainTextStyle),
-                                if (!withoutUrl && usesSubdomain)
+                                if (!withoutUrl &&
+                                    usesSubdomain &&
+                                    !serviceDesc.forceSubdomain)
                                   _createPathField(service, serviceDesc, vm,
                                       'Invalid path.'),
                                 if (!withoutUrl && !usesSubdomain)
