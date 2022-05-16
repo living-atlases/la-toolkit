@@ -3,11 +3,13 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/pipelinesTimeline.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/pipelinesStepDesc.dart';
+import 'package:la_toolkit/models/pipelinesStepName.dart';
 import 'package:la_toolkit/redux/appActions.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
+import 'components/alertCard.dart';
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
@@ -141,6 +143,16 @@ class _PipelinesPageState extends State<PipelinesPage> {
                                         vm.onSaveCmd(cmd);
                                       },
                                     )),
+                                if (((cmd.steps.contains(clustering) ||
+                                            cmd.steps.contains(jackknife)) ||
+                                        cmd.allSteps) &&
+                                    !cmd.allDrs &&
+                                    cmd.drs != null &&
+                                    cmd.drs!.isNotEmpty)
+                                  const AlertCard(
+                                    message:
+                                        "Run 'clustering' and/or 'jackkife' steps only with all drs",
+                                  ),
                                 LaunchBtn(
                                     onTap: onTap,
                                     execBtn: execBtn,

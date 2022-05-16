@@ -130,6 +130,7 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
                 } else {
                   if (cmd.steps.contains(step.name)) {
                     cmd.steps.remove(step.name);
+                    cmd.allSteps = false;
                   } else {
                     cmd.steps.add(step.name);
                   }
@@ -359,6 +360,7 @@ class _DrInput extends StatelessWidget {
       regexp: LARegExp.drs,
       onChanged: onChanged,
       enabled: !allDrs,
+      allowEmpty: allDrs,
       initialValue: initialValue,
     );
   }
