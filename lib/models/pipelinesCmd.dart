@@ -101,8 +101,9 @@ class PipelinesCmd extends CommonCmd {
             datasetList,
             pruneDatasets,
             validationReport,
-            jackknife,
-            clustering
+            // commenting as we have to use "all"
+            // jackknife,
+            // clustering
           ].contains(step))
       .toList()
       .isNotEmpty;
