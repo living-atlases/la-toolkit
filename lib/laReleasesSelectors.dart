@@ -86,7 +86,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                     );
                   }
                   if (version == runningVersion) {
-                    highlight[version] = TextStyle(
+                    highlight[version] = const TextStyle(
                         color: LAColorTheme.deployedColor,
                         fontWeight: FontWeight.w400);
                   } else if (version == releases.latest) {

@@ -652,6 +652,7 @@ check results length: ${checkResults.length}''';
         return version;
       }
     }
+    return version;
   }
 
   // Each serviceDeploy has a Map of software/versions
@@ -1323,6 +1324,7 @@ check results length: ${checkResults.length}''';
         return masterPipelinesServer;
       }
     }
+    return null;
   }
 
   List<String> getIncompatibilities() {

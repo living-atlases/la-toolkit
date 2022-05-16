@@ -351,7 +351,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                   Row(children: [
                                     const Text(
                                         "Note: the colors of the variables values indicate if these values are "),
-                                    Text("already deployed",
+                                    const Text("already deployed",
                                         style: LAColorTheme.deployedTextStyle),
                                     const Text(" in your servers or "),
                                     Text("they are not deployed yet",

@@ -41,15 +41,15 @@ class LAColorTheme {
   static const inactive = Colors.blueGrey;
   static final Color link = Colors.blueAccent.shade100;
   static final unDeployedColor = LAColorTheme.laPalette.shade800;
-  static final deployedColor = Colors.blueAccent;
+  static const deployedColor = Colors.blueAccent;
   static final up = Colors.green.shade400;
   static final down = Colors.red.shade300;
   static final unDeployedTextStyle = TextStyle(color: unDeployedColor);
-  static final deployedTextStyle = TextStyle(color: deployedColor);
+  static const deployedTextStyle = TextStyle(color: deployedColor);
   static final fixedUnDeployedTextStyle = GoogleFonts.ibmPlexMono(
     textStyle: TextStyle(color: unDeployedColor),
   );
   static final fixedDeployedTextStyle = GoogleFonts.ibmPlexMono(
-    textStyle: TextStyle(color: deployedColor),
+    textStyle: const TextStyle(color: deployedColor),
   );
 }

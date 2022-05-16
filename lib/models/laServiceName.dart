@@ -49,6 +49,7 @@ enum LAServiceName {
   biocollect,
   pdfgen,
   ecodata,
+  // ignore: constant_identifier_names
   ecodata_reporting
 }
 
