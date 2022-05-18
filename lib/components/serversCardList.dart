@@ -8,6 +8,8 @@ import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
+import '../models/laServer.dart';
+
 class ServersCardList extends StatelessWidget {
   const ServersCardList({Key? key}) : super(key: key);
 
@@ -51,8 +53,9 @@ class ServersCardList extends StatelessWidget {
                                         children: <Widget>[
                                       RenameServerIcon(_project.servers[index],
                                           (String newName) {
-                                        _project.serverRename(
-                                            _project.servers[index], newName);
+                                        LAServer s = _project.servers[index];
+                                        s.name = newName;
+                                        _project.upsertServer(s);
                                         vm.onSaveCurrentProject(_project);
                                       }),
                                       Tooltip(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -11,16 +10,16 @@ class ServerSshKeySelector extends StatefulWidget {
   final SshKey? currentSshKey;
   final List<SshKey> sshKeys;
   final bool isFirst;
-  final LAProject project;
-  final Function(LAProject) onSave;
+  final Function(LAServer) onSave;
+  final Function(SshKey?) onAllSameSshKey;
   const ServerSshKeySelector(
       {Key? key,
-      required this.project,
       required this.server,
       this.currentSshKey,
       required this.sshKeys,
       required this.isFirst,
-      required this.onSave})
+      required this.onSave,
+      required this.onAllSameSshKey})
       : super(key: key);
 
   @override
@@ -83,9 +82,7 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
         if (value != null) {
           if (widget.isFirst) {
             UiUtils.showAlertDialog(context, () {
-              for (int i = 0; i < widget.project.servers.length; i++) {
-                widget.project.servers[i].sshKey = value;
-              }
+              widget.onAllSameSshKey(value);
             }, () {
               widget.server.sshKey = value;
             },
@@ -97,8 +94,7 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
           } else {
             widget.server.sshKey = value;
           }
-          widget.project.upsertServer(widget.server);
-          widget.onSave(widget.project);
+          widget.onSave(widget.server);
           if (mounted) {
             setState(() {
               _sshKey = value;

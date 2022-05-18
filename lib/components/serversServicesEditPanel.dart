@@ -46,7 +46,8 @@ class _ServersServicesEditPanelState extends State<ServersServicesEditPanel> {
                   vm.onSaveCurrentProject(project);
                 },
                 onRename: (String newName) {
-                  vm.project.serverRename(server, newName);
+                  server.name = newName;
+                  project.upsertServer(server);
                   vm.onSaveCurrentProject(vm.project);
                 },
                 onDeleted: (LAServer server) {

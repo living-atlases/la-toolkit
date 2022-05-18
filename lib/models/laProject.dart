@@ -1354,9 +1354,4 @@ check results length: ${checkResults.length}''';
 
   bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();
   bool get showToolkitDeps => !isHub;
-
-  void serverRename(LAServer server, String newName) {
-    server.name = newName;
-    upsertServer(server);
-  }
 }
