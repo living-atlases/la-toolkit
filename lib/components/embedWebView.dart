@@ -89,15 +89,9 @@ class EmbedWebViewState extends State<EmbedWebView>
   Widget build(BuildContext context) {
     if (!AppUtils.isDemo() && widget.notify) {
       super.build(context);
-      _socket.onConnectError((e) {
-        _socket.disconnect();
-        String? perm = html.Notification.permission;
-        if (perm == "granted") {
-          html.Notification("LA Toolkit: Command finished",
-              icon:
-                  "https://raw.githubusercontent.com/living-atlases/artwork/master/icon-white.png");
-        }
-      });
+      // Does not works, so let's comment for now
+      //
+      // _socket.onConnectError((e) => onWebsocketEnd());
     }
     return SafeArea(
         bottom: false,
@@ -116,5 +110,15 @@ class EmbedWebViewState extends State<EmbedWebView>
                     ),
                   )
                 : const NotInTheDemoPanel()));
+  }
+
+  void onWebsocketEnd() {
+    _socket.disconnect();
+    String? perm = html.Notification.permission;
+    if (perm == "granted") {
+      html.Notification("LA Toolkit: Command finished",
+          icon:
+              "https://raw.githubusercontent.com/living-atlases/artwork/master/icon-white.png");
+    }
   }
 }
