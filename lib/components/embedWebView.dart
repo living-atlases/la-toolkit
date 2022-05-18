@@ -4,9 +4,9 @@ import 'package:la_toolkit/utils/utils.dart';
 // https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
 // ignore: implementation_imports
 import 'package:pointer_interceptor/src/shim/dart_ui.dart' as ui;
-import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:universal_html/html.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../notInDemo.dart';
 
@@ -30,7 +30,8 @@ class EmbedWebView extends StatefulWidget {
 
 class EmbedWebViewState extends State<EmbedWebView>
     with AutomaticKeepAliveClientMixin {
-  late io.Socket _socket;
+  late WebSocketChannel _channel;
+
   @override
   void initState() {
     super.initState();
@@ -41,25 +42,6 @@ class EmbedWebViewState extends State<EmbedWebView>
       ..style.border = 'none'
       ..style.overflow = "hidden"
       ..allow = "autoplay"
-/*      ..onChange.listen((event) {
-        print("ON IFRAME change");
-        print(event.currentTarget);
-      })
-      ..onLoad.listen((Event event) {
-        print("ON IFRAME LOAD");
-      })
-      ..onReset.listen((Event event) {
-        print("ON RESET");
-      })
-      ..onAbort.listen((Event event) {
-        print("ON ABORT");
-      }).onDone(() => {print("ON DONE")})
-      ..onLoadedData.listen((Event event) {
-        print("ON LOADED DATA");
-      })
-      ..onEnded.listen((Event event) {
-        print("ON ENDED");
-      }) */
       ..allowFullscreen = true;
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
@@ -67,20 +49,25 @@ class EmbedWebViewState extends State<EmbedWebView>
       (int viewId) => _iframeElement,
     );
     if (!AppUtils.isDemo() && widget.notify) {
-      _socket = io.io(
-        widget.src, // {"autoConnect": false}
-      );
-      _socket.on('disconnect', (_) => print('ON socket disconnect'));
-      _socket.onError((e) {
-        _socket.disconnect();
-      });
-    }
-  }
+      final uri = Uri.parse(widget.src.replaceAll("http", "ws"));
+      _channel = WebSocketChannel.connect(uri);
 
-  @override
-  void dispose() {
-    super.dispose();
-    if (!AppUtils.isDemo() && widget.notify) _socket.disconnect();
+      ///
+      /// Start listening to new notifications / messages
+      ///
+      _channel.stream.listen(
+        (dynamic message) {
+          // debugPrint('message $message');
+        },
+        onDone: () {
+          // debugPrint('ws channel closed');
+          onWebsocketEnd();
+        },
+        onError: (error) {
+          // debugPrint('ws error $error');
+        },
+      );
+    }
   }
 
   @override
@@ -113,7 +100,6 @@ class EmbedWebViewState extends State<EmbedWebView>
   }
 
   void onWebsocketEnd() {
-    _socket.disconnect();
     String? perm = html.Notification.permission;
     if (perm == "granted") {
       html.Notification("LA Toolkit: Command finished",
