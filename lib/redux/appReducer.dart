@@ -320,11 +320,13 @@ AppState _onTestConnectivityResults(
     currentProject.upsertServer(LAServer.fromJson(server));
   });
 
-  if (currentProject.allServersWithServicesReady() &&
-      currentProject.status.value <= LAProjectStatus.reachable.value) {
-    currentProject.setProjectStatus(LAProjectStatus.reachable);
-  } else {
-    currentProject.setProjectStatus(LAProjectStatus.advancedDefined);
+  if (currentProject.status != LAProjectStatus.inProduction) {
+    if (currentProject.allServersWithServicesReady() &&
+        currentProject.status.value <= LAProjectStatus.reachable.value) {
+      currentProject.setProjectStatus(LAProjectStatus.reachable);
+    } else {
+      currentProject.setProjectStatus(LAProjectStatus.advancedDefined);
+    }
   }
 
   return state.copyWith(
