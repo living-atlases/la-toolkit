@@ -56,11 +56,12 @@ Choose the latest release to update your portal.
         (versions.first != initialValue &&
             (initialValue != 'custom' && initialValue != 'upstream'));
 
-    String currentValueOrFirst = initialValueStillNotEmpty
-        ? initialValue!
-        : items.isNotEmpty
-            ? items[0].value!
-            : "";
+    String currentValueOrFirst =
+        initialValueStillNotEmpty && versions.contains(initialValue!)
+            ? initialValue!
+            : items.isNotEmpty
+                ? items[0].value!
+                : "";
 
     Container menu = Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
