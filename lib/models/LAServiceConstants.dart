@@ -19,6 +19,7 @@ final String images = LAServiceName.images.toS();
 final String logger = LAServiceName.logger.toS();
 final String nameindexer = LAServiceName.nameindexer.toS();
 final String namematchingService = LAServiceName.namematching_service.toS();
+final String sensitiveDataService = LAServiceName.sensitive_data_service.toS();
 final String dataQuality = LAServiceName.data_quality.toS();
 final String pipelines = LAServiceName.pipelines.toS();
 final String spark = LAServiceName.spark.toS();

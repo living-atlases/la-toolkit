@@ -163,6 +163,9 @@ class LAServiceDepsDesc {
     namematchingService: LAServiceDepsDesc(
         nameInt: namematchingService,
         serviceDepends: [Java.v8, Nginx.def, NameMatchingService.def]),
+    sensitiveDataService: LAServiceDepsDesc(
+        nameInt: sensitiveDataService,
+        serviceDepends: [Java.v8, Nginx.def, NameMatchingService.def]),
     dataQuality: LAServiceDepsDesc(
         nameInt: dataQuality,
         serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, PostgresSql.v10]),
@@ -182,7 +185,11 @@ class LAServiceDepsDesc {
     ),
     pipelines: LAServiceDepsDesc(
       nameInt: pipelines,
-      serviceDepends: [Java.v8],
+      serviceDepends: [
+        Java.v8,
+        NameMatchingService.def,
+        SensitiveDataService.def
+      ],
     ),
     spark: LAServiceDepsDesc(
       nameInt: spark,

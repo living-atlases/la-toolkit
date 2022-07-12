@@ -85,8 +85,17 @@ class Doi extends Tcp {
 class NameMatchingService extends BasicService {
   NameMatchingService(version)
       : super(
-            name: "namematching-service", version: version, tcp: [8880, 8881]);
+            name: "namematching-service", version: version, tcp: [9179, 9180]);
   static final def = NameMatchingService("");
+}
+
+class SensitiveDataService extends BasicService {
+  SensitiveDataService(version)
+      : super(
+            name: "sensitive-data-service",
+            version: version,
+            tcp: [9189, 9190]);
+  static final def = SensitiveDataService("");
 }
 
 class Nginx extends BasicService {

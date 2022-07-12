@@ -118,11 +118,16 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.biocache_cli: 'biocache_cli',
   LAServiceName.nameindexer: 'nameindexer',
   LAServiceName.namematching_service: 'namematching_service',
+  LAServiceName.sensitive_data_service: 'sensitive_data_service',
   LAServiceName.data_quality: 'data_quality',
   LAServiceName.pipelines: 'pipelines',
   LAServiceName.spark: 'spark',
   LAServiceName.hadoop: 'hadoop',
   LAServiceName.pipelinesJenkins: 'pipelinesJenkins',
+  LAServiceName.biocollect: 'biocollect',
+  LAServiceName.pdfgen: 'pdfgen',
+  LAServiceName.ecodata: 'ecodata',
+  LAServiceName.ecodata_reporting: 'ecodata_reporting',
 };
 
 const _$LAVariableStatusEnumMap = {

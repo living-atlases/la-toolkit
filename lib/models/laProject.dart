@@ -608,6 +608,7 @@ check results length: ${checkResults.length}''';
     if (newServices.contains(pipelines)) {
       newServices.add(spark);
       newServices.add(hadoop);
+      // namematching, and sensitive-data-service
     }
     return newServices;
   }

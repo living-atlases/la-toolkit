@@ -41,6 +41,8 @@ enum LAServiceName {
   // ignore: constant_identifier_names
   namematching_service,
   // ignore: constant_identifier_names
+  sensitive_data_service,
+  // ignore: constant_identifier_names
   data_quality,
   pipelines,
   spark,
