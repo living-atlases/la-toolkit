@@ -8,6 +8,7 @@ import 'package:la_toolkit/utils/utils.dart';
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
+import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/deployCmd.dart';
 import 'models/laProject.dart';
@@ -77,8 +78,17 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
                                 const SizedBox(height: 20),
                                 const Text(
                                     'This task will build and deploy your branding.'),
-                                const SizedBox(height: 20),
+                                const SizedBox(height: 10),
                                 LaunchBtn(onTap: onTap, execBtn: execBtn),
+                                const SizedBox(height: 10),
+                                TipsCard(
+                                    text:
+                                        '''This branding is based in the [base-branding](https://github.com/living-atlases/base-branding/) repository, a recommended way to develop a LA theme compatible with the LA software.
+
+Anyway this is only a start, you’ll need some [development environment](https://github.com/living-atlases/base-branding/#development) to customize and tune this branding for your portal needs. Take also into account [this issue](https://github.com/living-atlases/la-toolkit/issues/6) and the workaround: to deploy the branding outside of this la-toolkit docker container.
+
+Also take into account that under the `Deploy` tool you can run the `branding` step to deploy the nginx vhost that finally serves your branding in your server. 
+                                '''),
                               ],
                             )),
                         Expanded(
