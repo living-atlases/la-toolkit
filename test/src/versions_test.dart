@@ -17,7 +17,8 @@ void main() {
       VersionConstraint.parse('^1.0.0'),
       VersionConstraint.parse('>1.0.0 <1.3.0'),
       VersionConstraint.parse('>=1.2.3'),
-      VersionConstraint.parse('<2.0.0')
+      VersionConstraint.parse('<2.0.0'),
+      VersionConstraint.parse('1.2.3'),
     ];
     for (VersionConstraint cont in failConstraints) {
       expect(cont.allows(v123), equals(false));
