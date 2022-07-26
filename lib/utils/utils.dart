@@ -77,6 +77,7 @@ class UiUtils {
       child: Text(cancelBtn),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
+        onCancel();
       },
     );
     Widget continueButton = TextButton(
