@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit/models/MigrationNotesDesc.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/deployCmd.dart';
 import 'package:la_toolkit/models/tagsConstants.dart';
@@ -8,7 +9,9 @@ import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/debounce.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import 'components/alertCard.dart';
 import 'components/defDivider.dart';
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
@@ -21,6 +24,7 @@ import 'components/termsDrawer.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/commonCmd.dart';
+import 'models/dependencies.dart';
 import 'models/laProject.dart';
 import 'models/laService.dart';
 
@@ -75,6 +79,12 @@ class _DeployPageState extends State<DeployPage> {
             cmd.skipTags.isNotEmpty ||
             cmd.onlyProperties;
         String pageTitle = "${vm.project.shortName} Deployment";
+        Map<String, String> selectedVersions = {};
+        selectedVersions.addAll(vm.project.getServiceDeployReleases());
+        List<MigrationNotesDesc> migrationNotes =
+            Dependencies.getMigrationNotes(
+                vm.project.getServicesNameListInUse() + Dependencies.laTools,
+                selectedVersions);
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -224,6 +234,15 @@ class _DeployPageState extends State<DeployPage> {
                                     TipsCard(
                                         text:
                                             "This project is generated in the '${vm.project.dirName}' directory."),
+                                  Column(
+                                      children: migrationNotes
+                                          .map((m) => AlertCard(
+                                              message: m.text,
+                                              color: Colors.grey.shade100,
+                                              action: () => {launch(m.url)},
+                                              actionText: "READ MORE",
+                                              icon: Icons.info_outline))
+                                          .toList()),
                                   LaunchBtn(onTap: onTap, execBtn: execBtn),
                                 ])),
                         Expanded(

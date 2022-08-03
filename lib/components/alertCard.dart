@@ -4,9 +4,16 @@ class AlertCard extends StatelessWidget {
   final String message;
   final String? actionText;
   final VoidCallback? action;
+  final Color? color;
+  final IconData? icon;
 
   const AlertCard(
-      {Key? key, required this.message, this.actionText, this.action})
+      {Key? key,
+      required this.message,
+      this.actionText,
+      this.action,
+      this.icon,
+      this.color})
       : super(key: key);
 
   @override
@@ -15,12 +22,12 @@ class AlertCard extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(5, 10, 0, 0),
         child: Card(
             elevation: 2,
-            color: Colors.lightGreen.shade100,
+            color: color ?? Colors.lightGreen.shade100,
             child: Container(
                 margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: ListTile(
                   contentPadding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  leading: const Icon(Icons.warning_amber_outlined,
+                  leading: Icon(icon ?? Icons.warning_amber_outlined,
                       color: Colors.orangeAccent),
                   trailing: actionText != null
                       ? TextButton(

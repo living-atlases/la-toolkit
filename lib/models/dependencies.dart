@@ -1,4 +1,5 @@
 import 'package:la_toolkit/models/LAServiceConstants.dart';
+import 'package:la_toolkit/models/MigrationNotesDesc.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -119,6 +120,13 @@ class Dependencies {
         bie: vc(">= 1.5.0")
       }
     },
+    apikey: {
+      vc(">= 1.7.0"): {
+        cas: vc(">= 6.5.6-3"),
+        casManagement: vc(">= 6.5.5-2"),
+        userdetails: vc(">= 3.0.1")
+      }
+    },
     biocacheService: {
       vc(">= 2.5.0"): {tomcat: vc(">= 9.0.0")},
       // biocache-service 2.x - uses biocache-store
@@ -137,6 +145,21 @@ class Dependencies {
       vc(">= 2.4.5"): {images: vc(">= 1.0.7")},
       vc("< 3.0.0"): {biocacheService: vc("< 3.0.0")}
     },
+    cas: {
+      vc(">= 6.5.6-3"): {
+        casManagement: vc(">= 6.5.5-2"),
+        userdetails: vc(">= 3.0.1"),
+        apikey: vc(">= 1.7.0")
+      }
+    },
+    casManagement: {
+      vc(">= 6.5.5-2"): {
+        cas: vc(">= 6.5.6-3"),
+        userdetails: vc(">= 3.0.1"),
+        apikey: vc(">= 1.7.0")
+      }
+    },
+
     dashboard: {
       vc(">= 2.2"): {alaInstall: vc(">= 2.0.5")}
     },
@@ -162,7 +185,25 @@ class Dependencies {
     speciesLists: {
       vc("< 4.0.0"): {nameindexer: vc("any")},
       vc(">= 4.0.0"): {namematchingService: vc("any")}
+    },
+    userdetails: {
+      vc(">= 3.0.1"): {
+        cas: vc(">= 6.5.6-3"),
+        casManagement: vc(">= 6.5.5-2"),
+        apikey: vc(">= 1.7.0")
+      }
     }
+  };
+
+  static Map<String, Map<VersionConstraint, MigrationNotesDesc>>
+      laMigrationNotes = {
+    cas: {
+      vc(">= 6.5.6-3"): const MigrationNotesDesc(
+          text:
+              "You have to perform some additional steps if you are upgrading your auth services from previous versions",
+          url:
+              "https://github.com/AtlasOfLivingAustralia/ala-cas-5/blob/develop/UPGRADE.MD")
+    },
   };
 
   static final Map<String, String> defVersions2_0_11 = {
@@ -316,6 +357,43 @@ class Dependencies {
       print("Verify exception $e");
       print(stacktrace);
       return lintErrors.toList();
+    }
+  }
+
+  static List<MigrationNotesDesc> getMigrationNotes(
+      List<String> serviceInUse, Map<String, String> selectedVersions,
+      [bool debug = false]) {
+    Set<MigrationNotesDesc> migrationNotesList = {};
+    try {
+      selectedVersions.forEach((String sw, String version) {
+        if (debug) {
+          print("Checking dependencies for $sw");
+        }
+        if (version != 'custom' && version != 'upstream') {
+          if (laMigrationNotes[sw] != null) {
+            Version versionP = v(version);
+            laMigrationNotes[sw]!.forEach((VersionConstraint mainConstraint,
+                MigrationNotesDesc migrationNotes) {
+              if (mainConstraint.allows(versionP)) {
+                // Now we verify the rest of constraints dependencies
+                if (debug) {
+                  print("$mainConstraint applies to $sw");
+                }
+                migrationNotesList.add(migrationNotes);
+              }
+            });
+          } else {
+            if (debug) {
+              print("No dependencies for $sw");
+            }
+          }
+        }
+      });
+      return migrationNotesList.toList();
+    } catch (e, stacktrace) {
+      print("Verify exception $e");
+      print(stacktrace);
+      return migrationNotesList.toList();
     }
   }
 }
