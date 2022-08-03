@@ -22,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
+import '../utils/casUtils.dart';
 import 'appActions.dart';
 import 'entityActions.dart';
 import 'entityApis.dart';
@@ -428,6 +429,28 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         store.dispatch(ShowSnackBar(AppSnackBarMessage(
             'Something was wrong trying to delete that log, check the server logs')));
       }
+    }
+    if (action is OnInitCasKeys) {
+      var pac4jCookieSigningKey = await CASUtils.gen512CasKey();
+      var pac4jCookieEncryptionKey = await CASUtils.gen256CasKey();
+      var casWebflowSigningKey = await CASUtils.gen512CasKey();
+      var casWebflowEncryptionKey = await CASUtils.gen128CasKey();
+      store.dispatch(OnInitCasKeysResults(
+          pac4jCookieSigningKey: pac4jCookieSigningKey,
+          pac4jCookieEncryptionKey: pac4jCookieEncryptionKey,
+          casWebflowSigningKey: casWebflowSigningKey,
+          casWebflowEncryptionKey: casWebflowEncryptionKey));
+    }
+    if (action is OnInitCasOAuthKeys) {
+      String casOauthSigningKey = await CASUtils.gen512CasKey();
+      String casOauthEncryptionKey = await CASUtils.gen256CasKey();
+      String casOauthAccessTokenSigningKey = await CASUtils.gen512CasKey();
+      String casOauthAccessTokenEncryptionKey = await CASUtils.gen256CasKey();
+      store.dispatch(OnInitCasOAuthKeysResults(
+          casOauthSigningKey: casOauthSigningKey,
+          casOauthEncryptionKey: casOauthEncryptionKey,
+          casOauthAccessTokenSigningKey: casOauthAccessTokenSigningKey,
+          casOauthAccessTokenEncryptionKey: casOauthAccessTokenEncryptionKey));
     }
     next(action);
   }

@@ -13,7 +13,6 @@ import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
-import 'package:la_toolkit/utils/casUtils.dart';
 import 'package:la_toolkit/utils/mapUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:la_toolkit/utils/utils.dart';
@@ -240,23 +239,6 @@ class LAProject implements IsJsonSerializable<LAProject> {
       // re-assign to add sub-services
       print("reassigning $servicesInThatServer to ${server.name}");
       assign(server, servicesInThatServer);
-    }
-  }
-
-  init() async {
-    if (!isHub) {
-      // Try to generate default CAS keys
-      String pac4jSignKey = await CASUtils.gen512CasKey();
-      String pac4jEncKey = await CASUtils.gen256CasKey();
-      String webflowSignKey = await CASUtils.gen512CasKey();
-      String webflowEncKey = await CASUtils.gen128CasKey();
-      setVariable(LAVariableDesc.get("pac4j_cookie_signing_key"), pac4jSignKey);
-      setVariable(
-          LAVariableDesc.get("pac4j_cookie_encryption_key"), pac4jEncKey);
-      setVariable(
-          LAVariableDesc.get("cas_webflow_signing_key"), webflowSignKey);
-      setVariable(
-          LAVariableDesc.get("cas_webflow_encryption_key"), webflowEncKey);
     }
   }
 
@@ -523,6 +505,13 @@ check results length: ${checkResults.length}''';
         : null;
     if (isEmpty && value != null) setVariable(desc, value);
     return value;
+  }
+
+  bool isStringVariableNullOrEmpty(String nameInt) {
+    LAVariable variable = getVariable(nameInt);
+    bool isNull = variable.value == null;
+    if (isNull) return true;
+    return variable.value.toString().isEmpty;
   }
 
   void setVariable(LAVariableDesc variableDesc, Object value) {

@@ -123,11 +123,6 @@ class LAProjectEditPage extends StatelessWidget {
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           print('build project edit page');
           final LAProject _project = vm.project;
-          if (_project.getVariableValue("pac4j_cookie_signing_key") == null ||
-              _project.getVariableValue("pac4j_cookie_signing_key") == '') {
-            // Auto-generate CAS keys
-            _project.init();
-          }
           // Set default version of the project
           if (_project.alaInstallRelease == null &&
               vm.state.alaInstallReleases.isNotEmpty) {

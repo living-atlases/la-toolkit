@@ -378,3 +378,37 @@ class OnTestServicesResults extends AppActions {
 
   OnTestServicesResults(this.results);
 }
+
+class OnInitCasKeys extends AppActions {
+  OnInitCasKeys();
+}
+
+class OnInitCasKeysResults extends AppActions {
+  String pac4jCookieSigningKey;
+  String pac4jCookieEncryptionKey;
+  String casWebflowSigningKey;
+  String casWebflowEncryptionKey;
+
+  OnInitCasKeysResults(
+      {required this.pac4jCookieSigningKey,
+      required this.pac4jCookieEncryptionKey,
+      required this.casWebflowSigningKey,
+      required this.casWebflowEncryptionKey});
+}
+
+class OnInitCasOAuthKeys extends AppActions {
+  OnInitCasOAuthKeys();
+}
+
+class OnInitCasOAuthKeysResults extends AppActions {
+  String casOauthSigningKey;
+  String casOauthEncryptionKey;
+  String casOauthAccessTokenSigningKey;
+  String casOauthAccessTokenEncryptionKey;
+
+  OnInitCasOAuthKeysResults(
+      {required this.casOauthSigningKey,
+      required this.casOauthEncryptionKey,
+      required this.casOauthAccessTokenSigningKey,
+      required this.casOauthAccessTokenEncryptionKey});
+}

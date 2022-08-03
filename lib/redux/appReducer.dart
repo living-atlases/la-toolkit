@@ -12,6 +12,7 @@ import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
 
 import '../models/appState.dart';
+import '../models/laVariableDesc.dart';
 import 'actions.dart';
 import 'entityReducer.dart';
 
@@ -64,6 +65,8 @@ List<Reducer<AppState>> basic = [
   TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
   TypedReducer<AppState, OnPortalRunningVersionsRetrieved>(
       _onPortalRunningVersionsRetrieved),
+  TypedReducer<AppState, OnInitCasKeysResults>(_onInitCasKeysResults),
+  TypedReducer<AppState, OnInitCasOAuthKeysResults>(_onInitCasOAuthKeysResults)
 ];
 
 final appReducer =
@@ -467,5 +470,32 @@ AppState _onPortalRunningVersionsRetrieved(
     AppState state, OnPortalRunningVersionsRetrieved action) {
   LAProject cp = state.currentProject;
   cp.runningVersions = action.versions;
+  return state.copyWith(currentProject: cp);
+}
+
+AppState _onInitCasKeysResults(AppState state, OnInitCasKeysResults action) {
+  LAProject cp = state.currentProject;
+  cp.setVariable(LAVariableDesc.get("pac4j_cookie_signing_key"),
+      action.pac4jCookieSigningKey);
+  cp.setVariable(LAVariableDesc.get("pac4j_cookie_encryption_key"),
+      action.pac4jCookieEncryptionKey);
+  cp.setVariable(LAVariableDesc.get("cas_webflow_signing_key"),
+      action.casWebflowSigningKey);
+  cp.setVariable(LAVariableDesc.get("cas_webflow_encryption_key"),
+      action.casWebflowEncryptionKey);
+  return state.copyWith(currentProject: cp);
+}
+
+AppState _onInitCasOAuthKeysResults(
+    AppState state, OnInitCasOAuthKeysResults action) {
+  LAProject cp = state.currentProject;
+  cp.setVariable(
+      LAVariableDesc.get("cas_oauth_signing_key"), action.casOauthSigningKey);
+  cp.setVariable(LAVariableDesc.get("cas_oauth_encryption_key"),
+      action.casOauthAccessTokenEncryptionKey);
+  cp.setVariable(LAVariableDesc.get("cas_oauth_access_token_signing_key"),
+      action.casOauthAccessTokenSigningKey);
+  cp.setVariable(LAVariableDesc.get("cas_oauth_access_token_encryption_key"),
+      action.casOauthAccessTokenEncryptionKey);
   return state.copyWith(currentProject: cp);
 }

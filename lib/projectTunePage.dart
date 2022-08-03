@@ -61,6 +61,12 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
           generatorReleases: store.state.generatorReleases,
           backendVersion: store.state.backendVersion,
           sshKeys: store.state.sshKeys,
+          onInitCasKeys: () {
+            store.dispatch(OnInitCasKeys());
+          },
+          onInitCasOAuthKeys: () {
+            store.dispatch(OnInitCasOAuthKeys());
+          },
           onSaveProject: (project) {
             store.dispatch(SaveCurrentProject(project));
           },
@@ -76,6 +82,28 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
       },
       builder: (BuildContext context, _ProjectTuneViewModel vm) {
         LAProject project = vm.project;
+        if (!project.isHub &&
+            (project.isStringVariableNullOrEmpty("pac4j_cookie_signing_key") ||
+                project.isStringVariableNullOrEmpty(
+                    "pac4j_cookie_encryption_key") ||
+                project
+                    .isStringVariableNullOrEmpty("cas_webflow_signing_key") ||
+                project.isStringVariableNullOrEmpty(
+                    "cas_webflow_encryption_key"))) {
+          // Auto-generate CAS keys
+          vm.onInitCasKeys();
+        }
+        if (!project.isHub &&
+            (project.isStringVariableNullOrEmpty("cas_oauth_signing_key") ||
+                project
+                    .isStringVariableNullOrEmpty("cas_oauth_encryption_key") ||
+                project.isStringVariableNullOrEmpty(
+                    "cas_oauth_access_token_signing_key") ||
+                project.isStringVariableNullOrEmpty(
+                    "cas_oauth_access_token_encryption_key"))) {
+          // Auto-generate CAS OAuth keys
+          vm.onInitCasOAuthKeys();
+        }
         List<String> varCatName = project.getServicesNameListInUse();
         varCatName.add(LAServiceName.all.toS());
         List<ListItem> items = [];
@@ -492,6 +520,8 @@ class _ProjectTuneViewModel {
   final void Function(LAProject) onUpdateProject;
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
+  final void Function() onInitCasKeys;
+  final void Function() onInitCasOAuthKeys;
   final bool softwareReleasesReady;
 
   final List<String> alaInstallReleases;
@@ -506,6 +536,8 @@ class _ProjectTuneViewModel {
       required this.onUpdateProject,
       required this.softwareReleasesReady,
       required this.onSaveProject,
+      required this.onInitCasKeys,
+      required this.onInitCasOAuthKeys,
       required this.onCancel,
       required this.alaInstallReleases,
       required this.generatorReleases,
