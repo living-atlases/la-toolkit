@@ -75,6 +75,8 @@ class TermsDrawer extends StatelessWidget {
                 ),
               ),
             ),
+            // The docker console
+            TermDialog.drawerItem(context),
             for (LAServer server in vm.state.currentProject.servers)
               Tooltip(
                   message: "Open a terminal in ${server.name}",
@@ -83,7 +85,6 @@ class TermsDrawer extends StatelessWidget {
                       title: Text(server.name),
                       onTap: () =>
                           vm.openTerm(vm.state.currentProject, server))),
-            TermDialog.drawerItem(context),
           ]));
     });
   }
