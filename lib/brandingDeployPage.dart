@@ -81,7 +81,7 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
                                 const SizedBox(height: 10),
                                 LaunchBtn(onTap: onTap, execBtn: execBtn),
                                 const SizedBox(height: 10),
-                                TipsCard(
+                                const TipsCard(
                                     text:
                                         '''This branding is based in the [base-branding](https://github.com/living-atlases/base-branding/) repository, a recommended way to develop a LA theme compatible with the LA software.
 
