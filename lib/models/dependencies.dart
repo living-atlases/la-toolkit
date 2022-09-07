@@ -103,12 +103,14 @@ class Dependencies {
     // From here copy-pasted from the wiki:
     // https://github.com/AtlasOfLivingAustralia/documentation/wiki/Dependencies#dependencies-list
 
+    // ala-bie-hub in bie
     alerts: {
       vc(">= 1.5.1"): {
         regions: vc(">= 3.3.5"),
         alaHub: vc(">= 3.2.9"),
-        bie: vc(">= 1.5.0")
-      }
+        bie: vc(">= 1.5.0"),
+      },
+      vc(">= 2.0.0"): {java: vc(">= 11")},
     },
     alaInstall: {
       vc(">= 2.0.3"): {ansible: vc("2.10.3")}
@@ -118,14 +120,19 @@ class Dependencies {
         regions: vc(">= 3.3.5"),
         alaHub: vc(">= 3.2.9"),
         bie: vc(">= 1.5.0")
-      }
+      },
+      vc(">= 2.0.0"): {java: vc(">= 11")},
     },
     apikey: {
       vc(">= 1.7.0"): {
         cas: vc(">= 6.5.6-3"),
         casManagement: vc(">= 6.5.5-2"),
-        userdetails: vc(">= 3.0.1")
+        userdetails: vc(">= 3.0.1"),
+        java: vc(">= 11")
       }
+    },
+    bie: {
+      vc("> 2.0.1"): {java: vc(">= 11")}
     },
     biocacheService: {
       vc(">= 2.5.0"): {tomcat: vc(">= 9.0.0")},
@@ -149,17 +156,18 @@ class Dependencies {
       vc(">= 6.5.6-3"): {
         casManagement: vc(">= 6.5.5-2"),
         userdetails: vc(">= 3.0.1"),
-        apikey: vc(">= 1.7.0")
+        apikey: vc(">= 1.7.0"),
+        java: vc(">= 11")
       }
     },
     casManagement: {
       vc(">= 6.5.5-2"): {
         cas: vc(">= 6.5.6-3"),
         userdetails: vc(">= 3.0.1"),
-        apikey: vc(">= 1.7.0")
+        apikey: vc(">= 1.7.0"),
+        java: vc(">= 11")
       }
     },
-
     dashboard: {
       vc(">= 2.2"): {alaInstall: vc(">= 2.0.5")}
     },
@@ -168,6 +176,9 @@ class Dependencies {
     },
     images: {
       vc(">= 1.1"): {alaInstall: vc(">= 2.0.8")}
+    },
+    logger: {
+      vc("> 4.0.1"): {java: vc(">= 11")}
     },
     pipelines: {
       // Again, don't dup service keys or vc keys or dependencies will be overwritten
@@ -190,7 +201,8 @@ class Dependencies {
       vc(">= 3.0.1"): {
         cas: vc(">= 6.5.6-3"),
         casManagement: vc(">= 6.5.5-2"),
-        apikey: vc(">= 1.7.0")
+        apikey: vc(">= 1.7.0"),
+        java: vc(">= 11")
       }
     }
   };
@@ -382,30 +394,33 @@ class Dependencies {
   }
 
   static List<MigrationNotesDesc> getMigrationNotes(
-      List<String> serviceInUse, Map<String, String> selectedVersions,
+      List<String> servicesToDeploy, Map<String, String> selectedVersions,
       [bool debug = false]) {
     Set<MigrationNotesDesc> migrationNotesList = {};
     try {
       selectedVersions.forEach((String sw, String version) {
-        if (debug) {
-          print("Checking dependencies for $sw");
-        }
-        if (version != 'custom' && version != 'upstream') {
-          if (laMigrationNotes[sw] != null) {
-            Version versionP = v(version);
-            laMigrationNotes[sw]!.forEach((VersionConstraint mainConstraint,
-                MigrationNotesDesc migrationNotes) {
-              if (mainConstraint.allows(versionP)) {
-                // Now we verify the rest of constraints dependencies
-                if (debug) {
-                  print("$mainConstraint applies to $sw");
+        if ((servicesToDeploy.contains(sw) ||
+            servicesToDeploy.contains('all'))) {
+          if (debug) {
+            print("Checking dependencies for $sw");
+          }
+          if (version != 'custom' && version != 'upstream') {
+            if (laMigrationNotes[sw] != null) {
+              Version versionP = v(version);
+              laMigrationNotes[sw]!.forEach((VersionConstraint mainConstraint,
+                  MigrationNotesDesc migrationNotes) {
+                if (mainConstraint.allows(versionP)) {
+                  // Now we verify the rest of constraints dependencies
+                  if (debug) {
+                    print("$mainConstraint applies to $sw");
+                  }
+                  migrationNotesList.add(migrationNotes);
                 }
-                migrationNotesList.add(migrationNotes);
+              });
+            } else {
+              if (debug) {
+                print("No dependencies for $sw");
               }
-            });
-          } else {
-            if (debug) {
-              print("No dependencies for $sw");
             }
           }
         }

@@ -41,6 +41,7 @@ class _DeployPageState extends State<DeployPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   // TODO do something with --skip-tags nameindex
   final debouncer = Debouncer(milliseconds: 300);
+  late List<String> _servicesToDeploy = [];
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +83,7 @@ class _DeployPageState extends State<DeployPage> {
         Map<String, String> selectedVersions = {};
         selectedVersions.addAll(vm.project.getServiceDeployReleases());
         List<MigrationNotesDesc> migrationNotes =
-            Dependencies.getMigrationNotes(
-                vm.project.getServicesNameListInUse() + Dependencies.laTools,
-                selectedVersions);
+            Dependencies.getMigrationNotes(_servicesToDeploy, selectedVersions);
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -132,8 +131,10 @@ class _DeployPageState extends State<DeployPage> {
                                               .project
                                               .getServicesAssignedToServers()),
                                       isHub: vm.project.isHub,
-                                      onChange: (s) => setState(
-                                          () => cmd.deployServices = s)),
+                                      onChange: (s) => setState(() {
+                                            cmd.deployServices = s;
+                                            _servicesToDeploy = s;
+                                          })),
                                   ListTile(
                                       title: const Text(
                                         'Advanced options',
