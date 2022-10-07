@@ -22,7 +22,7 @@ import 'package:tuple/tuple.dart';
 
 import 'basicService.dart';
 import 'cmdHistoryDetails.dart';
-import 'dependencies.dart';
+import 'defaultVersions.dart';
 import 'hostServicesChecks.dart';
 import 'laServer.dart';
 import 'laService.dart';
@@ -31,6 +31,7 @@ import 'laServiceDepsDesc.dart';
 import 'laServiceName.dart';
 import 'laVariable.dart';
 import 'laVariableDesc.dart';
+import 'versionUtils.dart';
 
 part 'laProject.g.dart';
 
@@ -845,7 +846,7 @@ check results length: ${checkResults.length}''';
 
           if (sw == "collectory") {
             conf["LA_collectory_version_ge_3"] =
-                Dependencies.vc(">= 3.0.0").allows(Dependencies.v(value));
+                vc(">= 3.0.0").allows(v(value));
           }
         }
       });
@@ -1267,10 +1268,10 @@ check results length: ${checkResults.length}''';
   }
 
   String _setDefSwVersion(String nameInt) {
-    String? version = (Dependencies.alaInstallIsNotTagged(alaInstallRelease!)
-            ? Dependencies.defaultVersions.entries.first
-            : Dependencies.defaultVersions.entries.firstWhere(
-                (e) => e.key.allows(Dependencies.v(alaInstallRelease!))))
+    String? version = (alaInstallIsNotTagged(alaInstallRelease!)
+            ? DefaultVersions.map.entries.first
+            : DefaultVersions.map.entries
+                .firstWhere((e) => e.key.allows(v(alaInstallRelease!))))
         .value[nameInt];
     return version ?? "";
   }

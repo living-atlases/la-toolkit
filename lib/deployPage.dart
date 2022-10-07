@@ -22,9 +22,9 @@ import 'components/servicesChipPanel.dart';
 import 'components/tagsSelector.dart';
 import 'components/termsDrawer.dart';
 import 'components/tipsCard.dart';
+import 'dependenciesManager.dart';
 import 'laTheme.dart';
 import 'models/commonCmd.dart';
-import 'models/dependencies.dart';
 import 'models/laProject.dart';
 import 'models/laService.dart';
 
@@ -83,7 +83,8 @@ class _DeployPageState extends State<DeployPage> {
         Map<String, String> selectedVersions = {};
         selectedVersions.addAll(vm.project.getServiceDeployReleases());
         List<MigrationNotesDesc> migrationNotes =
-            Dependencies.getMigrationNotes(_servicesToDeploy, selectedVersions);
+            DependenciesManager.getMigrationNotes(
+                _servicesToDeploy, selectedVersions);
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,

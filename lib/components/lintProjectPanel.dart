@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/dependencies.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
@@ -11,6 +10,7 @@ import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
 
+import '../dependenciesManager.dart';
 import 'alertCard.dart';
 import 'lintErrorPanel.dart';
 
@@ -63,9 +63,8 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
       List<Widget> lints = [
         LintErrorPanel(vm.backendVersion == null // AppUtils.isDemo()
             ? []
-            : Dependencies.verifyLAReleases(
-                project.getServicesNameListInUse() + Dependencies.laTools,
-                selectedVersions))
+            : DependenciesManager.verifyLAReleases(
+                project.getServicesNameListInUse() + laTools, selectedVersions))
       ];
       List<String> notAssigned = project.servicesNotAssigned();
       String notAssignedMessage = notAssigned.length < 5
