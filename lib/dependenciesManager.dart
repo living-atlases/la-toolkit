@@ -1,5 +1,6 @@
 import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/MigrationNotesDesc.dart';
+import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
@@ -143,9 +144,9 @@ class DependenciesManager {
         Map<String, VersionConstraint> depsMap = {};
         if (debug) print("  $constraintMatch");
         for (var dep in depsYaml[module][constraintMatch]) {
-          if (debug) print("    - $dep");
+          // if (debug) print("    - $dep");
           for (var sw in dep.keys) {
-            if (debug) print("    $sw: ${dep[sw]}");
+            if (debug) print("    - $sw: ${dep[sw]}");
             depsMap.putIfAbsent(_normalize(sw), () => vc('${dep[sw]}'));
           }
         }
@@ -172,6 +173,84 @@ class DependenciesManager {
         String toSunder = sw.replaceAll('-', '_');
         // This throws ArgumentError if the enum does not exists
         return LAServiceName.values.byName(toSunder).toS();
+    }
+  }
+
+  static List<String> verifySw(LAServer server, String swToCheck,
+      List<String> serverServices, Map<String, String> selectedVersions,
+      [debug = false]) {
+    Set<String> lintErrors = {};
+    Map<String, List<String>> swGroups = {};
+
+    try {
+      for (String sw in serverServices) {
+        if (debug) {
+          print("Checking $swToCheck in $sw");
+        }
+        String? version = selectedVersions[sw];
+        if (version != null) {
+          Map<VersionConstraint, Map<String, VersionConstraint>>? deps =
+              Dependencies.map[sw];
+
+          final String swForHumans = LAServiceDesc.swNameWithAliasForHumans(sw);
+          if (version != 'custom' && version != 'upstream') {
+            if (Dependencies.map[sw] != null) {
+              Version versionP = v(version);
+              Dependencies.map[sw]!.forEach((VersionConstraint mainConstraint,
+                  Map<String, VersionConstraint> constraints) {
+                if (mainConstraint.allows(versionP)) {
+                  // Now we verify the rest of constraints dependencies
+                  if (debug) {
+                    print("$mainConstraint applies to $sw");
+                  }
+                  constraints.forEach(
+                      (String dependency, VersionConstraint constraint) {
+                    if (dependency == swToCheck) {
+                      if (swGroups.containsKey(constraint.toString())) {
+                        swGroups[constraint.toString()]!.add(sw);
+                      } else {
+                        swGroups.putIfAbsent(constraint.toString(), () => [sw]);
+                      }
+                    }
+                  });
+                }
+              });
+            }
+          }
+        }
+      }
+      if (swGroups.length > 1) {
+        lintErrors.add(
+            "Incompatible versions of $swToCheck in server ${server.name}: ${_versionGroupsForHumans(swGroups, swToCheck)}");
+      }
+      return lintErrors.toList();
+    } catch (e, stacktrace) {
+      print("Verify exception $e");
+      print(stacktrace);
+      return lintErrors.toList();
+    }
+  }
+
+  static _versionGroupsForHumans(
+      Map<String, List<String>> swGroups, String swToCheck) {
+    List result = [];
+    for (String version in swGroups.keys) {
+      if (swGroups[version]!.length > 1) {
+        result.add(
+            '${swGroups[version]!.join(', ')} use ${_swVersionTranslate(swToCheck, version)}');
+      } else {
+        result.add(
+            '${swGroups[version]![0]} uses ${_swVersionTranslate(swToCheck, version)}');
+      }
+    }
+    return result.join(', ');
+  }
+
+  static _swVersionTranslate(String swToCheck, String version) {
+    if (swToCheck == java) {
+      return "$swToCheck ${version.replaceAll('.0.0', '')}";
+    } else {
+      return "$swToCheck $version";
     }
   }
 }

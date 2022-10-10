@@ -11,6 +11,7 @@ import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
 
 import '../dependenciesManager.dart';
+import '../models/laServer.dart';
 import 'alertCard.dart';
 import 'lintErrorPanel.dart';
 
@@ -66,6 +67,14 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             : DependenciesManager.verifyLAReleases(
                 project.getServicesNameListInUse() + laTools, selectedVersions))
       ];
+      // Check java
+      for (LAServer s in project.servers) {
+        List<String> services = project.getServerServices(serverId: s.id);
+        lints.add(LintErrorPanel(vm.backendVersion == null // AppUtils.isDemo()
+            ? []
+            : DependenciesManager.verifySw(
+                s, java, services, selectedVersions)));
+      }
       List<String> notAssigned = project.servicesNotAssigned();
       String notAssignedMessage = notAssigned.length < 5
           ? ' (' +
