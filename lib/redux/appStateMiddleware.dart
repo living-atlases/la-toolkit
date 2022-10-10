@@ -22,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
+import '../dependenciesManager.dart';
 import '../utils/casUtils.dart';
 import 'appActions.dart';
 import 'entityActions.dart';
@@ -162,6 +163,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           store.dispatch(OnFetchGeneratorReleasesFailed());
         }
       }
+
+      // Dependencies
+      String deps = await Api.fetchDependencies();
+      DependenciesManager.setDeps(deps);
 
       if (!AppUtils.isDemo()) {
         // ALA other Releases

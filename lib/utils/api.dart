@@ -496,4 +496,14 @@ class Api {
       return {};
     }
   }
+
+  static Future<String> fetchDependencies() async {
+    Response response = await http.get(Uri.parse(
+        'https://raw.githubusercontent.com/living-atlases/la-toolkit-backend/master/assets/dependencies.yaml'));
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw "Failed to retrieve dependencies";
+    }
+  }
 }

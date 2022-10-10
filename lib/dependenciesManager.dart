@@ -2,8 +2,10 @@ import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/MigrationNotesDesc.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:yaml/yaml.dart';
 
 import 'models/dependencies.dart';
+import 'models/laServiceName.dart';
 import 'models/migrationNotes.dart';
 import 'models/versionUtils.dart';
 
@@ -127,6 +129,49 @@ class DependenciesManager {
       print("Verify exception $e");
       print(stacktrace);
       return migrationNotesList.toList();
+    }
+  }
+
+  static void setDeps(String deps, [bool debug = false]) {
+    var depsYaml = loadYaml(deps) as Map;
+    Map<String, Map<VersionConstraint, Map<String, VersionConstraint>>> map =
+        {};
+    for (var module in depsYaml.keys) {
+      if (debug) print("Module: $module");
+      Map<VersionConstraint, Map<String, VersionConstraint>> constraints = {};
+      for (var constraintMatch in depsYaml[module].keys) {
+        Map<String, VersionConstraint> depsMap = {};
+        if (debug) print("  $constraintMatch");
+        for (var dep in depsYaml[module][constraintMatch]) {
+          if (debug) print("    - $dep");
+          for (var sw in dep.keys) {
+            if (debug) print("    $sw: ${dep[sw]}");
+            depsMap.putIfAbsent(_normalize(sw), () => vc('${dep[sw]}'));
+          }
+        }
+        constraints.putIfAbsent(vc(constraintMatch), () => depsMap);
+      }
+      map.putIfAbsent(_normalize(module), () => constraints);
+    }
+    Dependencies.map = map;
+  }
+
+  static String _normalize(String sw) {
+    switch (sw) {
+      case "la-generator":
+        return generator;
+      case "ala-install":
+        return alaInstall;
+      case "la-toolkit":
+        return toolkit;
+      case "java":
+      case "tomcat":
+      case "ansible":
+        return sw;
+      default:
+        String toSunder = sw.replaceAll('-', '_');
+        // This throws ArgumentError if the enum does not exists
+        return LAServiceName.values.byName(toSunder).toS();
     }
   }
 }

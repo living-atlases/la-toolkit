@@ -44,7 +44,6 @@ const String alaInstall = "ala-install";
 const String generator = "la-generator";
 const String tomcat = "tomcat";
 const String ansible = "ansible";
-const String alaNameMatchingService = "ala-namematching-service";
 const String java = "java";
 
 const List<String> laTools = [alaInstall, generator, toolkit];
