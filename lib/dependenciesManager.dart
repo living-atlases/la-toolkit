@@ -191,12 +191,10 @@ class DependenciesManager {
         if (version != null) {
           Map<VersionConstraint, Map<String, VersionConstraint>>? deps =
               Dependencies.map[sw];
-
-          final String swForHumans = LAServiceDesc.swNameWithAliasForHumans(sw);
           if (version != 'custom' && version != 'upstream') {
-            if (Dependencies.map[sw] != null) {
+            if (deps != null) {
               Version versionP = v(version);
-              Dependencies.map[sw]!.forEach((VersionConstraint mainConstraint,
+              deps.forEach((VersionConstraint mainConstraint,
                   Map<String, VersionConstraint> constraints) {
                 if (mainConstraint.allows(versionP)) {
                   // Now we verify the rest of constraints dependencies
@@ -237,10 +235,10 @@ class DependenciesManager {
     for (String version in swGroups.keys) {
       if (swGroups[version]!.length > 1) {
         result.add(
-            '${swGroups[version]!.join(', ')} use ${_swVersionTranslate(swToCheck, version)}');
+            '${swGroups[version]!.map((sw) => LAServiceDesc.swNameWithAliasForHumans(sw)).join(', ')} use ${_swVersionTranslate(swToCheck, version)}');
       } else {
         result.add(
-            '${swGroups[version]![0]} uses ${_swVersionTranslate(swToCheck, version)}');
+            '${LAServiceDesc.swNameWithAliasForHumans(swGroups[version]![0])} uses ${_swVersionTranslate(swToCheck, version)}');
       }
     }
     return result.join(', ');
