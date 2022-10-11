@@ -503,7 +503,7 @@ class Api {
     if (response.statusCode == 200) {
       return response.body;
     } else {
-      throw "Failed to retrieve dependencies";
+      throw "Failed to retrieve dependencies (${response.statusCode})";
     }
   }
 }

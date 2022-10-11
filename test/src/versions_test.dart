@@ -6,7 +6,10 @@ import 'package:la_toolkit/utils/api.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
-void main() {
+void main() async {
+  String deps = await Api.fetchDependencies();
+  DependenciesManager.setDeps(deps, true);
+
   test('Compare versions', () {
     Version v123 = Version.parse('1.2.3');
     Version v123SNAP = Version.parse('1.2.3-SNAPSHOT');
@@ -169,10 +172,5 @@ void main() {
     expect(v("1.0").major == 1, equals(true));
     expect(v("1.0") == v("1.0.0"), equals(true));
     expect(v("1.0.0.1") == v("1.0.0-1"), equals(true));
-  });
-
-  test('Fetch deps', () async {
-    String deps = await Api.fetchDependencies();
-    DependenciesManager.setDeps(deps, true);
   });
 }

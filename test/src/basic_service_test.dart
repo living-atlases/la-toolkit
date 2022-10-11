@@ -14,32 +14,11 @@ void main() {
     expect(PostgresSql.def, isNot(equals(MySql.def)));
   });
 
-  test('LAServicesDesc spatial and images are incompatible', () {
-    expect(
-        LAServiceDesc.getE(LAServiceName.images)
-            .isCompatibleWith(alaInstallVersion, LAServiceDesc.get("spatial")),
-        equals(false));
-  });
-
   test('LAServicesDesc cas and pipelines are incompatible', () {
     // port collision
     expect(
         LAServiceDesc.getE(LAServiceName.pipelines)
             .isCompatibleWith(alaInstallVersion, LAServiceDesc.get("cas")),
-        equals(false));
-  });
-
-  test('LAServicesDesc spatial and images are incompatible', () {
-    expect(
-        LAServiceDesc.getE(LAServiceName.spatial).isCompatibleWith(
-            alaInstallVersion, LAServiceDesc.getE(LAServiceName.images)),
-        equals(false));
-  });
-
-  test('LAServicesDesc spatial and doi are incompatible', () {
-    expect(
-        LAServiceDesc.get("images")
-            .isCompatibleWith(alaInstallVersion, LAServiceDesc.get("doi")),
         equals(false));
   });
 
