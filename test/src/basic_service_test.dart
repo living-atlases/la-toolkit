@@ -7,23 +7,11 @@ import 'package:test/test.dart';
 void main() {
   String alaInstallVersion = "v2.0.4";
   test('Compare equals versions', () {
-    expect(MySql.v5_7, equals(MySql.v5_7));
+    expect(MySql.def, equals(MySql.def));
   });
 
   test('Not equals versions', () {
-    expect(PostgresSql.v9_6, isNot(equals(MySql.v5_7)));
-  });
-
-  test('Not equals software', () {
-    expect(MySql.v8, isNot(equals(MySql.v5_7)));
-  });
-
-  test('Software incompatible', () {
-    expect(MySql.v8.isCompatible(MySql.v5_7), equals(false));
-  });
-
-  test('Software compatible', () {
-    expect(MySql.v8.isCompatible(PostgresSql.v9_6), equals(true));
+    expect(PostgresSql.def, isNot(equals(MySql.def)));
   });
 
   test('LAServicesDesc spatial and images are incompatible', () {

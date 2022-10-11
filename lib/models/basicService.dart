@@ -34,18 +34,8 @@ class BasicService {
       version.hashCode ^ name.hashCode ^ tcp.hashCode ^ udp.hashCode;
 
   static List<BasicService> toCheck(List<BasicService> deps) {
-    return deps
-        .where(
-            (dep) => dep.name != Java.v8.name && dep.name != PostGis.v2_4.name)
-        .toList();
+    return deps.where((dep) => dep.name != PostGis.def.name).toList();
   }
-}
-
-class Java extends BasicService {
-  Java(version)
-      : super(name: "java", version: version, reachableFromOtherServers: false);
-  static final v8 = Java("8");
-  static final v11 = Java("11");
 }
 
 abstract class Tcp extends BasicService {
@@ -147,33 +137,26 @@ class Cassandra extends BasicService {
 
 class Tomcat extends BasicService {
   Tomcat(version) : super(name: "tomcat", version: version, tcp: [8080]);
-  static final v8 = Tomcat("8");
-  static final v9 = Tomcat("9");
+  static final def = Tomcat("");
 }
 
 class MySql extends BasicService {
   MySql(version) : super(name: "mysql", version: version, tcp: [3306]);
 
-  static final v5_7 = MySql("5.7");
-  static final v8 = MySql("8");
+  static final def = MySql("");
 }
 
 class PostgresSql extends BasicService {
   PostgresSql(version)
       : super(name: "postgresql", version: version, tcp: [5432]);
 
-  static final v8 = PostgresSql("8");
-  static final v9_6 = PostgresSql("9.6");
-  static final v10 = PostgresSql("10");
-  static final v13 = PostgresSql("13");
+  static final def = PostgresSql("");
 }
 
 class PostGis extends BasicService {
   PostGis(version) : super(name: "postgis", version: version);
 
-  static final v2_4 = PostGis("2_4");
-  // FIXME MORE
-
+  static final def = PostGis("");
 }
 
 class Mongo extends BasicService {
@@ -182,6 +165,7 @@ class Mongo extends BasicService {
   static final v4_0 = Mongo("4.0");
 }
 
+// FIXME Move this to dependencies
 class ElasticSearch extends BasicService {
   ElasticSearch(version)
       : super(name: "elasticsearch", version: version, tcp: [9200]);

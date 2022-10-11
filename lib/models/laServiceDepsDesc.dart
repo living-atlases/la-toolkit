@@ -14,77 +14,72 @@ class LAServiceDepsDesc {
   static final Map<String, LAServiceDepsDesc> v2_0_4 = {
     collectory: LAServiceDepsDesc(
       nameInt: collectory,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
+      serviceDepends: [Nginx.def, Tomcat.def, MySql.def],
     ),
     alaHub: LAServiceDepsDesc(
       nameInt: alaHub,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
-        Tomcat.v8,
+        Tomcat.def,
       ],
     ),
     biocacheService: LAServiceDepsDesc(
       nameInt: biocacheService,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
-        Tomcat.v8,
+        Tomcat.def,
       ],
     ),
     bie: LAServiceDepsDesc(
       nameInt: bie,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
+      serviceDepends: [Nginx.def, Tomcat.def],
     ),
     bieIndex: LAServiceDepsDesc(
       nameInt: bieIndex,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
+      serviceDepends: [Nginx.def, Tomcat.def],
     ),
     images: LAServiceDepsDesc(
       nameInt: images,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
         ElasticSearch.v7_7_1,
-        PostGis.v2_4,
-        PostgresSql.v10
+        PostGis.def,
+        PostgresSql.def
       ],
     ),
     speciesLists: LAServiceDepsDesc(
       nameInt: speciesLists,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
-        Tomcat.v8,
-        MySql.v5_7,
+        Tomcat.def,
+        MySql.def,
       ],
     ),
     regions: LAServiceDepsDesc(
       nameInt: regions,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
+      serviceDepends: [Nginx.def, Tomcat.def],
     ),
     logger: LAServiceDepsDesc(
       nameInt: logger,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
+      serviceDepends: [Nginx.def, Tomcat.def, MySql.def],
     ),
     solr: LAServiceDepsDesc(
       nameInt: solr,
-      serviceDepends: [Java.v8, Solr.v7],
+      serviceDepends: [Solr.v7],
     ),
     solrcloud: LAServiceDepsDesc(
       nameInt: solrcloud,
-      serviceDepends: [Java.v11, SolrCloud.v8],
+      serviceDepends: [SolrCloud.v8],
     ),
     zookeeper: LAServiceDepsDesc(
       nameInt: zookeeper,
-      serviceDepends: [Java.v8],
+      serviceDepends: [],
     ),
     cas: LAServiceDepsDesc(
       nameInt: cas,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
-        MySql.v5_7,
+        MySql.def,
         Mongo.v4_0,
         Cas.def,
         Postfix.def,
@@ -93,9 +88,8 @@ class LAServiceDepsDesc {
     userdetails: LAServiceDepsDesc(
       nameInt: userdetails,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
-        MySql.v5_7,
+        MySql.def,
         Mongo.v4_0,
         UserDetails.def,
         Postfix.def,
@@ -104,9 +98,8 @@ class LAServiceDepsDesc {
     apikey: LAServiceDepsDesc(
       nameInt: apikey,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
-        MySql.v5_7,
+        MySql.def,
         Cas.def,
         ApiKey.def,
       ],
@@ -114,111 +107,103 @@ class LAServiceDepsDesc {
     casManagement: LAServiceDepsDesc(
       nameInt: casManagement,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
-        MySql.v5_7,
+        MySql.def,
         Mongo.v4_0,
         CasManagement.def,
       ],
     ),
     spatial: LAServiceDepsDesc(
       nameInt: spatial,
-      serviceDepends: [Java.v8, Nginx.def, PostGis.v2_4, PostgresSql.v9_6],
+      serviceDepends: [Nginx.def, PostGis.def, PostgresSql.def],
     ),
     spatialService: LAServiceDepsDesc(
       nameInt: spatialService,
-      serviceDepends: [Java.v8, Nginx.def, PostGis.v2_4, PostgresSql.v9_6],
+      serviceDepends: [Nginx.def, PostGis.def, PostgresSql.def],
     ),
     geoserver: LAServiceDepsDesc(
       nameInt: geoserver,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
+      serviceDepends: [Nginx.def, Tomcat.def],
     ),
     webapi: LAServiceDepsDesc(
       nameInt: webapi,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, MySql.v5_7],
+      serviceDepends: [Nginx.def, Tomcat.def, MySql.def],
     ),
     dashboard: LAServiceDepsDesc(
       nameInt: dashboard,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
+      serviceDepends: [Nginx.def, Tomcat.def],
     ),
     sds: LAServiceDepsDesc(
       nameInt: sds,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8],
+      serviceDepends: [Nginx.def, Tomcat.def],
     ),
     alerts: LAServiceDepsDesc(
       nameInt: alerts,
-      serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, Postfix.def, MySql.v5_7],
+      serviceDepends: [Nginx.def, Tomcat.def, Postfix.def, MySql.def],
     ),
     doi: LAServiceDepsDesc(
       nameInt: doi,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
         ElasticSearch.v7_3_0,
-        PostgresSql.v9_6,
+        PostgresSql.def,
         Postfix.def,
         Doi.def,
       ],
     ),
     namematchingService: LAServiceDepsDesc(
         nameInt: namematchingService,
-        serviceDepends: [Java.v8, Nginx.def, NameMatchingService.def]),
+        serviceDepends: [Nginx.def, NameMatchingService.def]),
     sensitiveDataService: LAServiceDepsDesc(
         nameInt: sensitiveDataService,
-        serviceDepends: [Java.v8, Nginx.def, NameMatchingService.def]),
+        serviceDepends: [Nginx.def, NameMatchingService.def]),
     dataQuality: LAServiceDepsDesc(
         nameInt: dataQuality,
-        serviceDepends: [Java.v8, Nginx.def, Tomcat.v8, PostgresSql.v10]),
+        serviceDepends: [Nginx.def, Tomcat.def, PostgresSql.def]),
     biocacheBackend: LAServiceDepsDesc(
       nameInt: biocacheBackend,
-      serviceDepends: [Java.v8, Cassandra.v3],
+      serviceDepends: [Cassandra.v3],
     ),
     branding:
         LAServiceDepsDesc(nameInt: "branding", serviceDepends: [Nginx.def]),
     biocacheCli: LAServiceDepsDesc(
       nameInt: biocacheCli,
-      serviceDepends: [Java.v8],
+      serviceDepends: [],
     ),
     nameindexer: LAServiceDepsDesc(
       nameInt: nameindexer,
-      serviceDepends: [Java.v8],
+      serviceDepends: [],
     ),
     pipelines: LAServiceDepsDesc(
       nameInt: pipelines,
-      serviceDepends: [
-        Java.v8,
-        NameMatchingService.def,
-        SensitiveDataService.def
-      ],
+      serviceDepends: [NameMatchingService.def, SensitiveDataService.def],
     ),
     spark: LAServiceDepsDesc(
       nameInt: spark,
-      serviceDepends: [Java.v8, Spark.def],
+      serviceDepends: [Spark.def],
     ),
     hadoop: LAServiceDepsDesc(
       nameInt: hadoop,
-      serviceDepends: [Java.v8, Hadoop.def],
+      serviceDepends: [Hadoop.def],
     ),
     pipelinesJenkins: LAServiceDepsDesc(
       nameInt: pipelinesJenkins,
-      serviceDepends: [Java.v8],
+      serviceDepends: [],
     ),
     biocollect: LAServiceDepsDesc(
       nameInt: biocollect,
-      serviceDepends: [Java.v8, Nginx.def, Biocollect.def],
+      serviceDepends: [Nginx.def, Biocollect.def],
     ),
     pdfgen: LAServiceDepsDesc(
       nameInt: pdfgen,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
-        Tomcat.v8,
+        Tomcat.def,
       ],
     ),
     ecodata: LAServiceDepsDesc(
       nameInt: ecodata,
       serviceDepends: [
-        Java.v8,
         Nginx.def,
         Ecodata.def,
         Mongo.v4_0,
@@ -227,7 +212,7 @@ class LAServiceDepsDesc {
     ),
     ecodataReporting: LAServiceDepsDesc(
       nameInt: ecodataReporting,
-      serviceDepends: [Java.v8, Nginx.def, EcodataReporting.def],
+      serviceDepends: [Nginx.def, EcodataReporting.def],
     ),
   };
 /*
