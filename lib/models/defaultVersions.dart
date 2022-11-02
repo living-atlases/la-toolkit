@@ -3,6 +3,33 @@ import 'package:la_toolkit/models/versionUtils.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 class DefaultVersions {
+  static final Map<String, String> defVersions2_1_10 = {
+    namematchingService: "3.5",
+    alerts: "2.0.3",
+    apikey: "1.7.0",
+    bie: "2.0.2",
+    bieIndex: "1.8.1",
+    biocacheCli: "2.6.0",
+    alaHub: "4.0.12.4",
+    biocacheService: "2.7.0",
+    biocollect: "6.3",
+    casManagement: "6.5.5-2",
+    cas: "6.5.6-3",
+    collectory: "3.1.0",
+    dashboard: "2.3",
+    dataQuality: "1.3.0",
+    doi: "2.0.0",
+    images: "2.0.1",
+    logger: "4.1.0",
+    regions: "3.4",
+    sds: "1.6.3",
+    solr: "7.7.3",
+    spatial: "1.0.2",
+    spatialService: "1.1.0",
+    speciesLists: "4.0.3",
+    userdetails: "3.0.2"
+  };
+
   static final Map<String, String> defVersions2_0_11 = {
     alaHub: "3.2.9",
     alerts: "1.5.1",
@@ -64,6 +91,7 @@ class DefaultVersions {
     // ala-install vs rest of components
     vc('<= 2.0.11'): defVersions2_0_11,
     vc('> 2.0.11 < 2.1.0'): defVersions2_0_11,
-    vc('>= 2.1.0'): defVersions2_1_0
+    vc('>= 2.1.0 < 2.1.10'): defVersions2_1_0,
+    vc('>= 2.1.10'): defVersions2_1_10
   };
 }
