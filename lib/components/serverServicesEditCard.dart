@@ -14,6 +14,7 @@ class ServerServicesEditCard extends StatefulWidget {
   final bool isHub;
   final List<LAService> allServices;
   final Function(List<String>) onAssigned;
+  final Function(String) onUnassigned;
   final Function(LAServer) onDeleted;
   final Function(String) onRename;
 
@@ -25,6 +26,7 @@ class ServerServicesEditCard extends StatefulWidget {
       required this.isHub,
       required this.allServices,
       required this.onAssigned,
+      required this.onUnassigned,
       required this.onDeleted,
       required this.onRename})
       : super(key: key);
@@ -49,8 +51,12 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
             isSelected: isInThisServer,
             onSelected: () => widget.onAssigned(
                 widget.currentServerServices..add(serviceDesc.nameInt)),
-            onDeleted: () => widget.onAssigned(
-                widget.currentServerServices..remove(serviceDesc.nameInt))));
+            // FIXME do onDelete right
+            onDeleted: () {
+              widget.onUnassigned(serviceDesc.nameInt);
+              widget.onAssigned(
+                  widget.currentServerServices..remove(serviceDesc.nameInt));
+            }));
       }
     }
     return IntrinsicWidth(

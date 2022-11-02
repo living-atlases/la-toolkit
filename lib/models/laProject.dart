@@ -580,6 +580,22 @@ check results length: ${checkResults.length}''';
         !serviceIds.contains(sD.serviceId));
   }
 
+  void unAssign(LAServer server, String serviceName) {
+    HashSet<String> servicesToDel = HashSet<String>();
+    servicesToDel.add(serviceName);
+    servicesToDel = _addSubServices(servicesToDel);
+    if (serverServices[server.id] != null) {
+      serverServices[server.id]?.removeWhere((c) => servicesToDel.contains(c));
+    }
+    for (String sN in servicesToDel) {
+      LAService service = getService(sN);
+      serviceDeploys.removeWhere((sD) =>
+          sD.projectId == id &&
+          sD.serverId == server.id &&
+          sD.serviceId == service.id);
+    }
+  }
+
   static HashSet<String> _addSubServices(HashSet<String> newServices) {
     // In the same server nameindexer and biocache_cli
     if (newServices.contains(biocacheBackend)) {

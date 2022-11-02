@@ -45,6 +45,10 @@ class _ServersServicesEditPanelState extends State<ServersServicesEditPanel> {
                   project.assign(server, list);
                   vm.onSaveCurrentProject(project);
                 },
+                onUnassigned: (service) {
+                  project.unAssign(server, service);
+                  vm.onSaveCurrentProject(project);
+                },
                 onRename: (String newName) {
                   server.name = newName;
                   project.upsertServer(server);
