@@ -74,9 +74,11 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
             _hover = false;
           });
           if (!_editing) {
-            Future.delayed(const Duration(milliseconds: 500), () {
+            Future.delayed(const Duration(milliseconds: 1000), () {
               setState(() {
-                _stillHover = false;
+                if (!_hover) {
+                  _stillHover = false;
+                }
               });
             });
           }
