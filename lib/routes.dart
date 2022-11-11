@@ -8,6 +8,7 @@ import 'package:la_toolkit/portalStatusPage.dart';
 import 'package:la_toolkit/postDeployPage.dart';
 import 'package:la_toolkit/preDeployPage.dart';
 import 'package:la_toolkit/projectEditPage.dart';
+import 'package:la_toolkit/projectServersPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
 import 'package:la_toolkit/projectViewPage.dart';
 import 'package:la_toolkit/sandboxPage.dart';
@@ -37,6 +38,7 @@ class Routes {
             locationBuilder: BeamerLocationBuilder(beamLocations: [
               HomeLocation(),
               LAProjectEditLocation(),
+              LAProjectServersLocation(),
               LAProjectViewLocation(),
               SandboxLocation(),
               LAProjectTuneLocation(),
@@ -96,6 +98,18 @@ class LAProjectEditLocation extends NamedBeamLocation {
       ];
   @override
   String get route => LAProjectEditPage.routeName;
+}
+
+class LAProjectServersLocation extends NamedBeamLocation {
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
+        BeamPage(
+            key: ValueKey(route),
+            child: const LAProjectServersPage(),
+            title: "${MyApp.appName}: Servers of your project")
+      ];
+  @override
+  String get route => LAProjectServersPage.routeName;
 }
 
 class LAProjectViewLocation extends NamedBeamLocation {

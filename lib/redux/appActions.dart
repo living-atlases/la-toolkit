@@ -138,6 +138,12 @@ class OpenProject extends AppActions {
   OpenProject(this.project);
 }
 
+class OpenServersProject extends AppActions {
+  LAProject project;
+
+  OpenServersProject(this.project);
+}
+
 class NextStepEditProject extends AppActions {
   NextStepEditProject();
 }

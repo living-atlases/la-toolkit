@@ -248,13 +248,18 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (!action.project.isHub &&
           (action.project.allServicesAssignedToServers() ||
               action.project.inProduction)) {
-        Api.getServiceDetailsForVersionCheck(action.project)
-            .then((serviceVersions) {
-          store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
-          if (AppUtils.isDev()) {
-            print(serviceVersions);
-          }
-        });
+        if (action.project.lastSwCheck == null ||
+            action.project.lastSwCheck
+                .add(const Duration(hours: 1))
+                .isBefore(DateTime.now())) {
+          Api.getServiceDetailsForVersionCheck(action.project)
+              .then((serviceVersions) {
+            store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
+            if (AppUtils.isDev()) {
+              print(serviceVersions);
+            }
+          });
+        }
       }
     }
 

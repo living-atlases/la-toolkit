@@ -52,12 +52,13 @@ class _ServersServicesEditPanelState extends State<ServersServicesEditPanel> {
                 onRename: (String newName) {
                   server.name = newName;
                   project.upsertServer(server);
-                  vm.onSaveCurrentProject(vm.project);
+                  vm.onSaveCurrentProject(project);
                 },
                 onDeleted: (LAServer server) {
                   project.delete(server);
                   vm.onSaveCurrentProject(project);
                 },
+                onEditing: () {},
               )
           ]);
         });

@@ -17,6 +17,7 @@ class ServerServicesEditCard extends StatefulWidget {
   final Function(String) onUnassigned;
   final Function(LAServer) onDeleted;
   final Function(String) onRename;
+  final Function() onEditing;
 
   const ServerServicesEditCard(
       {Key? key,
@@ -28,7 +29,8 @@ class ServerServicesEditCard extends StatefulWidget {
       required this.onAssigned,
       required this.onUnassigned,
       required this.onDeleted,
-      required this.onRename})
+      required this.onRename,
+      required this.onEditing})
       : super(key: key);
 
   @override
@@ -51,7 +53,6 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
             isSelected: isInThisServer,
             onSelected: () => widget.onAssigned(
                 widget.currentServerServices..add(serviceDesc.nameInt)),
-            // FIXME do onDelete right
             onDeleted: () {
               widget.onUnassigned(serviceDesc.nameInt);
               widget.onAssigned(
@@ -75,8 +76,10 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                           style: const TextStyle(
                               color: LAColorTheme.inactive, fontSize: 20)),
                       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                        RenameServerIcon(widget.server,
-                            (String newName) => widget.onRename(newName)),
+                        RenameServerIcon(widget.server, widget.onEditing,
+                            (String newName) {
+                          widget.onRename(newName);
+                        }),
                         Tooltip(
                             message: "Delete this server",
                             child: IconButton(
@@ -86,10 +89,16 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                                   Icons.delete,
                                   color: Colors.grey,
                                 ),
-                                onPressed: () => UiUtils.showAlertDialog(
+                                onPressed: () {
+                                  widget.onEditing();
+                                  UiUtils.showAlertDialog(
                                     context,
                                     () => widget.onDeleted(widget.server),
-                                    () => {}))),
+                                    () => {},
+                                    title:
+                                        "Deleting server '${widget.server.name}'",
+                                  );
+                                })),
                       ])),
                   const SizedBox(height: 10),
                   // ignore: sized_box_for_whitespace

@@ -14,7 +14,7 @@ import 'laReleases.dart';
 
 part 'appState.g.dart';
 
-enum LAProjectViewStatus { view, edit, tune, create }
+enum LAProjectViewStatus { view, edit, servers, tune, create }
 
 extension ParseToString on LAProjectViewStatus {
   String toS() {
@@ -27,6 +27,8 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
     switch (this) {
       case LAProjectViewStatus.edit:
         return "Editing ${isHub ? 'Data Hub' : 'Project'}";
+      case LAProjectViewStatus.servers:
+        return "Defining your LA ${isHub ? 'data hub' : 'project'} servers";
       case LAProjectViewStatus.create:
         return "Creating a new LA ${isHub ? 'Data Hub' : 'Project'}";
       case LAProjectViewStatus.tune:

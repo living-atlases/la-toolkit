@@ -19,6 +19,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'components/LoadingTextOverlay.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
@@ -54,11 +55,18 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               status: store.state.currentProject.status,
               loading: store.state.loading,
               softwareReleasesReady: store.state.laReleases.isNotEmpty,
-              onOpenProject: (project) {
+              onOpenProject: (project) async {
+                await showOverlay(context);
                 store.dispatch(OpenProject(project));
                 BeamerCond.of(context, LAProjectEditLocation());
               },
-              onTuneProject: (project) {
+              onOpenServersProject: (project) async {
+                await showOverlay(context);
+                store.dispatch(OpenServersProject(project));
+                BeamerCond.of(context, LAProjectServersLocation());
+              },
+              onTuneProject: (project) async {
+                await showOverlay(context);
                 store.dispatch(TuneProject(project));
                 BeamerCond.of(context, LAProjectTuneLocation());
               },
@@ -163,6 +171,15 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 action: () {
                   context.loaderOverlay.show();
                   vm.onOpenProject(project);
+                }),
+            Tool(
+                icon: const Icon(Icons.dns),
+                title: "Servers",
+                tooltip: "Project servers configuration",
+                enabled: true,
+                action: () {
+                  context.loaderOverlay.show();
+                  vm.onOpenServersProject(project);
                 }),
             Tool(
                 icon: const Icon(Icons.tune),
@@ -321,6 +338,11 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                                 showToolkitDeps: showToolkitDeps)
                           ])))));
         });
+  }
+
+  Future<void> showOverlay(BuildContext context) async {
+    context.loaderOverlay.show(widget: const LoadingTextOverlay());
+    await Future.delayed(const Duration(seconds: 1));
   }
 
   Stack createHubWidget(
@@ -489,6 +511,7 @@ class _ProjectPageViewModel {
   final bool loading;
   final bool softwareReleasesReady;
   final void Function(LAProject project) onOpenProject;
+  final void Function(LAProject project) onOpenServersProject;
   final void Function(LAProject project) onOpenParent;
   final void Function(LAProject project) onTuneProject;
   final void Function(LAProject project) onDeployProject;
@@ -510,6 +533,7 @@ class _ProjectPageViewModel {
       required this.loading,
       required this.softwareReleasesReady,
       required this.onOpenProject,
+      required this.onOpenServersProject,
       required this.onOpenHub,
       required this.onOpenParent,
       required this.onTuneProject,

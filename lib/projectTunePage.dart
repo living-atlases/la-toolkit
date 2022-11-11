@@ -18,6 +18,7 @@ import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'components/GenericSelector.dart';
@@ -152,7 +153,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
         bool showSoftwareVersions =
             project.showSoftwareVersions && vm.softwareReleasesReady;
         bool showToolkitDeps = project.showToolkitDeps;
-
+        context.loaderOverlay.hide();
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,

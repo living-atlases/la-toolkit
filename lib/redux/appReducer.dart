@@ -33,6 +33,7 @@ List<Reducer<AppState>> basic = [
   TypedReducer<AppState, ImportProject>(_importProject),
   TypedReducer<AppState, AddTemplateProjects>(_addTemplateProjects),
   TypedReducer<AppState, OpenProject>(_openProject),
+  TypedReducer<AppState, OpenServersProject>(_openServersProject),
   TypedReducer<AppState, GotoStepEditProject>(_gotoStepEditProject),
   TypedReducer<AppState, NextStepEditProject>(_nextStepEditProject),
   TypedReducer<AppState, PreviousStepEditProject>(_previousStepEditProject),
@@ -134,7 +135,6 @@ AppState _importProject(AppState state, ImportProject action) {
   return state.copyWith(
       currentProject: newProjectAndHubs[0],
       status: LAProjectViewStatus.create,
-      loading: true,
       projects: projects..addAll(newProjectAndHubs),
       currentStep: 0);
 }
@@ -147,6 +147,14 @@ AppState _openProject(AppState state, OpenProject action) {
   return state.copyWith(
       currentProject: action.project,
       status: LAProjectViewStatus.edit,
+      currentStep: 0);
+}
+
+AppState _openServersProject(AppState state, OpenServersProject action) {
+  return state.copyWith(
+      currentProject: action.project,
+      status: LAProjectViewStatus.servers,
+      loading: true,
       currentStep: 0);
 }
 
@@ -470,6 +478,7 @@ AppState _onPortalRunningVersionsRetrieved(
     AppState state, OnPortalRunningVersionsRetrieved action) {
   LAProject cp = state.currentProject;
   cp.runningVersions = action.versions;
+  cp.lastSwCheck = DateTime.now();
   return state.copyWith(currentProject: cp);
 }
 

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/brandingSelector.dart';
-import 'package:la_toolkit/components/serverDetailsCardList.dart';
-import 'package:la_toolkit/components/serversCardList.dart';
-import 'package:la_toolkit/components/serversServicesEditPanel.dart';
 import 'package:la_toolkit/maps/mapAreaSelector.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/projectTunePage.dart';
@@ -21,12 +18,10 @@ import 'components/laAppBar.dart';
 import 'components/lintProjectPanel.dart';
 import 'components/scrollPanel.dart';
 import 'components/serviceWidget.dart';
-import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
-import 'models/laServer.dart';
 import 'models/laServiceDesc.dart';
 
 class LAProjectEditPage extends StatelessWidget {
@@ -39,35 +34,22 @@ class LAProjectEditPage extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static List<String> serversNameSplit(String value) =>
       value.split(RegExp(r"[, ]+"));
-  static const int totalSteps = 6;
+  static const int totalSteps = 4;
 
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
-    GlobalKey<FormState>(),
-    GlobalKey<FormState>(),
-    GlobalKey<FormState>()
   ];
   final List<FocusNode?> _focusNodes = [
     FocusNode(),
     null,
     FocusNode(),
-    FocusNode(),
-    FocusNode(),
-    FocusNode(),
   ];
 
-  static const serverHint =
-      "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
-  final _serverTextFieldController = TextEditingController();
-  final _serverAdditionalTextFieldController = TextEditingController();
   static const _basicStep = 0;
   static const _mapStep = 1;
-  static const _serversStep = 2;
-  static const _servicesStep = 3;
-  static const _serverToServiceStep = 4;
-  static const _serversAdditional = 5;
+  static const _servicesStep = 2;
 
   static const StepperType stepperType = StepperType.vertical;
 
@@ -268,7 +250,7 @@ class LAProjectEditPage extends StatelessWidget {
                   vm.onSaveCurrentProject(_project);
                 }).buildTitle(context),
               ])));
-          _steps.add(Step(
+          /*  _steps.add(Step(
               isActive: _setIsActive(_step, _serversStep),
               state: _setSetStatus(_step, _serversStep),
               title: const Text('Servers'),
@@ -293,7 +275,7 @@ If you are unsure type something like "server1, server2, server3".
 """),
                   ],
                 ),
-              )));
+              ))); */
           final Iterable<LAServiceDesc> availableServices =
               LAServiceDesc.listNoSub(_project.isHub)
                   .where((LAServiceDesc s) => s.isSubService == false);
@@ -327,71 +309,7 @@ If you are unsure type something like "server1, server2, server3".
                                       _focusNodes[_servicesStep]))
                     ],
                   ))));
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _serverToServiceStep),
-              state: _setSetStatus(_step, _serverToServiceStep),
-              title:
-                  const Text('Define which services will run in which servers'),
-              subtitle: const Text(
-                  "Some service can be deployed in several servers for web redundancy or to conform a cluster. Note: the la-toolkit does not configure load balancing in redundant web services."),
-              content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: (_project.numServers() > 0)
-                      ? [
-                          const ServersServicesEditPanel(),
-                          const SizedBox(height: 10),
-                          const Text("Add more servers:",
-                              style: TextStyle(fontSize: 18)),
-                          ServerTextField(
-                              controller: _serverAdditionalTextFieldController,
-                              focusNode: _focusNodes[_serverToServiceStep]!,
-                              formKey: _formKeys[_serverToServiceStep],
-                              onAddServer: (name) =>
-                                  _addServer(name.trim(), vm)),
-                        ]
-                      : [
-                          const Text(
-                              'You need to add some server before to this step...')
-                        ])));
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _serversAdditional),
-              state: _setSetStatus(_step, _serversAdditional),
-              title: const Text('Define better your servers'),
-              subtitle: const Text(
-                  "Information to know how to reach and access to your servers, like IP Addressing, names aliases, secure access information"),
-              content: Form(
-                  key: _formKeys[5],
-                  child: Column(children: [
-                    const TipsCard(text: '''
-Here we'll define how to connect to your server (thanks to the [IP address](https://en.wikipedia.org/wiki/IP_address)) and how to do it securely (thanks to [SSH](https://en.wikipedia.org/wiki/SSH_(Secure_Shell))).
-
-This is the most difficult part of all this project definition. If we configure correctly this, we'll deploy correctly later our portal.
-
-We'll use SSH to access to your server. For read more about SSH, read our wiki page [SSH for Beginners](https://github.com/AtlasOfLivingAustralia/documentation/wiki/SSH-for-Beginners).
-
-If you have doubts or need to ask for some information, save this project and continue later filling this. Don't hesitate to ask us in our #slack channel.    
-                         ''', margin: EdgeInsets.fromLTRB(0, 0, 0, 10)),
-                    MessageItem(_project, LAVariableDesc.get("ansible_user"),
-                        (value) {
-                      _project.setVariable(
-                          LAVariableDesc.get("ansible_user"), value);
-                      vm.onSaveCurrentProject(_project);
-                    }).buildTitle(context),
-                    const SizedBox(height: 20),
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text(
-                          'Advanced SSH options',
-                        ),
-                        trailing: Switch(
-                            value: _project.advancedEdit,
-                            onChanged: (value) {
-                              _project.advancedEdit = value;
-                              vm.onSaveCurrentProject(_project);
-                            })),
-                    const SizedBox(height: 20),
-                    ServersDetailsCardList(_focusNodes[_serversAdditional]!),
-                  ]))));
+          context.loaderOverlay.hide();
           return Title(
               title:
                   "${_project.shortName}: ${vm.state.status.getTitle(_project.isHub)}",
@@ -479,7 +397,7 @@ If you have doubts or need to ask for some information, save this project and co
                           ],
                         );
                       }),
-                  const LintProjectPanel(
+                  const LintProjectPanel(showOthers: false,
                       showToolkitDeps: false, showLADeps: false)
                 ]))),
                 //     ])
@@ -495,15 +413,6 @@ If you have doubts or need to ask for some information, save this project and co
   void onStepContinue(_ProjectPageViewModel vm, LAProject project) {
     vm.onNext();
     vm.onSaveCurrentProject(project);
-  }
-
-  void _addServer(String value, _ProjectPageViewModel vm) {
-    vm.project.upsertServer(LAServer(name: value, projectId: vm.project.id));
-    _serverTextFieldController.clear();
-    _serverAdditionalTextFieldController.clear();
-    _formKeys[_serversStep].currentState!.reset();
-    _focusNodes[_serversStep]!.requestFocus();
-    vm.onSaveCurrentProject(vm.project);
   }
 
   bool _setIsActive(currentStep, step) {
@@ -578,64 +487,6 @@ class HostHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [Text(title), if (help != null) HelpIcon(wikipage: help!)],
-    );
-  }
-}
-
-class ServerTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final FocusNode focusNode;
-
-  final GlobalKey<FormState> formKey;
-  final Function(String) onAddServer;
-
-  const ServerTextField(
-      {Key? key,
-      required this.controller,
-      required this.focusNode,
-      required this.formKey,
-      required this.onAddServer})
-      : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      showCursor: true,
-      cursorColor: Colors.orange,
-      style: LAColorTheme.unDeployedTextStyle,
-      initialValue: null,
-      onFieldSubmitted: (value) =>
-          LAProjectEditPage.serversNameSplit(value).forEach((server) {
-        onAddServer(server.trim());
-        controller.clear();
-      }),
-      focusNode: focusNode,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (String? value) {
-        return value != null &&
-                (LARegExp.hostnameRegexp.hasMatch(value) ||
-                    LARegExp.multiHostnameRegexp.hasMatch(value) ||
-                    value.isEmpty)
-            ? null
-            : 'Invalid server name.';
-      },
-      decoration: InputDecoration(
-          suffixIcon: IconButton(
-              icon: const Icon(Icons.add_circle),
-              onPressed: () {
-                if (formKey.currentState != null &&
-                    formKey.currentState!.validate()) {
-                  LAProjectEditPage.serversNameSplit(
-                    controller.text,
-                  ).forEach((server) {
-                    onAddServer(server);
-                  });
-                }
-              },
-              color: LAColorTheme.inactive),
-          hintText: LAProjectEditPage.serverHint,
-          labelText:
-              'Type the name of your servers, comma or space separated (Press \'enter\' to add it)'),
     );
   }
 }

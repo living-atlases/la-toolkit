@@ -93,6 +93,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
   int? clientMigration;
 
+  DateTime? lastSwCheck;
+
   @JsonKey(ignore: true)
   LAServer? masterPipelinesServer;
 
@@ -153,94 +155,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if ((dirName == null || dirName!.isEmpty) && shortName.isNotEmpty) {
       dirName = suggestDirName();
     }
-    migrate();
     // _setDefSwVersions();
     validateCreation();
-  }
-
-  void migrate() {
-    try {
-      if (clientMigration == null) {
-        // Project pre migration from subServices to services
-        fixNonHubServices();
-        clientMigration = 0;
-      }
-      if (clientMigration == 0) {
-        migrateSubServices();
-        clientMigration = 1;
-      }
-    } catch (e, stacktrace) {
-      print('Client migration of project failed $e');
-      print(stacktrace);
-    }
-  }
-
-  // Migrate old project from subservices (used for userdetails, apikey, etc) to
-  // services (like cas) with parent/child services. For now these kind of services
-  // are deployed together (cas, userdetails, etc).
-  void migrateSubServices() {
-    if (createdAt < DateTime(2021, 9, 24).millisecondsSinceEpoch && !isHub) {
-      if (AppUtils.isDev()) {
-        print("Migrating cas sub-services etc as services");
-      }
-      if (getService(cas).use) {
-        serviceInUse(userdetails, true);
-        serviceInUse(apikey, true);
-        serviceInUse(casManagement, true);
-        _reAssignService(cas);
-      }
-
-      if (getService(spatial).use) {
-        serviceInUse(spatialService, true);
-        serviceInUse(geoserver, true);
-        _reAssignService(spatial);
-      }
-    }
-  }
-
-  void fixNonHubServices() {
-    if (createdAt < DateTime(2021, 9, 24).millisecondsSinceEpoch && isHub) {
-      print("Fixing non hub services");
-      List<LAService> sToDel = [];
-      List<String> allowedServices = LAServiceDesc.listS(isHub);
-      // print(this);
-      for (LAService s in services) {
-        print(s);
-        if (!allowedServices.contains(s.nameInt)) {
-          print("Removing ${s.nameInt} from hub");
-          sToDel.add(s);
-        }
-      }
-      for (LAService sDel in sToDel) {
-        serviceDeploys.removeWhere(
-            (sd) => sDel.projectId == id && sd.serviceId == sDel.id);
-        services.removeWhere((s) => s.id == sDel.id);
-      }
-      serverServices.forEach((String serverId, List<String> services) {
-        for (String s in services) {
-          if (!allowedServices.contains(s)) {
-            print("Removing $s from hub");
-            services.remove(s);
-          }
-        }
-        serverServices[serverId] = services;
-      });
-      // print(this);
-    }
-  }
-
-  void _reAssignService(String serviceNameInt) {
-    List<LAServiceDeploy> deploys =
-        getServiceDeploysForSomeService(serviceNameInt);
-    if (deploys.isNotEmpty) {
-      // For now, we only support one deploy per service
-      LAServer server = servers.where((s) => s.id == deploys[0].serverId).first;
-      List<String> servicesInThatServer =
-          getServicesNameListInServer(server.id);
-      // re-assign to add sub-services
-      print("reassigning $servicesInThatServer to ${server.name}");
-      assign(server, servicesInThatServer);
-    }
   }
 
   int numServers() => servers.length;

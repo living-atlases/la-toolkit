@@ -52,7 +52,7 @@ class ServerDetailsCard extends StatelessWidget {
                       Text(server.name,
                           style: const TextStyle(
                               fontWeight: FontWeight.w500, fontSize: 16)),
-                      RenameServerIcon(server, (String newName) {
+                      RenameServerIcon(server, () {}, (String newName) {
                         server.name = newName;
                         onSave(server);
                       }),
