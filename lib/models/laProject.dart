@@ -671,12 +671,12 @@ check results length: ${checkResults.length}''';
     return sshKeysInUseList.toSet().toList().join(', ');
   }
 
-  bool collectoryAndBiocacheDifferentServers() {
-    List<String> colHosts = getHostnames(collectory);
-    List<String> biocacheHubHosts = getHostnames(alaHub);
-    List<String> common = List.from(colHosts);
-    common.removeWhere((item) => biocacheHubHosts.contains(item));
-    return const ListEquality().equals(common, colHosts);
+  bool servicesInDifferentServers(String serviceA, String serviceB) {
+    List<String> serviceAHosts = getHostnames(serviceA);
+    List<String> serviceBHosts = getHostnames(serviceB);
+    List<String> common = List.from(serviceAHosts);
+    common.removeWhere((item) => serviceBHosts.contains(item));
+    return const ListEquality().equals(common, serviceAHosts);
   }
 
   void setMap(LatLng firstPoint, LatLng sndPoint, double zoom) {

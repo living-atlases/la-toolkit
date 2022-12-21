@@ -116,10 +116,18 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           if (basicDefined && !project.allServersWithSshKeys())
             const AlertCard(
                 message: "All servers should have configured their SSH keys"),
-          if (!project.collectoryAndBiocacheDifferentServers())
+          if (!project.servicesInDifferentServers(collectory, alaHub))
             const AlertCard(
                 message:
                     "The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled"),
+          if (!project.servicesInDifferentServers(ecodata, spatial))
+            const AlertCard(
+                message:
+                    "The ecodata and spatial services are in the same server. This can cause deploy problems"),
+          if (!project.servicesInDifferentServers(ecodataReporting, spatial))
+            const AlertCard(
+                message:
+                    "The ecodata reporting and spatial services are in the same server. This can cause deploy problems"),
           if (!project.isHub &&
               !project.isPipelinesInUse &&
               !project.getServiceE(LAServiceName.biocache_backend).use)
