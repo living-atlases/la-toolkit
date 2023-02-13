@@ -49,6 +49,7 @@ class AppState {
   final LAProject currentProject;
   final LAProjectViewStatus status;
   final int currentStep;
+  final int currentTuneTab;
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
@@ -71,7 +72,8 @@ class AppState {
       this.failedLoad = false,
       this.firstUsage = true,
       LAProject? currentProject,
-      this.currentStep = 0,
+      this.currentStep = 0, 
+        this.currentTuneTab = 0,
       LAProjectViewStatus? status,
       List<String>? alaInstallReleases,
       List<String>? generatorReleases,
@@ -109,6 +111,7 @@ class AppState {
           currentProject == other.currentProject &&
           status == other.status &&
           currentStep == other.currentStep &&
+          currentTuneTab == other.currentTuneTab &&
           repeatCmd == other.repeatCmd &&
           pkgInfo == other.pkgInfo &&
           loading == other.loading &&
@@ -129,6 +132,7 @@ class AppState {
       currentProject.hashCode ^
       status.hashCode ^
       currentStep.hashCode ^
+      currentTuneTab.hashCode ^
       repeatCmd.hashCode ^
       pkgInfo.hashCode ^
       backendVersion.hashCode ^
@@ -161,7 +165,7 @@ class AppState {
     return '''
 
 === AppState ${loading ? '(loading)' : ''} ===
-view status: $status , currentStep: $currentStep, failedToLoad: $failedLoad, appVersion: ${pkgInfo != null ? pkgInfo!.version : 'unknown'}, backendVersion ${backendVersion ?? ''}
+view status: $status , currentStep: $currentStep, currentTuneStep: $currentTuneTab, failedToLoad: $failedLoad, appVersion: ${pkgInfo != null ? pkgInfo!.version : 'unknown'}, backendVersion ${backendVersion ?? ''}
 LA projects: ${projects.length} 
 ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}
 snackMessages: ${appSnackBarMessages.length} repeatCmd: $repeatCmd

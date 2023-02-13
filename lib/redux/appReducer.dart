@@ -67,7 +67,8 @@ List<Reducer<AppState>> basic = [
   TypedReducer<AppState, OnPortalRunningVersionsRetrieved>(
       _onPortalRunningVersionsRetrieved),
   TypedReducer<AppState, OnInitCasKeysResults>(_onInitCasKeysResults),
-  TypedReducer<AppState, OnInitCasOAuthKeysResults>(_onInitCasOAuthKeysResults)
+  TypedReducer<AppState, OnInitCasOAuthKeysResults>(_onInitCasOAuthKeysResults),
+  TypedReducer<AppState, OnSelectTuneTab>(_onSelectTuneTab)
 ];
 
 final appReducer =
@@ -507,4 +508,8 @@ AppState _onInitCasOAuthKeysResults(
   cp.setVariable(LAVariableDesc.get("cas_oauth_access_token_encryption_key"),
       action.casOauthAccessTokenEncryptionKey);
   return state.copyWith(currentProject: cp);
+}
+
+AppState _onSelectTuneTab(AppState state,OnSelectTuneTab action) {
+  return state.copyWith(currentTuneTab: action.currentTab);
 }

@@ -418,3 +418,9 @@ class OnInitCasOAuthKeysResults extends AppActions {
       required this.casOauthAccessTokenSigningKey,
       required this.casOauthAccessTokenEncryptionKey});
 }
+
+class OnSelectTuneTab extends AppActions {
+  int currentTab;
+
+  OnSelectTuneTab({required this.currentTab});
+}

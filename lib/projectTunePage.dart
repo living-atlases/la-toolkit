@@ -47,7 +47,9 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final bool _endNoteEnabled = false;
   int _tab = 0;
-
+  final int _moreInfoTab = 0;
+  final int _softwareTab = 1;
+  final int _extraTab = 2;
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectTuneViewModel>(
@@ -57,6 +59,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
           project: store.state.currentProject,
           softwareReleasesReady: store.state.laReleases.isNotEmpty,
           laReleases: store.state.laReleases,
+          currentTab: store.state.currentTuneTab,
           status: store.state.currentProject.status,
           alaInstallReleases: store.state.alaInstallReleases,
           generatorReleases: store.state.generatorReleases,
@@ -78,11 +81,12 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
           onCancel: (project) {
             store.dispatch(OpenProjectTools(project));
             BeamerCond.of(context, LAProjectViewLocation());
-          },
+          }, onSelectTuneTab: (int tab) => store.dispatch(OnSelectTuneTab(currentTab: tab))
         );
       },
       builder: (BuildContext context, _ProjectTuneViewModel vm) {
         LAProject project = vm.project;
+        _tab =vm.currentTab;
         if (!project.isHub &&
             (project.isStringVariableNullOrEmpty("pac4j_cookie_signing_key") ||
                 project.isStringVariableNullOrEmpty(
@@ -194,7 +198,10 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                         icon: MdiIcons.formTextbox, title: "Ansible Extras"),
                   ],
                   initialActiveIndex: 0, //optional, default as 0
-                  onTap: (int i) => setState(() => _tab = i),
+                  onTap: (int i) => setState(() {
+                    _tab = i;
+                    vm.onSelectTuneTab(i);
+                  } ),
                 ),
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.centerDocked,
@@ -205,7 +212,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              if (_tab == 0)
+                              if (_tab == _moreInfoTab)
                                 ListTile(
                                     // contentPadding: EdgeInsets.zero,
                                     title: const Text(
@@ -217,11 +224,11 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                           project.advancedTune = value;
                                           vm.onSaveProject(project);
                                         })),
-                              if (_tab == 0 &&
+                              if (_tab == _moreInfoTab &&
                                   !AppUtils.isDemo() &&
                                   project.advancedTune)
                                 const SizedBox(height: 20),
-                              if (_tab == 0 &&
+                              if (_tab == _moreInfoTab &&
                                   !AppUtils.isDemo() &&
                                   project.advancedTune)
                                 ListTile(
@@ -249,8 +256,8 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                             vm.onSaveProject(project);
                                           }
                                         })),
-                              if (_tab == 0) const SizedBox(height: 20),
-                              if (_tab == 0)
+                              if (_tab == _moreInfoTab) const SizedBox(height: 20),
+                              if (_tab == _moreInfoTab)
                                 ListView.builder(
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
@@ -267,15 +274,15 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                     );
                                   },
                                 ),
-                              if (_tab == 1)
+                              if (_tab == _softwareTab)
                                 if (showToolkitDeps) const SizedBox(height: 20),
-                              if (_tab == 1)
+                              if (_tab == _softwareTab)
                                 if (showToolkitDeps)
                                   HeadingItem("LA Toolkit dependencies")
                                       .buildTitle(context),
-                              if (_tab == 1)
+                              if (_tab == _softwareTab)
                                 if (showToolkitDeps) const SizedBox(height: 20),
-                              if (_tab == 1)
+                              if (_tab == _softwareTab)
                                 if (showToolkitDeps)
                                   Row(
                                       mainAxisAlignment:
@@ -302,14 +309,14 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                               vm.onSaveProject(project);
                                             }))
                                       ]),
-                              if (_tab == 1)
+                              if (_tab == _softwareTab)
                                 if (showSoftwareVersions)
                                   const SizedBox(height: 20),
-                              if (_tab == 1)
+                              if (_tab == _softwareTab)
                                 if (showSoftwareVersions)
                                   HeadingItem("LA Component versions")
                                       .buildTitle(context),
-                              if (_tab == 1)
+                              if (_tab == _softwareTab)
                                 if (showSoftwareVersions)
                                   LAReleasesSelectors(onSoftwareSelected:
                                       (String sw, String version, bool save) {
@@ -319,33 +326,33 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                       vm.onSaveProject(project);
                                     }
                                   }),
-                              if (_tab == 1)
+                              if (_tab == _softwareTab)
                                 if (showSoftwareVersions || showToolkitDeps)
                                   LintProjectPanel(
                                       showLADeps: showSoftwareVersions,
                                       showToolkitDeps: showToolkitDeps,
                                       showOthers: false),
-                              if (_tab == 2)
+                              if (_tab == _extraTab)
                                 if (project.advancedTune)
                                   const SizedBox(height: 20),
-                              if (_tab == 2)
+                              if (_tab == _extraTab)
                                 if (project.advancedTune)
                                   HeadingItem("Other variables")
                                       .buildTitle(context),
-                              if (_tab == 2)
+                              if (_tab == _extraTab)
                                 if (project.advancedTune)
                                   const SizedBox(height: 30),
-                              if (_tab == 2)
+                              if (_tab == _extraTab)
                                 if (project.advancedTune)
                                   const Text(
                                     "Write here other extra ansible variables that are not configurable in the previous forms:",
                                     style: TextStyle(
                                         fontSize: 18, color: Colors.black54),
                                   ),
-                              if (_tab == 2)
+                              if (_tab == _extraTab)
                                 if (project.advancedTune)
                                   const SizedBox(height: 20),
-                              if (_tab == 2)
+                              if (_tab == _extraTab)
                                 if (project.advancedTune)
                                   // This breaks the newline enter key:
                                   //ListTile(
@@ -374,8 +381,8 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                               /* trailing: HelpIcon(
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
-                              if (_tab == 2) const SizedBox(height: 20),
-                              if (_tab == 2)
+                              if (_tab == _extraTab) const SizedBox(height: 20),
+                              if (_tab == _extraTab)
                                 if (_endNoteEnabled)
                                   Row(children: [
                                     const Text(
@@ -521,9 +528,11 @@ class _ProjectTuneViewModel {
   final void Function(LAProject) onUpdateProject;
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
+  final void Function(int) onSelectTuneTab;
   final void Function() onInitCasKeys;
   final void Function() onInitCasOAuthKeys;
   final bool softwareReleasesReady;
+  final int currentTab;
 
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
@@ -534,11 +543,13 @@ class _ProjectTuneViewModel {
       {required this.project,
       required this.status,
       required this.laReleases,
+        required this.currentTab,
       required this.onUpdateProject,
       required this.softwareReleasesReady,
       required this.onSaveProject,
       required this.onInitCasKeys,
       required this.onInitCasOAuthKeys,
+        required this.onSelectTuneTab,
       required this.onCancel,
       required this.alaInstallReleases,
       required this.generatorReleases,
@@ -550,6 +561,7 @@ class _ProjectTuneViewModel {
       other is _ProjectTuneViewModel &&
           runtimeType == other.runtimeType &&
           project == other.project &&
+          currentTab == other.currentTab &&
           softwareReleasesReady == other.softwareReleasesReady &&
           const DeepCollectionEquality.unordered()
               .equals(laReleases, other.laReleases) &&
@@ -564,6 +576,7 @@ class _ProjectTuneViewModel {
   int get hashCode =>
       project.hashCode ^
       status.hashCode ^
+      currentTab.hashCode ^
       softwareReleasesReady.hashCode ^
       const ListEquality().hash(sshKeys) ^
       const ListEquality().hash(generatorReleases) ^

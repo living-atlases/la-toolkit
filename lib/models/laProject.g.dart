@@ -339,7 +339,11 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) => LAProject(
         (k, e) =>
             MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
       ),
-    )..clientMigration = json['clientMigration'] as int?;
+    )
+      ..clientMigration = json['clientMigration'] as int?
+      ..lastSwCheck = json['lastSwCheck'] == null
+          ? null
+          : DateTime.parse(json['lastSwCheck'] as String);
 
 Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'id': instance.id,
@@ -372,6 +376,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'hubs': instance.hubs.map((e) => e.toJson()).toList(),
       'lastCmdEntry': instance.lastCmdEntry?.toJson(),
       'clientMigration': instance.clientMigration,
+      'lastSwCheck': instance.lastSwCheck?.toIso8601String(),
     };
 
 const _$LAProjectStatusEnumMap = {

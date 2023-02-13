@@ -24,6 +24,7 @@ class _AppStateCWProxy {
     String? backendVersion,
     LAProject? currentProject,
     int? currentStep,
+    int? currentTuneTab,
     bool? failedLoad,
     bool? firstUsage,
     List<String>? generatorReleases,
@@ -42,6 +43,7 @@ class _AppStateCWProxy {
       backendVersion: backendVersion ?? _value.backendVersion,
       currentProject: currentProject ?? _value.currentProject,
       currentStep: currentStep ?? _value.currentStep,
+      currentTuneTab: currentTuneTab ?? _value.currentTuneTab,
       failedLoad: failedLoad ?? _value.failedLoad,
       firstUsage: firstUsage ?? _value.firstUsage,
       generatorReleases: generatorReleases ?? _value.generatorReleases,
@@ -113,6 +115,9 @@ class _AppStateCWProxy {
 
   AppState currentStep(int currentStep) => this(currentStep: currentStep);
 
+  AppState currentTuneTab(int currentTuneTab) =>
+      this(currentTuneTab: currentTuneTab);
+
   AppState failedLoad(bool failedLoad) => this(failedLoad: failedLoad);
 
   AppState firstUsage(bool firstUsage) => this(firstUsage: firstUsage);
@@ -145,6 +150,7 @@ extension AppStateCopyWith on AppState {
       backendVersion: backendVersion == true ? null : this.backendVersion,
       currentProject: currentProject == true ? null : this.currentProject,
       currentStep: currentStep,
+      currentTuneTab: currentTuneTab,
       failedLoad: failedLoad,
       firstUsage: firstUsage,
       generatorReleases:
@@ -174,6 +180,7 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
           ? null
           : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
       currentStep: json['currentStep'] as int? ?? 0,
+      currentTuneTab: json['currentTuneTab'] as int? ?? 0,
       status: $enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
       alaInstallReleases: (json['alaInstallReleases'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -197,6 +204,7 @@ Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'currentProject': instance.currentProject.toJson(),
       'status': _$LAProjectViewStatusEnumMap[instance.status],
       'currentStep': instance.currentStep,
+      'currentTuneTab': instance.currentTuneTab,
       'projects': instance.projects.map((e) => e.toJson()).toList(),
       'alaInstallReleases': instance.alaInstallReleases,
       'generatorReleases': instance.generatorReleases,
@@ -208,6 +216,7 @@ Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
 const _$LAProjectViewStatusEnumMap = {
   LAProjectViewStatus.view: 'view',
   LAProjectViewStatus.edit: 'edit',
+  LAProjectViewStatus.servers: 'servers',
   LAProjectViewStatus.tune: 'tune',
   LAProjectViewStatus.create: 'create',
 };
