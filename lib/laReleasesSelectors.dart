@@ -25,13 +25,6 @@ class LAReleasesSelectors extends StatefulWidget {
 
 class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
   final debouncer = Debouncer(milliseconds: 1000);
-  late bool _loading;
-
-  @override
-  void initState() {
-    super.initState();
-    _loading = false;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +39,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
               onSaveProject: (project) {
                 debouncer
                     .run(() => store.dispatch(SaveCurrentProject(project)));
-              },
-              refreshSWVersions: () => store.dispatch(OnFetchSoftwareDepsState(
-                  force: true,
-                  onReady: () => setState(() {
-                        _loading = false;
-                      }))));
+              });
         },
         builder: (BuildContext context, _LAReleasesSelectorsViewModel vm) {
           LAProject project = vm.project;
@@ -126,12 +114,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
               trailing: HelpIcon(wikipage: "Components-versioning"),
             ),
             Wrap(children: selectors),
-            Padding(
-                padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                child: TextButton.icon(
-                    onPressed: _loading ? null : () => _onPressed(vm),
-                    label: const Text("Refresh"),
-                    icon: const Icon(Icons.refresh)))
+
           ]);
         });
   }
@@ -151,18 +134,10 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
       return storedVersion;
     }
   }
-
-  _onPressed(vm) {
-    setState(() {
-      _loading = true;
-    });
-    vm.refreshSWVersions();
-  }
 }
 
 class _LAReleasesSelectorsViewModel {
   final Map<String, LAReleases> laReleases;
-  final Function() refreshSWVersions;
   final LAProject project;
   final bool runningVersionsRetrieved;
   final void Function(LAProject project) onSaveProject;
@@ -188,6 +163,5 @@ class _LAReleasesSelectorsViewModel {
       {required this.laReleases,
       required this.project,
       required this.runningVersionsRetrieved,
-      required this.refreshSWVersions,
       required this.onSaveProject});
 }

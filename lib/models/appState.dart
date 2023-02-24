@@ -65,6 +65,8 @@ class AppState {
   final String? backendVersion;
   @JsonKey(ignore: true)
   final bool loading;
+  @JsonKey(ignore: true)
+  final bool depsLoading;
   final DateTime? lastSwCheck;
 
   AppState(
@@ -72,7 +74,7 @@ class AppState {
       this.failedLoad = false,
       this.firstUsage = true,
       LAProject? currentProject,
-      this.currentStep = 0, 
+      this.currentStep = 0,
         this.currentTuneTab = 0,
       LAProjectViewStatus? status,
       List<String>? alaInstallReleases,
@@ -84,6 +86,7 @@ class AppState {
       this.backendVersion,
       this.lastSwCheck,
       bool? loading,
+        bool? depsLoading,
       List<SshKey>? sshKeys})
       : projects = projects ?? [],
         sshKeys = sshKeys ?? [],
@@ -94,6 +97,7 @@ class AppState {
         repeatCmd = repeatCmd ?? CommonCmd(),
         laReleases = laReleases ?? {},
         loading = loading ?? false,
+        depsLoading = loading ?? false,
         appSnackBarMessages = appSnackBarMessages ?? [];
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
@@ -115,6 +119,7 @@ class AppState {
           repeatCmd == other.repeatCmd &&
           pkgInfo == other.pkgInfo &&
           loading == other.loading &&
+          depsLoading == other.depsLoading &&
           backendVersion == other.backendVersion &&
           lastSwCheck == other.lastSwCheck &&
           listEquals(projects, other.projects) &&
@@ -137,6 +142,7 @@ class AppState {
       pkgInfo.hashCode ^
       backendVersion.hashCode ^
       loading.hashCode ^
+      depsLoading.hashCode ^
       lastSwCheck.hashCode ^
       const ListEquality().hash(appSnackBarMessages) ^
       const ListEquality().hash(projects) ^
@@ -160,11 +166,18 @@ class AppState {
     }
   }
 
+
+  String printShort() {
+    return '''=== AppState ${loading ? '(loading)' : ''} ${depsLoading
+        ? '(depsLoading)'
+        : ''} ===''';
+  }
+
   @override
   String toString() {
     return '''
 
-=== AppState ${loading ? '(loading)' : ''} ===
+=== AppState ${loading ? '(loading)' : ''} ${depsLoading ? '(depsLoading)' : ''} ===
 view status: $status , currentStep: $currentStep, currentTuneStep: $currentTuneTab, failedToLoad: $failedLoad, appVersion: ${pkgInfo != null ? pkgInfo!.version : 'unknown'}, backendVersion ${backendVersion ?? ''}
 LA projects: ${projects.length} 
 ala-install releases: ${alaInstallReleases.length}, generator releases: ${generatorReleases.length}, sshKeys: ${sshKeys.length}

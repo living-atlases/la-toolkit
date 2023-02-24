@@ -25,6 +25,7 @@ class _AppStateCWProxy {
     LAProject? currentProject,
     int? currentStep,
     int? currentTuneTab,
+    bool? depsLoading,
     bool? failedLoad,
     bool? firstUsage,
     List<String>? generatorReleases,
@@ -44,6 +45,7 @@ class _AppStateCWProxy {
       currentProject: currentProject ?? _value.currentProject,
       currentStep: currentStep ?? _value.currentStep,
       currentTuneTab: currentTuneTab ?? _value.currentTuneTab,
+      depsLoading: depsLoading ?? _value.depsLoading,
       failedLoad: failedLoad ?? _value.failedLoad,
       firstUsage: firstUsage ?? _value.firstUsage,
       generatorReleases: generatorReleases ?? _value.generatorReleases,
@@ -75,6 +77,10 @@ class _AppStateCWProxy {
   AppState currentProject(LAProject? currentProject) => currentProject == null
       ? _value._copyWithNull(currentProject: true)
       : this(currentProject: currentProject);
+
+  AppState depsLoading(bool? depsLoading) => depsLoading == null
+      ? _value._copyWithNull(depsLoading: true)
+      : this(depsLoading: depsLoading);
 
   AppState generatorReleases(List<String>? generatorReleases) =>
       generatorReleases == null
@@ -132,6 +138,7 @@ extension AppStateCopyWith on AppState {
     bool appSnackBarMessages = false,
     bool backendVersion = false,
     bool currentProject = false,
+    bool depsLoading = false,
     bool generatorReleases = false,
     bool laReleases = false,
     bool lastSwCheck = false,
@@ -151,6 +158,7 @@ extension AppStateCopyWith on AppState {
       currentProject: currentProject == true ? null : this.currentProject,
       currentStep: currentStep,
       currentTuneTab: currentTuneTab,
+      depsLoading: depsLoading == true ? null : this.depsLoading,
       failedLoad: failedLoad,
       firstUsage: firstUsage,
       generatorReleases:

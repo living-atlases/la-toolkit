@@ -18,10 +18,10 @@ import 'entityReducer.dart';
 
 List<Reducer<AppState>> basic = [
   TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
-  TypedReducer<AppState, OnFetchSoftwareDepsState>(_onFetchState),
+  TypedReducer<AppState, OnFetchSoftwareDepsState>(_onFetchSoftwareDepsState),
   TypedReducer<AppState, OnFetchStateFailed>(_onFetchStateFailed),
   TypedReducer<AppState, OnFetchAlaInstallReleases>(_onFetchAlaInstallReleases),
-  TypedReducer<AppState, OnLAVersionsSwCheck>(_onLAVersionsSwCheck),
+  TypedReducer<AppState, OnLAVersionsSwCheckEnd>(_onLAVersionsSwCheckEnd),
   TypedReducer<AppState, OnFetchBackendVersion>(_onFetchBackendVersion),
   TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(
       _onFetchAlaInstallReleasesFailed),
@@ -78,8 +78,8 @@ AppState _onIntroEnd(AppState state, OnIntroEnd action) {
   return state.copyWith(firstUsage: false);
 }
 
-AppState _onFetchState(AppState state, OnFetchSoftwareDepsState action) {
-  return state;
+AppState _onFetchSoftwareDepsState(AppState state, OnFetchSoftwareDepsState action) {
+  return state.copyWith(depsLoading: true);
 }
 
 AppState _onFetchStateFailed(AppState state, OnFetchStateFailed action) {
@@ -91,9 +91,9 @@ AppState _onFetchAlaInstallReleases(
   return state.copyWith(alaInstallReleases: action.releases);
 }
 
-AppState _onLAVersionsSwCheck(AppState state, OnLAVersionsSwCheck action) {
+AppState _onLAVersionsSwCheckEnd(AppState state, OnLAVersionsSwCheckEnd action) {
   print(action.releases);
-  return state.copyWith(laReleases: action.releases, lastSwCheck: action.time);
+  return state.copyWith(laReleases: action.releases, lastSwCheck: action.time, depsLoading: false);
 }
 
 AppState _onFetchAlaInstallReleasesFailed(

@@ -50,43 +50,66 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
   final int _moreInfoTab = 0;
   final int _softwareTab = 1;
   final int _extraTab = 2;
+  late bool _loading;
+
+  @override
+  void initState() {
+    super.initState();
+    _loading = false;
+  }
+
+  _onPressed(vm) {
+    setState(() {
+      _loading = true;
+    });
+    vm.refreshSWVersions();
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectTuneViewModel>(
       // Fails the switch distinct: true,
       converter: (store) {
         return _ProjectTuneViewModel(
-          project: store.state.currentProject,
-          softwareReleasesReady: store.state.laReleases.isNotEmpty,
-          laReleases: store.state.laReleases,
-          currentTab: store.state.currentTuneTab,
-          status: store.state.currentProject.status,
-          alaInstallReleases: store.state.alaInstallReleases,
-          generatorReleases: store.state.generatorReleases,
-          backendVersion: store.state.backendVersion,
-          sshKeys: store.state.sshKeys,
-          onInitCasKeys: () {
-            store.dispatch(OnInitCasKeys());
-          },
-          onInitCasOAuthKeys: () {
-            store.dispatch(OnInitCasOAuthKeys());
-          },
-          onSaveProject: (project) {
-            store.dispatch(SaveCurrentProject(project));
-          },
-          onUpdateProject: (project) {
-            store.dispatch(UpdateProject(project));
-            BeamerCond.of(context, LAProjectViewLocation());
-          },
-          onCancel: (project) {
-            store.dispatch(OpenProjectTools(project));
-            BeamerCond.of(context, LAProjectViewLocation());
-          }, onSelectTuneTab: (int tab) => store.dispatch(OnSelectTuneTab(currentTab: tab))
-        );
+            project: store.state.currentProject,
+            softwareReleasesReady: store.state.laReleases.isNotEmpty,
+            laReleases: store.state.laReleases,
+            currentTab: store.state.currentTuneTab,
+            status: store.state.currentProject.status,
+            depsLoading: store.state.depsLoading,
+            alaInstallReleases: store.state.alaInstallReleases,
+            generatorReleases: store.state.generatorReleases,
+            backendVersion: store.state.backendVersion,
+            sshKeys: store.state.sshKeys,
+            onInitCasKeys: () {
+              store.dispatch(OnInitCasKeys());
+            },
+            onInitCasOAuthKeys: () {
+              store.dispatch(OnInitCasOAuthKeys());
+            },
+            refreshSWVersions: () => store.dispatch(OnFetchSoftwareDepsState(
+                force: true,
+                onReady: () => setState(() {
+                  _loading = false;
+                }))),
+            onSaveProject: (project) {
+              store.dispatch(SaveCurrentProject(project));
+            },
+            onUpdateProject: (project) {
+              store.dispatch(UpdateProject(project));
+              BeamerCond.of(context, LAProjectViewLocation());
+            },
+            onCancel: (project) {
+              store.dispatch(OpenProjectTools(project));
+              BeamerCond.of(context, LAProjectViewLocation());
+            },
+            onSelectTuneTab: (int tab) =>
+                store.dispatch(OnSelectTuneTab(currentTab: tab)));
       },
       builder: (BuildContext context, _ProjectTuneViewModel vm) {
         LAProject project = vm.project;
-        _tab =vm.currentTab;
+        _tab = vm.currentTab;
+
         if (!project.isHub &&
             (project.isStringVariableNullOrEmpty("pac4j_cookie_signing_key") ||
                 project.isStringVariableNullOrEmpty(
@@ -117,23 +140,23 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
         bool isHub = project.isHub;
         LAVariableDesc.map.entries
             .where((laVar) =>
-                laVar.value.inTunePage &&
-                // add onlyHub vars if needed
-                (!laVar.value.onlyHub || (isHub && laVar.value.onlyHub)) &&
-                // Show var where depend service is in use
-                (laVar.value.depends == null ||
-                    (laVar.value.depends != null &&
-                        (!isHub ||
-                            isHub &&
-                                LAServiceDesc.getE(laVar.value.depends!)
-                                    .hubCapable) &&
-                        project.getService(laVar.value.depends!.toS()).use)) &&
-                /* This gets parent deps vars also like CAS
+        laVar.value.inTunePage &&
+            // add onlyHub vars if needed
+            (!laVar.value.onlyHub || (isHub && laVar.value.onlyHub)) &&
+            // Show var where depend service is in use
+            (laVar.value.depends == null ||
+                (laVar.value.depends != null &&
+                    (!isHub ||
+                        isHub &&
+                            LAServiceDesc.getE(laVar.value.depends!)
+                                .hubCapable) &&
+                    project.getService(laVar.value.depends!.toS()).use)) &&
+            /* This gets parent deps vars also like CAS
                         (isHub ? project.parent! : project)
                             .getService(laVar.value.depends!.toS())
                             .use)) && */
-                ((!project.advancedTune && !laVar.value.advanced) ||
-                    project.advancedTune))
+            ((!project.advancedTune && !laVar.value.advanced) ||
+                project.advancedTune))
             .forEach((entry) {
           if (entry.value.service != lastCategory) {
             items.add(HeadingItem(entry.value.service == LAServiceName.all
@@ -170,7 +193,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                     showLaIcon: false,
                     actions: [
                       TextButton(
-                          // icon: Icon(Icons.cancel),
+                        // icon: Icon(Icons.cancel),
                           style: TextButton.styleFrom(primary: Colors.white),
                           child: const Text(
                             "CANCEL",
@@ -197,14 +220,15 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                     TabItem(
                         icon: MdiIcons.formTextbox, title: "Ansible Extras"),
                   ],
-                  initialActiveIndex: 0, //optional, default as 0
+                  initialActiveIndex: 0,
+                  //optional, default as 0
                   onTap: (int i) => setState(() {
                     _tab = i;
                     vm.onSelectTuneTab(i);
-                  } ),
+                  }),
                 ),
                 floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerDocked,
+                FloatingActionButtonLocation.centerDocked,
                 body: AppSnackBar(ScrollPanel(
                     withPadding: true,
                     child: Form(
@@ -214,7 +238,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                             children: <Widget>[
                               if (_tab == _moreInfoTab)
                                 ListTile(
-                                    // contentPadding: EdgeInsets.zero,
+                                  // contentPadding: EdgeInsets.zero,
                                     title: const Text(
                                       'Advanced options',
                                     ),
@@ -232,7 +256,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                   !AppUtils.isDemo() &&
                                   project.advancedTune)
                                 ListTile(
-                                    // contentPadding: EdgeInsets.zero,
+                                  // contentPadding: EdgeInsets.zero,
                                     title: Text(
                                       'This ${project.portalName} is in Production',
                                     ),
@@ -256,7 +280,8 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                             vm.onSaveProject(project);
                                           }
                                         })),
-                              if (_tab == _moreInfoTab) const SizedBox(height: 20),
+                              if (_tab == _moreInfoTab)
+                                const SizedBox(height: 20),
                               if (_tab == _moreInfoTab)
                                 ListView.builder(
                                   scrollDirection: Axis.vertical,
@@ -286,28 +311,28 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                 if (showToolkitDeps)
                                   Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                      MainAxisAlignment.start,
                                       children: [
                                         SizedBox(
                                             width: 250,
                                             child: ALAInstallSelector(
                                                 onChange: (String? value) {
-                                              String version = value ??
-                                                  vm.alaInstallReleases[0];
-                                              project.alaInstallRelease =
-                                                  version;
-                                              vm.onSaveProject(project);
-                                            })),
+                                                  String version = value ??
+                                                      vm.alaInstallReleases[0];
+                                                  project.alaInstallRelease =
+                                                      version;
+                                                  vm.onSaveProject(project);
+                                                })),
                                         SizedBox(
                                             width: 250,
                                             child: GeneratorSelector(
                                                 onChange: (String? value) {
-                                              String version = value ??
-                                                  vm.generatorReleases[0];
-                                              project.generatorRelease =
-                                                  version;
-                                              vm.onSaveProject(project);
-                                            }))
+                                                  String version = value ??
+                                                      vm.generatorReleases[0];
+                                                  project.generatorRelease =
+                                                      version;
+                                                  vm.onSaveProject(project);
+                                                }))
                                       ]),
                               if (_tab == _softwareTab)
                                 if (showSoftwareVersions)
@@ -326,6 +351,19 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                       vm.onSaveProject(project);
                                     }
                                   }),
+                              if (_tab == _softwareTab)
+                                Padding(
+                                    padding:
+                                    const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                    child: Align(
+                                        alignment: Alignment.center,child:
+                                    ElevatedButton.icon(
+                                        onPressed: _loading
+                                            ? null
+                                            : () => _onPressed(vm),
+                                        label: const Text("Refresh"),
+                                        icon: const Icon(Icons.refresh))
+                                    )),
                               if (_tab == _softwareTab)
                                 if (showSoftwareVersions || showToolkitDeps)
                                   LintProjectPanel(
@@ -354,16 +392,16 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                   const SizedBox(height: 20),
                               if (_tab == _extraTab)
                                 if (project.advancedTune)
-                                  // This breaks the newline enter key:
-                                  //ListTile(
-                                  //                        title:
+                                // This breaks the newline enter key:
+                                //ListTile(
+                                //                        title:
                                   GenericTextFormField(
                                       initialValue:
-                                          project.additionalVariables.isNotEmpty
-                                              ? utf8.decode(base64.decode(
-                                                  project.additionalVariables))
-                                              : _initialExtraAnsibleVariables(
-                                                  project),
+                                      project.additionalVariables.isNotEmpty
+                                          ? utf8.decode(base64.decode(
+                                          project.additionalVariables))
+                                          : _initialExtraAnsibleVariables(
+                                          project),
                                       minLines: 100,
                                       maxLines: null,
                                       fillColor: Colors.grey[100],
@@ -392,7 +430,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                     const Text(" in your servers or "),
                                     Text("they are not deployed yet",
                                         style:
-                                            LAColorTheme.unDeployedTextStyle),
+                                        LAColorTheme.unDeployedTextStyle),
                                     const Text("."),
                                   ]),
                             ]))))));
@@ -454,7 +492,7 @@ class HeadingItem implements ListItem {
         style: !subheading
             ? Theme.of(context).textTheme.headline5
             : Theme.of(context).textTheme.headline6!.copyWith(
-                fontSize: 18, color: LAColorTheme.laThemeData.hintColor));
+            fontSize: 18, color: LAColorTheme.laThemeData.hintColor));
   }
 
   @override
@@ -467,6 +505,7 @@ class MessageItem implements ListItem {
   LAProject project;
 
   ValueChanged<Object> onChanged;
+
   MessageItem(this.project, this.varDesc, this.onChanged);
 
   @override
@@ -480,40 +519,40 @@ class MessageItem implements ListItem {
     return ListTile(
         title: (varDesc.type == LAVariableType.bool)
             ? SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                value: initialValue ?? defValue ?? false,
-                title: Text(varDesc.name,
-                    style:
-                        TextStyle(color: LAColorTheme.laThemeData.hintColor)),
-                onChanged: (bool newValue) {
-                  onChanged(newValue);
-                })
+            contentPadding: EdgeInsets.zero,
+            value: initialValue ?? defValue ?? false,
+            title: Text(varDesc.name,
+                style:
+                TextStyle(color: LAColorTheme.laThemeData.hintColor)),
+            onChanged: (bool newValue) {
+              onChanged(newValue);
+            })
             : varDesc.type == LAVariableType.select
-                ? Row(children: [
-                    Text("${varDesc.name}: "),
-                    const SizedBox(width: 20),
-                    GenericSelector<String>(
-                        values: varDesc.defValue!(project),
-                        currentValue: "$initialValue",
-                        onChange: (String newValue) => {onChanged(newValue)})
-                  ])
-                : GenericTextFormField(
-                    label: varDesc.name,
-                    hint: varDesc.hint,
-                    initialValue: initialValue ?? defValue,
-                    allowEmpty: varDesc.allowEmpty,
-                    enabledBorder: false,
-                    obscureText: varDesc.protected,
-                    deployed: deployed,
-                    regexp: varDesc.type == LAVariableType.int
-                        ? LARegExp.int
-                        : varDesc.type == LAVariableType.double
-                            ? LARegExp.double
-                            : varDesc.regExp,
-                    error: varDesc.error,
-                    onChanged: (newValue) {
-                      onChanged(newValue);
-                    }),
+            ? Row(children: [
+          Text("${varDesc.name}: "),
+          const SizedBox(width: 20),
+          GenericSelector<String>(
+              values: varDesc.defValue!(project),
+              currentValue: "$initialValue",
+              onChange: (String newValue) => {onChanged(newValue)})
+        ])
+            : GenericTextFormField(
+            label: varDesc.name,
+            hint: varDesc.hint,
+            initialValue: initialValue ?? defValue,
+            allowEmpty: varDesc.allowEmpty,
+            enabledBorder: false,
+            obscureText: varDesc.protected,
+            deployed: deployed,
+            regexp: varDesc.type == LAVariableType.int
+                ? LARegExp.int
+                : varDesc.type == LAVariableType.double
+                ? LARegExp.double
+                : varDesc.regExp,
+            error: varDesc.error,
+            onChanged: (newValue) {
+              onChanged(newValue);
+            }),
         trailing: varDesc.help != null ? HelpIcon.from(varDesc.help!) : null);
   }
 
@@ -531,7 +570,9 @@ class _ProjectTuneViewModel {
   final void Function(int) onSelectTuneTab;
   final void Function() onInitCasKeys;
   final void Function() onInitCasOAuthKeys;
+  final Function() refreshSWVersions;
   final bool softwareReleasesReady;
+  final bool depsLoading;
   final int currentTab;
 
   final List<String> alaInstallReleases;
@@ -541,42 +582,47 @@ class _ProjectTuneViewModel {
 
   _ProjectTuneViewModel(
       {required this.project,
-      required this.status,
-      required this.laReleases,
+        required this.status,
+        required this.laReleases,
         required this.currentTab,
-      required this.onUpdateProject,
-      required this.softwareReleasesReady,
-      required this.onSaveProject,
-      required this.onInitCasKeys,
-      required this.onInitCasOAuthKeys,
+        required this.onUpdateProject,
+        required this.softwareReleasesReady,
+        required this.onSaveProject,
+        required this.onInitCasKeys,
+        required this.onInitCasOAuthKeys,
         required this.onSelectTuneTab,
-      required this.onCancel,
-      required this.alaInstallReleases,
-      required this.generatorReleases,
-      required this.backendVersion,
-      required this.sshKeys});
+        required this.onCancel,
+        required this.depsLoading,
+        required this.refreshSWVersions,
+        required this.alaInstallReleases,
+        required this.generatorReleases,
+        required this.backendVersion,
+        required this.sshKeys});
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _ProjectTuneViewModel &&
-          runtimeType == other.runtimeType &&
-          project == other.project &&
-          currentTab == other.currentTab &&
-          softwareReleasesReady == other.softwareReleasesReady &&
-          const DeepCollectionEquality.unordered()
-              .equals(laReleases, other.laReleases) &&
-          const ListEquality()
-              .equals(generatorReleases, other.generatorReleases) &&
-          const ListEquality()
-              .equals(alaInstallReleases, other.alaInstallReleases) &&
-          const ListEquality().equals(sshKeys, other.sshKeys) &&
-          status == other.status;
+          other is _ProjectTuneViewModel &&
+              runtimeType == other.runtimeType &&
+              project == other.project &&
+              depsLoading == other.depsLoading &&
+              currentTab == other.currentTab &&
+              softwareReleasesReady == other.softwareReleasesReady &&
+              const DeepCollectionEquality.unordered()
+                  .equals(laReleases, other.laReleases) &&
+              const ListEquality()
+                  .equals(generatorReleases, other.generatorReleases) &&
+              const ListEquality()
+                  .equals(alaInstallReleases, other.alaInstallReleases) &&
+              const ListEquality().equals(sshKeys, other.sshKeys) &&
+              status == other.status;
 
   @override
   int get hashCode =>
       project.hashCode ^
       status.hashCode ^
       currentTab.hashCode ^
+      depsLoading.hashCode ^
       softwareReleasesReady.hashCode ^
       const ListEquality().hash(sshKeys) ^
       const ListEquality().hash(generatorReleases) ^

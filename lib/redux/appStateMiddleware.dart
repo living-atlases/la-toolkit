@@ -184,7 +184,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             servicesAndSub[service.nameInt] = service.artifacts!;
           }
           releases = await getDepsVersions(servicesAndSub);
-          store.dispatch(OnLAVersionsSwCheck(releases, DateTime.now()));
+          store.dispatch(OnLAVersionsSwCheckEnd(releases, DateTime.now()));
           if (action.onReady != null) action.onReady!();
         }
       }

@@ -44,10 +44,10 @@ class OnFetchBackendVersion extends AppActions {
   OnFetchBackendVersion(this.version);
 }
 
-class OnLAVersionsSwCheck extends AppActions {
+class OnLAVersionsSwCheckEnd extends AppActions {
   Map<String, LAReleases> releases;
   DateTime time;
-  OnLAVersionsSwCheck(this.releases, this.time);
+  OnLAVersionsSwCheckEnd(this.releases, this.time);
 }
 
 class OnFetchAlaInstallReleasesFailed extends AppActions {}
