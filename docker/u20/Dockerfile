@@ -25,8 +25,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
 
 # go install (needed by assh)
 # https://golang.org/doc/install
-RUN curl -s -O https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
-RUN tar -C /usr/local -xzf go1.15.8.linux-amd64.tar.gz
+RUN curl -s -O https://dl.google.com/go/go1.20.1.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.20.1.linux-amd64.tar.gz
 
 # CAS utils
 RUN curl -o /usr/local/bin/jwk-gen.jar --location --remote-header-name --remote-name https://raw.githubusercontent.com/apereo/cas/master/etc/jwk-gen.jar
