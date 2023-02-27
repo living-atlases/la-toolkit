@@ -80,7 +80,7 @@ Future<void> main() async {
     );
     store.onChange.listen((state) {
       // Disable for now
-      print("On store change: ${state.printShort}");
+      print("On store change: ${state.printShort()}");
       try {
         appStateMiddleware.saveAppState(state);
       } catch (e) {
