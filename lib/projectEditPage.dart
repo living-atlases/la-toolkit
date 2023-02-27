@@ -337,12 +337,12 @@ If you are unsure type something like "server1, server2, server3".
                       if (_step != 0)
                         TextButton(
                             child: const Text('PREVIOUS'),
-                            style: TextButton.styleFrom(primary: Colors.white),
+                            style: TextButton.styleFrom(foregroundColor: Colors.white),
                             onPressed: () => onStepCancel(vm, _project)),
                       if (_step != _steps.length - 1)
                         TextButton(
                             child: const Text('NEXT'),
-                            style: TextButton.styleFrom(primary: Colors.white),
+                            style: TextButton.styleFrom(foregroundColor: Colors.white),
                             onPressed: () => onStepContinue(vm, _project)),
                       Tooltip(
                         message: "Close without saving your changes",

@@ -27,8 +27,7 @@ class LaunchBtn extends StatelessWidget {
               child: ElevatedButton.icon(
                   onPressed: onTap,
                   style: TextButton.styleFrom(
-                      primary: Colors.white,
-                      minimumSize: const Size(140, 50),
+                      foregroundColor: Colors.white, minimumSize: const Size(140, 50),
                       // primary: LAColorTheme.laPalette,
                       // padding: const EdgeInsets.all(8.0),
                       shape: RoundedRectangleBorder(

@@ -48,17 +48,17 @@ class SshKeyPage extends StatelessWidget {
                 actions: [
                   TextButton.icon(
                       icon: const Icon(Icons.add_circle_outline),
-                      style: TextButton.styleFrom(primary: Colors.white),
+                      style: TextButton.styleFrom(foregroundColor: Colors.white),
                       onPressed: () => _generateKeyDialog(context, vm),
                       label: const Text("GENERATE A NEW KEY")),
                   TextButton.icon(
                       icon: const Icon(Icons.upload_rounded),
-                      style: TextButton.styleFrom(primary: Colors.white),
+                      style: TextButton.styleFrom(foregroundColor: Colors.white),
                       onPressed: () => _importKeysDialog(context, vm),
                       label: const Text("UPLOAD KEYS")),
                   TextButton.icon(
                       icon: const Icon(MdiIcons.refresh),
-                      style: TextButton.styleFrom(primary: Colors.white),
+                      style: TextButton.styleFrom(foregroundColor: Colors.white),
                       onPressed: () {
                         context.loaderOverlay.show();
                         vm.onScanKeys();

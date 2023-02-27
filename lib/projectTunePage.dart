@@ -194,7 +194,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                     actions: [
                       TextButton(
                         // icon: Icon(Icons.cancel),
-                          style: TextButton.styleFrom(primary: Colors.white),
+                          style: TextButton.styleFrom(foregroundColor: Colors.white),
                           child: const Text(
                             "CANCEL",
                           ),
@@ -490,8 +490,8 @@ class HeadingItem implements ListItem {
   Widget buildTitle(BuildContext context) {
     return Text(heading,
         style: !subheading
-            ? Theme.of(context).textTheme.headline5
-            : Theme.of(context).textTheme.headline6!.copyWith(
+            ? Theme.of(context).textTheme.headlineSmall
+            : Theme.of(context).textTheme.titleLarge!.copyWith(
             fontSize: 18, color: LAColorTheme.laThemeData.hintColor));
   }
 

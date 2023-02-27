@@ -35,5 +35,5 @@ class AdminIconButton extends StatelessWidget {
   }
 
   Future<bool> go() async =>
-      await launch(url + (alaAdmin ? '/alaAdmin' : '//admin'));
+      await launchUrl(Uri.parse(url + (alaAdmin ? '/alaAdmin' : '//admin')));
 }

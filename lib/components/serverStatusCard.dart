@@ -61,7 +61,7 @@ class ServerStatusCard extends StatelessWidget {
                             size: 36,
                           ),
                           style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
+                              backgroundColor: Colors.white,
                               elevation: 10,
                               shadowColor: Colors.green,
                               minimumSize: const Size(0, 0),

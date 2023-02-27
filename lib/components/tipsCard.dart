@@ -38,7 +38,7 @@ class TipsCard extends StatelessWidget {
                             decoration: TextDecoration.underline),
                       ),
                       onTapLink: (text, href, title) async {
-                        if (href != null) await launch(href);
+                        if (href != null) await launchUrl(Uri.parse(href));
                       },
                       data: text))
             ]));

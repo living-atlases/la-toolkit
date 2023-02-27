@@ -56,7 +56,13 @@ dependencies:
   # loading spinner
   loader_overlay: ^2.0.1
   # used for terms
-  modal_bottom_sheet: ^2.0.0
+  # modal_bottom_sheet: ^2.0.0
+  # https://stackoverflow.com/questions/74751803/error-modalbottomsheetroute-is-imported-from-both
+  modal_bottom_sheet:
+    git:
+      url: https://github.com/followthemoney1/modal_bottom_sheet.git
+      ref: main
+      path: modal_bottom_sheet
   # web_browser: ^0.5.0
   # bottom floating button
   flutter_speed_dial: ^5.0.0+1

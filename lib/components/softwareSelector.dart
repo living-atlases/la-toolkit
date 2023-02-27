@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:badges/badges.dart' as badges;
 
 class SoftwareSelector extends StatelessWidget {
   final List<String> versions;
@@ -105,7 +106,7 @@ Choose the latest release to update your portal.
 
     Widget menuConditionalBadge = outDated && useBadge
         // https://pub.dev/packages/badges
-        ? Badge(
+        ? badges.Badge(
             toAnimate: false,
             shape: BadgeShape.square,
             badgeColor: outdatedColor,

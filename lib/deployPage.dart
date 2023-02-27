@@ -241,7 +241,7 @@ class _DeployPageState extends State<DeployPage> {
                                           .map((m) => AlertCard(
                                               message: m.text,
                                               color: Colors.grey.shade100,
-                                              action: () => {launch(m.url)},
+                                              action: () => {launchUrl(Uri.parse(m.url))},
                                               actionText: "READ MORE",
                                               icon: Icons.info_outline))
                                           .toList()),

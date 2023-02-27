@@ -36,7 +36,7 @@ class HelpIcon extends StatelessWidget {
     return IconButton(
         onPressed: () async {
           // print("Opening help page: $url");
-          await launch(url);
+          await launchUrl(Uri.parse(url));
         },
         icon: const Icon(Icons.help_outline),
         /*size: 24,*/ color: Colors.blueGrey);

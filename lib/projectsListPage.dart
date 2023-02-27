@@ -89,8 +89,7 @@ class LAProjectsList extends StatelessWidget {
                               child: ElevatedButton.icon(
                                   onPressed: () => vm.onCreateProject(),
                                   style: TextButton.styleFrom(
-                                      minimumSize: const Size(100, 50),
-                                      primary: Colors.white,
+                                      foregroundColor: Colors.white, minimumSize: const Size(100, 50),
                                       // padding: const EdgeInsets.all(8.0),
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -187,7 +186,7 @@ class ProjectCard extends StatelessWidget {
                                 options: const LinkifyOptions(humanize: false),
                                 text:
                                     "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
-                                onOpen: (link) async => await launch(link.url)),
+                                onOpen: (link) async => await launchUrl(Uri.parse(link.url))),
                             ButtonBar(
                                 alignment: MainAxisAlignment.center,
                                 buttonPadding:

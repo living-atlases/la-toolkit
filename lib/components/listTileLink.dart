@@ -32,7 +32,7 @@ class ListTileLink extends StatelessWidget {
           : Text(title),
       onTap: () async {
         // print(url);
-        await launch(url);
+        await launchUrl(Uri.parse(url));
       },
       trailing: Wrap(
         spacing: 0, // space between two icons

@@ -28,7 +28,6 @@ import 'components/serversStatusPanel.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laProject.dart';
-import 'models/laProjectStatus.dart';
 import 'models/postDeployCmd.dart';
 import 'redux/actions.dart';
 
@@ -477,7 +476,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 options: const LinkifyOptions(humanize: false),
                 text:
                     'https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub',
-                onOpen: (link) async => await launch(link.url)),
+                onOpen: (link) async => await launchUrl(Uri.parse(link.url))),
           ],
         ),
       ),

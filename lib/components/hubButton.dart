@@ -30,11 +30,9 @@ class HubButton extends StatelessWidget {
                   icon,
                 ),
                 style: TextButton.styleFrom(
-                    backgroundColor: isActionBtn
+                    foregroundColor: isActionBtn ? Colors.white : LAColorTheme.laPalette, backgroundColor: isActionBtn
                         ? LAColorTheme.laPalette
                         : Colors.grey[200]!,
-                    primary:
-                        isActionBtn ? Colors.white : LAColorTheme.laPalette,
                     padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
                     shape: RoundedRectangleBorder(
                       side: BorderSide(

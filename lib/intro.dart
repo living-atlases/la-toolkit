@@ -148,7 +148,7 @@ Living Atlases portals''',
                       color: _markdownColor,
                       decoration: TextDecoration.underline),
                 ),
-                onTapLink: (text, href, title) async => await launch(href!),
+                onTapLink: (text, href, title) async => await launchUrl(Uri.parse(href!)),
                 data: text)
             : Text(text,
                 textAlign: TextAlign.left,

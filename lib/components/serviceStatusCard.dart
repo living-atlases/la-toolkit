@@ -72,7 +72,7 @@ class ServiceSmallLinks extends StatelessWidget {
                     child: InkWell(
                       child: Icon(Icons.link,
                           size: iconDefSize, color: LAColorTheme.link),
-                      onTap: () async => await launch(service.url),
+                      onTap: () async => await launchUrl(Uri.parse(service.url)),
                     ))),
           if (service.admin)
             SimpleServiceStatusItem(

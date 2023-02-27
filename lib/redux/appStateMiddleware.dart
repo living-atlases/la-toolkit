@@ -123,8 +123,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
                   SnackBarAction(
                       label: "MORE INFO",
                       onPressed: () async {
-                        await launch(
-                            "https://github.com/living-atlases/la-toolkit/#upgrade-the-toolkit");
+                        await launchUrl(Uri.parse(
+                            "https://github.com/living-atlases/la-toolkit/#upgrade-the-toolkit"));
                       }))));
             }
           }
