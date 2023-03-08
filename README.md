@@ -113,18 +113,20 @@ This directories should be writable by your user and docker.
 
 To continue you can git clone this repo or just copy the [`docker-compose.yml`](https://github.com/living-atlases/la-toolkit/blob/master/docker-compose.yml) and  [`mongo-init.sh`](https://github.com/living-atlases/la-toolkit/blob/master/mongo-init.sh) and adapt the first one to your needs (like changing the default passwords prior to start the toolkit via `docker-compose`).
 
+## Clone the la-toolkit
+
+Clone the project and enter the project folder:
+
+```bash
+https://github.com/living-atlases/la-toolkit.git
+cd la-toolkit
+```
+
+Edit and adjust the file `docker-compose.yml` to your needs (follow the comments).
+
 ## Running the la-toolkit
 
-### Using docker-compose helper
-
-```
-./dockerTask.sh compose
-```
-
-
-Note that you'll need to have installed `xdg-utils` (`sudo apt install xgd-utils`).
-
-### or directly using docker-compose
+### Directly using docker-compose
 
 ```
 docker-compose up -d
@@ -133,6 +135,14 @@ docker-compose up -d
 This will start three containers (la-toolkit, la-toolkit-mongo and la-toolkit-watchtower). You can see it with `docker ps`. Verify that they start correctly.
 
 Open the toolkit in http://localhost:2010/
+
+### or using a docker-compose helper
+
+```
+./dockerTask.sh compose
+```
+
+Note that you'll need to have installed `xdg-utils` (`sudo apt install xgd-utils`).
 
 Run `./dockerTask.sh` for more options (like how to run a development environment).
 
