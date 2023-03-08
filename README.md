@@ -8,8 +8,7 @@
    * [Docker](#docker)
    * [Docker compose](#docker-compose)
    * [Data directories](#data-directories)
-   * [Clone or just download docker-compose.yml](#clone-or-just-download-docker-composeyml)
-* [Clone the la-toolkit](#clone-the-la-toolkit)
+* [Clone or just download docker-compose.yml](#clone-or-just-download-docker-composeyml)
 * [Running the la-toolkit](#running-the-la-toolkit)
    * [Directly using docker-compose](#directly-using-docker-compose)
    * [or using a docker-compose helper](#or-using-a-docker-compose-helper)
@@ -114,20 +113,14 @@ If you use a different directory, you'll have to update the `docker-compose.yml`
 
 This directories should be writable by your user and docker.
 
-### Clone or just download docker-compose.yml
+## Clone or just download docker-compose.yml
 
-To continue you can git clone this repo or just copy the [`docker-compose.yml`](https://github.com/living-atlases/la-toolkit/blob/master/docker-compose.yml) and  [`mongo-init.sh`](https://github.com/living-atlases/la-toolkit/blob/master/mongo-init.sh) and adapt the first one to your needs (like changing the default passwords prior to start the toolkit via `docker-compose`).
-
-## Clone the la-toolkit
-
-Clone the project and enter the project folder:
-
+To continue you can git clone this repository:
 ```bash
-https://github.com/living-atlases/la-toolkit.git
+git clone https://github.com/living-atlases/la-toolkit.git
 cd la-toolkit
 ```
-
-Edit and adjust the file `docker-compose.yml` to your needs (follow the comments).
+or just copy the [`docker-compose.yml`](https://github.com/living-atlases/la-toolkit/blob/master/docker-compose.yml) and  [`mongo-init.sh`](https://github.com/living-atlases/la-toolkit/blob/master/mongo-init.sh) and adapt the first one to your needs (like changing the default passwords prior to start the toolkit via `docker-compose`) following the comments.
 
 ## Running the la-toolkit
 
