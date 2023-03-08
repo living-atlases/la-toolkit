@@ -1,7 +1,5 @@
 # Living Atlases Toolkit
 
-_Under development tool_
-
 * [Introduction](#introduction)
    * [How ?](#how-)
    * [Demo](#demo)
@@ -10,11 +8,16 @@ _Under development tool_
    * [Docker](#docker)
    * [Docker compose](#docker-compose)
    * [Data directories](#data-directories)
+   * [Clone or just download docker-compose.yml](#clone-or-just-download-docker-composeyml)
+* [Clone the la-toolkit](#clone-the-la-toolkit)
 * [Running the la-toolkit](#running-the-la-toolkit)
-   * [Using docker-compose](#using-docker-compose)
+   * [Directly using docker-compose](#directly-using-docker-compose)
+   * [or using a docker-compose helper](#or-using-a-docker-compose-helper)
    * [Running the la-toolkit in an external server.](#running-the-la-toolkit-in-an-external-server)
 * [Upgrade the toolkit](#upgrade-the-toolkit)
-   * [Notes to upgrade to 1.1.X](#notes-to-upgrade-to-11X)
+   * [Notes to upgrade to 1.1.X](#notes-to-upgrade-to-11x)
+* [Migrate your old inventories to the toolkit](#migrate-your-old-inventories-to-the-toolkit)
+* [Migrate your la-toolkit to other location](#migrate-your-la-toolkit-to-other-location)
 * [Logs and debugging](#logs-and-debugging)
 * [Development](#development)
    * [Using flutter web](#using-flutter-web)
@@ -46,6 +49,8 @@ _Under development tool_
    * [Deployment results (success):](#deployment-results-success)
    * [Deployment results (failed):](#deployment-results-failed)
    * [History of deployments with repeat function](#history-of-deployments-with-repeat-function)
+   * [Software upgrade checks](#software-upgrade-checks)
+   * [Software releases selection](#software-releases-selection)
    * [Console for the intrepids:](#console-for-the-intrepids)
 * [License](#license)
    * [Others](#others)
