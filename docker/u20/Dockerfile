@@ -23,11 +23,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
         rm -rf /var/lib/apt/lists/* && \
         apt-get clean
 
-# go install (needed by assh)
-# https://golang.org/doc/install
-RUN curl -s -O https://dl.google.com/go/go1.20.1.linux-amd64.tar.gz
-RUN tar -C /usr/local -xzf go1.20.1.linux-amd64.tar.gz
-
 # CAS utils
 RUN curl -o /usr/local/bin/jwk-gen.jar --location --remote-header-name --remote-name https://raw.githubusercontent.com/apereo/cas/master/etc/jwk-gen.jar
 
@@ -43,8 +38,8 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md
 RUN echo 'NPM_PACKAGES="/home/ubuntu/.npm-packages"' >> /home/ubuntu/.bashrc
 RUN echo 'NPM_PACKAGES="/home/ubuntu/.npm-packages"' >> /home/ubuntu/.profile
-RUN echo 'export PATH="$PATH:$NPM_PACKAGES/bin:/usr/local/go/bin"' >> /home/ubuntu/.bashrc
-RUN echo 'export PATH="$PATH:$NPM_PACKAGES/bin:/usr/local/go/bin"' >> /home/ubuntu/.profile
+RUN echo 'export PATH="$PATH:$NPM_PACKAGES/bin"' >> /home/ubuntu/.bashrc
+RUN echo 'export PATH="$PATH:$NPM_PACKAGES/bin"' >> /home/ubuntu/.profile
 # manpath is not installed
 # RUN echo 'export MANPATH="${MANPATH-$(manpath)}:$NPM_PACKAGES/share/man"' >> /home/ubuntu/.bashrc
 
@@ -55,15 +50,10 @@ RUN mkdir -p /home/ubuntu/.ssh/assh.d && \
     chown ubuntu:ubuntu -R /home/ubuntu/.ssh
 
 # assh install
-RUN su - ubuntu -c 'git clone --depth 1 https://github.com/moul/assh.git'
-# For non interactive shell cmds
-RUN echo 'export GOPATH=$HOME/go' >> /home/ubuntu/.profile
-RUN echo 'export GOPATH=$HOME/go' >> /home/ubuntu/.bashrc
-RUN echo 'export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"' >> /home/ubuntu/.profile
-RUN echo 'export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"' >> /home/ubuntu/.bashrc
+RUN curl -L -o /tmp/assh.tar.gz -O https://github.com/moul/assh/releases/download/v2.15.0/assh_2.15.0_linux_amd64.tar.gz
+RUN cd /tmp/ && tar xfvz assh.tar.gz assh && mv assh /usr/local/bin/
 RUN echo 'alias ssh="assh wrapper ssh --"' >> /home/ubuntu/.profile
 RUN echo 'alias ssh="assh wrapper ssh --"' >> /home/ubuntu/.bashrc
-RUN su -l ubuntu -c 'cd assh; go get -u moul.io/assh/v2'
 
 # ttyd
 RUN curl -o /usr/local/bin/ttyd --location --remote-header-name --remote-name https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64
