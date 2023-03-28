@@ -7,7 +7,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         python-dev git 'python.*-pip' python3-minimal 'python2.*-minimal' \
         python-docopt nagios-plugins iputils-ping openjdk-8-jre zip unzip \
         gnupg2 sshpass openssh-client openssh-server vim netcat expect less \
-        bash-completion && \
+        bash-completion cron-apt && \
         rm -rf /var/lib/apt/lists/* && \
         apt-get clean
 
@@ -52,6 +52,7 @@ RUN mkdir -p /home/ubuntu/.ssh/assh.d && \
 # assh install
 RUN curl -L -o /tmp/assh.tar.gz -O https://github.com/moul/assh/releases/download/v2.15.0/assh_2.15.0_linux_amd64.tar.gz
 RUN cd /tmp/ && tar xfvz assh.tar.gz assh && mv assh /usr/local/bin/
+RUN chown root:root /usr/local/bin/assh
 RUN echo 'alias ssh="assh wrapper ssh --"' >> /home/ubuntu/.profile
 RUN echo 'alias ssh="assh wrapper ssh --"' >> /home/ubuntu/.bashrc
 
@@ -109,7 +110,7 @@ RUN su - ubuntu -c 'cd /home/ubuntu/base-branding && yarn install'
 
 # ala-install
 RUN echo "2021032402 (change this date to rebuild & repeat this and the following steps)"
-RUN su - ubuntu -c 'git clone --branch v2.0.10 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
+RUN su - ubuntu -c 'git clone --branch v2.1.12 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
 # apt.gbif.es LA pipelines and deps
 RUN echo "deb [arch=amd64] https://apt.gbif.es/ bionic main" > /etc/apt/sources.list.d/ala.list && \
