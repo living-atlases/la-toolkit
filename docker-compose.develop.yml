@@ -2,7 +2,7 @@ version: '2'
 
 services:
   la-toolkit:
-    #image: la-toolkit-dev
+    image: livingatlases/la-toolkit:latest
     container_name: la-toolkit
     restart: always
     hostname: la-toolkit
