@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -14,9 +15,27 @@ import 'package:url_launcher/url_launcher.dart';
 import 'components/formattedTitle.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
-
-class LAProjectsList extends StatelessWidget {
+class LAProjectsList extends StatefulWidget {
   const LAProjectsList({Key? key}) : super(key: key);
+
+  @override
+  State<LAProjectsList> createState() => _LAProjectsListState();
+}
+
+class _LAProjectsListState extends State<LAProjectsList> {
+  ScrollController? _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController!.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +67,8 @@ class LAProjectsList extends StatelessWidget {
               vm.state.projects.where((p) => !p.isHub).toList();
           int num = pjs.length;
           return num > 0
-              ? ScrollPanel(
+              ? LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints)  =>ScrollPanel(
                   child: Container(
                       margin: const EdgeInsets.symmetric(
                           horizontal: 80, vertical: 20),
@@ -56,6 +76,7 @@ class LAProjectsList extends StatelessWidget {
                         AnimationLimiter(
                             child: ListView.builder(
                                 scrollDirection: Axis.vertical,
+                                controller: _scrollController,
                                 shrinkWrap: true,
                                 itemCount: num,
                                 // itemCount: appStateProv.appState.projects.length,
@@ -78,7 +99,7 @@ class LAProjectsList extends StatelessWidget {
                                                     () => vm.onDeleteProject(
                                                         pjs[index])))))))
                       ])))
-              : vm.loading
+              ): vm.loading
                   ? Container()
                   : Center(
                       child: Column(
