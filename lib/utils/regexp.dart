@@ -24,7 +24,7 @@ class LARegExp {
   static final url = RegExp(
       r'(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})');
   static final email = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
   // https://stackoverflow.com/questions/1221985/how-to-validate-a-user-name-with-regex
   static final username = RegExp(r'^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$');
   static final int = RegExp(r'^[-+]?\d+$');

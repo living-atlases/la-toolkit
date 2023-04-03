@@ -224,20 +224,35 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
     }
   });
 
-  test('email regexp should allow valid emails', () {
-    List<String> emails = [
-      'bob@example.com',
-      'alice@example.org',
+  test('Valid email addresses', () {
+    final validEmails = [
+      'example@example.com',
+      'john.doe@domain.co.uk',
+      'inf@l-a.site',
+      'jane_doe@example.io',
+      'test.email+123@example.ca',
     ];
-    List<String> wrongEmails = [
-      'example.com',
-      '',
-    ];
-    for (String email in emails) {
-      expect(LARegExp.email.hasMatch(email), equals(true));
+
+    for (final email in validEmails) {
+      expect(LARegExp.email.hasMatch(email), true,
+          reason: 'Expected $email to be a valid email address');
     }
-    for (String email in wrongEmails) {
-      expect(LARegExp.email.hasMatch(email), equals(false));
+  });
+
+  test('Invalid email addresses', () {
+    final invalidEmails = [
+      'example@example',
+      'john.doe@domain',
+      'inf@l-a',
+      '@example.com',
+      'example@.com',
+      'example@.com.',
+      'example@.',
+    ];
+
+    for (final email in invalidEmails) {
+      expect(LARegExp.email.hasMatch(email), false,
+          reason: 'Expected $email to be an invalid email address');
     }
   });
 
