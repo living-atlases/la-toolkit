@@ -14,8 +14,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 # Install ansible via PIP
 RUN python3 -m pip install --upgrade pip cffi \
     pip install setuptools && \
-    pip install ansible==2.10.3 ansible-base==2.10.3 && \
-    pip install mitogen ansible-lint
+    pip install ansible==2.10.3 && \
+    pip install ansible-base==2.10.3
 
 # Install node via APT
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
@@ -149,12 +149,12 @@ RUN sed -i '/^#.*\. \/etc\/bash_completion/s/^#//' /etc/bash.bashrc
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-RUN echo "1.4.4"
+RUN echo "1.4.5"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
 # la-toolkit frontend
-RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.4.4/flutter-web-1.4.4.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
+RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.4.5/flutter-web-1.4.5.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
 # RUN echo "2021032402"
 # COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
