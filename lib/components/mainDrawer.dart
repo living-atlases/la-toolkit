@@ -84,7 +84,7 @@ class _MainDrawerState extends State<MainDrawer> {
               icon: const Icon(LAIcon.la),
               applicationName: widget.appName,
               applicationVersion:
-                  "Version: ${widget.packageInfo.version} build: ${widget.packageInfo.buildNumber}",
+                  "Version: ${widget.packageInfo.version}",
               applicationIcon: const Icon(LAIcon.la),
               applicationLegalese:
                   "© 2020-${DateTime.now().year.toString()} Living Atlases, under Apache 2.0",
