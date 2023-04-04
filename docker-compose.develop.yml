@@ -31,7 +31,9 @@ services:
       # TOOLKIT_TERM_PROXY: "false"
 
     # The volumes should be writeable by your user so maybe you have to set your uid:gid here
-    user: 1000:1000
+    # user: "1000:1000"
+    # or if you are using docker desktop and GNU/Linux via:
+    # https://docs.docker.com/desktop/faqs/linuxfaqs/#how-do-i-enable-file-sharing
     volumes:
       # mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/
       - /data/la-toolkit/config/:/home/ubuntu/ansible/la-inventories/:rw
