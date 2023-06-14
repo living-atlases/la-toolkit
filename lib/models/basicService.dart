@@ -4,6 +4,7 @@ class BasicService {
   List<num> tcp;
   List<num> udp;
   bool reachableFromOtherServers;
+
   BasicService(
       {required this.name,
       required this.version,
@@ -173,6 +174,7 @@ class ElasticSearch extends BasicService {
   static final v7_7_1 = ElasticSearch("7.7.1");
   static final v7_3_0 = ElasticSearch("7.3.0");
   static final v7_14_1 = ElasticSearch("7.14.1");
+  static final v7_17_7 = ElasticSearch("7.17.7");
 }
 
 class Spark extends BasicService {

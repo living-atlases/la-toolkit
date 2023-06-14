@@ -151,6 +151,10 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             const AlertCard(
                 message: "You should use solrcloud for indexing pipelines"),
           if (!project.isHub &&
+              project.getService(events).use &&
+              !project.getService(eventsElasticSearch).use)
+            const AlertCard(message: "You should use elasticsearch for events"),
+          if (!project.isHub &&
               project.getService(pipelines).use &&
               project.getService(solrcloud).use &&
               !project.getService(zookeeper).use)
@@ -214,6 +218,7 @@ class _LintProjectPanelViewModel {
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
   final LAProjectStatus status;
+
   _LintProjectPanelViewModel(
       {required this.project,
       required this.sshKeys,

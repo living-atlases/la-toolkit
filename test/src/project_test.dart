@@ -1150,7 +1150,9 @@ void main() {
         biocollect,
         pdfgen,
         ecodata,
-        ecodataReporting
+        ecodataReporting,
+        events,
+        eventsElasticSearch
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason:
@@ -1205,7 +1207,9 @@ void main() {
         biocollect,
         pdfgen,
         ecodata,
-        ecodataReporting
+        ecodataReporting,
+        events,
+        eventsElasticSearch
       ];
       if (notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(false),
@@ -1251,7 +1255,9 @@ void main() {
         biocollect,
         pdfgen,
         ecodata,
-        ecodataReporting
+        ecodataReporting,
+        events,
+        eventsElasticSearch
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");

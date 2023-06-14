@@ -45,6 +45,8 @@ const String generator = "la-generator";
 const String tomcat = "tomcat";
 const String ansible = "ansible";
 const String java = "java";
+final String events = LAServiceName.events.toS();
+final String eventsElasticSearch = LAServiceName.events_elasticsearch.toS();
 
 const List<String> laTools = [alaInstall, generator, toolkit];
 const List<String> laToolsNoAlaInstall = [generator, toolkit];

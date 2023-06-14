@@ -11,6 +11,7 @@ import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'helpIcon.dart';
 
@@ -23,6 +24,7 @@ class ServiceWidget extends StatelessWidget {
       : super(key: key);
   final domainTextStyle =
       TextStyle(fontSize: 16, color: LAColorTheme.laThemeData.hintColor);
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _LAServiceViewModel>(
@@ -47,6 +49,7 @@ class ServiceWidget extends StatelessWidget {
       bool visible = noDependsOrInUse &&
           (!withoutUrl ||
               (serviceName == biocacheBackend ||
+                  serviceName == eventsElasticSearch ||
                   serviceName == pipelines ||
                   serviceName == solrcloud ||
                   serviceName == zookeeper));
@@ -74,75 +77,89 @@ class ServiceWidget extends StatelessWidget {
                       children: [
                         // const DefDivider(),
                         ListTile(
-                          // leading: Icon(serviceDesc.icon),
-                          contentPadding: EdgeInsets.zero,
-                          title: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  serviceDesc.icon,
-                                  color: Colors.grey,
-                                  // color: LAColorTheme.inactive
-                                ),
-                                const SizedBox(
-                                  width:
-                                      10, // here put the desired space between the icon and the text
-                                ),
-                                if (optional)
-                                  Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(children: [
-                                          Text(
-                                              "Use the ${serviceDesc.name} service?"),
-                                          Transform.scale(
-                                              scale: 0.8,
-                                              child: Switch(
-                                                value: service.use,
-                                                // activeColor: Color(0xFF6200EE),
-                                                onChanged: (bool newValue) {
-                                                  currentProject.serviceInUse(
-                                                      serviceName, newValue);
-                                                  vm.onSaveProject(
-                                                      currentProject);
-                                                },
-                                              ))
+                            // leading: Icon(serviceDesc.icon),
+                            contentPadding: EdgeInsets.zero,
+                            title: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    serviceDesc.icon,
+                                    color: Colors.grey,
+                                    // color: LAColorTheme.inactive
+                                  ),
+                                  const SizedBox(
+                                    width:
+                                        10, // here put the desired space between the icon and the text
+                                  ),
+                                  if (optional)
+                                    Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(children: [
+                                            Text(
+                                                "Use the ${serviceDesc.name} service?"),
+                                            Transform.scale(
+                                                scale: 0.8,
+                                                child: Switch(
+                                                  value: service.use,
+                                                  // activeColor: Color(0xFF6200EE),
+                                                  onChanged: (bool newValue) {
+                                                    currentProject.serviceInUse(
+                                                        serviceName, newValue);
+                                                    vm.onSaveProject(
+                                                        currentProject);
+                                                  },
+                                                ))
+                                          ]),
+                                          const SizedBox(
+                                            height:
+                                                0, // here put the desired space between the icon and the text
+                                          ),
+                                          SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.6,
+                                              child: Wrap(children: [
+                                                Text(
+                                                    StringUtils.capitalize(
+                                                        serviceDesc.desc),
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color:
+                                                            Colors.grey[600]))
+                                              ])),
+                                          const SizedBox(height: 10)
                                         ]),
-                                        const SizedBox(
-                                          height:
-                                              0, // here put the desired space between the icon and the text
-                                        ),
-                                        SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.6,
-                                            child: Wrap(children: [
-                                              Text(
-                                                  StringUtils.capitalize(
-                                                      serviceDesc.desc),
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.grey[600]))
-                                            ])),
-                                        const SizedBox(height: 10)
-                                      ]),
-                                if (!optional)
-                                  Text(
-                                      "${serviceDesc.name}: ${StringUtils.capitalize(serviceDesc.desc)}")
-                              ]),
-                          trailing: serviceDesc.sample != null
-                              ? serviceDesc.name == branding
-                                  ? HelpIcon(wikipage: "Styling-the-web-app")
-                                  : HelpIcon.url(
-                                      url: serviceDesc.sample!,
-                                      tooltip:
-                                          "See a similar service in production")
-                              : null,
-                        ),
+                                  if (!optional)
+                                    Text(
+                                        "${serviceDesc.name}: ${StringUtils.capitalize(serviceDesc.desc)}")
+                                ]),
+                            trailing:
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                              if (serviceDesc.repository != null)
+                                Tooltip(
+                                    message: 'Code repository of this service',
+                                    child: IconButton(
+                                        onPressed: () async {
+                                          await launchUrl(Uri.parse(
+                                              serviceDesc.repository!));
+                                        },
+                                        icon: const Icon(Icons.code))),
+                              if (serviceDesc.sample != null &&
+                                  serviceDesc.repository != null)
+                                const SizedBox(width: 8),
+                              if (serviceDesc.sample != null)
+                                serviceDesc.name == branding
+                                    ? HelpIcon(wikipage: "Styling-the-web-app")
+                                    : HelpIcon.url(
+                                        url: serviceDesc.sample!,
+                                        tooltip:
+                                            "See a similar service in production")
+                            ])),
                         if (!withoutUrl && (!optional || service.use))
                           Row(
                               mainAxisAlignment: MainAxisAlignment.start,

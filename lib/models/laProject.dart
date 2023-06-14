@@ -914,6 +914,9 @@ check results length: ${checkResults.length}''';
       p.serviceInUse(spark, true);
       p.serviceInUse(hadoop, true);
     }
+    if (p.getService(events).use) {
+      p.serviceInUse(eventsElasticSearch, true);
+    }
     String? biocacheHostname = a('biocache_backend_hostname');
     if (biocacheHostname != null) {
       p.getService(biocacheBackend).use = true;
@@ -1276,5 +1279,6 @@ check results length: ${checkResults.length}''';
   }
 
   bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();
+
   bool get showToolkitDeps => !isHub;
 }

@@ -214,7 +214,16 @@ class LAServiceDepsDesc {
       nameInt: ecodataReporting,
       serviceDepends: [Nginx.def, EcodataReporting.def],
     ),
+    events: LAServiceDepsDesc(
+      nameInt: events,
+      serviceDepends: [Nginx.def],
+    ),
+    eventsElasticSearch: LAServiceDepsDesc(
+      nameInt: eventsElasticSearch,
+      serviceDepends: [ElasticSearch.v7_17_7],
+    ),
   };
+
 /*
   static final Map<String, Map<String, LAServiceDepsDesc>> map = {
     "v2.0.6": v2_0_4,

@@ -52,7 +52,10 @@ enum LAServiceName {
   pdfgen,
   ecodata,
   // ignore: constant_identifier_names
-  ecodata_reporting
+  ecodata_reporting,
+  events,
+  // ignore: constant_identifier_names
+  events_elasticsearch
 }
 
 extension ParseToString on LAServiceName {

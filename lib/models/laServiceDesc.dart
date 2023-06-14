@@ -22,12 +22,14 @@ class LAServiceDesc {
   bool recommended;
   String path;
   String? iniPath;
+  String? repository;
   bool initUse;
   bool admin;
   bool alaAdmin;
   bool hubCapable;
   bool allowMultipleDeploys;
   String? artifacts;
+
   // used for spatial-service apikeys/userdetails/etc
   bool isSubService;
   LAServiceName? parentService;
@@ -59,6 +61,7 @@ class LAServiceDesc {
       this.alias,
       this.allowMultipleDeploys = false,
       this.hubCapable = false,
+      this.repository,
       this.parentService});
 
   @override
@@ -79,6 +82,7 @@ class LAServiceDesc {
           hint == other.hint &&
           recommended == other.recommended &&
           path == other.path &&
+          repository == other.repository &&
           initUse == other.initUse &&
           admin == other.admin &&
           alaAdmin == other.alaAdmin &&
@@ -102,6 +106,7 @@ class LAServiceDesc {
       sample.hashCode ^
       hint.hashCode ^
       recommended.hashCode ^
+      repository.hashCode ^
       path.hashCode ^
       initUse.hashCode ^
       admin.hashCode ^
@@ -126,6 +131,7 @@ class LAServiceDesc {
         // multiple with last with precedence
         artifacts: 'ala-collectory collectory',
         allowMultipleDeploys: false,
+        repository: 'https://github.com/AtlasOfLivingAustralia/collectory/',
         path: ""),
     alaHub: LAServiceDesc(
         name: "records",
@@ -142,6 +148,7 @@ class LAServiceDesc {
         hubCapable: true,
         artifacts: 'ala-hub',
         allowMultipleDeploys: true,
+        repository: 'https://github.com/AtlasOfLivingAustralia/biocache-hubs',
         path: ""),
     biocacheService: LAServiceDesc(
         name: "records-ws",
@@ -154,6 +161,8 @@ class LAServiceDesc {
         sample: "https://biocache.ala.org.au/ws",
         artifacts: "biocache-service",
         allowMultipleDeploys: true,
+        repository:
+            'https://github.com/AtlasOfLivingAustralia/biocache-service',
         path: ""),
     bie: LAServiceDesc(
         name: "species",
@@ -170,6 +179,7 @@ class LAServiceDesc {
         hubCapable: true,
         allowMultipleDeploys: true,
         artifacts: "ala-bie ala-bie-hub",
+        repository: 'https://github.com/AtlasOfLivingAustralia/ala-bie-hub',
         path: ""),
     bieIndex: LAServiceDesc(
         name: "species-ws",
@@ -185,6 +195,7 @@ class LAServiceDesc {
         alaAdmin: true,
         artifacts: "bie-index",
         allowMultipleDeploys: true,
+        repository: 'https://github.com/AtlasOfLivingAustralia/bie-index',
         path: ""),
     images: LAServiceDesc(
         name: "images",
@@ -199,6 +210,7 @@ class LAServiceDesc {
         admin: true,
         artifacts: "image-service",
         allowMultipleDeploys: false,
+        repository: 'https://github.com/AtlasOfLivingAustralia/image-service',
         path: ""),
     speciesLists: LAServiceDesc(
         name: "lists",
@@ -214,6 +226,8 @@ class LAServiceDesc {
         admin: true,
         artifacts: "specieslist-webapp",
         allowMultipleDeploys: false,
+        repository:
+            'https://github.com/AtlasOfLivingAustralia/specieslist-webapp',
         path: ""),
     regions: LAServiceDesc(
         name: regions,
@@ -228,8 +242,10 @@ class LAServiceDesc {
         sample: "https://regions.ala.org.au",
         alaAdmin: true,
         hubCapable: true,
-        allowMultipleDeploys: true, // ALA does not have this service redundant
+        allowMultipleDeploys: true,
+        // ALA does not have this service redundant
         artifacts: "regions",
+        repository: 'https://github.com/AtlasOfLivingAustralia/regions',
         path: ""),
     logger: LAServiceDesc(
         name: "logger",
@@ -243,6 +259,7 @@ class LAServiceDesc {
         alaAdmin: true,
         artifacts: "logger-service",
         allowMultipleDeploys: false,
+        repository: 'https://github.com/AtlasOfLivingAustralia/logger-service',
         path: ""),
     solr: LAServiceDesc(
         name: solr,
@@ -274,6 +291,7 @@ class LAServiceDesc {
         alaAdmin: false,
         // Issue https://github.com/living-atlases/la-toolkit/issues/8
         iniPath: "",
+        repository: 'https://github.com/AtlasOfLivingAustralia/ala-cas-5',
         path: "/cas"),
     userdetails: LAServiceDesc(
         nameInt: userdetails,
@@ -288,6 +306,7 @@ class LAServiceDesc {
         admin: true,
         alaAdmin: true,
         parentService: LAServiceName.cas,
+        repository: 'https://github.com/AtlasOfLivingAustralia/userdetails',
         isSubService: true),
     apikey: LAServiceDesc(
         nameInt: apikey,
@@ -300,6 +319,7 @@ class LAServiceDesc {
         isSubService: true,
         parentService: LAServiceName.cas,
         desc: "",
+        repository: 'https://github.com/AtlasOfLivingAustralia/apikey',
         artifacts: "apikey"),
     casManagement: LAServiceDesc(
         nameInt: casManagement,
@@ -312,6 +332,8 @@ class LAServiceDesc {
         desc: "",
         parentService: LAServiceName.cas,
         icon: MdiIcons.accountNetwork,
+        repository:
+            'https://github.com/AtlasOfLivingAustralia/ala-cas-5-services',
         isSubService: true),
     spatial: LAServiceDesc(
         name: "spatial",
@@ -324,6 +346,7 @@ class LAServiceDesc {
         icon: MdiIcons.layers,
         sample: "https://spatial.ala.org.au",
         artifacts: 'spatial-hub',
+        repository: 'https://github.com/AtlasOfLivingAustralia/spatial-hub',
         path: ""),
     spatialService: LAServiceDesc(
       name: 'Spatial Webservice',
@@ -337,6 +360,7 @@ class LAServiceDesc {
       group: "spatial-service",
       optional: true,
       initUse: true,
+      repository: 'https://github.com/AtlasOfLivingAustralia/spatial-service',
       desc: "",
     ),
     'geoserver': LAServiceDesc(
@@ -374,6 +398,7 @@ class LAServiceDesc {
         alaAdmin: true,
         artifacts: 'dashboard',
         allowMultipleDeploys: false,
+        repository: 'https://github.com/AtlasOfLivingAustralia/dashboard',
         path: ""),
     sds: LAServiceDesc(
         name: "sds",
@@ -389,6 +414,7 @@ class LAServiceDesc {
         alaAdmin: true,
         allowMultipleDeploys: false,
         artifacts: "sds-webapp2",
+        repository: 'https://github.com/AtlasOfLivingAustralia/sds',
         path: ""),
     alerts: LAServiceDesc(
         name: "alerts",
@@ -404,6 +430,7 @@ class LAServiceDesc {
         admin: true,
         artifacts: "alerts",
         allowMultipleDeploys: false,
+        repository: 'https://github.com/AtlasOfLivingAustralia/alerts',
         path: ""),
     doi: LAServiceDesc(
         name: "doi",
@@ -418,6 +445,7 @@ class LAServiceDesc {
         admin: true,
         allowMultipleDeploys: false,
         artifacts: "doi-service",
+        repository: 'https://github.com/AtlasOfLivingAustralia/doi-service',
         path: ""),
     branding: LAServiceDesc(
         name: "branding",
@@ -431,6 +459,7 @@ class LAServiceDesc {
         alaAdmin: false,
         allowMultipleDeploys: true,
         hubCapable: true,
+        repository: 'https://github.com/living-atlases/base-branding',
         path: "brand-${DateTime.now().year}"),
     biocacheCli: LAServiceDesc(
         name: "biocache-cli",
@@ -445,6 +474,7 @@ class LAServiceDesc {
         icon: MdiIcons.powershell,
         artifacts: "biocache-store",
         allowMultipleDeploys: true,
+        repository: 'https://github.com/AtlasOfLivingAustralia/biocache-store',
         path: ""),
     nameindexer: LAServiceDesc(
         name: "nameindexer",
@@ -530,6 +560,38 @@ class LAServiceDesc {
         artifacts: pipelines,
         icon: MdiIcons.pipe,
         allowMultipleDeploys: true,
+        path: ""),
+    events: LAServiceDesc(
+        name: events,
+        nameInt: events,
+        group: events,
+        desc: "events extended-data-model",
+        depends: LAServiceName.pipelines,
+        optional: true,
+        icon: Icons.event,
+        initUse: false,
+        sample: "https://events.test.ala.org.au/",
+        alaAdmin: false,
+        hubCapable: false,
+        forceSubdomain: true,
+        allowMultipleDeploys: false,
+        artifacts: "atlasoflivingaustralia/es2vt",
+        path: ""),
+    eventsElasticSearch: LAServiceDesc(
+        name: "events-elasticsearch",
+        nameInt: eventsElasticSearch,
+        group: eventsElasticSearch,
+        desc: "elasticsearch for events",
+        depends: LAServiceName.events,
+        optional: true,
+        icon: Icons.manage_search,
+        initUse: false,
+        //sample: "https://events.test.ala.org.au/",
+        alaAdmin: false,
+        withoutUrl: true,
+        hubCapable: false,
+        allowMultipleDeploys: true,
+        // artifacts: "atlasoflivingaustralia/es2vt",
         path: ""),
     spark: LAServiceDesc(
         name: spark,
@@ -645,6 +707,7 @@ class LAServiceDesc {
         depends: LAServiceName.biocollect,
         desc: 'provides reporting service for ecodata',
         optional: true,
+        parentService: LAServiceName.events,
         path: "")
   };
 
@@ -699,6 +762,7 @@ class LAServiceDesc {
     spark,
     pipelines,
     hadoop,
+    events
   ];
 
   static final List<String> subServices = [
