@@ -9,9 +9,11 @@ import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:la_toolkit/routes.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import '../dependenciesManager.dart';
 import '../models/laServer.dart';
+import '../models/versionUtils.dart';
 import 'alertCard.dart';
 import 'lintErrorPanel.dart';
 
@@ -203,7 +205,16 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 actionText: "SOLVE",
                 action: project.isCreated
                     ? () => BeamerCond.of(context, LAProjectEditLocation())
-                    : null)
+                    : null),
+          if (project.getService(cas).use &&
+              project.getServiceDeploysForSomeService(userdetails).isNotEmpty &&
+              VersionConstraint.parse('< 3.0.1').allows(v(project
+                  .getServiceDeploysForSomeService(userdetails)
+                  .first
+                  .softwareVersions[userdetails]!)) &&
+              project.getVariable("oidc_use").value as bool)
+            const AlertCard(
+                message: "OIDC can be used with userdetails >= 3.0.1"),
         ]);
       }
       return Column(children: lints);
