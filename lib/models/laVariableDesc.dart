@@ -332,6 +332,21 @@ class LAVariableDesc {
         subcategory: LAVariableSubcategory.apikeys,
         service: LAServiceName.ala_hub,
         hint: "Something like: UKDDas3bGKJ9VuuL"),
+    "mapbox_access_token": LAVariableDesc(
+        name: "Mapbox Access Token",
+        nameInt: "mapbox_access_token",
+        subcategory: LAVariableSubcategory.apikeys,
+        service: LAServiceName.collectory,
+        hint: "Something like: pk.XXXXXXXXXX"),
+    "oidc_use": LAVariableDesc(
+        name: "Use OIDC instead of CAS Auth?",
+        nameInt: "oidc_use",
+        //  subcategory: LAVariableSubcategory.otherKeys,
+        help: "OIDC",
+        depends: LAServiceName.cas,
+        service: LAServiceName.cas,
+        defValue: (_) => false,
+        type: LAVariableType.bool),
     "pac4j_cookie_signing_key": LAVariableDesc(
         name: "CAS PAC4J Signing key",
         nameInt: "pac4j_cookie_signing_key",
@@ -440,6 +455,7 @@ class LAVariableDesc {
         defValue: (_) => false,
         type: LAVariableType.bool),
   };
+
   static LAVariableDesc get(String nameInt) {
     return map[nameInt]!;
   }
