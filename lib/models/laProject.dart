@@ -464,7 +464,8 @@ check results length: ${checkResults.length}''';
     this.status = status;
   }
 
-  void assign(LAServer server, List<String> assignedServices) {
+  void assign(LAServer server, List<String> assignedServices,
+      [Map<String, String>? softwareVersions]) {
     HashSet<String> newServices = HashSet<String>();
     newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
@@ -479,11 +480,21 @@ check results length: ${checkResults.length}''';
               sD.projectId == id &&
               sD.serverId == server.id &&
               sD.serviceId == service.id, orElse: () {
+        Map<String, String> versions = getServiceDefaultVersions(service);
+        if (softwareVersions != null) {
+          String? ansibleVar = LAServiceDesc.swToAnsibleVars[service];
+          if (ansibleVar != null) {
+            final String? serviceVersion = softwareVersions[ansibleVar];
+            if (serviceVersion != null) {
+              versions[ansibleVar] = serviceVersion;
+            }
+          }
+        }
         LAServiceDeploy newSd = LAServiceDeploy(
             projectId: id,
             serverId: server.id,
             serviceId: service.id,
-            softwareVersions: getServiceDefaultVersions(service));
+            softwareVersions: versions);
         serviceDeploys.add(newSd);
         return newSd;
       });
