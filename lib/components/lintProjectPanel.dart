@@ -210,7 +210,8 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 action: project.isCreated
                     ? () => BeamerCond.of(context, LAProjectEditLocation())
                     : null),
-          if (project.getService(cas).use &&
+          if (!project.isHub &&
+              project.getService(cas).use &&
               userDetailsVersion != null &&
               VersionConstraint.parse('< 3.0.1')
                   .allows(v(userDetailsVersion)) &&
