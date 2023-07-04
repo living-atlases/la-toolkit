@@ -91,6 +91,10 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               ')'
           : '';
       if (widget.showOthers) {
+        final bool? useOidc = project.getVariableValue("oidc_use") as bool;
+        final String? userDetailsVersion =
+            project.getSwVersionOfService(userdetails);
+        // print('useOidc: $useOidc userDetails version: $userDetailsVersion');
         lints.addAll([
           if (vm.sshKeys.isEmpty)
             AlertCard(
@@ -207,12 +211,11 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                     ? () => BeamerCond.of(context, LAProjectEditLocation())
                     : null),
           if (project.getService(cas).use &&
-              project.getServiceDeploysForSomeService(userdetails).isNotEmpty &&
-              VersionConstraint.parse('< 3.0.1').allows(v(project
-                  .getServiceDeploysForSomeService(userdetails)
-                  .first
-                  .softwareVersions[userdetails]!)) &&
-              project.getVariable("oidc_use").value as bool)
+              userDetailsVersion != null &&
+              VersionConstraint.parse('< 3.0.1')
+                  .allows(v(userDetailsVersion)) &&
+              useOidc != null &&
+              useOidc)
             const AlertCard(
                 message: "OIDC can be used with userdetails >= 3.0.1"),
         ]);

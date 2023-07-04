@@ -424,6 +424,14 @@ check results length: ${checkResults.length}''';
     return value;
   }
 
+  String? getSwVersionOfService(String nameInt) {
+    final List<LAServiceDeploy> deploys =
+        getServiceDeploysForSomeService(nameInt);
+    final String? swVersion =
+        deploys.isEmpty ? null : deploys.first.softwareVersions[nameInt];
+    return swVersion;
+  }
+
   bool isStringVariableNullOrEmpty(String nameInt) {
     LAVariable variable = getVariable(nameInt);
     bool isNull = variable.value == null;
