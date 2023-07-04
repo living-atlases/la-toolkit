@@ -42,6 +42,12 @@ class _HomePageState extends State<HomePage> {
     _initPackageInfo();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    context.loaderOverlay.hide();
+  }
+
   Future<void> _initPackageInfo() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
     setState(() {
@@ -290,6 +296,7 @@ class _HomePageViewModel {
           // status == other.status &&
           // currentStep == other.currentStep &&
           state.projects == other.projects;
+
   // alaInstallReleases == other.alaInstallReleases;
 
   @override

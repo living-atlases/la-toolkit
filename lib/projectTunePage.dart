@@ -58,6 +58,12 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
     _loading = false;
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    context.loaderOverlay.hide();
+  }
+
   _onPressed(vm) {
     setState(() {
       _loading = true;

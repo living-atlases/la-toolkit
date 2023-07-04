@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -15,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'components/formattedTitle.dart';
 import 'components/scrollPanel.dart';
 import 'laTheme.dart';
+
 class LAProjectsList extends StatefulWidget {
   const LAProjectsList({Key? key}) : super(key: key);
 
@@ -34,6 +34,7 @@ class _LAProjectsListState extends State<LAProjectsList> {
   @override
   void dispose() {
     _scrollController!.dispose();
+    context.loaderOverlay.hide();
     super.dispose();
   }
 
@@ -64,64 +65,70 @@ class _LAProjectsListState extends State<LAProjectsList> {
         },
         builder: (BuildContext context, _ProjectsPageViewModel vm) {
           List<LAProject> pjs =
-              vm.state.projects.where((p) => !p.isHub).toList();
+          vm.state.projects.where((p) => !p.isHub).toList();
           int num = pjs.length;
           return num > 0
               ? LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints)  =>ScrollPanel(
-                  child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 80, vertical: 20),
-                      child: Column(children: <Widget>[
-                        AnimationLimiter(
-                            child: ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                controller: _scrollController,
-                                shrinkWrap: true,
-                                itemCount: num,
-                                // itemCount: appStateProv.appState.projects.length,
-                                itemBuilder: (BuildContext context,
+              builder: (BuildContext context, BoxConstraints constraints) =>
+                  ScrollPanel(
+                      child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 80, vertical: 20),
+                          child: Column(children: <Widget>[
+                            AnimationLimiter(
+                                child: ListView.builder(
+                                    scrollDirection: Axis.vertical,
+                                    controller: _scrollController,
+                                    shrinkWrap: true,
+                                    itemCount: num,
+                                    // itemCount: appStateProv.appState.projects.length,
+                                    itemBuilder: (BuildContext context,
                                         int index) =>
-                                    AnimationConfiguration.staggeredList(
-                                        position: index,
-                                        delay: const Duration(milliseconds: 0),
-                                        duration:
+                                        AnimationConfiguration.staggeredList(
+                                            position: index,
+                                            delay: const Duration(
+                                                milliseconds: 0),
+                                            duration:
                                             const Duration(milliseconds: 1000),
-                                        child: SlideAnimation(
-                                            verticalOffset: 50.0,
-                                            child: ScaleAnimation(
-                                                duration: const Duration(
-                                                    milliseconds: 750),
-                                                child: ProjectCard(
-                                                    pjs[index],
-                                                    () => vm.onOpenProjectTools(
-                                                        pjs[index]),
-                                                    () => vm.onDeleteProject(
-                                                        pjs[index])))))))
-                      ])))
-              ): vm.loading
-                  ? Container()
-                  : Center(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                          ButtonTheme(
-                              child: ElevatedButton.icon(
-                                  onPressed: () => vm.onCreateProject(),
-                                  style: TextButton.styleFrom(
-                                      foregroundColor: Colors.white, minimumSize: const Size(100, 50),
-                                      // padding: const EdgeInsets.all(8.0),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30.0),
-                                        // side: BorderSide(color: Colors.red)),
-                                      )),
-                                  icon: const Icon(Icons.add_circle_outline,
-                                      size: 30),
-                                  label: const Text("Create a New LA Project",
-                                      style: TextStyle(fontSize: 18))))
-                        ]));
+                                            child: SlideAnimation(
+                                                verticalOffset: 50.0,
+                                                child: ScaleAnimation(
+                                                    duration: const Duration(
+                                                        milliseconds: 750),
+                                                    child: ProjectCard(
+                                                        pjs[index],
+                                                            () =>
+                                                            vm
+                                                                .onOpenProjectTools(
+                                                                pjs[index]),
+                                                            () =>
+                                                            vm.onDeleteProject(
+                                                                pjs[index])))))))
+                          ])))
+          ) : vm.loading
+              ? Container()
+              : Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    ButtonTheme(
+                        child: ElevatedButton.icon(
+                            onPressed: () => vm.onCreateProject(),
+                            style: TextButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(100, 50),
+                                // padding: const EdgeInsets.all(8.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(30.0),
+                                  // side: BorderSide(color: Colors.red)),
+                                )),
+                            icon: const Icon(Icons.add_circle_outline,
+                                size: 30),
+                            label: const Text("Create a New LA Project",
+                                style: TextStyle(fontSize: 18))))
+                  ]));
         });
   }
 }
@@ -130,6 +137,7 @@ class ProjectCard extends StatelessWidget {
   final LAProject project;
   final void Function() onOpen;
   final void Function() onDelete;
+
   const ProjectCard(this.project, this.onOpen, this.onDelete, {Key? key})
       : super(key: key);
 
@@ -148,7 +156,7 @@ class ProjectCard extends StatelessWidget {
                       height: 220.0,
                       margin: const EdgeInsets.fromLTRB(30, 12, 20, 30),
                       child: Column(
-                          // crossAxisAlignment: CrossAxisAlignment.stretch,
+                        // crossAxisAlignment: CrossAxisAlignment.stretch,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -167,7 +175,7 @@ class ProjectCard extends StatelessWidget {
                                           child: IconButton(
                                               padding: EdgeInsets.zero,
                                               constraints:
-                                                  const BoxConstraints(),
+                                              const BoxConstraints(),
                                               icon: const Icon(
                                                 Icons.delete,
                                                 color: Colors.grey,
@@ -179,8 +187,8 @@ class ProjectCard extends StatelessWidget {
                                                 } else {
                                                   UiUtils.showAlertDialog(
                                                       context,
-                                                      () => onDelete(),
-                                                      () => {});
+                                                          () => onDelete(),
+                                                          () => {});
                                                 }
                                               })),
                                       const SizedBox(width: 20),
@@ -206,17 +214,20 @@ class ProjectCard extends StatelessWidget {
                                     color: LAColorTheme.laPalette),
                                 options: const LinkifyOptions(humanize: false),
                                 text:
-                                    "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
-                                onOpen: (link) async => await launchUrl(Uri.parse(link.url))),
+                                "${project.useSSL
+                                    ? 'https://'
+                                    : 'http://'}${project.domain}",
+                                onOpen: (link) async =>
+                                await launchUrl(Uri.parse(link.url))),
                             ButtonBar(
                                 alignment: MainAxisAlignment.center,
                                 buttonPadding:
-                                    const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                const EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 children: <Widget>[
                                   Wrap(
                                       direction: Axis.horizontal,
                                       crossAxisAlignment:
-                                          WrapCrossAlignment.start,
+                                      WrapCrossAlignment.start,
                                       children: [
                                         LAProjectTimeline(project: project),
                                         // Text('Configured: '),
@@ -244,15 +255,15 @@ class ProjectCard extends StatelessWidget {
               child: CircleAvatar(
                 radius: 25.0,
                 child: project.getVariableValue("favicon_url") != null &&
-                        !AppUtils.isDemo()
+                    !AppUtils.isDemo()
                     ? ImageIcon(
-                        NetworkImage(AppUtils.proxyImg(
-                            project.getVariableValue("favicon_url"))),
-                        color: LAColorTheme.laPalette,
-                        size: 35)
+                    NetworkImage(AppUtils.proxyImg(
+                        project.getVariableValue("favicon_url"))),
+                    color: LAColorTheme.laPalette,
+                    size: 35)
                     : Text(project.shortName.length > 3
-                        ? project.shortName.substring(0, 1)
-                        : project.shortName),
+                    ? project.shortName.substring(0, 1)
+                    : project.shortName),
               ),
               alignment: const FractionalOffset(0.5, 0.0),
             ),
@@ -270,19 +281,18 @@ class _ProjectsPageViewModel {
   final void Function(LAProject project) onDeleteProject;
   final void Function() onCreateProject;
 
-  _ProjectsPageViewModel(
-      {required this.state,
-      required this.loading,
-      required this.onOpenProjectTools,
-      required this.onCreateProject,
-      required this.onDeleteProject});
+  _ProjectsPageViewModel({required this.state,
+    required this.loading,
+    required this.onOpenProjectTools,
+    required this.onCreateProject,
+    required this.onDeleteProject});
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _ProjectsPageViewModel &&
-          runtimeType == other.runtimeType &&
-          state.projects == other.state.projects;
+          other is _ProjectsPageViewModel &&
+              runtimeType == other.runtimeType &&
+              state.projects == other.state.projects;
 
   @override
   int get hashCode => state.projects.hashCode;

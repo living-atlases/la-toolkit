@@ -25,6 +25,7 @@ import 'models/laServer.dart';
 
 class LAProjectServersPage extends StatefulWidget {
   static const routeName = "servers";
+
   const LAProjectServersPage({Key? key}) : super(key: key);
 
   @override
@@ -50,6 +51,12 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
   static const _serversAdditional = 1;
 
   static const StepperType stepperType = StepperType.vertical;
+
+  @override
+  void dispose() {
+    super.dispose();
+    context.loaderOverlay.hide();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,12 +194,14 @@ If you have doubts or need to ask for some information, save this project and co
                       if (_step != 0)
                         TextButton(
                             child: const Text('PREVIOUS'),
-                            style: TextButton.styleFrom(foregroundColor: Colors.white),
+                            style: TextButton.styleFrom(
+                                foregroundColor: Colors.white),
                             onPressed: () => onStepCancel(vm, _project)),
                       if (_step != _steps.length - 1)
                         TextButton(
                             child: const Text('NEXT'),
-                            style: TextButton.styleFrom(foregroundColor: Colors.white),
+                            style: TextButton.styleFrom(
+                                foregroundColor: Colors.white),
                             onPressed: () => onStepContinue(vm, _project)),
                       Tooltip(
                         message: "Close without saving your changes",
@@ -299,6 +308,7 @@ class _ProjectPageViewModel {
   final Function(LAProject) onCancel;
 
   final Function(int) onGoto;
+
   _ProjectPageViewModel(
       {required this.state,
       required this.project,
