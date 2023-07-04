@@ -1,5 +1,251 @@
 
 [
+{
+  "generator-living-atlas": {
+    "promptValues": {
+      "LA_id": "649c0e1000541ed3bc69cc62",
+      "LA_project_name": "Living Atlas Demo (legacy)",
+      "LA_project_shortname": "LADemo",
+      "LA_pkg_name": "lademo",
+      "LA_domain": "l-a.site",
+      "LA_use_species": true,
+      "LA_use_spatial": true,
+      "LA_use_regions": true,
+      "LA_use_species_lists": true,
+      "LA_use_CAS": true,
+      "LA_use_images": true,
+      "LA_use_alerts": false,
+      "LA_use_doi": false,
+      "LA_use_webapi": false,
+      "LA_use_dashboard": false,
+      "LA_use_biocache_store": true,
+      "LA_use_pipelines": false,
+      "LA_use_solrcloud": false,
+      "LA_use_sds": false,
+      "LA_use_biocollect": false,
+      "LA_use_namematching_service": false,
+      "LA_use_sensitive_data_service": false,
+      "LA_use_data_quality": false,
+      "LA_use_events": false,
+      "LA_use_events_elasticsearch": false,
+      "LA_enable_ssl": true,
+      "LA_use_git": true,
+      "LA_generate_branding": true,
+      "LA_cas_hostname": "vm1",
+      "LA_cas_url": "auth.l-a.site",
+      "LA_spatial_hostname": "vm1",
+      "LA_spatial_url": "spatial.l-a.site",
+      "LA_spatial_path": "/",
+      "LA_branding_uses_subdomain": true,
+      "LA_branding_hostname": "vm1",
+      "LA_branding_url": "branding.l-a.site",
+      "LA_branding_path": "/brand-2023",
+      "LA_collectory_uses_subdomain": true,
+      "LA_collectory_hostname": "vm1",
+      "LA_collectory_url": "collections.l-a.site",
+      "LA_collectory_path": "/",
+      "LA_ala_hub_uses_subdomain": true,
+      "LA_ala_hub_hostname": "vm1",
+      "LA_ala_hub_url": "records.l-a.site",
+      "LA_ala_hub_path": "/",
+      "LA_biocache_service_uses_subdomain": true,
+      "LA_biocache_service_hostname": "vm1",
+      "LA_biocache_service_url": "records-ws.l-a.site",
+      "LA_biocache_service_path": "/",
+      "LA_ala_bie_uses_subdomain": true,
+      "LA_ala_bie_hostname": "vm1",
+      "LA_ala_bie_url": "species.l-a.site",
+      "LA_ala_bie_path": "/",
+      "LA_bie_index_uses_subdomain": true,
+      "LA_bie_index_hostname": "vm1",
+      "LA_bie_index_url": "species-ws.l-a.site",
+      "LA_bie_index_path": "/",
+      "LA_images_uses_subdomain": true,
+      "LA_images_hostname": "vm1",
+      "LA_images_url": "images.l-a.site",
+      "LA_images_path": "/",
+      "LA_lists_uses_subdomain": true,
+      "LA_lists_hostname": "vm1",
+      "LA_lists_url": "lists.l-a.site",
+      "LA_lists_path": "/",
+      "LA_regions_uses_subdomain": true,
+      "LA_regions_hostname": "vm1",
+      "LA_regions_url": "regions.l-a.site",
+      "LA_regions_path": "/",
+      "LA_logger_uses_subdomain": true,
+      "LA_logger_hostname": "vm1",
+      "LA_logger_url": "logger.l-a.site",
+      "LA_logger_path": "/",
+      "LA_solr_uses_subdomain": true,
+      "LA_solr_hostname": "vm1",
+      "LA_solr_url": "solr.l-a.site",
+      "LA_solr_path": "/",
+      "LA_biocache_backend_hostname": "vm1",
+      "LA_webapi_uses_subdomain": true,
+      "LA_webapi_hostname": "",
+      "LA_webapi_url": "webapi.l-a.site",
+      "LA_webapi_path": "/",
+      "LA_dashboard_uses_subdomain": true,
+      "LA_dashboard_hostname": "",
+      "LA_dashboard_path": "/",
+      "LA_dashboard_url": "dashboard.l-a.site",
+      "LA_sds_uses_subdomain": true,
+      "LA_sds_hostname": "",
+      "LA_sds_path": "/",
+      "LA_sds_url": "sds.l-a.site",
+      "LA_namematching_service_hostname": "",
+      "LA_namematching_service_path": "/",
+      "LA_namematching_service_url": "namematching.l-a.site",
+      "LA_sensitive_data_service_hostname": "",
+      "LA_sensitive_data_service_path": "/",
+      "LA_sensitive_data_service_url": "sensitive-data-service.l-a.site",
+      "LA_data_quality_hostname": "",
+      "LA_data_quality_path": "/",
+      "LA_data_quality_url": "data-quality.l-a.site",
+      "LA_alerts_uses_subdomain": true,
+      "LA_alerts_hostname": "",
+      "LA_alerts_path": "/",
+      "LA_alerts_url": "alerts.l-a.site",
+      "LA_doi_uses_subdomain": true,
+      "LA_doi_hostname": "",
+      "LA_doi_path": "/",
+      "LA_doi_url": "doi.l-a.site",
+      "LA_biocollect_uses_subdomain": true,
+      "LA_biocollect_hostname": "",
+      "LA_biocollect_path": "/",
+      "LA_biocollect_url": "biocollect.l-a.site",
+      "LA_pdfgen_uses_subdomain": true,
+      "LA_pdfgen_hostname": "",
+      "LA_pdfgen_path": "/",
+      "LA_pdfgen_url": "pdfgen.l-a.site",
+      "LA_ecodata_uses_subdomain": true,
+      "LA_ecodata_hostname": "",
+      "LA_ecodata_path": "/",
+      "LA_ecodata_url": "ecodata.l-a.site",
+      "LA_ecodata_reporting_uses_subdomain": true,
+      "LA_ecodata_reporting_hostname": "",
+      "LA_ecodata_reporting_path": "/",
+      "LA_ecodata_reporting_url": "ecodata-reporting.l-a.site",
+      "LA_events_uses_subdomain": true,
+      "LA_events_hostname": "",
+      "LA_events_elasticsearch_hostname": "",
+      "LA_events_path": "/",
+      "LA_events_url": "events.l-a.site",
+      "LA_server_ips": "172.16.16.10",
+      "LA_theme": "simplex",
+      "LA_collectory_map_centreMapLat": 7.874575060529807,
+      "LA_collectory_map_centreMapLng": 4.449218749999986,
+      "LA_spatial_map_lan": 7.874575060529807,
+      "LA_spatial_map_lng": 4.449218749999986,
+      "LA_regions_map_bounds": "[73.04121154664902, -171.10156250000003, -57.29206142558941, 180]",
+      "LA_spatial_map_bbox": "[73.04121154664902, -171.10156250000003, -57.29206142558941, 180]",
+      "LA_spatial_map_areaSqKm": 14314104.669553608,
+      "LA_etc_hosts": "      172.16.16.10 vm1 collections.l-a.site records.l-a.site records-ws.l-a.site species.l-a.site species-ws.l-a.site images.l-a.site lists.l-a.site regions.l-a.site logger.l-a.site solr.l-a.site auth.l-a.site spatial.l-a.site branding.l-a.site",
+      "LA_hostnames": "vm1",
+      "LA_ssh_keys": "'~/.ssh/gbif-es-2022.pub'",
+      "LA_variable_ansible_user": "ubuntu",
+      "LA_variable_caches_auth_enabled": true,
+      "LA_variable_caches_collections_enabled": true,
+      "LA_variable_caches_layers_enabled": true,
+      "LA_variable_caches_logs_enabled": true,
+      "LA_variable_cas_webflow_encryption_key": "6Y-9jDh-br9nsP2YvUPwSA",
+      "LA_variable_cas_webflow_signing_key": "YSksHGeVkjWdvH-MH2wbMfl65_4W717GtCEVgeUGvsOMeGus0x4R7sYPc9K2TxDh31sNRTBHjpvUmY5izLsolQ",
+      "LA_variable_cas_oauth_encryption_key": "3HhD62J1gcEELKcCewxisgV93e-U8-GlaS0nfbp9VUU",
+      "LA_variable_cas_oauth_signing_key": "81XayAcCidVfhpJSQk6jL-TNV4-sBoyZwiXNJmHDQ-OYBEW0au_J1Bgj7J8xk0rSs96rgP4s1l33Zkv_HaxxoA",
+      "LA_variable_cas_oauth_access_token_encryption_key": "3HhD62J1gcEELKcCewxisgV93e-U8-GlaS0nfbp9VUU",
+      "LA_variable_cas_oauth_access_token_signing_key": "xQV8UQVlus0xjo-CmGAMlXMfI94-LbG_QmCtm0Ve3GkwSnJDmdYRC3ejZga7RDTbzU9nzfNVAq7DFUK2xSOs3Q",
+      "LA_variable_email_sender": "noreply@l-a.site",
+      "LA_variable_favicon_url": "https://raw.githubusercontent.com/living-atlases/artwork/master/favicon.ico",
+      "LA_variable_map_zone_name": "World",
+      "LA_variable_orgCountry": "World",
+      "LA_variable_orgEmail": "info@l-a.site",
+      "LA_variable_pac4j_cookie_encryption_key": "tpX4n2Wf5hfssZyat88wQbG5Uu_T16xkSzqWXSEf1FE",
+      "LA_variable_pac4j_cookie_signing_key": "3HgmnQ2aNgIRHlqsV9hqn5Wwf03j0YeK36o1-EkPrQKn76UHiUCXwb9BkPYPYM4iQ3sckTHHPy6miZ-7-srmUA",
+      "LA_variable_support_email": "support@l-a.site",
+      "LA_variable_oidc_use": false,
+      "LA_is_hub": false,
+      "LA_software_versions": [
+        [
+          "ala_name_matching_version",
+          "3.5"
+        ],
+        [
+          "apikey_version",
+          "1.6.0"
+        ],
+        [
+          "bie_hub_version",
+          "2.0.1"
+        ],
+        [
+          "bie_index_version",
+          "1.4.7"
+        ],
+        [
+          "biocache_cli_version",
+          "2.6.1"
+        ],
+        [
+          "biocache_hub_version",
+          "4.0.12.4"
+        ],
+        [
+          "biocache_service_version",
+          "2.7.1"
+        ],
+        [
+          "cas_management_version",
+          "5.3.6-3"
+        ],
+        [
+          "cas_version",
+          "5.3.12-5"
+        ],
+        [
+          "collectory_version",
+          "1.6.4"
+        ],
+        [
+          "image_service_version",
+          "1.1.7.1"
+        ],
+        [
+          "logger_version",
+          "3.0.0"
+        ],
+        [
+          "regions_version",
+          "3.3.5"
+        ],
+        [
+          "solr_version",
+          "7.7.3"
+        ],
+        [
+          "spatial_hub_version",
+          "1.0.2"
+        ],
+        [
+          "spatial_service_version",
+          "0.4.2"
+        ],
+        [
+          "species_list_version",
+          "3.5.9"
+        ],
+        [
+          "user_details_version",
+          "2.4.0"
+        ]
+      ],
+      "LA_pipelines_hostname": "",
+      "LA_solrcloud_hostname": "",
+      "LA_zookeeper_hostname": "",
+      "LA_collectory_version_ge_3": false
+    },
+    "firstRun": false
+  }
+},
     {
         "generator-living-atlas": {
             "promptValues": {

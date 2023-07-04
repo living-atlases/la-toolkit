@@ -482,11 +482,11 @@ check results length: ${checkResults.length}''';
               sD.serviceId == service.id, orElse: () {
         Map<String, String> versions = getServiceDefaultVersions(service);
         if (softwareVersions != null) {
-          String? ansibleVar = LAServiceDesc.swToAnsibleVars[service];
+          String? ansibleVar = LAServiceDesc.swToAnsibleVars[sN];
           if (ansibleVar != null) {
             final String? serviceVersion = softwareVersions[ansibleVar];
             if (serviceVersion != null) {
-              versions[ansibleVar] = serviceVersion;
+              versions[sN] = serviceVersion;
             }
           }
         }
@@ -890,7 +890,15 @@ check results length: ${checkResults.length}''';
       if (debug) {
         // print("server ${server.name} has ${tempServerServices[server.id]!}");
       }
-      p.assign(server, tempServerServices[server.id]!);
+      Map<String, String> swVersions = {};
+      final dynamic impVersions = a("software_versions");
+      if (impVersions != null) {
+        List<dynamic> swVersionsList = a("software_versions") as List<dynamic>;
+        for (List<dynamic> swVersion in swVersionsList) {
+          swVersions[swVersion[0]] = swVersion[1];
+        }
+      }
+      p.assign(server, tempServerServices[server.id]!, swVersions);
     }
 
     // Other variables
