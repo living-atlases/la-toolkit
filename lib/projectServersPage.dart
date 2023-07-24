@@ -243,8 +243,8 @@ If you have doubts or need to ask for some information, save this project and co
                       // https://github.com/flutter/flutter/issues/11133
                       controlsBuilder:
                           (BuildContext context, ControlsDetails details) {
-                        return Row(
-                          children: const <Widget>[
+                        return const Row(
+                          children: <Widget>[
                             // empty and custom in the AppBar
                             /* TextButton(
                               onPressed: details.onStepContinue,

@@ -383,8 +383,8 @@ If you are unsure type something like "server1, server2, server3".
                       // https://github.com/flutter/flutter/issues/11133
                       controlsBuilder:
                           (BuildContext context, ControlsDetails details) {
-                        return Row(
-                          children: const <Widget>[
+                        return const Row(
+                          children: <Widget>[
                             // empty and custom in the AppBar
                             /* TextButton(
                               onPressed: details.onStepContinue,

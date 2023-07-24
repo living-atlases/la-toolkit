@@ -93,9 +93,9 @@ Living Atlases portals''',
             ),
           PageViewModel(
             title: "Ready to start?",
-            bodyWidget: Row(
+            bodyWidget: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Text("Click on ", style: bodyStyle),
                 Icon(Icons.add_circle),
                 Text(" to create your first Living Atlas project",

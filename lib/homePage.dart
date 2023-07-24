@@ -210,9 +210,9 @@ class _HomePageState extends State<HomePage> {
   showAlertDialog(BuildContext context, _HomePageViewModel vm) {
     AlertDialog alert = AlertDialog(
       title: const Text('Import of Inventories'),
-      content: SingleChildScrollView(
+      content: const SingleChildScrollView(
         child: ListBody(
-          children: const <Widget>[
+          children: <Widget>[
             Text(
                 'Please select a \'.yo-rc.json\' file of some previous generated inventories to import it. This file is located in the parent directory of your inventories (maybe you have to show hidden files).'),
             SizedBox(height: 20),
