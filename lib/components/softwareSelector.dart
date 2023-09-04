@@ -1,6 +1,6 @@
 import 'package:badges/badges.dart';
-import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:flutter/material.dart';
 
 class SoftwareSelector extends StatelessWidget {
   final List<String> versions;
@@ -29,6 +29,7 @@ New version available.
 Choose the latest release to update your portal.
 ''';
   static const String updatedTooltip = "This current version is up-to-date";
+
   // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   static const Color outdatedColor = Colors.orangeAccent;
 
@@ -47,8 +48,9 @@ Choose the latest release to update your portal.
       TextStyle? style = highlight[version];
       items.add(DropdownMenuItem<String>(
           // remove starting 'v' from git tags
-          child: Text(version.replaceFirst(RegExp(r'^v'), ''), style: style),
-          value: version));
+          value: version,
+          // remove starting 'v' from git tags
+          child: Text(version.replaceFirst(RegExp(r'^v'), ''), style: style)));
     }
     bool initialValueStillNotEmpty =
         initialValue != null && initialValue!.isNotEmpty;
@@ -107,10 +109,12 @@ Choose the latest release to update your portal.
     Widget menuConditionalBadge = outDated && useBadge
         // https://pub.dev/packages/badges
         ? badges.Badge(
-            toAnimate: false,
-            shape: BadgeShape.square,
-            badgeColor: outdatedColor,
-            borderRadius: BorderRadius.circular(8),
+            // toAnimate: false,
+            badgeStyle: badges.BadgeStyle(
+              shape: BadgeShape.square,
+              badgeColor: outdatedColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
             badgeContent:
                 const Text('NEW', style: TextStyle(color: Colors.white)),
             child: menu,

@@ -12,8 +12,9 @@ class SandboxPage extends StatefulWidget {
   static const routeName = "sandbox";
 
   const SandboxPage({Key? key}) : super(key: key);
+
   @override
-  _SandboxPageState createState() => _SandboxPageState();
+  State<SandboxPage> createState() => _SandboxPageState();
 }
 
 class _SandboxPageState extends State<SandboxPage> {
@@ -30,7 +31,7 @@ class _SandboxPageState extends State<SandboxPage> {
     }, builder: (BuildContext context, _SandboxViewModel vm) {
       List<DropdownMenuItem<String>> releases = [];
       for (var element in vm.state.alaInstallReleases) {
-        releases.add(DropdownMenuItem(child: Text(element), value: element));
+        releases.add(DropdownMenuItem(value: element, child: Text(element)));
       }
       return Scaffold(
           key: _scaffoldKey,

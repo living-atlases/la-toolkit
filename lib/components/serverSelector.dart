@@ -16,6 +16,7 @@ class ServerSelector extends StatefulWidget {
   final List<String> initialValue;
   final Function(List<String>) onChange;
   final LAServer? exclude;
+
   const ServerSelector(
       {Key? key,
       required this.selectorKey,
@@ -30,7 +31,7 @@ class ServerSelector extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ServerSelectorState createState() => _ServerSelectorState();
+  State<ServerSelector> createState() => _ServerSelectorState();
 }
 
 class _ServerSelectorState extends State<ServerSelector> {

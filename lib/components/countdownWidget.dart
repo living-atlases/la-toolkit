@@ -6,9 +6,11 @@ import '../laTheme.dart';
 
 class CountDownWidget extends StatefulWidget {
   final void Function() onReload;
+
   const CountDownWidget({Key? key, required this.onReload}) : super(key: key);
+
   @override
-  _CountDownWidgetState createState() => _CountDownWidgetState();
+  State<CountDownWidget> createState() => _CountDownWidgetState();
 }
 
 class _CountDownWidgetState extends State<CountDownWidget> {

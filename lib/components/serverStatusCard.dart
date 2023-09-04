@@ -22,6 +22,7 @@ class ServerStatusCard extends StatelessWidget {
   final String alaInstallVersion;
   final VoidCallback onTerm;
   final List<dynamic> status;
+
   const ServerStatusCard(
       {Key? key,
       required this.server,
@@ -55,11 +56,6 @@ class ServerStatusCard extends StatelessWidget {
                     Tooltip(
                         message: "Open a terminal in ${server.name}",
                         child: ElevatedButton(
-                          child: Icon(
-                            MdiIcons.console,
-                            color: statusUpDownColor(),
-                            size: 36,
-                          ),
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               elevation: 10,
@@ -68,6 +64,11 @@ class ServerStatusCard extends StatelessWidget {
                               padding: const EdgeInsets.fromLTRB(1, 1, 1, 0),
                               enableFeedback: true),
                           onPressed: () => onTerm(),
+                          child: Icon(
+                            MdiIcons.console,
+                            color: statusUpDownColor(),
+                            size: 36,
+                          ),
                         ))
                   ]),
                   const SizedBox(width: 20),
@@ -153,6 +154,7 @@ class SimpleServerStatusItem extends StatelessWidget {
   final bool ready;
   final String successHint;
   final String errorHint;
+
   const SimpleServerStatusItem(
       this.text, this.ready, this.successHint, this.errorHint,
       {Key? key})
@@ -182,6 +184,7 @@ class SimpleServerStatusItem extends StatelessWidget {
 class DepsPanel extends StatelessWidget {
   final LinkedHashSet<BasicService> deps;
   final List<dynamic> status;
+
   const DepsPanel(this.deps, this.status, {Key? key}) : super(key: key);
 
   @override

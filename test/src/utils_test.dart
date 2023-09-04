@@ -43,8 +43,8 @@ void main() {
     // List<double> mapBounds1stPoint = [44.4806, -19.4184];
     // List<double> mapBounds2ndPoint = [26.6767, 5.7989];
 
-    LatLng mapBounds1stPoint = LatLng(40.0, 20.0);
-    LatLng mapBounds2ndPoint = LatLng(20.0, 10.0);
+    LatLng mapBounds1stPoint = const LatLng(40.0, 20.0);
+    LatLng mapBounds2ndPoint = const LatLng(20.0, 10.0);
 
     var invVariables =
         MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint);

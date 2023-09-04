@@ -27,7 +27,7 @@ class TermDialog {
         builder: (context) => Material(
               child: Scaffold(
                 appBar: AppBar(
-                  leading: const Icon(
+                  leading: Icon(
                     MdiIcons.console,
                     color: Colors.white,
                   ),
@@ -84,7 +84,7 @@ class TermDialog {
 
   static ListTile drawerItem(BuildContext context) {
     return ListTile(
-      leading: const Icon(MdiIcons.console),
+      leading: Icon(MdiIcons.console),
       title: const Text('Console'),
       onTap: () {
         openTerm(context, false);

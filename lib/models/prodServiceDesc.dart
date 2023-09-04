@@ -38,8 +38,8 @@ class ProdServiceDesc {
         nameInt != nameindexer &&
         nameInt != biocacheCli) {
       urls.add(url);
-      if (alaAdmin) urls.add(url + '/alaAdmin/');
-      if (admin) urls.add(url + '/admin/');
+      if (alaAdmin) urls.add('$url/alaAdmin/');
+      if (admin) urls.add('$url/admin/');
     }
   }
 

@@ -12,6 +12,7 @@ class ServerSshKeySelector extends StatefulWidget {
   final bool isFirst;
   final Function(LAServer) onSave;
   final Function(SshKey?) onAllSameSshKey;
+
   const ServerSshKeySelector(
       {Key? key,
       required this.server,
@@ -23,11 +24,12 @@ class ServerSshKeySelector extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ServerSshKeySelectorState createState() => _ServerSshKeySelectorState();
+  State<ServerSshKeySelector> createState() => _ServerSshKeySelectorState();
 }
 
 class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
   SshKey? _sshKey;
+
   @override
   void initState() {
     _sshKey = widget.currentSshKey;
@@ -45,7 +47,7 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
       hint: Row(
         children: [
           if (_sshKey != null)
-            const Icon(MdiIcons.key, color: LAColorTheme.laPalette),
+            Icon(MdiIcons.key, color: LAColorTheme.laPalette),
           if (_sshKey != null) const SizedBox(width: 5),
           Text(_sshKey != null ? _sshKey!.name : "No SSH key selected"),
         ],
@@ -59,7 +61,7 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
           value: sshKey,
           child: Row(
             children: [
-              const Icon(MdiIcons.key),
+              Icon(MdiIcons.key),
               const SizedBox(
                 width: 10,
               ),

@@ -9,6 +9,7 @@ class ServicesChipPanel extends StatefulWidget {
   final List<String> services;
   final List<String> initialValue;
   final bool isHub;
+
   const ServicesChipPanel(
       {Key? key,
       required this.onChange,
@@ -18,7 +19,7 @@ class ServicesChipPanel extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ServicesChipPanelState createState() => _ServicesChipPanelState();
+  State<ServicesChipPanel> createState() => _ServicesChipPanelState();
 }
 
 class _ServicesChipPanelState extends State<ServicesChipPanel> {
@@ -79,8 +80,8 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                         // alignment: Alignment.centerLeft,
                         ChipsChoice<String>.multiple(
                       key: _chipsKey,
-                      value:
-                          formValue, // state.value, // _selectAllOrElements(state.value),
+                      value: formValue,
+                      // state.value, // _selectAllOrElements(state.value),
                       onChanged: (values) {
                         setState(() {
                           formValue = _selectAllOrElements(values);

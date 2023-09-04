@@ -84,11 +84,11 @@ class DeployCmd extends CommonCmd {
               : LAServiceDesc.get(serviceName).name)
           .toList();
       servicesForHuman.asMap().forEach((i, value) => services += i == 0
-          ? ' ' + value
+          ? ' $value'
           : i < serviceLength - 1
-              ? ', ' + value
-              : ' and ' + value);
-      services += ' service' + (serviceLength > 1 ? 's' : '');
+              ? ', $value'
+              : ' and $value');
+      services += ' service${serviceLength > 1 ? 's' : ''}';
     } else {
       services += ' some services';
     }
@@ -98,12 +98,12 @@ class DeployCmd extends CommonCmd {
     List<String> lTags = List<String>.from(tags);
     if (onlyProperties) lTags.add('properties');
     if (lTags.isNotEmpty && lTags.length <= 3) {
-      prefix += ' (tags: ' + lTags.join(', ') + ')';
+      prefix += ' (tags: ${lTags.join(', ')})';
     } else if (lTags.length > 3) {
       prefix = ' (only some tasks)';
     }
     String result = "$services$servers$prefix";
-    result = dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);
+    result = dryRun ? 'Dry run $result' : StringUtils.capitalize(result);
     return result;
   }
 
@@ -112,7 +112,7 @@ class DeployCmd extends CommonCmd {
     if (limitToServers.isEmpty) {
       servers = '';
     } else if (limitToServers.length <= 3) {
-      servers += ' in ' + limitToServers.join(', ');
+      servers += ' in ${limitToServers.join(', ')}';
     } else {
       servers = ' in some servers';
     }
@@ -123,6 +123,7 @@ class DeployCmd extends CommonCmd {
 
   factory DeployCmd.fromJson(Map<String, dynamic> json) =>
       _$DeployCmdFromJson(json);
+
   Map<String, dynamic> toJson() => _$DeployCmdToJson(this);
 
   String getTitle() => "Deployment Results";

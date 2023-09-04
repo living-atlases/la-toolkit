@@ -106,13 +106,13 @@ class LAService implements IsJsonSerializable<LAService> {
   String get path => usesSubdomain
       ? iniPath.startsWith("/")
           ? iniPath
-          : "/" + iniPath
+          : "/$iniPath"
       : suburl.startsWith("/")
           ? suburl
-          : "/" + suburl;
+          : "/$suburl";
 
   String url(domain) =>
-      usesSubdomain ? (suburl.isNotEmpty ? suburl + "." : '') + domain : domain;
+      usesSubdomain ? (suburl.isNotEmpty ? "$suburl." : '') + domain : domain;
 
   String fullUrl(ssl, domain) => 'http${ssl ? "s" : ""}://${url(domain)}$path';
 

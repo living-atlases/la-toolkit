@@ -251,11 +251,11 @@ void main() {
     LAProject p = LAProject(
         mapBoundsFstPoint: LALatLng.from(10.0, 10.0),
         mapBoundsSndPoint: LALatLng.from(20.0, 20.0));
-    expect(p.getCenter(), equals(LatLng(15, 15)));
+    expect(p.getCenter(), equals(const LatLng(15, 15)));
     p.mapBoundsFstPoint = LALatLng.from(20, 20);
     p.mapBoundsSndPoint = LALatLng.from(40, 40);
-    p.setMap(LatLng(20, 20), LatLng(40, 40), 10);
-    expect(p.getCenter(), equals(LatLng(30, 30)));
+    p.setMap(const LatLng(20, 20), const LatLng(40, 40), 10);
+    expect(p.getCenter(), equals(const LatLng(30, 30)));
     expect(p.mapZoom, equals(10));
   });
 

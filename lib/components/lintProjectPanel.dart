@@ -30,7 +30,7 @@ class LintProjectPanel extends StatefulWidget {
       : super(key: key);
 
   @override
-  _LintProjectPanelState createState() => _LintProjectPanelState();
+  State<LintProjectPanel> createState() => _LintProjectPanelState();
 }
 
 class _LintProjectPanelState extends State<LintProjectPanel> {
@@ -83,15 +83,10 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
       }
       List<String> notAssigned = project.servicesNotAssigned();
       String notAssignedMessage = notAssigned.length < 5
-          ? ' (' +
-              notAssigned
-                  .map((s) => LAServiceDesc.get(s).name)
-                  .toList()
-                  .join(', ') +
-              ')'
+          ? ' (${notAssigned.map((s) => LAServiceDesc.get(s).name).toList().join(', ')})'
           : '';
       if (widget.showOthers) {
-        final bool? useOidc = project.getVariableValue("oidc_use") as bool;
+        final bool useOidc = project.getVariableValue("oidc_use") as bool;
         final String? userDetailsVersion =
             project.getSwVersionOfService(userdetails);
         // print('useOidc: $useOidc userDetails version: $userDetailsVersion');
@@ -215,7 +210,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               userDetailsVersion != null &&
               VersionConstraint.parse('< 3.0.1')
                   .allows(v(userDetailsVersion)) &&
-              useOidc != null &&
+              // useOidc != null &&
               useOidc)
             const AlertCard(
                 message: "OIDC can be used with userdetails >= 3.0.1"),

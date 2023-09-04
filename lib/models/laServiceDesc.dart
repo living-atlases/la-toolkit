@@ -821,7 +821,7 @@ class LAServiceDesc {
       print("Processing software $sw: $e");
       name = sw;
     }
-    return "$name${alias != null ? ' (' + alias + ')' : ''}";
+    return "$name${alias != null ? ' ($alias)' : ''}";
   }
 
   static final Map<String, String> swToAnsibleVars = {

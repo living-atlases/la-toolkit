@@ -98,7 +98,7 @@ class ListTileLink extends StatelessWidget {
           title: 'Atlas of Living Australia',
           url: "https://ala.org.au"),
       const DefDivider(),
-      const ListTileLink(
+      ListTileLink(
           icon: Icon(MdiIcons.github),
           title: 'This software on GitHub',
           url: "https://github.com/living-atlases/la-toolkit/")

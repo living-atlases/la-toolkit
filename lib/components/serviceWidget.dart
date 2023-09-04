@@ -58,11 +58,11 @@ class ServiceWidget extends StatelessWidget {
 
       String domain = vm.currentProject.domain;
       bool usesSubdomain = !withoutUrl && service.usesSubdomain;
-      ValueNotifier<bool> _domainSwitchController = ValueNotifier<bool>(false);
-      _domainSwitchController.value = !service.usesSubdomain;
-      _domainSwitchController.addListener(() {
+      ValueNotifier<bool> domainSwitchController = ValueNotifier<bool>(false);
+      domainSwitchController.value = !service.usesSubdomain;
+      domainSwitchController.addListener(() {
         if (canUseSubdomain) {
-          service.usesSubdomain = !_domainSwitchController.value;
+          service.usesSubdomain = !domainSwitchController.value;
           vm.onEditService(service);
         }
       });
@@ -173,7 +173,7 @@ class ServiceWidget extends StatelessWidget {
                                       padding: const EdgeInsets.fromLTRB(
                                           0, 3, 20, 0),
                                       child: AdvancedSwitch(
-                                        controller: _domainSwitchController,
+                                        controller: domainSwitchController,
                                         height: 16.0,
                                         width: 60.0,
                                         activeColor: LAColorTheme.inactive,

@@ -55,6 +55,7 @@ class Routes {
             ]));
 
   static final Routes _instance = Routes._privateConstructor();
+
   factory Routes() {
     return _instance;
   }
@@ -62,8 +63,9 @@ class Routes {
 
 abstract class NamedBeamLocation extends BeamLocation<BeamState> {
   String get route;
+
   @override
-  List<String> get pathPatterns => ['/' + route];
+  List<String> get pathPatterns => ['/$route'];
 }
 
 class BeamerCond {
@@ -96,6 +98,7 @@ class LAProjectEditLocation extends NamedBeamLocation {
             child: LAProjectEditPage(),
             title: "${MyApp.appName}: Editing your project")
       ];
+
   @override
   String get route => LAProjectEditPage.routeName;
 }
@@ -108,6 +111,7 @@ class LAProjectServersLocation extends NamedBeamLocation {
             child: const LAProjectServersPage(),
             title: "${MyApp.appName}: Servers of your project")
       ];
+
   @override
   String get route => LAProjectServersPage.routeName;
 }
@@ -128,6 +132,7 @@ class LAProjectViewLocation extends NamedBeamLocation {
 class SandboxLocation extends NamedBeamLocation {
   @override
   String get route => SandboxPage.routeName;
+
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
@@ -140,6 +145,7 @@ class SandboxLocation extends NamedBeamLocation {
 class LAProjectTuneLocation extends NamedBeamLocation {
   @override
   String get route => LAProjectTunePage.routeName;
+
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(
@@ -199,6 +205,7 @@ class LogsHistoryLocation extends NamedBeamLocation {
 class SshKeysLocation extends NamedBeamLocation {
   @override
   String get route => SshKeyPage.routeName;
+
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) => [
         BeamPage(

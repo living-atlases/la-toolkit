@@ -6,11 +6,12 @@ import 'package:la_toolkit/models/laProject.dart';
 
 class ALAInstallSelector extends StatefulWidget {
   final Function(String?) onChange;
+
   const ALAInstallSelector({Key? key, required this.onChange})
       : super(key: key);
 
   @override
-  _ALAInstallSelectorState createState() => _ALAInstallSelectorState();
+  State<ALAInstallSelector> createState() => _ALAInstallSelectorState();
 }
 
 class _ALAInstallSelectorState extends State<ALAInstallSelector> {

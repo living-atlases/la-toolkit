@@ -39,11 +39,12 @@ class ServerDetailsCard extends StatelessWidget {
         margin: CardConstants.defaultSeparation,
         elevation: CardConstants.defaultElevation,
         shape: CardConstants.defaultShape,
-        child: Column(mainAxisSize: MainAxisSize.min,
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
             // margin: EdgeInsets.fromLTRB(30, 12, 20, 30),
             children: [
               ListTile(
-                leading: const Icon(MdiIcons.server),
+                leading: Icon(MdiIcons.server),
                 // tileColor: Colors.black12,
                 title: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,

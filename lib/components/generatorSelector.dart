@@ -6,10 +6,11 @@ import 'package:la_toolkit/models/laProject.dart';
 
 class GeneratorSelector extends StatefulWidget {
   final Function(String?) onChange;
+
   const GeneratorSelector({Key? key, required this.onChange}) : super(key: key);
 
   @override
-  _GeneratorSelectorState createState() => _GeneratorSelectorState();
+  State<GeneratorSelector> createState() => _GeneratorSelectorState();
 }
 
 class _GeneratorSelectorState extends State<GeneratorSelector> {

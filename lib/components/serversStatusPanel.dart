@@ -9,12 +9,13 @@ import 'package:la_toolkit/models/laServer.dart';
 class ServersStatusPanel extends StatefulWidget {
   final bool extendedStatus;
   final Map<String, dynamic> results;
+
   const ServersStatusPanel(
       {Key? key, required this.extendedStatus, required this.results})
       : super(key: key);
 
   @override
-  _ServersStatusPanelState createState() => _ServersStatusPanelState();
+  State<ServersStatusPanel> createState() => _ServersStatusPanelState();
 }
 
 class _ServersStatusPanelState extends State<ServersStatusPanel> {
@@ -51,5 +52,6 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
 class _ServersStatusPanelViewModel {
   final LAProject project;
   final void Function(LAProject, LAServer) openTerm;
+
   _ServersStatusPanelViewModel({required this.project, required this.openTerm});
 }

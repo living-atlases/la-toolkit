@@ -24,11 +24,12 @@ class PipelinesPage extends StatefulWidget {
   const PipelinesPage({Key? key}) : super(key: key);
 
   @override
-  _PipelinesPageState createState() => _PipelinesPageState();
+  State<PipelinesPage> createState() => _PipelinesPageState();
 }
 
 class _PipelinesPageState extends State<PipelinesPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(

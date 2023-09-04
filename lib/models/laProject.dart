@@ -66,7 +66,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   bool fstDeployed;
   bool advancedEdit;
   bool advancedTune;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, dynamic> checkResults;
 
   // Relations -----
@@ -79,23 +79,23 @@ class LAProject implements IsJsonSerializable<LAProject> {
   List<LAServiceDeploy> serviceDeploys;
   List<LAVariable> variables;
   List<LAProject> hubs;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   LAProject? parent;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, String> runningVersions;
 
   // Logs history -----
   CmdHistoryEntry? lastCmdEntry;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   CmdHistoryDetails? lastCmdDetails;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   Tuple2<List<ProdServiceDesc>, HostsServicesChecks>? servicesToMonitor;
 
   int? clientMigration;
 
   DateTime? lastSwCheck;
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   LAServer? masterPipelinesServer;
 
   LAProject(
@@ -132,7 +132,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       Map<String, dynamic>? checkResults,
       Map<String, String>? runningVersions})
       : id = id ?? ObjectId().toString(),
-        domain = domain ?? (isHub ? 'somehubname.' + parent!.domain : ''),
+        domain = domain ?? (isHub ? 'somehubname.${parent!.domain}' : ''),
         servers = servers ?? [],
         services = services ?? getInitialServices(isHub),
         serviceDeploys = serviceDeploys ?? [],
@@ -1253,7 +1253,7 @@ check results length: ${checkResults.length}''';
         versions[serviceName] = {
           "server": sd.serviceId,
           "url": serviceName == cas
-              ? serviceFullUrl(desc, service) + '/cas/'
+              ? '${serviceFullUrl(desc, service)}/cas/'
               : serviceFullUrl(desc, service)
         };
       }

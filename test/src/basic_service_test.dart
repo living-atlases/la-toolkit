@@ -45,7 +45,7 @@ void main() {
         LAVariableDesc.map.values.map((v) => v.nameInt).toList();
     laVariablesList.sort();
     for (var e in laVariablesList) {
-      list = list + "LA_variable_$e: 'LA_variable_$e',\n";
+      list = "${list}LA_variable_$e: 'LA_variable_$e',\n";
     }
     // LIST variables for backend transform
     // print(list);

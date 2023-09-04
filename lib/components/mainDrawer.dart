@@ -43,6 +43,9 @@ class _MainDrawerState extends State<MainDrawer> {
               context.beamBack();
             },
             child: DrawerHeader(
+              decoration: BoxDecoration(
+                color: LAColorTheme.laPalette.shade300,
+              ),
               child: Column(
                 children: <Widget>[
                   Image.asset(
@@ -58,13 +61,10 @@ class _MainDrawerState extends State<MainDrawer> {
                       )),
                 ],
               ),
-              decoration: BoxDecoration(
-                color: LAColorTheme.laPalette.shade300,
-              ),
             ),
           ),
           ListTile(
-            leading: const Icon(MdiIcons.key),
+            leading: Icon(MdiIcons.key),
             title: const Text('SSH Keys'),
             onTap: () {
               BeamerCond.of(context, SshKeysLocation());
@@ -83,8 +83,7 @@ class _MainDrawerState extends State<MainDrawer> {
           AboutListTile(
               icon: const Icon(LAIcon.la),
               applicationName: widget.appName,
-              applicationVersion:
-                  "Version: ${widget.packageInfo.version}",
+              applicationVersion: "Version: ${widget.packageInfo.version}",
               applicationIcon: const Icon(LAIcon.la),
               applicationLegalese:
                   "© 2020-${DateTime.now().year.toString()} Living Atlases, under Apache 2.0",

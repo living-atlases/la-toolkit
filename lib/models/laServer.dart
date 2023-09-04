@@ -24,6 +24,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
   int sshPort;
   String? sshUser;
   SshKey? sshKey;
+
   // List of proxy jumps (assh allows multi proxyjumps)
   List<String> gateways;
 
@@ -64,6 +65,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   factory LAServer.fromJson(Map<String, dynamic> json) =>
       _$LAServerFromJson(json);
+
   @override
   Map<String, dynamic> toJson() => _$LAServerToJson(this);
 
@@ -116,7 +118,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   @override
   String toString() {
-    return '''$name ($id)${ip.isNotEmpty ? ', ' + ip : ''} gws: ${gateways.length} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.isNotEmpty ? ' ' + aliases.join(' ') : ''}''';
+    return '''$name ($id)${ip.isNotEmpty ? ', $ip' : ''} gws: ${gateways.length} isReady: ${isReady()}${osName != '' ? ' osName: ' : ''}$osName${osVersion != '' ? ' osVersion: ' : ''}$osVersion ${aliases.isNotEmpty ? ' ${aliases.join(' ')}' : ''}''';
   }
 
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {

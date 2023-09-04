@@ -24,10 +24,10 @@ class ServersCardList extends StatelessWidget {
               });
         },
         builder: (BuildContext context, _ServersCardListViewModel vm) {
-          final _project = vm.currentProject;
+          final project = vm.currentProject;
           return Wrap(children: [
-            for (LAServer server in _project.servers)
-              ServerServicesHoverCard(server: server, project: _project, vm: vm)
+            for (LAServer server in project.servers)
+              ServerServicesHoverCard(server: server, project: project, vm: vm)
           ]);
         });
   }
@@ -51,6 +51,7 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
   bool _editing = false;
   bool _hover = false;
   bool _stillHover = false;
+
   @override
   Widget build(BuildContext context) {
     Map<String, List<LAService>> servicesAssignable =
@@ -148,7 +149,7 @@ class ServerServicesViewCard extends StatelessWidget {
                 width: 300,
                 margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: ListTile(
-                  key: ValueKey(server.name + "basic-tile"),
+                  key: ValueKey("${server.name}basic-tile"),
                   contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   title: Text(server.name),
                   subtitle: Text(LAService.servicesForHumans(

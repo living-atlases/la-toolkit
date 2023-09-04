@@ -14,7 +14,7 @@ part 'cmdHistoryDetails.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class CmdHistoryDetails {
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   CmdHistoryEntry? cmd;
   int? port;
   int? pid;
@@ -24,9 +24,9 @@ class CmdHistoryDetails {
   String logs;
   String logsColorized;
   bool fstRetrieved;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, num>? _resultsTotals;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   List<Widget>? _details;
 
   CmdHistoryDetails(
@@ -78,6 +78,7 @@ class CmdHistoryDetails {
       (resultsTotals[ResultType.changed.toS()] ?? 0) +
       (resultsTotals[ResultType.failures.toS()] ?? 0) +
       (resultsTotals[ResultType.ok.toS()] ?? 0);
+
   /* +
       (resultsTotals[ResultType.unreachable.toS()] ?? 0 */
 
@@ -106,7 +107,7 @@ class CmdHistoryDetails {
                     : '';
                 if (task['hosts'][host]['results'] != null) {
                   task['hosts'][host]['results'].forEach((r) {
-                    if (r['stderr'] != null) msg += "\n" + r['stderr'];
+                    if (r['stderr'] != null) msg += "\n${r['stderr']}";
                   });
                 }
                 errors[host]!.add(AnsibleError(
@@ -190,5 +191,6 @@ class CmdHistoryDetails {
 
   factory CmdHistoryDetails.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryDetailsFromJson(json);
+
   Map<String, dynamic> toJson() => _$CmdHistoryDetailsToJson(this);
 }

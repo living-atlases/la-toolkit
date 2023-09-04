@@ -39,8 +39,8 @@ class TermCommandDesc extends StatelessWidget {
           ]));
     }
     return ListTile(
-        leading: const Icon(MdiIcons.console,
-            size: 36, color: LAColorTheme.laPalette),
+        leading:
+            Icon(MdiIcons.console, size: 36, color: LAColorTheme.laPalette),
         title: MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(

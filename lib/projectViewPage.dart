@@ -19,7 +19,6 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 
-import 'components/LoadingTextOverlay.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
@@ -38,7 +37,7 @@ class LAProjectViewPage extends StatefulWidget {
   const LAProjectViewPage({Key? key}) : super(key: key);
 
   @override
-  _LAProjectViewPageState createState() => _LAProjectViewPageState();
+  State<LAProjectViewPage> createState() => _LAProjectViewPageState();
 }
 
 class _LAProjectViewPageState extends State<LAProjectViewPage> {
@@ -61,17 +60,17 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               loading: store.state.loading,
               softwareReleasesReady: store.state.laReleases.isNotEmpty,
               onOpenProject: (project) async {
-                await showOverlay(context);
+                context.loaderOverlay.show();
                 store.dispatch(OpenProject(project));
                 BeamerCond.of(context, LAProjectEditLocation());
               },
               onOpenServersProject: (project) async {
-                await showOverlay(context);
+                context.loaderOverlay.show();
                 store.dispatch(OpenServersProject(project));
                 BeamerCond.of(context, LAProjectServersLocation());
               },
               onTuneProject: (project) async {
-                await showOverlay(context);
+                context.loaderOverlay.show();
                 store.dispatch(TuneProject(project));
                 BeamerCond.of(context, LAProjectTuneLocation());
               },
@@ -111,13 +110,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     ShowSnackBar(AppSnackBarMessage("Under development"))); */
                 store.dispatch(TestServicesProject(
                     project,
-                    project
-                        .serverServicesToMonitor()
-                        .item2,
-                        () =>
-                        store.dispatch(TestConnectivityProject(
-                            store.state.currentProject, () => {}, () => {})),
-                        () => {}));
+                    project.serverServicesToMonitor().item2,
+                    () => store.dispatch(TestConnectivityProject(
+                        store.state.currentProject, () => {}, () => {})),
+                    () => {}));
                 BeamerCond.of(context, PortalStatusLocation());
               },
               onPipelinesTasks: (project) {
@@ -157,8 +153,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           final LAProject project = vm.project;
           print(
-              "Building ProjectViewPage $_scaffoldKey, ala-install: ${project
-                  .alaInstallRelease}, gen: ${project.generatorRelease}");
+              "Building ProjectViewPage $_scaffoldKey, ala-install: ${project.alaInstallRelease}, gen: ${project.generatorRelease}");
 
           if (project.isCreated && !AppUtils.isDemo()) {
             html.Notification.requestPermission();
@@ -169,7 +164,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           String Portal = project.PortalName;
           bool isCreatedAndAccessibleOrInProduction =
               (project.isCreated && project.allServersWithServicesReady() ||
-                  project.allServersWithSshReady()) ||
+                      project.allServersWithSshReady()) ||
                   project.inProduction;
           List<Tool> tools = [
             Tool(
@@ -194,7 +189,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 icon: const Icon(Icons.tune),
                 title: "Tune your\nConfiguration",
                 tooltip:
-                "Fine tune the $portal configuration with other options different than the basic ones.",
+                    "Fine tune the $portal configuration with other options different than the basic ones.",
                 enabled: vm.status.value >= LAProjectStatus.basicDefined.value,
                 action: () => vm.onTuneProject(project)),
             Tool(
@@ -220,7 +215,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 enabled: isCreatedAndAccessibleOrInProduction,
                 action: () => vm.onDeployBranding(project)),
             Tool(
-                icon: const Icon(MdiIcons.rocketLaunch),
+                icon: Icon(MdiIcons.rocketLaunch),
                 title: "Deploy",
                 tooltip: "Install/update your LA $Portal or some services",
                 grid: 12,
@@ -270,7 +265,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 action: () => vm.onDelProject(project)),
             if (!project.isHub && project.getPipelinesMaster() != null)
               Tool(
-                  icon: const Icon(MdiIcons.pipe),
+                  icon: Icon(MdiIcons.pipe),
                   title: "Pipelines Data Processing",
                   // tooltip: "Pipelines for data processing",
                   enabled: isCreatedAndAccessibleOrInProduction,
@@ -278,7 +273,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   action: () => vm.onPipelinesTasks(project)),
           ];
           String projectIconUrl =
-          project.getVariableValue("favicon_url").toString();
+              project.getVariableValue("favicon_url").toString();
           String pageTitle = "${project.shortName} Toolkit";
           bool showSoftwareVersions =
               project.showSoftwareVersions && vm.softwareReleasesReady;
@@ -320,25 +315,25 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                           child: Column(children: [
                             Container(
                                 padding:
-                                const EdgeInsets.only(top: 80, bottom: 50),
+                                    const EdgeInsets.only(top: 80, bottom: 50),
                                 child: LAProjectTimeline(project: project)),
                             // Disabled for now
                             // ServicesChipPanel(),
                             ResponsiveGridRow(
-                              // desiredItemWidth: 120,
-                              // minSpacing: 20,
+                                // desiredItemWidth: 120,
+                                // minSpacing: 20,
                                 children: tools.map((tool) {
-                                  return ResponsiveGridCol(
-                                      lg: tool.grid,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(10),
-                                        height: 120,
-                                        alignment: const Alignment(0, 0),
-                                        color: Colors.white,
-                                        // color: LAColorTheme.laPalette.shade50,
-                                        child: ToolShortcut(tool: tool),
-                                      ));
-                                }).toList()),
+                              return ResponsiveGridCol(
+                                  lg: tool.grid,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    height: 120,
+                                    alignment: const Alignment(0, 0),
+                                    color: Colors.white,
+                                    // color: LAColorTheme.laPalette.shade50,
+                                    child: ToolShortcut(tool: tool),
+                                  ));
+                            }).toList()),
                             const SizedBox(height: 10),
                             if (!project.isHub)
                               createHubWidget(context, vm, project),
@@ -349,13 +344,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
         });
   }
 
-  Future<void> showOverlay(BuildContext context) async {
-    context.loaderOverlay.show(widget: const LoadingTextOverlay());
-    await Future.delayed(const Duration(seconds: 1));
-  }
-
-  Stack createHubWidget(BuildContext context, _ProjectPageViewModel vm,
-      LAProject project) {
+  Stack createHubWidget(
+      BuildContext context, _ProjectPageViewModel vm, LAProject project) {
     return Stack(children: <Widget>[
       Container(
           margin: const EdgeInsets.all(10),
@@ -364,20 +354,19 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             border: Border.all(color: Colors.grey),
             borderRadius: const BorderRadius.all(
                 Radius.circular(10.0) //                 <--- border radius here
-            ),
+                ),
           ),
           child: ResponsiveGridRow(
               children: project.hubs
-                  .map((LAProject hub) =>
-                  ResponsiveGridCol(
-                      lg: 2,
-                      child: HubButton(
-                          text: hub.shortName,
-                          icon: Icons.data_saver_off,
-                          onPressed: () => vm.onOpenHub(project, hub),
-                          tooltip: "Open this Hub",
-                          isActionBtn: false)))
-                  .toList() +
+                      .map((LAProject hub) => ResponsiveGridCol(
+                          lg: 2,
+                          child: HubButton(
+                              text: hub.shortName,
+                              icon: Icons.data_saver_off,
+                              onPressed: () => vm.onOpenHub(project, hub),
+                              tooltip: "Open this Hub",
+                              isActionBtn: false)))
+                      .toList() +
                   [
                     ResponsiveGridCol(
                       lg: 2,
@@ -435,16 +424,16 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
             children: List.from([
-              const SizedBox(height: 20),
-              Text(
-                  allReady
-                      ? "Congrats! All the servers are ready"
-                      : "Uuppps! It seems that some servers are not yet ready",
-                  style:
+          const SizedBox(height: 20),
+          Text(
+              allReady
+                  ? "Congrats! All the servers are ready"
+                  : "Uuppps! It seems that some servers are not yet ready",
+              style:
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-              const SizedBox(height: 20),
-              const ServersStatusPanel(extendedStatus: false, results: {})
-            ])),
+          const SizedBox(height: 20),
+          const ServersStatusPanel(extendedStatus: false, results: {})
+        ])),
         buttons: [
           DialogButton(
             width: 500,
@@ -486,7 +475,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 linkStyle: const TextStyle(color: LAColorTheme.laPalette),
                 options: const LinkifyOptions(humanize: false),
                 text:
-                'https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub',
+                    'https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub',
                 onOpen: (link) async => await launchUrl(Uri.parse(link.url))),
           ],
         ),
@@ -537,37 +526,38 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onCreateHub;
   final void Function(LAProject project, LAProject hub) onOpenHub;
 
-  _ProjectPageViewModel({required this.project,
-    required this.status,
-    required this.loading,
-    required this.softwareReleasesReady,
-    required this.onOpenProject,
-    required this.onOpenServersProject,
-    required this.onOpenHub,
-    required this.onOpenParent,
-    required this.onTuneProject,
-    required this.onDelProject,
-    required this.onPreDeployTasks,
-    required this.onPostDeployTasks,
-    required this.onDeployBranding,
-    required this.onViewLogs,
-    required this.onDeployProject,
-    required this.onPipelinesTasks,
-    required this.onGenInvProject,
-    required this.onTestConnProject,
-    required this.onPortalStatus,
-    required this.onCreateHub});
+  _ProjectPageViewModel(
+      {required this.project,
+      required this.status,
+      required this.loading,
+      required this.softwareReleasesReady,
+      required this.onOpenProject,
+      required this.onOpenServersProject,
+      required this.onOpenHub,
+      required this.onOpenParent,
+      required this.onTuneProject,
+      required this.onDelProject,
+      required this.onPreDeployTasks,
+      required this.onPostDeployTasks,
+      required this.onDeployBranding,
+      required this.onViewLogs,
+      required this.onDeployProject,
+      required this.onPipelinesTasks,
+      required this.onGenInvProject,
+      required this.onTestConnProject,
+      required this.onPortalStatus,
+      required this.onCreateHub});
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is _ProjectPageViewModel &&
-              runtimeType == other.runtimeType &&
-              project == other.project &&
-              status.value == other.status.value &&
-              softwareReleasesReady &&
-              other.softwareReleasesReady &&
-              loading == other.loading;
+      other is _ProjectPageViewModel &&
+          runtimeType == other.runtimeType &&
+          project == other.project &&
+          status.value == other.status.value &&
+          softwareReleasesReady &&
+          other.softwareReleasesReady &&
+          loading == other.loading;
 
   @override
   int get hashCode =>

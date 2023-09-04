@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LaunchBtn extends StatelessWidget {
-  const LaunchBtn({
+  LaunchBtn({
     Key? key,
     this.onTap,
     required this.execBtn,
-    this.icon = MdiIcons.rocketLaunch,
-  }) : super(key: key);
+    IconData? icon,
+  })  : icon = icon ?? MdiIcons.rocketLaunch,
+        super(key: key);
 
   final VoidCallback? onTap;
   final String execBtn;
@@ -27,7 +28,8 @@ class LaunchBtn extends StatelessWidget {
               child: ElevatedButton.icon(
                   onPressed: onTap,
                   style: TextButton.styleFrom(
-                      foregroundColor: Colors.white, minimumSize: const Size(140, 50),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(140, 50),
                       // primary: LAColorTheme.laPalette,
                       // padding: const EdgeInsets.all(8.0),
                       shape: RoundedRectangleBorder(

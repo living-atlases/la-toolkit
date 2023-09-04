@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -116,8 +116,9 @@ class _HomePageState extends State<HomePage> {
                         if (AppUtils.isDev())
                           IconButton(
                             icon: const Tooltip(
-                                child: Icon(Icons.refresh, color: Colors.white),
-                                message: "Refresh projects"),
+                                message: "Refresh projects",
+                                child:
+                                    Icon(Icons.refresh, color: Colors.white)),
                             onPressed: () {
                               vm.projectsReload();
                             },

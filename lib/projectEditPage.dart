@@ -32,6 +32,7 @@ class LAProjectEditPage extends StatelessWidget {
   LAProjectEditPage({Key? key}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   static List<String> serversNameSplit(String value) =>
       value.split(RegExp(r"[, ]+"));
   static const int totalSteps = 4;
@@ -104,35 +105,35 @@ class LAProjectEditPage extends StatelessWidget {
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           print('build project edit page');
-          final LAProject _project = vm.project;
+          final LAProject project = vm.project;
           // Set default version of the project
-          if (_project.alaInstallRelease == null &&
+          if (project.alaInstallRelease == null &&
               vm.state.alaInstallReleases.isNotEmpty) {
-            _project.alaInstallRelease = _project.isHub
-                ? _project.parent!.alaInstallRelease
+            project.alaInstallRelease = project.isHub
+                ? project.parent!.alaInstallRelease
                 : vm.state.alaInstallReleases[0];
           }
-          if (_project.generatorRelease == null &&
+          if (project.generatorRelease == null &&
               vm.state.generatorReleases.isNotEmpty) {
-            _project.generatorRelease = _project.isHub
-                ? _project.parent!.generatorRelease
+            project.generatorRelease = project.isHub
+                ? project.parent!.generatorRelease
                 : vm.state.generatorReleases[0];
           }
-          final int _step = vm.state.currentStep;
-          print('Building project edit currentStep: $_step key: $_scaffoldKey');
-          final List<Step> _steps = [];
-          String projectName = _project.projectName;
-          String portal = _project.portalName;
+          final int step = vm.state.currentStep;
+          print('Building project edit currentStep: $step key: $_scaffoldKey');
+          final List<Step> steps = [];
+          String projectName = project.projectName;
+          String portal = project.portalName;
           // ignore: non_constant_identifier_names
-          String Portal = _project.PortalName;
-          if (_project.isHub) _project.domain = _project.parent!.domain;
+          String Portal = project.PortalName;
+          if (project.isHub) project.domain = project.parent!.domain;
 
-          _steps.add(Step(
+          steps.add(Step(
               title: const Text('Basic information'),
               subtitle: Text(
                   'Define the main information of your $portal, like name, ...'),
-              isActive: _setIsActive(_step, _basicStep),
-              state: _setSetStatus(_step, _basicStep),
+              isActive: _setIsActive(step, _basicStep),
+              state: _setSetStatus(step, _basicStep),
               content: Form(
                 key: _formKeys[_basicStep],
                 child: Column(
@@ -142,51 +143,51 @@ class LAProjectEditPage extends StatelessWidget {
                         // LONG NAME
                         //  key: _formKeys[0],
                         label: 'Your LA $projectName Long Name',
-                        hint: _project.isHub
+                        hint: project.isHub
                             ? "Similar to e.g: 'The Australasian Virtual Herbarium', 'NBN Atlas Scotland', 'GBIF Togo', ..."
                             : "Similar to e.g: 'Atlas of Living Australia', 'BioAtlas Sweden', 'NBN Atlas', ...",
                         wikipage: "Glossary#Long-name",
                         error: '$projectName name invalid.',
-                        initialValue: _project.longName,
+                        initialValue: project.longName,
                         regexp: LARegExp.projectNameRegexp,
                         focusNode: _focusNodes[_basicStep],
                         onChanged: (value) {
-                          _project.longName = value;
-                          vm.onSaveCurrentProject(_project);
+                          project.longName = value;
+                          vm.onSaveCurrentProject(project);
                         }),
                     GenericTextFormField(
                         // SHORT NAME
                         label: 'Short Name',
-                        hint: _project.isHub
+                        hint: project.isHub
                             ? "Similar to for e.g.: 'AVH', 'NBN Scotland', ..."
                             : "Similar to for e.g.: 'ALA', 'GBIF.ES', 'NBN',...",
                         wikipage: "Glossary#Short-name",
                         error: 'Project short name invalid.',
-                        initialValue: _project.shortName,
+                        initialValue: project.shortName,
                         regexp: LARegExp.projectNameRegexp,
                         onChanged: (value) {
-                          _project.shortName = value;
-                          vm.onSaveCurrentProject(_project);
+                          project.shortName = value;
+                          vm.onSaveCurrentProject(project);
                         }),
                     const SizedBox(height: 10),
-                    if (_project.isHub)
+                    if (project.isHub)
                       GenericTextFormField(
                           // DIR NAME
                           label:
                               'Directory Name to store the generated directories and files',
-                          hint: _project.isHub
+                          hint: project.isHub
                               ? "Similar to for e.g.: 'avh', 'nbn_scotland', ..."
                               : "Similar to for e.g.: 'ala', 'gbif_es', 'nbn',...",
                           wikipage: "Glossary#Directory-name",
                           error:
                               'Directory name invalid. Should be start by lowercase and should contain only lowercase characters, numbers and/or underscores',
-                          initialValue: _project.dirName,
-                          regexp: _project.createdAt < permissiveDirNamesDate
+                          initialValue: project.dirName,
+                          regexp: project.createdAt < permissiveDirNamesDate
                               ? LARegExp.ansibleDirnameRegexpPermissive
                               : LARegExp.ansibleDirnameRegexp,
                           onChanged: (value) {
-                            _project.dirName = value;
-                            vm.onSaveCurrentProject(_project);
+                            project.dirName = value;
+                            vm.onSaveCurrentProject(project);
                           }),
                     Tooltip(
                         // SSL
@@ -197,42 +198,41 @@ class LAProjectEditPage extends StatelessWidget {
                             'Use SSL?',
                           ),
                           trailing: Switch(
-                            value: _project.useSSL,
+                            value: project.useSSL,
                             // activeColor: Color(0xFF6200EE),
                             onChanged: (bool newValue) {
-                              _project.useSSL = newValue;
-                              vm.onSaveCurrentProject(_project);
+                              project.useSSL = newValue;
+                              vm.onSaveCurrentProject(project);
                             },
                           ),
                         )),
-                    if (!_project.isHub)
+                    if (!project.isHub)
                       GenericTextFormField(
                           // DOMAIN
                           label:
-                              'The ${_project.isHub ? 'sub' : ''}domain of your LA $Portal',
+                              'The ${project.isHub ? 'sub' : ''}domain of your LA $Portal',
                           hint:
                               "Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
-                          prefixText: _protocolToS(_project.useSSL),
+                          prefixText: _protocolToS(project.useSSL),
                           wikipage: "Glossary#Domain",
                           error: '$projectName short name invalid.',
-                          initialValue: _project.domain,
+                          initialValue: project.domain,
                           regexp: LARegExp.domainRegexp,
                           onChanged: (value) {
-                            _project.domain = value;
-                            vm.onSaveCurrentProject(_project);
+                            project.domain = value;
+                            vm.onSaveCurrentProject(project);
                           }),
-                    if (!_project.isHub) const SizedBox(height: 20),
+                    if (!project.isHub) const SizedBox(height: 20),
                     BrandingTile(
-                        initialValue: _project.theme,
+                        initialValue: project.theme,
                         portalName: Portal,
-                        onChange: (String newTheme) =>
-                            _project.theme = newTheme)
+                        onChange: (String newTheme) => project.theme = newTheme)
                   ],
                 ),
               )));
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _mapStep),
-              state: _setSetStatus(_step, _mapStep),
+          steps.add(Step(
+              isActive: _setIsActive(step, _mapStep),
+              state: _setSetStatus(step, _mapStep),
               title: const Text('Location information'),
               subtitle: Text('Select the map area of your LA $Portal,...'),
               content: Column(children: [
@@ -243,16 +243,16 @@ class LAProjectEditPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 const MapAreaSelector(),
                 // MAP AREA NAME
-                MessageItem(_project, LAVariableDesc.get("map_zone_name"),
+                MessageItem(project, LAVariableDesc.get("map_zone_name"),
                     (value) {
-                  _project.setVariable(
+                  project.setVariable(
                       LAVariableDesc.get("map_zone_name"), value);
-                  vm.onSaveCurrentProject(_project);
+                  vm.onSaveCurrentProject(project);
                 }).buildTitle(context),
               ])));
-          /*  _steps.add(Step(
-              isActive: _setIsActive(_step, _serversStep),
-              state: _setSetStatus(_step, _serversStep),
+          /*  steps.add(Step(
+              isActive: _setIsActive(step, _serversStep),
+              state: _setSetStatus(step, _serversStep),
               title: const Text('Servers'),
               subtitle: Text('Inventory of the servers of your LA $Portal'),
               content: Form(
@@ -277,11 +277,11 @@ If you are unsure type something like "server1, server2, server3".
                 ),
               ))); */
           final Iterable<LAServiceDesc> availableServices =
-              LAServiceDesc.listNoSub(_project.isHub)
+              LAServiceDesc.listNoSub(project.isHub)
                   .where((LAServiceDesc s) => s.isSubService == false);
-          _steps.add(Step(
-              isActive: _setIsActive(_step, _servicesStep),
-              state: _setSetStatus(_step, _servicesStep),
+          steps.add(Step(
+              isActive: _setIsActive(step, _servicesStep),
+              state: _setSetStatus(step, _servicesStep),
               title: const Text('Services'),
               subtitle: Text(
                   'Choose the services of your $Portal and how your services URLs will look like'),
@@ -312,14 +312,14 @@ If you are unsure type something like "server1, server2, server3".
           context.loaderOverlay.hide();
           return Title(
               title:
-                  "${_project.shortName}: ${vm.state.status.getTitle(_project.isHub)}",
+                  "${project.shortName}: ${vm.state.status.getTitle(project.isHub)}",
               color: LAColorTheme.laPalette,
               child: Scaffold(
                 key: _scaffoldKey,
                 appBar: LAAppBar(
                     context: context,
                     titleIcon: Icons.edit,
-                    title: vm.state.status.getTitle(_project.isHub),
+                    title: vm.state.status.getTitle(project.isHub),
                     showLaIcon: false,
                     actions: <Widget>[
                       Tooltip(
@@ -327,38 +327,40 @@ If you are unsure type something like "server1, server2, server3".
                           child: CircularPercentIndicator(
                             radius: 50.0,
                             lineWidth: 6.0,
-                            percent: _project.status.percent / 100,
-                            center: Text("${_project.status.percent}%",
+                            percent: project.status.percent / 100,
+                            center: Text("${project.status.percent}%",
                                 style: const TextStyle(
                                     color: Colors.white, fontSize: 12)),
                             progressColor: Colors.white,
                           )),
                       const SizedBox(width: 20),
-                      if (_step != 0)
+                      if (step != 0)
                         TextButton(
-                            child: const Text('PREVIOUS'),
-                            style: TextButton.styleFrom(foregroundColor: Colors.white),
-                            onPressed: () => onStepCancel(vm, _project)),
-                      if (_step != _steps.length - 1)
+                            style: TextButton.styleFrom(
+                                foregroundColor: Colors.white),
+                            onPressed: () => onStepCancel(vm, project),
+                            child: const Text('PREVIOUS')),
+                      if (step != steps.length - 1)
                         TextButton(
-                            child: const Text('NEXT'),
-                            style: TextButton.styleFrom(foregroundColor: Colors.white),
-                            onPressed: () => onStepContinue(vm, _project)),
+                            style: TextButton.styleFrom(
+                                foregroundColor: Colors.white),
+                            onPressed: () => onStepContinue(vm, project),
+                            child: const Text('NEXT')),
                       Tooltip(
                         message: "Close without saving your changes",
                         child: TextButton(
                             child: const Icon(Icons.close, color: Colors.white),
                             onPressed: () {
-                              vm.onFinish(_project);
+                              vm.onFinish(project);
                             }),
                       ),
                       TapDebouncer(
-                          onTap: () async => await vm.onFinish(_project),
+                          onTap: () async => await vm.onFinish(project),
                           builder: (context, onTap) {
                             return IconButton(
                               icon: const Tooltip(
-                                  child: Icon(Icons.save, color: Colors.white),
-                                  message: "Save the current LA project"),
+                                  message: "Save the current LA project",
+                                  child: Icon(Icons.save, color: Colors.white)),
                               onPressed: onTap,
                             );
                           })
@@ -366,19 +368,19 @@ If you are unsure type something like "server1, server2, server3".
                 body: AppSnackBar(ScrollPanel(
                     child: Column(children: [
                   Stepper(
-                      steps: _steps,
-                      currentStep: _step,
+                      steps: steps,
+                      currentStep: step,
                       type: stepperType,
                       onStepContinue: () {
                         // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                        onStepContinue(vm, _project);
+                        onStepContinue(vm, project);
                       },
                       onStepTapped: (step) {
                         vm.onGoto(step);
-                        vm.onSaveCurrentProject(_project);
+                        vm.onSaveCurrentProject(project);
                       },
                       onStepCancel: () {
-                        onStepCancel(vm, _project);
+                        onStepCancel(vm, project);
                       },
                       // https://github.com/flutter/flutter/issues/11133
                       controlsBuilder:
@@ -397,8 +399,10 @@ If you are unsure type something like "server1, server2, server3".
                           ],
                         );
                       }),
-                  const LintProjectPanel(showOthers: false,
-                      showToolkitDeps: false, showLADeps: false)
+                  const LintProjectPanel(
+                      showOthers: false,
+                      showToolkitDeps: false,
+                      showLADeps: false)
                 ]))),
                 //     ])
               ));
@@ -439,6 +443,7 @@ class _ProjectPageViewModel {
   final Function() onNext;
   final Function() onPrevious;
   final Function(int) onGoto;
+
   _ProjectPageViewModel(
       {required this.state,
       required this.project,

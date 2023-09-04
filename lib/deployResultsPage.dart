@@ -25,7 +25,7 @@ class CmdResultsPage extends StatefulWidget {
   const CmdResultsPage({Key? key}) : super(key: key);
 
   @override
-  _CmdResultsPageState createState() => _CmdResultsPageState();
+  State<CmdResultsPage> createState() => _CmdResultsPageState();
 }
 
 class _CmdResultsPageState extends State<CmdResultsPage> {
@@ -84,8 +84,8 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                         TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                         IconButton(
                             icon: const Tooltip(
-                                child: Icon(Icons.close, color: Colors.white),
-                                message: "Close"),
+                                message: "Close",
+                                child: Icon(Icons.close, color: Colors.white)),
                             onPressed: () =>
                                 vm.onClose(vm.project, cmdHistoryDetails)),
                       ]),
@@ -106,7 +106,7 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                   Text(desc, style: UiUtils.cmdTitleStyle),
                                   const SizedBox(height: 20),
                                   Text(
-                                      "${LADateUtils.formatDate(cmdEntry.date)}${cmdEntry.duration != null ? ', duration: ' + LADateUtils.formatDuration(cmdEntry.duration!) : ''}",
+                                      "${LADateUtils.formatDate(cmdEntry.date)}${cmdEntry.duration != null ? ', duration: ${LADateUtils.formatDuration(cmdEntry.duration!)}' : ''}",
                                       style: UiUtils.dateStyle),
                                   const SizedBox(height: 20),
                                   Row(
@@ -252,6 +252,7 @@ class _DeployResultsViewModel {
   final LAProject project;
   final Function(LAProject, CmdHistoryDetails cmdDetails) onClose;
   final void Function(CmdHistoryEntry entry) onOpenDeployResults;
+
   _DeployResultsViewModel(
       {required this.project,
       required this.onClose,

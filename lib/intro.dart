@@ -15,7 +15,7 @@ class Intro extends StatefulWidget {
   const Intro({Key? key}) : super(key: key);
 
   @override
-  _IntroState createState() => _IntroState();
+  State<Intro> createState() => _IntroState();
 }
 
 class _IntroState extends State<Intro> {
@@ -38,7 +38,7 @@ class _IntroState extends State<Intro> {
     const pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
       bodyTextStyle: bodyStyle,
-      descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+      bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       pageColor: Colors.white,
       imagePadding: EdgeInsets.zero,
     );
@@ -116,7 +116,7 @@ Living Atlases portals''',
         onDone: () => vm.onIntroEnd(),
         onSkip: () => vm.onIntroEnd(),
         showSkipButton: true,
-        skipFlex: 0,
+        skipOrBackFlex: 0,
         nextFlex: 0,
         skip: const Text('Skip'),
         next: const Icon(Icons.arrow_forward),
@@ -148,7 +148,8 @@ Living Atlases portals''',
                       color: _markdownColor,
                       decoration: TextDecoration.underline),
                 ),
-                onTapLink: (text, href, title) async => await launchUrl(Uri.parse(href!)),
+                onTapLink: (text, href, title) async =>
+                    await launchUrl(Uri.parse(href!)),
                 data: text)
             : Text(text,
                 textAlign: TextAlign.left,
@@ -158,11 +159,11 @@ Living Atlases portals''',
 
   Widget _buildImage([String? assetName, double? width]) {
     return Align(
+      alignment: Alignment.bottomCenter,
       child: assetName == null
           ? Image.asset('assets/images/la-icon.png', width: 150.0)
           : Image.asset('assets/images/$assetName',
               width: width ?? MediaQuery.of(context).size.width * 0.5),
-      alignment: Alignment.bottomCenter,
     );
   }
 }

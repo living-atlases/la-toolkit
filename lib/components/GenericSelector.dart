@@ -4,6 +4,7 @@ class GenericSelector<T> extends StatefulWidget {
   final T? currentValue;
   final List<T> values;
   final Function(T) onChange;
+
   const GenericSelector(
       {Key? key,
       this.currentValue,
@@ -12,11 +13,12 @@ class GenericSelector<T> extends StatefulWidget {
       : super(key: key);
 
   @override
-  _GenericSelectorState<T> createState() => _GenericSelectorState();
+  State<GenericSelector<T>> createState() => _GenericSelectorState();
 }
 
 class _GenericSelectorState<T> extends State<GenericSelector<T>> {
   T? _currentValue;
+
   @override
   void initState() {
     _currentValue = widget.currentValue;

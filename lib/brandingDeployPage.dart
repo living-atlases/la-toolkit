@@ -19,11 +19,12 @@ class BrandingDeployPage extends StatefulWidget {
   const BrandingDeployPage({Key? key}) : super(key: key);
 
   @override
-  _BrandingDeployPageState createState() => _BrandingDeployPageState();
+  State<BrandingDeployPage> createState() => _BrandingDeployPageState();
 }
 
 class _BrandingDeployPageState extends State<BrandingDeployPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(

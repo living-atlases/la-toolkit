@@ -24,30 +24,30 @@ class ServersDetailsCardList extends StatelessWidget {
               });
         },
         builder: (BuildContext context, _ServersCardListViewModel vm) {
-          final _project = vm.currentProject;
+          final project = vm.currentProject;
           return ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              itemCount: _project.numServers(),
+              itemCount: project.numServers(),
               // itemCount: appStateProv.appState.projects.length,
               itemBuilder: (BuildContext context, int index) {
                 return ServerDetailsCard(
-                    server: _project.servers[index],
+                    server: project.servers[index],
                     index: index,
                     onSave: (server) {
-                      _project.upsertServer(server);
-                      vm.onSaveCurrentProject(_project);
+                      project.upsertServer(server);
+                      vm.onSaveCurrentProject(project);
                     },
                     onAllSameSshKey: (sshKey) {
-                      for (int i = 0; i < _project.servers.length; i++) {
-                        _project.servers[i].sshKey = sshKey;
+                      for (int i = 0; i < project.servers.length; i++) {
+                        project.servers[i].sshKey = sshKey;
                       }
                     },
-                    advancedEdit: _project.advancedEdit,
-                    isFirst: _isFirstServer(index, _project.servers.length),
+                    advancedEdit: project.advancedEdit,
+                    isFirst: _isFirstServer(index, project.servers.length),
                     sshKeys: vm.sshKeys,
                     ansibleUser:
-                        _project.getVariableValue("ansible_user").toString());
+                        project.getVariableValue("ansible_user").toString());
               });
         });
   }

@@ -102,12 +102,12 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
         },
         builder: (BuildContext context, _ProjectPageViewModel vm) {
           print('build project servers page');
-          final LAProject _project = vm.project;
+          final LAProject project = vm.project;
 
           print(
               'Building project servers currentStep: $_step key: $_scaffoldKey');
-          final List<Step> _steps = [];
-          _steps.add(Step(
+          final List<Step> steps = [];
+          steps.add(Step(
               isActive: _setIsActive(_step, _serversToServiceStep),
               state: _setSetStatus(_step, _serversToServiceStep),
               title: const Text(
@@ -127,7 +127,7 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
                         formKey: _formKeys[_serversToServiceStep],
                         onAddServer: (name) => _addServer(name.trim(), vm)),
                   ])));
-          _steps.add(Step(
+          steps.add(Step(
               isActive: _setIsActive(_step, _serversAdditional),
               state: _setSetStatus(_step, _serversAdditional),
               title: const Text('Define better your servers'),
@@ -145,11 +145,11 @@ We'll use SSH to access to your server. For read more about SSH, read our wiki p
 
 If you have doubts or need to ask for some information, save this project and continue later filling this. Don't hesitate to ask us in our #slack channel.    
                          ''', margin: EdgeInsets.fromLTRB(0, 0, 0, 10)),
-                    MessageItem(_project, LAVariableDesc.get("ansible_user"),
+                    MessageItem(project, LAVariableDesc.get("ansible_user"),
                         (value) {
-                      _project.setVariable(
+                      project.setVariable(
                           LAVariableDesc.get("ansible_user"), value);
-                      vm.onSaveCurrentProject(_project);
+                      vm.onSaveCurrentProject(project);
                     }).buildTitle(context),
                     const SizedBox(height: 20),
                     ListTile(
@@ -158,10 +158,10 @@ If you have doubts or need to ask for some information, save this project and co
                           'Advanced SSH options',
                         ),
                         trailing: Switch(
-                            value: _project.advancedEdit,
+                            value: project.advancedEdit,
                             onChanged: (value) {
-                              _project.advancedEdit = value;
-                              vm.onSaveCurrentProject(_project);
+                              project.advancedEdit = value;
+                              vm.onSaveCurrentProject(project);
                             })),
                     const SizedBox(height: 20),
                     ServersDetailsCardList(_focusNodes[_serversAdditional]!),
@@ -169,14 +169,14 @@ If you have doubts or need to ask for some information, save this project and co
           context.loaderOverlay.hide();
           return Title(
               title:
-                  "${_project.shortName}: ${vm.state.status.getTitle(_project.isHub)}",
+                  "${project.shortName}: ${vm.state.status.getTitle(project.isHub)}",
               color: LAColorTheme.laPalette,
               child: Scaffold(
                 key: _scaffoldKey,
                 appBar: LAAppBar(
                     context: context,
                     titleIcon: Icons.dns,
-                    title: vm.state.status.getTitle(_project.isHub),
+                    title: vm.state.status.getTitle(project.isHub),
                     showLaIcon: false,
                     actions: <Widget>[
                       Tooltip(
@@ -184,8 +184,8 @@ If you have doubts or need to ask for some information, save this project and co
                           child: CircularPercentIndicator(
                             radius: 50.0,
                             lineWidth: 6.0,
-                            percent: _project.status.percent / 100,
-                            center: Text("${_project.status.percent}%",
+                            percent: project.status.percent / 100,
+                            center: Text("${project.status.percent}%",
                                 style: const TextStyle(
                                     color: Colors.white, fontSize: 12)),
                             progressColor: Colors.white,
@@ -193,31 +193,31 @@ If you have doubts or need to ask for some information, save this project and co
                       const SizedBox(width: 20),
                       if (_step != 0)
                         TextButton(
-                            child: const Text('PREVIOUS'),
                             style: TextButton.styleFrom(
                                 foregroundColor: Colors.white),
-                            onPressed: () => onStepCancel(vm, _project)),
-                      if (_step != _steps.length - 1)
+                            onPressed: () => onStepCancel(vm, project),
+                            child: const Text('PREVIOUS')),
+                      if (_step != steps.length - 1)
                         TextButton(
-                            child: const Text('NEXT'),
                             style: TextButton.styleFrom(
                                 foregroundColor: Colors.white),
-                            onPressed: () => onStepContinue(vm, _project)),
+                            onPressed: () => onStepContinue(vm, project),
+                            child: const Text('NEXT')),
                       Tooltip(
                         message: "Close without saving your changes",
                         child: TextButton(
                             child: const Icon(Icons.close, color: Colors.white),
                             onPressed: () {
-                              vm.onFinish(_project);
+                              vm.onFinish(project);
                             }),
                       ),
                       TapDebouncer(
-                          onTap: () async => await vm.onFinish(_project),
+                          onTap: () async => await vm.onFinish(project),
                           builder: (context, onTap) {
                             return IconButton(
                               icon: const Tooltip(
-                                  child: Icon(Icons.save, color: Colors.white),
-                                  message: "Save the current LA project"),
+                                  message: "Save the current LA project",
+                                  child: Icon(Icons.save, color: Colors.white)),
                               onPressed: onTap,
                             );
                           })
@@ -225,12 +225,12 @@ If you have doubts or need to ask for some information, save this project and co
                 body: AppSnackBar(ScrollPanel(
                     child: Column(children: [
                   Stepper(
-                      steps: _steps,
+                      steps: steps,
                       currentStep: _step,
                       type: stepperType,
                       onStepContinue: () {
                         // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                        onStepContinue(vm, _project);
+                        onStepContinue(vm, project);
                       },
                       onStepTapped: (step) {
                         setState(() {
@@ -238,7 +238,7 @@ If you have doubts or need to ask for some information, save this project and co
                         });
                       },
                       onStepCancel: () {
-                        onStepCancel(vm, _project);
+                        onStepCancel(vm, project);
                       },
                       // https://github.com/flutter/flutter/issues/11133
                       controlsBuilder:

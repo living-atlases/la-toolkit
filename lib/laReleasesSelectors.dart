@@ -16,11 +16,12 @@ import 'models/laService.dart';
 
 class LAReleasesSelectors extends StatefulWidget {
   final Function(String, String, bool) onSoftwareSelected;
+
   const LAReleasesSelectors({Key? key, required this.onSoftwareSelected})
       : super(key: key);
 
   @override
-  _LAReleasesSelectorsState createState() => _LAReleasesSelectorsState();
+  State<LAReleasesSelectors> createState() => _LAReleasesSelectorsState();
 }
 
 class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
@@ -58,7 +59,8 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                 : project.getService(serviceDesc.parentService!.toS());
             if (serviceOrParent.use &&
                 serviceDesc.artifacts != null &&
-                releases != null && releases.versions.isNotEmpty) {
+                releases != null &&
+                releases.versions.isNotEmpty) {
               Map<String, TextStyle> highlight = {};
               String? runningVersion = vm.runningVersionsRetrieved
                   ? project.runningVersions[serviceNameInt]
@@ -114,7 +116,6 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
               trailing: HelpIcon(wikipage: "Components-versioning"),
             ),
             Wrap(children: selectors),
-
           ]);
         });
   }

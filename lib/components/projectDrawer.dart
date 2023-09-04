@@ -22,7 +22,7 @@ class ProjectDrawer extends StatelessWidget {
   static Widget appBarIcon(LAProject project, GlobalKey<ScaffoldState> key) {
     return IconButton(
       color: Colors.white,
-      icon: const Icon(MdiIcons.vectorLink),
+      icon: Icon(MdiIcons.vectorLink),
       tooltip: "${project.shortName} links drawer",
       onPressed: () => key.currentState?.openDrawer(),
     );
@@ -46,6 +46,9 @@ class ProjectDrawer extends StatelessWidget {
                 context.beamBack();
               },
               child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: LAColorTheme.laPalette.shade300,
+                ),
                 child: Column(
                   children: <Widget>[
                     vm.state.currentProject.getVariableValue("favicon_url") !=
@@ -71,9 +74,6 @@ class ProjectDrawer extends StatelessWidget {
                         )),
                   ],
                 ),
-                decoration: BoxDecoration(
-                  color: LAColorTheme.laPalette.shade300,
-                ),
               ),
             ),
             ListTile(
@@ -84,7 +84,7 @@ class ProjectDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(MdiIcons.key),
+              leading: Icon(MdiIcons.key),
               title: const Text('SSH Keys'),
               onTap: () {
                 BeamerCond.of(context, SshKeysLocation());

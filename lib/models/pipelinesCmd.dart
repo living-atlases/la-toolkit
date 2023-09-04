@@ -74,23 +74,24 @@ class PipelinesCmd extends CommonCmd {
       stepsDesc += '';
     } else if (stepsLength <= 7) {
       steps.toList().asMap().forEach((i, value) => stepsDesc += i == 0
-          ? ' (' + value
+          ? ' ($value'
           : i < stepsLength - 1
-              ? ', ' + value
-              : ' and ' + value);
+              ? ', $value'
+              : ' and $value');
       String plural = stepsLength > 1 ? 's' : '';
-      stepsDesc += '' + (stepsLength >= 1 && !allSteps ? ' step$plural)' : '');
+      stepsDesc += stepsLength >= 1 && !allSteps ? ' step$plural)' : '';
     } else {
       stepsDesc += ' (some steps)';
     }
 
     String result = StringUtils.capitalize(stepsDesc);
-    result = dryRun ? 'Dry run of ' + result : result;
+    result = dryRun ? 'Dry run of $result' : result;
     return result;
   }
 
   factory PipelinesCmd.fromJson(Map<String, dynamic> json) =>
       _$PipelinesCmdFromJson(json);
+
   Map<String, dynamic> toJson() => _$PipelinesCmdToJson(this);
 
   String getTitle() => "Pipelines Data Processing Results";

@@ -29,7 +29,7 @@ class LogList extends StatefulWidget {
       : super(key: key);
 
   @override
-  _LogListState createState() => _LogListState();
+  State<LogList> createState() => _LogListState();
 }
 
 class _LogListState extends State<LogList> {
@@ -149,6 +149,7 @@ class LogItem extends StatelessWidget {
       required this.onUpdateDesc,
       Key? key})
       : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     String desc = log.getDesc();

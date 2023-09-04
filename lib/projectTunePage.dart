@@ -39,7 +39,7 @@ class LAProjectTunePage extends StatefulWidget {
   static const routeName = "tune";
 
   @override
-  _LAProjectTunePageState createState() => _LAProjectTunePageState();
+  State<LAProjectTunePage> createState() => _LAProjectTunePageState();
 }
 
 class _LAProjectTunePageState extends State<LAProjectTunePage> {
@@ -208,8 +208,8 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                           onPressed: () => vm.onCancel(project)),
                       IconButton(
                         icon: const Tooltip(
-                            child: Icon(Icons.save, color: Colors.white),
-                            message: "Save the current LA project variables"),
+                            message: "Save the current LA project variables",
+                            child: Icon(Icons.save, color: Colors.white)),
                         onPressed: () {
                           vm.onUpdateProject(project);
                         },
@@ -220,7 +220,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                   color: Colors.black,
                   activeColor: Colors.black,
                   style: TabStyle.react,
-                  items: const [
+                  items: [
                     TabItem(icon: MdiIcons.formatListGroup, title: "Variables"),
                     TabItem(
                         icon: MdiIcons.autorenew, title: "Software versions"),
@@ -444,29 +444,27 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
   }
 
   String _initialExtraAnsibleVariables(LAProject currentProject) {
-    return '''
-${_doTitle(" Other variables common to all services ")}
-[${currentProject.isHub ? 'hub-' + currentProject.dirName! : 'all'}:vars]
+    return '''${_doTitle(" Other variables common to all services ")}
+[${currentProject.isHub ? 'hub-${currentProject.dirName!}' : 'all'}:vars]
 
 # End of common variables
 ${_doLine()}
                                         
                                                                                                                                                                       
-''' +
-        currentProject.services.map((service) {
-          String name = service.nameInt;
-          LAServiceDesc serviceDesc = LAServiceDesc.get(name);
-          final String title =
-              " ${serviceDesc.name} ${serviceDesc.name != serviceDesc.nameInt ? '(' + serviceDesc.nameInt + ') ' : ''}extra variables ";
-          return '''
+${currentProject.services.map((service) {
+      String name = service.nameInt;
+      LAServiceDesc serviceDesc = LAServiceDesc.get(name);
+      final String title =
+          " ${serviceDesc.name} ${serviceDesc.name != serviceDesc.nameInt ? '(${serviceDesc.nameInt}) ' : ''}extra variables ";
+      return '''
 
 ${_doTitle(title)} 
-${service.use ? '' : '# '}[${serviceDesc.group}${currentProject.isHub ? '-' + currentProject.dirName! : ''}:vars]${service.use ? '' : ' #uncomment this line if you enable this service to tune it'} 
+${service.use ? '' : '# '}[${serviceDesc.group}${currentProject.isHub ? '-${currentProject.dirName!}' : ''}:vars]${service.use ? '' : ' #uncomment this line if you enable this service to tune it'} 
 
 # End of ${StringUtils.capitalize(serviceDesc.name)} variables
 ${_doLine()}
 ''';
-        }).join("\n\n");
+    }).join("\n\n")}''';
   }
 
   String _doTitle(String title) =>

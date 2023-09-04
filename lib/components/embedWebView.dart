@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/utils/utils.dart';
-// https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
+import 'package:la_toolkit/utils/utils.dart'; // https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
 // ignore: implementation_imports
 import 'package:pointer_interceptor/src/shim/dart_ui.dart' as ui;
 import 'package:universal_html/html.dart';
@@ -14,6 +13,7 @@ class EmbedWebView extends StatefulWidget {
   final String src;
   final double? height, width;
   final bool notify;
+
   const EmbedWebView(
       {Key? key,
       required this.src,
@@ -35,7 +35,7 @@ class EmbedWebViewState extends State<EmbedWebView>
   @override
   void initState() {
     super.initState();
-    final IFrameElement _iframeElement = IFrameElement()
+    final IFrameElement iframeElement = IFrameElement()
       ..height = '100%'
       ..width = '100%'
       ..src = widget.src
@@ -46,7 +46,7 @@ class EmbedWebViewState extends State<EmbedWebView>
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
       widget.src,
-      (int viewId) => _iframeElement,
+      (int viewId) => iframeElement,
     );
     if (!AppUtils.isDemo() && widget.notify) {
       final uri = Uri.parse(widget.src.replaceAll("http", "ws"));
@@ -72,6 +72,7 @@ class EmbedWebViewState extends State<EmbedWebView>
 
   @override
   bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     if (!AppUtils.isDemo() && widget.notify) {

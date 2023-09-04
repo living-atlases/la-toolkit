@@ -24,13 +24,16 @@ class HubButton extends StatelessWidget {
     return Container(
         margin: const EdgeInsets.only(right: 10.0),
         child: Tooltip(
+            message: tooltip,
             child: TextButton.icon(
                 label: Text(text),
                 icon: Icon(
                   icon,
                 ),
                 style: TextButton.styleFrom(
-                    foregroundColor: isActionBtn ? Colors.white : LAColorTheme.laPalette, backgroundColor: isActionBtn
+                    foregroundColor:
+                        isActionBtn ? Colors.white : LAColorTheme.laPalette,
+                    backgroundColor: isActionBtn
                         ? LAColorTheme.laPalette
                         : Colors.grey[200]!,
                     padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
@@ -40,7 +43,6 @@ class HubButton extends StatelessWidget {
                           width: isActionBtn ? 0 : 1),
                       borderRadius: BorderRadius.circular(10.0),
                     )),
-                onPressed: () => onPressed()),
-            message: tooltip));
+                onPressed: () => onPressed())));
   }
 }

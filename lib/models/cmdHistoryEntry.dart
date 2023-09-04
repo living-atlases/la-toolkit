@@ -63,15 +63,15 @@ class CmdHistoryEntry implements IsJsonSerializable {
   String invDir;
   String? cwd;
   Cmd cmd;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   DateTime date;
   CmdResult result;
   int createdAt;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   DeployCmd? parsedDeployCmd;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   BrandingDeployCmd? parsedBrandingDeployCmd;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   PipelinesCmd? pipelinesCmd;
   double? duration;
 
@@ -116,6 +116,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
 
   factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryEntryFromJson(json);
+
   @override
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
 

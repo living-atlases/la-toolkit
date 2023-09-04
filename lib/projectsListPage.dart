@@ -252,6 +252,7 @@ class ProjectCard extends StatelessWidget {
           FractionalTranslation(
             translation: const Offset(0.0, -0.4),
             child: Align(
+              alignment: const FractionalOffset(0.5, 0.0),
               child: CircleAvatar(
                 radius: 25.0,
                 child: project.getVariableValue("favicon_url") != null &&
@@ -265,7 +266,6 @@ class ProjectCard extends StatelessWidget {
                     ? project.shortName.substring(0, 1)
                     : project.shortName),
               ),
-              alignment: const FractionalOffset(0.5, 0.0),
             ),
           ),
         ],

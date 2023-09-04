@@ -34,7 +34,7 @@ class ServerServicesEditCard extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ServerServicesEditCardState createState() => _ServerServicesEditCardState();
+  State<ServerServicesEditCard> createState() => _ServerServicesEditCardState();
 }
 
 class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
@@ -105,9 +105,9 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                   Container(
                       width: 300,
                       child: Wrap(
-                        children: chips,
                         spacing: 3.0, // spacing between adjacent chips
                         runSpacing: 5.0,
+                        children: chips,
                       ))
                 ],
               ),
@@ -120,6 +120,7 @@ class _ServiceChip extends StatelessWidget {
   final LAServiceDesc service;
   final VoidCallback onSelected;
   final VoidCallback onDeleted;
+
   const _ServiceChip(
       {required this.service,
       required this.isSelected,
@@ -141,7 +142,7 @@ class _ServiceChip extends StatelessWidget {
       selected: isSelected,
       selectedColor: LAColorTheme.laPalette,
       onSelected: (bool selected) => selected ? onSelected() : onDeleted(),
-      tooltip: service.alias != null ? 'aka ' + service.alias! : '',
+      tooltip: service.alias != null ? 'aka ${service.alias!}' : '',
       // Cannot use with onSelected
       // onPressed: () => isSelected ? onSelected() : onDeleted(),
       // deleteButtonTooltipMessage: "Don't use this service in this server",

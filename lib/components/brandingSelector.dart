@@ -28,7 +28,7 @@ class BrandingTile extends StatefulWidget {
       : super(key: key);
 
   @override
-  _BrandingTileState createState() => _BrandingTileState();
+  State<BrandingTile> createState() => _BrandingTileState();
 }
 
 class _BrandingTileState extends State<BrandingTile> {
@@ -109,7 +109,7 @@ class BrandingSelector extends StatefulWidget {
       : super(key: key);
 
   @override
-  _BrandingSelectorState createState() => _BrandingSelectorState();
+  State<BrandingSelector> createState() => _BrandingSelectorState();
 }
 
 class _BrandingSelectorState extends State<BrandingSelector> {

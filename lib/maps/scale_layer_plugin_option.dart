@@ -4,48 +4,24 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 
-import 'scalebar_utils.dart' as util;
+import './scalebar_utils.dart' as util;
 
-class ScaleLayerPluginOption extends LayerOptions {
+class ScaleLayerPluginOption {
   TextStyle? textStyle;
   Color lineColor;
   double lineWidth;
   final EdgeInsets? padding;
 
   ScaleLayerPluginOption({
-    required Key key,
     this.textStyle,
     this.lineColor = Colors.white,
     this.lineWidth = 2,
     this.padding,
-    required rebuild,
-  }) : super(key: key, rebuild: rebuild);
+  });
 }
 
-class ScaleLayerPlugin implements MapPlugin {
-  @override
-  Widget createLayer(
-      LayerOptions options,
-      MapState mapState,
-      // ignore: prefer_void_to_null
-      Stream<Null> stream) {
-    if (options is ScaleLayerPluginOption) {
-      return ScaleLayer(options, mapState, stream);
-    }
-    throw Exception('Unknown options type for ScaleLayerPlugin: $options');
-  }
-
-  @override
-  bool supportsLayer(LayerOptions options) {
-    return options is ScaleLayerPluginOption;
-  }
-}
-
-class ScaleLayer extends StatelessWidget {
-  final ScaleLayerPluginOption scaleLayerOpts;
-  final MapState map;
-  // ignore: prefer_void_to_null
-  final Stream<Null> stream;
+class ScaleLayerWidget extends StatelessWidget {
+  final ScaleLayerPluginOption options;
   final scale = [
     25000000,
     15000000,
@@ -72,32 +48,36 @@ class ScaleLayer extends StatelessWidget {
     5
   ];
 
-  ScaleLayer(this.scaleLayerOpts, this.map, this.stream)
-      : super(key: scaleLayerOpts.key);
+  ScaleLayerWidget({super.key, required this.options});
 
   @override
   Widget build(BuildContext context) {
-    var zoom = map.zoom;
-    var distance = scale[max(0, min(20, zoom.round() + 2))].toDouble();
-    var center = map.center;
-    var start = map.project(center);
-    var targetPoint =
+    final map = FlutterMapState.of(context);
+    final zoom = map.zoom;
+    final distance = scale[max(0, min(20, zoom.round() + 2))].toDouble();
+    final center = map.center;
+    final start = map.project(center);
+    final targetPoint =
         util.calculateEndingGlobalCoordinates(center, 90, distance);
-    var end = map.project(targetPoint);
-    var displayDistance = distance > 999
+    final end = map.project(targetPoint);
+    final displayDistance = distance > 999
         ? '${(distance / 1000).toStringAsFixed(0)} km'
         : '${distance.toStringAsFixed(0)} m';
-    double width = (end.x - (start.x as double));
+    final width = (end.x - (start.x));
 
-    return CustomPaint(
-      painter: ScalePainter(
-        width,
-        displayDistance,
-        lineColor: scaleLayerOpts.lineColor,
-        lineWidth: scaleLayerOpts.lineWidth,
-        padding: scaleLayerOpts.padding,
-        textStyle: scaleLayerOpts.textStyle,
-      ),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints bc) {
+        return CustomPaint(
+          painter: ScalePainter(
+            width,
+            displayDistance,
+            lineColor: options.lineColor,
+            lineWidth: options.lineWidth,
+            padding: options.padding,
+            textStyle: options.textStyle,
+          ),
+        );
+      },
     );
   }
 }
@@ -105,6 +85,7 @@ class ScaleLayer extends StatelessWidget {
 class ScalePainter extends CustomPainter {
   ScalePainter(this.width, this.text,
       {this.padding, this.textStyle, this.lineWidth, this.lineColor});
+
   final double width;
   final EdgeInsets? padding;
   final String text;
@@ -119,25 +100,24 @@ class ScalePainter extends CustomPainter {
       ..strokeCap = StrokeCap.square
       ..strokeWidth = lineWidth!;
 
-    var sizeForStartEnd = 4;
-    var paddingLeft = padding == null ? 0 : padding!.left + sizeForStartEnd / 2;
-    var paddingTop = padding == null ? 0 : padding!.top;
+    const sizeForStartEnd = 4;
+    final paddingLeft =
+        padding == null ? 0.0 : padding!.left + sizeForStartEnd / 2;
+    var paddingTop = padding == null ? 0.0 : padding!.top;
 
-    var textSpan = TextSpan(style: textStyle, text: text);
-    var textPainter =
+    final textSpan = TextSpan(style: textStyle, text: text);
+    final textPainter =
         TextPainter(text: textSpan, textDirection: TextDirection.ltr)..layout();
-    textPainter.paint(
-        canvas,
-        Offset(width / 2 - textPainter.width / 2 + paddingLeft,
-            paddingTop as double));
+    textPainter.paint(canvas,
+        Offset(width / 2 - textPainter.width / 2 + paddingLeft, paddingTop));
     paddingTop += textPainter.height;
-    var p1 = Offset(paddingLeft as double, sizeForStartEnd + paddingTop);
-    var p2 = Offset(paddingLeft + width, sizeForStartEnd + paddingTop);
+    final p1 = Offset(paddingLeft, sizeForStartEnd + paddingTop);
+    final p2 = Offset(paddingLeft + width, sizeForStartEnd + paddingTop);
     // draw start line
     canvas.drawLine(Offset(paddingLeft, paddingTop),
         Offset(paddingLeft, sizeForStartEnd + paddingTop), paint);
     // draw middle line
-    var middleX = width / 2 + paddingLeft - lineWidth! / 2;
+    final middleX = width / 2 + paddingLeft - lineWidth! / 2;
     canvas.drawLine(Offset(middleX, paddingTop + sizeForStartEnd / 2),
         Offset(middleX, sizeForStartEnd + paddingTop), paint);
     // draw end line

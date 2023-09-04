@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/maps/scale_layer_plugin_option.dart';
 import 'package:la_toolkit/maps/zoombuttons_plugin_option.dart';
@@ -9,13 +10,12 @@ import 'package:la_toolkit/redux/actions.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../laTheme.dart';
-import 'dragmarker.dart';
 
 class MapAreaSelector extends StatefulWidget {
   const MapAreaSelector({Key? key}) : super(key: key);
 
   @override
-  _MapAreaSelectorState createState() => _MapAreaSelectorState();
+  State<MapAreaSelector> createState() => _MapAreaSelectorState();
 }
 
 class _MapAreaSelectorState extends State<MapAreaSelector> {
@@ -75,11 +75,11 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                     zoom: 3.0, */
                     /* boundsOptions:
                         FitBoundsOptions(padding: EdgeInsets.all(20)), */
-                    plugins: [
+                    /*  plugins: [
                       ZoomButtonsPlugin(),
                       ScaleLayerPlugin(),
                       DragMarkerPlugin(),
-                    ],
+                    ],*/
                     onTap: (tapPosition, latLng) {
                       if (firstPoint) {
                         area = [latLng, null, null, null, latLng];
@@ -92,14 +92,14 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                     },
                     maxZoom: _maxZoom,
                     minZoom: _minZoom),
-                layers: [
-                  TileLayerOptions(
+                children: [
+                  TileLayer(
                       urlTemplate:
                           'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: ['a', 'b', 'c']),
+                      subdomains: const ['a', 'b', 'c']),
                   if (area.where((point) => point != null).length != 5)
-                    MarkerLayerOptions(markers: markers),
-                  PolylineLayerOptions(
+                    MarkerLayer(markers: markers),
+                  PolylineLayer(
                     polylines: [
                       if (projectArea[0] != null && projectArea[2] != null)
                         Polyline(
@@ -109,7 +109,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                             color: LAColorTheme.laPalette),
                     ],
                   ),
-                  PolylineLayerOptions(polylines: [
+                  PolylineLayer(polylines: [
                     if (area[0] != null && area[2] != null)
                       Polyline(
                           points: areaNN,
@@ -117,26 +117,25 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                           isDotted: true,
                           color: LAColorTheme.laPalette)
                   ]),
-                  ZoomButtonsPluginOption(
+                  FlutterMapZoomButtons(
                       key: GlobalKey(),
-                      minZoom: _minZoom.toInt(),
-                      maxZoom: _maxZoom.toInt(),
+                      minZoom: _minZoom,
+                      maxZoom: _maxZoom,
                       mini: true,
                       padding: 10,
-                      rebuild: null,
+                      // rebuild: null,
                       //   rebuild: () {}, // new in nullsafety ??
                       alignment: Alignment.bottomRight),
-                  ScaleLayerPluginOption(
-                    key: GlobalKey(),
-                    lineColor: Colors.blue,
-                    lineWidth: 2,
-                    rebuild: null,
-                    //   rebuild: () {}, // new in nullsafety ??
-                    textStyle:
-                        const TextStyle(color: Colors.blue, fontSize: 12),
-                    padding: const EdgeInsets.all(10),
-                  ),
-                  DragMarkerPluginOptions(markers: [
+                  ScaleLayerWidget(
+                      key: GlobalKey(),
+                      options: ScaleLayerPluginOption(
+                        lineColor: Colors.blue,
+                        lineWidth: 2,
+                        textStyle:
+                            const TextStyle(color: Colors.blue, fontSize: 12),
+                        padding: const EdgeInsets.all(10),
+                      )),
+                  DragMarkers(markers: [
                     if (projectArea[0] != null && projectArea[2] != null)
                       _createDragMarker(projectArea[0]!, vm),
                     if (projectArea[0] != null && projectArea[2] != null)
@@ -161,12 +160,17 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
   DragMarker _createDragMarker(
       LatLng initialPoint, _MapAreaSelectorViewModel vm) {
     return DragMarker(
+      key: GlobalKey<DragMarkerWidgetState>(),
       point: LatLng(initialPoint.latitude, initialPoint.longitude),
-      width: 80.0,
-      height: 80.0,
+      size: const Size(80.0, 80.0),
       offset: const Offset(0.0, 0.0),
-      builder: (ctx) =>
-          const Icon(Icons.circle, size: 20, color: LAColorTheme.laPalette),
+      builder: (_, __, isDragging) {
+        if (isDragging) {
+          return const Icon(Icons.close, size: 45, color: Colors.orange);
+        }
+        return const Icon(Icons.circle,
+            size: 20, color: LAColorTheme.laPalette);
+      },
       onDragStart: (details, point) => print("Start point $point"),
       onDragEnd: (details, endPoint) {
         print("End point $endPoint");
@@ -188,12 +192,9 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
       onLongPress: (point) {
         print("on long press");
       },
-      feedbackBuilder: (ctx) =>
-          const Icon(Icons.close, size: 45, color: Colors.orange),
-      feedbackOffset: const Offset(0.0, 0.0),
-      updateMapNearEdge: false,
-      nearEdgeRatio: 1.0,
-      nearEdgeSpeed: 1.0,
+      scrollMapNearEdge: false,
+      scrollNearEdgeRatio: 1.0,
+      scrollNearEdgeSpeed: 1.0,
     );
   }
 
@@ -208,9 +209,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
   }
 
   _fit() {
-    var bounds = LatLngBounds();
-    bounds.extend(area[0]!);
-    bounds.extend(area[1]!);
+    var bounds = LatLngBounds(area[0]!, area[1]!);
     bounds.extend(area[2]!);
     bounds.extend(area[3]!);
     mapController.fitBounds(

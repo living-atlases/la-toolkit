@@ -34,11 +34,12 @@ class DeployPage extends StatefulWidget {
   const DeployPage({Key? key}) : super(key: key);
 
   @override
-  _DeployPageState createState() => _DeployPageState();
+  State<DeployPage> createState() => _DeployPageState();
 }
 
 class _DeployPageState extends State<DeployPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   // TODO do something with --skip-tags nameindex
   final debouncer = Debouncer(milliseconds: 300);
   late List<String> _servicesToDeploy = [];
@@ -103,8 +104,8 @@ class _DeployPageState extends State<DeployPage> {
                       TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                       IconButton(
                           icon: const Tooltip(
-                              child: Icon(Icons.close, color: Colors.white),
-                              message: "Cancel the deploy"),
+                              message: "Cancel the deploy",
+                              child: Icon(Icons.close, color: Colors.white)),
                           onPressed: () => vm.onCancel(vm.project)),
                     ]),
                 body: ScrollPanel(
@@ -241,7 +242,8 @@ class _DeployPageState extends State<DeployPage> {
                                           .map((m) => AlertCard(
                                               message: m.text,
                                               color: Colors.grey.shade100,
-                                              action: () => {launchUrl(Uri.parse(m.url))},
+                                              action: () =>
+                                                  {launchUrl(Uri.parse(m.url))},
                                               actionText: "READ MORE",
                                               icon: Icons.info_outline))
                                           .toList()),

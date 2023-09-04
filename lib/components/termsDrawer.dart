@@ -20,7 +20,7 @@ class TermsDrawer extends StatelessWidget {
   static Widget appBarIcon(LAProject project, GlobalKey<ScaffoldState> key) {
     return IconButton(
       color: Colors.white,
-      icon: const Icon(MdiIcons.console),
+      icon: Icon(MdiIcons.console),
       tooltip: "${project.shortName} terminals",
       onPressed: () => key.currentState?.openEndDrawer(),
     );
@@ -45,6 +45,9 @@ class TermsDrawer extends StatelessWidget {
                 context.beamBack();
               },
               child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: LAColorTheme.laPalette.shade300,
+                ),
                 child: Column(
                   children: <Widget>[
                     vm.state.currentProject.getVariableValue("favicon_url") !=
@@ -70,9 +73,6 @@ class TermsDrawer extends StatelessWidget {
                         )),
                   ],
                 ),
-                decoration: BoxDecoration(
-                  color: LAColorTheme.laPalette.shade300,
-                ),
               ),
             ),
             // The docker console
@@ -81,7 +81,7 @@ class TermsDrawer extends StatelessWidget {
               Tooltip(
                   message: "Open a terminal in ${server.name}",
                   child: ListTile(
-                      leading: const Icon(MdiIcons.console),
+                      leading: Icon(MdiIcons.console),
                       title: Text(server.name),
                       onTap: () =>
                           vm.openTerm(vm.state.currentProject, server))),

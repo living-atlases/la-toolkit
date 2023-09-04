@@ -7,7 +7,7 @@ part 'sshKey.g.dart';
 @CopyWith()
 class SshKey {
   String name;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   String privateKey;
   String publicKey;
   String? type;
@@ -29,6 +29,7 @@ class SshKey {
       this.missing = false});
 
   factory SshKey.fromJson(Map<String, dynamic> json) => _$SshKeyFromJson(json);
+
   Map<String, dynamic> toJson() => _$SshKeyToJson(this);
 
   @override

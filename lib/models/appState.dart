@@ -43,7 +43,7 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class AppState {
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final bool failedLoad;
   final bool firstUsage;
   final LAProject currentProject;
@@ -55,17 +55,17 @@ class AppState {
   final List<String> generatorReleases;
   final Map<String, LAReleases> laReleases;
   final List<SshKey> sshKeys;
-  @JsonKey(ignore: true) //, nullable: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final List<AppSnackBarMessage> appSnackBarMessages;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final CommonCmd repeatCmd;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final PackageInfo? pkgInfo;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final String? backendVersion;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final bool loading;
-  @JsonKey(ignore: true)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final bool depsLoading;
   final DateTime? lastSwCheck;
 
@@ -75,7 +75,7 @@ class AppState {
       this.firstUsage = true,
       LAProject? currentProject,
       this.currentStep = 0,
-        this.currentTuneTab = 0,
+      this.currentTuneTab = 0,
       LAProjectViewStatus? status,
       List<String>? alaInstallReleases,
       List<String>? generatorReleases,
@@ -86,7 +86,7 @@ class AppState {
       this.backendVersion,
       this.lastSwCheck,
       bool? loading,
-        bool? depsLoading,
+      bool? depsLoading,
       List<SshKey>? sshKeys})
       : projects = projects ?? [],
         sshKeys = sshKeys ?? [],
@@ -166,11 +166,8 @@ class AppState {
     }
   }
 
-
   String printShort() {
-    return '''=== AppState ${loading ? '(loading)' : ''} ${depsLoading
-        ? '(depsLoading)'
-        : ''} ===''';
+    return '''=== AppState ${loading ? '(loading)' : ''} ${depsLoading ? '(depsLoading)' : ''} ===''';
   }
 
   @override

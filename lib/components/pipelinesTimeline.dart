@@ -26,6 +26,7 @@ class PipelinesTimeline extends StatefulWidget {
   final LAProject project;
   final PipelinesCmd cmd;
   final Function(PipelinesCmd) onChange;
+
   const PipelinesTimeline(
       {required this.project,
       required this.cmd,
@@ -34,7 +35,7 @@ class PipelinesTimeline extends StatefulWidget {
       : super(key: key);
 
   @override
-  _PipelinesTimelineState createState() => _PipelinesTimelineState();
+  State<PipelinesTimeline> createState() => _PipelinesTimelineState();
 }
 
 class _PipelinesTimelineState extends State<PipelinesTimeline> {
@@ -241,6 +242,7 @@ class _StepWidget extends StatelessWidget {
   final bool lastBuilt;
   final int index;
   final VoidCallback onPressed;
+
   const _StepWidget(
       {Key? key,
       required this.cmd,
@@ -275,6 +277,7 @@ class _StepWidget extends StatelessWidget {
       iconData: Icons.check,
     ),
   );
+
   List<T> intersection<T>(Iterable<Iterable<T>> iterables) {
     return iterables
         .map((e) => e.toSet())
@@ -324,6 +327,7 @@ class _StepWidget extends StatelessWidget {
 class _StepDescription extends StatelessWidget {
   final String desc;
   final bool visible;
+
   const _StepDescription({Key? key, required this.desc, required this.visible})
       : super(key: key);
 
@@ -347,6 +351,7 @@ class _DrInput extends StatelessWidget {
   final String? initialValue;
   final bool allDrs;
   final Function(String) onChanged;
+
   const _DrInput(this.initialValue, this.allDrs, this.onChanged);
 
   @override
@@ -369,7 +374,9 @@ class _DrInput extends StatelessWidget {
 class _DoAllDrsBtn extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isPressed;
+
   const _DoAllDrsBtn(this.isPressed, this.onPressed);
+
   @override
   Widget build(BuildContext context) {
     return ButtonTheme(
@@ -399,6 +406,7 @@ class GenericActionChip extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isPressed;
   final String text;
+
   @override
   Widget build(BuildContext context) {
     return ActionChip(

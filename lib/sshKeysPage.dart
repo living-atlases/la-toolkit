@@ -48,17 +48,20 @@ class SshKeyPage extends StatelessWidget {
                 actions: [
                   TextButton.icon(
                       icon: const Icon(Icons.add_circle_outline),
-                      style: TextButton.styleFrom(foregroundColor: Colors.white),
+                      style:
+                          TextButton.styleFrom(foregroundColor: Colors.white),
                       onPressed: () => _generateKeyDialog(context, vm),
                       label: const Text("GENERATE A NEW KEY")),
                   TextButton.icon(
                       icon: const Icon(Icons.upload_rounded),
-                      style: TextButton.styleFrom(foregroundColor: Colors.white),
+                      style:
+                          TextButton.styleFrom(foregroundColor: Colors.white),
                       onPressed: () => _importKeysDialog(context, vm),
                       label: const Text("UPLOAD KEYS")),
                   TextButton.icon(
-                      icon: const Icon(MdiIcons.refresh),
-                      style: TextButton.styleFrom(foregroundColor: Colors.white),
+                      icon: Icon(MdiIcons.refresh),
+                      style:
+                          TextButton.styleFrom(foregroundColor: Colors.white),
                       onPressed: () {
                         context.loaderOverlay.show();
                         vm.onScanKeys();
@@ -93,7 +96,7 @@ class SshKeyPage extends StatelessWidget {
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
-        image: const Icon(MdiIcons.key, size: 60, color: LAColorTheme.inactive),
+        image: Icon(MdiIcons.key, size: 60, color: LAColorTheme.inactive),
         title: "SSH Key Generation",
         style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
@@ -108,8 +111,8 @@ class SshKeyPage extends StatelessWidget {
                 error: "This is not a valid file name",
                 keyboardType: TextInputType.multiline,
                 // filled: true,
-                minLines:
-                    1, // any number you need (It works as the rows for the textarea)
+                minLines: 1,
+                // any number you need (It works as the rows for the textarea)
                 maxLines: null,
                 hint: "Something like: gbif-wakanda-key-2020",
                 onChanged: (value) {
@@ -144,7 +147,7 @@ class SshKeyPage extends StatelessWidget {
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
-        image: const Icon(MdiIcons.key, size: 60, color: LAColorTheme.inactive),
+        image: Icon(MdiIcons.key, size: 60, color: LAColorTheme.inactive),
         title: "SSH Key Import",
         style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
@@ -160,8 +163,8 @@ class SshKeyPage extends StatelessWidget {
                 error: "This is not a valid file name",
                 keyboardType: TextInputType.multiline,
                 // filled: true,
-                minLines:
-                    1, // any number you need (It works as the rows for the textarea)
+                minLines: 1,
+                // any number you need (It works as the rows for the textarea)
                 maxLines: null,
                 hint: "Something like: gbif-wakanda-key-2020",
                 onChanged: (value) {
@@ -177,8 +180,8 @@ class SshKeyPage extends StatelessWidget {
                 error: "This is not a valid ssh public key",
                 keyboardType: TextInputType.multiline,
                 // filled: true,
-                minLines:
-                    3, // any number you need (It works as the rows for the textarea)
+                minLines: 3,
+                // any number you need (It works as the rows for the textarea)
                 maxLines: null,
                 hint:
                     "Something like: ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTGK9(...)",
@@ -195,8 +198,8 @@ class SshKeyPage extends StatelessWidget {
                 error: "This is not a valid ssh private key",
                 keyboardType: TextInputType.multiline,
                 // filled: true,
-                minLines:
-                    3, // any number you need (It works as the rows for the textarea)
+                minLines: 3,
+                // any number you need (It works as the rows for the textarea)
                 maxLines: null,
                 onChanged: (value) {
                   privateKey = value;
@@ -227,6 +230,7 @@ class SshKeyPage extends StatelessWidget {
 
 class SshKeysTable extends StatelessWidget {
   final _SshKeyViewModel vm;
+
   const SshKeysTable({Key? key, required this.vm}) : super(key: key);
 
   @override
@@ -269,11 +273,11 @@ class SshKeysTable extends StatelessWidget {
                   DataCell(Padding(
                       padding: const EdgeInsets.only(left: 30),
                       child: sshKey.encrypted
-                          ? const Tooltip(
+                          ? Tooltip(
                               message:
                                   "SSH Key password encrypted, no supported right now",
                               child: Icon(MdiIcons.lockOutline))
-                          : const Tooltip(
+                          : Tooltip(
                               message: "SSH Key without password",
                               child: Icon(MdiIcons.lockOpenVariantOutline,
                                   color: Colors.grey)))),

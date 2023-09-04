@@ -13,7 +13,7 @@ class LogSearchInput extends StatefulWidget {
   final Duration? debounceTime;
 
   @override
-  _LogSearchInputState createState() => _LogSearchInputState();
+  State<LogSearchInput> createState() => _LogSearchInputState();
 }
 
 class _LogSearchInputState extends State<LogSearchInput> {

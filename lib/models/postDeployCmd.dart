@@ -41,6 +41,7 @@ class PostDeployCmd extends DeployCmd {
 
   factory PostDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PostDeployCmdFromJson(json);
+
   @override
   Map<String, dynamic> toJson() => _$PostDeployCmdToJson(this);
 
@@ -50,7 +51,7 @@ class PostDeployCmd extends DeployCmd {
     if (configurePostfix) tasks.add('configure postfix');
     String result =
         'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
-    return dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);
+    return dryRun ? 'Dry run $result' : StringUtils.capitalize(result);
   }
 
   @override

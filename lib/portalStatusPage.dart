@@ -29,7 +29,7 @@ class PortalStatusPage extends StatefulWidget {
   const PortalStatusPage({Key? key}) : super(key: key);
 
   @override
-  _PortalStatusPageState createState() => _PortalStatusPageState();
+  State<PortalStatusPage> createState() => _PortalStatusPageState();
 }
 
 class _PortalStatusPageState extends State<PortalStatusPage> {
@@ -90,8 +90,8 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                     actions: [
                       IconButton(
                         icon: const Tooltip(
-                            child: Icon(Icons.pause, color: Colors.white),
-                            message: "Pause to check services"),
+                            message: "Pause to check services",
+                            child: Icon(Icons.pause, color: Colors.white)),
                         onPressed: () {
                           //
                         },
@@ -99,10 +99,10 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                       Container(
                           margin: const EdgeInsets.only(right: 10.0),
                           child: IconButton(
-                            icon: const Tooltip(
+                            icon: Tooltip(
+                                message: "Recheck the status of the portal",
                                 child:
-                                    Icon(MdiIcons.reload, color: Colors.white),
-                                message: "Recheck the status of the portal"),
+                                    Icon(MdiIcons.reload, color: Colors.white)),
                             onPressed: () {
                               vm.checkServices(
                                   vm.serverServicesToMonitor.item2);
@@ -119,12 +119,13 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                   color: Colors.black,
                   activeColor: Colors.black,
                   style: TabStyle.react,
-                  items: const [
+                  items: [
                     TabItem(icon: MdiIcons.server, title: "Servers"),
-                    TabItem(icon: Icons.fact_check, title: "Services"),
-                    TabItem(icon: Icons.receipt_long, title: "Details"),
+                    const TabItem(icon: Icons.fact_check, title: "Services"),
+                    const TabItem(icon: Icons.receipt_long, title: "Details"),
                   ],
-                  initialActiveIndex: 0, //optional, default as 0
+                  initialActiveIndex: 0,
+                  //optional, default as 0
                   onTap: (int i) => setState(() => _tab = i),
                 ),
                 body: AppSnackBar(

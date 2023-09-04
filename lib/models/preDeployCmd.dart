@@ -46,6 +46,7 @@ class PreDeployCmd extends DeployCmd {
 
   factory PreDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PreDeployCmdFromJson(json);
+
   @override
   Map<String, dynamic> toJson() => _$PreDeployCmdToJson(this);
 
@@ -73,7 +74,7 @@ class PreDeployCmd extends DeployCmd {
     if (rootBecome) tasks.add('as root');
     String result =
         'pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
-    return dryRun ? 'Dry run ' + result : StringUtils.capitalize(result);
+    return dryRun ? 'Dry run $result' : StringUtils.capitalize(result);
   }
 
   @override

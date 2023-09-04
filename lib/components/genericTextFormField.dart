@@ -59,7 +59,7 @@ class GenericTextFormField extends StatefulWidget {
       : super(key: key);
 
   @override
-  _GenericTextFormFieldState createState() => _GenericTextFormFieldState();
+  State<GenericTextFormField> createState() => _GenericTextFormFieldState();
 }
 
 class _GenericTextFormFieldState extends State<GenericTextFormField>
@@ -107,7 +107,8 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
           height: 1.5, // sets the distance between label and input
         ),
         prefixText: widget.prefixText,
-        contentPadding: widget.contentPadding, // ?? EdgeInsets.only(top: 2),
+        contentPadding: widget.contentPadding,
+        // ?? EdgeInsets.only(top: 2),
         filled: widget.fillColor != null,
         suffixIcon: widget.wikipage == null
             ? widget.obscureText
