@@ -6,279 +6,411 @@ part of 'laProject.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAProject.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfLAProject.copyWith.fieldName(...)`
-class _LAProjectCWProxy {
-  final LAProject _value;
+abstract class _$LAProjectCWProxy {
+  LAProject id(String? id);
 
-  const _LAProjectCWProxy(this._value);
+  LAProject longName(String longName);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `LAProject(...).copyWithNull(...)` to set certain fields to `null`. Prefer `LAProject(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  LAProject shortName(String shortName);
+
+  LAProject domain(String? domain);
+
+  LAProject dirName(String? dirName);
+
+  LAProject useSSL(bool useSSL);
+
+  LAProject isCreated(bool isCreated);
+
+  LAProject isHub(bool isHub);
+
+  LAProject fstDeployed(bool? fstDeployed);
+
+  LAProject additionalVariables(String additionalVariables);
+
+  LAProject status(LAProjectStatus status);
+
+  LAProject alaInstallRelease(String? alaInstallRelease);
+
+  LAProject generatorRelease(String? generatorRelease);
+
+  LAProject mapBoundsFstPoint(LALatLng? mapBoundsFstPoint);
+
+  LAProject mapBoundsSndPoint(LALatLng? mapBoundsSndPoint);
+
+  LAProject theme(String theme);
+
+  LAProject mapZoom(double? mapZoom);
+
+  LAProject lastCmdEntry(CmdHistoryEntry? lastCmdEntry);
+
+  LAProject lastCmdDetails(CmdHistoryDetails? lastCmdDetails);
+
+  LAProject advancedEdit(bool? advancedEdit);
+
+  LAProject advancedTune(bool? advancedTune);
+
+  LAProject variables(List<LAVariable>? variables);
+
+  LAProject cmdHistoryEntries(List<CmdHistoryEntry>? cmdHistoryEntries);
+
+  LAProject servers(List<LAServer>? servers);
+
+  LAProject services(List<LAService>? services);
+
+  LAProject serviceDeploys(List<LAServiceDeploy>? serviceDeploys);
+
+  LAProject parent(LAProject? parent);
+
+  LAProject hubs(List<LAProject>? hubs);
+
+  LAProject createdAt(int? createdAt);
+
+  LAProject serverServices(Map<String, List<String>>? serverServices);
+
+  LAProject checkResults(Map<String, dynamic>? checkResults);
+
+  LAProject runningVersions(Map<String, String>? runningVersions);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAProject(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// LAProject(...).copyWith(id: 12, name: "My name")
   /// ````
   LAProject call({
-    String? additionalVariables,
-    bool? advancedEdit,
-    bool? advancedTune,
-    String? alaInstallRelease,
-    Map<String, dynamic>? checkResults,
-    List<CmdHistoryEntry>? cmdHistoryEntries,
-    int? createdAt,
-    String? dirName,
-    String? domain,
-    bool? fstDeployed,
-    String? generatorRelease,
-    List<LAProject>? hubs,
     String? id,
+    String? longName,
+    String? shortName,
+    String? domain,
+    String? dirName,
+    bool? useSSL,
     bool? isCreated,
     bool? isHub,
-    CmdHistoryDetails? lastCmdDetails,
-    CmdHistoryEntry? lastCmdEntry,
-    String? longName,
+    bool? fstDeployed,
+    String? additionalVariables,
+    LAProjectStatus? status,
+    String? alaInstallRelease,
+    String? generatorRelease,
     LALatLng? mapBoundsFstPoint,
     LALatLng? mapBoundsSndPoint,
-    double? mapZoom,
-    LAProject? parent,
-    Map<String, String>? runningVersions,
-    Map<String, List<String>>? serverServices,
-    List<LAServer>? servers,
-    List<LAServiceDeploy>? serviceDeploys,
-    List<LAService>? services,
-    String? shortName,
-    LAProjectStatus? status,
     String? theme,
-    bool? useSSL,
+    double? mapZoom,
+    CmdHistoryEntry? lastCmdEntry,
+    CmdHistoryDetails? lastCmdDetails,
+    bool? advancedEdit,
+    bool? advancedTune,
     List<LAVariable>? variables,
-  }) {
-    return LAProject(
-      additionalVariables: additionalVariables ?? _value.additionalVariables,
-      advancedEdit: advancedEdit ?? _value.advancedEdit,
-      advancedTune: advancedTune ?? _value.advancedTune,
-      alaInstallRelease: alaInstallRelease ?? _value.alaInstallRelease,
-      checkResults: checkResults ?? _value.checkResults,
-      cmdHistoryEntries: cmdHistoryEntries ?? _value.cmdHistoryEntries,
-      createdAt: createdAt ?? _value.createdAt,
-      dirName: dirName ?? _value.dirName,
-      domain: domain ?? _value.domain,
-      fstDeployed: fstDeployed ?? _value.fstDeployed,
-      generatorRelease: generatorRelease ?? _value.generatorRelease,
-      hubs: hubs ?? _value.hubs,
-      id: id ?? _value.id,
-      isCreated: isCreated ?? _value.isCreated,
-      isHub: isHub ?? _value.isHub,
-      lastCmdDetails: lastCmdDetails ?? _value.lastCmdDetails,
-      lastCmdEntry: lastCmdEntry ?? _value.lastCmdEntry,
-      longName: longName ?? _value.longName,
-      mapBoundsFstPoint: mapBoundsFstPoint ?? _value.mapBoundsFstPoint,
-      mapBoundsSndPoint: mapBoundsSndPoint ?? _value.mapBoundsSndPoint,
-      mapZoom: mapZoom ?? _value.mapZoom,
-      parent: parent ?? _value.parent,
-      runningVersions: runningVersions ?? _value.runningVersions,
-      serverServices: serverServices ?? _value.serverServices,
-      servers: servers ?? _value.servers,
-      serviceDeploys: serviceDeploys ?? _value.serviceDeploys,
-      services: services ?? _value.services,
-      shortName: shortName ?? _value.shortName,
-      status: status ?? _value.status,
-      theme: theme ?? _value.theme,
-      useSSL: useSSL ?? _value.useSSL,
-      variables: variables ?? _value.variables,
-    );
-  }
+    List<CmdHistoryEntry>? cmdHistoryEntries,
+    List<LAServer>? servers,
+    List<LAService>? services,
+    List<LAServiceDeploy>? serviceDeploys,
+    LAProject? parent,
+    List<LAProject>? hubs,
+    int? createdAt,
+    Map<String, List<String>>? serverServices,
+    Map<String, dynamic>? checkResults,
+    Map<String, String>? runningVersions,
+  });
+}
 
-  LAProject advancedEdit(bool? advancedEdit) => advancedEdit == null
-      ? _value._copyWithNull(advancedEdit: true)
-      : this(advancedEdit: advancedEdit);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAProject.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAProject.copyWith.fieldName(...)`
+class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
+  const _$LAProjectCWProxyImpl(this._value);
 
-  LAProject advancedTune(bool? advancedTune) => advancedTune == null
-      ? _value._copyWithNull(advancedTune: true)
-      : this(advancedTune: advancedTune);
+  final LAProject _value;
 
-  LAProject alaInstallRelease(String? alaInstallRelease) =>
-      alaInstallRelease == null
-          ? _value._copyWithNull(alaInstallRelease: true)
-          : this(alaInstallRelease: alaInstallRelease);
+  @override
+  LAProject id(String? id) => this(id: id);
 
-  LAProject checkResults(Map<String, dynamic>? checkResults) =>
-      checkResults == null
-          ? _value._copyWithNull(checkResults: true)
-          : this(checkResults: checkResults);
+  @override
+  LAProject longName(String longName) => this(longName: longName);
 
-  LAProject cmdHistoryEntries(List<CmdHistoryEntry>? cmdHistoryEntries) =>
-      cmdHistoryEntries == null
-          ? _value._copyWithNull(cmdHistoryEntries: true)
-          : this(cmdHistoryEntries: cmdHistoryEntries);
+  @override
+  LAProject shortName(String shortName) => this(shortName: shortName);
 
-  LAProject createdAt(int? createdAt) => createdAt == null
-      ? _value._copyWithNull(createdAt: true)
-      : this(createdAt: createdAt);
+  @override
+  LAProject domain(String? domain) => this(domain: domain);
 
-  LAProject dirName(String? dirName) => dirName == null
-      ? _value._copyWithNull(dirName: true)
-      : this(dirName: dirName);
+  @override
+  LAProject dirName(String? dirName) => this(dirName: dirName);
 
-  LAProject domain(String? domain) => domain == null
-      ? _value._copyWithNull(domain: true)
-      : this(domain: domain);
+  @override
+  LAProject useSSL(bool useSSL) => this(useSSL: useSSL);
 
-  LAProject fstDeployed(bool? fstDeployed) => fstDeployed == null
-      ? _value._copyWithNull(fstDeployed: true)
-      : this(fstDeployed: fstDeployed);
+  @override
+  LAProject isCreated(bool isCreated) => this(isCreated: isCreated);
 
-  LAProject generatorRelease(String? generatorRelease) =>
-      generatorRelease == null
-          ? _value._copyWithNull(generatorRelease: true)
-          : this(generatorRelease: generatorRelease);
+  @override
+  LAProject isHub(bool isHub) => this(isHub: isHub);
 
-  LAProject hubs(List<LAProject>? hubs) =>
-      hubs == null ? _value._copyWithNull(hubs: true) : this(hubs: hubs);
+  @override
+  LAProject fstDeployed(bool? fstDeployed) => this(fstDeployed: fstDeployed);
 
-  LAProject id(String? id) =>
-      id == null ? _value._copyWithNull(id: true) : this(id: id);
-
-  LAProject lastCmdDetails(CmdHistoryDetails? lastCmdDetails) =>
-      lastCmdDetails == null
-          ? _value._copyWithNull(lastCmdDetails: true)
-          : this(lastCmdDetails: lastCmdDetails);
-
-  LAProject lastCmdEntry(CmdHistoryEntry? lastCmdEntry) => lastCmdEntry == null
-      ? _value._copyWithNull(lastCmdEntry: true)
-      : this(lastCmdEntry: lastCmdEntry);
-
-  LAProject mapBoundsFstPoint(LALatLng? mapBoundsFstPoint) =>
-      mapBoundsFstPoint == null
-          ? _value._copyWithNull(mapBoundsFstPoint: true)
-          : this(mapBoundsFstPoint: mapBoundsFstPoint);
-
-  LAProject mapBoundsSndPoint(LALatLng? mapBoundsSndPoint) =>
-      mapBoundsSndPoint == null
-          ? _value._copyWithNull(mapBoundsSndPoint: true)
-          : this(mapBoundsSndPoint: mapBoundsSndPoint);
-
-  LAProject mapZoom(double? mapZoom) => mapZoom == null
-      ? _value._copyWithNull(mapZoom: true)
-      : this(mapZoom: mapZoom);
-
-  LAProject parent(LAProject? parent) => parent == null
-      ? _value._copyWithNull(parent: true)
-      : this(parent: parent);
-
-  LAProject runningVersions(Map<String, String>? runningVersions) =>
-      runningVersions == null
-          ? _value._copyWithNull(runningVersions: true)
-          : this(runningVersions: runningVersions);
-
-  LAProject serverServices(Map<String, List<String>>? serverServices) =>
-      serverServices == null
-          ? _value._copyWithNull(serverServices: true)
-          : this(serverServices: serverServices);
-
-  LAProject servers(List<LAServer>? servers) => servers == null
-      ? _value._copyWithNull(servers: true)
-      : this(servers: servers);
-
-  LAProject serviceDeploys(List<LAServiceDeploy>? serviceDeploys) =>
-      serviceDeploys == null
-          ? _value._copyWithNull(serviceDeploys: true)
-          : this(serviceDeploys: serviceDeploys);
-
-  LAProject services(List<LAService>? services) => services == null
-      ? _value._copyWithNull(services: true)
-      : this(services: services);
-
-  LAProject variables(List<LAVariable>? variables) => variables == null
-      ? _value._copyWithNull(variables: true)
-      : this(variables: variables);
-
+  @override
   LAProject additionalVariables(String additionalVariables) =>
       this(additionalVariables: additionalVariables);
 
-  LAProject isCreated(bool isCreated) => this(isCreated: isCreated);
-
-  LAProject isHub(bool isHub) => this(isHub: isHub);
-
-  LAProject longName(String longName) => this(longName: longName);
-
-  LAProject shortName(String shortName) => this(shortName: shortName);
-
+  @override
   LAProject status(LAProjectStatus status) => this(status: status);
 
+  @override
+  LAProject alaInstallRelease(String? alaInstallRelease) =>
+      this(alaInstallRelease: alaInstallRelease);
+
+  @override
+  LAProject generatorRelease(String? generatorRelease) =>
+      this(generatorRelease: generatorRelease);
+
+  @override
+  LAProject mapBoundsFstPoint(LALatLng? mapBoundsFstPoint) =>
+      this(mapBoundsFstPoint: mapBoundsFstPoint);
+
+  @override
+  LAProject mapBoundsSndPoint(LALatLng? mapBoundsSndPoint) =>
+      this(mapBoundsSndPoint: mapBoundsSndPoint);
+
+  @override
   LAProject theme(String theme) => this(theme: theme);
 
-  LAProject useSSL(bool useSSL) => this(useSSL: useSSL);
-}
+  @override
+  LAProject mapZoom(double? mapZoom) => this(mapZoom: mapZoom);
 
-extension LAProjectCopyWith on LAProject {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass LAProject implements IsJsonSerializable<LAProject>.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass LAProject implements IsJsonSerializable<LAProject>.name.copyWith.fieldName(...)`
-  _LAProjectCWProxy get copyWith => _LAProjectCWProxy(this);
+  @override
+  LAProject lastCmdEntry(CmdHistoryEntry? lastCmdEntry) =>
+      this(lastCmdEntry: lastCmdEntry);
 
-  LAProject _copyWithNull({
-    bool advancedEdit = false,
-    bool advancedTune = false,
-    bool alaInstallRelease = false,
-    bool checkResults = false,
-    bool cmdHistoryEntries = false,
-    bool createdAt = false,
-    bool dirName = false,
-    bool domain = false,
-    bool fstDeployed = false,
-    bool generatorRelease = false,
-    bool hubs = false,
-    bool id = false,
-    bool lastCmdDetails = false,
-    bool lastCmdEntry = false,
-    bool mapBoundsFstPoint = false,
-    bool mapBoundsSndPoint = false,
-    bool mapZoom = false,
-    bool parent = false,
-    bool runningVersions = false,
-    bool serverServices = false,
-    bool servers = false,
-    bool serviceDeploys = false,
-    bool services = false,
-    bool variables = false,
+  @override
+  LAProject lastCmdDetails(CmdHistoryDetails? lastCmdDetails) =>
+      this(lastCmdDetails: lastCmdDetails);
+
+  @override
+  LAProject advancedEdit(bool? advancedEdit) =>
+      this(advancedEdit: advancedEdit);
+
+  @override
+  LAProject advancedTune(bool? advancedTune) =>
+      this(advancedTune: advancedTune);
+
+  @override
+  LAProject variables(List<LAVariable>? variables) =>
+      this(variables: variables);
+
+  @override
+  LAProject cmdHistoryEntries(List<CmdHistoryEntry>? cmdHistoryEntries) =>
+      this(cmdHistoryEntries: cmdHistoryEntries);
+
+  @override
+  LAProject servers(List<LAServer>? servers) => this(servers: servers);
+
+  @override
+  LAProject services(List<LAService>? services) => this(services: services);
+
+  @override
+  LAProject serviceDeploys(List<LAServiceDeploy>? serviceDeploys) =>
+      this(serviceDeploys: serviceDeploys);
+
+  @override
+  LAProject parent(LAProject? parent) => this(parent: parent);
+
+  @override
+  LAProject hubs(List<LAProject>? hubs) => this(hubs: hubs);
+
+  @override
+  LAProject createdAt(int? createdAt) => this(createdAt: createdAt);
+
+  @override
+  LAProject serverServices(Map<String, List<String>>? serverServices) =>
+      this(serverServices: serverServices);
+
+  @override
+  LAProject checkResults(Map<String, dynamic>? checkResults) =>
+      this(checkResults: checkResults);
+
+  @override
+  LAProject runningVersions(Map<String, String>? runningVersions) =>
+      this(runningVersions: runningVersions);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAProject(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// LAProject(...).copyWith(id: 12, name: "My name")
+  /// ````
+  LAProject call({
+    Object? id = const $CopyWithPlaceholder(),
+    Object? longName = const $CopyWithPlaceholder(),
+    Object? shortName = const $CopyWithPlaceholder(),
+    Object? domain = const $CopyWithPlaceholder(),
+    Object? dirName = const $CopyWithPlaceholder(),
+    Object? useSSL = const $CopyWithPlaceholder(),
+    Object? isCreated = const $CopyWithPlaceholder(),
+    Object? isHub = const $CopyWithPlaceholder(),
+    Object? fstDeployed = const $CopyWithPlaceholder(),
+    Object? additionalVariables = const $CopyWithPlaceholder(),
+    Object? status = const $CopyWithPlaceholder(),
+    Object? alaInstallRelease = const $CopyWithPlaceholder(),
+    Object? generatorRelease = const $CopyWithPlaceholder(),
+    Object? mapBoundsFstPoint = const $CopyWithPlaceholder(),
+    Object? mapBoundsSndPoint = const $CopyWithPlaceholder(),
+    Object? theme = const $CopyWithPlaceholder(),
+    Object? mapZoom = const $CopyWithPlaceholder(),
+    Object? lastCmdEntry = const $CopyWithPlaceholder(),
+    Object? lastCmdDetails = const $CopyWithPlaceholder(),
+    Object? advancedEdit = const $CopyWithPlaceholder(),
+    Object? advancedTune = const $CopyWithPlaceholder(),
+    Object? variables = const $CopyWithPlaceholder(),
+    Object? cmdHistoryEntries = const $CopyWithPlaceholder(),
+    Object? servers = const $CopyWithPlaceholder(),
+    Object? services = const $CopyWithPlaceholder(),
+    Object? serviceDeploys = const $CopyWithPlaceholder(),
+    Object? parent = const $CopyWithPlaceholder(),
+    Object? hubs = const $CopyWithPlaceholder(),
+    Object? createdAt = const $CopyWithPlaceholder(),
+    Object? serverServices = const $CopyWithPlaceholder(),
+    Object? checkResults = const $CopyWithPlaceholder(),
+    Object? runningVersions = const $CopyWithPlaceholder(),
   }) {
     return LAProject(
-      additionalVariables: additionalVariables,
-      advancedEdit: advancedEdit == true ? null : this.advancedEdit,
-      advancedTune: advancedTune == true ? null : this.advancedTune,
-      alaInstallRelease:
-          alaInstallRelease == true ? null : this.alaInstallRelease,
-      checkResults: checkResults == true ? null : this.checkResults,
-      cmdHistoryEntries:
-          cmdHistoryEntries == true ? null : this.cmdHistoryEntries,
-      createdAt: createdAt == true ? null : this.createdAt,
-      dirName: dirName == true ? null : this.dirName,
-      domain: domain == true ? null : this.domain,
-      fstDeployed: fstDeployed == true ? null : this.fstDeployed,
-      generatorRelease: generatorRelease == true ? null : this.generatorRelease,
-      hubs: hubs == true ? null : this.hubs,
-      id: id == true ? null : this.id,
-      isCreated: isCreated,
-      isHub: isHub,
-      lastCmdDetails: lastCmdDetails == true ? null : this.lastCmdDetails,
-      lastCmdEntry: lastCmdEntry == true ? null : this.lastCmdEntry,
-      longName: longName,
-      mapBoundsFstPoint:
-          mapBoundsFstPoint == true ? null : this.mapBoundsFstPoint,
-      mapBoundsSndPoint:
-          mapBoundsSndPoint == true ? null : this.mapBoundsSndPoint,
-      mapZoom: mapZoom == true ? null : this.mapZoom,
-      parent: parent == true ? null : this.parent,
-      runningVersions: runningVersions == true ? null : this.runningVersions,
-      serverServices: serverServices == true ? null : this.serverServices,
-      servers: servers == true ? null : this.servers,
-      serviceDeploys: serviceDeploys == true ? null : this.serviceDeploys,
-      services: services == true ? null : this.services,
-      shortName: shortName,
-      status: status,
-      theme: theme,
-      useSSL: useSSL,
-      variables: variables == true ? null : this.variables,
+      id: id == const $CopyWithPlaceholder()
+          ? _value.id
+          // ignore: cast_nullable_to_non_nullable
+          : id as String?,
+      longName: longName == const $CopyWithPlaceholder() || longName == null
+          ? _value.longName
+          // ignore: cast_nullable_to_non_nullable
+          : longName as String,
+      shortName: shortName == const $CopyWithPlaceholder() || shortName == null
+          ? _value.shortName
+          // ignore: cast_nullable_to_non_nullable
+          : shortName as String,
+      domain: domain == const $CopyWithPlaceholder()
+          ? _value.domain
+          // ignore: cast_nullable_to_non_nullable
+          : domain as String?,
+      dirName: dirName == const $CopyWithPlaceholder()
+          ? _value.dirName
+          // ignore: cast_nullable_to_non_nullable
+          : dirName as String?,
+      useSSL: useSSL == const $CopyWithPlaceholder() || useSSL == null
+          ? _value.useSSL
+          // ignore: cast_nullable_to_non_nullable
+          : useSSL as bool,
+      isCreated: isCreated == const $CopyWithPlaceholder() || isCreated == null
+          ? _value.isCreated
+          // ignore: cast_nullable_to_non_nullable
+          : isCreated as bool,
+      isHub: isHub == const $CopyWithPlaceholder() || isHub == null
+          ? _value.isHub
+          // ignore: cast_nullable_to_non_nullable
+          : isHub as bool,
+      fstDeployed: fstDeployed == const $CopyWithPlaceholder()
+          ? _value.fstDeployed
+          // ignore: cast_nullable_to_non_nullable
+          : fstDeployed as bool?,
+      additionalVariables:
+          additionalVariables == const $CopyWithPlaceholder() ||
+                  additionalVariables == null
+              ? _value.additionalVariables
+              // ignore: cast_nullable_to_non_nullable
+              : additionalVariables as String,
+      status: status == const $CopyWithPlaceholder() || status == null
+          ? _value.status
+          // ignore: cast_nullable_to_non_nullable
+          : status as LAProjectStatus,
+      alaInstallRelease: alaInstallRelease == const $CopyWithPlaceholder()
+          ? _value.alaInstallRelease
+          // ignore: cast_nullable_to_non_nullable
+          : alaInstallRelease as String?,
+      generatorRelease: generatorRelease == const $CopyWithPlaceholder()
+          ? _value.generatorRelease
+          // ignore: cast_nullable_to_non_nullable
+          : generatorRelease as String?,
+      mapBoundsFstPoint: mapBoundsFstPoint == const $CopyWithPlaceholder()
+          ? _value.mapBoundsFstPoint
+          // ignore: cast_nullable_to_non_nullable
+          : mapBoundsFstPoint as LALatLng?,
+      mapBoundsSndPoint: mapBoundsSndPoint == const $CopyWithPlaceholder()
+          ? _value.mapBoundsSndPoint
+          // ignore: cast_nullable_to_non_nullable
+          : mapBoundsSndPoint as LALatLng?,
+      theme: theme == const $CopyWithPlaceholder() || theme == null
+          ? _value.theme
+          // ignore: cast_nullable_to_non_nullable
+          : theme as String,
+      mapZoom: mapZoom == const $CopyWithPlaceholder()
+          ? _value.mapZoom
+          // ignore: cast_nullable_to_non_nullable
+          : mapZoom as double?,
+      lastCmdEntry: lastCmdEntry == const $CopyWithPlaceholder()
+          ? _value.lastCmdEntry
+          // ignore: cast_nullable_to_non_nullable
+          : lastCmdEntry as CmdHistoryEntry?,
+      lastCmdDetails: lastCmdDetails == const $CopyWithPlaceholder()
+          ? _value.lastCmdDetails
+          // ignore: cast_nullable_to_non_nullable
+          : lastCmdDetails as CmdHistoryDetails?,
+      advancedEdit: advancedEdit == const $CopyWithPlaceholder()
+          ? _value.advancedEdit
+          // ignore: cast_nullable_to_non_nullable
+          : advancedEdit as bool?,
+      advancedTune: advancedTune == const $CopyWithPlaceholder()
+          ? _value.advancedTune
+          // ignore: cast_nullable_to_non_nullable
+          : advancedTune as bool?,
+      variables: variables == const $CopyWithPlaceholder()
+          ? _value.variables
+          // ignore: cast_nullable_to_non_nullable
+          : variables as List<LAVariable>?,
+      cmdHistoryEntries: cmdHistoryEntries == const $CopyWithPlaceholder()
+          ? _value.cmdHistoryEntries
+          // ignore: cast_nullable_to_non_nullable
+          : cmdHistoryEntries as List<CmdHistoryEntry>?,
+      servers: servers == const $CopyWithPlaceholder()
+          ? _value.servers
+          // ignore: cast_nullable_to_non_nullable
+          : servers as List<LAServer>?,
+      services: services == const $CopyWithPlaceholder()
+          ? _value.services
+          // ignore: cast_nullable_to_non_nullable
+          : services as List<LAService>?,
+      serviceDeploys: serviceDeploys == const $CopyWithPlaceholder()
+          ? _value.serviceDeploys
+          // ignore: cast_nullable_to_non_nullable
+          : serviceDeploys as List<LAServiceDeploy>?,
+      parent: parent == const $CopyWithPlaceholder()
+          ? _value.parent
+          // ignore: cast_nullable_to_non_nullable
+          : parent as LAProject?,
+      hubs: hubs == const $CopyWithPlaceholder()
+          ? _value.hubs
+          // ignore: cast_nullable_to_non_nullable
+          : hubs as List<LAProject>?,
+      createdAt: createdAt == const $CopyWithPlaceholder()
+          ? _value.createdAt
+          // ignore: cast_nullable_to_non_nullable
+          : createdAt as int?,
+      serverServices: serverServices == const $CopyWithPlaceholder()
+          ? _value.serverServices
+          // ignore: cast_nullable_to_non_nullable
+          : serverServices as Map<String, List<String>>?,
+      checkResults: checkResults == const $CopyWithPlaceholder()
+          ? _value.checkResults
+          // ignore: cast_nullable_to_non_nullable
+          : checkResults as Map<String, dynamic>?,
+      runningVersions: runningVersions == const $CopyWithPlaceholder()
+          ? _value.runningVersions
+          // ignore: cast_nullable_to_non_nullable
+          : runningVersions as Map<String, String>?,
     );
   }
+}
+
+extension $LAProjectCopyWith on LAProject {
+  /// Returns a callable class that can be used as follows: `instanceOfLAProject.copyWith(...)` or like so:`instanceOfLAProject.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$LAProjectCWProxy get copyWith => _$LAProjectCWProxyImpl(this);
 }
 
 // **************************************************************************
@@ -361,7 +493,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'createdAt': instance.createdAt,
       'alaInstallRelease': instance.alaInstallRelease,
       'generatorRelease': instance.generatorRelease,
-      'status': _$LAProjectStatusEnumMap[instance.status],
+      'status': _$LAProjectStatusEnumMap[instance.status]!,
       'isCreated': instance.isCreated,
       'fstDeployed': instance.fstDeployed,
       'advancedEdit': instance.advancedEdit,

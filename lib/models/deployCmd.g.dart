@@ -6,94 +6,148 @@ part of 'deployCmd.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfDeployCmd.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfDeployCmd.copyWith.fieldName(...)`
-class _DeployCmdCWProxy {
-  final DeployCmd _value;
+abstract class _$DeployCmdCWProxy {
+  DeployCmd deployServices(List<String>? deployServices);
 
-  const _DeployCmdCWProxy(this._value);
+  DeployCmd limitToServers(List<String>? limitToServers);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `DeployCmd(...).copyWithNull(...)` to set certain fields to `null`. Prefer `DeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  DeployCmd skipTags(List<String>? skipTags);
+
+  DeployCmd tags(List<String>? tags);
+
+  DeployCmd advanced(bool advanced);
+
+  DeployCmd onlyProperties(bool onlyProperties);
+
+  DeployCmd continueEvenIfFails(bool continueEvenIfFails);
+
+  DeployCmd debug(bool debug);
+
+  DeployCmd dryRun(bool dryRun);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `DeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// DeployCmd(...).copyWith(id: 12, name: "My name")
   /// ````
   DeployCmd call({
-    bool? advanced,
-    bool? continueEvenIfFails,
-    bool? debug,
     List<String>? deployServices,
-    bool? dryRun,
     List<String>? limitToServers,
-    bool? onlyProperties,
     List<String>? skipTags,
     List<String>? tags,
-  }) {
-    return DeployCmd(
-      advanced: advanced ?? _value.advanced,
-      continueEvenIfFails: continueEvenIfFails ?? _value.continueEvenIfFails,
-      debug: debug ?? _value.debug,
-      deployServices: deployServices ?? _value.deployServices,
-      dryRun: dryRun ?? _value.dryRun,
-      limitToServers: limitToServers ?? _value.limitToServers,
-      onlyProperties: onlyProperties ?? _value.onlyProperties,
-      skipTags: skipTags ?? _value.skipTags,
-      tags: tags ?? _value.tags,
-    );
-  }
+    bool? advanced,
+    bool? onlyProperties,
+    bool? continueEvenIfFails,
+    bool? debug,
+    bool? dryRun,
+  });
+}
 
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfDeployCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfDeployCmd.copyWith.fieldName(...)`
+class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
+  const _$DeployCmdCWProxyImpl(this._value);
+
+  final DeployCmd _value;
+
+  @override
   DeployCmd deployServices(List<String>? deployServices) =>
-      deployServices == null
-          ? _value._copyWithNull(deployServices: true)
-          : this(deployServices: deployServices);
+      this(deployServices: deployServices);
 
+  @override
   DeployCmd limitToServers(List<String>? limitToServers) =>
-      limitToServers == null
-          ? _value._copyWithNull(limitToServers: true)
-          : this(limitToServers: limitToServers);
+      this(limitToServers: limitToServers);
 
-  DeployCmd skipTags(List<String>? skipTags) => skipTags == null
-      ? _value._copyWithNull(skipTags: true)
-      : this(skipTags: skipTags);
+  @override
+  DeployCmd skipTags(List<String>? skipTags) => this(skipTags: skipTags);
 
-  DeployCmd tags(List<String>? tags) =>
-      tags == null ? _value._copyWithNull(tags: true) : this(tags: tags);
+  @override
+  DeployCmd tags(List<String>? tags) => this(tags: tags);
 
+  @override
   DeployCmd advanced(bool advanced) => this(advanced: advanced);
 
+  @override
+  DeployCmd onlyProperties(bool onlyProperties) =>
+      this(onlyProperties: onlyProperties);
+
+  @override
   DeployCmd continueEvenIfFails(bool continueEvenIfFails) =>
       this(continueEvenIfFails: continueEvenIfFails);
 
+  @override
   DeployCmd debug(bool debug) => this(debug: debug);
 
+  @override
   DeployCmd dryRun(bool dryRun) => this(dryRun: dryRun);
 
-  DeployCmd onlyProperties(bool onlyProperties) =>
-      this(onlyProperties: onlyProperties);
-}
+  @override
 
-extension DeployCmdCopyWith on DeployCmd {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass DeployCmd extends CommonCmd.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass DeployCmd extends CommonCmd.name.copyWith.fieldName(...)`
-  _DeployCmdCWProxy get copyWith => _DeployCmdCWProxy(this);
-
-  DeployCmd _copyWithNull({
-    bool deployServices = false,
-    bool limitToServers = false,
-    bool skipTags = false,
-    bool tags = false,
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `DeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// DeployCmd(...).copyWith(id: 12, name: "My name")
+  /// ````
+  DeployCmd call({
+    Object? deployServices = const $CopyWithPlaceholder(),
+    Object? limitToServers = const $CopyWithPlaceholder(),
+    Object? skipTags = const $CopyWithPlaceholder(),
+    Object? tags = const $CopyWithPlaceholder(),
+    Object? advanced = const $CopyWithPlaceholder(),
+    Object? onlyProperties = const $CopyWithPlaceholder(),
+    Object? continueEvenIfFails = const $CopyWithPlaceholder(),
+    Object? debug = const $CopyWithPlaceholder(),
+    Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return DeployCmd(
-      advanced: advanced,
-      continueEvenIfFails: continueEvenIfFails,
-      debug: debug,
-      deployServices: deployServices == true ? null : this.deployServices,
-      dryRun: dryRun,
-      limitToServers: limitToServers == true ? null : this.limitToServers,
-      onlyProperties: onlyProperties,
-      skipTags: skipTags == true ? null : this.skipTags,
-      tags: tags == true ? null : this.tags,
+      deployServices: deployServices == const $CopyWithPlaceholder()
+          ? _value.deployServices
+          // ignore: cast_nullable_to_non_nullable
+          : deployServices as List<String>?,
+      limitToServers: limitToServers == const $CopyWithPlaceholder()
+          ? _value.limitToServers
+          // ignore: cast_nullable_to_non_nullable
+          : limitToServers as List<String>?,
+      skipTags: skipTags == const $CopyWithPlaceholder()
+          ? _value.skipTags
+          // ignore: cast_nullable_to_non_nullable
+          : skipTags as List<String>?,
+      tags: tags == const $CopyWithPlaceholder()
+          ? _value.tags
+          // ignore: cast_nullable_to_non_nullable
+          : tags as List<String>?,
+      advanced: advanced == const $CopyWithPlaceholder() || advanced == null
+          ? _value.advanced
+          // ignore: cast_nullable_to_non_nullable
+          : advanced as bool,
+      onlyProperties: onlyProperties == const $CopyWithPlaceholder() ||
+              onlyProperties == null
+          ? _value.onlyProperties
+          // ignore: cast_nullable_to_non_nullable
+          : onlyProperties as bool,
+      continueEvenIfFails:
+          continueEvenIfFails == const $CopyWithPlaceholder() ||
+                  continueEvenIfFails == null
+              ? _value.continueEvenIfFails
+              // ignore: cast_nullable_to_non_nullable
+              : continueEvenIfFails as bool,
+      debug: debug == const $CopyWithPlaceholder() || debug == null
+          ? _value.debug
+          // ignore: cast_nullable_to_non_nullable
+          : debug as bool,
+      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
+          ? _value.dryRun
+          // ignore: cast_nullable_to_non_nullable
+          : dryRun as bool,
     );
   }
+}
+
+extension $DeployCmdCopyWith on DeployCmd {
+  /// Returns a callable class that can be used as follows: `instanceOfDeployCmd.copyWith(...)` or like so:`instanceOfDeployCmd.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$DeployCmdCWProxy get copyWith => _$DeployCmdCWProxyImpl(this);
 }
 
 // **************************************************************************

@@ -6,13 +6,10 @@ part of 'brandingDeployCmd.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfBrandingDeployCmd.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfBrandingDeployCmd.copyWith.fieldName(...)`
-class _BrandingDeployCmdCWProxy {
-  final BrandingDeployCmd _value;
+abstract class _$BrandingDeployCmdCWProxy {
+  BrandingDeployCmd debug(bool debug);
 
-  const _BrandingDeployCmdCWProxy(this._value);
-
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `BrandingDeployCmd(...).copyWithNull(...)` to set certain fields to `null`. Prefer `BrandingDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BrandingDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
@@ -20,18 +17,43 @@ class _BrandingDeployCmdCWProxy {
   /// ````
   BrandingDeployCmd call({
     bool? debug,
-  }) {
-    return BrandingDeployCmd(
-      debug: debug ?? _value.debug,
-    );
-  }
-
-  BrandingDeployCmd debug(bool debug) => this(debug: debug);
+  });
 }
 
-extension BrandingDeployCmdCopyWith on BrandingDeployCmd {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass BrandingDeployCmd extends CommonCmd.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass BrandingDeployCmd extends CommonCmd.name.copyWith.fieldName(...)`
-  _BrandingDeployCmdCWProxy get copyWith => _BrandingDeployCmdCWProxy(this);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfBrandingDeployCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfBrandingDeployCmd.copyWith.fieldName(...)`
+class _$BrandingDeployCmdCWProxyImpl implements _$BrandingDeployCmdCWProxy {
+  const _$BrandingDeployCmdCWProxyImpl(this._value);
+
+  final BrandingDeployCmd _value;
+
+  @override
+  BrandingDeployCmd debug(bool debug) => this(debug: debug);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BrandingDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// BrandingDeployCmd(...).copyWith(id: 12, name: "My name")
+  /// ````
+  BrandingDeployCmd call({
+    Object? debug = const $CopyWithPlaceholder(),
+  }) {
+    return BrandingDeployCmd(
+      debug: debug == const $CopyWithPlaceholder() || debug == null
+          ? _value.debug
+          // ignore: cast_nullable_to_non_nullable
+          : debug as bool,
+    );
+  }
+}
+
+extension $BrandingDeployCmdCopyWith on BrandingDeployCmd {
+  /// Returns a callable class that can be used as follows: `instanceOfBrandingDeployCmd.copyWith(...)` or like so:`instanceOfBrandingDeployCmd.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$BrandingDeployCmdCWProxy get copyWith =>
+      _$BrandingDeployCmdCWProxyImpl(this);
 }
 
 // **************************************************************************

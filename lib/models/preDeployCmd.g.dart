@@ -6,119 +6,206 @@ part of 'preDeployCmd.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfPreDeployCmd.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfPreDeployCmd.copyWith.fieldName(...)`
-class _PreDeployCmdCWProxy {
-  final PreDeployCmd _value;
+abstract class _$PreDeployCmdCWProxy {
+  PreDeployCmd addAnsibleUser(bool addAnsibleUser);
 
-  const _PreDeployCmdCWProxy(this._value);
+  PreDeployCmd addSshKeys(bool addSshKeys);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `PreDeployCmd(...).copyWithNull(...)` to set certain fields to `null`. Prefer `PreDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  PreDeployCmd giveSudo(bool giveSudo);
+
+  PreDeployCmd etcHosts(bool etcHosts);
+
+  PreDeployCmd solrLimits(bool solrLimits);
+
+  PreDeployCmd addAdditionalDeps(bool addAdditionalDeps);
+
+  PreDeployCmd rootBecome(bool? rootBecome);
+
+  PreDeployCmd limitToServers(List<String>? limitToServers);
+
+  PreDeployCmd skipTags(List<String>? skipTags);
+
+  PreDeployCmd tags(List<String>? tags);
+
+  PreDeployCmd advanced(bool advanced);
+
+  PreDeployCmd continueEvenIfFails(bool continueEvenIfFails);
+
+  PreDeployCmd debug(bool debug);
+
+  PreDeployCmd dryRun(bool dryRun);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PreDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// PreDeployCmd(...).copyWith(id: 12, name: "My name")
   /// ````
   PreDeployCmd call({
-    bool? addAdditionalDeps,
     bool? addAnsibleUser,
     bool? addSshKeys,
+    bool? giveSudo,
+    bool? etcHosts,
+    bool? solrLimits,
+    bool? addAdditionalDeps,
+    bool? rootBecome,
+    List<String>? limitToServers,
+    List<String>? skipTags,
+    List<String>? tags,
     bool? advanced,
     bool? continueEvenIfFails,
     bool? debug,
     bool? dryRun,
-    bool? etcHosts,
-    bool? giveSudo,
-    List<String>? limitToServers,
-    bool? rootBecome,
-    List<String>? skipTags,
-    bool? solrLimits,
-    List<String>? tags,
-  }) {
-    return PreDeployCmd(
-      addAdditionalDeps: addAdditionalDeps ?? _value.addAdditionalDeps,
-      addAnsibleUser: addAnsibleUser ?? _value.addAnsibleUser,
-      addSshKeys: addSshKeys ?? _value.addSshKeys,
-      advanced: advanced ?? _value.advanced,
-      continueEvenIfFails: continueEvenIfFails ?? _value.continueEvenIfFails,
-      debug: debug ?? _value.debug,
-      dryRun: dryRun ?? _value.dryRun,
-      etcHosts: etcHosts ?? _value.etcHosts,
-      giveSudo: giveSudo ?? _value.giveSudo,
-      limitToServers: limitToServers ?? _value.limitToServers,
-      rootBecome: rootBecome ?? _value.rootBecome,
-      skipTags: skipTags ?? _value.skipTags,
-      solrLimits: solrLimits ?? _value.solrLimits,
-      tags: tags ?? _value.tags,
-    );
-  }
+  });
+}
 
-  PreDeployCmd limitToServers(List<String>? limitToServers) =>
-      limitToServers == null
-          ? _value._copyWithNull(limitToServers: true)
-          : this(limitToServers: limitToServers);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfPreDeployCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfPreDeployCmd.copyWith.fieldName(...)`
+class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
+  const _$PreDeployCmdCWProxyImpl(this._value);
 
-  PreDeployCmd rootBecome(bool? rootBecome) => rootBecome == null
-      ? _value._copyWithNull(rootBecome: true)
-      : this(rootBecome: rootBecome);
+  final PreDeployCmd _value;
 
-  PreDeployCmd skipTags(List<String>? skipTags) => skipTags == null
-      ? _value._copyWithNull(skipTags: true)
-      : this(skipTags: skipTags);
-
-  PreDeployCmd tags(List<String>? tags) =>
-      tags == null ? _value._copyWithNull(tags: true) : this(tags: tags);
-
-  PreDeployCmd addAdditionalDeps(bool addAdditionalDeps) =>
-      this(addAdditionalDeps: addAdditionalDeps);
-
+  @override
   PreDeployCmd addAnsibleUser(bool addAnsibleUser) =>
       this(addAnsibleUser: addAnsibleUser);
 
+  @override
   PreDeployCmd addSshKeys(bool addSshKeys) => this(addSshKeys: addSshKeys);
 
+  @override
+  PreDeployCmd giveSudo(bool giveSudo) => this(giveSudo: giveSudo);
+
+  @override
+  PreDeployCmd etcHosts(bool etcHosts) => this(etcHosts: etcHosts);
+
+  @override
+  PreDeployCmd solrLimits(bool solrLimits) => this(solrLimits: solrLimits);
+
+  @override
+  PreDeployCmd addAdditionalDeps(bool addAdditionalDeps) =>
+      this(addAdditionalDeps: addAdditionalDeps);
+
+  @override
+  PreDeployCmd rootBecome(bool? rootBecome) => this(rootBecome: rootBecome);
+
+  @override
+  PreDeployCmd limitToServers(List<String>? limitToServers) =>
+      this(limitToServers: limitToServers);
+
+  @override
+  PreDeployCmd skipTags(List<String>? skipTags) => this(skipTags: skipTags);
+
+  @override
+  PreDeployCmd tags(List<String>? tags) => this(tags: tags);
+
+  @override
   PreDeployCmd advanced(bool advanced) => this(advanced: advanced);
 
+  @override
   PreDeployCmd continueEvenIfFails(bool continueEvenIfFails) =>
       this(continueEvenIfFails: continueEvenIfFails);
 
+  @override
   PreDeployCmd debug(bool debug) => this(debug: debug);
 
+  @override
   PreDeployCmd dryRun(bool dryRun) => this(dryRun: dryRun);
 
-  PreDeployCmd etcHosts(bool etcHosts) => this(etcHosts: etcHosts);
+  @override
 
-  PreDeployCmd giveSudo(bool giveSudo) => this(giveSudo: giveSudo);
-
-  PreDeployCmd solrLimits(bool solrLimits) => this(solrLimits: solrLimits);
-}
-
-extension PreDeployCmdCopyWith on PreDeployCmd {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass PreDeployCmd extends DeployCmd.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass PreDeployCmd extends DeployCmd.name.copyWith.fieldName(...)`
-  _PreDeployCmdCWProxy get copyWith => _PreDeployCmdCWProxy(this);
-
-  PreDeployCmd _copyWithNull({
-    bool limitToServers = false,
-    bool rootBecome = false,
-    bool skipTags = false,
-    bool tags = false,
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PreDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// PreDeployCmd(...).copyWith(id: 12, name: "My name")
+  /// ````
+  PreDeployCmd call({
+    Object? addAnsibleUser = const $CopyWithPlaceholder(),
+    Object? addSshKeys = const $CopyWithPlaceholder(),
+    Object? giveSudo = const $CopyWithPlaceholder(),
+    Object? etcHosts = const $CopyWithPlaceholder(),
+    Object? solrLimits = const $CopyWithPlaceholder(),
+    Object? addAdditionalDeps = const $CopyWithPlaceholder(),
+    Object? rootBecome = const $CopyWithPlaceholder(),
+    Object? limitToServers = const $CopyWithPlaceholder(),
+    Object? skipTags = const $CopyWithPlaceholder(),
+    Object? tags = const $CopyWithPlaceholder(),
+    Object? advanced = const $CopyWithPlaceholder(),
+    Object? continueEvenIfFails = const $CopyWithPlaceholder(),
+    Object? debug = const $CopyWithPlaceholder(),
+    Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PreDeployCmd(
-      addAdditionalDeps: addAdditionalDeps,
-      addAnsibleUser: addAnsibleUser,
-      addSshKeys: addSshKeys,
-      advanced: advanced,
-      continueEvenIfFails: continueEvenIfFails,
-      debug: debug,
-      dryRun: dryRun,
-      etcHosts: etcHosts,
-      giveSudo: giveSudo,
-      limitToServers: limitToServers == true ? null : this.limitToServers,
-      rootBecome: rootBecome == true ? null : this.rootBecome,
-      skipTags: skipTags == true ? null : this.skipTags,
-      solrLimits: solrLimits,
-      tags: tags == true ? null : this.tags,
+      addAnsibleUser: addAnsibleUser == const $CopyWithPlaceholder() ||
+              addAnsibleUser == null
+          ? _value.addAnsibleUser
+          // ignore: cast_nullable_to_non_nullable
+          : addAnsibleUser as bool,
+      addSshKeys:
+          addSshKeys == const $CopyWithPlaceholder() || addSshKeys == null
+              ? _value.addSshKeys
+              // ignore: cast_nullable_to_non_nullable
+              : addSshKeys as bool,
+      giveSudo: giveSudo == const $CopyWithPlaceholder() || giveSudo == null
+          ? _value.giveSudo
+          // ignore: cast_nullable_to_non_nullable
+          : giveSudo as bool,
+      etcHosts: etcHosts == const $CopyWithPlaceholder() || etcHosts == null
+          ? _value.etcHosts
+          // ignore: cast_nullable_to_non_nullable
+          : etcHosts as bool,
+      solrLimits:
+          solrLimits == const $CopyWithPlaceholder() || solrLimits == null
+              ? _value.solrLimits
+              // ignore: cast_nullable_to_non_nullable
+              : solrLimits as bool,
+      addAdditionalDeps: addAdditionalDeps == const $CopyWithPlaceholder() ||
+              addAdditionalDeps == null
+          ? _value.addAdditionalDeps
+          // ignore: cast_nullable_to_non_nullable
+          : addAdditionalDeps as bool,
+      rootBecome: rootBecome == const $CopyWithPlaceholder()
+          ? _value.rootBecome
+          // ignore: cast_nullable_to_non_nullable
+          : rootBecome as bool?,
+      limitToServers: limitToServers == const $CopyWithPlaceholder()
+          ? _value.limitToServers
+          // ignore: cast_nullable_to_non_nullable
+          : limitToServers as List<String>?,
+      skipTags: skipTags == const $CopyWithPlaceholder()
+          ? _value.skipTags
+          // ignore: cast_nullable_to_non_nullable
+          : skipTags as List<String>?,
+      tags: tags == const $CopyWithPlaceholder()
+          ? _value.tags
+          // ignore: cast_nullable_to_non_nullable
+          : tags as List<String>?,
+      advanced: advanced == const $CopyWithPlaceholder() || advanced == null
+          ? _value.advanced
+          // ignore: cast_nullable_to_non_nullable
+          : advanced as bool,
+      continueEvenIfFails:
+          continueEvenIfFails == const $CopyWithPlaceholder() ||
+                  continueEvenIfFails == null
+              ? _value.continueEvenIfFails
+              // ignore: cast_nullable_to_non_nullable
+              : continueEvenIfFails as bool,
+      debug: debug == const $CopyWithPlaceholder() || debug == null
+          ? _value.debug
+          // ignore: cast_nullable_to_non_nullable
+          : debug as bool,
+      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
+          ? _value.dryRun
+          // ignore: cast_nullable_to_non_nullable
+          : dryRun as bool,
     );
   }
+}
+
+extension $PreDeployCmdCopyWith on PreDeployCmd {
+  /// Returns a callable class that can be used as follows: `instanceOfPreDeployCmd.copyWith(...)` or like so:`instanceOfPreDeployCmd.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$PreDeployCmdCWProxy get copyWith => _$PreDeployCmdCWProxyImpl(this);
 }
 
 // **************************************************************************

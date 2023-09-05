@@ -6,13 +6,18 @@ part of 'laVariable.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAVariable.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfLAVariable.copyWith.fieldName(...)`
-class _LAVariableCWProxy {
-  final LAVariable _value;
+abstract class _$LAVariableCWProxy {
+  LAVariable id(String? id);
 
-  const _LAVariableCWProxy(this._value);
+  LAVariable nameInt(String nameInt);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `LAVariable(...).copyWithNull(...)` to set certain fields to `null`. Prefer `LAVariable(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  LAVariable service(LAServiceName service);
+
+  LAVariable value(Object? value);
+
+  LAVariable projectId(String projectId);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAVariable(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
@@ -21,48 +26,77 @@ class _LAVariableCWProxy {
   LAVariable call({
     String? id,
     String? nameInt,
-    String? projectId,
     LAServiceName? service,
     Object? value,
-  }) {
-    return LAVariable(
-      id: id ?? _value.id,
-      nameInt: nameInt ?? _value.nameInt,
-      projectId: projectId ?? _value.projectId,
-      service: service ?? _value.service,
-      value: value ?? _value.value,
-    );
-  }
-
-  LAVariable id(String? id) =>
-      id == null ? _value._copyWithNull(id: true) : this(id: id);
-
-  LAVariable value(Object? value) =>
-      value == null ? _value._copyWithNull(value: true) : this(value: value);
-
-  LAVariable nameInt(String nameInt) => this(nameInt: nameInt);
-
-  LAVariable projectId(String projectId) => this(projectId: projectId);
-
-  LAVariable service(LAServiceName service) => this(service: service);
+    String? projectId,
+  });
 }
 
-extension LAVariableCopyWith on LAVariable {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass LAVariable implements IsJsonSerializable<LAVariable>.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass LAVariable implements IsJsonSerializable<LAVariable>.name.copyWith.fieldName(...)`
-  _LAVariableCWProxy get copyWith => _LAVariableCWProxy(this);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAVariable.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAVariable.copyWith.fieldName(...)`
+class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
+  const _$LAVariableCWProxyImpl(this._value);
 
-  LAVariable _copyWithNull({
-    bool id = false,
-    bool value = false,
+  final LAVariable _value;
+
+  @override
+  LAVariable id(String? id) => this(id: id);
+
+  @override
+  LAVariable nameInt(String nameInt) => this(nameInt: nameInt);
+
+  @override
+  LAVariable service(LAServiceName service) => this(service: service);
+
+  @override
+  LAVariable value(Object? value) => this(value: value);
+
+  @override
+  LAVariable projectId(String projectId) => this(projectId: projectId);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAVariable(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// LAVariable(...).copyWith(id: 12, name: "My name")
+  /// ````
+  LAVariable call({
+    Object? id = const $CopyWithPlaceholder(),
+    Object? nameInt = const $CopyWithPlaceholder(),
+    Object? service = const $CopyWithPlaceholder(),
+    Object? value = const $CopyWithPlaceholder(),
+    Object? projectId = const $CopyWithPlaceholder(),
   }) {
     return LAVariable(
-      id: id == true ? null : this.id,
-      nameInt: nameInt,
-      projectId: projectId,
-      service: service,
-      value: value == true ? null : this.value,
+      id: id == const $CopyWithPlaceholder()
+          ? _value.id
+          // ignore: cast_nullable_to_non_nullable
+          : id as String?,
+      nameInt: nameInt == const $CopyWithPlaceholder() || nameInt == null
+          ? _value.nameInt
+          // ignore: cast_nullable_to_non_nullable
+          : nameInt as String,
+      service: service == const $CopyWithPlaceholder() || service == null
+          ? _value.service
+          // ignore: cast_nullable_to_non_nullable
+          : service as LAServiceName,
+      value: value == const $CopyWithPlaceholder()
+          ? _value.value
+          // ignore: cast_nullable_to_non_nullable
+          : value as Object?,
+      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
+          ? _value.projectId
+          // ignore: cast_nullable_to_non_nullable
+          : projectId as String,
     );
   }
+}
+
+extension $LAVariableCopyWith on LAVariable {
+  /// Returns a callable class that can be used as follows: `instanceOfLAVariable.copyWith(...)` or like so:`instanceOfLAVariable.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$LAVariableCWProxy get copyWith => _$LAVariableCWProxyImpl(this);
 }
 
 // **************************************************************************
@@ -81,10 +115,10 @@ Map<String, dynamic> _$LAVariableToJson(LAVariable instance) =>
     <String, dynamic>{
       'id': instance.id,
       'nameInt': instance.nameInt,
-      'service': _$LAServiceNameEnumMap[instance.service],
+      'service': _$LAServiceNameEnumMap[instance.service]!,
       'value': instance.value,
       'projectId': instance.projectId,
-      'status': _$LAVariableStatusEnumMap[instance.status],
+      'status': _$LAVariableStatusEnumMap[instance.status]!,
     };
 
 const _$LAServiceNameEnumMap = {
@@ -128,6 +162,8 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.pdfgen: 'pdfgen',
   LAServiceName.ecodata: 'ecodata',
   LAServiceName.ecodata_reporting: 'ecodata_reporting',
+  LAServiceName.events: 'events',
+  LAServiceName.events_elasticsearch: 'events_elasticsearch',
 };
 
 const _$LAVariableStatusEnumMap = {

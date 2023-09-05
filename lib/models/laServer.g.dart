@@ -6,122 +6,200 @@ part of 'laServer.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAServer.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfLAServer.copyWith.fieldName(...)`
-class _LAServerCWProxy {
-  final LAServer _value;
+abstract class _$LAServerCWProxy {
+  LAServer id(String? id);
 
-  const _LAServerCWProxy(this._value);
+  LAServer name(String name);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `LAServer(...).copyWithNull(...)` to set certain fields to `null`. Prefer `LAServer(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  LAServer ip(String? ip);
+
+  LAServer sshPort(int sshPort);
+
+  LAServer sshUser(String? sshUser);
+
+  LAServer aliases(List<String>? aliases);
+
+  LAServer gateways(List<String>? gateways);
+
+  LAServer sshKey(SshKey? sshKey);
+
+  LAServer reachable(ServiceStatus reachable);
+
+  LAServer sshReachable(ServiceStatus sshReachable);
+
+  LAServer sudoEnabled(ServiceStatus sudoEnabled);
+
+  LAServer osName(String osName);
+
+  LAServer osVersion(String osVersion);
+
+  LAServer projectId(String projectId);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAServer(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// LAServer(...).copyWith(id: 12, name: "My name")
   /// ````
   LAServer call({
+    String? id,
+    String? name,
+    String? ip,
+    int? sshPort,
+    String? sshUser,
     List<String>? aliases,
     List<String>? gateways,
-    String? id,
-    String? ip,
-    String? name,
+    SshKey? sshKey,
+    ServiceStatus? reachable,
+    ServiceStatus? sshReachable,
+    ServiceStatus? sudoEnabled,
     String? osName,
     String? osVersion,
     String? projectId,
-    ServiceStatus? reachable,
-    SshKey? sshKey,
-    int? sshPort,
-    ServiceStatus? sshReachable,
-    String? sshUser,
-    ServiceStatus? sudoEnabled,
-  }) {
-    return LAServer(
-      aliases: aliases ?? _value.aliases,
-      gateways: gateways ?? _value.gateways,
-      id: id ?? _value.id,
-      ip: ip ?? _value.ip,
-      name: name ?? _value.name,
-      osName: osName ?? _value.osName,
-      osVersion: osVersion ?? _value.osVersion,
-      projectId: projectId ?? _value.projectId,
-      reachable: reachable ?? _value.reachable,
-      sshKey: sshKey ?? _value.sshKey,
-      sshPort: sshPort ?? _value.sshPort,
-      sshReachable: sshReachable ?? _value.sshReachable,
-      sshUser: sshUser ?? _value.sshUser,
-      sudoEnabled: sudoEnabled ?? _value.sudoEnabled,
-    );
-  }
+  });
+}
 
-  LAServer aliases(List<String>? aliases) => aliases == null
-      ? _value._copyWithNull(aliases: true)
-      : this(aliases: aliases);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAServer.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAServer.copyWith.fieldName(...)`
+class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
+  const _$LAServerCWProxyImpl(this._value);
 
-  LAServer gateways(List<String>? gateways) => gateways == null
-      ? _value._copyWithNull(gateways: true)
-      : this(gateways: gateways);
+  final LAServer _value;
 
-  LAServer id(String? id) =>
-      id == null ? _value._copyWithNull(id: true) : this(id: id);
+  @override
+  LAServer id(String? id) => this(id: id);
 
-  LAServer ip(String? ip) =>
-      ip == null ? _value._copyWithNull(ip: true) : this(ip: ip);
-
-  LAServer sshKey(SshKey? sshKey) => sshKey == null
-      ? _value._copyWithNull(sshKey: true)
-      : this(sshKey: sshKey);
-
-  LAServer sshUser(String? sshUser) => sshUser == null
-      ? _value._copyWithNull(sshUser: true)
-      : this(sshUser: sshUser);
-
+  @override
   LAServer name(String name) => this(name: name);
 
-  LAServer osName(String osName) => this(osName: osName);
+  @override
+  LAServer ip(String? ip) => this(ip: ip);
 
-  LAServer osVersion(String osVersion) => this(osVersion: osVersion);
-
-  LAServer projectId(String projectId) => this(projectId: projectId);
-
-  LAServer reachable(ServiceStatus reachable) => this(reachable: reachable);
-
+  @override
   LAServer sshPort(int sshPort) => this(sshPort: sshPort);
 
+  @override
+  LAServer sshUser(String? sshUser) => this(sshUser: sshUser);
+
+  @override
+  LAServer aliases(List<String>? aliases) => this(aliases: aliases);
+
+  @override
+  LAServer gateways(List<String>? gateways) => this(gateways: gateways);
+
+  @override
+  LAServer sshKey(SshKey? sshKey) => this(sshKey: sshKey);
+
+  @override
+  LAServer reachable(ServiceStatus reachable) => this(reachable: reachable);
+
+  @override
   LAServer sshReachable(ServiceStatus sshReachable) =>
       this(sshReachable: sshReachable);
 
+  @override
   LAServer sudoEnabled(ServiceStatus sudoEnabled) =>
       this(sudoEnabled: sudoEnabled);
-}
 
-extension LAServerCopyWith on LAServer {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass LAServer implements IsJsonSerializable<LAServer>.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass LAServer implements IsJsonSerializable<LAServer>.name.copyWith.fieldName(...)`
-  _LAServerCWProxy get copyWith => _LAServerCWProxy(this);
+  @override
+  LAServer osName(String osName) => this(osName: osName);
 
-  LAServer _copyWithNull({
-    bool aliases = false,
-    bool gateways = false,
-    bool id = false,
-    bool ip = false,
-    bool sshKey = false,
-    bool sshUser = false,
+  @override
+  LAServer osVersion(String osVersion) => this(osVersion: osVersion);
+
+  @override
+  LAServer projectId(String projectId) => this(projectId: projectId);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAServer(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// LAServer(...).copyWith(id: 12, name: "My name")
+  /// ````
+  LAServer call({
+    Object? id = const $CopyWithPlaceholder(),
+    Object? name = const $CopyWithPlaceholder(),
+    Object? ip = const $CopyWithPlaceholder(),
+    Object? sshPort = const $CopyWithPlaceholder(),
+    Object? sshUser = const $CopyWithPlaceholder(),
+    Object? aliases = const $CopyWithPlaceholder(),
+    Object? gateways = const $CopyWithPlaceholder(),
+    Object? sshKey = const $CopyWithPlaceholder(),
+    Object? reachable = const $CopyWithPlaceholder(),
+    Object? sshReachable = const $CopyWithPlaceholder(),
+    Object? sudoEnabled = const $CopyWithPlaceholder(),
+    Object? osName = const $CopyWithPlaceholder(),
+    Object? osVersion = const $CopyWithPlaceholder(),
+    Object? projectId = const $CopyWithPlaceholder(),
   }) {
     return LAServer(
-      aliases: aliases == true ? null : this.aliases,
-      gateways: gateways == true ? null : this.gateways,
-      id: id == true ? null : this.id,
-      ip: ip == true ? null : this.ip,
-      name: name,
-      osName: osName,
-      osVersion: osVersion,
-      projectId: projectId,
-      reachable: reachable,
-      sshKey: sshKey == true ? null : this.sshKey,
-      sshPort: sshPort,
-      sshReachable: sshReachable,
-      sshUser: sshUser == true ? null : this.sshUser,
-      sudoEnabled: sudoEnabled,
+      id: id == const $CopyWithPlaceholder()
+          ? _value.id
+          // ignore: cast_nullable_to_non_nullable
+          : id as String?,
+      name: name == const $CopyWithPlaceholder() || name == null
+          ? _value.name
+          // ignore: cast_nullable_to_non_nullable
+          : name as String,
+      ip: ip == const $CopyWithPlaceholder()
+          ? _value.ip
+          // ignore: cast_nullable_to_non_nullable
+          : ip as String?,
+      sshPort: sshPort == const $CopyWithPlaceholder() || sshPort == null
+          ? _value.sshPort
+          // ignore: cast_nullable_to_non_nullable
+          : sshPort as int,
+      sshUser: sshUser == const $CopyWithPlaceholder()
+          ? _value.sshUser
+          // ignore: cast_nullable_to_non_nullable
+          : sshUser as String?,
+      aliases: aliases == const $CopyWithPlaceholder()
+          ? _value.aliases
+          // ignore: cast_nullable_to_non_nullable
+          : aliases as List<String>?,
+      gateways: gateways == const $CopyWithPlaceholder()
+          ? _value.gateways
+          // ignore: cast_nullable_to_non_nullable
+          : gateways as List<String>?,
+      sshKey: sshKey == const $CopyWithPlaceholder()
+          ? _value.sshKey
+          // ignore: cast_nullable_to_non_nullable
+          : sshKey as SshKey?,
+      reachable: reachable == const $CopyWithPlaceholder() || reachable == null
+          ? _value.reachable
+          // ignore: cast_nullable_to_non_nullable
+          : reachable as ServiceStatus,
+      sshReachable:
+          sshReachable == const $CopyWithPlaceholder() || sshReachable == null
+              ? _value.sshReachable
+              // ignore: cast_nullable_to_non_nullable
+              : sshReachable as ServiceStatus,
+      sudoEnabled:
+          sudoEnabled == const $CopyWithPlaceholder() || sudoEnabled == null
+              ? _value.sudoEnabled
+              // ignore: cast_nullable_to_non_nullable
+              : sudoEnabled as ServiceStatus,
+      osName: osName == const $CopyWithPlaceholder() || osName == null
+          ? _value.osName
+          // ignore: cast_nullable_to_non_nullable
+          : osName as String,
+      osVersion: osVersion == const $CopyWithPlaceholder() || osVersion == null
+          ? _value.osVersion
+          // ignore: cast_nullable_to_non_nullable
+          : osVersion as String,
+      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
+          ? _value.projectId
+          // ignore: cast_nullable_to_non_nullable
+          : projectId as String,
     );
   }
+}
+
+extension $LAServerCopyWith on LAServer {
+  /// Returns a callable class that can be used as follows: `instanceOfLAServer.copyWith(...)` or like so:`instanceOfLAServer.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$LAServerCWProxy get copyWith => _$LAServerCWProxyImpl(this);
 }
 
 // **************************************************************************
@@ -165,9 +243,9 @@ Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
       'sshUser': instance.sshUser,
       'sshKey': instance.sshKey?.toJson(),
       'gateways': instance.gateways,
-      'reachable': _$ServiceStatusEnumMap[instance.reachable],
-      'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable],
-      'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled],
+      'reachable': _$ServiceStatusEnumMap[instance.reachable]!,
+      'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable]!,
+      'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled]!,
       'osName': instance.osName,
       'osVersion': instance.osVersion,
       'projectId': instance.projectId,

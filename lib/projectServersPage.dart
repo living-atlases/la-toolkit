@@ -54,8 +54,10 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
 
   @override
   void dispose() {
+    /* if (mounted) {
+      context.loaderOverlay.hide();
+    } */
     super.dispose();
-    context.loaderOverlay.hide();
   }
 
   @override
@@ -143,7 +145,7 @@ This is the most difficult part of all this project definition. If we configure 
 
 We'll use SSH to access to your server. For read more about SSH, read our wiki page [SSH for Beginners](https://github.com/AtlasOfLivingAustralia/documentation/wiki/SSH-for-Beginners).
 
-If you have doubts or need to ask for some information, save this project and continue later filling this. Don't hesitate to ask us in our #slack channel.    
+If you have doubts or need to ask for some information, save this project and continue later filling this. Don't hesitate to ask us in our #slack channel.
                          ''', margin: EdgeInsets.fromLTRB(0, 0, 0, 10)),
                     MessageItem(project, LAVariableDesc.get("ansible_user"),
                         (value) {
@@ -182,7 +184,7 @@ If you have doubts or need to ask for some information, save this project and co
                       Tooltip(
                           message: "Project configuration progress",
                           child: CircularPercentIndicator(
-                            radius: 50.0,
+                            radius: 25.0,
                             lineWidth: 6.0,
                             percent: project.status.percent / 100,
                             center: Text("${project.status.percent}%",

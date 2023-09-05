@@ -6,13 +6,12 @@ part of 'laLatLng.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfLALatLng.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfLALatLng.copyWith.fieldName(...)`
-class _LALatLngCWProxy {
-  final LALatLng _value;
+abstract class _$LALatLngCWProxy {
+  LALatLng latitude(double latitude);
 
-  const _LALatLngCWProxy(this._value);
+  LALatLng longitude(double longitude);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `LALatLng(...).copyWithNull(...)` to set certain fields to `null`. Prefer `LALatLng(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LALatLng(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
@@ -21,21 +20,50 @@ class _LALatLngCWProxy {
   LALatLng call({
     double? latitude,
     double? longitude,
-  }) {
-    return LALatLng(
-      latitude: latitude ?? _value.latitude,
-      longitude: longitude ?? _value.longitude,
-    );
-  }
-
-  LALatLng latitude(double latitude) => this(latitude: latitude);
-
-  LALatLng longitude(double longitude) => this(longitude: longitude);
+  });
 }
 
-extension LALatLngCopyWith on LALatLng {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass LALatLng extends LatLng.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass LALatLng extends LatLng.name.copyWith.fieldName(...)`
-  _LALatLngCWProxy get copyWith => _LALatLngCWProxy(this);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLALatLng.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLALatLng.copyWith.fieldName(...)`
+class _$LALatLngCWProxyImpl implements _$LALatLngCWProxy {
+  const _$LALatLngCWProxyImpl(this._value);
+
+  final LALatLng _value;
+
+  @override
+  LALatLng latitude(double latitude) => this(latitude: latitude);
+
+  @override
+  LALatLng longitude(double longitude) => this(longitude: longitude);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LALatLng(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// LALatLng(...).copyWith(id: 12, name: "My name")
+  /// ````
+  LALatLng call({
+    Object? latitude = const $CopyWithPlaceholder(),
+    Object? longitude = const $CopyWithPlaceholder(),
+  }) {
+    return LALatLng(
+      latitude: latitude == const $CopyWithPlaceholder() || latitude == null
+          ? _value.latitude
+          // ignore: cast_nullable_to_non_nullable
+          : latitude as double,
+      longitude: longitude == const $CopyWithPlaceholder() || longitude == null
+          ? _value.longitude
+          // ignore: cast_nullable_to_non_nullable
+          : longitude as double,
+    );
+  }
+}
+
+extension $LALatLngCopyWith on LALatLng {
+  /// Returns a callable class that can be used as follows: `instanceOfLALatLng.copyWith(...)` or like so:`instanceOfLALatLng.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$LALatLngCWProxy get copyWith => _$LALatLngCWProxyImpl(this);
 }
 
 // **************************************************************************

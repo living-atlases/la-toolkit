@@ -6,85 +6,136 @@ part of 'postDeployCmd.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfPostDeployCmd.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfPostDeployCmd.copyWith.fieldName(...)`
-class _PostDeployCmdCWProxy {
-  final PostDeployCmd _value;
+abstract class _$PostDeployCmdCWProxy {
+  PostDeployCmd configurePostfix(bool configurePostfix);
 
-  const _PostDeployCmdCWProxy(this._value);
+  PostDeployCmd limitToServers(List<String>? limitToServers);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `PostDeployCmd(...).copyWithNull(...)` to set certain fields to `null`. Prefer `PostDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  PostDeployCmd skipTags(List<String>? skipTags);
+
+  PostDeployCmd tags(List<String>? tags);
+
+  PostDeployCmd advanced(bool advanced);
+
+  PostDeployCmd continueEvenIfFails(bool continueEvenIfFails);
+
+  PostDeployCmd debug(bool debug);
+
+  PostDeployCmd dryRun(bool dryRun);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PostDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// PostDeployCmd(...).copyWith(id: 12, name: "My name")
   /// ````
   PostDeployCmd call({
-    bool? advanced,
     bool? configurePostfix,
-    bool? continueEvenIfFails,
-    bool? debug,
-    bool? dryRun,
     List<String>? limitToServers,
     List<String>? skipTags,
     List<String>? tags,
-  }) {
-    return PostDeployCmd(
-      advanced: advanced ?? _value.advanced,
-      configurePostfix: configurePostfix ?? _value.configurePostfix,
-      continueEvenIfFails: continueEvenIfFails ?? _value.continueEvenIfFails,
-      debug: debug ?? _value.debug,
-      dryRun: dryRun ?? _value.dryRun,
-      limitToServers: limitToServers ?? _value.limitToServers,
-      skipTags: skipTags ?? _value.skipTags,
-      tags: tags ?? _value.tags,
-    );
-  }
+    bool? advanced,
+    bool? continueEvenIfFails,
+    bool? debug,
+    bool? dryRun,
+  });
+}
 
-  PostDeployCmd limitToServers(List<String>? limitToServers) =>
-      limitToServers == null
-          ? _value._copyWithNull(limitToServers: true)
-          : this(limitToServers: limitToServers);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfPostDeployCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfPostDeployCmd.copyWith.fieldName(...)`
+class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
+  const _$PostDeployCmdCWProxyImpl(this._value);
 
-  PostDeployCmd skipTags(List<String>? skipTags) => skipTags == null
-      ? _value._copyWithNull(skipTags: true)
-      : this(skipTags: skipTags);
+  final PostDeployCmd _value;
 
-  PostDeployCmd tags(List<String>? tags) =>
-      tags == null ? _value._copyWithNull(tags: true) : this(tags: tags);
-
-  PostDeployCmd advanced(bool advanced) => this(advanced: advanced);
-
+  @override
   PostDeployCmd configurePostfix(bool configurePostfix) =>
       this(configurePostfix: configurePostfix);
 
+  @override
+  PostDeployCmd limitToServers(List<String>? limitToServers) =>
+      this(limitToServers: limitToServers);
+
+  @override
+  PostDeployCmd skipTags(List<String>? skipTags) => this(skipTags: skipTags);
+
+  @override
+  PostDeployCmd tags(List<String>? tags) => this(tags: tags);
+
+  @override
+  PostDeployCmd advanced(bool advanced) => this(advanced: advanced);
+
+  @override
   PostDeployCmd continueEvenIfFails(bool continueEvenIfFails) =>
       this(continueEvenIfFails: continueEvenIfFails);
 
+  @override
   PostDeployCmd debug(bool debug) => this(debug: debug);
 
+  @override
   PostDeployCmd dryRun(bool dryRun) => this(dryRun: dryRun);
-}
 
-extension PostDeployCmdCopyWith on PostDeployCmd {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass PostDeployCmd extends DeployCmd.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass PostDeployCmd extends DeployCmd.name.copyWith.fieldName(...)`
-  _PostDeployCmdCWProxy get copyWith => _PostDeployCmdCWProxy(this);
+  @override
 
-  PostDeployCmd _copyWithNull({
-    bool limitToServers = false,
-    bool skipTags = false,
-    bool tags = false,
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PostDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// PostDeployCmd(...).copyWith(id: 12, name: "My name")
+  /// ````
+  PostDeployCmd call({
+    Object? configurePostfix = const $CopyWithPlaceholder(),
+    Object? limitToServers = const $CopyWithPlaceholder(),
+    Object? skipTags = const $CopyWithPlaceholder(),
+    Object? tags = const $CopyWithPlaceholder(),
+    Object? advanced = const $CopyWithPlaceholder(),
+    Object? continueEvenIfFails = const $CopyWithPlaceholder(),
+    Object? debug = const $CopyWithPlaceholder(),
+    Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PostDeployCmd(
-      advanced: advanced,
-      configurePostfix: configurePostfix,
-      continueEvenIfFails: continueEvenIfFails,
-      debug: debug,
-      dryRun: dryRun,
-      limitToServers: limitToServers == true ? null : this.limitToServers,
-      skipTags: skipTags == true ? null : this.skipTags,
-      tags: tags == true ? null : this.tags,
+      configurePostfix: configurePostfix == const $CopyWithPlaceholder() ||
+              configurePostfix == null
+          ? _value.configurePostfix
+          // ignore: cast_nullable_to_non_nullable
+          : configurePostfix as bool,
+      limitToServers: limitToServers == const $CopyWithPlaceholder()
+          ? _value.limitToServers
+          // ignore: cast_nullable_to_non_nullable
+          : limitToServers as List<String>?,
+      skipTags: skipTags == const $CopyWithPlaceholder()
+          ? _value.skipTags
+          // ignore: cast_nullable_to_non_nullable
+          : skipTags as List<String>?,
+      tags: tags == const $CopyWithPlaceholder()
+          ? _value.tags
+          // ignore: cast_nullable_to_non_nullable
+          : tags as List<String>?,
+      advanced: advanced == const $CopyWithPlaceholder() || advanced == null
+          ? _value.advanced
+          // ignore: cast_nullable_to_non_nullable
+          : advanced as bool,
+      continueEvenIfFails:
+          continueEvenIfFails == const $CopyWithPlaceholder() ||
+                  continueEvenIfFails == null
+              ? _value.continueEvenIfFails
+              // ignore: cast_nullable_to_non_nullable
+              : continueEvenIfFails as bool,
+      debug: debug == const $CopyWithPlaceholder() || debug == null
+          ? _value.debug
+          // ignore: cast_nullable_to_non_nullable
+          : debug as bool,
+      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
+          ? _value.dryRun
+          // ignore: cast_nullable_to_non_nullable
+          : dryRun as bool,
     );
   }
+}
+
+extension $PostDeployCmdCopyWith on PostDeployCmd {
+  /// Returns a callable class that can be used as follows: `instanceOfPostDeployCmd.copyWith(...)` or like so:`instanceOfPostDeployCmd.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$PostDeployCmdCWProxy get copyWith => _$PostDeployCmdCWProxyImpl(this);
 }
 
 // **************************************************************************

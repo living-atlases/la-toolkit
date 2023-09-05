@@ -46,9 +46,9 @@ dependencies:
   # Used for service selection (for instance in service deploy)
   # https://github.com/davigmacode/flutter_chips_choice/pull/21
   chips_choice: # 2.0.1
-    path: ../flutter/flutter_chips_choice
-    #git:
-    #  url: https://github.com/vjrj/flutter_chips_choice.git
+    #path: ../flutter/flutter_chips_choice
+    git:
+      url: https://github.com/vjrj/flutter_chips_choice.git
   percent_indicator: ^4.2.3
   rflutter_alert: ^2.0.2
   # xterm: ^1.1.1+1
@@ -139,7 +139,6 @@ dependencies:
   sails_io: ^0.0.2
   infinite_scroll_pagination: ^4.0.0
   rxdart: ^0.27.3
-  sentry: ^7.9.0
   web_socket_channel: ^2.2.0
   collection: ^1.17.1
   redux: ^5.0.0

@@ -14,16 +14,16 @@ class ServersCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ServersCardListViewModel>(
+    return StoreConnector<AppState, ServersCardListViewModel>(
         distinct: false,
         converter: (store) {
-          return _ServersCardListViewModel(
+          return ServersCardListViewModel(
               currentProject: store.state.currentProject,
               onSaveCurrentProject: (project) {
                 store.dispatch(SaveCurrentProject(project));
               });
         },
-        builder: (BuildContext context, _ServersCardListViewModel vm) {
+        builder: (BuildContext context, ServersCardListViewModel vm) {
           final project = vm.currentProject;
           return Wrap(children: [
             for (LAServer server in project.servers)
@@ -36,7 +36,7 @@ class ServersCardList extends StatelessWidget {
 class ServerServicesHoverCard extends StatefulWidget {
   final LAServer server;
   final LAProject project;
-  final _ServersCardListViewModel vm;
+  final ServersCardListViewModel vm;
 
   const ServerServicesHoverCard(
       {Key? key, required this.server, required this.project, required this.vm})
@@ -136,7 +136,7 @@ class ServerServicesViewCard extends StatelessWidget {
 
   final LAServer server;
   final LAProject project;
-  final _ServersCardListViewModel vm;
+  final ServersCardListViewModel vm;
 
   @override
   Widget build(BuildContext context) {
@@ -178,17 +178,17 @@ class ServerServicesViewCard extends StatelessWidget {
   }
 }
 
-class _ServersCardListViewModel {
+class ServersCardListViewModel {
   final LAProject currentProject;
   final void Function(LAProject project) onSaveCurrentProject;
 
-  _ServersCardListViewModel(
+  ServersCardListViewModel(
       {required this.currentProject, required this.onSaveCurrentProject});
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _ServersCardListViewModel &&
+      other is ServersCardListViewModel &&
           runtimeType == other.runtimeType &&
           currentProject == other.currentProject;
 

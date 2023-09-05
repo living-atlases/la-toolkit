@@ -19,6 +19,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'components/LoadingTextOverlay.dart';
 import 'components/laAppBar.dart';
 import 'components/laProjectTimeline.dart';
 import 'components/projectDrawer.dart';
@@ -45,8 +46,15 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
 
   @override
   void dispose() {
+    if (mounted) {
+      // context.loaderOverlay.hide();
+    }
     super.dispose();
-    context.loaderOverlay.hide();
+  }
+
+  Future<void> showOverlay(BuildContext context) async {
+    context.loaderOverlay.show(widget: const LoadingTextOverlay());
+    await Future.delayed(const Duration(milliseconds: 1000));
   }
 
   @override
@@ -60,17 +68,17 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               loading: store.state.loading,
               softwareReleasesReady: store.state.laReleases.isNotEmpty,
               onOpenProject: (project) async {
-                context.loaderOverlay.show();
+                showOverlay(context);
                 store.dispatch(OpenProject(project));
                 BeamerCond.of(context, LAProjectEditLocation());
               },
               onOpenServersProject: (project) async {
-                context.loaderOverlay.show();
+                showOverlay(context);
                 store.dispatch(OpenServersProject(project));
                 BeamerCond.of(context, LAProjectServersLocation());
               },
               onTuneProject: (project) async {
-                context.loaderOverlay.show();
+                showOverlay(context);
                 store.dispatch(TuneProject(project));
                 BeamerCond.of(context, LAProjectTuneLocation());
               },

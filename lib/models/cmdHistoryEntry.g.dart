@@ -6,104 +6,165 @@ part of 'cmdHistoryEntry.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfCmdHistoryEntry.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfCmdHistoryEntry.copyWith.fieldName(...)`
-class _CmdHistoryEntryCWProxy {
-  final CmdHistoryEntry _value;
+abstract class _$CmdHistoryEntryCWProxy {
+  CmdHistoryEntry id(String? id);
 
-  const _CmdHistoryEntryCWProxy(this._value);
+  CmdHistoryEntry logsPrefix(String logsPrefix);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `CmdHistoryEntry(...).copyWithNull(...)` to set certain fields to `null`. Prefer `CmdHistoryEntry(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  CmdHistoryEntry logsSuffix(String logsSuffix);
+
+  CmdHistoryEntry desc(String? desc);
+
+  CmdHistoryEntry invDir(String? invDir);
+
+  CmdHistoryEntry cwd(String? cwd);
+
+  CmdHistoryEntry rawCmd(String rawCmd);
+
+  CmdHistoryEntry cmd(Cmd cmd);
+
+  CmdHistoryEntry createdAt(int? createdAt);
+
+  CmdHistoryEntry duration(double? duration);
+
+  CmdHistoryEntry result(CmdResult result);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `CmdHistoryEntry(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// CmdHistoryEntry(...).copyWith(id: 12, name: "My name")
   /// ````
   CmdHistoryEntry call({
-    Cmd? cmd,
-    int? createdAt,
-    String? cwd,
-    String? desc,
-    double? duration,
     String? id,
-    String? invDir,
     String? logsPrefix,
     String? logsSuffix,
+    String? desc,
+    String? invDir,
+    String? cwd,
     String? rawCmd,
+    Cmd? cmd,
+    int? createdAt,
+    double? duration,
     CmdResult? result,
-  }) {
-    return CmdHistoryEntry(
-      cmd: cmd ?? _value.cmd,
-      createdAt: createdAt ?? _value.createdAt,
-      cwd: cwd ?? _value.cwd,
-      desc: desc ?? _value.desc,
-      duration: duration ?? _value.duration,
-      id: id ?? _value.id,
-      invDir: invDir ?? _value.invDir,
-      logsPrefix: logsPrefix ?? _value.logsPrefix,
-      logsSuffix: logsSuffix ?? _value.logsSuffix,
-      rawCmd: rawCmd ?? _value.rawCmd,
-      result: result ?? _value.result,
-    );
-  }
-
-  CmdHistoryEntry createdAt(int? createdAt) => createdAt == null
-      ? _value._copyWithNull(createdAt: true)
-      : this(createdAt: createdAt);
-
-  CmdHistoryEntry cwd(String? cwd) =>
-      cwd == null ? _value._copyWithNull(cwd: true) : this(cwd: cwd);
-
-  CmdHistoryEntry desc(String? desc) =>
-      desc == null ? _value._copyWithNull(desc: true) : this(desc: desc);
-
-  CmdHistoryEntry duration(double? duration) => duration == null
-      ? _value._copyWithNull(duration: true)
-      : this(duration: duration);
-
-  CmdHistoryEntry id(String? id) =>
-      id == null ? _value._copyWithNull(id: true) : this(id: id);
-
-  CmdHistoryEntry invDir(String? invDir) => invDir == null
-      ? _value._copyWithNull(invDir: true)
-      : this(invDir: invDir);
-
-  CmdHistoryEntry cmd(Cmd cmd) => this(cmd: cmd);
-
-  CmdHistoryEntry logsPrefix(String logsPrefix) => this(logsPrefix: logsPrefix);
-
-  CmdHistoryEntry logsSuffix(String logsSuffix) => this(logsSuffix: logsSuffix);
-
-  CmdHistoryEntry rawCmd(String rawCmd) => this(rawCmd: rawCmd);
-
-  CmdHistoryEntry result(CmdResult result) => this(result: result);
+  });
 }
 
-extension CmdHistoryEntryCopyWith on CmdHistoryEntry {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass CmdHistoryEntry implements IsJsonSerializable<dynamic>.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass CmdHistoryEntry implements IsJsonSerializable<dynamic>.name.copyWith.fieldName(...)`
-  _CmdHistoryEntryCWProxy get copyWith => _CmdHistoryEntryCWProxy(this);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfCmdHistoryEntry.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfCmdHistoryEntry.copyWith.fieldName(...)`
+class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
+  const _$CmdHistoryEntryCWProxyImpl(this._value);
 
-  CmdHistoryEntry _copyWithNull({
-    bool createdAt = false,
-    bool cwd = false,
-    bool desc = false,
-    bool duration = false,
-    bool id = false,
-    bool invDir = false,
+  final CmdHistoryEntry _value;
+
+  @override
+  CmdHistoryEntry id(String? id) => this(id: id);
+
+  @override
+  CmdHistoryEntry logsPrefix(String logsPrefix) => this(logsPrefix: logsPrefix);
+
+  @override
+  CmdHistoryEntry logsSuffix(String logsSuffix) => this(logsSuffix: logsSuffix);
+
+  @override
+  CmdHistoryEntry desc(String? desc) => this(desc: desc);
+
+  @override
+  CmdHistoryEntry invDir(String? invDir) => this(invDir: invDir);
+
+  @override
+  CmdHistoryEntry cwd(String? cwd) => this(cwd: cwd);
+
+  @override
+  CmdHistoryEntry rawCmd(String rawCmd) => this(rawCmd: rawCmd);
+
+  @override
+  CmdHistoryEntry cmd(Cmd cmd) => this(cmd: cmd);
+
+  @override
+  CmdHistoryEntry createdAt(int? createdAt) => this(createdAt: createdAt);
+
+  @override
+  CmdHistoryEntry duration(double? duration) => this(duration: duration);
+
+  @override
+  CmdHistoryEntry result(CmdResult result) => this(result: result);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `CmdHistoryEntry(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// CmdHistoryEntry(...).copyWith(id: 12, name: "My name")
+  /// ````
+  CmdHistoryEntry call({
+    Object? id = const $CopyWithPlaceholder(),
+    Object? logsPrefix = const $CopyWithPlaceholder(),
+    Object? logsSuffix = const $CopyWithPlaceholder(),
+    Object? desc = const $CopyWithPlaceholder(),
+    Object? invDir = const $CopyWithPlaceholder(),
+    Object? cwd = const $CopyWithPlaceholder(),
+    Object? rawCmd = const $CopyWithPlaceholder(),
+    Object? cmd = const $CopyWithPlaceholder(),
+    Object? createdAt = const $CopyWithPlaceholder(),
+    Object? duration = const $CopyWithPlaceholder(),
+    Object? result = const $CopyWithPlaceholder(),
   }) {
     return CmdHistoryEntry(
-      cmd: cmd,
-      createdAt: createdAt == true ? null : this.createdAt,
-      cwd: cwd == true ? null : this.cwd,
-      desc: desc == true ? null : this.desc,
-      duration: duration == true ? null : this.duration,
-      id: id == true ? null : this.id,
-      invDir: invDir == true ? null : this.invDir,
-      logsPrefix: logsPrefix,
-      logsSuffix: logsSuffix,
-      rawCmd: rawCmd,
-      result: result,
+      id: id == const $CopyWithPlaceholder()
+          ? _value.id
+          // ignore: cast_nullable_to_non_nullable
+          : id as String?,
+      logsPrefix:
+          logsPrefix == const $CopyWithPlaceholder() || logsPrefix == null
+              ? _value.logsPrefix
+              // ignore: cast_nullable_to_non_nullable
+              : logsPrefix as String,
+      logsSuffix:
+          logsSuffix == const $CopyWithPlaceholder() || logsSuffix == null
+              ? _value.logsSuffix
+              // ignore: cast_nullable_to_non_nullable
+              : logsSuffix as String,
+      desc: desc == const $CopyWithPlaceholder()
+          ? _value.desc
+          // ignore: cast_nullable_to_non_nullable
+          : desc as String?,
+      invDir: invDir == const $CopyWithPlaceholder()
+          ? _value.invDir
+          // ignore: cast_nullable_to_non_nullable
+          : invDir as String?,
+      cwd: cwd == const $CopyWithPlaceholder()
+          ? _value.cwd
+          // ignore: cast_nullable_to_non_nullable
+          : cwd as String?,
+      rawCmd: rawCmd == const $CopyWithPlaceholder() || rawCmd == null
+          ? _value.rawCmd
+          // ignore: cast_nullable_to_non_nullable
+          : rawCmd as String,
+      cmd: cmd == const $CopyWithPlaceholder() || cmd == null
+          ? _value.cmd
+          // ignore: cast_nullable_to_non_nullable
+          : cmd as Cmd,
+      createdAt: createdAt == const $CopyWithPlaceholder()
+          ? _value.createdAt
+          // ignore: cast_nullable_to_non_nullable
+          : createdAt as int?,
+      duration: duration == const $CopyWithPlaceholder()
+          ? _value.duration
+          // ignore: cast_nullable_to_non_nullable
+          : duration as double?,
+      result: result == const $CopyWithPlaceholder() || result == null
+          ? _value.result
+          // ignore: cast_nullable_to_non_nullable
+          : result as CmdResult,
     );
   }
+}
+
+extension $CmdHistoryEntryCopyWith on CmdHistoryEntry {
+  /// Returns a callable class that can be used as follows: `instanceOfCmdHistoryEntry.copyWith(...)` or like so:`instanceOfCmdHistoryEntry.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$CmdHistoryEntryCWProxy get copyWith => _$CmdHistoryEntryCWProxyImpl(this);
 }
 
 // **************************************************************************
@@ -136,7 +197,7 @@ Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
       'invDir': instance.invDir,
       'cwd': instance.cwd,
       'cmd': instance.cmd.toJson(),
-      'result': _$CmdResultEnumMap[instance.result],
+      'result': _$CmdResultEnumMap[instance.result]!,
       'createdAt': instance.createdAt,
       'duration': instance.duration,
     };

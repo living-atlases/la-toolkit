@@ -6,78 +6,130 @@ part of 'pipelinesCmd.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfPipelinesCmd.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfPipelinesCmd.copyWith.fieldName(...)`
-class _PipelinesCmdCWProxy {
-  final PipelinesCmd _value;
+abstract class _$PipelinesCmdCWProxy {
+  PipelinesCmd drs(String? drs);
 
-  const _PipelinesCmdCWProxy(this._value);
+  PipelinesCmd steps(Set<String>? steps);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `PipelinesCmd(...).copyWithNull(...)` to set certain fields to `null`. Prefer `PipelinesCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  PipelinesCmd master(String master);
+
+  PipelinesCmd debug(bool debug);
+
+  PipelinesCmd allDrs(bool allDrs);
+
+  PipelinesCmd allSteps(bool allSteps);
+
+  PipelinesCmd dryRun(bool dryRun);
+
+  PipelinesCmd mode(int mode);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PipelinesCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// PipelinesCmd(...).copyWith(id: 12, name: "My name")
   /// ````
   PipelinesCmd call({
+    String? drs,
+    Set<String>? steps,
+    String? master,
+    bool? debug,
     bool? allDrs,
     bool? allSteps,
-    bool? debug,
-    String? drs,
     bool? dryRun,
-    String? master,
     int? mode,
-    Set<String>? steps,
-  }) {
-    return PipelinesCmd(
-      allDrs: allDrs ?? _value.allDrs,
-      allSteps: allSteps ?? _value.allSteps,
-      debug: debug ?? _value.debug,
-      drs: drs ?? _value.drs,
-      dryRun: dryRun ?? _value.dryRun,
-      master: master ?? _value.master,
-      mode: mode ?? _value.mode,
-      steps: steps ?? _value.steps,
-    );
-  }
-
-  PipelinesCmd drs(String? drs) =>
-      drs == null ? _value._copyWithNull(drs: true) : this(drs: drs);
-
-  PipelinesCmd steps(Set<String>? steps) =>
-      steps == null ? _value._copyWithNull(steps: true) : this(steps: steps);
-
-  PipelinesCmd allDrs(bool allDrs) => this(allDrs: allDrs);
-
-  PipelinesCmd allSteps(bool allSteps) => this(allSteps: allSteps);
-
-  PipelinesCmd debug(bool debug) => this(debug: debug);
-
-  PipelinesCmd dryRun(bool dryRun) => this(dryRun: dryRun);
-
-  PipelinesCmd master(String master) => this(master: master);
-
-  PipelinesCmd mode(int mode) => this(mode: mode);
+  });
 }
 
-extension PipelinesCmdCopyWith on PipelinesCmd {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass PipelinesCmd extends CommonCmd.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass PipelinesCmd extends CommonCmd.name.copyWith.fieldName(...)`
-  _PipelinesCmdCWProxy get copyWith => _PipelinesCmdCWProxy(this);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfPipelinesCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfPipelinesCmd.copyWith.fieldName(...)`
+class _$PipelinesCmdCWProxyImpl implements _$PipelinesCmdCWProxy {
+  const _$PipelinesCmdCWProxyImpl(this._value);
 
-  PipelinesCmd _copyWithNull({
-    bool drs = false,
-    bool steps = false,
+  final PipelinesCmd _value;
+
+  @override
+  PipelinesCmd drs(String? drs) => this(drs: drs);
+
+  @override
+  PipelinesCmd steps(Set<String>? steps) => this(steps: steps);
+
+  @override
+  PipelinesCmd master(String master) => this(master: master);
+
+  @override
+  PipelinesCmd debug(bool debug) => this(debug: debug);
+
+  @override
+  PipelinesCmd allDrs(bool allDrs) => this(allDrs: allDrs);
+
+  @override
+  PipelinesCmd allSteps(bool allSteps) => this(allSteps: allSteps);
+
+  @override
+  PipelinesCmd dryRun(bool dryRun) => this(dryRun: dryRun);
+
+  @override
+  PipelinesCmd mode(int mode) => this(mode: mode);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PipelinesCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// PipelinesCmd(...).copyWith(id: 12, name: "My name")
+  /// ````
+  PipelinesCmd call({
+    Object? drs = const $CopyWithPlaceholder(),
+    Object? steps = const $CopyWithPlaceholder(),
+    Object? master = const $CopyWithPlaceholder(),
+    Object? debug = const $CopyWithPlaceholder(),
+    Object? allDrs = const $CopyWithPlaceholder(),
+    Object? allSteps = const $CopyWithPlaceholder(),
+    Object? dryRun = const $CopyWithPlaceholder(),
+    Object? mode = const $CopyWithPlaceholder(),
   }) {
     return PipelinesCmd(
-      allDrs: allDrs,
-      allSteps: allSteps,
-      debug: debug,
-      drs: drs == true ? null : this.drs,
-      dryRun: dryRun,
-      master: master,
-      mode: mode,
-      steps: steps == true ? null : this.steps,
+      drs: drs == const $CopyWithPlaceholder()
+          ? _value.drs
+          // ignore: cast_nullable_to_non_nullable
+          : drs as String?,
+      steps: steps == const $CopyWithPlaceholder()
+          ? _value.steps
+          // ignore: cast_nullable_to_non_nullable
+          : steps as Set<String>?,
+      master: master == const $CopyWithPlaceholder() || master == null
+          ? _value.master
+          // ignore: cast_nullable_to_non_nullable
+          : master as String,
+      debug: debug == const $CopyWithPlaceholder() || debug == null
+          ? _value.debug
+          // ignore: cast_nullable_to_non_nullable
+          : debug as bool,
+      allDrs: allDrs == const $CopyWithPlaceholder() || allDrs == null
+          ? _value.allDrs
+          // ignore: cast_nullable_to_non_nullable
+          : allDrs as bool,
+      allSteps: allSteps == const $CopyWithPlaceholder() || allSteps == null
+          ? _value.allSteps
+          // ignore: cast_nullable_to_non_nullable
+          : allSteps as bool,
+      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
+          ? _value.dryRun
+          // ignore: cast_nullable_to_non_nullable
+          : dryRun as bool,
+      mode: mode == const $CopyWithPlaceholder() || mode == null
+          ? _value.mode
+          // ignore: cast_nullable_to_non_nullable
+          : mode as int,
     );
   }
+}
+
+extension $PipelinesCmdCopyWith on PipelinesCmd {
+  /// Returns a callable class that can be used as follows: `instanceOfPipelinesCmd.copyWith(...)` or like so:`instanceOfPipelinesCmd.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$PipelinesCmdCWProxy get copyWith => _$PipelinesCmdCWProxyImpl(this);
 }
 
 // **************************************************************************

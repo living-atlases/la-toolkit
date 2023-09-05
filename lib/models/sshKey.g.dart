@@ -6,86 +6,142 @@ part of 'sshKey.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfSshKey.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfSshKey.copyWith.fieldName(...)`
-class _SshKeyCWProxy {
-  final SshKey _value;
+abstract class _$SshKeyCWProxy {
+  SshKey name(String name);
 
-  const _SshKeyCWProxy(this._value);
+  SshKey privateKey(String privateKey);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `SshKey(...).copyWithNull(...)` to set certain fields to `null`. Prefer `SshKey(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  SshKey publicKey(String publicKey);
+
+  SshKey type(String? type);
+
+  SshKey size(int? size);
+
+  SshKey desc(String desc);
+
+  SshKey fingerprint(String? fingerprint);
+
+  SshKey encrypted(bool encrypted);
+
+  SshKey missing(bool missing);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `SshKey(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// SshKey(...).copyWith(id: 12, name: "My name")
   /// ````
   SshKey call({
-    String? desc,
-    bool? encrypted,
-    String? fingerprint,
-    bool? missing,
     String? name,
     String? privateKey,
     String? publicKey,
-    int? size,
     String? type,
-  }) {
-    return SshKey(
-      desc: desc ?? _value.desc,
-      encrypted: encrypted ?? _value.encrypted,
-      fingerprint: fingerprint ?? _value.fingerprint,
-      missing: missing ?? _value.missing,
-      name: name ?? _value.name,
-      privateKey: privateKey ?? _value.privateKey,
-      publicKey: publicKey ?? _value.publicKey,
-      size: size ?? _value.size,
-      type: type ?? _value.type,
-    );
-  }
-
-  SshKey fingerprint(String? fingerprint) => fingerprint == null
-      ? _value._copyWithNull(fingerprint: true)
-      : this(fingerprint: fingerprint);
-
-  SshKey size(int? size) =>
-      size == null ? _value._copyWithNull(size: true) : this(size: size);
-
-  SshKey type(String? type) =>
-      type == null ? _value._copyWithNull(type: true) : this(type: type);
-
-  SshKey desc(String desc) => this(desc: desc);
-
-  SshKey encrypted(bool encrypted) => this(encrypted: encrypted);
-
-  SshKey missing(bool missing) => this(missing: missing);
-
-  SshKey name(String name) => this(name: name);
-
-  SshKey privateKey(String privateKey) => this(privateKey: privateKey);
-
-  SshKey publicKey(String publicKey) => this(publicKey: publicKey);
+    int? size,
+    String? desc,
+    String? fingerprint,
+    bool? encrypted,
+    bool? missing,
+  });
 }
 
-extension SshKeyCopyWith on SshKey {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass SshKey.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass SshKey.name.copyWith.fieldName(...)`
-  _SshKeyCWProxy get copyWith => _SshKeyCWProxy(this);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfSshKey.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfSshKey.copyWith.fieldName(...)`
+class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
+  const _$SshKeyCWProxyImpl(this._value);
 
-  SshKey _copyWithNull({
-    bool fingerprint = false,
-    bool size = false,
-    bool type = false,
+  final SshKey _value;
+
+  @override
+  SshKey name(String name) => this(name: name);
+
+  @override
+  SshKey privateKey(String privateKey) => this(privateKey: privateKey);
+
+  @override
+  SshKey publicKey(String publicKey) => this(publicKey: publicKey);
+
+  @override
+  SshKey type(String? type) => this(type: type);
+
+  @override
+  SshKey size(int? size) => this(size: size);
+
+  @override
+  SshKey desc(String desc) => this(desc: desc);
+
+  @override
+  SshKey fingerprint(String? fingerprint) => this(fingerprint: fingerprint);
+
+  @override
+  SshKey encrypted(bool encrypted) => this(encrypted: encrypted);
+
+  @override
+  SshKey missing(bool missing) => this(missing: missing);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `SshKey(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// SshKey(...).copyWith(id: 12, name: "My name")
+  /// ````
+  SshKey call({
+    Object? name = const $CopyWithPlaceholder(),
+    Object? privateKey = const $CopyWithPlaceholder(),
+    Object? publicKey = const $CopyWithPlaceholder(),
+    Object? type = const $CopyWithPlaceholder(),
+    Object? size = const $CopyWithPlaceholder(),
+    Object? desc = const $CopyWithPlaceholder(),
+    Object? fingerprint = const $CopyWithPlaceholder(),
+    Object? encrypted = const $CopyWithPlaceholder(),
+    Object? missing = const $CopyWithPlaceholder(),
   }) {
     return SshKey(
-      desc: desc,
-      encrypted: encrypted,
-      fingerprint: fingerprint == true ? null : this.fingerprint,
-      missing: missing,
-      name: name,
-      privateKey: privateKey,
-      publicKey: publicKey,
-      size: size == true ? null : this.size,
-      type: type == true ? null : this.type,
+      name: name == const $CopyWithPlaceholder() || name == null
+          ? _value.name
+          // ignore: cast_nullable_to_non_nullable
+          : name as String,
+      privateKey:
+          privateKey == const $CopyWithPlaceholder() || privateKey == null
+              ? _value.privateKey
+              // ignore: cast_nullable_to_non_nullable
+              : privateKey as String,
+      publicKey: publicKey == const $CopyWithPlaceholder() || publicKey == null
+          ? _value.publicKey
+          // ignore: cast_nullable_to_non_nullable
+          : publicKey as String,
+      type: type == const $CopyWithPlaceholder()
+          ? _value.type
+          // ignore: cast_nullable_to_non_nullable
+          : type as String?,
+      size: size == const $CopyWithPlaceholder()
+          ? _value.size
+          // ignore: cast_nullable_to_non_nullable
+          : size as int?,
+      desc: desc == const $CopyWithPlaceholder() || desc == null
+          ? _value.desc
+          // ignore: cast_nullable_to_non_nullable
+          : desc as String,
+      fingerprint: fingerprint == const $CopyWithPlaceholder()
+          ? _value.fingerprint
+          // ignore: cast_nullable_to_non_nullable
+          : fingerprint as String?,
+      encrypted: encrypted == const $CopyWithPlaceholder() || encrypted == null
+          ? _value.encrypted
+          // ignore: cast_nullable_to_non_nullable
+          : encrypted as bool,
+      missing: missing == const $CopyWithPlaceholder() || missing == null
+          ? _value.missing
+          // ignore: cast_nullable_to_non_nullable
+          : missing as bool,
     );
   }
+}
+
+extension $SshKeyCopyWith on SshKey {
+  /// Returns a callable class that can be used as follows: `instanceOfSshKey.copyWith(...)` or like so:`instanceOfSshKey.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$SshKeyCWProxy get copyWith => _$SshKeyCWProxyImpl(this);
 }
 
 // **************************************************************************

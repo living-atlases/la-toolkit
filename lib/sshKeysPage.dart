@@ -25,10 +25,10 @@ class SshKeyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _SshKeyViewModel>(
+    return StoreConnector<AppState, SshKeyViewModel>(
       // Fails the switch distinct: true,
       converter: (store) {
-        return _SshKeyViewModel(
+        return SshKeyViewModel(
             state: store.state,
             onAddKey: (name) => store.dispatch(OnAddSshKey(name)),
             onImportKey: (name, publicKey, privateKey) =>
@@ -36,7 +36,7 @@ class SshKeyPage extends StatelessWidget {
             onScanKeys: () => store
                 .dispatch(OnSshKeysScan(() => context.loaderOverlay.hide())));
       },
-      builder: (BuildContext context, _SshKeyViewModel vm) {
+      builder: (BuildContext context, SshKeyViewModel vm) {
         return Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
@@ -91,7 +91,7 @@ class SshKeyPage extends StatelessWidget {
     );
   }
 
-  void _generateKeyDialog(BuildContext context, _SshKeyViewModel vm) {
+  void _generateKeyDialog(BuildContext context, SshKeyViewModel vm) {
     String? name;
     Alert(
         context: context,
@@ -140,7 +140,7 @@ class SshKeyPage extends StatelessWidget {
         ]).show();
   }
 
-  void _importKeysDialog(BuildContext context, _SshKeyViewModel vm) {
+  void _importKeysDialog(BuildContext context, SshKeyViewModel vm) {
     String? name;
     String? publicKey;
     String? privateKey;
@@ -229,14 +229,14 @@ class SshKeyPage extends StatelessWidget {
 }
 
 class SshKeysTable extends StatelessWidget {
-  final _SshKeyViewModel vm;
+  final SshKeyViewModel vm;
 
   const SshKeysTable({Key? key, required this.vm}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return DataTable(
-        dataRowHeight: 65,
+        dataRowMaxHeight: 65,
         // sortAscending: sort,
         // sortColumnIndex: 0,
         showCheckboxColumn: false,
@@ -299,13 +299,13 @@ class SshKeysTable extends StatelessWidget {
   }
 }
 
-class _SshKeyViewModel {
+class SshKeyViewModel {
   final AppState state;
   final void Function(String) onAddKey;
   final void Function() onScanKeys;
   final void Function(String, String, String) onImportKey;
 
-  _SshKeyViewModel(
+  SshKeyViewModel(
       {required this.state,
       required this.onAddKey,
       required this.onScanKeys,
@@ -314,7 +314,7 @@ class _SshKeyViewModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _SshKeyViewModel &&
+      other is SshKeyViewModel &&
           runtimeType == other.runtimeType &&
           state.sshKeys == other.state.sshKeys;
 

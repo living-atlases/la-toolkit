@@ -6,13 +6,14 @@ part of 'cmd.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfCmd.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfCmd.copyWith.fieldName(...)`
-class _CmdCWProxy {
-  final Cmd _value;
+abstract class _$CmdCWProxy {
+  Cmd id(String? id);
 
-  const _CmdCWProxy(this._value);
+  Cmd type(CmdType type);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `Cmd(...).copyWithNull(...)` to set certain fields to `null`. Prefer `Cmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  Cmd properties(Map<String, dynamic> properties);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Cmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
@@ -20,38 +21,62 @@ class _CmdCWProxy {
   /// ````
   Cmd call({
     String? id,
-    Map<String, dynamic>? properties,
     CmdType? type,
-  }) {
-    return Cmd(
-      id: id ?? _value.id,
-      properties: properties ?? _value.properties,
-      type: type ?? _value.type,
-    );
-  }
+    Map<String, dynamic>? properties,
+  });
+}
 
-  Cmd id(String? id) =>
-      id == null ? _value._copyWithNull(id: true) : this(id: id);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfCmd.copyWith.fieldName(...)`
+class _$CmdCWProxyImpl implements _$CmdCWProxy {
+  const _$CmdCWProxyImpl(this._value);
 
+  final Cmd _value;
+
+  @override
+  Cmd id(String? id) => this(id: id);
+
+  @override
+  Cmd type(CmdType type) => this(type: type);
+
+  @override
   Cmd properties(Map<String, dynamic> properties) =>
       this(properties: properties);
 
-  Cmd type(CmdType type) => this(type: type);
-}
+  @override
 
-extension CmdCopyWith on Cmd {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass Cmd.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass Cmd.name.copyWith.fieldName(...)`
-  _CmdCWProxy get copyWith => _CmdCWProxy(this);
-
-  Cmd _copyWithNull({
-    bool id = false,
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Cmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// Cmd(...).copyWith(id: 12, name: "My name")
+  /// ````
+  Cmd call({
+    Object? id = const $CopyWithPlaceholder(),
+    Object? type = const $CopyWithPlaceholder(),
+    Object? properties = const $CopyWithPlaceholder(),
   }) {
     return Cmd(
-      id: id == true ? null : this.id,
-      properties: properties,
-      type: type,
+      id: id == const $CopyWithPlaceholder()
+          ? _value.id
+          // ignore: cast_nullable_to_non_nullable
+          : id as String?,
+      type: type == const $CopyWithPlaceholder() || type == null
+          ? _value.type
+          // ignore: cast_nullable_to_non_nullable
+          : type as CmdType,
+      properties:
+          properties == const $CopyWithPlaceholder() || properties == null
+              ? _value.properties
+              // ignore: cast_nullable_to_non_nullable
+              : properties as Map<String, dynamic>,
     );
   }
+}
+
+extension $CmdCopyWith on Cmd {
+  /// Returns a callable class that can be used as follows: `instanceOfCmd.copyWith(...)` or like so:`instanceOfCmd.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$CmdCWProxy get copyWith => _$CmdCWProxyImpl(this);
 }
 
 // **************************************************************************
@@ -66,7 +91,7 @@ Cmd _$CmdFromJson(Map<String, dynamic> json) => Cmd(
 
 Map<String, dynamic> _$CmdToJson(Cmd instance) => <String, dynamic>{
       'id': instance.id,
-      'type': _$CmdTypeEnumMap[instance.type],
+      'type': _$CmdTypeEnumMap[instance.type]!,
       'properties': instance.properties,
     };
 

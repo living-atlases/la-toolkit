@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
-    context.loaderOverlay.hide();
+    // context.loaderOverlay.hide();
   }
 
   Future<void> _initPackageInfo() async {
@@ -101,14 +101,14 @@ class _HomePageState extends State<HomePage> {
                   key: _scaffoldKey,
                   drawer: MainDrawer(
                       currentRoute: HomePage.routeName,
-                      appName: MyApp.appName,
+                      appName: LaToolkitApp.appName,
                       packageInfo: _packageInfo),
                   // Maybe:
                   // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
                   // App bar with floating: true, pinned: true, snap: false:
                   appBar: LAAppBar(
                       context: context,
-                      title: MyApp.appName,
+                      title: LaToolkitApp.appName,
                       tooltip: _packageInfo.version,
                       showLaIcon: true,
                       loading: vm.state.loading,
@@ -241,9 +241,15 @@ class _HomePageState extends State<HomePage> {
               if (yoRcJson != null) {
                 vm.onImportProject(yoRcJson);
               } else {
+                if (!mounted) {
+                  return;
+                }
                 onFinish(context, true);
               }
             } catch (e) {
+              if (!mounted) {
+                return;
+              }
               onFinish(context, true);
             }
           },

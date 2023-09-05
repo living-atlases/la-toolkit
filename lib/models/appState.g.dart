@@ -6,173 +6,251 @@ part of 'appState.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-/// Proxy class for `CopyWith` functionality. This is a callable class and can be used as follows: `instanceOfAppState.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfAppState.copyWith.fieldName(...)`
-class _AppStateCWProxy {
-  final AppState _value;
+abstract class _$AppStateCWProxy {
+  AppState projects(List<LAProject>? projects);
 
-  const _AppStateCWProxy(this._value);
+  AppState failedLoad(bool failedLoad);
 
-  /// This function does not support nullification of optional types, all `null` values passed to this function will be ignored. For nullification, use `AppState(...).copyWithNull(...)` to set certain fields to `null`. Prefer `AppState(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  AppState firstUsage(bool firstUsage);
+
+  AppState currentProject(LAProject? currentProject);
+
+  AppState currentStep(int currentStep);
+
+  AppState currentTuneTab(int currentTuneTab);
+
+  AppState status(LAProjectViewStatus? status);
+
+  AppState alaInstallReleases(List<String>? alaInstallReleases);
+
+  AppState generatorReleases(List<String>? generatorReleases);
+
+  AppState appSnackBarMessages(List<AppSnackBarMessage>? appSnackBarMessages);
+
+  AppState laReleases(Map<String, LAReleases>? laReleases);
+
+  AppState repeatCmd(CommonCmd? repeatCmd);
+
+  AppState pkgInfo(PackageInfo? pkgInfo);
+
+  AppState backendVersion(String? backendVersion);
+
+  AppState lastSwCheck(DateTime? lastSwCheck);
+
+  AppState loading(bool? loading);
+
+  AppState depsLoading(bool? depsLoading);
+
+  AppState sshKeys(List<SshKey>? sshKeys);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `AppState(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
   /// AppState(...).copyWith(id: 12, name: "My name")
   /// ````
   AppState call({
-    List<String>? alaInstallReleases,
-    List<AppSnackBarMessage>? appSnackBarMessages,
-    String? backendVersion,
+    List<LAProject>? projects,
+    bool? failedLoad,
+    bool? firstUsage,
     LAProject? currentProject,
     int? currentStep,
     int? currentTuneTab,
-    bool? depsLoading,
-    bool? failedLoad,
-    bool? firstUsage,
+    LAProjectViewStatus? status,
+    List<String>? alaInstallReleases,
     List<String>? generatorReleases,
+    List<AppSnackBarMessage>? appSnackBarMessages,
     Map<String, LAReleases>? laReleases,
+    CommonCmd? repeatCmd,
+    PackageInfo? pkgInfo,
+    String? backendVersion,
     DateTime? lastSwCheck,
     bool? loading,
-    PackageInfo? pkgInfo,
-    List<LAProject>? projects,
-    CommonCmd? repeatCmd,
+    bool? depsLoading,
     List<SshKey>? sshKeys,
-    LAProjectViewStatus? status,
-  }) {
-    return AppState(
-      alaInstallReleases: alaInstallReleases ?? _value.alaInstallReleases,
-      appSnackBarMessages: appSnackBarMessages ?? _value.appSnackBarMessages,
-      backendVersion: backendVersion ?? _value.backendVersion,
-      currentProject: currentProject ?? _value.currentProject,
-      currentStep: currentStep ?? _value.currentStep,
-      currentTuneTab: currentTuneTab ?? _value.currentTuneTab,
-      depsLoading: depsLoading ?? _value.depsLoading,
-      failedLoad: failedLoad ?? _value.failedLoad,
-      firstUsage: firstUsage ?? _value.firstUsage,
-      generatorReleases: generatorReleases ?? _value.generatorReleases,
-      laReleases: laReleases ?? _value.laReleases,
-      lastSwCheck: lastSwCheck ?? _value.lastSwCheck,
-      loading: loading ?? _value.loading,
-      pkgInfo: pkgInfo ?? _value.pkgInfo,
-      projects: projects ?? _value.projects,
-      repeatCmd: repeatCmd ?? _value.repeatCmd,
-      sshKeys: sshKeys ?? _value.sshKeys,
-      status: status ?? _value.status,
-    );
-  }
+  });
+}
 
-  AppState alaInstallReleases(List<String>? alaInstallReleases) =>
-      alaInstallReleases == null
-          ? _value._copyWithNull(alaInstallReleases: true)
-          : this(alaInstallReleases: alaInstallReleases);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfAppState.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfAppState.copyWith.fieldName(...)`
+class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
+  const _$AppStateCWProxyImpl(this._value);
 
-  AppState appSnackBarMessages(List<AppSnackBarMessage>? appSnackBarMessages) =>
-      appSnackBarMessages == null
-          ? _value._copyWithNull(appSnackBarMessages: true)
-          : this(appSnackBarMessages: appSnackBarMessages);
+  final AppState _value;
 
-  AppState backendVersion(String? backendVersion) => backendVersion == null
-      ? _value._copyWithNull(backendVersion: true)
-      : this(backendVersion: backendVersion);
+  @override
+  AppState projects(List<LAProject>? projects) => this(projects: projects);
 
-  AppState currentProject(LAProject? currentProject) => currentProject == null
-      ? _value._copyWithNull(currentProject: true)
-      : this(currentProject: currentProject);
+  @override
+  AppState failedLoad(bool failedLoad) => this(failedLoad: failedLoad);
 
-  AppState depsLoading(bool? depsLoading) => depsLoading == null
-      ? _value._copyWithNull(depsLoading: true)
-      : this(depsLoading: depsLoading);
+  @override
+  AppState firstUsage(bool firstUsage) => this(firstUsage: firstUsage);
 
-  AppState generatorReleases(List<String>? generatorReleases) =>
-      generatorReleases == null
-          ? _value._copyWithNull(generatorReleases: true)
-          : this(generatorReleases: generatorReleases);
+  @override
+  AppState currentProject(LAProject? currentProject) =>
+      this(currentProject: currentProject);
 
-  AppState laReleases(Map<String, LAReleases>? laReleases) => laReleases == null
-      ? _value._copyWithNull(laReleases: true)
-      : this(laReleases: laReleases);
-
-  AppState lastSwCheck(DateTime? lastSwCheck) => lastSwCheck == null
-      ? _value._copyWithNull(lastSwCheck: true)
-      : this(lastSwCheck: lastSwCheck);
-
-  AppState loading(bool? loading) => loading == null
-      ? _value._copyWithNull(loading: true)
-      : this(loading: loading);
-
-  AppState pkgInfo(PackageInfo? pkgInfo) => pkgInfo == null
-      ? _value._copyWithNull(pkgInfo: true)
-      : this(pkgInfo: pkgInfo);
-
-  AppState projects(List<LAProject>? projects) => projects == null
-      ? _value._copyWithNull(projects: true)
-      : this(projects: projects);
-
-  AppState repeatCmd(CommonCmd? repeatCmd) => repeatCmd == null
-      ? _value._copyWithNull(repeatCmd: true)
-      : this(repeatCmd: repeatCmd);
-
-  AppState sshKeys(List<SshKey>? sshKeys) => sshKeys == null
-      ? _value._copyWithNull(sshKeys: true)
-      : this(sshKeys: sshKeys);
-
-  AppState status(LAProjectViewStatus? status) => status == null
-      ? _value._copyWithNull(status: true)
-      : this(status: status);
-
+  @override
   AppState currentStep(int currentStep) => this(currentStep: currentStep);
 
+  @override
   AppState currentTuneTab(int currentTuneTab) =>
       this(currentTuneTab: currentTuneTab);
 
-  AppState failedLoad(bool failedLoad) => this(failedLoad: failedLoad);
+  @override
+  AppState status(LAProjectViewStatus? status) => this(status: status);
 
-  AppState firstUsage(bool firstUsage) => this(firstUsage: firstUsage);
-}
+  @override
+  AppState alaInstallReleases(List<String>? alaInstallReleases) =>
+      this(alaInstallReleases: alaInstallReleases);
 
-extension AppStateCopyWith on AppState {
-  /// CopyWith feature provided by `copy_with_extension_gen` library. Returns a callable class and can be used as follows: `instanceOfclass AppState.name.copyWith(...)`. Be aware that this kind of usage does not support nullification and all passed `null` values will be ignored. Prefer to copy the instance with a specific field change that handles nullification of fields correctly, e.g. like this:`instanceOfclass AppState.name.copyWith.fieldName(...)`
-  _AppStateCWProxy get copyWith => _AppStateCWProxy(this);
+  @override
+  AppState generatorReleases(List<String>? generatorReleases) =>
+      this(generatorReleases: generatorReleases);
 
-  AppState _copyWithNull({
-    bool alaInstallReleases = false,
-    bool appSnackBarMessages = false,
-    bool backendVersion = false,
-    bool currentProject = false,
-    bool depsLoading = false,
-    bool generatorReleases = false,
-    bool laReleases = false,
-    bool lastSwCheck = false,
-    bool loading = false,
-    bool pkgInfo = false,
-    bool projects = false,
-    bool repeatCmd = false,
-    bool sshKeys = false,
-    bool status = false,
+  @override
+  AppState appSnackBarMessages(List<AppSnackBarMessage>? appSnackBarMessages) =>
+      this(appSnackBarMessages: appSnackBarMessages);
+
+  @override
+  AppState laReleases(Map<String, LAReleases>? laReleases) =>
+      this(laReleases: laReleases);
+
+  @override
+  AppState repeatCmd(CommonCmd? repeatCmd) => this(repeatCmd: repeatCmd);
+
+  @override
+  AppState pkgInfo(PackageInfo? pkgInfo) => this(pkgInfo: pkgInfo);
+
+  @override
+  AppState backendVersion(String? backendVersion) =>
+      this(backendVersion: backendVersion);
+
+  @override
+  AppState lastSwCheck(DateTime? lastSwCheck) => this(lastSwCheck: lastSwCheck);
+
+  @override
+  AppState loading(bool? loading) => this(loading: loading);
+
+  @override
+  AppState depsLoading(bool? depsLoading) => this(depsLoading: depsLoading);
+
+  @override
+  AppState sshKeys(List<SshKey>? sshKeys) => this(sshKeys: sshKeys);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `AppState(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// AppState(...).copyWith(id: 12, name: "My name")
+  /// ````
+  AppState call({
+    Object? projects = const $CopyWithPlaceholder(),
+    Object? failedLoad = const $CopyWithPlaceholder(),
+    Object? firstUsage = const $CopyWithPlaceholder(),
+    Object? currentProject = const $CopyWithPlaceholder(),
+    Object? currentStep = const $CopyWithPlaceholder(),
+    Object? currentTuneTab = const $CopyWithPlaceholder(),
+    Object? status = const $CopyWithPlaceholder(),
+    Object? alaInstallReleases = const $CopyWithPlaceholder(),
+    Object? generatorReleases = const $CopyWithPlaceholder(),
+    Object? appSnackBarMessages = const $CopyWithPlaceholder(),
+    Object? laReleases = const $CopyWithPlaceholder(),
+    Object? repeatCmd = const $CopyWithPlaceholder(),
+    Object? pkgInfo = const $CopyWithPlaceholder(),
+    Object? backendVersion = const $CopyWithPlaceholder(),
+    Object? lastSwCheck = const $CopyWithPlaceholder(),
+    Object? loading = const $CopyWithPlaceholder(),
+    Object? depsLoading = const $CopyWithPlaceholder(),
+    Object? sshKeys = const $CopyWithPlaceholder(),
   }) {
     return AppState(
-      alaInstallReleases:
-          alaInstallReleases == true ? null : this.alaInstallReleases,
-      appSnackBarMessages:
-          appSnackBarMessages == true ? null : this.appSnackBarMessages,
-      backendVersion: backendVersion == true ? null : this.backendVersion,
-      currentProject: currentProject == true ? null : this.currentProject,
-      currentStep: currentStep,
-      currentTuneTab: currentTuneTab,
-      depsLoading: depsLoading == true ? null : this.depsLoading,
-      failedLoad: failedLoad,
-      firstUsage: firstUsage,
-      generatorReleases:
-          generatorReleases == true ? null : this.generatorReleases,
-      laReleases: laReleases == true ? null : this.laReleases,
-      lastSwCheck: lastSwCheck == true ? null : this.lastSwCheck,
-      loading: loading == true ? null : this.loading,
-      pkgInfo: pkgInfo == true ? null : this.pkgInfo,
-      projects: projects == true ? null : this.projects,
-      repeatCmd: repeatCmd == true ? null : this.repeatCmd,
-      sshKeys: sshKeys == true ? null : this.sshKeys,
-      status: status == true ? null : this.status,
+      projects: projects == const $CopyWithPlaceholder()
+          ? _value.projects
+          // ignore: cast_nullable_to_non_nullable
+          : projects as List<LAProject>?,
+      failedLoad:
+          failedLoad == const $CopyWithPlaceholder() || failedLoad == null
+              ? _value.failedLoad
+              // ignore: cast_nullable_to_non_nullable
+              : failedLoad as bool,
+      firstUsage:
+          firstUsage == const $CopyWithPlaceholder() || firstUsage == null
+              ? _value.firstUsage
+              // ignore: cast_nullable_to_non_nullable
+              : firstUsage as bool,
+      currentProject: currentProject == const $CopyWithPlaceholder()
+          ? _value.currentProject
+          // ignore: cast_nullable_to_non_nullable
+          : currentProject as LAProject?,
+      currentStep:
+          currentStep == const $CopyWithPlaceholder() || currentStep == null
+              ? _value.currentStep
+              // ignore: cast_nullable_to_non_nullable
+              : currentStep as int,
+      currentTuneTab: currentTuneTab == const $CopyWithPlaceholder() ||
+              currentTuneTab == null
+          ? _value.currentTuneTab
+          // ignore: cast_nullable_to_non_nullable
+          : currentTuneTab as int,
+      status: status == const $CopyWithPlaceholder()
+          ? _value.status
+          // ignore: cast_nullable_to_non_nullable
+          : status as LAProjectViewStatus?,
+      alaInstallReleases: alaInstallReleases == const $CopyWithPlaceholder()
+          ? _value.alaInstallReleases
+          // ignore: cast_nullable_to_non_nullable
+          : alaInstallReleases as List<String>?,
+      generatorReleases: generatorReleases == const $CopyWithPlaceholder()
+          ? _value.generatorReleases
+          // ignore: cast_nullable_to_non_nullable
+          : generatorReleases as List<String>?,
+      appSnackBarMessages: appSnackBarMessages == const $CopyWithPlaceholder()
+          ? _value.appSnackBarMessages
+          // ignore: cast_nullable_to_non_nullable
+          : appSnackBarMessages as List<AppSnackBarMessage>?,
+      laReleases: laReleases == const $CopyWithPlaceholder()
+          ? _value.laReleases
+          // ignore: cast_nullable_to_non_nullable
+          : laReleases as Map<String, LAReleases>?,
+      repeatCmd: repeatCmd == const $CopyWithPlaceholder()
+          ? _value.repeatCmd
+          // ignore: cast_nullable_to_non_nullable
+          : repeatCmd as CommonCmd?,
+      pkgInfo: pkgInfo == const $CopyWithPlaceholder()
+          ? _value.pkgInfo
+          // ignore: cast_nullable_to_non_nullable
+          : pkgInfo as PackageInfo?,
+      backendVersion: backendVersion == const $CopyWithPlaceholder()
+          ? _value.backendVersion
+          // ignore: cast_nullable_to_non_nullable
+          : backendVersion as String?,
+      lastSwCheck: lastSwCheck == const $CopyWithPlaceholder()
+          ? _value.lastSwCheck
+          // ignore: cast_nullable_to_non_nullable
+          : lastSwCheck as DateTime?,
+      loading: loading == const $CopyWithPlaceholder()
+          ? _value.loading
+          // ignore: cast_nullable_to_non_nullable
+          : loading as bool?,
+      depsLoading: depsLoading == const $CopyWithPlaceholder()
+          ? _value.depsLoading
+          // ignore: cast_nullable_to_non_nullable
+          : depsLoading as bool?,
+      sshKeys: sshKeys == const $CopyWithPlaceholder()
+          ? _value.sshKeys
+          // ignore: cast_nullable_to_non_nullable
+          : sshKeys as List<SshKey>?,
     );
   }
+}
+
+extension $AppStateCopyWith on AppState {
+  /// Returns a callable class that can be used as follows: `instanceOfAppState.copyWith(...)` or like so:`instanceOfAppState.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$AppStateCWProxy get copyWith => _$AppStateCWProxyImpl(this);
 }
 
 // **************************************************************************
@@ -210,7 +288,7 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
 Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'firstUsage': instance.firstUsage,
       'currentProject': instance.currentProject.toJson(),
-      'status': _$LAProjectViewStatusEnumMap[instance.status],
+      'status': _$LAProjectViewStatusEnumMap[instance.status]!,
       'currentStep': instance.currentStep,
       'currentTuneTab': instance.currentTuneTab,
       'projects': instance.projects.map((e) => e.toJson()).toList(),

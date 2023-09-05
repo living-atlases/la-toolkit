@@ -60,14 +60,14 @@ class LAProjectEditPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ProjectPageViewModel>(
+    return StoreConnector<AppState, ProjectPageViewModel>(
         // with true fails ssl y ssh advanced, and delete
         distinct: false,
         onInitialBuild: (_) {
           context.loaderOverlay.hide();
         },
         converter: (store) {
-          return _ProjectPageViewModel(
+          return ProjectPageViewModel(
               state: store.state,
               project: store.state.currentProject,
               ssl: store.state.currentProject.useSSL,
@@ -103,7 +103,7 @@ class LAProjectEditPage extends StatelessWidget {
                 store.dispatch(GotoStepEditProject(step));
               });
         },
-        builder: (BuildContext context, _ProjectPageViewModel vm) {
+        builder: (BuildContext context, ProjectPageViewModel vm) {
           print('build project edit page');
           final LAProject project = vm.project;
           // Set default version of the project
@@ -325,7 +325,7 @@ If you are unsure type something like "server1, server2, server3".
                       Tooltip(
                           message: "Project configuration progress",
                           child: CircularPercentIndicator(
-                            radius: 50.0,
+                            radius: 25.0,
                             lineWidth: 6.0,
                             percent: project.status.percent / 100,
                             center: Text("${project.status.percent}%",
@@ -409,12 +409,12 @@ If you are unsure type something like "server1, server2, server3".
         });
   }
 
-  void onStepCancel(_ProjectPageViewModel vm, LAProject project) {
+  void onStepCancel(ProjectPageViewModel vm, LAProject project) {
     vm.onPrevious();
     vm.onSaveCurrentProject(project);
   }
 
-  void onStepContinue(_ProjectPageViewModel vm, LAProject project) {
+  void onStepContinue(ProjectPageViewModel vm, LAProject project) {
     vm.onNext();
     vm.onSaveCurrentProject(project);
   }
@@ -432,7 +432,7 @@ If you are unsure type something like "server1, server2, server3".
   }
 }
 
-class _ProjectPageViewModel {
+class ProjectPageViewModel {
   final AppState state;
   final LAProject project;
   final bool ssl;
@@ -444,7 +444,7 @@ class _ProjectPageViewModel {
   final Function() onPrevious;
   final Function(int) onGoto;
 
-  _ProjectPageViewModel(
+  ProjectPageViewModel(
       {required this.state,
       required this.project,
       required this.onSaveCurrentProject,
@@ -459,7 +459,7 @@ class _ProjectPageViewModel {
   @override
   bool operator ==(Object other) {
     bool equals = identical(this, other) ||
-        other is _ProjectPageViewModel &&
+        other is ProjectPageViewModel &&
             runtimeType == other.runtimeType &&
             project == other.project &&
             ssl == other.ssl &&

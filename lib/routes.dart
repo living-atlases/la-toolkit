@@ -83,7 +83,7 @@ class HomeLocation extends NamedBeamLocation {
         BeamPage(
             key: const ValueKey('home'),
             child: const HomePage(),
-            title: MyApp.appName)
+            title: LaToolkitApp.appName)
       ];
 
   @override
@@ -96,7 +96,7 @@ class LAProjectEditLocation extends NamedBeamLocation {
         BeamPage(
             key: ValueKey(route),
             child: LAProjectEditPage(),
-            title: "${MyApp.appName}: Editing your project")
+            title: "${LaToolkitApp.appName}: Editing your project")
       ];
 
   @override
@@ -109,7 +109,7 @@ class LAProjectServersLocation extends NamedBeamLocation {
         BeamPage(
             key: ValueKey(route),
             child: const LAProjectServersPage(),
-            title: "${MyApp.appName}: Servers of your project")
+            title: "${LaToolkitApp.appName}: Servers of your project")
       ];
 
   @override
@@ -138,7 +138,7 @@ class SandboxLocation extends NamedBeamLocation {
         BeamPage(
             key: ValueKey(route),
             child: const SandboxPage(),
-            title: "${MyApp.appName}: Sandbox")
+            title: "${LaToolkitApp.appName}: Sandbox")
       ];
 }
 
@@ -151,7 +151,7 @@ class LAProjectTuneLocation extends NamedBeamLocation {
         BeamPage(
             key: ValueKey(route),
             child: const LAProjectTunePage(),
-            title: "${MyApp.appName}: Tune your project")
+            title: "${LaToolkitApp.appName}: Tune your project")
       ];
 }
 
@@ -198,7 +198,7 @@ class LogsHistoryLocation extends NamedBeamLocation {
         BeamPage(
             key: ValueKey(route),
             child: LogsHistoryPage(),
-            title: "${MyApp.appName}: Logs History")
+            title: "${LaToolkitApp.appName}: Logs History")
       ];
 }
 
@@ -211,7 +211,7 @@ class SshKeysLocation extends NamedBeamLocation {
         BeamPage(
             key: ValueKey(route),
             child: SshKeyPage(),
-            title: "${MyApp.appName}: SSH Keys")
+            title: "${LaToolkitApp.appName}: SSH Keys")
       ];
 }
 
