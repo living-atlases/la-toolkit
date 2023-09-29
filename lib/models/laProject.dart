@@ -23,7 +23,9 @@ import 'package:tuple/tuple.dart';
 import 'basicService.dart';
 import 'cmdHistoryDetails.dart';
 import 'defaultVersions.dart';
+import 'deploymentType.dart';
 import 'hostServicesChecks.dart';
+import 'laCluster.dart';
 import 'laServer.dart';
 import 'laService.dart';
 import 'laServiceDeploy.dart';
@@ -71,10 +73,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
   // Relations -----
   List<LAServer> servers;
+  List<LACluster> clusters;
   List<LAService> services;
 
   // Mapped by server.id - serviceNames
   Map<String, List<String>> serverServices;
+
+  // Mapped by cluster.id - serviceNames
+  Map<String, List<String>> clusterServices;
   List<CmdHistoryEntry> cmdHistoryEntries;
   List<LAServiceDeploy> serviceDeploys;
   List<LAVariable> variables;
@@ -123,17 +129,20 @@ class LAProject implements IsJsonSerializable<LAProject> {
       List<LAVariable>? variables,
       List<CmdHistoryEntry>? cmdHistoryEntries,
       List<LAServer>? servers,
+      List<LACluster>? clusters,
       List<LAService>? services,
       List<LAServiceDeploy>? serviceDeploys,
       this.parent,
       List<LAProject>? hubs,
       int? createdAt,
       Map<String, List<String>>? serverServices,
+      Map<String, List<String>>? clusterServices,
       Map<String, dynamic>? checkResults,
       Map<String, String>? runningVersions})
       : id = id ?? ObjectId().toString(),
         domain = domain ?? (isHub ? 'somehubname.${parent!.domain}' : ''),
         servers = servers ?? [],
+        clusters = clusters ?? [],
         services = services ?? getInitialServices(isHub),
         serviceDeploys = serviceDeploys ?? [],
         variables = variables ?? [],
@@ -141,6 +150,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         createdAt = createdAt ?? DateTime.now().microsecondsSinceEpoch,
         checkResults = checkResults ?? {},
         serverServices = serverServices ?? {},
+        clusterServices = clusterServices ?? {},
         runningVersions = runningVersions ?? {},
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
@@ -168,12 +178,17 @@ class LAProject implements IsJsonSerializable<LAProject> {
   bool validateCreation({debug = false}) {
     bool valid = true;
     LAProjectStatus tempStatus = LAProjectStatus.created;
-    if (servers.length != serverServices.length) {
+    if (servers.length != serverServices.length ||
+        clusters.length != clusterServices.length) {
       String msgErr =
           'Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length}';
+      msgErr +=
+          'or Clusters in $longName ($id) are inconsistent (clusterServices: ${clusterServices.length} servers: ${clusters.length}';
       print(msgErr);
       print("servers (${servers.length}): $servers");
       print("serverServices (${serverServices.length}): $serverServices");
+      print("clusters (${clusters.length}): $clusters");
+      print("clusterServices (${clusterServices.length}): $clusterServices");
       throw (msgErr);
     }
 
@@ -195,7 +210,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if (debug) print("Step 2 valid: ${valid ? 'yes' : 'no'}");
     // If the previous steps are correct, this is also correct
 
-    valid = valid && allServicesAssignedToServers();
+    valid = valid && allServicesAssigned();
     if (debug) print("Step 3 valid: ${valid ? 'yes' : 'no'}");
 
     if (valid) {
@@ -225,15 +240,15 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return valid;
   }
 
-  bool allServicesAssignedToServers({debug = false}) {
+  bool allServicesAssigned({debug = false}) {
     List<String> difference = servicesNotAssigned();
     bool ok = difference.isEmpty;
 
     if (!ok && debug) {
       print(
-          "Not the same services in use ${getServicesNameListInUse().length} as assigned to servers ${getServicesAssignedToServers().length}");
+          "Not the same services in use ${getServicesNameListInUse().length} as assigned ${getServicesAssigned().length}");
       print(
-          "Services unassigned: ${getServicesNameListInUse().where((s) => !getServicesAssignedToServers().contains(s)).toList().join(',')}");
+          "Services unassigned: ${getServicesNameListInUse().where((s) => !getServicesAssigned().contains(s)).toList().join(',')}");
     }
     getServicesNameListInUse().forEach((service) {
       ok && getHostnames(service).isNotEmpty;
@@ -244,7 +259,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   List<String> servicesNotAssigned() {
     List<String> difference = getServicesNameListInUse()
         .toSet()
-        .difference(getServicesAssignedToServers().toSet())
+        .difference(getServicesAssigned().toSet())
         .toList();
     return difference;
   }
@@ -315,9 +330,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
         .toList();
   }
 
-  List<String> getServicesAssignedToServers() {
+  List<String> getServicesAssigned() {
     Set<String> selected = {};
     serverServices.forEach((id, service) => selected.addAll(service));
+    clusterServices.forEach((id, service) => selected.addAll(service));
     return selected.toList();
   }
 
@@ -330,10 +346,16 @@ class LAProject implements IsJsonSerializable<LAProject> {
   @override
   String toString() {
     String? sToS;
+    String? cToS;
     try {
       sToS = serverServices.entries
           .map((entry) =>
               '${servers.firstWhere((server) => server.id == entry.key).name} has ${entry.value}')
+          .toList()
+          .join('\n');
+      cToS = clusterServices.entries
+          .map((entry) =>
+              '${clusters.firstWhere((cluster) => cluster.id == entry.key).name} has ${entry.value}')
           .toList()
           .join('\n');
     } catch (e) {
@@ -343,11 +365,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
 isHub: $isHub isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
+clusters (${clusters.length}): ${clusters.join('| ')}
 services (${services.length})
 serviceDeploys (${serviceDeploys.length})
 servers-services (${serverServices.length}): 
 ${sToS ?? "Some error in serversToServices"}
-services selected (${getServicesAssignedToServers().length}): [${getServicesAssignedToServers().join(', ')}]
+cluster-services (${clusterServices.length}):
+${cToS ?? "Some error in clusterToServices"}
+services selected (${getServicesAssigned().length}): [${getServicesAssigned().join(', ')}]
 services in use (${getServicesNameListInUse().length}): [${getServicesNameListInUse().join(', ')}]
 services not in use (${getServicesNameListNotInUse().length}): [${getServicesNameListNotInUse().join(', ')}]
 check results length: ${checkResults.length}''';
@@ -474,19 +499,35 @@ check results length: ${checkResults.length}''';
 
   void assign(LAServer server, List<String> assignedServices,
       [Map<String, String>? softwareVersions]) {
+    assignByType(
+        server.id, DeploymentType.vm, assignedServices, softwareVersions);
+  }
+
+  void assignByType(
+      String id, DeploymentType type, List<String> assignedServices,
+      [Map<String, String>? softwareVersions]) {
+    final bool isServer = type == DeploymentType.vm;
     HashSet<String> newServices = HashSet<String>();
     newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
     newServices = _addSubServices(newServices);
-    serverServices[server.id] = newServices.toList();
+    if (isServer) {
+      serverServices[id] = newServices.toList();
+    } else {
+      clusterServices[id] = newServices.toList();
+    }
     List serviceIds = [];
+    if (assignedServices.contains(dockerSwarm)) {
+      _addDockerClusterIfNotExists();
+    }
     for (String sN in newServices) {
       LAService service = getService(sN);
       serviceIds.add(service.id);
       serviceDeploys.firstWhere(
           (sD) =>
               sD.projectId == id &&
-              sD.serverId == server.id &&
+              sD.serverId == id &&
+              sD.type == type &&
               sD.serviceId == service.id, orElse: () {
         Map<String, String> versions = getServiceDefaultVersions(service);
         if (softwareVersions != null) {
@@ -500,7 +541,8 @@ check results length: ${checkResults.length}''';
         }
         LAServiceDeploy newSd = LAServiceDeploy(
             projectId: id,
-            serverId: server.id,
+            serverId: id,
+            type: type,
             serviceId: service.id,
             softwareVersions: versions);
         serviceDeploys.add(newSd);
@@ -511,24 +553,43 @@ check results length: ${checkResults.length}''';
     // Remove previous deploys
     serviceDeploys.removeWhere((sD) =>
         sD.projectId == id &&
-        sD.serverId == server.id &&
+        sD.serverId == id &&
+        sD.type == type &&
         !serviceIds.contains(sD.serviceId));
   }
 
   void unAssign(LAServer server, String serviceName) {
+    unAssignByType(server.id, DeploymentType.vm, serviceName);
+  }
+
+  void unAssignByType(String id, DeploymentType type, String serviceName) {
+    final bool isServer = type == DeploymentType.vm;
     HashSet<String> servicesToDel = HashSet<String>();
     servicesToDel.add(serviceName);
     servicesToDel = _addSubServices(servicesToDel);
-    if (serverServices[server.id] != null) {
-      serverServices[server.id]?.removeWhere((c) => servicesToDel.contains(c));
+    if (isServer && serverServices[id] != null) {
+      serverServices[id]?.removeWhere((c) => servicesToDel.contains(c));
+    }
+    if (!isServer && clusterServices[id] != null) {
+      clusterServices[id]?.removeWhere((c) => servicesToDel.contains(c));
     }
     for (String sN in servicesToDel) {
       LAService service = getService(sN);
       serviceDeploys.removeWhere((sD) =>
           sD.projectId == id &&
-          sD.serverId == server.id &&
+          sD.serverId == id &&
+          sD.type == type &&
           sD.serviceId == service.id);
     }
+    if (serviceName == dockerSwarm && isDockerClusterConfigured()) {
+      // For now, we remove all cluster because we only support one unique cluster
+      clusters.clear();
+    }
+  }
+
+  bool isDockerClusterConfigured() {
+    return isDockerEnabled &&
+        getServiceDeploysForSomeService(dockerSwarm).isNotEmpty;
   }
 
   static HashSet<String> _addSubServices(HashSet<String> newServices) {
@@ -552,13 +613,6 @@ check results length: ${checkResults.length}''';
       // namematching, and sensitive-data-service
     }
     return newServices;
-  }
-
-  LAServiceDeploy getServiceDeploysById(String serviceId, String serverId) {
-    return serviceDeploys.firstWhere((sD) =>
-        sD.projectId == id &&
-        sD.serverId == serverId &&
-        sD.serviceId == serviceId);
   }
 
   List<LAServiceDeploy> getServiceDeploysForSomeService(String serviceNameInt) {
@@ -611,6 +665,7 @@ check results length: ${checkResults.length}''';
     return versions;
   }
 
+  // TODO remove clusters ?
   void delete(LAServer serverToDelete) {
     serverServices.remove(serverToDelete.id);
     serviceDeploys =
@@ -657,7 +712,7 @@ check results length: ${checkResults.length}''';
     for (LAProject current in projects) {
       current.serversWithServices().forEach((server) {
         String hostnames = current
-            .getServerServicesFull(serverId: server.id)
+            .getServerServicesFull(id: server.id, type: DeploymentType.vm)
             .where((s) =>
                 !LAServiceDesc.subServices.contains(s.nameInt) &&
                 s.nameInt != biocacheBackend &&
@@ -719,6 +774,9 @@ check results length: ${checkResults.length}''';
     if (!use) {
       // Remove
       serverServices.forEach((id, services) {
+        services.remove(serviceNameInt);
+      });
+      clusterServices.forEach((id, services) {
         services.remove(serviceNameInt);
       });
       serviceDeploys.removeWhere(
@@ -961,13 +1019,25 @@ check results length: ${checkResults.length}''';
     return serverServices[serverId]!;
   }
 
-  List<LAService> getServerServicesFull({required String serverId}) {
-    List<String> listS = getServerServices(serverId: serverId);
+  List<String> getClusterServices({required String clusterId}) {
+    if (!clusterServices.containsKey(clusterId)) {
+      clusterServices[clusterId] = List<String>.empty(growable: true);
+    }
+    return clusterServices[clusterId]!;
+  }
+
+  List<LAService> getServerServicesFull(
+      {required String id, required DeploymentType type}) {
+    List<String> listS = type == DeploymentType.vm
+        ? getServerServices(serverId: id)
+        : getClusterServices(clusterId: id);
     return services.where((s) => listS.contains(s.nameInt)).toList();
   }
 
-  Map<String, List<LAService>> getServerServicesAssignable() {
-    List<String> canBeRedeployed = getServicesAssignedToServers()
+  // TODO this should work also for clusters
+  Map<String, List<LAService>> getServerServicesAssignable(
+      DeploymentType type) {
+    List<String> canBeRedeployed = getServicesAssigned()
         .where((s) =>
             LAServiceDesc.get(s).allowMultipleDeploys &&
             LAServiceDesc.get(s).parentService == null)
@@ -975,18 +1045,33 @@ check results length: ${checkResults.length}''';
     List<String> notAssigned = servicesNotAssigned();
     List<LAService> eligible = services
         .where((s) =>
-            canBeRedeployed.contains(s.nameInt) ||
-            notAssigned.contains(s.nameInt))
+            (canBeRedeployed.contains(s.nameInt) ||
+                notAssigned.contains(s.nameInt)) &&
+            (type == DeploymentType.vm ||
+                (type == DeploymentType.dockerSwarm &&
+                    LAServiceDesc.listDockerCapableS.contains(s.nameInt))))
         .toList();
     Map<String, List<LAService>> results = {};
-    for (LAServer server in servers) {
-      List<String> currentServerServicesIds =
-          getServerServicesFull(serverId: server.id)
-              .map((service) => service.id)
-              .toList();
-      results[server.id] = eligible
-          .where((sv) => !currentServerServicesIds.contains(sv.id))
-          .toList();
+    if (type == DeploymentType.vm) {
+      for (LAServer server in servers) {
+        List<String> currentServerServicesIds =
+            getServerServicesFull(id: server.id, type: type)
+                .map((service) => service.id)
+                .toList();
+        results[server.id] = eligible
+            .where((sv) => !currentServerServicesIds.contains(sv.id))
+            .toList();
+      }
+    } else {
+      for (LACluster cluster in clusters) {
+        List<String> currentClusterServicesIds =
+            getServerServicesFull(id: cluster.id, type: type)
+                .map((service) => service.id)
+                .toList();
+        results[cluster.id] = eligible
+            .where((sv) => !currentClusterServicesIds.contains(sv.id))
+            .toList();
+      }
     }
 
     return results;
@@ -1267,6 +1352,8 @@ check results length: ${checkResults.length}''';
 
   bool get isPipelinesInUse => !isHub && getService(pipelines).use;
 
+  bool get isDockerEnabled => !isHub && getService(dockerSwarm).use;
+
   LAServer? getPipelinesMaster() {
     if (isPipelinesInUse && getVariableOrNull("pipelines_master") != null) {
       // && getServiceDeploysForSomeService(pipelines).length > 0) {
@@ -1305,7 +1392,16 @@ check results length: ${checkResults.length}''';
     return allIncompatibilities;
   }
 
-  bool get showSoftwareVersions => !isHub && allServicesAssignedToServers();
+  bool get showSoftwareVersions => !isHub && allServicesAssigned();
 
   bool get showToolkitDeps => !isHub;
+
+  _addDockerClusterIfNotExists() {
+    if (clusters.isEmpty) {
+      clusters.add(LACluster(
+        id: ObjectId().toString(),
+        projectId: id,
+      ));
+    }
+  }
 }

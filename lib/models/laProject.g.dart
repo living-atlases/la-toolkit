@@ -55,6 +55,8 @@ abstract class _$LAProjectCWProxy {
 
   LAProject servers(List<LAServer>? servers);
 
+  LAProject clusters(List<LACluster>? clusters);
+
   LAProject services(List<LAService>? services);
 
   LAProject serviceDeploys(List<LAServiceDeploy>? serviceDeploys);
@@ -66,6 +68,8 @@ abstract class _$LAProjectCWProxy {
   LAProject createdAt(int? createdAt);
 
   LAProject serverServices(Map<String, List<String>>? serverServices);
+
+  LAProject clusterServices(Map<String, List<String>>? clusterServices);
 
   LAProject checkResults(Map<String, dynamic>? checkResults);
 
@@ -102,12 +106,14 @@ abstract class _$LAProjectCWProxy {
     List<LAVariable>? variables,
     List<CmdHistoryEntry>? cmdHistoryEntries,
     List<LAServer>? servers,
+    List<LACluster>? clusters,
     List<LAService>? services,
     List<LAServiceDeploy>? serviceDeploys,
     LAProject? parent,
     List<LAProject>? hubs,
     int? createdAt,
     Map<String, List<String>>? serverServices,
+    Map<String, List<String>>? clusterServices,
     Map<String, dynamic>? checkResults,
     Map<String, String>? runningVersions,
   });
@@ -203,6 +209,9 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
   LAProject servers(List<LAServer>? servers) => this(servers: servers);
 
   @override
+  LAProject clusters(List<LACluster>? clusters) => this(clusters: clusters);
+
+  @override
   LAProject services(List<LAService>? services) => this(services: services);
 
   @override
@@ -221,6 +230,10 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
   @override
   LAProject serverServices(Map<String, List<String>>? serverServices) =>
       this(serverServices: serverServices);
+
+  @override
+  LAProject clusterServices(Map<String, List<String>>? clusterServices) =>
+      this(clusterServices: clusterServices);
 
   @override
   LAProject checkResults(Map<String, dynamic>? checkResults) =>
@@ -263,12 +276,14 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
     Object? variables = const $CopyWithPlaceholder(),
     Object? cmdHistoryEntries = const $CopyWithPlaceholder(),
     Object? servers = const $CopyWithPlaceholder(),
+    Object? clusters = const $CopyWithPlaceholder(),
     Object? services = const $CopyWithPlaceholder(),
     Object? serviceDeploys = const $CopyWithPlaceholder(),
     Object? parent = const $CopyWithPlaceholder(),
     Object? hubs = const $CopyWithPlaceholder(),
     Object? createdAt = const $CopyWithPlaceholder(),
     Object? serverServices = const $CopyWithPlaceholder(),
+    Object? clusterServices = const $CopyWithPlaceholder(),
     Object? checkResults = const $CopyWithPlaceholder(),
     Object? runningVersions = const $CopyWithPlaceholder(),
   }) {
@@ -371,6 +386,10 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.servers
           // ignore: cast_nullable_to_non_nullable
           : servers as List<LAServer>?,
+      clusters: clusters == const $CopyWithPlaceholder()
+          ? _value.clusters
+          // ignore: cast_nullable_to_non_nullable
+          : clusters as List<LACluster>?,
       services: services == const $CopyWithPlaceholder()
           ? _value.services
           // ignore: cast_nullable_to_non_nullable
@@ -395,6 +414,10 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.serverServices
           // ignore: cast_nullable_to_non_nullable
           : serverServices as Map<String, List<String>>?,
+      clusterServices: clusterServices == const $CopyWithPlaceholder()
+          ? _value.clusterServices
+          // ignore: cast_nullable_to_non_nullable
+          : clusterServices as Map<String, List<String>>?,
       checkResults: checkResults == const $CopyWithPlaceholder()
           ? _value.checkResults
           // ignore: cast_nullable_to_non_nullable
@@ -457,6 +480,9 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) => LAProject(
       servers: (json['servers'] as List<dynamic>?)
           ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
           .toList(),
+      clusters: (json['clusters'] as List<dynamic>?)
+          ?.map((e) => LACluster.fromJson(e as Map<String, dynamic>))
+          .toList(),
       services: (json['services'] as List<dynamic>?)
           ?.map((e) => LAService.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -468,6 +494,10 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) => LAProject(
           .toList(),
       createdAt: json['createdAt'] as int?,
       serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
+        (k, e) =>
+            MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
+      ),
+      clusterServices: (json['clusterServices'] as Map<String, dynamic>?)?.map(
         (k, e) =>
             MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
       ),
@@ -499,8 +529,10 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'advancedEdit': instance.advancedEdit,
       'advancedTune': instance.advancedTune,
       'servers': instance.servers.map((e) => e.toJson()).toList(),
+      'clusters': instance.clusters.map((e) => e.toJson()).toList(),
       'services': instance.services.map((e) => e.toJson()).toList(),
       'serverServices': instance.serverServices,
+      'clusterServices': instance.clusterServices,
       'cmdHistoryEntries':
           instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),
       'serviceDeploys': instance.serviceDeploys.map((e) => e.toJson()).toList(),

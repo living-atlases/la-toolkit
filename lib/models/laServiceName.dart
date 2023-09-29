@@ -55,7 +55,11 @@ enum LAServiceName {
   ecodata_reporting,
   events,
   // ignore: constant_identifier_names
-  events_elasticsearch
+  events_elasticsearch,
+  // ignore: constant_identifier_names
+  docker_swarm,
+  gatus,
+  portainer
 }
 
 extension ParseToString on LAServiceName {

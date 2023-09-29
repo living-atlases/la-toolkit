@@ -7,6 +7,8 @@ import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 
+import '../models/deploymentType.dart';
+import '../models/laCluster.dart';
 import '../models/laServer.dart';
 
 class ServersCardList extends StatelessWidget {
@@ -25,21 +27,31 @@ class ServersCardList extends StatelessWidget {
         },
         builder: (BuildContext context, ServersCardListViewModel vm) {
           final project = vm.currentProject;
+          final bool dockerEnabled = project.isDockerClusterConfigured();
           return Wrap(children: [
             for (LAServer server in project.servers)
-              ServerServicesHoverCard(server: server, project: project, vm: vm)
+              ServerServicesHoverCard(server: server, project: project, vm: vm),
+            if (dockerEnabled)
+              for (LACluster cluster in project.clusters)
+                ServerServicesHoverCard(
+                    cluster: cluster, project: project, vm: vm),
           ]);
         });
   }
 }
 
 class ServerServicesHoverCard extends StatefulWidget {
-  final LAServer server;
+  final LAServer? server;
+  final LACluster? cluster;
   final LAProject project;
   final ServersCardListViewModel vm;
 
   const ServerServicesHoverCard(
-      {Key? key, required this.server, required this.project, required this.vm})
+      {Key? key,
+      this.server,
+      this.cluster,
+      required this.project,
+      required this.vm})
       : super(key: key);
 
   @override
@@ -54,8 +66,13 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isAServer = widget.server != null;
+    final DeploymentType type =
+        isAServer ? DeploymentType.vm : DeploymentType.dockerSwarm;
+    final String id = isAServer ? widget.server!.id : widget.cluster!.id;
+    final String name = isAServer ? widget.server!.name : widget.cluster!.name;
     Map<String, List<LAService>> servicesAssignable =
-        widget.project.getServerServicesAssignable();
+        widget.project.getServerServicesAssignable(type);
     return MouseRegion(
         cursor: SystemMouseCursors.click,
         onHover: (s) {
@@ -89,27 +106,33 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
           child: _stillHover
               ? ServerServicesEditCard(
                   server: widget.server,
+                  cluster: widget.cluster,
+                  type: type,
                   isHub: widget.project.isHub,
-                  currentServerServices: widget.project
-                      .getServerServices(serverId: widget.server.id),
-                  availableServicesForServer:
-                      servicesAssignable[widget.server.id]!,
+                  currentServerServices: isAServer
+                      ? widget.project
+                          .getServerServices(serverId: widget.server!.id)
+                      : widget.project
+                          .getClusterServices(clusterId: widget.cluster!.id),
+                  availableServicesForServer: servicesAssignable[id]!,
                   allServices: widget.project.services,
                   onAssigned: (list) {
-                    widget.project.assign(widget.server, list);
+                    widget.project.assignByType(id, type, list);
                     widget.vm.onSaveCurrentProject(widget.project);
                   },
                   onUnassigned: (service) {
-                    widget.project.unAssign(widget.server, service);
+                    widget.project.unAssignByType(id, type, service);
                     widget.vm.onSaveCurrentProject(widget.project);
                   },
                   onRename: (String newName) {
-                    widget.server.name = newName;
-                    widget.project.upsertServer(widget.server);
-                    widget.vm.onSaveCurrentProject(widget.project);
-                    setState(() {
-                      _editing = false;
-                    });
+                    if (isAServer) {
+                      widget.server!.name = newName;
+                      widget.project.upsertServer(widget.server!);
+                      widget.vm.onSaveCurrentProject(widget.project);
+                      setState(() {
+                        _editing = false;
+                      });
+                    }
                   },
                   onDeleted: (LAServer server) {
                     setState(() {
@@ -122,7 +145,9 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                         _editing = true;
                       }))
               : ServerServicesViewCard(
-                  server: widget.server,
+                  id: id,
+                  name: name,
+                  type: type,
                   project: widget.project,
                   vm: widget.vm),
         ));
@@ -131,10 +156,17 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
 
 class ServerServicesViewCard extends StatelessWidget {
   const ServerServicesViewCard(
-      {Key? key, required this.server, required this.project, required this.vm})
+      {Key? key,
+      required this.name,
+      required this.id,
+      required this.type,
+      required this.project,
+      required this.vm})
       : super(key: key);
 
-  final LAServer server;
+  final String id;
+  final String name;
+  final DeploymentType type;
   final LAProject project;
   final ServersCardListViewModel vm;
 
@@ -144,36 +176,18 @@ class ServerServicesViewCard extends StatelessWidget {
         child: Card(
             margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
             elevation: CardConstants.defaultElevation,
-            shape: CardConstants.defaultShape,
+            shape: type == DeploymentType.vm
+                ? CardConstants.defaultShape
+                : CardConstants.defaultClusterShape,
             child: Container(
                 width: 300,
                 margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: ListTile(
-                  key: ValueKey("${server.name}basic-tile"),
+                  key: ValueKey("${name}basic-tile"),
                   contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  title: Text(server.name),
+                  title: Text(name),
                   subtitle: Text(LAService.servicesForHumans(
-                      project.getServerServicesFull(serverId: server.id))),
-                  /* trailing: Wrap(spacing: 12, // space between two icons
-                        children: <Widget>[
-                          RenameServerIcon(server, (String newName) {
-                            LAServer s = server;
-                            s.name = newName;
-                            project.upsertServer(s);
-                            vm.onSaveCurrentProject(project);
-                          }),
-                          Tooltip(
-                              message: "Delete this server",
-                              child: IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () =>
-                                      UiUtils.showAlertDialog(context, () {
-                                        project.delete(server);
-                                        vm.onSaveCurrentProject(project);
-                                      }, () => {},
-                                          title:
-                                              "Deleting the server '${server.name}'"))),
-                        ]) */
+                      project.getServerServicesFull(id: id, type: type))),
                 ))));
   }
 }

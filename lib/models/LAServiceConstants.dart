@@ -47,6 +47,17 @@ const String ansible = "ansible";
 const String java = "java";
 final String events = LAServiceName.events.toS();
 final String eventsElasticSearch = LAServiceName.events_elasticsearch.toS();
+final String dockerSwarm = LAServiceName.docker_swarm.toS();
+final String gatus = LAServiceName.gatus.toS();
+final String portainer = LAServiceName.portainer.toS();
 
 const List<String> laTools = [alaInstall, generator, toolkit];
 const List<String> laToolsNoAlaInstall = [generator, toolkit];
+List<String> servicesWithoutUrlButShow = [
+  biocacheBackend,
+  eventsElasticSearch,
+  pipelines,
+  solrcloud,
+  dockerSwarm,
+  zookeeper
+];

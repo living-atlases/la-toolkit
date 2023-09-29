@@ -102,7 +102,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 message: "The current supported OS version in Ubuntu 18.04"),
           if (basicDefined &&
               project.servers.isNotEmpty &&
-              !project.allServicesAssignedToServers())
+              !project.allServicesAssigned())
             AlertCard(
                 message:
                     "Some service is not assigned to a server$notAssignedMessage"),

@@ -5,4 +5,8 @@ class CardConstants {
   static const double defaultElevation = 2;
   static RoundedRectangleBorder defaultShape =
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(3));
+  static RoundedRectangleBorder defaultClusterShape = RoundedRectangleBorder(
+    side: BorderSide(color: Colors.blue[100]!, width: 3.0),
+    borderRadius: BorderRadius.circular(4),
+  );
 }

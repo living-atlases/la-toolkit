@@ -21,6 +21,8 @@ abstract class _$LAServiceDeployCWProxy {
 
   LAServiceDeploy checkedAt(int? checkedAt);
 
+  LAServiceDeploy type(DeploymentType? type);
+
   LAServiceDeploy status(ServiceStatus? status);
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAServiceDeploy(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
@@ -37,6 +39,7 @@ abstract class _$LAServiceDeployCWProxy {
     String? projectId,
     Map<String, String>? softwareVersions,
     int? checkedAt,
+    DeploymentType? type,
     ServiceStatus? status,
   });
 }
@@ -71,6 +74,9 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
   LAServiceDeploy checkedAt(int? checkedAt) => this(checkedAt: checkedAt);
 
   @override
+  LAServiceDeploy type(DeploymentType? type) => this(type: type);
+
+  @override
   LAServiceDeploy status(ServiceStatus? status) => this(status: status);
 
   @override
@@ -89,6 +95,7 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
     Object? projectId = const $CopyWithPlaceholder(),
     Object? softwareVersions = const $CopyWithPlaceholder(),
     Object? checkedAt = const $CopyWithPlaceholder(),
+    Object? type = const $CopyWithPlaceholder(),
     Object? status = const $CopyWithPlaceholder(),
   }) {
     return LAServiceDeploy(
@@ -122,6 +129,10 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
           ? _value.checkedAt
           // ignore: cast_nullable_to_non_nullable
           : checkedAt as int?,
+      type: type == const $CopyWithPlaceholder()
+          ? _value.type
+          // ignore: cast_nullable_to_non_nullable
+          : type as DeploymentType?,
       status: status == const $CopyWithPlaceholder()
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
@@ -152,6 +163,7 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) =>
         (k, e) => MapEntry(k, e as String),
       ),
       checkedAt: json['checkedAt'] as int?,
+      type: $enumDecodeNullable(_$DeploymentTypeEnumMap, json['type']),
       status: $enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
     );
 
@@ -165,7 +177,14 @@ Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) =>
       'softwareVersions': instance.softwareVersions,
       'status': _$ServiceStatusEnumMap[instance.status]!,
       'checkedAt': instance.checkedAt,
+      'type': _$DeploymentTypeEnumMap[instance.type]!,
     };
+
+const _$DeploymentTypeEnumMap = {
+  DeploymentType.vm: 'vm',
+  DeploymentType.dockerSwarm: 'dockerSwarm',
+  DeploymentType.k8s: 'k8s',
+};
 
 const _$ServiceStatusEnumMap = {
   ServiceStatus.unknown: 'unknown',

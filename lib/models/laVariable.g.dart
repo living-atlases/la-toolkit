@@ -164,6 +164,9 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.ecodata_reporting: 'ecodata_reporting',
   LAServiceName.events: 'events',
   LAServiceName.events_elasticsearch: 'events_elasticsearch',
+  LAServiceName.docker_swarm: 'docker_swarm',
+  LAServiceName.gatus: 'gatus',
+  LAServiceName.portainer: 'portainer',
 };
 
 const _$LAVariableStatusEnumMap = {

@@ -47,12 +47,13 @@ class ServiceWidget extends StatelessWidget {
               .use;
       bool withoutUrl = serviceDesc.withoutUrl;
       bool visible = noDependsOrInUse &&
-          (!withoutUrl ||
-              (serviceName == biocacheBackend ||
+          (!withoutUrl || servicesWithoutUrlButShow.contains(serviceName));
+      /* (serviceName == biocacheBackend ||
                   serviceName == eventsElasticSearch ||
                   serviceName == pipelines ||
                   serviceName == solrcloud ||
-                  serviceName == zookeeper));
+                  serviceName == dockerSwarm ||
+                  serviceName == zookeeper) */
       bool optional = serviceDesc.optional;
       bool canUseSubdomain = !serviceDesc.forceSubdomain && !withoutUrl;
 

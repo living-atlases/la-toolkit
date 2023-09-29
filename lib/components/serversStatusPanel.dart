@@ -6,6 +6,8 @@ import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
 
+import '../models/deploymentType.dart';
+
 class ServersStatusPanel extends StatefulWidget {
   final bool extendedStatus;
   final Map<String, dynamic> results;
@@ -35,7 +37,8 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
             for (var server in vm.project.serversWithServices())
               ServerStatusCard(
                 server: server,
-                services: vm.project.getServerServicesFull(serverId: server.id),
+                services: vm.project.getServerServicesFull(
+                    id: server.id, type: DeploymentType.vm),
                 alaInstallVersion: vm.project.alaInstallRelease!,
                 extendedStatus: widget.extendedStatus,
                 status: widget.results.isNotEmpty &&

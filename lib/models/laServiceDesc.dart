@@ -1,9 +1,9 @@
-import "package:collection/collection.dart";
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDepsDesc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import 'LAServiceConstants.dart';
 import 'laServiceName.dart';
 
 class LAServiceDesc {
@@ -29,6 +29,7 @@ class LAServiceDesc {
   bool hubCapable;
   bool allowMultipleDeploys;
   String? artifacts;
+  bool dockerSupport;
 
   // used for spatial-service apikeys/userdetails/etc
   bool isSubService;
@@ -62,7 +63,8 @@ class LAServiceDesc {
       this.allowMultipleDeploys = false,
       this.hubCapable = false,
       this.repository,
-      this.parentService});
+      this.parentService,
+      this.dockerSupport = false});
 
   @override
   bool operator ==(Object other) =>
@@ -90,6 +92,7 @@ class LAServiceDesc {
           alias == other.alias &&
           allowMultipleDeploys == other.allowMultipleDeploys &&
           parentService == other.parentService &&
+          dockerSupport == other.dockerSupport &&
           hubCapable == other.hubCapable;
 
   @override
@@ -115,9 +118,22 @@ class LAServiceDesc {
       alias.hashCode ^
       parentService.hashCode ^
       allowMultipleDeploys.hashCode ^
+      dockerSupport.hashCode ^
       hubCapable.hashCode;
 
   static final Map<String, LAServiceDesc> _map = {
+    dockerSwarm: LAServiceDesc(
+      name: "Docker Swarm",
+      nameInt: dockerSwarm,
+      group: dockerSwarm,
+      icon: MdiIcons.ferry,
+      withoutUrl: true,
+      allowMultipleDeploys: true,
+      desc: 'docker swarm deployment support (in development)',
+      optional: true,
+      isSubService: false,
+      path: "",
+    ),
     collectory: LAServiceDesc(
         name: "collections",
         nameInt: collectory,
@@ -132,6 +148,7 @@ class LAServiceDesc {
         artifacts: 'ala-collectory collectory',
         allowMultipleDeploys: false,
         repository: 'https://github.com/AtlasOfLivingAustralia/collectory/',
+        dockerSupport: true,
         path: ""),
     alaHub: LAServiceDesc(
         name: "records",
@@ -149,6 +166,7 @@ class LAServiceDesc {
         artifacts: 'ala-hub',
         allowMultipleDeploys: true,
         repository: 'https://github.com/AtlasOfLivingAustralia/biocache-hubs',
+        dockerSupport: true,
         path: ""),
     biocacheService: LAServiceDesc(
         name: "records-ws",
@@ -163,6 +181,7 @@ class LAServiceDesc {
         allowMultipleDeploys: true,
         repository:
             'https://github.com/AtlasOfLivingAustralia/biocache-service',
+        dockerSupport: true,
         path: ""),
     bie: LAServiceDesc(
         name: "species",
@@ -180,6 +199,7 @@ class LAServiceDesc {
         allowMultipleDeploys: true,
         artifacts: "ala-bie ala-bie-hub",
         repository: 'https://github.com/AtlasOfLivingAustralia/ala-bie-hub',
+        dockerSupport: true,
         path: ""),
     bieIndex: LAServiceDesc(
         name: "species-ws",
@@ -196,6 +216,7 @@ class LAServiceDesc {
         artifacts: "bie-index",
         allowMultipleDeploys: true,
         repository: 'https://github.com/AtlasOfLivingAustralia/bie-index',
+        dockerSupport: true,
         path: ""),
     images: LAServiceDesc(
         name: "images",
@@ -228,6 +249,7 @@ class LAServiceDesc {
         allowMultipleDeploys: false,
         repository:
             'https://github.com/AtlasOfLivingAustralia/specieslist-webapp',
+        dockerSupport: true,
         path: ""),
     regions: LAServiceDesc(
         name: regions,
@@ -292,6 +314,7 @@ class LAServiceDesc {
         // Issue https://github.com/living-atlases/la-toolkit/issues/8
         iniPath: "",
         repository: 'https://github.com/AtlasOfLivingAustralia/ala-cas-5',
+        dockerSupport: true,
         path: "/cas"),
     userdetails: LAServiceDesc(
         nameInt: userdetails,
@@ -307,6 +330,7 @@ class LAServiceDesc {
         alaAdmin: true,
         parentService: LAServiceName.cas,
         repository: 'https://github.com/AtlasOfLivingAustralia/userdetails',
+        dockerSupport: true,
         isSubService: true),
     apikey: LAServiceDesc(
         nameInt: apikey,
@@ -334,6 +358,7 @@ class LAServiceDesc {
         icon: MdiIcons.accountNetwork,
         repository:
             'https://github.com/AtlasOfLivingAustralia/ala-cas-5-services',
+        dockerSupport: true,
         isSubService: true),
     spatial: LAServiceDesc(
         name: "spatial",
@@ -502,6 +527,7 @@ class LAServiceDesc {
         allowMultipleDeploys: true,
         admin: false,
         alaAdmin: false,
+        dockerSupport: true,
         path: ""),
     sensitiveDataService: LAServiceDesc(
         name: "sensitive-data-service",
@@ -518,6 +544,7 @@ class LAServiceDesc {
         depends: LAServiceName.sds,
         admin: false,
         alaAdmin: false,
+        dockerSupport: true,
         path: ""),
     dataQuality: LAServiceDesc(
         name: "data-quality",
@@ -646,6 +673,7 @@ class LAServiceDesc {
         allowMultipleDeploys: true,
         depends: LAServiceName.pipelines,
         withoutUrl: true,
+        dockerSupport: true,
         path: ""),
     zookeeper: LAServiceDesc(
         name: zookeeper,
@@ -660,6 +688,7 @@ class LAServiceDesc {
         depends: LAServiceName.pipelines,
         withoutUrl: true,
         allowMultipleDeploys: true,
+        dockerSupport: true,
         path: ""),
     biocollect: LAServiceDesc(
         name: biocollect,
@@ -708,7 +737,36 @@ class LAServiceDesc {
         desc: 'provides reporting service for ecodata',
         optional: true,
         parentService: LAServiceName.events,
-        path: "")
+        path: ""),
+    gatus: LAServiceDesc(
+        name: gatus,
+        nameInt: gatus,
+        group: gatus,
+        forceSubdomain: false,
+        icon: MdiIcons.listStatus,
+        allowMultipleDeploys: true,
+        depends: LAServiceName.docker_swarm,
+        desc: 'gatus monitoring service',
+        optional: true,
+        sample: 'https://status.twin.sh/',
+        initUse: false,
+        isSubService: false,
+        dockerSupport: true,
+        path: ""),
+    portainer: LAServiceDesc(
+        name: portainer,
+        nameInt: portainer,
+        group: portainer,
+        forceSubdomain: false,
+        optional: true,
+        allowMultipleDeploys: true,
+        desc: "portainer docker management service",
+        depends: LAServiceName.docker_swarm,
+        icon: MdiIcons.crane,
+        initUse: false,
+        isSubService: false,
+        dockerSupport: true,
+        path: ""),
   };
 
   static LAServiceDesc get(String nameInt) {
@@ -723,36 +781,73 @@ class LAServiceDesc {
     return _map[nameInt.toS()]!;
   }
 
-  static List<LAServiceDesc> list(bool isHub) =>
-      isHub ? LAServiceDesc.listHubCapable : LAServiceDesc._list;
-
-  static List<LAServiceDesc> listWithArtifact() =>
-      list(false).where((sd) => sd.artifacts != null).toList();
-
-  static List<String> listS(bool isHub) =>
-      list(isHub).map((s) => s.nameInt).toList();
-
-  static List<LAServiceDesc> listSorted(bool isHub) =>
-      List<LAServiceDesc>.from(list(isHub))
-        ..sort((a, b) => compareAsciiUpperCase(a.name, b.name));
-
-  static List<LAServiceDesc> listRedundant(bool isHub) => LAServiceDesc._list
-      .where((s) =>
-          s.allowMultipleDeploys == true && (!isHub || (isHub && s.hubCapable)))
-      .toList();
-
-  static List<LAServiceDesc> listNoSub(bool isHub) => isHub
-      ? LAServiceDesc.listHubCapable
-      : LAServiceDesc._list.where((s) => s.isSubService != true).toList();
-
   static final List<LAServiceDesc> _list = _map.values.toList();
-  static List<LAServiceDesc> listHubCapable =
-      _list.where((LAServiceDesc s) => s.hubCapable).toList();
 
-  static List<LAServiceDesc> childServices(String parentNameInt) => _map.values
-      .where((s) =>
-          s.parentService != null && s.parentService!.toS() == parentNameInt)
-      .toList();
+  static List<LAServiceDesc> get listDockerCapable => _listDockerCapable ??=
+      _list.where((s) => s.dockerSupport == true).toList();
+  static List<LAServiceDesc>? _listDockerCapable;
+
+  static List<String> get listDockerCapableS =>
+      _listDockerCapableS ??= listDockerCapable.map((s) => s.nameInt).toList();
+  static List<String>? _listDockerCapableS;
+
+  static List<LAServiceDesc> get listWithArtifact =>
+      _listWithArtifact ??= _list.where((sd) => sd.artifacts != null).toList();
+  static List<LAServiceDesc>? _listWithArtifact;
+
+  static List<LAServiceDesc> get listHubCapable => _listHubCapable ??=
+      _list.where((LAServiceDesc s) => s.hubCapable).toList();
+  static List<LAServiceDesc>? _listHubCapable;
+
+  static List<LAServiceDesc> list(bool isHub) => isHub ? listHubCapable : _list;
+
+  static List<LAServiceDesc> get listRedundant => _listRedundant ??=
+      _list.where((s) => s.allowMultipleDeploys == true).toList();
+  static List<LAServiceDesc>? _listRedundant;
+
+  static List<LAServiceDesc> listNoSub(bool isHub) {
+    return isHub
+        ? listHubCapable
+        : (_listNoSub ??= _list.where((s) => s.isSubService != true).toList());
+  }
+
+  static List<LAServiceDesc>? _listNoSub;
+
+  static List<String> listS(bool isHub) {
+    if (isHub) {
+      return _listSHub ??= listHubCapable.map((s) => s.nameInt).toList();
+    } else {
+      return _listS ??= _list.map((s) => s.nameInt).toList();
+    }
+  }
+
+  static List<String>? _listS;
+  static List<String>? _listSHub;
+
+  static List<LAServiceDesc> listSorted(bool isHub) {
+    if (isHub) {
+      return _listSortedHub ??= _sortedListFrom(listHubCapable);
+    } else {
+      return _listSorted ??= _sortedListFrom(_list);
+    }
+  }
+
+  static List<LAServiceDesc>? _listSorted;
+  static List<LAServiceDesc>? _listSortedHub;
+
+  static List<LAServiceDesc> _sortedListFrom(List<LAServiceDesc> list) {
+    return List<LAServiceDesc>.from(list)
+      ..sort((a, b) => compareAsciiUpperCase(a.name, b.name));
+  }
+
+  static List<LAServiceDesc> childServices(String parentNameInt) {
+    return _childServices[parentNameInt] ??= _map.values
+        .where((s) =>
+            s.parentService != null && s.parentService!.toS() == parentNameInt)
+        .toList();
+  }
+
+  static final Map<String, List<LAServiceDesc>> _childServices = {};
 
   static final List<String> internalServices = [
     nameindexer,
@@ -762,7 +857,8 @@ class LAServiceDesc {
     spark,
     pipelines,
     hadoop,
-    events
+    events,
+    dockerSwarm
   ];
 
   static final List<String> subServices = [

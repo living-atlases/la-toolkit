@@ -222,6 +222,9 @@ class LAServiceDepsDesc {
       nameInt: eventsElasticSearch,
       serviceDepends: [ElasticSearch.v7_17_7],
     ),
+    dockerSwarm: LAServiceDepsDesc(nameInt: dockerSwarm, serviceDepends: []),
+    gatus: LAServiceDepsDesc(nameInt: gatus, serviceDepends: []),
+    portainer: LAServiceDepsDesc(nameInt: portainer, serviceDepends: [])
   };
 
 /*

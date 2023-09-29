@@ -3,6 +3,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
+import 'deploymentType.dart';
 import 'isJsonSerializable.dart';
 import 'laService.dart';
 
@@ -19,6 +20,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
   Map<String, String> softwareVersions;
   ServiceStatus status;
   int? checkedAt;
+  DeploymentType type;
 
   LAServiceDeploy(
       {String? id,
@@ -28,9 +30,11 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       required this.projectId,
       Map<String, String>? softwareVersions,
       this.checkedAt,
+      DeploymentType? type,
       ServiceStatus? status})
       : id = id ?? ObjectId().toString(),
         softwareVersions = softwareVersions ?? {},
+        type = type ?? DeploymentType.vm,
         status = status ?? ServiceStatus.unknown;
 
   factory LAServiceDeploy.fromJson(Map<String, dynamic> json) =>
@@ -52,6 +56,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
           serviceId == other.serviceId &&
           serverId == other.serverId &&
           projectId == other.projectId &&
+          type == other.type &&
           additionalVariables == other.additionalVariables &&
           checkedAt == other.checkedAt &&
           const DeepCollectionEquality.unordered()
@@ -65,12 +70,13 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       serverId.hashCode ^
       projectId.hashCode ^
       checkedAt.hashCode ^
+      type.hashCode ^
       additionalVariables.hashCode ^
       const DeepCollectionEquality.unordered().hash(softwareVersions) ^
       status.hashCode;
 
   @override
   String toString() {
-    return 'LAServiceDeploy{id: $id, status: $status, serviceId: $serviceId, serverId: $serverId, projectId: $projectId, checkedAt: $checkedAt}';
+    return 'LAServiceDeploy{id: $id, status: $status, serviceId: $serviceId, serverId: $serverId, projectId: $projectId, checkedAt: $checkedAt, type: $type}';
   }
 }

@@ -180,7 +180,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         } else {
           Map<String, LAReleases> releases = {};
           Map<String, String> servicesAndSub = {};
-          for (LAServiceDesc service in LAServiceDesc.listWithArtifact()) {
+          for (LAServiceDesc service in LAServiceDesc.listWithArtifact) {
             servicesAndSub[service.nameInt] = service.artifacts!;
           }
           releases = await getDepsVersions(servicesAndSub);

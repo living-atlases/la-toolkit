@@ -112,7 +112,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
             const SizedBox(height: 10),
             ListTile(
               title: Text(
-                  "Here you can select which version of each LA component do you want to deploy in order to keep your portal updated. ${(project.inProduction || project.allServicesAssignedToServers()) ? 'In green services that need to be deployed, and in blue your current running versions. ' : ''}You can verify also which versions are running other LA portals."),
+                  "Here you can select which version of each LA component do you want to deploy in order to keep your portal updated. ${(project.inProduction || project.allServicesAssigned()) ? 'In green services that need to be deployed, and in blue your current running versions. ' : ''}You can verify also which versions are running other LA portals."),
               trailing: HelpIcon(wikipage: "Components-versioning"),
             ),
             Wrap(children: selectors),

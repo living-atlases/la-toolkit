@@ -129,9 +129,8 @@ class _DeployPageState extends State<DeployPage> {
                                   ServicesChipPanel(
                                       initialValue: cmd.deployServices,
                                       services: LAService
-                                          .removeServicesDeployedTogether(vm
-                                              .project
-                                              .getServicesAssignedToServers()),
+                                          .removeServicesDeployedTogether(
+                                              vm.project.getServicesAssigned()),
                                       isHub: vm.project.isHub,
                                       onChange: (s) => setState(() {
                                             cmd.deployServices = s;

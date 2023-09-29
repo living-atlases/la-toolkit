@@ -7,8 +7,12 @@ import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
+import '../models/deploymentType.dart';
+import '../models/laCluster.dart';
+
 class ServerServicesEditCard extends StatefulWidget {
-  final LAServer server;
+  final LAServer? server;
+  final LACluster? cluster;
   final List<String> currentServerServices;
   final List<LAService> availableServicesForServer;
   final bool isHub;
@@ -18,10 +22,13 @@ class ServerServicesEditCard extends StatefulWidget {
   final Function(LAServer) onDeleted;
   final Function(String) onRename;
   final Function() onEditing;
+  final DeploymentType type;
 
   const ServerServicesEditCard(
       {Key? key,
-      required this.server,
+      this.server,
+      this.cluster,
+      required this.type,
       required this.currentServerServices,
       required this.availableServicesForServer,
       required this.isHub,
@@ -60,9 +67,13 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
             }));
       }
     }
+    final bool isAServer = widget.server != null;
     return IntrinsicWidth(
         child: Card(
             elevation: CardConstants.defaultElevation,
+            shape: widget.type == DeploymentType.vm
+                ? CardConstants.defaultShape
+                : CardConstants.defaultClusterShape,
             // color: Colors.black12,
             margin: const EdgeInsets.all(10),
             child: Padding(
@@ -72,33 +83,38 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                 children: [
                   ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text(widget.server.name,
+                      title: Text(
+                          isAServer
+                              ? widget.server!.name
+                              : "Docker swarm cluster",
                           style: const TextStyle(
                               color: LAColorTheme.inactive, fontSize: 20)),
                       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                        RenameServerIcon(widget.server, widget.onEditing,
-                            (String newName) {
-                          widget.onRename(newName);
-                        }),
-                        Tooltip(
-                            message: "Delete this server",
-                            child: IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () {
-                                  widget.onEditing();
-                                  UiUtils.showAlertDialog(
-                                    context,
-                                    () => widget.onDeleted(widget.server),
-                                    () => {},
-                                    title:
-                                        "Deleting server '${widget.server.name}'",
-                                  );
-                                })),
+                        if (isAServer)
+                          RenameServerIcon(widget.server!, widget.onEditing,
+                              (String newName) {
+                            widget.onRename(newName);
+                          }),
+                        if (isAServer)
+                          Tooltip(
+                              message: "Delete this server",
+                              child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    widget.onEditing();
+                                    UiUtils.showAlertDialog(
+                                      context,
+                                      () => widget.onDeleted(widget.server!),
+                                      () => {},
+                                      title:
+                                          "Deleting server '${widget.server!.name}'",
+                                    );
+                                  })),
                       ])),
                   const SizedBox(height: 10),
                   // ignore: sized_box_for_whitespace
@@ -142,7 +158,8 @@ class _ServiceChip extends StatelessWidget {
       selected: isSelected,
       selectedColor: LAColorTheme.laPalette,
       onSelected: (bool selected) => selected ? onSelected() : onDeleted(),
-      tooltip: service.alias != null ? 'aka ${service.alias!}' : '',
+      // Very slow:
+      //   tooltip: service.alias != null ? 'aka ${service.alias!}' : '',
       // Cannot use with onSelected
       // onPressed: () => isSelected ? onSelected() : onDeleted(),
       // deleteButtonTooltipMessage: "Don't use this service in this server",

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/models/LAServiceConstants.dart';
+import 'package:la_toolkit/models/deploymentType.dart';
 import 'package:la_toolkit/models/laLatLng.dart';
 import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
@@ -231,7 +232,7 @@ void main() {
     print(testProject.servicesNotAssigned()); */
     expect(
         testProject.getServicesNameListInUse().length ==
-            testProject.getServicesAssignedToServers().length,
+            testProject.getServicesAssigned().length,
         equals(true));
     testProject.getServicesNameListInUse().forEach((service) {
       expect(testProject.getHostnames(service).isNotEmpty, equals(true));
@@ -286,9 +287,8 @@ void main() {
     LAServer vm1 = LAServer(name: "vm1", projectId: p.id);
     p.upsertServer(vm1);
     p.assign(vm1, [collectory, bie, bieIndex, speciesLists]);
-    expect(p.getServicesAssignedToServers().length, equals(4));
-    expect(p.serviceDeploys.length,
-        equals(p.getServicesAssignedToServers().length));
+    expect(p.getServicesAssigned().length, equals(4));
+    expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
     LAServer vm1Bis = LAServer(
         name: "vm1",
         ip: "10.0.0.1",
@@ -323,31 +323,28 @@ void main() {
     p.serviceInUse(bie, true);
     p.serviceInUse(bie, false);
     p.serviceInUse(bie, true);
-    expect(p.serviceDeploys.length,
-        equals(p.getServicesAssignedToServers().length));
+    expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
     p.getService(bie).usesSubdomain = false;
     p.getService(bie).usesSubdomain = true;
     expect(numServices == p.getServersNameList().length, equals(true));
     expect(p.getService(bie).use, equals(true));
     expect(p.getService(bieIndex).use, equals(true));
-    expect(p.allServicesAssignedToServers(), equals(false));
-    expect(p.serviceDeploys.length,
-        equals(p.getServicesAssignedToServers().length));
+    expect(p.allServicesAssigned(), equals(false));
+    expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
     p.assign(vm1, [bie]);
     /* print(p.getServicesAssignedToServers());
     print(p.serviceDeploys);
     p.serviceDeploys.forEach(
         (sd) => print(p.services.firstWhere((s) => s.id == sd.serviceId))); */
-    expect(p.serviceDeploys.length,
-        equals(p.getServicesAssignedToServers().length));
-    expect(p.allServicesAssignedToServers(), equals(false));
+    expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
+    expect(p.allServicesAssigned(), equals(false));
     p.getServicesNameListInUse().contains(bie);
     p.getServicesNameListInUse().contains(bieIndex);
-    expect(p.getServicesAssignedToServers().contains(bie), equals(true));
-    expect(p.getServicesAssignedToServers().contains(bieIndex), equals(false));
+    expect(p.getServicesAssigned().contains(bie), equals(true));
+    expect(p.getServicesAssigned().contains(bieIndex), equals(false));
     p.assign(vm1, [bie, bieIndex, branding]);
-    expect(p.getServicesAssignedToServers().contains(bie), equals(true));
-    expect(p.getServicesAssignedToServers().contains(bieIndex), equals(true));
+    expect(p.getServicesAssigned().contains(bie), equals(true));
+    expect(p.getServicesAssigned().contains(bieIndex), equals(true));
     expect(p.getHostnames(bieIndex), equals(['vm1']));
     expect(p.getHostnames(bie), equals(['vm1']));
     p.getService(bie).iniPath = "/species";
@@ -362,8 +359,7 @@ void main() {
         p.etcHostsVar,
         equals(
             '      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site l-a.site'));
-    expect(p.serviceDeploys.length,
-        equals(p.getServicesAssignedToServers().length));
+    expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
 
     // print(p.getServiceDefaultVersion(p.getService(bie)));
     expect(p.getServiceDefaultVersions(p.getService(bie)).isNotEmpty,
@@ -1399,7 +1395,10 @@ void main() {
         ecodata,
         ecodataReporting,
         events,
-        eventsElasticSearch
+        eventsElasticSearch,
+        dockerSwarm,
+        gatus,
+        portainer
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason:
@@ -1456,7 +1455,10 @@ void main() {
         ecodata,
         ecodataReporting,
         events,
-        eventsElasticSearch
+        eventsElasticSearch,
+        dockerSwarm,
+        gatus,
+        portainer
       ];
       if (notUsedServices.contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(false),
@@ -1504,7 +1506,10 @@ void main() {
         ecodata,
         ecodataReporting,
         events,
-        eventsElasticSearch
+        eventsElasticSearch,
+        dockerSwarm,
+        gatus,
+        portainer
       ].contains(service.nameInt)) {
         expect(p.getService(service.nameInt).use, equals(true),
             reason: "${service.nameInt} should be in Use");
@@ -1615,7 +1620,8 @@ void main() {
     p.upsertServer(vm3);
     p.assign(vm1, [collectory, alaHub]);
     p.assign(vm2, [alaHub]);
-    Map<String, List<LAService>> assignable = p.getServerServicesAssignable();
+    Map<String, List<LAService>> assignable =
+        p.getServerServicesAssignable(DeploymentType.vm);
 
     expect(assignable[vm1.id]!.isNotEmpty, equals(true));
     expect(assignable[vm2.id]!.isNotEmpty, equals(true));
@@ -1630,7 +1636,7 @@ void main() {
     expect(
         assignable[vm2.id]!.contains(p.getService(speciesLists)), equals(true));
     p.assign(vm1, [collectory, alaHub, speciesLists]);
-    assignable = p.getServerServicesAssignable();
+    assignable = p.getServerServicesAssignable(DeploymentType.vm);
     expect(assignable[vm1.id]!.contains(p.getService(speciesLists)),
         equals(false));
     expect(assignable[vm2.id]!.contains(p.getService(speciesLists)),
@@ -1650,7 +1656,7 @@ void main() {
         reason: "Services in vm1: ${p.getServicesNameListInServer(vm1.id)}");
     LAServer vm4 = LAServer(name: "vm3", ip: "10.0.0.4", projectId: p.id);
     p.upsertServer(vm4);
-    assignable = p.getServerServicesAssignable();
+    assignable = p.getServerServicesAssignable(DeploymentType.vm);
     expect(assignable[vm4.id]!.contains(p.getService(alaHub)), equals(true));
     p.alaInstallRelease = "1.2.1";
     p.getServiceDetailsForVersionCheck();
