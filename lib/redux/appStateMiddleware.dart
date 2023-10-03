@@ -246,7 +246,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
     if (action is OpenProjectTools || action is TuneProject) {
       if (!action.project.isHub &&
-          (action.project.allServicesAssignedToServers() ||
+          ((action.project as LAProject).allServicesAssigned() ||
               action.project.inProduction)) {
         if (action.project.lastSwCheck == null ||
             action.project.lastSwCheck

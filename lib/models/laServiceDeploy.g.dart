@@ -11,7 +11,9 @@ abstract class _$LAServiceDeployCWProxy {
 
   LAServiceDeploy serviceId(String serviceId);
 
-  LAServiceDeploy serverId(String serverId);
+  LAServiceDeploy serverId(String? serverId);
+
+  LAServiceDeploy clusterId(String? clusterId);
 
   LAServiceDeploy additionalVariables(String additionalVariables);
 
@@ -35,6 +37,7 @@ abstract class _$LAServiceDeployCWProxy {
     String? id,
     String? serviceId,
     String? serverId,
+    String? clusterId,
     String? additionalVariables,
     String? projectId,
     Map<String, String>? softwareVersions,
@@ -57,7 +60,10 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
   LAServiceDeploy serviceId(String serviceId) => this(serviceId: serviceId);
 
   @override
-  LAServiceDeploy serverId(String serverId) => this(serverId: serverId);
+  LAServiceDeploy serverId(String? serverId) => this(serverId: serverId);
+
+  @override
+  LAServiceDeploy clusterId(String? clusterId) => this(clusterId: clusterId);
 
   @override
   LAServiceDeploy additionalVariables(String additionalVariables) =>
@@ -91,6 +97,7 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
     Object? id = const $CopyWithPlaceholder(),
     Object? serviceId = const $CopyWithPlaceholder(),
     Object? serverId = const $CopyWithPlaceholder(),
+    Object? clusterId = const $CopyWithPlaceholder(),
     Object? additionalVariables = const $CopyWithPlaceholder(),
     Object? projectId = const $CopyWithPlaceholder(),
     Object? softwareVersions = const $CopyWithPlaceholder(),
@@ -107,10 +114,14 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
           ? _value.serviceId
           // ignore: cast_nullable_to_non_nullable
           : serviceId as String,
-      serverId: serverId == const $CopyWithPlaceholder() || serverId == null
+      serverId: serverId == const $CopyWithPlaceholder()
           ? _value.serverId
           // ignore: cast_nullable_to_non_nullable
-          : serverId as String,
+          : serverId as String?,
+      clusterId: clusterId == const $CopyWithPlaceholder()
+          ? _value.clusterId
+          // ignore: cast_nullable_to_non_nullable
+          : clusterId as String?,
       additionalVariables:
           additionalVariables == const $CopyWithPlaceholder() ||
                   additionalVariables == null
@@ -155,7 +166,8 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) =>
     LAServiceDeploy(
       id: json['id'] as String?,
       serviceId: json['serviceId'] as String,
-      serverId: json['serverId'] as String,
+      serverId: json['serverId'] as String?,
+      clusterId: json['clusterId'] as String?,
       additionalVariables: json['additionalVariables'] as String? ?? "",
       projectId: json['projectId'] as String,
       softwareVersions:
@@ -172,6 +184,7 @@ Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) =>
       'id': instance.id,
       'serviceId': instance.serviceId,
       'serverId': instance.serverId,
+      'clusterId': instance.clusterId,
       'projectId': instance.projectId,
       'additionalVariables': instance.additionalVariables,
       'softwareVersions': instance.softwareVersions,

@@ -14,7 +14,8 @@ part 'laServiceDeploy.g.dart';
 class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
   String id;
   String serviceId;
-  String serverId;
+  String? serverId;
+  String? clusterId;
   String projectId;
   String additionalVariables;
   Map<String, String> softwareVersions;
@@ -26,6 +27,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       {String? id,
       required this.serviceId,
       required this.serverId,
+      required this.clusterId,
       this.additionalVariables = "",
       required this.projectId,
       Map<String, String>? softwareVersions,
@@ -55,6 +57,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
           id == other.id &&
           serviceId == other.serviceId &&
           serverId == other.serverId &&
+          clusterId == other.clusterId &&
           projectId == other.projectId &&
           type == other.type &&
           additionalVariables == other.additionalVariables &&
@@ -68,6 +71,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       id.hashCode ^
       serviceId.hashCode ^
       serverId.hashCode ^
+      clusterId.hashCode ^
       projectId.hashCode ^
       checkedAt.hashCode ^
       type.hashCode ^
@@ -77,6 +81,6 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
 
   @override
   String toString() {
-    return 'LAServiceDeploy{id: $id, status: $status, serviceId: $serviceId, serverId: $serverId, projectId: $projectId, checkedAt: $checkedAt, type: $type}';
+    return 'LAServiceDeploy{id: $id, status: $status, serviceId: $serviceId, serverId: $serverId, clusterId: $clusterId, projectId: $projectId, checkedAt: $checkedAt, type: $type}';
   }
 }

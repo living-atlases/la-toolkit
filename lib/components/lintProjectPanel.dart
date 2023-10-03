@@ -59,8 +59,14 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           vm.backendVersion != null) {
         selectedVersions.addAll({
           toolkit: vm.backendVersion!,
-          alaInstall: project.alaInstallRelease ?? vm.alaInstallReleases[0],
-          generator: project.generatorRelease ?? vm.generatorReleases[0]
+          alaInstall: project.alaInstallRelease ??
+              (vm.alaInstallReleases.isNotEmpty
+                  ? vm.alaInstallReleases[0]
+                  : '2.1.14'),
+          generator: project.generatorRelease ??
+              (vm.generatorReleases.isNotEmpty
+                  ? vm.generatorReleases[0]
+                  : '1.4.3')
         });
       }
       List<Widget> lints = [

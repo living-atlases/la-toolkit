@@ -15,15 +15,19 @@ part 'hostServicesChecks.g.dart';
 class HostsServicesChecks {
   // Server Id to check
   Map<String, Map<String, HostServiceCheck>> checks = {};
+
   HostsServicesChecks();
 
   factory HostsServicesChecks.fromJson(Map<String, dynamic> json) =>
       _$HostsServicesChecksFromJson(json);
+
   Map<String, dynamic> toJson() => _$HostsServicesChecksToJson(this);
 
   void setUrls(LAServiceDeploy sd, List<String> urls, String name,
       List<String> serversIds, bool full) {
-    for (String serverId in full ? serversIds : [sd.serverId]) {
+    List<String> list = sd.serverId != null ? [sd.serverId!] : [];
+
+    for (String serverId in full ? serversIds : list) {
       Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
       for (String url in urls) {
         HostServiceCheck ch = hChecks.values.firstWhere(
@@ -43,13 +47,15 @@ class HostsServicesChecks {
 
   void add(LAServiceDeploy sd, LAServer server, List<BasicService>? deps,
       String name, List<String> serversIds, bool full) {
+    // For now, don't check docker swarm services
+    if (sd.serverId == null) return;
     if (deps != null) {
       BasicService.toCheck(deps).forEach((dep) {
         for (num tcp in dep.tcp) {
           // Some services should be checked also from others servers like solr/cassandra
           for (String serverId in full && dep.reachableFromOtherServers
               ? serversIds
-              : [sd.serverId]) {
+              : [sd.serverId!]) {
             Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
             HostServiceCheck ch = hChecks.values.firstWhere(
                 (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
@@ -69,7 +75,7 @@ class HostsServicesChecks {
             hChecks[ch.id] = ch;
           }
         }
-        String serverId = sd.serverId;
+        String serverId = sd.serverId!;
         Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
         for (num udp in dep.udp) {
           HostServiceCheck ch = hChecks.values.firstWhere(

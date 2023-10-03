@@ -507,6 +507,8 @@ check results length: ${checkResults.length}''';
       String id, DeploymentType type, List<String> assignedServices,
       [Map<String, String>? softwareVersions]) {
     final bool isServer = type == DeploymentType.vm;
+    final String? serverId = isServer ? id : null;
+    final String? clusterId = !isServer ? id : null;
     HashSet<String> newServices = HashSet<String>();
     newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
@@ -526,7 +528,8 @@ check results length: ${checkResults.length}''';
       serviceDeploys.firstWhere(
           (sD) =>
               sD.projectId == id &&
-              sD.serverId == id &&
+              sD.serverId == serverId &&
+              sD.clusterId == clusterId &&
               sD.type == type &&
               sD.serviceId == service.id, orElse: () {
         Map<String, String> versions = getServiceDefaultVersions(service);
@@ -541,7 +544,8 @@ check results length: ${checkResults.length}''';
         }
         LAServiceDeploy newSd = LAServiceDeploy(
             projectId: id,
-            serverId: id,
+            serverId: type == DeploymentType.vm ? id : null,
+            clusterId: type == DeploymentType.dockerSwarm ? id : null,
             type: type,
             serviceId: service.id,
             softwareVersions: versions);
@@ -553,7 +557,8 @@ check results length: ${checkResults.length}''';
     // Remove previous deploys
     serviceDeploys.removeWhere((sD) =>
         sD.projectId == id &&
-        sD.serverId == id &&
+        sD.serverId == serverId &&
+        sD.clusterId == clusterId &&
         sD.type == type &&
         !serviceIds.contains(sD.serviceId));
   }
@@ -564,6 +569,8 @@ check results length: ${checkResults.length}''';
 
   void unAssignByType(String id, DeploymentType type, String serviceName) {
     final bool isServer = type == DeploymentType.vm;
+    final String? serverId = isServer ? id : null;
+    final String? clusterId = !isServer ? id : null;
     HashSet<String> servicesToDel = HashSet<String>();
     servicesToDel.add(serviceName);
     servicesToDel = _addSubServices(servicesToDel);
@@ -577,7 +584,8 @@ check results length: ${checkResults.length}''';
       LAService service = getService(sN);
       serviceDeploys.removeWhere((sD) =>
           sD.projectId == id &&
-          sD.serverId == id &&
+          sD.serverId == serverId &&
+          sD.clusterId == clusterId &&
           sD.type == type &&
           sD.serviceId == service.id);
     }
@@ -681,6 +689,9 @@ check results length: ${checkResults.length}''';
         s.gateways.remove(deletedId);
         upsertServer(s);
       }
+    }
+    if (!isDockerClusterConfigured()) {
+      clusters.clear();
     }
     validateCreation();
   }
