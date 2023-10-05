@@ -665,9 +665,10 @@ check results length: ${checkResults.length}''';
   // 1) at creation time
   // 2) prior to update a service
   // 3) after a deploy/update a service
-  Map<String, String> getServiceDeployReleases() {
+  Map<String, String> getServiceDeployReleases([bool onlyDocker = false]) {
     Map<String, String> versions = {};
-    for (LAServiceDeploy sd in serviceDeploys) {
+    for (LAServiceDeploy sd in serviceDeploys.where((sd) =>
+        (onlyDocker && sd.type == DeploymentType.dockerSwarm) || !onlyDocker)) {
       versions.addAll(sd.softwareVersions);
     }
     return versions;
@@ -703,7 +704,7 @@ check results length: ${checkResults.length}''';
   }
 
   List<String> getHostnames(String serviceName) {
-    List<String> hostnames = [];
+    Set<String> hostnames = {};
 
     serverServices.forEach((id, serviceNames) {
       for (String currentService in serviceNames) {
@@ -713,7 +714,19 @@ check results length: ${checkResults.length}''';
         }
       }
     });
-    return hostnames;
+
+    clusterServices.forEach((id, serviceNames) {
+      for (String currentService in serviceNames) {
+        List<String> serverCluster = getServiceDeploysForSomeService(
+                dockerSwarm)
+            .map((sd) => (servers.firstWhere((s) => s.id == sd.serverId)).name)
+            .toList();
+        if (serviceName == currentService) {
+          hostnames.addAll(serverCluster);
+        }
+      }
+    });
+    return hostnames.toList();
   }
 
   String get etcHostsVar {
@@ -855,6 +868,20 @@ check results length: ${checkResults.length}''';
       conf["LA_${service.nameInt}_url"] = service.url(domain);
       conf["LA_${service.nameInt}_path"] = service.path;
     }
+    // Docker related vars
+    if (isDockerClusterConfigured()) {
+      Set<String> nginxDockerInternalAliases = {};
+      clusterServices.forEach((id, serviceNames) {
+        for (String currentService in serviceNames) {
+          LAService s = getService(currentService);
+          nginxDockerInternalAliases.add(s.url(domain));
+        }
+      });
+      conf["LA_nginx_docker_internal_aliases"] =
+          nginxDockerInternalAliases.toList();
+      List<String> dockerSolrHosts = dockerServers();
+      conf["LA_docker_solr_hosts"] = dockerSolrHosts;
+    }
 
     // Release versions
     Map<String, List<dynamic>> swVersions = {};
@@ -887,6 +914,15 @@ check results length: ${checkResults.length}''';
       conf['LA_hubs'] = hubsConf;
     }
     return conf;
+  }
+
+  List<String> dockerServers() {
+    List<String> dList = getServiceDeploysForSomeService(dockerSwarm)
+        .map((sd) => (servers.firstWhere((s) => s.id == sd.serverId)).name)
+        .toSet()
+        .toList();
+    dList.sort();
+    return dList;
   }
 
   factory LAProject.fromObject(Map<String, dynamic> yoRc, {debug = false}) {

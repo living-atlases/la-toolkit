@@ -123,7 +123,7 @@ class LAServiceDesc {
 
   static final Map<String, LAServiceDesc> _map = {
     dockerSwarm: LAServiceDesc(
-      name: "Docker Swarm",
+      name: "docker swarm",
       nameInt: dockerSwarm,
       group: dockerSwarm,
       icon: MdiIcons.ferry,
