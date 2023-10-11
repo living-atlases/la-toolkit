@@ -77,13 +77,13 @@ class _BrandingTileState extends State<BrandingTile> {
               onChange: (String newTheme) => theme = newTheme,
             ),
             const SizedBox(
-              height: 20,
+              height: 0,
             ),
           ],
         ),
         buttons: [
           DialogButton(
-            width: 500,
+            width: 450,
             onPressed: () {
               widget.onChange(theme);
               setState(() {
@@ -153,7 +153,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
     _brandings.insert(0, _selected[0]);
     return Container(
       alignment: Alignment.center,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(0),
       child: Column(
         children: <Widget>[
           MultiSelectChipField<Branding>(
@@ -178,21 +178,23 @@ class _BrandingSelectorState extends State<BrandingSelector> {
             title: const Text("Select your branding"),
             initialValue: _selected,
             key: _multiSelectKey,
-            height: 360,
+            height: 330,
             headerColor: Colors.white,
-            itemBuilder: (item, state) {
+            itemBuilder: (MultiSelectItem<Branding?> item,
+                FormFieldState<List<Branding?>> state) {
               // return your custom widget here
+              Branding value = item.value ?? _brandings[0];
               return /* Tooltip(
                 message: item.value.desc,
                 child: */
                   Padding(
                       // Scroll padding
-                      padding: const EdgeInsets.only(bottom: 20.0),
+                      padding: const EdgeInsets.only(bottom: 10.0),
                       child: InkWell(
                         child: Container(
-                            // height: 100,
-                            width: 250,
-                            color: _selected.contains(item.value)
+                            height: 80,
+                            width: 200,
+                            color: _selected.contains(value)
                                 ? LAColorTheme.laPalette
                                 : Colors.black54,
                             margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
@@ -203,30 +205,30 @@ class _BrandingSelectorState extends State<BrandingSelector> {
                                     MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   const SizedBox(height: 10),
-                                  item.value.name != 'custom'
+                                  value.name != 'custom'
                                       ? Image.asset(
-                                          "assets/images/themes/${item.value.name}.png",
+                                          "assets/images/themes/${value.name}.png",
                                           width: 210)
                                       : Container(),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 5),
                                   Column(
                                       // mainAxisSize: MainAxisSize.max,
                                       /*  crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween, */
                                       children: <Widget>[
-                                        Text(item.value.name,
+                                        Text(value.name,
                                             style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.normal)),
-                                        const SizedBox(height: 10),
+                                        const SizedBox(height: 5),
                                       ])
                                 ])),
                         onTap: () {
                           setState(() {
-                            _selected = [item.value];
-                            widget.onChange(item.value.name);
+                            _selected = [value];
+                            widget.onChange(value.name);
                           });
                         },
                         // child: Text(item.value.name),
