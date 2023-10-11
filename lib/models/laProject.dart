@@ -506,19 +506,19 @@ check results length: ${checkResults.length}''';
   }
 
   void assignByType(
-      String id, DeploymentType type, List<String> assignedServices,
+      String sOrCId, DeploymentType type, List<String> assignedServices,
       [Map<String, String>? softwareVersions]) {
     final bool isServer = type == DeploymentType.vm;
-    final String? serverId = isServer ? id : null;
-    final String? clusterId = !isServer ? id : null;
+    final String? serverId = isServer ? sOrCId : null;
+    final String? clusterId = !isServer ? sOrCId : null;
     HashSet<String> newServices = HashSet<String>();
     newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
     newServices = _addSubServices(newServices);
     if (isServer) {
-      serverServices[id] = newServices.toList();
+      serverServices[sOrCId] = newServices.toList();
     } else {
-      clusterServices[id] = newServices.toList();
+      clusterServices[sOrCId] = newServices.toList();
     }
     List serviceIds = [];
     if (assignedServices.contains(dockerSwarm)) {
@@ -529,7 +529,7 @@ check results length: ${checkResults.length}''';
       serviceIds.add(service.id);
       serviceDeploys.firstWhere(
           (sD) =>
-              sD.projectId == id &&
+              sD.projectId == this.id &&
               sD.serverId == serverId &&
               sD.clusterId == clusterId &&
               sD.type == type &&
@@ -546,8 +546,8 @@ check results length: ${checkResults.length}''';
         }
         LAServiceDeploy newSd = LAServiceDeploy(
             projectId: id,
-            serverId: type == DeploymentType.vm ? id : null,
-            clusterId: type == DeploymentType.dockerSwarm ? id : null,
+            serverId: serverId,
+            clusterId: clusterId,
             type: type,
             serviceId: service.id,
             softwareVersions: versions);

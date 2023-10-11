@@ -125,7 +125,7 @@ class LAService implements IsJsonSerializable<LAService> {
   @override
   String toString() {
     if (use) {
-      return 'LAService ($nameInt, use: $use, project: (${projectId.length > 8 ? projectId.substring(0, 8) : ""}))';
+      return 'LAService ($id $nameInt, use: $use, project: (${projectId.length > 8 ? projectId.substring(0, 8) : ""}))';
     } else {
       return "$nameInt not used";
     }

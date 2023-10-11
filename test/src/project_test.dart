@@ -7,6 +7,7 @@ import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laProjectStatus.dart';
 import 'package:la_toolkit/models/laServer.dart';
 import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/laServiceDeploy.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/sshKey.dart';
@@ -323,7 +324,7 @@ void main() {
     p.serviceInUse(bie, true);
     p.serviceInUse(bie, false);
     p.serviceInUse(bie, true);
-    expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
+    // debugServiceDeployAssigned(p);
     p.getService(bie).usesSubdomain = false;
     p.getService(bie).usesSubdomain = true;
     expect(numServices == p.getServersNameList().length, equals(true));
@@ -332,10 +333,7 @@ void main() {
     expect(p.allServicesAssigned(), equals(false));
     expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
     p.assign(vm1, [bie]);
-    /* print(p.getServicesAssignedToServers());
-    print(p.serviceDeploys);
-    p.serviceDeploys.forEach(
-        (sd) => print(p.services.firstWhere((s) => s.id == sd.serviceId))); */
+    debugServiceDeployAssigned(p);
     expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
     expect(p.allServicesAssigned(), equals(false));
     p.getServicesNameListInUse().contains(bie);
@@ -1663,6 +1661,19 @@ void main() {
     p.setServiceDeployRelease(
         alaHub, p.getServiceDefaultVersions(p.getService(alaHub))[alaHub]!);
     expect(
-        p.toGeneratorJson()['LA_software_versions'].length == 1, equals(true));
+        p.toGeneratorJson()['LA_software_versions'].length == 1, equals(true),
+        reason: p.toGeneratorJson()['LA_software_versions'].length.toString());
   });
+}
+
+void debugServiceDeployAssigned(LAProject p) {
+  for (LAServiceDeploy sd in p.serviceDeploys) {
+    LAService s = p.services.firstWhere((LAService s) => s.id == sd.serviceId);
+
+    print("Service ${s.nameInt} ($s) is used: ${s.use} on $sd");
+  }
+  print(p.getServicesAssigned());
+  expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length),
+      reason:
+          'p.serviceDeploys.length: ${p.serviceDeploys.length} != p.getServicesAssigned().length: ${p.getServicesAssigned().length}');
 }
