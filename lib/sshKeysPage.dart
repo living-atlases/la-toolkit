@@ -125,7 +125,7 @@ class SshKeyPage extends StatelessWidget {
         ),
         buttons: [
           DialogButton(
-            width: 500,
+            width: 450,
             onPressed: () {
               if (name != null && LARegExp.hostnameRegexp.hasMatch(name!)) {
                 vm.onAddKey(name!);
@@ -208,7 +208,7 @@ class SshKeyPage extends StatelessWidget {
         ),
         buttons: [
           DialogButton(
-            width: 500,
+            width: 450,
             onPressed: () {
               if (name != null && publicKey != null && privateKey != null) {
                 if (LARegExp.hostnameRegexp.hasMatch(name!) &&

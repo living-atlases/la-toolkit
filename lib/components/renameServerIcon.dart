@@ -13,6 +13,7 @@ class RenameServerIcon extends StatelessWidget {
 
   const RenameServerIcon(this.server, this.onEditing, this.onRename, {Key? key})
       : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Tooltip(
@@ -61,12 +62,12 @@ class RenameServerIcon extends StatelessWidget {
         ),
         buttons: [
           DialogButton(
-            width: 500,
+            width: 450,
             onPressed: () {
               if (name != null) {
                 if (LARegExp.hostnameRegexp.hasMatch(name!)) {
-                  onRename(name!);
                   Navigator.pop(context);
+                  onRename(name!);
                 }
               }
             },

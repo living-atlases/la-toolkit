@@ -444,7 +444,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
         ])),
         buttons: [
           DialogButton(
-            width: 500,
+            width: 450,
             onPressed: () {
               Navigator.pop(context);
             },

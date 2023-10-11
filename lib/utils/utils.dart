@@ -135,7 +135,7 @@ class UiUtils {
         ]),
         buttons: [
           DialogButton(
-            width: 500,
+            width: 450,
             onPressed: () {
               Navigator.pop(context);
             },
