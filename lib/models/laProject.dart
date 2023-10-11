@@ -330,9 +330,11 @@ class LAProject implements IsJsonSerializable<LAProject> {
         .toList();
   }
 
-  List<String> getServicesAssigned() {
+  List<String> getServicesAssigned([bool onlyDocker = false]) {
     Set<String> selected = {};
-    serverServices.forEach((id, service) => selected.addAll(service));
+    if (!onlyDocker) {
+      serverServices.forEach((id, service) => selected.addAll(service));
+    }
     clusterServices.forEach((id, service) => selected.addAll(service));
     return selected.toList();
   }
@@ -721,6 +723,7 @@ check results length: ${checkResults.length}''';
                 dockerSwarm)
             .map((sd) => (servers.firstWhere((s) => s.id == sd.serverId)).name)
             .toList();
+        serverCluster.sort();
         if (serviceName == currentService) {
           hostnames.addAll(serverCluster);
         }
