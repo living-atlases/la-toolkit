@@ -1,4 +1,4 @@
-import 'package:la_toolkit/dependenciesManager.dart';
+import 'package:la_toolkit/dependencies_manager.dart';
 import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/versionUtils.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';

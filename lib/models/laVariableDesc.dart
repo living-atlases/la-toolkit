@@ -2,8 +2,8 @@ import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/laServiceDeploy.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 
-import 'laProject.dart';
 import 'laServiceName.dart';
+import 'la_project.dart';
 
 // Other option is to get variables from ala-install parsing the templates with
 // some regexp like {{([a-z A-Z0-9][^{}]+)}}

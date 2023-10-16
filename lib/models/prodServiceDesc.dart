@@ -1,9 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:la_toolkit/models/LAServiceConstants.dart';
-import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/la_service.dart';
 
-import 'basicService.dart';
+import 'basic_service.dart';
 import 'laServiceDeploy.dart';
 
 class ProdServiceDesc {

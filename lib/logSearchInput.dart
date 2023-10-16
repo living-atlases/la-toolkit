@@ -18,8 +18,8 @@ class LogSearchInput extends StatefulWidget {
 
 class _LogSearchInputState extends State<LogSearchInput> {
   final StreamController<String> _textChangeStreamController =
-      StreamController();
-  late StreamSubscription _textChangesSubscription;
+      StreamController<String>();
+  late StreamSubscription<String> _textChangesSubscription;
 
   @override
   void initState() {

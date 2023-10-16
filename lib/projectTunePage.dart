@@ -4,39 +4,41 @@ import 'package:collection/collection.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/genericTextFormField.dart';
-import 'package:la_toolkit/components/helpIcon.dart';
-import 'package:la_toolkit/laReleasesSelectors.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/laProjectStatus.dart';
-import 'package:la_toolkit/models/laVariableDesc.dart';
-import 'package:la_toolkit/models/sshKey.dart';
-import 'package:la_toolkit/redux/appActions.dart';
-import 'package:la_toolkit/routes.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
-import 'package:la_toolkit/utils/regexp.dart';
-import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:redux/redux.dart';
 
 import 'components/GenericSelector.dart';
 import 'components/alaInstallSelector.dart';
-import 'components/appSnackBar.dart';
+import 'components/app_snack_bar.dart';
 import 'components/generatorSelector.dart';
+import 'components/genericTextFormField.dart';
+import 'components/help_icon.dart';
 import 'components/laAppBar.dart';
 import 'components/lintProjectPanel.dart';
 import 'components/scrollPanel.dart';
+import 'laTheme.dart';
+import 'la_releases_selectors.dart';
+import 'models/appState.dart';
+import 'models/laProjectStatus.dart';
 import 'models/laReleases.dart';
 import 'models/laServiceDesc.dart';
 import 'models/laServiceName.dart';
 import 'models/laVariable.dart';
+import 'models/laVariableDesc.dart';
+import 'models/la_project.dart';
+import 'models/la_service.dart';
+import 'models/sshKey.dart';
+import 'redux/app_actions.dart';
+import 'routes.dart';
+import 'utils/StringUtils.dart';
+import 'utils/regexp.dart';
+import 'utils/utils.dart';
 
 class LAProjectTunePage extends StatefulWidget {
-  const LAProjectTunePage({Key? key}) : super(key: key);
+  const LAProjectTunePage({super.key});
 
-  static const routeName = "tune";
+  static const String routeName = 'tune';
 
   @override
   State<LAProjectTunePage> createState() => _LAProjectTunePageState();
@@ -75,7 +77,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectTuneViewModel>(
       // Fails the switch distinct: true,
-      converter: (store) {
+      converter: (Store<AppState> store) {
         return _ProjectTuneViewModel(
             project: store.state.currentProject,
             softwareReleasesReady: store.state.laReleases.isNotEmpty,
@@ -98,14 +100,14 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                 onReady: () => setState(() {
                       _loading = false;
                     }))),
-            onSaveProject: (project) {
+            onSaveProject: (LAProject project) {
               store.dispatch(SaveCurrentProject(project));
             },
-            onUpdateProject: (project) {
+            onUpdateProject: (LAProject project) {
               store.dispatch(UpdateProject(project));
               BeamerCond.of(context, LAProjectViewLocation());
             },
-            onCancel: (project) {
+            onCancel: (LAProject project) {
               store.dispatch(OpenProjectTools(project));
               BeamerCond.of(context, LAProjectViewLocation());
             },
@@ -113,39 +115,39 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                 store.dispatch(OnSelectTuneTab(currentTab: tab)));
       },
       builder: (BuildContext context, _ProjectTuneViewModel vm) {
-        LAProject project = vm.project;
+        final LAProject project = vm.project;
         _tab = vm.currentTab;
 
         if (!project.isHub &&
-            (project.isStringVariableNullOrEmpty("pac4j_cookie_signing_key") ||
+            (project.isStringVariableNullOrEmpty('pac4j_cookie_signing_key') ||
                 project.isStringVariableNullOrEmpty(
-                    "pac4j_cookie_encryption_key") ||
+                    'pac4j_cookie_encryption_key') ||
                 project
-                    .isStringVariableNullOrEmpty("cas_webflow_signing_key") ||
+                    .isStringVariableNullOrEmpty('cas_webflow_signing_key') ||
                 project.isStringVariableNullOrEmpty(
-                    "cas_webflow_encryption_key"))) {
+                    'cas_webflow_encryption_key'))) {
           // Auto-generate CAS keys
           vm.onInitCasKeys();
         }
         if (!project.isHub &&
-            (project.isStringVariableNullOrEmpty("cas_oauth_signing_key") ||
+            (project.isStringVariableNullOrEmpty('cas_oauth_signing_key') ||
                 project
-                    .isStringVariableNullOrEmpty("cas_oauth_encryption_key") ||
+                    .isStringVariableNullOrEmpty('cas_oauth_encryption_key') ||
                 project.isStringVariableNullOrEmpty(
-                    "cas_oauth_access_token_signing_key") ||
+                    'cas_oauth_access_token_signing_key') ||
                 project.isStringVariableNullOrEmpty(
-                    "cas_oauth_access_token_encryption_key"))) {
+                    'cas_oauth_access_token_encryption_key'))) {
           // Auto-generate CAS OAuth keys
           vm.onInitCasOAuthKeys();
         }
-        List<String> varCatName = project.getServicesNameListInUse();
+        final List<String> varCatName = project.getServicesNameListInUse();
         varCatName.add(LAServiceName.all.toS());
-        List<ListItem> items = [];
+        final List<ListItem> items = <ListItem>[];
         LAServiceName? lastCategory;
         LAVariableSubcategory? lastSubcategory;
-        bool isHub = project.isHub;
+        final bool isHub = project.isHub;
         LAVariableDesc.map.entries
-            .where((laVar) =>
+            .where((MapEntry<String, LAVariableDesc> laVar) =>
                 laVar.value.inTunePage &&
                 // add onlyHub vars if needed
                 (!laVar.value.onlyHub || (isHub && laVar.value.onlyHub)) &&
@@ -163,11 +165,11 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                             .use)) && */
                 ((!project.advancedTune && !laVar.value.advanced) ||
                     project.advancedTune))
-            .forEach((entry) {
+            .forEach((MapEntry<String, LAVariableDesc> entry) {
           if (entry.value.service != lastCategory) {
             items.add(HeadingItem(entry.value.service == LAServiceName.all
-                ? "Variables common to all services"
-                : "${StringUtils.capitalize(LAServiceDesc.getE(entry.value.service).name)} variables"));
+                ? 'Variables common to all services'
+                : '${StringUtils.capitalize(LAServiceDesc.getE(entry.value.service).name)} variables'));
 
             lastCategory = entry.value.service;
           }
@@ -176,16 +178,16 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
             items.add(HeadingItem(entry.value.subcategory!.title, true));
             lastSubcategory = entry.value.subcategory;
           }
-          items.add(MessageItem(project, entry.value, (value) {
+          items.add(MessageItem(project, entry.value, (Object value) {
             project.setVariable(entry.value, value);
             vm.onSaveProject(project);
           }));
         });
-        String pageTitle =
-            "${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}";
-        bool showSoftwareVersions =
+        final String pageTitle =
+            '${project.shortName}: ${LAProjectViewStatus.tune.getTitle(project.isHub)}';
+        final bool showSoftwareVersions =
             project.showSoftwareVersions && vm.softwareReleasesReady;
-        bool showToolkitDeps = project.showToolkitDeps;
+        final bool showToolkitDeps = project.showToolkitDeps;
         context.loaderOverlay.hide();
         return Title(
             title: pageTitle,
@@ -196,19 +198,19 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                     context: context,
                     titleIcon: Icons.edit,
                     title: pageTitle,
-                    showLaIcon: false,
-                    actions: [
+                    // showLaIcon: false,
+                    actions: <Widget>[
                       TextButton(
                           // icon: Icon(Icons.cancel),
                           style: TextButton.styleFrom(
                               foregroundColor: Colors.white),
                           child: const Text(
-                            "CANCEL",
+                            'CANCEL',
                           ),
                           onPressed: () => vm.onCancel(project)),
                       IconButton(
                         icon: const Tooltip(
-                            message: "Save the current LA project variables",
+                            message: 'Save the current LA project variables',
                             child: Icon(Icons.save, color: Colors.white)),
                         onPressed: () {
                           vm.onUpdateProject(project);
@@ -220,11 +222,13 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                   color: Colors.black,
                   activeColor: Colors.black,
                   style: TabStyle.react,
-                  items: [
-                    TabItem(icon: MdiIcons.formatListGroup, title: "Variables"),
-                    TabItem(
-                        icon: MdiIcons.autorenew, title: "Software versions"),
-                    TabItem(icon: MdiIcons.formTextbox, title: "Ansible Extras")
+                  items: <TabItem<dynamic>>[
+                    TabItem<dynamic>(
+                        icon: MdiIcons.formatListGroup, title: 'Variables'),
+                    TabItem<dynamic>(
+                        icon: MdiIcons.autorenew, title: 'Software versions'),
+                    TabItem<dynamic>(
+                        icon: MdiIcons.formTextbox, title: 'Ansible Extras')
                   ],
                   initialActiveIndex: vm.currentTab,
                   //optional, default as 0
@@ -250,7 +254,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                     ),
                                     trailing: Switch(
                                         value: project.advancedTune,
-                                        onChanged: (value) {
+                                        onChanged: (bool value) {
                                           project.advancedTune = value;
                                           vm.onSaveProject(project);
                                         })),
@@ -273,14 +277,14 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                           if (value) {
                                             project.isCreated = true;
                                             project.fstDeployed = true;
-                                            project.setProjectStatus(
-                                                LAProjectStatus.inProduction);
+                                            project.status =
+                                                LAProjectStatus.inProduction;
                                             project.validateCreation(
                                                 debug: true);
                                             vm.onSaveProject(project);
                                           } else {
-                                            project.setProjectStatus(
-                                                LAProjectStatus.firstDeploy);
+                                            project.status =
+                                                LAProjectStatus.firstDeploy;
                                             project.validateCreation(
                                                 debug: true);
                                             vm.onSaveProject(project);
@@ -290,14 +294,15 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                 const SizedBox(height: 20),
                               if (_tab == _moreInfoTab)
                                 ListView.builder(
-                                  scrollDirection: Axis.vertical,
+                                  // scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
                                   // Let the ListView know how many items it needs to build.
                                   itemCount: items.length,
                                   // Provide a builder function. This is where the magic happens.
                                   // Convert each item into a widget based on the type of item it is.
-                                  itemBuilder: (context, index) {
-                                    final item = items[index];
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final ListItem item = items[index];
                                     return ListTile(
                                       // contentPadding: EdgeInsets.zero,
                                       title: item.buildTitle(context),
@@ -309,21 +314,21 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                 if (showToolkitDeps) const SizedBox(height: 20),
                               if (_tab == _softwareTab)
                                 if (showToolkitDeps)
-                                  HeadingItem("LA Toolkit dependencies")
+                                  HeadingItem('LA Toolkit dependencies')
                                       .buildTitle(context),
                               if (_tab == _softwareTab)
                                 if (showToolkitDeps) const SizedBox(height: 20),
                               if (_tab == _softwareTab)
                                 if (showToolkitDeps)
                                   Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
+/*                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,*/
+                                      children: <Widget>[
                                         SizedBox(
                                             width: 250,
                                             child: ALAInstallSelector(
                                                 onChange: (String? value) {
-                                              String version = value ??
+                                              final String version = value ??
                                                   vm.alaInstallReleases[0];
                                               project.alaInstallRelease =
                                                   version;
@@ -333,7 +338,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                             width: 250,
                                             child: GeneratorSelector(
                                                 onChange: (String? value) {
-                                              String version = value ??
+                                              final String version = value ??
                                                   vm.generatorReleases[0];
                                               project.generatorRelease =
                                                   version;
@@ -345,7 +350,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                   const SizedBox(height: 20),
                               if (_tab == _softwareTab)
                                 if (showSoftwareVersions)
-                                  HeadingItem("LA Component versions")
+                                  HeadingItem('LA Component versions')
                                       .buildTitle(context),
                               if (_tab == _softwareTab)
                                 if (showSoftwareVersions)
@@ -362,12 +367,12 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                     padding:
                                         const EdgeInsets.fromLTRB(0, 20, 0, 20),
                                     child: Align(
-                                        alignment: Alignment.center,
+                                        // alignment: Alignment.center,
                                         child: ElevatedButton.icon(
                                             onPressed: _loading
                                                 ? null
                                                 : () => _onPressed(vm),
-                                            label: const Text("Refresh"),
+                                            label: const Text('Refresh'),
                                             icon: const Icon(Icons.refresh)))),
                               if (_tab == _softwareTab)
                                 if (showSoftwareVersions || showToolkitDeps)
@@ -380,7 +385,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                   const SizedBox(height: 20),
                               if (_tab == _extraTab)
                                 if (project.advancedTune)
-                                  HeadingItem("Other variables")
+                                  HeadingItem('Other variables')
                                       .buildTitle(context),
                               if (_tab == _extraTab)
                                 if (project.advancedTune)
@@ -388,7 +393,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                               if (_tab == _extraTab)
                                 if (project.advancedTune)
                                   const Text(
-                                    "Write here other extra ansible variables that are not configurable in the previous forms:",
+                                    'Write here other extra ansible variables that are not configurable in the previous forms:',
                                     style: TextStyle(
                                         fontSize: 18, color: Colors.black54),
                                   ),
@@ -414,9 +419,9 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                       allowEmpty: true,
                                       keyboardType: TextInputType.multiline,
                                       monoSpaceFont: true,
-                                      error: "",
+                                      error: '',
                                       selected: false,
-                                      onChanged: (value) {
+                                      onChanged: (String value) {
                                         project.additionalVariables =
                                             base64.encode(utf8.encode(value));
                                         vm.onSaveProject(project);
@@ -427,16 +432,16 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                               if (_tab == _extraTab) const SizedBox(height: 20),
                               if (_tab == _extraTab)
                                 if (_endNoteEnabled)
-                                  Row(children: [
+                                  Row(children: <Widget>[
                                     const Text(
-                                        "Note: the colors of the variables values indicate if these values are "),
-                                    const Text("already deployed",
+                                        'Note: the colors of the variables values indicate if these values are '),
+                                    const Text('already deployed',
                                         style: LAColorTheme.deployedTextStyle),
-                                    const Text(" in your servers or "),
-                                    Text("they are not deployed yet",
+                                    const Text(' in your servers or '),
+                                    Text('they are not deployed yet',
                                         style:
                                             LAColorTheme.unDeployedTextStyle),
-                                    const Text("."),
+                                    const Text('.'),
                                   ]),
                             ]))))));
       },
@@ -444,16 +449,17 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
   }
 
   String _initialExtraAnsibleVariables(LAProject currentProject) {
-    return '''${_doTitle(" Other variables common to all services ")}
+    return '''
+${_doTitle(" Other variables common to all services ")}
 [${currentProject.isHub ? 'hub-${currentProject.dirName!}' : 'all'}:vars]
 
 # End of common variables
 ${_doLine()}
                                         
                                                                                                                                                                       
-${currentProject.services.map((service) {
-      String name = service.nameInt;
-      LAServiceDesc serviceDesc = LAServiceDesc.get(name);
+${currentProject.services.map((LAService service) {
+      final String name = service.nameInt;
+      final LAServiceDesc serviceDesc = LAServiceDesc.get(name);
       final String title =
           " ${serviceDesc.name} ${serviceDesc.name != serviceDesc.nameInt ? '(${serviceDesc.nameInt}) ' : ''}extra variables ";
       return '''
@@ -499,7 +505,7 @@ class HeadingItem implements ListItem {
   }
 
   @override
-  Widget buildSubtitle(BuildContext context) => const Text("");
+  Widget buildSubtitle(BuildContext context) => const Text('');
 }
 
 // A ListItem that contains data to display a message.
@@ -513,17 +519,19 @@ class MessageItem implements ListItem {
 
   @override
   Widget buildTitle(BuildContext context) {
-    final initialValue = project.getVariableValue(varDesc.nameInt);
-    var laVariable = project.getVariable(varDesc.nameInt);
+    final Object? initialValue = project.getVariableValue(varDesc.nameInt);
+    final LAVariable laVariable = project.getVariable(varDesc.nameInt);
     final bool deployed = laVariable.status == LAVariableStatus.deployed;
     // ignore: prefer_typing_uninitialized_variables
-    var defValue;
-    if (varDesc.defValue != null) defValue = varDesc.defValue!(project);
+    dynamic defValue;
+    if (varDesc.defValue != null) {
+      defValue = varDesc.defValue!(project);
+    }
     return ListTile(
         title: (varDesc.type == LAVariableType.bool)
             ? SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                value: initialValue ?? defValue ?? false,
+                value: initialValue as bool? ?? defValue as bool? ?? false,
                 title: Text(varDesc.name,
                     style:
                         TextStyle(color: LAColorTheme.laThemeData.hintColor)),
@@ -531,18 +539,20 @@ class MessageItem implements ListItem {
                   onChanged(newValue);
                 })
             : varDesc.type == LAVariableType.select
-                ? Row(children: [
-                    Text("${varDesc.name}: "),
+                ? Row(children: <Widget>[
+                    Text('${varDesc.name}: '),
                     const SizedBox(width: 20),
                     GenericSelector<String>(
-                        values: varDesc.defValue!(project),
-                        currentValue: "$initialValue",
-                        onChange: (String newValue) => {onChanged(newValue)})
+                        values: varDesc.defValue!(project) as List<String>,
+                        currentValue: '$initialValue',
+                        onChange: (String newValue) =>
+                            <void>{onChanged(newValue)})
                   ])
                 : GenericTextFormField(
                     label: varDesc.name,
                     hint: varDesc.hint,
-                    initialValue: initialValue ?? defValue,
+                    initialValue:
+                        initialValue as String? ?? defValue as String?,
                     allowEmpty: varDesc.allowEmpty,
                     enabledBorder: false,
                     obscureText: varDesc.protected,
@@ -553,14 +563,14 @@ class MessageItem implements ListItem {
                             ? LARegExp.double
                             : varDesc.regExp,
                     error: varDesc.error,
-                    onChanged: (newValue) {
+                    onChanged: (String newValue) {
                       onChanged(newValue);
                     }),
         trailing: varDesc.help != null ? HelpIcon.from(varDesc.help!) : null);
   }
 
   @override
-  Widget buildSubtitle(BuildContext context) => const Text("");
+  Widget buildSubtitle(BuildContext context) => const Text('');
 }
 
 class _ProjectTuneViewModel {

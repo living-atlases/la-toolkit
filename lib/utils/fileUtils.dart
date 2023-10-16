@@ -68,8 +68,11 @@ class FileUtils {
     return content;
   }
 
-  static Future onChange(html.Event e, html.FileUploadInputElement uploadInput,
-      Completer<String> completer, String errorMessage) async {
+  static Future<dynamic> onChange(
+      html.Event e,
+      html.FileUploadInputElement uploadInput,
+      Completer<String> completer,
+      String errorMessage) async {
     print(e.type);
 
     final files = uploadInput.files;

@@ -7,7 +7,7 @@ import 'package:la_toolkit/utils/regexp.dart';
 import 'package:objectid/objectid.dart';
 
 import 'isJsonSerializable.dart';
-import 'laService.dart';
+import 'la_service.dart';
 
 part 'laServer.g.dart';
 

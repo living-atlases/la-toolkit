@@ -1,13 +1,13 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/components/termDialog.dart';
+import 'package:la_toolkit/components/term_dialog.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../routes.dart';
-import 'laIcon.dart';
+import 'la_icon.dart';
 import 'listTileLink.dart';
 
 class MainDrawer extends StatefulWidget {

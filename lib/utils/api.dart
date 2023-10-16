@@ -1,49 +1,57 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:la_toolkit/models/LAServiceConstants.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/cmdHistoryDetails.dart';
-import 'package:la_toolkit/models/cmdHistoryEntry.dart';
-import 'package:la_toolkit/models/deployCmd.dart';
-import 'package:la_toolkit/models/hostServicesChecks.dart';
-import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/sshKey.dart';
-import 'package:la_toolkit/redux/actions.dart';
-import 'package:la_toolkit/utils/utils.dart';
+
+import '../models/LAServiceConstants.dart';
+import '../models/appState.dart';
+import '../models/cmdHistoryEntry.dart';
+import '../models/cmd_history_details.dart';
+import '../models/deployCmd.dart';
+import '../models/hostServicesChecks.dart';
+import '../models/laServer.dart';
+import '../models/la_project.dart';
+import '../models/sshKey.dart';
+import '../redux/actions.dart';
+import 'utils.dart';
 
 class Api {
-  static Function uri = AppUtils.uri;
-
   static Future<String> genCasKey(int size) async {
-    if (AppUtils.isDemo()) return "";
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/cas-gen/$size");
-    Response response = await http.get(url);
+    if (AppUtils.isDemo()) {
+      return '';
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/cas-gen/$size');
+    final Response response = await http.get(url);
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      return jsonResponse["value"].toString();
+      final Map<String, dynamic> jsonResponse =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      return jsonResponse['value'].toString();
     } else {
-      return "";
+      return '';
     }
   }
 
   static Future<void> genSshConf(LAProject project,
       [bool forceRoot = false]) async {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/gen-ssh-conf");
-    List<Map<String, dynamic>> servers = project.toJson()['servers'];
-    String user = project.getVariableValue("ansible_user")!.toString();
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/gen-ssh-conf');
+    final List<Map<String, dynamic>> servers =
+        project.toJson()['servers'] as List<Map<String, dynamic>>;
+    final String user = project.getVariableValue('ansible_user')!.toString();
     // print(user);
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(<String, Object>{
           'name': project.shortName,
           'id': project.id,
           'servers': servers,
-          'user': forceRoot ? 'root' : user.toString()
+          'user': forceRoot ? 'root' : user
         })));
     if (response.statusCode == 200) {}
     // errors.dart:187 Uncaught (in promise) Error: Expected a value of type 'Map<String, dynamic>', but got one of type 'List<Map<String, dynamic>>'
@@ -51,13 +59,17 @@ class Api {
   }
 
   static Future<List<SshKey>> sshKeysScan() async {
-    if (AppUtils.isDemo()) return [];
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/ssh-key-scan");
-    Response response = await http.get(url);
+    if (AppUtils.isDemo()) {
+      return <SshKey>[];
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/ssh-key-scan');
+    final Response response = await http.get(url);
     if (response.statusCode == 200) {
-      Iterable l = json.decode(response.body)['keys'];
-      List<SshKey> keys = List<SshKey>.from(l.map((k) {
-        return SshKey.fromJson(k);
+      final List<dynamic> l = (json.decode(response.body)
+          as Map<String, dynamic>)['keys'] as List<dynamic>;
+      final List<SshKey> keys = List<SshKey>.from(l.map((dynamic k) {
+        return SshKey.fromJson(k as Map<String, dynamic>);
       }));
       return keys;
     } else {
@@ -66,41 +78,51 @@ class Api {
   }
 
   static Future<void> genSshKey(String name) async {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/ssh-key-gen/$name");
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/ssh-key-gen/$name');
     http
         .get(url)
-        .then((response) => jsonDecode(response.body))
-        .catchError((error) => {print(error)});
+        .then((http.Response response) => jsonDecode(response.body))
+        .catchError((dynamic error) => <void>{log(error.toString())});
   }
 
   static Future<Map<String, dynamic>> testConnectivity(
       List<LAServer> servers) async {
-    if (AppUtils.isDemo()) return {};
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/test-connectivity");
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({
+    if (AppUtils.isDemo()) {
+      return <String, dynamic>{};
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/test-connectivity');
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(<String, List<LAServer>>{
           'servers': servers,
         })));
     if (response.statusCode == 200) {
-      Map<String, dynamic> l = json.decode(response.body);
+      final Map<String, dynamic> l =
+          json.decode(response.body) as Map<String, dynamic>;
       // for (var element in l.keys) {
       // print("out: ${l[element]['out']}");
       // }
       return l;
     } else {
-      return {};
+      return <String, dynamic>{};
     }
   }
 
   static Future<void> importSshKey(
       String name, String publicKey, String privateKey) async {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/ssh-key-import");
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/ssh-key-import');
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(<String, String>{
           'name': name,
           'publicKey': publicKey,
           'privateKey': privateKey,
@@ -111,88 +133,106 @@ class Api {
   }
 
   static Future<void> saveConf(AppState state) async {
-    Map map = {
-      for (LAProject item in state.projects) item.id: item.toGeneratorJson()
+    final Map<String, dynamic> map = <String, dynamic>{
+      for (final LAProject item in state.projects)
+        item.id: item.toGeneratorJson()
     };
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/save-conf");
-    Map<String, dynamic> stateJ = state.toJson();
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/save-conf');
+    final Map<String, dynamic> stateJ = state.toJson();
     stateJ['projectsMap'] = map;
     try {
-      Response response = await http.post(url,
-          headers: {'Content-type': 'application/json'},
+      final Response response = await http.post(url,
+          headers: <String, String>{'Content-type': 'application/json'},
           body: utf8.encode(json.encode(stateJ)));
       if (response.statusCode == 200) {
         return;
       } else {
-        throw "Failed to save configuration (${response.reasonPhrase}))";
+        throw Exception(
+            'Failed to save configuration (${response.reasonPhrase}))');
       }
     } catch (e) {
-      print(e);
-      throw "Failed to save configuration ($e)";
+      log(e.toString());
+      throw Exception('Failed to save configuration ($e)');
     }
   }
 
   static Future<List<dynamic>> getConf() async {
-    if (AppUtils.isDemo()) return [];
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/get-conf");
+    if (AppUtils.isDemo()) {
+      return <dynamic>[];
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/get-conf');
 
-    Response response = await http.get(url);
+    final Response response = await http.get(url);
     if (response.statusCode == 200) {
       return retrieveProjectList(response);
     } else {
-      throw "Failed to load configuration";
+      throw Exception('Failed to load configuration');
     }
   }
 
   static List<dynamic> retrieveProjectList(http.Response response) {
-    Map<String, dynamic> stateRetrievedJ = json.decode(response.body);
-    return stateRetrievedJ['projects'];
+    final Map<String, dynamic> stateRetrievedJ =
+        json.decode(response.body) as Map<String, dynamic>;
+    return stateRetrievedJ['projects'] as List<dynamic>;
   }
 
   static Future<void> alaInstallSelect(
       String version, Function(String) onError) async {
-    const userError = 'Error selecting that ala-install version';
-    if (AppUtils.isDemo()) return;
-    Uri url =
-        uri(dotenv.env['BACKEND']!, "/api/v1/ala-install-select/$version");
+    const String userError = 'Error selecting that ala-install version';
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url = AppUtils.uri(
+        dotenv.env['BACKEND']!, '/api/v1/ala-install-select/$version');
     await http
         .get(url)
-        .then(
-            (response) => response.statusCode != 200 ? onError(userError) : {})
-        .catchError((error) {
-      print("ala-install select error $error");
+        .then((http.Response response) => response.statusCode != 200
+            ? onError(userError)
+            : <String, dynamic>{})
+        .catchError((dynamic error) {
+      log('ala-install select error $error');
       onError(userError);
     });
   }
 
   static Future<void> generatorSelect(
       String version, Function(String) onError) async {
-    if (AppUtils.isDemo()) return;
-    const userError = 'Error installing that generator version';
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/generator-select/$version");
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    const String userError = 'Error installing that generator version';
+    final Uri url = AppUtils.uri(
+        dotenv.env['BACKEND']!, '/api/v1/generator-select/$version');
     await http
         .get(url)
-        .then(
-            (response) => response.statusCode != 200 ? onError(userError) : {})
-        .catchError((error) {
-      print("generator select error $error");
+        .then((http.Response response) => response.statusCode != 200
+            ? onError(userError)
+            : <String, dynamic>{})
+        .catchError((dynamic error) {
+      log('generator select error $error');
       onError(userError);
     });
   }
 
   static Future<void> regenerateInv(
       {required LAProject project, required Function(String) onError}) async {
-    if (AppUtils.isDemo()) return;
-    String id = project.isHub ? project.parent!.id : project.id;
-    const userError = 'Error generating your inventories';
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/gen/$id/false");
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final String id = project.isHub ? project.parent!.id : project.id;
+    const String userError = 'Error generating your inventories';
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/gen/$id/false');
     http
         .get(url)
-        .then(
-            (response) => response.statusCode != 200 ? onError(userError) : {})
-        .catchError((error) {
-      print("regenerateInv select error $error");
+        .then((http.Response response) => response.statusCode != 200
+            ? onError(userError)
+            : <String, dynamic>{})
+        .catchError((dynamic error) {
+      log('regenerateInv select error $error');
       onError(userError);
     });
   }
@@ -203,20 +243,24 @@ class Api {
       String? server,
       String? projectId}) async {
     if (AppUtils.isDemo()) {
-      onStart("", 2011, 1);
+      onStart('', 2011, 1);
       return;
     }
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/term");
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/term');
     Object? body;
     if (server != null && projectId != null) {
-      body = utf8.encode(json.encode({'id': projectId, 'server': server}));
+      body = utf8.encode(
+          json.encode(<String, String>{'id': projectId, 'server': server}));
     }
     http
-        .post(url, headers: {'Content-type': 'application/json'}, body: body)
-        .then((response) {
+        .post(url,
+            headers: <String, String>{'Content-type': 'application/json'},
+            body: body)
+        .then((http.Response response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> l = json.decode(response.body);
-        onStart(l['cmd'], l['port'], l['ttydPid']);
+        final Map<String, dynamic> l =
+            json.decode(response.body) as Map<String, dynamic>;
+        onStart(l['cmd'] as String, l['port'] as int, l['ttydPid'] as int);
       } else {
         onError(response.statusCode);
       }
@@ -227,20 +271,23 @@ class Api {
       {required CmdHistoryEntry cmd,
       required Function(String cmd, int port, int ttydPort) onStart,
       required ErrorCallback onError}) async {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/term-logs");
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/term-logs');
     http
         .post(url,
-            headers: {'Content-type': 'application/json'},
-            body: utf8.encode(json.encode({
+            headers: <String, String>{'Content-type': 'application/json'},
+            body: utf8.encode(json.encode(<String, String>{
               'cmdHistoryEntryId': cmd.id,
               'logsPrefix': cmd.logsPrefix,
               'logsSuffix': cmd.logsSuffix
             })))
-        .then((response) {
+        .then((http.Response response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> l = json.decode(response.body);
-        onStart(l['cmd'], l['port'], l['ttydPid']);
+        final Map<String, dynamic> l =
+            json.decode(response.body) as Map<String, dynamic>;
+        onStart(l['cmd'] as String, l['port'] as int, l['ttydPid'] as int);
       } else {
         onError(response.statusCode);
       }
@@ -248,13 +295,15 @@ class Api {
   }
 
   static Future<void> ansiblew(DeployProject action) async {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/ansiblew");
-    String desc = action.cmd.desc;
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/ansiblew');
+    final String desc = action.cmd.desc;
     // use lists in ansiblew
-    DeployCmd cmdTr = action.cmd.copyWith();
+    final DeployCmd cmdTr = action.cmd.copyWith();
     cmdTr.deployServices = cmdTr.deployServices
-        .map((name) => name == speciesLists ? "lists" : name)
+        .map((String name) => name == speciesLists ? 'lists' : name)
         .toList();
     doCmd(
         url: url,
@@ -272,69 +321,86 @@ class Api {
       required DeployAction action}) {
     http
         .post(url,
-            headers: {'Content-type': 'application/json'},
-            body: utf8.encode(
-                json.encode({'id': projectId, 'desc': desc, 'cmd': cmd})))
-        .then((response) {
+            headers: <String, String>{'Content-type': 'application/json'},
+            body: utf8.encode(json.encode(
+                <String, Object>{'id': projectId, 'desc': desc, 'cmd': cmd})))
+        .then((http.Response response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> l = json.decode(response.body);
+        final Map<String, dynamic> l =
+            json.decode(response.body) as Map<String, dynamic>;
         action.onStart(
-            CmdHistoryEntry.fromJson(l['cmdEntry']), l['port'], l['ttydPid']);
+            CmdHistoryEntry.fromJson(l['cmdEntry'] as Map<String, dynamic>),
+            l['port'] as int,
+            l['ttydPid'] as int);
       } else {
         action.onError(response.statusCode);
       }
-    }).catchError((error) {
-      print("cmd error $error");
-      action.onError(error);
+    }).catchError((dynamic error) {
+      log('cmd error $error');
+      action.onError(1);
     });
   }
 
   static Future<CmdHistoryDetails?> getCmdResults(
-      {required cmdHistoryEntryId,
+      {required String cmdHistoryEntryId,
       required String logsPrefix,
       required String logsSuffix}) async {
-    if (AppUtils.isDemo()) return null;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/cmd-results");
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({
+    if (AppUtils.isDemo()) {
+      return null;
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/cmd-results');
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(<String, dynamic>{
           'cmdHistoryEntryId': cmdHistoryEntryId,
           'logsPrefix': logsPrefix,
           'logsSuffix': logsSuffix
         })));
     if (response.statusCode == 200) {
-      return CmdHistoryDetails.fromJson(json.decode(response.body));
+      return CmdHistoryDetails.fromJson(
+          json.decode(response.body) as Map<String, dynamic>);
     }
     return null;
   }
 
   static Future<String?> checkDirName(
       {required String dirName, required String id}) async {
-    if (AppUtils.isDemo()) return null;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/check-dir-name");
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({'dirName': dirName, 'id': id})));
+    if (AppUtils.isDemo()) {
+      return null;
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/check-dir-name');
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(
+            json.encode(<String, String>{'dirName': dirName, 'id': id})));
     if (response.statusCode == 200) {
-      return json.decode(response.body)['dirName'];
+      return (json.decode(response.body) as Map<String, dynamic>)['dirName']
+          as String?;
     }
     return null;
   }
 
   static Future<String?> getBackendVersion() async {
-    if (AppUtils.isDemo()) return null;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/get-backend-version");
-    Response response = await http.get(url);
+    if (AppUtils.isDemo()) {
+      return null;
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/get-backend-version');
+    final Response response = await http.get(url);
     if (response.statusCode == 200) {
-      return json.decode(response.body)['version'];
+      return (json.decode(response.body) as Map<String, dynamic>)['version']
+          as String?;
     } else {
       return null;
     }
   }
 
   static Future<void> preDeploy(DeployProject action) async {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/pre-deploy");
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/pre-deploy');
     doCmd(
         url: url,
         projectId: action.project.id,
@@ -344,8 +410,10 @@ class Api {
   }
 
   static Future<void> postDeploy(DeployProject action) async {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/post-deploy");
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/post-deploy');
     doCmd(
         url: url,
         projectId: action.project.id,
@@ -356,68 +424,75 @@ class Api {
 
   static Future<Map<String, dynamic>> checkHostServices(
       String projectId, HostsServicesChecks hostsServicesChecks) async {
-    if (AppUtils.isDemo()) return {};
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/test-host-services");
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({
+    if (AppUtils.isDemo()) {
+      return <String, dynamic>{};
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/test-host-services');
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(<String, Object>{
           'projectId': projectId,
           'hostsServices': hostsServicesChecks.toJson(),
         })));
     if (response.statusCode == 200) {
-      Map<String, dynamic> l = json.decode(response.body);
+      final Map<String, dynamic> l =
+          json.decode(response.body) as Map<String, dynamic>;
       return l;
     } else {
-      return {};
+      return <String, dynamic>{};
     }
   }
 
   static Future<List<dynamic>> updateProject(
       {required LAProject project}) async {
-    return await addOrUpdateProject(project, "update");
+    return addOrUpdateProject(project, 'update');
   }
 
   static Future<List<dynamic>> addOrUpdateProject(
       LAProject project, String op) async {
-    if (AppUtils.isDemo()) return [project.toJson()];
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/$op-project");
-    Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
-    Map<String, dynamic> body = {
+    if (AppUtils.isDemo()) {
+      return <List<dynamic>>[project.toJson() as List<dynamic>];
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/$op-project');
+    final Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
+    final Map<String, dynamic> body = <String, dynamic>{
       'project': projectJ,
     };
-    Response response = await (op == "add" ? http.post : http.patch)(url,
-        headers: {'Content-type': 'application/json'},
+    final Response response = await (op == 'add' ? http.post : http.patch)(url,
+        headers: <String, String>{'Content-type': 'application/json'},
         body: utf8.encode(json.encode(body)));
     if (response.statusCode == 200) {
       return retrieveProjectList(response);
     } else {
-      throw "Failed to $op project";
+      throw Exception('Failed to $op project');
     }
   }
 
   static Future<List<dynamic>> addProjects(List<LAProject> projects) async {
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/add-projects");
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/add-projects');
 
-    List<dynamic> projectsJ = [];
-    for (var project in projects) {
-      Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
+    final List<dynamic> projectsJ = <dynamic>[];
+    for (final LAProject project in projects) {
+      final Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
       projectsJ.add(projectJ);
     }
-    Map<String, dynamic> body = {'projects': projectsJ};
+    final Map<String, dynamic> body = <String, dynamic>{'projects': projectsJ};
 
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
         body: utf8.encode(json.encode(body)));
     if (response.statusCode == 200) {
       return retrieveProjectList(response);
     } else {
-      throw "Failed to add projects";
+      throw Exception('Failed to add projects');
     }
   }
 
   static Map<String, dynamic> projectJsonWithGenConf(LAProject project) {
-    Map<String, dynamic> projectJ = project.toJson();
-    Map<String, dynamic> projectGenJson = project.toGeneratorJson();
+    final Map<String, dynamic> projectJ = project.toJson();
+    final Map<String, dynamic> projectGenJson = project.toGeneratorJson();
     projectJ['genConf'] = projectGenJson;
     projectJ['parent'] = project.parent != null ? project.parent!.id : null;
     return projectJ;
@@ -425,27 +500,33 @@ class Api {
 
   static Future<List<dynamic>> deleteProject(
       {required LAProject project}) async {
-    if (AppUtils.isDemo()) [];
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/delete-project");
+    if (AppUtils.isDemo()) {
+      return <dynamic>[];
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/delete-project');
 
-    Map<String, dynamic> body = {'id': project.id};
+    final Map<String, dynamic> body = <String, dynamic>{'id': project.id};
 
-    Response response = await http.delete(url,
-        headers: {'Content-type': 'application/json'},
+    final Response response = await http.delete(url,
+        headers: <String, String>{'Content-type': 'application/json'},
         body: utf8.encode(json.encode(body)));
     if (response.statusCode == 200) {
       return retrieveProjectList(response);
     } else {
-      throw "Failed to delete project";
+      throw Exception('Failed to delete project');
     }
   }
 
   static Future<void> termClose({required int port, required int pid}) async {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/term-close");
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({'port': port, 'pid': pid})));
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/term-close');
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body:
+            utf8.encode(json.encode(<String, int>{'port': port, 'pid': pid})));
     if (response.statusCode == 200) {
       return;
     }
@@ -453,8 +534,11 @@ class Api {
   }
 
   static void deployBranding(BrandingDeploy action) {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/branding-deploy");
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/branding-deploy');
     doCmd(
         url: url,
         projectId: action.project.id,
@@ -464,8 +548,11 @@ class Api {
   }
 
   static void pipelinesRun(PipelinesRun action) {
-    if (AppUtils.isDemo()) return;
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/pipelines-run");
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/pipelines-run');
     doCmd(
         url: url,
         projectId: action.project.id,
@@ -476,34 +563,40 @@ class Api {
 
   static Future<Map<String, String>> getServiceDetailsForVersionCheck(
       LAProject project) async {
-    Map<String, dynamic> services = project.getServiceDetailsForVersionCheck();
-    if (AppUtils.isDemo()) return {};
-    Uri url = uri(dotenv.env['BACKEND']!, "/api/v1/get-service-versions");
-    Response response = await http.post(url,
-        headers: {'Content-type': 'application/json'},
-        body: utf8.encode(json.encode({
+    final Map<String, dynamic> services =
+        project.getServiceDetailsForVersionCheck();
+    if (AppUtils.isDemo()) {
+      return <String, String>{};
+    }
+    final Uri url =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/get-service-versions');
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(<String, Map<String, dynamic>>{
           'services': services,
         })));
     if (response.statusCode == 200) {
-      Map<String, dynamic> l = json.decode(response.body);
-      Map<String, String> versions =
-          l.map((key, value) => MapEntry(key, value.toString()));
+      final Map<String, dynamic> l =
+          json.decode(response.body) as Map<String, dynamic>;
+      final Map<String, String> versions = l.map((String key, dynamic value) =>
+          MapEntry<String, String>(key, value.toString()));
       // for (var element in l.keys) {
-      // print("out: ${l[element]['out']}");
+      // log("out: ${l[element]['out']}");
       // }
       return versions;
     } else {
-      return {};
+      return <String, String>{};
     }
   }
 
   static Future<String> fetchDependencies() async {
-    Response response = await http.get(Uri.parse(
+    final Response response = await http.get(Uri.parse(
         'https://raw.githubusercontent.com/living-atlases/la-toolkit-backend/master/assets/dependencies.yaml'));
     if (response.statusCode == 200) {
       return response.body;
     } else {
-      throw "Failed to retrieve dependencies (${response.statusCode})";
+      throw Exception(
+          'Failed to retrieve dependencies (${response.statusCode})');
     }
   }
 }

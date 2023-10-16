@@ -11,12 +11,11 @@ class ServicesChipPanel extends StatefulWidget {
   final bool isHub;
 
   const ServicesChipPanel(
-      {Key? key,
+      {super.key,
       required this.onChange,
       required this.services,
       required this.initialValue,
-      required this.isHub})
-      : super(key: key);
+      required this.isHub});
 
   @override
   State<ServicesChipPanel> createState() => _ServicesChipPanelState();

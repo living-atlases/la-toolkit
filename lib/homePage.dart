@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
-import 'package:la_toolkit/projectsListPage.dart';
-import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/projects_list_page.dart';
+import 'package:la_toolkit/redux/app_actions.dart';
 import 'package:la_toolkit/utils/fileUtils.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'components/appSnackBar.dart';
+import 'components/app_snack_bar.dart';
 import 'components/mainDrawer.dart';
 import 'intro.dart';
 import 'laTheme.dart';

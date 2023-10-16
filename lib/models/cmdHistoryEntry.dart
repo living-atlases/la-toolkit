@@ -1,16 +1,16 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:la_toolkit/models/brandingDeployCmd.dart';
-import 'package:la_toolkit/models/deployCmd.dart';
-import 'package:la_toolkit/models/pipelinesCmd.dart';
-import 'package:la_toolkit/models/postDeployCmd.dart';
-import 'package:la_toolkit/models/preDeployCmd.dart';
-import 'package:la_toolkit/utils/resultTypes.dart';
 import 'package:objectid/objectid.dart';
 
+import '../utils/resultTypes.dart';
+import 'brandingDeployCmd.dart';
 import 'cmd.dart';
+import 'deployCmd.dart';
 import 'isJsonSerializable.dart';
+import 'pipelinesCmd.dart';
+import 'postDeployCmd.dart';
+import 'preDeployCmd.dart';
 
 part 'cmdHistoryEntry.g.dart';
 
@@ -41,40 +41,20 @@ extension CmdResultToServiceStatus on CmdResult {
   String toServiceForHumans() {
     switch (this) {
       case CmdResult.unknown:
-        return "checking";
+        return 'checking';
       case CmdResult.aborted:
-        return "aborted";
+        return 'aborted';
       case CmdResult.success:
-        return "No issues detected";
+        return 'No issues detected';
       case CmdResult.failed:
-        return "Some check failed";
+        return 'Some check failed';
     }
   }
 }
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class CmdHistoryEntry implements IsJsonSerializable {
-  String id;
-  String? desc;
-  String logsPrefix;
-  String logsSuffix;
-  String rawCmd;
-  String invDir;
-  String? cwd;
-  Cmd cmd;
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  DateTime date;
-  CmdResult result;
-  int createdAt;
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  DeployCmd? parsedDeployCmd;
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  BrandingDeployCmd? parsedBrandingDeployCmd;
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  PipelinesCmd? pipelinesCmd;
-  double? duration;
-
+class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
   CmdHistoryEntry(
       {String? id,
       required this.logsPrefix,
@@ -88,8 +68,8 @@ class CmdHistoryEntry implements IsJsonSerializable {
       this.duration,
       this.result = CmdResult.unknown})
       : id = id ?? ObjectId().toString(),
-        invDir = invDir ?? "",
-        cwd = cwd ?? "",
+        invDir = invDir ?? '',
+        cwd = cwd ?? '',
         createdAt = createdAt ?? DateTime.now().millisecondsSinceEpoch,
         date = createdAt != null
             ? DateTime.fromMillisecondsSinceEpoch(createdAt)
@@ -110,12 +90,31 @@ class CmdHistoryEntry implements IsJsonSerializable {
     }
   }
 
+  factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
+      _$CmdHistoryEntryFromJson(json);
+  String id;
+  String? desc;
+  String logsPrefix;
+  String logsSuffix;
+  String rawCmd;
+  String invDir;
+  String? cwd;
+  Cmd cmd;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  DateTime date;
+  CmdResult result;
+  int createdAt;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  DeployCmd? parsedDeployCmd;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  BrandingDeployCmd? parsedBrandingDeployCmd;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  PipelinesCmd? pipelinesCmd;
+  double? duration;
+
   bool isAnsibleDeploy() {
     return cmd.type.isAnsibleDeploy;
   }
-
-  factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
-      _$CmdHistoryEntryFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$CmdHistoryEntryToJson(this);
@@ -167,7 +166,7 @@ class CmdHistoryEntry implements IsJsonSerializable {
             ? parsedBrandingDeployCmd!.getTitle()
             : cmd.type == CmdType.laPipelines
                 ? pipelinesCmd!.getTitle()
-                : "TODO FIXME";
+                : 'TODO FIXME';
   }
 
   String getDesc() {
@@ -177,6 +176,6 @@ class CmdHistoryEntry implements IsJsonSerializable {
             ? parsedBrandingDeployCmd!.desc
             : cmd.type == CmdType.laPipelines
                 ? pipelinesCmd!.desc
-                : "TODO FIXME";
+                : 'TODO FIXME';
   }
 }

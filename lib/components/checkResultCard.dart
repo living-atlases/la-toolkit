@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/la_service.dart';
 
 class CheckResultCard extends StatelessWidget {
   final ServiceStatus status;

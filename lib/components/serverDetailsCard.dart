@@ -9,7 +9,7 @@ import '../models/laServer.dart';
 import '../models/sshKey.dart';
 import 'gatewaySelector.dart';
 import 'genericTextFormField.dart';
-import 'helpIcon.dart';
+import 'help_icon.dart';
 
 class ServerDetailsCard extends StatelessWidget {
   final LAServer server;

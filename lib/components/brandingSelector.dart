@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/components/helpIcon.dart';
+import 'package:la_toolkit/components/help_icon.dart';
 import 'package:la_toolkit/components/textWithHelp.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -21,11 +21,10 @@ class BrandingTile extends StatefulWidget {
   final String portalName;
 
   const BrandingTile(
-      {Key? key,
+      {super.key,
       required this.initialValue,
       required this.portalName,
-      required this.onChange})
-      : super(key: key);
+      required this.onChange});
 
   @override
   State<BrandingTile> createState() => _BrandingTileState();
@@ -105,8 +104,7 @@ class BrandingSelector extends StatefulWidget {
   final Function(String) onChange;
 
   const BrandingSelector(
-      {Key? key, required this.initialValue, required this.onChange})
-      : super(key: key);
+      {super.key, required this.initialValue, required this.onChange});
 
   @override
   State<BrandingSelector> createState() => _BrandingSelectorState();
@@ -135,7 +133,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
 
   List<Branding> _selected = [];
 
-  final _multiSelectKey = GlobalKey<FormFieldState>();
+  final _multiSelectKey = GlobalKey<FormFieldState<dynamic>>();
 
   @override
   void initState() {

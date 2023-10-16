@@ -5,7 +5,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:la_toolkit/components/appSnackBarMessage.dart';
-import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/models/sshKey.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 

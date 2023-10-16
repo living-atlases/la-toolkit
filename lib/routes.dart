@@ -2,20 +2,20 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:la_toolkit/cmdTermPage.dart';
 import 'package:la_toolkit/deployResultsPage.dart';
-import 'package:la_toolkit/logsPage.dart';
-import 'package:la_toolkit/pipelinesPage.dart';
+import 'package:la_toolkit/logs_page.dart';
+import 'package:la_toolkit/pipelines_page.dart';
 import 'package:la_toolkit/portalStatusPage.dart';
 import 'package:la_toolkit/postDeployPage.dart';
 import 'package:la_toolkit/preDeployPage.dart';
-import 'package:la_toolkit/projectEditPage.dart';
 import 'package:la_toolkit/projectServersPage.dart';
 import 'package:la_toolkit/projectTunePage.dart';
-import 'package:la_toolkit/projectViewPage.dart';
+import 'package:la_toolkit/project_edit_page.dart';
+import 'package:la_toolkit/project_view_page.dart';
 import 'package:la_toolkit/sandboxPage.dart';
 import 'package:la_toolkit/sshKeysPage.dart';
 
-import 'brandingDeployPage.dart';
-import 'deployPage.dart';
+import 'branding_deploy_page.dart';
+import 'deploy_page.dart';
 import 'homePage.dart';
 import 'main.dart';
 

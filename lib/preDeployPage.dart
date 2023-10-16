@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
 import 'package:la_toolkit/models/preDeployCmd.dart';
-import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/redux/app_actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -13,7 +13,7 @@ import 'components/scrollPanel.dart';
 import 'components/serverSelector.dart';
 import 'laTheme.dart';
 import 'models/deployCmd.dart';
-import 'models/laProject.dart';
+import 'models/la_project.dart';
 
 class PreDeployPage extends StatefulWidget {
   static const routeName = "predeploy";
@@ -156,7 +156,8 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                     }),
                                 const SizedBox(height: 20),
                                 ServerSelector(
-                                    selectorKey: GlobalKey<FormFieldState>(),
+                                    selectorKey:
+                                        GlobalKey<FormFieldState<dynamic>>(),
                                     title: "Do the pre-deploy in servers:",
                                     modalTitle:
                                         "Choose some servers if you want to limit the pre-deploy to them",

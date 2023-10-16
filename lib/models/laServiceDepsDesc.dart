@@ -1,6 +1,6 @@
 import 'package:la_toolkit/models/LAServiceConstants.dart';
 
-import 'basicService.dart';
+import 'basic_service.dart';
 
 class LAServiceDepsDesc {
   String nameInt;

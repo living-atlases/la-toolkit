@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/utils/debounce.dart';
 
-import 'helpIcon.dart';
+import 'help_icon.dart';
 
 class GenericTextFormField extends StatefulWidget {
   final String? label;

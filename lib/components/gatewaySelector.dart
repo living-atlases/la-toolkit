@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/laProject.dart';
 import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -12,9 +12,11 @@ import 'serverSelector.dart';
 class GatewaySelector extends StatelessWidget {
   final bool firstServer;
   final LAServer exclude;
+
   const GatewaySelector(
       {Key? key, required this.firstServer, required this.exclude})
       : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _GatewaySelectorViewModel>(
@@ -33,7 +35,7 @@ class GatewaySelector extends StatelessWidget {
               .toList();
           // print("Building gateway selector for ${vm.server.name}");
           return ServerSelector(
-            selectorKey: GlobalKey<FormFieldState>(),
+            selectorKey: GlobalKey<FormFieldState<dynamic>>(),
             exclude: vm.server,
             initialValue: initialValue,
             hosts: vm.project.getServersNameList(),

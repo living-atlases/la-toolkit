@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/renameServerIcon.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/la_service.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
 import 'package:la_toolkit/utils/utils.dart';
 
@@ -25,7 +25,7 @@ class ServerServicesEditCard extends StatefulWidget {
   final DeploymentType type;
 
   const ServerServicesEditCard(
-      {Key? key,
+      {super.key,
       this.server,
       this.cluster,
       required this.type,
@@ -37,8 +37,7 @@ class ServerServicesEditCard extends StatefulWidget {
       required this.onUnassigned,
       required this.onDeleted,
       required this.onRename,
-      required this.onEditing})
-      : super(key: key);
+      required this.onEditing});
 
   @override
   State<ServerServicesEditCard> createState() => _ServerServicesEditCardState();

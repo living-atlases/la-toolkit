@@ -1,11 +1,10 @@
-import 'package:la_toolkit/models/cmdHistoryEntry.dart';
-import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/laService.dart';
-import 'package:la_toolkit/models/laServiceDeploy.dart';
-import 'package:la_toolkit/models/laVariable.dart';
-
-import 'entityApi.dart';
+import '../models/cmdHistoryEntry.dart';
+import '../models/laServer.dart';
+import '../models/laServiceDeploy.dart';
+import '../models/laVariable.dart';
+import '../models/la_project.dart';
+import '../models/la_service.dart';
+import 'entity_api.dart';
 
 // While waiting to https://github.com/flutterdata/flutter_data
 // is more stable and null-safety ready :

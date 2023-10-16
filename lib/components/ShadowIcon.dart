@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 class ShadowIcon extends StatelessWidget {
   const ShadowIcon(
-      {Key? key, required this.icon, required this.size, required this.color})
-      : super(key: key);
+      {super.key, required this.icon, required this.size, required this.color});
 
   final IconData icon;
   final double size;
