@@ -1695,7 +1695,7 @@ void debugServiceDeployAssigned(LAProject p) {
 
     log('Service ${s.nameInt} ($s) is used: ${s.use} on $sd');
   }
-  log(p.getServicesAssigned() as String);
+  log(p.getServicesAssigned().toString());
   expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length),
       reason:
           'p.serviceDeploys.length: ${p.serviceDeploys.length} != p.getServicesAssigned().length: ${p.getServicesAssigned().length}');

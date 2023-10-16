@@ -15,7 +15,7 @@ class DeploySubResultWidget extends StatelessWidget {
 
   final String host;
   final String title;
-  final Map<String, int> results;
+  final Map<String, dynamic> results;
   final List<AnsibleError> errors;
 
   @override
@@ -87,7 +87,7 @@ class DeployTextSummary extends StatelessWidget {
 
   final String host;
   final String title;
-  final Map<String, int> results;
+  final Map<String, dynamic> results;
   final double defFontSize;
 
   @override

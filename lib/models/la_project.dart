@@ -207,9 +207,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
       final Map<String, String> swVersions = <String, String>{};
       final dynamic impVersions = a('software_versions');
       if (impVersions != null) {
-        final List<List<dynamic>> swVersionsList =
-            a('software_versions') as List<List<dynamic>>;
-        for (final List<dynamic> swVersion in swVersionsList) {
+        final List<dynamic> swVersionsList =
+            a('software_versions') as List<dynamic>;
+        for (final dynamic swVersion in swVersionsList) {
           swVersions[swVersion[0] as String] = swVersion[1] as String;
         }
       }
@@ -218,7 +218,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
     // Other variables
     LAVariableDesc.map.forEach((String name, LAVariableDesc laVar) {
-      final Object varInGenJson = a('variable_$name') as Object;
+      final Object? varInGenJson = a('variable_$name') as Object?;
       if (varInGenJson != null) {
         p.setVariable(laVar, varInGenJson);
       }
@@ -1327,10 +1327,9 @@ check results length: ${checkResults.length}''';
 
     final List<LAProject> list = <LAProject>[];
     final String templatesS = await rootBundle.loadString(file);
-    final List<Map<String, dynamic>> projectsJ =
-        jsonDecode(templatesS) as List<Map<String, dynamic>>;
+    final List<dynamic> projectsJ = jsonDecode(templatesS) as List<dynamic>;
 
-    for (final Map<String, dynamic> genJson in projectsJ) {
+    for (final dynamic genJson in projectsJ) {
       final Map<String, dynamic> pJson = genJson['generator-living-atlas']
           ['promptValues'] as Map<String, dynamic>;
       pJson['LA_id'] = null;
@@ -1347,9 +1346,9 @@ check results length: ${checkResults.length}''';
       Map<String, dynamic> pJson, LAProject parent) {
     final List<LAProject> hubs = <LAProject>[];
     if (pJson['LA_hubs'] != null) {
-      for (final Map<String, dynamic> hubJson
-          in pJson['LA_hubs'] as List<Map<String, dynamic>>) {
-        final LAProject hub = LAProject.fromObject(hubJson);
+      for (final dynamic hubJson in pJson['LA_hubs'] as List<dynamic>) {
+        final LAProject hub =
+            LAProject.fromObject(hubJson as Map<String, dynamic>);
         hub.isHub = true;
         hub.parent = parent;
         hubs.add(hub);

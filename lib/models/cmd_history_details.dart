@@ -135,7 +135,7 @@ class CmdHistoryDetails {
           final DeploySubResultWidget subResult = DeploySubResultWidget(
               host: host,
               title: plays.join(', '),
-              results: result['stats'][host] as Map<String, int>,
+              results: result['stats'][host] as Map<String, dynamic>,
               errors: errors[host]!);
           _details!.add(subResult);
         });
