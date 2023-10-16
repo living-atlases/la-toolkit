@@ -100,7 +100,6 @@ dependencies:
   objectid: ^3.0.0
   http: ^1.1.0
   # flutter_data: ^0.7.0
-  yaml: ^3.1.1
 
   shared_preferences: ^2.0.5
 
@@ -146,6 +145,8 @@ dependencies:
   logging: ^1.2.0
   flutter_map_dragmarker: ^5.0.0
   sentry_flutter: ^7.9.0
+  yaml: ^3.1.2
+  yaml_extension: ^1.0.2
 
 dependency_overrides:
   intl: ^0.18.1

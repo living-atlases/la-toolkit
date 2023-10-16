@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
+import 'package:yaml_extension/yaml_extension.dart';
 
 import 'models/LAServiceConstants.dart';
 import 'models/MigrationNotesDesc.dart';
@@ -135,8 +136,8 @@ class DependenciesManager {
   }
 
   static void setDeps(String deps, [bool debug = false]) {
-    final Map<String, Map<String, dynamic>> depsYaml =
-        loadYaml(deps) as Map<String, Map<String, dynamic>>;
+    final YamlMap depsYamlY = loadYaml(deps) as YamlMap;
+    final Map<String, dynamic> depsYaml = depsYamlY.toMap();
     final Map<String, Map<VersionConstraint, Map<String, VersionConstraint>>>
         map =
         <String, Map<VersionConstraint, Map<String, VersionConstraint>>>{};
@@ -146,16 +147,17 @@ class DependenciesManager {
       }
       final Map<VersionConstraint, Map<String, VersionConstraint>> constraints =
           <VersionConstraint, Map<String, VersionConstraint>>{};
-      for (final String constraintMatch in depsYaml[module]!.keys) {
+      for (final String constraintMatch
+          in (depsYaml[module] as Map<String, dynamic>).keys) {
         final Map<String, VersionConstraint> depsMap =
             <String, VersionConstraint>{};
         if (debug) {
           log('  $constraintMatch');
         }
-        for (final Map<String, dynamic> dep
-            in depsYaml[module]![constraintMatch]
-                as List<Map<String, dynamic>>) {
+        for (final dynamic depDyn in (depsYaml[module]
+            as Map<String, dynamic>)[constraintMatch] as List<dynamic>) {
           // if (debug) log("    - $dep");
+          final Map<String, dynamic> dep = depDyn as Map<String, dynamic>;
           for (final String sw in dep.keys) {
             if (debug) {
               log('    - $sw: ${dep[sw]}');

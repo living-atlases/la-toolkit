@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -13,6 +14,7 @@ import 'package:version/version.dart';
 
 import '../components/appSnackBarMessage.dart';
 import '../dependencies_manager.dart';
+import '../models/LAServiceConstants.dart';
 import '../models/appState.dart';
 import '../models/cmdHistoryEntry.dart';
 import '../models/cmd_history_details.dart';
@@ -33,7 +35,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   final String key = 'laTool20210418';
   SharedPreferences? _pref;
 
-  _initPrefs() async {
+  Future<void> _initPrefs() async {
     _pref ??= await SharedPreferences.getInstance();
   }
 
@@ -491,12 +493,22 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     final Map<String, LAReleases> releases = <String, LAReleases>{};
     final Map<String, dynamic> excludeList =
         jsonBody['excludeList'] as Map<String, dynamic>;
-    try {
-      for (final String service in jsonBody.keys) {
-        log('Processing $service deps');
+
+    for (final String service in jsonBody.keys) {
+      try {
         if (service == 'excludeList') {
           continue;
         }
+        if (service == events) {
+          // TODO (vjrj): Process docker tags as versions too
+          releases[events] = LAReleases(
+              name: events,
+              latest: 'latest',
+              versions: const <String>[],
+              artifacts: events);
+          continue;
+        }
+        log('Processing $service deps');
         final List<String> versions = <String>[];
         final List<String> releasesVersions =
             getResponseVersions(jsonBody, 'releases', service);
@@ -511,7 +523,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             0, 2 > snapshotVersions.length ? snapshotVersions.length : 2));
         // exclude
         final List<dynamic> serviceExcludeList =
-            excludeList[service] as List<dynamic>;
+            excludeList[service] as List<dynamic>? ?? <dynamic>[];
         versions.removeWhere((String v) =>
             excludeList[service] != null && serviceExcludeList.contains(v));
         final LAReleases servReleases = LAReleases(
@@ -521,45 +533,16 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             // remove dups
             versions: versions.toSet().toList());
         releases[service] = servReleases;
+      } catch (e) {
+        if (kDebugMode) {
+          print('----- Error getting $service deps ($e)');
+          // print(stacktrace);
+        }
       }
-    } catch (e) {
-      log('Error getting deps ($e)');
     }
+
     return releases;
   }
-
-  /* jsonBodyMap.forEach((service, jsonBody) {
-        try {
-          String? latest;
-          List<String> versions = [];
-          var thisVersions =
-              jsonBody['metadata']['versioning']['versions']['version'];
-          List<String> groupVersions = thisVersions.runtimeType == String
-              ? [thisVersions]
-              : thisVersions.cast<String>();
-          String groupLatest =
-              jsonBody['metadata']['versioning']['latest'].toString();
-          for (String repo in ['releases', 'snapshots']) {
-          if (repo == "releases") {
-            latest = groupLatest;
-            // truncate the list
-            versions.addAll(groupVersions.reversed.toList().sublist(
-                0, 30 > groupVersions.length ? groupVersions.length : 30));
-          } else {
-            versions.addAll(groupVersions.reversed.toList().sublist(
-                0, 2 > groupVersions.length ? groupVersions.length : 2));
-          }
-          /* LAReleases release = LAReleases(
-              name: service,
-              artifact: artifact,
-              latest: latest,
-              // remove dups
-              versions: versions.toSet().toList()); */
-        } catch (e) {
-          log('Cannot retrieve versions for $service ($e)');
-        }
-      });
-    } */
 
   List<String> getResponseVersions(
       Map<String, dynamic> jsonBody, String repo, String service) {

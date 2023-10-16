@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/redux/actions.dart';
-import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:redux/src/store.dart';
 
+import '../models/appState.dart';
+import '../models/laServer.dart';
+import '../models/la_project.dart';
+import '../redux/actions.dart';
+import '../utils/utils.dart';
 import 'serverSelector.dart';
 
 class GatewaySelector extends StatelessWidget {
@@ -21,17 +22,17 @@ class GatewaySelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _GatewaySelectorViewModel>(
         distinct: false,
-        converter: (store) {
+        converter: (Store<AppState> store) {
           return _GatewaySelectorViewModel(
               project: store.state.currentProject,
               server: exclude,
-              onSaveProject: (project) =>
+              onSaveProject: (LAProject project) =>
                   store.dispatch(SaveCurrentProject(project)));
         },
         builder: (BuildContext context, _GatewaySelectorViewModel vm) {
-          List<String> initialValue = vm.project.servers
-              .where((s) => vm.server.gateways.contains(s.id))
-              .map((s) => s.name)
+          final List<String> initialValue = vm.project.servers
+              .where((LAServer s) => vm.server.gateways.contains(s.id))
+              .map((LAServer s) => s.name)
               .toList();
           // print("Building gateway selector for ${vm.server.name}");
           return ServerSelector(
@@ -39,11 +40,11 @@ class GatewaySelector extends StatelessWidget {
             exclude: vm.server,
             initialValue: initialValue,
             hosts: vm.project.getServersNameList(),
-            title: "SSH Gateway",
+            title: 'SSH Gateway',
             icon: MdiIcons.doorClosedLock,
             modalTitle:
-                "Select the server (or servers) that is used as gateway to access to this server:",
-            placeHolder: "Direct connection",
+                'Select the server (or servers) that is used as gateway to access to this server:',
+            placeHolder: 'Direct connection',
             /* choiceEmptyPanel: ChoiceEmptyPanel(
                 title: "This server doesn't have a ssh gateway associated",
                 body:
@@ -51,17 +52,17 @@ class GatewaySelector extends StatelessWidget {
                 footer: "For more info see our ssh documentation in our wiki"), */
             onChange: (List<String> gatewaysNames) {
               print(
-                  "Gateway name-------------------------------------: $gatewaysNames");
-              List<String> gatewaysIds = vm.project.servers
-                  .where((s) => gatewaysNames.contains(s.name))
-                  .map((s) => s.id)
+                  'Gateway name-------------------------------------: $gatewaysNames');
+              final List<String> gatewaysIds = vm.project.servers
+                  .where((LAServer s) => gatewaysNames.contains(s.name))
+                  .map((LAServer s) => s.id)
                   .toList();
-              print("Gateway ids: $gatewaysIds");
+              print('Gateway ids: $gatewaysIds');
               if (firstServer) {
                 UiUtils.showAlertDialog(context, () {
                   for (LAServer s in vm.project.servers) {
                     if (!gatewaysIds.contains(s.id)) {
-                      print("Setting gateways for ${s.name}");
+                      print('Setting gateways for ${s.name}');
                       s.gateways = gatewaysIds;
                       vm.project.upsertServer(s);
                     }
@@ -70,11 +71,11 @@ class GatewaySelector extends StatelessWidget {
                   vm.server.gateways = gatewaysIds;
                   vm.project.upsertServer(vm.server);
                 },
-                    title: "Use this gateway always",
+                    title: 'Use this gateway always',
                     subtitle:
-                        "Do you want to use the same gateway for all your servers?",
-                    confirmBtn: "YES",
-                    cancelBtn: "NO");
+                        'Do you want to use the same gateway for all your servers?',
+                    confirmBtn: 'YES',
+                    cancelBtn: 'NO');
               } else {
                 vm.server.gateways = gatewaysIds;
                 vm.project.upsertServer(vm.server);
