@@ -3,6 +3,16 @@ import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 
 class SoftwareSelector extends StatelessWidget {
+  SoftwareSelector(
+      {super.key,
+      required this.label,
+      required this.versions,
+      Map<String, TextStyle>? highlight,
+      this.initialValue,
+      required this.onChange,
+      this.useBadge = true,
+      this.roundStyle = true})
+      : highlight = highlight ?? <String, TextStyle>{};
   final List<String> versions;
   final Map<String, TextStyle> highlight;
   final String? initialValue;
@@ -11,32 +21,22 @@ class SoftwareSelector extends StatelessWidget {
   final bool roundStyle;
   final bool useBadge;
 
-  SoftwareSelector(
-      {Key? key,
-      required this.label,
-      required this.versions,
-      Map<String, TextStyle>? highlight,
-      this.initialValue,
-      required this.onChange,
-      this.useBadge = true,
-      this.roundStyle = true})
-      : highlight = highlight ?? {},
-        super(key: key);
-
   static const String outdatedTooltip = '''
   
 New version available. 
 Choose the latest release to update your portal.
 ''';
-  static const String updatedTooltip = "This current version is up-to-date";
+  static const String updatedTooltip = 'This current version is up-to-date';
 
   // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   static const Color outdatedColor = Colors.orangeAccent;
 
   @override
   Widget build(BuildContext context) {
-    if (versions.isEmpty) return Container();
-    List<DropdownMenuItem<String>> items = [];
+    if (versions.isEmpty) {
+      return Container();
+    }
+    final List<DropdownMenuItem<String>> items = <DropdownMenuItem<String>>[];
     bool initialValueEmpty = initialValue != null && initialValue!.isEmpty;
     if (!initialValueEmpty && !versions.contains(initialValue)) {
       // A list that does not contains the initial value
@@ -44,29 +44,29 @@ Choose the latest release to update your portal.
       initialValueEmpty = true;
     }
     // remove duplicates
-    for (String version in versions.toSet().toList()) {
-      TextStyle? style = highlight[version];
+    for (final String version in versions.toSet().toList()) {
+      final TextStyle? style = highlight[version];
       items.add(DropdownMenuItem<String>(
           // remove starting 'v' from git tags
           value: version,
           // remove starting 'v' from git tags
           child: Text(version.replaceFirst(RegExp(r'^v'), ''), style: style)));
     }
-    bool initialValueStillNotEmpty =
+    final bool initialValueStillNotEmpty =
         initialValue != null && initialValue!.isNotEmpty;
-    bool outDated = initialValueStillNotEmpty &&
+    final bool outDated = initialValueStillNotEmpty &&
         versions.isNotEmpty &&
         (versions.first != initialValue &&
             (initialValue != 'custom' && initialValue != 'upstream'));
 
-    String currentValueOrFirst =
-        initialValueStillNotEmpty && versions.contains(initialValue!)
+    final String currentValueOrFirst =
+        initialValueStillNotEmpty && versions.contains(initialValue)
             ? initialValue!
             : items.isNotEmpty
                 ? items[0].value!
-                : "";
+                : '';
 
-    Container menu = Container(
+    final Container menu = Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: Padding(
           padding: const EdgeInsets.all(3.0),
@@ -106,7 +106,7 @@ Choose the latest release to update your portal.
           ),
         ));
 
-    Widget menuConditionalBadge = outDated && useBadge
+    final Widget menuConditionalBadge = outDated && useBadge
         // https://pub.dev/packages/badges
         ? badges.Badge(
             // toAnimate: false,

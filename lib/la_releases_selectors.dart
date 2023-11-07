@@ -6,7 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'components/help_icon.dart';
-import 'components/softwareSelector.dart';
+import 'components/software_selector.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
 import 'models/laReleases.dart';
