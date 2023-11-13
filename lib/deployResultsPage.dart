@@ -1,20 +1,20 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/termDialog.dart';
+import 'package:la_toolkit/components/term_dialog.dart';
 import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/cmdHistoryDetails.dart';
-import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/cmd_history_details.dart';
+import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'components/laAppBar.dart';
-import 'components/projectDrawer.dart';
+import 'components/project_drawer.dart';
 import 'components/resultsPieChart.dart';
 import 'components/scrollPanel.dart';
 import 'components/termCommandDesc.dart';
-import 'components/termsDrawer.dart';
+import 'components/terms_drawer.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/cmdHistoryEntry.dart';

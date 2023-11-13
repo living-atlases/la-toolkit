@@ -9,7 +9,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import 'components/appSnackBar.dart';
+import 'components/app_snack_bar.dart';
 import 'components/genericTextFormField.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';

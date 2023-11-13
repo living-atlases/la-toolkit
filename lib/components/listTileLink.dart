@@ -3,7 +3,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:url_launcher/url_launcher.dart';
 
 import 'defDivider.dart';
-import 'laIcon.dart';
+import 'la_icon.dart';
 
 class ListTileLink extends StatelessWidget {
   final Widget? icon;

@@ -5,7 +5,7 @@ import 'package:la_toolkit/utils/utils.dart';
 
 import '../laTheme.dart';
 import '../routes.dart';
-import 'laIcon.dart';
+import 'la_icon.dart';
 
 class LAAppBar extends AppBar {
   LAAppBar(

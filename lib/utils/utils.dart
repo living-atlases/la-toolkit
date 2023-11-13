@@ -2,24 +2,26 @@ import 'package:duration/duration.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:la_toolkit/components/LoadingTextOverlay.dart';
-import 'package:la_toolkit/components/termDialog.dart';
-import 'package:la_toolkit/models/brandingDeployCmd.dart';
-import 'package:la_toolkit/models/cmdHistoryEntry.dart';
-import 'package:la_toolkit/models/commonCmd.dart';
-import 'package:la_toolkit/models/deployCmd.dart';
-import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/pipelinesCmd.dart';
-import 'package:la_toolkit/models/postDeployCmd.dart';
-import 'package:la_toolkit/redux/appActions.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:redux/redux.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:simple_moment/simple_moment.dart';
 
+import '../components/LoadingTextOverlay.dart';
+import '../components/term_dialog.dart';
 import '../laTheme.dart';
+import '../models/appState.dart';
+import '../models/brandingDeployCmd.dart';
+import '../models/cmdHistoryEntry.dart';
+import '../models/commonCmd.dart';
+import '../models/deployCmd.dart';
+import '../models/la_project.dart';
+import '../models/pipelinesCmd.dart';
+import '../models/postDeployCmd.dart';
 import '../models/preDeployCmd.dart';
+import '../redux/app_actions.dart';
 import '../routes.dart';
+import 'StringUtils.dart';
 
 class AppUtils {
   static bool isDev() {
@@ -27,17 +29,17 @@ class AppUtils {
   }
 
   static bool isDemo() {
-    return (dotenv.env['DEMO'] ?? "false").parseBool();
+    return (dotenv.env['DEMO'] ?? 'false').parseBool();
   }
 
-  static bool https = (dotenv.env['HTTPS'] ?? "false").parseBool();
+  static bool https = (dotenv.env['HTTPS'] ?? 'false').parseBool();
 
-  static uri(String a, String p, [Map<String, String>? query]) =>
+  static Uri uri(String a, String p, [Map<String, String>? query]) =>
       https ? Uri.https(a, p, query) : Uri.http(a, p, query);
   static String scheme =
-      (dotenv.env['HTTPS'] ?? "false").parseBool() ? "https" : "http";
+      (dotenv.env['HTTPS'] ?? 'false').parseBool() ? 'https' : 'http';
 
-  static String proxyImg(imgUrl) {
+  static String proxyImg(String imgUrl) {
     return "$scheme://${dotenv.env['BACKEND']}/api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
   }
 }
@@ -66,31 +68,31 @@ class UiUtils {
       fontSize: 18,
       fontStyle: FontStyle.italic);
 
-  static showAlertDialog(
+  static void showAlertDialog(
       BuildContext context, VoidCallback onConfirm, VoidCallback onCancel,
-      {title = "Please Confirm",
-      subtitle = "Are you sure?",
-      confirmBtn = "CONFIRM",
-      cancelBtn = "CANCEL"}) {
+      {String title = 'Please Confirm',
+      String subtitle = 'Are you sure?',
+      String confirmBtn = 'CONFIRM',
+      String cancelBtn = 'CANCEL'}) {
     // set up the buttons
-    Widget cancelButton = TextButton(
+    final Widget cancelButton = TextButton(
       child: Text(cancelBtn),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
         onCancel();
       },
     );
-    Widget continueButton = TextButton(
+    final Widget continueButton = TextButton(
         child: Text(confirmBtn),
         onPressed: () {
           Navigator.of(context, rootNavigator: true).pop();
           onConfirm();
         });
     // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
+    final AlertDialog alert = AlertDialog(
       title: Text(title),
       content: Text(subtitle),
-      actions: [
+      actions: <Widget>[
         cancelButton,
         continueButton,
       ],
@@ -104,7 +106,7 @@ class UiUtils {
     );
   }
 
-  static showSnackBarError(BuildContext context, String e) {
+  static void showSnackBarError(BuildContext context, String e) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(e),
       duration: const Duration(days: 365),
@@ -115,32 +117,32 @@ class UiUtils {
     ));
   }
 
-  static void termErrorAlert(context, error) {
+  static void termErrorAlert(BuildContext context, String error) {
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
         image: const Icon(Icons.error_outline,
             size: 60, color: LAColorTheme.inactive),
-        title: "ERROR",
+        title: 'ERROR',
         style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(children: <Widget>[
           Text(
-            "We had some problem ($error)",
+            'We had some problem ($error)',
           ),
           const SizedBox(
             height: 20,
           ),
           // Text(error),
         ]),
-        buttons: [
+        buttons: <DialogButton>[
           DialogButton(
             width: 450,
             onPressed: () {
               Navigator.pop(context);
             },
             child: const Text(
-              "OK",
+              'OK',
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           )
@@ -152,9 +154,9 @@ class UiUtils {
 }
 
 class DeployUtils {
-  static doDeploy(
+  static dynamic doDeploy(
       {required BuildContext context,
-      required var store,
+      required Store<AppState> store,
       required LAProject project,
       required CommonCmd commonCmd}) {
     context.loaderOverlay.show(widget: const LoadingTextOverlay());
@@ -175,15 +177,15 @@ class DeployUtils {
           }
         },
         deployCmd: commonCmd,
-        onError: (e) {
+        onError: (String e) {
           context.loaderOverlay.hide();
           UiUtils.showSnackBarError(context, e);
         }));
   }
 
-  static deployActionLaunch(
+  static void deployActionLaunch(
       {required BuildContext context,
-      var store,
+      required Store<AppState> store,
       required LAProject project,
       required DeployCmd deployCmd}) {
     context.loaderOverlay.show();
@@ -193,7 +195,7 @@ class DeployUtils {
           project: project,
           onReady: () {},
           deployCmd: deployCmd,
-          onError: (e) {
+          onError: (String e) {
             context.loaderOverlay.hide();
             UiUtils.showSnackBarError(context, e);
           }));
@@ -201,7 +203,7 @@ class DeployUtils {
     store.dispatch(DeployProject(
         project: project,
         cmd: deployCmd,
-        onStart: (cmdEntry, port, ttydPid) {
+        onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
           context.loaderOverlay.hide();
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
@@ -209,7 +211,7 @@ class DeployUtils {
               port: port,
               pid: ttydPid,
               notify: true,
-              title: "Ansible console", onClose: () async {
+              title: 'Ansible console', onClose: () async {
             if (!deployCmd.dryRun) {
               // Show the results
               store
@@ -218,7 +220,7 @@ class DeployUtils {
             // context.loaderOverlay.hide();
           });
         },
-        onError: (error) {
+        onError: (int error) {
           context.loaderOverlay.hide();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               action: SnackBarAction(
@@ -232,29 +234,29 @@ class DeployUtils {
         }));
   }
 
-  static brandingDeployActionLaunch(
+  static void brandingDeployActionLaunch(
       {required BuildContext context,
-      var store,
+      required Store<AppState> store,
       required LAProject project,
       required BrandingDeployCmd deployCmd}) {
     context.loaderOverlay.show();
     store.dispatch(BrandingDeploy(
         project: project,
         cmd: deployCmd,
-        onStart: (cmdEntry, port, ttydPid) {
+        onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
           context.loaderOverlay.hide();
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
           TermDialog.show(context,
               port: port,
               pid: ttydPid,
-              title: "Console",
+              // title: 'Console',
               notify: false, onClose: () async {
             // Show the results
             store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
           });
         },
-        onError: (error) {
+        onError: (int error) {
           context.loaderOverlay.hide();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               action: SnackBarAction(
@@ -268,29 +270,29 @@ class DeployUtils {
         }));
   }
 
-  static pipelinesRun(
+  static void pipelinesRun(
       {required BuildContext context,
-      var store,
+      required Store<AppState> store,
       required LAProject project,
       required PipelinesCmd cmd}) {
     context.loaderOverlay.show();
     store.dispatch(PipelinesRun(
         project: project,
         cmd: cmd,
-        onStart: (cmdEntry, port, ttydPid) {
+        onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
           context.loaderOverlay.hide();
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
           TermDialog.show(context,
               port: port,
               pid: ttydPid,
-              title: "Console",
+              // title: 'Console',
               notify: true, onClose: () async {
             // Show the results
             store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
           });
         },
-        onError: (error) {
+        onError: (int error) {
           context.loaderOverlay.hide();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               action: SnackBarAction(
@@ -337,9 +339,10 @@ class LADateUtils {
     // DateFormat('yyyy-MM-dd H:mm:ss a', locale);
     return formatter.format(now);
   }*/
-  static String formatDuration(double duration) =>
-      prettyDuration(Duration(milliseconds: duration.toInt()),
-          abbreviated: false);
+  static String formatDuration(double duration) => prettyDuration(
+        Duration(milliseconds: duration.toInt()),
+        // abbreviated: false
+      );
 
-  static String formatDate(DateTime date) => Moment.now().from(date).toString();
+  static String formatDate(DateTime date) => Moment.now().from(date);
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/adminIconButton.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/LAServiceConstants.dart';
-import 'package:la_toolkit/models/laService.dart';
+import 'package:la_toolkit/models/la_service.dart';
 import 'package:la_toolkit/models/prodServiceDesc.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/cardConstants.dart';
@@ -72,7 +72,8 @@ class ServiceSmallLinks extends StatelessWidget {
                     child: InkWell(
                       child: Icon(Icons.link,
                           size: iconDefSize, color: LAColorTheme.link),
-                      onTap: () async => await launchUrl(Uri.parse(service.url)),
+                      onTap: () async =>
+                          await launchUrl(Uri.parse(service.url)),
                     ))),
           if (service.admin)
             SimpleServiceStatusItem(
@@ -97,6 +98,7 @@ class ServiceSmallLinks extends StatelessWidget {
 
 class SimpleServiceStatusItem extends StatelessWidget {
   final Widget icon;
+
   const SimpleServiceStatusItem({Key? key, required this.icon})
       : super(key: key);
 

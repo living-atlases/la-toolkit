@@ -3,24 +3,25 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/serverDetailsCardList.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';
 import 'package:la_toolkit/projectTunePage.dart';
-import 'package:la_toolkit/redux/appActions.dart';
+import 'package:la_toolkit/redux/app_actions.dart';
 import 'package:la_toolkit/routes.dart';
 import 'package:la_toolkit/serverTextField.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
-import 'components/appSnackBar.dart';
-import 'components/helpIcon.dart';
+
+import 'components/app_snack_bar.dart';
+import 'components/help_icon.dart';
 import 'components/laAppBar.dart';
 import 'components/lintProjectPanel.dart';
 import 'components/scrollPanel.dart';
-import 'components/serversCardList.dart';
+import 'components/servers_card_list.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
 import 'models/appState.dart';
-import 'models/laProject.dart';
 import 'models/laProjectStatus.dart';
 import 'models/laServer.dart';
+import 'models/la_project.dart';
 
 class LAProjectServersPage extends StatefulWidget {
   static const routeName = "servers";

@@ -11,13 +11,12 @@ class HubButton extends StatelessWidget {
   final bool isActionBtn;
 
   const HubButton(
-      {Key? key,
+      {super.key,
       required this.text,
       required this.icon,
       required this.tooltip,
       required this.onPressed,
-      required this.isActionBtn})
-      : super(key: key);
+      required this.isActionBtn});
 
   @override
   Widget build(BuildContext context) {

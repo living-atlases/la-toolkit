@@ -6,7 +6,7 @@ import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
 class ChoicesSelector extends StatefulWidget {
-  final GlobalKey<FormFieldState> selectorKey;
+  final GlobalKey<FormFieldState<dynamic>> selectorKey;
   final List<String> choices;
   final IconData icon;
   final String title;

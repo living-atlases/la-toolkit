@@ -5,7 +5,7 @@ import 'package:objectid/objectid.dart';
 
 import 'deploymentType.dart';
 import 'isJsonSerializable.dart';
-import 'laService.dart';
+import 'la_service.dart';
 
 part 'laServiceDeploy.g.dart';
 

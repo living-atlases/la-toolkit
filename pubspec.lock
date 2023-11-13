@@ -768,6 +768,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  object_extension:
+    dependency: transitive
+    description:
+      name: object_extension
+      sha256: "2d2c65d803912d431a66fd74e4ad532be07639764f64b3b5ffbb0b37d76de389"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   objectid:
     dependency: "direct main"
     description:
@@ -1469,6 +1477,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  yaml_extension:
+    dependency: "direct main"
+    description:
+      name: yaml_extension
+      sha256: "4eb57ac54171be86a682d89cbea6152714aa0b8b1470f63b853a57d03118be35"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
 sdks:
   dart: ">=3.1.0-185.0.dev <4.0.0"
   flutter: ">=3.10.0"

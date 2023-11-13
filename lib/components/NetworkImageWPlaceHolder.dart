@@ -7,8 +7,10 @@ class NetworkImageWPlaceHolder extends StatelessWidget {
   final double width;
 
   const NetworkImageWPlaceHolder(
-      {Key? key, required this.url, required this.height, required this.width})
-      : super(key: key);
+      {super.key,
+      required this.url,
+      required this.height,
+      required this.width});
 
   @override
   Widget build(BuildContext context) {

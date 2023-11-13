@@ -3,9 +3,9 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:la_toolkit/models/basicService.dart';
+import 'package:la_toolkit/models/basic_service.dart';
 
-import 'hostServiceCheck.dart';
+import 'host_service_check.dart';
 import 'laServer.dart';
 import 'laServiceDeploy.dart';
 

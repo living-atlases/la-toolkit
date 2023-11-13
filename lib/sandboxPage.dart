@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/components/GenericSelector.dart';
 import 'package:la_toolkit/components/laAppBar.dart';
-import 'package:la_toolkit/components/softwareSelector.dart';
+import 'package:la_toolkit/components/software_selector.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'components/scrollPanel.dart';

@@ -1,4 +1,4 @@
-import 'package:la_toolkit/models/basicService.dart';
+import 'package:la_toolkit/models/basic_service.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
 import 'package:la_toolkit/models/laServiceName.dart';
 import 'package:la_toolkit/models/laVariableDesc.dart';

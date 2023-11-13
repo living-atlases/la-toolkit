@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:la_toolkit/components/choicesSelector.dart';
 
 class TagsSelector extends StatelessWidget {
-  final GlobalKey<FormFieldState> selectorKey;
+  final GlobalKey<FormFieldState<dynamic>> selectorKey;
   final List<String> tags;
   final IconData icon;
   final String title;

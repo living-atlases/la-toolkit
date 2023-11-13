@@ -11,7 +11,7 @@ enum LAProjectStatus {
 }
 
 extension LAProjectStatusExtension on LAProjectStatus {
-  String title(isHub) {
+  String title(bool isHub) {
     switch (this) {
       case LAProjectStatus.created:
         return 'Creation';

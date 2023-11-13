@@ -5,7 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:la_toolkit/maps/scale_layer_plugin_option.dart';
 import 'package:la_toolkit/maps/zoombuttons_plugin_option.dart';
 import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/laProject.dart';
+import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:latlong2/latlong.dart';
 

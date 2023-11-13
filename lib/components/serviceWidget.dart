@@ -5,23 +5,25 @@ import 'package:la_toolkit/components/genericTextFormField.dart';
 import 'package:la_toolkit/laTheme.dart';
 import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/laProject.dart';
-import 'package:la_toolkit/models/laService.dart';
 import 'package:la_toolkit/models/laServiceDesc.dart';
+import 'package:la_toolkit/models/la_project.dart';
+import 'package:la_toolkit/models/la_service.dart';
 import 'package:la_toolkit/redux/actions.dart';
 import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/regexp.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'helpIcon.dart';
+import 'help_icon.dart';
 
 class ServiceWidget extends StatelessWidget {
   final String serviceName;
   final FocusNode? collectoryFocusNode;
 
   ServiceWidget(
-      {Key? key, required this.serviceName, required this.collectoryFocusNode})
-      : super(key: key);
+      {super.key,
+      required this.serviceName,
+      required this.collectoryFocusNode});
+
   final domainTextStyle =
       TextStyle(fontSize: 16, color: LAColorTheme.laThemeData.hintColor);
 

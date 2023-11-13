@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'helpIcon.dart';
+import 'help_icon.dart';
 
 class TextWithHelp extends StatelessWidget {
   final String text;
@@ -13,6 +13,7 @@ class TextWithHelp extends StatelessWidget {
       required this.helpPage,
       this.padding = EdgeInsets.zero})
       : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
