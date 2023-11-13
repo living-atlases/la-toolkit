@@ -156,7 +156,7 @@ RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.5.1/flutter-web-1.5.1.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
 # RUN echo "2021032402"
 # COPY build/web/ /home/ubuntu/la-toolkit/assets/
-COPY assets/.env.production  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
+COPY assets/env.production.txt  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
 
 # bash command with echo to show to the users

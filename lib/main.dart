@@ -31,8 +31,9 @@ Future<void> main() async {
   final AppStateMiddleware appStateMiddleware = AppStateMiddleware();
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(
-      fileName: kReleaseMode ? 'env.production.txt' : '.env.development');
+  const String dotFile =
+      kReleaseMode ? 'env.production.txt' : 'env.development.txt';
+  await dotenv.load(fileName: dotFile);
 
   /*
   // Disabled because of Zone mismatch errors
@@ -50,10 +51,13 @@ Future<void> main() async {
     log('Uri env: $url');
     final Response response = await http.get(url);
     if (response.statusCode == 200) {
-      final Map<String, String> jsonResponse =
-          jsonDecode(response.body) as Map<String, String>;
-      await dotenv.load(
-          fileName: 'env.production.txt', mergeWith: jsonResponse);
+      final Map<String, dynamic> jsonResponse =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      final Map<String, String> serverEnvStringMap =
+          jsonResponse.map((String key, dynamic value) {
+        return MapEntry<String, String>(key, value.toString());
+      });
+      await dotenv.load(fileName: dotFile, mergeWith: serverEnvStringMap);
     }
   }
 
