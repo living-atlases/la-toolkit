@@ -177,6 +177,8 @@ void main() {
     List<String> domains = [
       'l-a.site',
       'example.org',
+      'b.a.example.com',
+      'c.b.a.example.com'
     ];
     for (String d in domains) {
       expect(LARegExp.domainRegexp.hasMatch(d), equals(true));

@@ -218,7 +218,7 @@ class LAProjectEditPage extends StatelessWidget {
                           "Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
                       prefixText: _protocolToS(project.useSSL),
                       wikipage: 'Glossary#Domain',
-                      error: '$projectName short name invalid.',
+                      error: 'Domain invalid',
                       initialValue: project.domain,
                       regexp: LARegExp.domainRegexp,
                       onChanged: (String value) {
