@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
@@ -51,7 +52,8 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
         const String execBtn = 'Deploy branding';
         final BrandingDeployCmd cmd = vm.cmd;
         dynamic onTap() => vm.onDoDeployTaskSwitchs(vm.project, cmd);
-        final String pageTitle = 'Branding Deploy of ${vm.project.shortName} ';
+        final String pageTitle =
+            'Branding Build and Deploy of ${vm.project.shortName} ';
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
