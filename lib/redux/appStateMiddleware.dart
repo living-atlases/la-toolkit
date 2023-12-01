@@ -181,7 +181,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         if (!action.force &&
             store.state.lastSwCheck != null &&
             (store.state.lastSwCheck!
-                .isAfter(DateTime.now().subtract(const Duration(days: 1))))) {
+                .isAfter(DateTime.now().subtract(const Duration(hours: 12))))) {
           log('Not checking LA versions because we retrieved them already today');
           log(store.state.laReleases.toString());
         } else {
