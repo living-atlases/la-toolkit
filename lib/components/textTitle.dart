@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/utils/utils.dart';
+import '../utils/utils.dart';
 
 import 'defDivider.dart';
 
 class TextTitle extends StatelessWidget {
+  const TextTitle({super.key, required this.text, this.separator = false});
   final String text;
   final bool separator;
-  const TextTitle({Key? key, required this.text, this.separator = false})
-      : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
+    return Column(children: <Widget>[
       if (separator) const SizedBox(height: 20),
       if (separator) const DefDivider(),
       const SizedBox(height: 20),

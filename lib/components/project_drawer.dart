@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
+
 import '../laTheme.dart';
 import '../models/appState.dart';
 import '../models/laServiceDesc.dart';

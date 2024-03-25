@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/software_selector.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/la_project.dart';
+import 'software_selector.dart';
+import '../models/appState.dart';
+import '../models/la_project.dart';
+import 'package:redux/src/store.dart';
 
 class ALAInstallSelector extends StatefulWidget {
-  final Function(String?) onChange;
 
-  const ALAInstallSelector({Key? key, required this.onChange})
-      : super(key: key);
+  const ALAInstallSelector({super.key, required this.onChange});
+  final Function(String?) onChange;
 
   @override
   State<ALAInstallSelector> createState() => _ALAInstallSelectorState();
@@ -18,12 +18,12 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ALAInstallSelectorViewModel>(
-        converter: (store) {
+        converter: (Store<AppState> store) {
       return _ALAInstallSelectorViewModel(state: store.state);
     }, builder: (BuildContext context, _ALAInstallSelectorViewModel vm) {
-      LAProject currentProject = vm.state.currentProject;
+      final LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
-          label: "ala-install release:",
+          label: 'ala-install release:',
           initialValue: currentProject.alaInstallRelease,
           versions: vm.state.alaInstallReleases,
           roundStyle: false,
@@ -33,7 +33,7 @@ class _ALAInstallSelectorState extends State<ALAInstallSelector> {
 }
 
 class _ALAInstallSelectorViewModel {
-  final AppState state;
 
   _ALAInstallSelectorViewModel({required this.state});
+  final AppState state;
 }

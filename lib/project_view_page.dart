@@ -487,7 +487,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             const Text('More info:'),
             const SizedBox(height: 20),
             SelectableLinkify(
-                linkStyle: const TextStyle(color: LAColorTheme.laPalette),
+                linkStyle: TextStyle(color: LAColorTheme.laPalette),
                 options: const LinkifyOptions(humanize: false),
                 text:
                     'https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub',

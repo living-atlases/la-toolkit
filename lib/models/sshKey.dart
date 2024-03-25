@@ -6,6 +6,19 @@ part 'sshKey.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class SshKey {
+
+  SshKey(
+      {required this.name,
+      this.privateKey = '',
+      this.publicKey = '',
+      this.type,
+      this.size,
+      required this.desc,
+      this.fingerprint,
+      required this.encrypted,
+      this.missing = false});
+
+  factory SshKey.fromJson(Map<String, dynamic> json) => _$SshKeyFromJson(json);
   String name;
   @JsonKey(includeToJson: false, includeFromJson: false)
   String privateKey;
@@ -16,19 +29,6 @@ class SshKey {
   String? fingerprint;
   bool encrypted;
   bool missing;
-
-  SshKey(
-      {required this.name,
-      this.privateKey = "",
-      this.publicKey = "",
-      this.type,
-      this.size,
-      required this.desc,
-      this.fingerprint,
-      required this.encrypted,
-      this.missing = false});
-
-  factory SshKey.fromJson(Map<String, dynamic> json) => _$SshKeyFromJson(json);
 
   Map<String, dynamic> toJson() => _$SshKeyToJson(this);
 

@@ -1,28 +1,29 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/term_dialog.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/cmd_history_details.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/utils/api.dart';
-import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:redux/src/store.dart';
 
 import 'components/laAppBar.dart';
 import 'components/project_drawer.dart';
 import 'components/resultsPieChart.dart';
 import 'components/scrollPanel.dart';
 import 'components/termCommandDesc.dart';
+import 'components/term_dialog.dart';
 import 'components/terms_drawer.dart';
 import 'components/tipsCard.dart';
 import 'laTheme.dart';
+import 'models/appState.dart';
 import 'models/cmdHistoryEntry.dart';
+import 'models/cmd_history_details.dart';
+import 'models/la_project.dart';
+import 'utils/api.dart';
+import 'utils/utils.dart';
 
 class CmdResultsPage extends StatefulWidget {
-  static const routeName = "cmd-results";
 
-  const CmdResultsPage({Key? key}) : super(key: key);
+  const CmdResultsPage({super.key});
+  static const String routeName = 'cmd-results';
 
   @override
   State<CmdResultsPage> createState() => _CmdResultsPageState();
@@ -35,35 +36,35 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _DeployResultsViewModel>(
-      converter: (store) {
+      converter: (Store<AppState> store) {
         return _DeployResultsViewModel(
             project: store.state.currentProject,
-            onOpenDeployResults: (cmdHistory) {
+            onOpenDeployResults: (CmdHistoryEntry cmdHistory) {
               store.dispatch(
                   DeployUtils.getCmdResults(context, cmdHistory, false));
             },
-            onClose: (project, cmdHistory) {
+            onClose: (LAProject project, CmdHistoryDetails cmdHistory) {
               closeTerm(cmdHistory);
               context.beamBack();
             });
       },
       builder: (BuildContext context, _DeployResultsViewModel vm) {
-        CmdHistoryDetails? cmdHistoryDetails = vm.project.lastCmdDetails;
+        final CmdHistoryDetails? cmdHistoryDetails = vm.project.lastCmdDetails;
 
         if (cmdHistoryDetails != null) {
-          List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
-          bool failed = cmdHistoryDetails.failed;
-          CmdResult result = cmdHistoryDetails.result;
-          CmdHistoryEntry cmdEntry = cmdHistoryDetails.cmd!;
+          final List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
+          final bool failed = cmdHistoryDetails.failed;
+          final CmdResult result = cmdHistoryDetails.result;
+          final CmdHistoryEntry cmdEntry = cmdHistoryDetails.cmd!;
           // print(result);
-          bool nothingDone = !failed && cmdHistoryDetails.nothingDone;
-          bool noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
+          final bool nothingDone = !failed && cmdHistoryDetails.nothingDone;
+          final bool noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
           print(
-              "failed $failed, nothingDone: $nothingDone, noFailedButDone: $noFailedButDone, numFails ${cmdHistoryDetails.numFailures()}");
-          String title = cmdEntry.getTitle();
-          String desc = cmdEntry.getDesc();
-          bool isAnsibleDeploy = cmdEntry.isAnsibleDeploy();
-          String pageTitle = "${vm.project.shortName} $title";
+              'failed $failed, nothingDone: $nothingDone, noFailedButDone: $noFailedButDone, numFails ${cmdHistoryDetails.numFailures()}');
+          final String title = cmdEntry.getTitle();
+          final String desc = cmdEntry.getDesc();
+          final bool isAnsibleDeploy = cmdEntry.isAnsibleDeploy();
+          final String pageTitle = '${vm.project.shortName} $title';
           return Title(
               title: pageTitle,
               color: LAColorTheme.laPalette,
@@ -75,16 +76,15 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                       context: context,
                       titleIcon: Icons.analytics_outlined,
                       title: pageTitle,
-                      showLaIcon: false,
                       showBack: true,
                       onBack: () => closeTerm(cmdHistoryDetails),
                       leading:
                           ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),
-                      actions: [
+                      actions: <Widget>[
                         TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                         IconButton(
                             icon: const Tooltip(
-                                message: "Close",
+                                message: 'Close',
                                 child: Icon(Icons.close, color: Colors.white)),
                             onPressed: () =>
                                 vm.onClose(vm.project, cmdHistoryDetails)),
@@ -94,14 +94,13 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                       child: Row(
                         children: <Widget>[
                           const Expanded(
-                            flex: 1, // 10%
                             child: SizedBox(),
                           ),
                           Expanded(
                               flex: 8, // 80%,
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
-                                children: [
+                                children: <Widget>[
                                   const SizedBox(height: 20),
                                   Text(desc, style: UiUtils.cmdTitleStyle),
                                   const SizedBox(height: 20),
@@ -112,7 +111,7 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: [
+                                      children: <Widget>[
                                         if (isAnsibleDeploy)
                                           Icon(
                                               noFailedButDone
@@ -143,22 +142,22 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                         Text(
                                             isAnsibleDeploy
                                                 ? noFailedButDone
-                                                    ? "All steps ok"
+                                                    ? 'All steps ok'
                                                     : nothingDone
-                                                        ? "No steps were executed"
+                                                        ? 'No steps were executed'
                                                         : result ==
                                                                 CmdResult.failed
-                                                            ? "Uuppps! some step failed"
+                                                            ? 'Uuppps! some step failed'
                                                             : result ==
                                                                     CmdResult
                                                                         .aborted
                                                                 ? "The command didn't finished correctly"
-                                                                : "The command failed for some reason"
+                                                                : 'The command failed for some reason'
                                                 :
                                                 // no Ansible Logs
                                                 failed
-                                                    ? "Something were wrong"
-                                                    : "The command ended correctly",
+                                                    ? 'Something were wrong'
+                                                    : 'The command ended correctly',
                                             style: UiUtils.titleStyle)
                                       ]),
                                   const SizedBox(height: 20),
@@ -205,7 +204,7 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                   if (cmdHistoryDetails.port == null)
                                     const Text(
                                         "For some reason, we couldn't open a terminal with these logs. Possible fix: restart your la-toolkit container"),
-                                  TipsCard(text: """## Tips with the logs
+                                  TipsCard(text: '''## Tips with the logs
 This logs are located in the file `logs/${cmdHistoryDetails.cmd!.logsPrefix}-${cmdHistoryDetails.cmd!.logsSuffix}.log`.
 
 This term shows the end of that log file using the command `less`. You can use your mouse scroll or the keyboard:
@@ -224,11 +223,10 @@ You can can search words backwards or forward:
 This is useful to search errors. For instance `?FAILED` will search backward the logs for the work `FAILED` and your can follow searching typing `n`.
 
 More info about [how to navigate in this log file](https://www.thegeekstuff.com/2010/02/unix-less-command-10-tips-for-effective-navigation/).
-"""),
+'''),
                                 ],
                               )),
                           const Expanded(
-                            flex: 1, // 10%
                             child: SizedBox(),
                           )
                         ],
@@ -249,14 +247,14 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
 }
 
 class _DeployResultsViewModel {
-  final LAProject project;
-  final Function(LAProject, CmdHistoryDetails cmdDetails) onClose;
-  final void Function(CmdHistoryEntry entry) onOpenDeployResults;
 
   _DeployResultsViewModel(
       {required this.project,
       required this.onClose,
       required this.onOpenDeployResults});
+  final LAProject project;
+  final Function(LAProject, CmdHistoryDetails cmdDetails) onClose;
+  final void Function(CmdHistoryEntry entry) onOpenDeployResults;
 
   @override
   bool operator ==(Object other) =>

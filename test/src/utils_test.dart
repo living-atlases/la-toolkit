@@ -7,18 +7,18 @@ import 'package:test/test.dart';
 
 void main() {
   test('Capitalize strings', () {
-    String string = 'abc';
+    const String string = 'abc';
     expect(StringUtils.capitalize(string), equals('Abc'));
   });
 
   test('Capitalize strings', () {
-    String string = 'a';
+    const String string = 'a';
     expect(StringUtils.capitalize(string), equals('A'));
   });
 
   test('Capitalize empty strings', () {
-    String string = "";
-    expect(StringUtils.capitalize(string), equals(""));
+    const String string = '';
+    expect(StringUtils.capitalize(string), equals(''));
   });
 
   test(
@@ -43,32 +43,32 @@ void main() {
     // List<double> mapBounds1stPoint = [44.4806, -19.4184];
     // List<double> mapBounds2ndPoint = [26.6767, 5.7989];
 
-    LatLng mapBounds1stPoint = const LatLng(40.0, 20.0);
-    LatLng mapBounds2ndPoint = const LatLng(20.0, 10.0);
+    const LatLng mapBounds1stPoint = LatLng(40.0, 20.0);
+    const LatLng mapBounds2ndPoint = LatLng(20.0, 10.0);
 
-    var invVariables =
+    final Map<String, dynamic> invVariables =
         MapUtils.toInvVariables(mapBounds1stPoint, mapBounds2ndPoint);
     expect(invVariables['LA_collectory_map_centreMapLat'], equals(30));
     expect(invVariables['LA_collectory_map_centreMapLng'], equals(15));
     expect(invVariables['LA_spatial_map_lan'], equals(30));
     expect(invVariables['LA_spatial_map_lng'], equals(15));
-    expect(invVariables["LA_regions_map_bounds"],
+    expect(invVariables['LA_regions_map_bounds'],
         equals('[40.0, 20.0, 20.0, 10.0]'));
-    expect(invVariables["LA_spatial_map_areaSqKm"], equals(2390918.8297587633));
-    expect(invVariables["LA_spatial_map_bbox"],
+    expect(invVariables['LA_spatial_map_areaSqKm'], equals(2390918.8297587633));
+    expect(invVariables['LA_spatial_map_bbox'],
         equals('[40.0, 20.0, 20.0, 10.0]'));
     // print(invVariables);
   });
   test('Area calculation', () {
-    const world = {
+    const Map<String, Object> world = <String, Object>{
       'type': 'Polygon',
-      'coordinates': [
-        [
-          [-180, -90],
-          [-180, 90],
-          [180, 90],
-          [180, -90],
-          [-180, -90]
+      'coordinates': <List<List<int>>>[
+        <List<int>>[
+          <int>[-180, -90],
+          <int>[-180, 90],
+          <int>[180, 90],
+          <int>[180, -90],
+          <int>[-180, -90]
         ]
       ]
     };
@@ -76,7 +76,7 @@ void main() {
   });
 
   test('dirName suggestions', () {
-    const List<String> shortNames = [
+    const List<String> shortNames = <String>[
       '回尚芸策出多探政検済浜朝毎。車記隠地実問底欠葉下女保月兄介禄情内線裁。的点回父政埼芸岡',
       'LA Wäkßandâ',
       'ALA',
@@ -86,9 +86,9 @@ void main() {
       'Лорем ипсум долор сит амет, фастидии ехпетенда при ид.',
       '議さだや設9売サコヱ助送首し康美イヤエテ決竹ハキ約泣ヘハ式追だじけ',
     ];
-    for (String shortName in shortNames) {
-      String uuid = ObjectId().toString();
-      String dirName =
+    for (final String shortName in shortNames) {
+      final String uuid = ObjectId().toString();
+      final String dirName =
           StringUtils.suggestDirName(shortName: shortName, id: uuid);
       // print("$shortName: $dirName");
       expect(dirName.length >= 2, equals(true));
@@ -96,14 +96,14 @@ void main() {
   });
 
   test('dirName generated as expected', () {
-    const List<List<String>> pairs = [
-      ['GBIF.ES', 'gbif-es'],
-      ['LA.TEST', 'la-test'],
-      ['ALA', 'ala']
+    const List<List<String>> pairs = <List<String>>[
+      <String>['GBIF.ES', 'gbif-es'],
+      <String>['LA.TEST', 'la-test'],
+      <String>['ALA', 'ala']
     ];
-    for (List<String> pair in pairs) {
-      String uuid = ObjectId().toString();
-      String dirName = StringUtils.suggestDirName(shortName: pair[0], id: uuid);
+    for (final List<String> pair in pairs) {
+      final String uuid = ObjectId().toString();
+      final String dirName = StringUtils.suggestDirName(shortName: pair[0], id: uuid);
       // Uncomment to get a list of vars
       // print("${pair[0]}: $dirName");
       expect(dirName.length >= 2, equals(true));
@@ -112,7 +112,7 @@ void main() {
   });
 
   test('LatLng to from json', () {
-    LALatLng mapBounds1stPoint = LALatLng(latitude: 40.0, longitude: 20.0);
+    final LALatLng mapBounds1stPoint = LALatLng(latitude: 40.0, longitude: 20.0);
     // print(mapBounds1stPoint.toJson());
     expect(mapBounds1stPoint.toJson().toString().contains('latitude'),
         equals(true));

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/preDeployCmd.dart';
-import 'package:la_toolkit/redux/app_actions.dart';
-import 'package:la_toolkit/utils/utils.dart';
+import 'models/appState.dart';
+import 'models/preDeployCmd.dart';
+import 'redux/app_actions.dart';
+import 'utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:redux/src/store.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
@@ -13,12 +14,13 @@ import 'components/scrollPanel.dart';
 import 'components/serverSelector.dart';
 import 'laTheme.dart';
 import 'models/deployCmd.dart';
+import 'models/laServer.dart';
 import 'models/la_project.dart';
 
 class PreDeployPage extends StatefulWidget {
-  static const routeName = "predeploy";
 
-  const PreDeployPage({Key? key}) : super(key: key);
+  const PreDeployPage({super.key});
+  static const String routeName = 'predeploy';
 
   @override
   State<PreDeployPage> createState() => _PreDeployPageState();
@@ -32,14 +34,14 @@ class _PreDeployPageState extends State<PreDeployPage> {
     return StoreConnector<AppState, _ViewModel>(
       // The switch fails
       // distinct: true,
-      converter: (store) {
+      converter: (Store<AppState> store) {
         return _ViewModel(
             project: store.state.currentProject,
-            onCancel: (project) {},
-            onSaveDeployCmd: (cmd) {
+            onCancel: (LAProject project) {},
+            onSaveDeployCmd: (DeployCmd cmd) {
               store.dispatch(SaveCurrentCmd(cmd: cmd));
             },
-            onDoDeployTaskSwitchs: (project, cmd) =>
+            onDoDeployTaskSwitchs: (LAProject project, PreDeployCmd cmd) =>
                 DeployUtils.deployActionLaunch(
                     context: context,
                     store: store,
@@ -50,9 +52,9 @@ class _PreDeployPageState extends State<PreDeployPage> {
                 : store.state.repeatCmd as PreDeployCmd);
       },
       builder: (BuildContext context, _ViewModel vm) {
-        String execBtn = "Run tasks";
-        PreDeployCmd cmd = vm.cmd;
-        VoidCallback? onTap = cmd.addAnsibleUser ||
+        const String execBtn = 'Run tasks';
+        final PreDeployCmd cmd = vm.cmd;
+        final VoidCallback? onTap = cmd.addAnsibleUser ||
                 cmd.giveSudo ||
                 cmd.etcHosts ||
                 cmd.solrLimits ||
@@ -60,8 +62,8 @@ class _PreDeployPageState extends State<PreDeployPage> {
                 cmd.addAdditionalDeps
             ? () => vm.onDoDeployTaskSwitchs(vm.project, cmd)
             : null;
-        String defUser = vm.project.getVariableValue("ansible_user").toString();
-        String pageTitle = "${vm.project.shortName} Pre-Deploy Tasks";
+        final String defUser = vm.project.getVariableValue('ansible_user').toString();
+        final String pageTitle = '${vm.project.shortName} Pre-Deploy Tasks';
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -72,20 +74,18 @@ class _PreDeployPageState extends State<PreDeployPage> {
                     titleIcon: Icons.foundation,
                     showBack: true,
                     title: pageTitle,
-                    showLaIcon: false,
-                    actions: const []),
+                    actions: const <Widget>[]),
                 body: ScrollPanel(
                     withPadding: true,
                     child: Row(
                       children: <Widget>[
                         Expanded(
-                          flex: 1, // 10%
                           child: Container(),
                         ),
                         Expanded(
                             flex: 8, // 80%,
                             child: Column(
-                              children: [
+                              children: <Widget>[
                                 const SizedBox(height: 20),
                                 const Text(
                                     'These are tasks that depending on the status of your servers can be helpful to setup them correctly.'),
@@ -95,8 +95,8 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                         "Add the '$defUser' user to your servers",
                                     initialValue: cmd.addAnsibleUser,
                                     help:
-                                        "Before-Start-Your-LA-Installation#default-user-ubuntu",
-                                    onChanged: (newValue) {
+                                        'Before-Start-Your-LA-Installation#default-user-ubuntu',
+                                    onChanged: (bool newValue) {
                                       cmd.addAnsibleUser = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
@@ -105,8 +105,8 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                         "Give the 'ubuntu' user sudo permissions",
                                     initialValue: cmd.giveSudo,
                                     help:
-                                        "Before-Start-Your-LA-Installation#sudo",
-                                    onChanged: (newValue) {
+                                        'Before-Start-Your-LA-Installation#sudo',
+                                    onChanged: (bool newValue) {
                                       cmd.giveSudo = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
@@ -115,8 +115,8 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                         "Add your public ssh keys to '$defUser' user (warning: right now we add all your ssh keys)",
                                     initialValue: cmd.addSshKeys,
                                     help:
-                                        "SSH-for-Beginners#public-and-private-ip-addresses",
-                                    onChanged: (newValue) {
+                                        'SSH-for-Beginners#public-and-private-ip-addresses',
+                                    onChanged: (bool newValue) {
                                       cmd.addSshKeys = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
@@ -125,32 +125,32 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                         "Configure the '/etc/hosts' in your servers",
                                     initialValue: cmd.etcHosts,
                                     help:
-                                        "Before-Start-Your-LA-Installation#fake-dns-calls",
-                                    onChanged: (newValue) {
+                                        'Before-Start-Your-LA-Installation#fake-dns-calls',
+                                    onChanged: (bool newValue) {
                                       cmd.etcHosts = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
                                 if (!vm.project.isHub)
                                   DeployTaskSwitch(
                                       title:
-                                          "Adjust solr limits (increase the number of files and process allowed to create)",
+                                          'Adjust solr limits (increase the number of files and process allowed to create)',
                                       initialValue: cmd.solrLimits,
                                       help:
-                                          "Before-Start-Your-LA-Installation#solr-limits",
-                                      onChanged: (newValue) => setState(
+                                          'Before-Start-Your-LA-Installation#solr-limits',
+                                      onChanged: (bool newValue) => setState(
                                           () => cmd.solrLimits = newValue)),
                                 DeployTaskSwitch(
                                     title:
-                                        "Add additional package utils for monitoring and troubleshooting",
+                                        'Add additional package utils for monitoring and troubleshooting',
                                     initialValue: cmd.addAdditionalDeps,
-                                    onChanged: (newValue) {
+                                    onChanged: (bool newValue) {
                                       cmd.addAdditionalDeps = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
                                 DeployTaskSwitch(
                                     title: "Try these tasks as 'root'",
                                     initialValue: cmd.rootBecome,
-                                    onChanged: (newValue) {
+                                    onChanged: (bool newValue) {
                                       cmd.rootBecome = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
@@ -158,24 +158,23 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                 ServerSelector(
                                     selectorKey:
                                         GlobalKey<FormFieldState<dynamic>>(),
-                                    title: "Do the pre-deploy in servers:",
+                                    title: 'Do the pre-deploy in servers:',
                                     modalTitle:
-                                        "Choose some servers if you want to limit the pre-deploy to them",
-                                    placeHolder: "All servers",
+                                        'Choose some servers if you want to limit the pre-deploy to them',
+                                    placeHolder: 'All servers',
                                     initialValue: cmd.limitToServers,
                                     hosts: vm.project
                                         .serversWithServices()
-                                        .map((e) => e.name)
+                                        .map((LAServer e) => e.name)
                                         .toList(),
                                     icon: MdiIcons.server,
-                                    onChange: (limitToServers) => setState(() =>
+                                    onChange: (List<String> limitToServers) => setState(() =>
                                         cmd.limitToServers = limitToServers)),
                                 const SizedBox(height: 20),
                                 LaunchBtn(onTap: onTap, execBtn: execBtn),
                               ],
                             )),
                         Expanded(
-                          flex: 1, // 10%
                           child: Container(),
                         )
                       ],
@@ -186,11 +185,6 @@ class _PreDeployPageState extends State<PreDeployPage> {
 }
 
 class _ViewModel {
-  final LAProject project;
-  final Function(LAProject, PreDeployCmd) onDoDeployTaskSwitchs;
-  final PreDeployCmd cmd;
-  final Function(LAProject) onCancel;
-  final Function(DeployCmd) onSaveDeployCmd;
 
   _ViewModel(
       {required this.project,
@@ -198,6 +192,11 @@ class _ViewModel {
       required this.cmd,
       required this.onSaveDeployCmd,
       required this.onCancel});
+  final LAProject project;
+  final Function(LAProject, PreDeployCmd) onDoDeployTaskSwitchs;
+  final PreDeployCmd cmd;
+  final Function(LAProject) onCancel;
+  final Function(DeployCmd) onSaveDeployCmd;
 
   @override
   bool operator ==(Object other) =>

@@ -42,8 +42,8 @@ extension ParseToString on ResultType {
   }
 
   String title() {
-    String toS = this.toS();
-    return StringUtils.capitalize(toS == "ok" ? "success" : toS);
+    final String toS = this.toS();
+    return StringUtils.capitalize(toS == 'ok' ? 'success' : toS);
   }
 
   Color get color {

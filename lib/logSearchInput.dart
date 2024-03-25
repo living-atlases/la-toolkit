@@ -5,10 +5,10 @@ import 'package:rxdart/rxdart.dart';
 
 class LogSearchInput extends StatefulWidget {
   const LogSearchInput({
-    Key? key,
+    super.key,
     this.onChanged,
     this.debounceTime,
-  }) : super(key: key);
+  });
   final ValueChanged<String>? onChanged;
   final Duration? debounceTime;
 
@@ -28,8 +28,8 @@ class _LogSearchInputState extends State<LogSearchInput> {
           widget.debounceTime ?? const Duration(seconds: 1),
         )
         .distinct()
-        .listen((text) {
-      final onChanged = widget.onChanged;
+        .listen((String text) {
+      final ValueChanged<String>? onChanged = widget.onChanged;
       if (onChanged != null) {
         onChanged(text);
       }

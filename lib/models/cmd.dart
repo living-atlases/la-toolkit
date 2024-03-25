@@ -1,6 +1,6 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
+import '../utils/StringUtils.dart';
 import 'package:objectid/objectid.dart';
 
 part 'cmd.g.dart';
@@ -30,12 +30,14 @@ extension ParseToString on CmdType {
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class Cmd {
-  final String id;
-  final CmdType type;
-  final Map<String, dynamic> properties;
 
   Cmd({String? id, required this.type, required this.properties})
       : id = id ?? ObjectId().toString();
+
+  factory Cmd.fromJson(Map<String, dynamic> json) => _$CmdFromJson(json);
+  final String id;
+  final CmdType type;
+  final Map<String, dynamic> properties;
 
   @override
   bool operator ==(Object other) =>
@@ -49,8 +51,6 @@ class Cmd {
   @override
   int get hashCode => id.hashCode ^ type.hashCode ^ properties.hashCode;
 
-  String getTitle() => "${StringUtils.capitalize(type.toS())} Results";
-
-  factory Cmd.fromJson(Map<String, dynamic> json) => _$CmdFromJson(json);
+  String getTitle() => '${StringUtils.capitalize(type.toS())} Results';
   Map<String, dynamic> toJson() => _$CmdToJson(this);
 }

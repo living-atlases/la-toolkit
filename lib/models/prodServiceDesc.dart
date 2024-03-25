@@ -1,25 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
-import 'package:la_toolkit/models/LAServiceConstants.dart';
-import 'package:la_toolkit/models/la_service.dart';
 
+import 'LAServiceConstants.dart';
 import 'basic_service.dart';
 import 'laServiceDeploy.dart';
+import 'la_service.dart';
 
 class ProdServiceDesc {
-  final IconData icon;
-  final String name;
-  final String nameInt;
-  final String tooltip;
-  final String url;
-  final bool admin;
-  final bool alaAdmin;
-  final String? help;
-  final String subtitle;
-  final List<LAServiceDeploy> serviceDeploys;
-  final List<BasicService>? deps;
-  final List<String> urls = [];
-  final ServiceStatus status;
 
   ProdServiceDesc(
       {required this.icon,
@@ -42,6 +29,19 @@ class ProdServiceDesc {
       if (admin) urls.add('$url/admin/');
     }
   }
+  final IconData icon;
+  final String name;
+  final String nameInt;
+  final String tooltip;
+  final String url;
+  final bool admin;
+  final bool alaAdmin;
+  final String? help;
+  final String subtitle;
+  final List<LAServiceDeploy> serviceDeploys;
+  final List<BasicService>? deps;
+  final List<String> urls = <String>[];
+  final ServiceStatus status;
 
   @override
   bool operator ==(Object other) =>

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
+import '../utils/StringUtils.dart';
 
 import '../laTheme.dart';
 
 class FormattedTitle extends StatelessWidget {
+
+  const FormattedTitle(
+      {super.key, required this.title, this.fontSize, this.color, this.subtitle});
   final String title;
   final Widget? subtitle;
   final double? fontSize;
   final Color? color;
-
-  const FormattedTitle(
-      {Key? key, required this.title, this.fontSize, this.color, this.subtitle})
-      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

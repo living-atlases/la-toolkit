@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/components/help_icon.dart';
-import 'package:la_toolkit/components/textWithHelp.dart';
-import 'package:la_toolkit/laTheme.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-class Branding {
-  final String name;
-  final String desc;
+import '../laTheme.dart';
+import 'help_icon.dart';
+import 'textWithHelp.dart';
 
+class Branding {
   Branding({
     required this.name,
     required this.desc,
   });
+
+  final String name;
+  final String desc;
 }
 
 class BrandingTile extends StatefulWidget {
-  final String initialValue;
-  final Function(String) onChange;
-  final String portalName;
-
   const BrandingTile(
       {super.key,
       required this.initialValue,
       required this.portalName,
       required this.onChange});
+
+  final String initialValue;
+  final Function(String) onChange;
+  final String portalName;
 
   @override
   State<BrandingTile> createState() => _BrandingTileState();
@@ -43,11 +44,11 @@ class _BrandingTileState extends State<BrandingTile> {
   Widget build(BuildContext context) {
     return ListTile(
       ///contentPadding: padding,
-      title: Text("${widget.portalName} branding"),
+      title: Text('${widget.portalName} branding'),
       subtitle: Text(initialValue),
       onTap: () => _showDialog(context),
       leading: const Icon(Icons.format_paint),
-      trailing: HelpIcon(wikipage: "Styling-the-web-app"),
+      trailing: HelpIcon(wikipage: 'Styling-the-web-app'),
     );
   }
 
@@ -61,7 +62,7 @@ class _BrandingTileState extends State<BrandingTile> {
         closeIcon: const Icon(Icons.close),
         image: const Icon(
             Icons.format_paint /* , size: 60, color: LAColorTheme.laPalette*/),
-        title: "Select your branding theme",
+        title: 'Select your branding theme',
         style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
@@ -70,7 +71,7 @@ class _BrandingTileState extends State<BrandingTile> {
                 padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
                 text:
                     "Scroll to choose a branding for your portal or choose 'custom' if you have developed your own theme:",
-                helpPage: "Styling-the-web-app"),
+                helpPage: 'Styling-the-web-app'),
             BrandingSelector(
               initialValue: initialValue,
               onChange: (String newTheme) => theme = newTheme,
@@ -80,7 +81,7 @@ class _BrandingTileState extends State<BrandingTile> {
             ),
           ],
         ),
-        buttons: [
+        buttons: <DialogButton>[
           DialogButton(
             width: 450,
             onPressed: () {
@@ -91,7 +92,7 @@ class _BrandingTileState extends State<BrandingTile> {
               Navigator.pop(context);
             },
             child: const Text(
-              "SELECT",
+              'SELECT',
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           )
@@ -100,18 +101,18 @@ class _BrandingTileState extends State<BrandingTile> {
 }
 
 class BrandingSelector extends StatefulWidget {
-  final String initialValue;
-  final Function(String) onChange;
-
   const BrandingSelector(
       {super.key, required this.initialValue, required this.onChange});
+
+  final String initialValue;
+  final Function(String) onChange;
 
   @override
   State<BrandingSelector> createState() => _BrandingSelectorState();
 }
 
 class _BrandingSelectorState extends State<BrandingSelector> {
-  static final List<Branding> _brandings = [
+  static final List<Branding> _brandings = <Branding>[
     Branding(name: 'clean', desc: 'Clean Bootstrap compatible theme'),
     Branding(name: 'cosmo', desc: ''),
     Branding(name: 'darkly', desc: 'Flatly night mode theme'),
@@ -123,23 +124,23 @@ class _BrandingSelectorState extends State<BrandingSelector> {
     Branding(name: 'slate', desc: ''),
     Branding(name: 'superhero', desc: ''),
     Branding(name: 'yeti', desc: ''),
-    Branding(
-        name: 'custom', desc: 'None of them. We\'ll use a self made theme'),
+    Branding(name: 'custom', desc: "None of them. We'll use a self made theme"),
   ];
 
-  final _items = _brandings
-      .map((theme) => MultiSelectItem<Branding>(theme, theme.name))
+  final List<MultiSelectItem<Branding>> _items = _brandings
+      .map((Branding theme) => MultiSelectItem<Branding>(theme, theme.name))
       .toList();
 
-  List<Branding> _selected = [];
+  List<Branding> _selected = <Branding>[];
 
-  final _multiSelectKey = GlobalKey<FormFieldState<dynamic>>();
+  final GlobalKey<FormFieldState<dynamic>> _multiSelectKey =
+      GlobalKey<FormFieldState<dynamic>>();
 
   @override
   void initState() {
-    Branding currentBranding =
-        _brandings.firstWhere((b) => b.name == widget.initialValue);
-    _selected = [currentBranding];
+    final Branding currentBranding =
+        _brandings.firstWhere((Branding b) => b.name == widget.initialValue);
+    _selected = <Branding>[currentBranding];
 
     super.initState();
   }
@@ -147,7 +148,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
   @override
   Widget build(BuildContext context) {
     // TODO add selection to the start
-    _brandings.removeWhere((b) => b == _selected[0]);
+    _brandings.removeWhere((Branding b) => b == _selected[0]);
     _brandings.insert(0, _selected[0]);
     return Container(
       alignment: Alignment.center,
@@ -157,7 +158,6 @@ class _BrandingSelectorState extends State<BrandingSelector> {
           MultiSelectChipField<Branding>(
             items: _items,
             scrollBar: HorizontalScrollBar(isAlwaysShown: true),
-            scroll: true,
             showHeader: false,
             decoration: BoxDecoration(
               border: Border.all(
@@ -165,7 +165,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
                 width: 10,
               ),
               borderRadius: BorderRadius.circular(5),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.grey.withOpacity(.4),
                 ),
@@ -173,7 +173,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
               /* border:
                   Border.all(width: 0, color: Theme.of(context).primaryColor),*/
             ),
-            title: const Text("Select your branding"),
+            title: const Text('Select your branding'),
             initialValue: _selected,
             key: _multiSelectKey,
             height: 330,
@@ -181,7 +181,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
             itemBuilder: (MultiSelectItem<Branding?> item,
                 FormFieldState<List<Branding?>> state) {
               // return your custom widget here
-              Branding value = item.value ?? _brandings[0];
+              final Branding value = item.value ?? _brandings[0];
               return /* Tooltip(
                 message: item.value.desc,
                 child: */
@@ -197,17 +197,16 @@ class _BrandingSelectorState extends State<BrandingSelector> {
                                 : Colors.black54,
                             margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
                             child: Column(
-                                // mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   const SizedBox(height: 10),
-                                  value.name != 'custom'
-                                      ? Image.asset(
-                                          "assets/images/themes/${value.name}.png",
-                                          width: 210)
-                                      : Container(),
+                                  if (value.name != 'custom')
+                                    Image.asset(
+                                        'assets/images/themes/${value.name}.png',
+                                        width: 210)
+                                  else
+                                    Container(),
                                   const SizedBox(height: 5),
                                   Column(
                                       // mainAxisSize: MainAxisSize.max,
@@ -225,7 +224,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
                                 ])),
                         onTap: () {
                           setState(() {
-                            _selected = [value];
+                            _selected = <Branding>[value];
                             widget.onChange(value.name);
                           });
                         },

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/software_selector.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/la_project.dart';
+import 'software_selector.dart';
+import '../models/appState.dart';
+import '../models/la_project.dart';
+import 'package:redux/src/store.dart';
 
 class GeneratorSelector extends StatefulWidget {
-  final Function(String?) onChange;
 
-  const GeneratorSelector({Key? key, required this.onChange}) : super(key: key);
+  const GeneratorSelector({super.key, required this.onChange});
+  final Function(String?) onChange;
 
   @override
   State<GeneratorSelector> createState() => _GeneratorSelectorState();
@@ -17,12 +18,12 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _GeneratorSelectorViewModel>(
-        converter: (store) {
+        converter: (Store<AppState> store) {
       return _GeneratorSelectorViewModel(state: store.state);
     }, builder: (BuildContext context, _GeneratorSelectorViewModel vm) {
-      LAProject currentProject = vm.state.currentProject;
+      final LAProject currentProject = vm.state.currentProject;
       return SoftwareSelector(
-          label: "la-generator release:",
+          label: 'la-generator release:',
           versions: vm.state.generatorReleases,
           initialValue: currentProject.generatorRelease,
           roundStyle: false,
@@ -32,7 +33,7 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
 }
 
 class _GeneratorSelectorViewModel {
-  final AppState state;
 
   _GeneratorSelectorViewModel({required this.state});
+  final AppState state;
 }

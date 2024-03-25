@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/utils/regexp.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import '../laTheme.dart';
+import '../models/laServer.dart';
+import '../utils/regexp.dart';
 import 'genericTextFormField.dart';
 
 class RenameServerIcon extends StatelessWidget {
+
+  const RenameServerIcon(this.server, this.onEditing, this.onRename, {super.key});
   final Function(String) onRename;
   final Function() onEditing;
   final LAServer server;
 
-  const RenameServerIcon(this.server, this.onEditing, this.onRename, {Key? key})
-      : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Tooltip(
-        message: "Rename the server",
+        message: 'Rename the server',
         child: IconButton(
             icon: const Icon(Icons.edit, size: 18, color: Colors.grey),
             color: LAColorTheme.inactive,
@@ -39,7 +38,7 @@ class RenameServerIcon extends StatelessWidget {
         context: context,
         closeIcon: const Icon(Icons.close),
         image: const Icon(Icons.dns, size: 60, color: LAColorTheme.inactive),
-        title: "Server rename",
+        title: 'Server rename',
         style: const AlertStyle(
             constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
@@ -51,8 +50,8 @@ class RenameServerIcon extends StatelessWidget {
             GenericTextFormField(
                 initialValue: server.name,
                 regexp: LARegExp.hostnameRegexp,
-                error: "This is not a valid server name",
-                onChanged: (value) {
+                error: 'This is not a valid server name',
+                onChanged: (String value) {
                   name = value;
                 }),
             const SizedBox(
@@ -60,7 +59,7 @@ class RenameServerIcon extends StatelessWidget {
             ),
           ],
         ),
-        buttons: [
+        buttons: <DialogButton>[
           DialogButton(
             width: 450,
             onPressed: () {
@@ -72,7 +71,7 @@ class RenameServerIcon extends StatelessWidget {
               }
             },
             child: const Text(
-              "RENAME",
+              'RENAME',
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           )

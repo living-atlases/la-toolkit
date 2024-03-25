@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
 class AlertCard extends StatelessWidget {
+
+  const AlertCard(
+      {super.key,
+      required this.message,
+      this.actionText,
+      this.action,
+      this.icon,
+      this.color});
   final String message;
   final String? actionText;
   final VoidCallback? action;
   final Color? color;
   final IconData? icon;
-
-  const AlertCard(
-      {Key? key,
-      required this.message,
-      this.actionText,
-      this.action,
-      this.icon,
-      this.color})
-      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -1,13 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/utils/resultTypes.dart';
+import '../utils/resultTypes.dart';
 
 import 'indicator.dart';
 
 class ResultsPieChart extends StatefulWidget {
-  final Map<String, num> results;
 
-  const ResultsPieChart(this.results, {Key? key}) : super(key: key);
+  const ResultsPieChart(this.results, {super.key});
+  final Map<String, num> results;
 
   @override
   State<StatefulWidget> createState() => ResultsPieChartState();
@@ -28,7 +28,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
               child: PieChart(
                 PieChartData(
                     pieTouchData: PieTouchData(
-                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                        touchCallback: (FlTouchEvent event, PieTouchResponse? pieTouchResponse) {
                       setState(() {
                         if (!event.isInterestedForInteractions ||
                             pieTouchResponse == null ||
@@ -51,16 +51,15 @@ class ResultsPieChartState extends State<ResultsPieChart> {
           ),
           const SizedBox(width: 100),
           Column(
-            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              for (ResultType type in ResultType.values)
+              for (final ResultType type in ResultType.values)
                 Padding(
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                     child: Indicator(
                       color: type.color,
-                      text: "${type.title()} (${widget.results[type.toS()]})",
+                      text: '${type.title()} (${widget.results[type.toS()]})',
                       isSquare: false,
                     )),
             ],
@@ -73,9 +72,9 @@ class ResultsPieChartState extends State<ResultsPieChart> {
   List<PieChartSectionData> showingSections() {
     int i = 0;
     return ResultType.values
-        .where((t) =>
+        .where((ResultType t) =>
             widget.results[t.toS()] != null && widget.results[t.toS()] != 0)
-        .map((type) {
+        .map((ResultType type) {
       final bool isTouched = i == touchedIndex;
       i += 1;
       final double fontSize = isTouched ? 12 : 12;
@@ -93,8 +92,8 @@ class ResultsPieChartState extends State<ResultsPieChart> {
   }
 
   List<PieChartSectionData> showingSectionsExample() {
-    return List.generate(4, (i) {
-      final isTouched = i == touchedIndex;
+    return List.generate(4, (int i) {
+      final bool isTouched = i == touchedIndex;
       final double fontSize = isTouched ? 25 : 16;
       final double radius = isTouched ? 60 : 50;
       switch (i) {

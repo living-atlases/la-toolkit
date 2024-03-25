@@ -1,10 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/utils/debounce.dart';
+import '../laTheme.dart';
+import '../utils/debounce.dart';
 
 import 'help_icon.dart';
 
 class GenericTextFormField extends StatefulWidget {
+
+  const GenericTextFormField(
+      {super.key,
+      this.label,
+      this.hint,
+      this.hintStyle,
+      required this.initialValue,
+      this.prefixText,
+      this.wikipage,
+      this.regexp,
+      required this.error,
+      required this.onChanged,
+      this.isDense = false,
+      this.isCollapsed = false,
+      this.focusNode,
+      this.minLines,
+      this.maxLines = 1,
+      this.fillColor,
+      this.allowEmpty = false,
+      this.enabledBorder = false,
+      this.monoSpaceFont = false,
+      this.obscureText = false,
+      this.keyboardType,
+      this.deployed = false,
+      this.enabled = true,
+      this.selected = true,
+      this.contentPadding});
   final String? label;
   final String? hint;
   final TextStyle? hintStyle;
@@ -30,41 +57,13 @@ class GenericTextFormField extends StatefulWidget {
   final bool selected;
   final EdgeInsets? contentPadding;
 
-  const GenericTextFormField(
-      {Key? key,
-      this.label,
-      this.hint,
-      this.hintStyle,
-      required this.initialValue,
-      this.prefixText,
-      this.wikipage,
-      this.regexp,
-      required this.error,
-      required this.onChanged,
-      this.isDense = false,
-      this.isCollapsed = false,
-      this.focusNode,
-      this.minLines,
-      this.maxLines = 1,
-      this.fillColor,
-      this.allowEmpty = false,
-      this.enabledBorder = false,
-      this.monoSpaceFont = false,
-      this.obscureText = false,
-      this.keyboardType,
-      this.deployed = false,
-      this.enabled = true,
-      this.selected = true,
-      this.contentPadding})
-      : super(key: key);
-
   @override
   State<GenericTextFormField> createState() => _GenericTextFormFieldState();
 }
 
 class _GenericTextFormFieldState extends State<GenericTextFormField>
     with AutomaticKeepAliveClientMixin {
-  final debouncer = Debouncer(milliseconds: 1000);
+  final Debouncer debouncer = Debouncer(milliseconds: 1000);
   late GlobalKey<FormState> formKey;
   String? delayedValue;
   late bool obscureTextState;
@@ -96,7 +95,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
   Widget build(BuildContext context) {
     super.build(context);
 
-    final decoration = InputDecoration(
+    final InputDecoration decoration = InputDecoration(
         fillColor: widget.fillColor,
         labelText: widget.label,
         hintText: widget.hint,
@@ -118,8 +117,8 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
                         child: Icon(obscureTextState
                             ? Icons.visibility
                             : Icons.visibility_off),
-                        onTapUp: (tap) => showPass(true),
-                        onTapDown: (tap) => showPass(false)))
+                        onTapUp: (TapUpDetails tap) => showPass(true),
+                        onTapDown: (TapDownDetails tap) => showPass(false)))
                 : null
             : Padding(
                 padding:
@@ -131,7 +130,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
             : null // , width: 1.0),
         );
 
-    final style = widget.deployed
+    final TextStyle style = widget.deployed
         ? !widget.monoSpaceFont
             ? LAColorTheme.deployedTextStyle
             : LAColorTheme.fixedDeployedTextStyle

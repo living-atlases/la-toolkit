@@ -209,8 +209,8 @@ class ProjectCard extends StatelessWidget {
                               style: const TextStyle(fontSize: 16),
                             ),
                             SelectableLinkify(
-                                linkStyle: const TextStyle(
-                                    color: LAColorTheme.laPalette),
+                                linkStyle:
+                                    TextStyle(color: LAColorTheme.laPalette),
                                 options: const LinkifyOptions(humanize: false),
                                 text:
                                     "${project.useSSL ? 'https://' : 'http://'}${project.domain}",

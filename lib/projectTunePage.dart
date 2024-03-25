@@ -490,10 +490,10 @@ abstract class ListItem {
 
 /// A ListItem that contains data to display a heading.
 class HeadingItem implements ListItem {
+  HeadingItem(this.heading, [this.subheading = false]);
+
   final String heading;
   final bool subheading;
-
-  HeadingItem(this.heading, [this.subheading = false]);
 
   @override
   Widget buildTitle(BuildContext context) {
@@ -501,7 +501,7 @@ class HeadingItem implements ListItem {
         style: !subheading
             ? Theme.of(context).textTheme.headlineSmall
             : Theme.of(context).textTheme.titleLarge!.copyWith(
-                fontSize: 18, color: LAColorTheme.laThemeData.hintColor));
+                fontSize: 18, color: LAColorTheme.themeData.hintColor));
   }
 
   @override
@@ -510,12 +510,12 @@ class HeadingItem implements ListItem {
 
 // A ListItem that contains data to display a message.
 class MessageItem implements ListItem {
+  MessageItem(this.project, this.varDesc, this.onChanged);
+
   LAVariableDesc varDesc;
   LAProject project;
 
   ValueChanged<Object> onChanged;
-
-  MessageItem(this.project, this.varDesc, this.onChanged);
 
   @override
   Widget buildTitle(BuildContext context) {
@@ -533,8 +533,7 @@ class MessageItem implements ListItem {
                 contentPadding: EdgeInsets.zero,
                 value: initialValue as bool? ?? defValue as bool? ?? false,
                 title: Text(varDesc.name,
-                    style:
-                        TextStyle(color: LAColorTheme.laThemeData.hintColor)),
+                    style: TextStyle(color: LAColorTheme.themeData.hintColor)),
                 onChanged: (bool newValue) {
                   onChanged(newValue);
                 })
@@ -554,7 +553,6 @@ class MessageItem implements ListItem {
                     initialValue:
                         initialValue as String? ?? defValue as String?,
                     allowEmpty: varDesc.allowEmpty,
-                    enabledBorder: false,
                     obscureText: varDesc.protected,
                     deployed: deployed,
                     regexp: varDesc.type == LAVariableType.int
@@ -574,25 +572,6 @@ class MessageItem implements ListItem {
 }
 
 class _ProjectTuneViewModel {
-  final LAProject project;
-  final LAProjectStatus status;
-  final Map<String, LAReleases> laReleases;
-  final void Function(LAProject) onUpdateProject;
-  final void Function(LAProject) onSaveProject;
-  final void Function(LAProject) onCancel;
-  final void Function(int) onSelectTuneTab;
-  final void Function() onInitCasKeys;
-  final void Function() onInitCasOAuthKeys;
-  final Function() refreshSWVersions;
-  final bool softwareReleasesReady;
-  final bool depsLoading;
-  final int currentTab;
-
-  final List<String> alaInstallReleases;
-  final List<String> generatorReleases;
-  final String? backendVersion;
-  final List<SshKey> sshKeys;
-
   _ProjectTuneViewModel(
       {required this.project,
       required this.status,
@@ -611,6 +590,25 @@ class _ProjectTuneViewModel {
       required this.generatorReleases,
       required this.backendVersion,
       required this.sshKeys});
+
+  final LAProject project;
+  final LAProjectStatus status;
+  final Map<String, LAReleases> laReleases;
+  final void Function(LAProject) onUpdateProject;
+  final void Function(LAProject) onSaveProject;
+  final void Function(LAProject) onCancel;
+  final void Function(int) onSelectTuneTab;
+  final void Function() onInitCasKeys;
+  final void Function() onInitCasOAuthKeys;
+  final Function() refreshSWVersions;
+  final bool softwareReleasesReady;
+  final bool depsLoading;
+  final int currentTab;
+
+  final List<String> alaInstallReleases;
+  final List<String> generatorReleases;
+  final String? backendVersion;
+  final List<SshKey> sshKeys;
 
   @override
   bool operator ==(Object other) =>

@@ -1,17 +1,20 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:la_toolkit/models/commonCmd.dart';
+import 'commonCmd.dart';
 
 part 'brandingDeployCmd.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class BrandingDeployCmd extends CommonCmd {
-  bool debug;
 
   BrandingDeployCmd({
     this.debug = false,
   });
+
+  factory BrandingDeployCmd.fromJson(Map<String, dynamic> json) =>
+      _$BrandingDeployCmdFromJson(json);
+  bool debug;
 
   @override
   bool operator ==(Object other) =>
@@ -29,10 +32,7 @@ class BrandingDeployCmd extends CommonCmd {
   }
 
   String get desc => 'Branding Deploy';
-
-  factory BrandingDeployCmd.fromJson(Map<String, dynamic> json) =>
-      _$BrandingDeployCmdFromJson(json);
   Map<String, dynamic> toJson() => _$BrandingDeployCmdToJson(this);
 
-  String getTitle() => "Branding Deploy Results";
+  String getTitle() => 'Branding Deploy Results';
 }

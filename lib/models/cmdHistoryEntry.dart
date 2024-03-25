@@ -155,7 +155,7 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
       result.hashCode;
 
   @override
-  fromJson(Map<String, dynamic> json) {
+  CmdHistoryEntry fromJson(Map<String, dynamic> json) {
     return CmdHistoryEntry.fromJson(json);
   }
 

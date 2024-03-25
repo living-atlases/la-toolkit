@@ -53,7 +53,7 @@ class _CountDownWidgetState extends State<CountDownWidget> {
               // Begin and end contours with a flat edge and no extension.
               strokeCap: StrokeCap.round,
               // Text Style for Countdown Text.
-              textStyle: const TextStyle(
+              textStyle: TextStyle(
                   fontSize: 14.0,
                   color: LAColorTheme.laPalette,
                   fontWeight: FontWeight.bold),

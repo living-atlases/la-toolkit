@@ -1,17 +1,17 @@
-import 'package:la_toolkit/models/pipelinesStepName.dart';
+import 'pipelinesStepName.dart';
 
 import 'laServiceName.dart';
 
 class PipelinesStepDesc {
+
+  PipelinesStepDesc(
+      {required this.name, required this.desc, List<LAServiceName>? depends})
+      : depends = depends ?? <LAServiceName>[];
   String name;
   String desc;
   List<LAServiceName> depends;
 
-  PipelinesStepDesc(
-      {required this.name, required this.desc, List<LAServiceName>? depends})
-      : depends = depends ?? [];
-
-  static final Map<String, PipelinesStepDesc> _map = {
+  static final Map<String, PipelinesStepDesc> _map = <String, PipelinesStepDesc>{
     dwcaAvro: PipelinesStepDesc(
         name: dwcaAvro,
         desc: 'reads a Dwc-A and converts it to an verbatim.avro file'),
@@ -29,15 +29,15 @@ class PipelinesStepDesc {
             'mints UUID on new records and rematches to existing UUIDs for records loaded before'),
     sds: PipelinesStepDesc(
         name: sds,
-        depends: [LAServiceName.sds],
+        depends: <LAServiceName>[LAServiceName.sds],
         desc: 'runs the sensitive data checks'),
     imageLoad: PipelinesStepDesc(
         name: imageLoad,
-        depends: [LAServiceName.images],
+        depends: <LAServiceName>[LAServiceName.images],
         desc: 'pushes an export of multimedia AVRO files to the image service'),
     imageSync: PipelinesStepDesc(
         name: imageSync,
-        depends: [LAServiceName.images],
+        depends: <LAServiceName>[LAServiceName.images],
         desc:
             'retrieves details of images stored in image service for indexing purposes'),
     index: PipelinesStepDesc(
@@ -45,16 +45,16 @@ class PipelinesStepDesc {
         desc: 'generates a AVRO records ready to be index to SOLR'),
     sample: PipelinesStepDesc(
         name: sample,
-        depends: [LAServiceName.spatial],
+        depends: <LAServiceName>[LAServiceName.spatial],
         desc:
             'use the sampling service to retrieve values for points for the layers in the spatial service'),
     clustering: PipelinesStepDesc(
         name: clustering,
-        depends: [LAServiceName.spatial],
+        depends: <LAServiceName>[LAServiceName.spatial],
         desc: 'Duplication detection (clustering) of occurrences'),
     jackknife: PipelinesStepDesc(
         name: jackknife,
-        depends: [LAServiceName.spatial],
+        depends: <LAServiceName>[LAServiceName.spatial],
         desc:
             "adds an aggregated jackknife AVRO for all datasets. Requires samping-avro. After running a full 'index' is required."),
     solr: PipelinesStepDesc(
@@ -93,7 +93,7 @@ class PipelinesStepDesc {
   static List<PipelinesStepDesc> get restList =>
       _map.values.toList().sublist(lastStep, _map.length);
 
-  static List<String> get allStringList => allList.map((v) => v.name).toList();
+  static List<String> get allStringList => allList.map((PipelinesStepDesc v) => v.name).toList();
   static List<String> get restStringList =>
-      restList.map((v) => v.name).toList();
+      restList.map((PipelinesStepDesc v) => v.name).toList();
 }

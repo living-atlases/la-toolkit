@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
 class CmdTermPage extends StatelessWidget {
-  static const routeName = "term";
+  const CmdTermPage({super.key, required this.port, required this.ttydPid});
+  static const String routeName = 'term';
 
   /* Not used right now, but maybe in the future */
 
   final int port;
   final int ttydPid;
-  const CmdTermPage({Key? key, required this.port, required this.ttydPid})
-      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

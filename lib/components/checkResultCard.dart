@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/models/la_service.dart';
+import '../models/la_service.dart';
 
 class CheckResultCard extends StatelessWidget {
+
+  const CheckResultCard(
+      {super.key,
+      required this.status,
+      required this.title,
+      required this.subtitle,
+      this.actionText,
+      this.action});
   final ServiceStatus status;
   final String title;
   final String subtitle;
   final String? actionText;
   final VoidCallback? action;
-
-  const CheckResultCard(
-      {Key? key,
-      required this.status,
-      required this.title,
-      required this.subtitle,
-      this.actionText,
-      this.action})
-      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -2,8 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:la_toolkit/models/sshKey.dart';
-import 'package:la_toolkit/utils/regexp.dart';
+import 'sshKey.dart';
+import '../utils/regexp.dart';
 import 'package:objectid/objectid.dart';
 
 import 'isJsonSerializable.dart';
@@ -14,6 +14,32 @@ part 'laServer.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServer implements IsJsonSerializable<LAServer> {
+
+  LAServer(
+      {String? id,
+      required this.name,
+      String? ip,
+      this.sshPort = 22,
+      this.sshUser,
+      List<String>? aliases,
+      List<String>? gateways,
+      this.sshKey,
+      this.reachable = ServiceStatus.unknown,
+      this.sshReachable = ServiceStatus.unknown,
+      this.sudoEnabled = ServiceStatus.unknown,
+      this.osName = '',
+      this.osVersion = '',
+      required this.projectId})
+      : id = id ?? ObjectId().toString(),
+        aliases = aliases ?? <String>[],
+        gateways = gateways ?? <String>[],
+        ip = ip ?? '' {
+    assert(LARegExp.hostnameRegexp.hasMatch(name),
+        "'$name' is a invalid server name");
+  }
+
+  factory LAServer.fromJson(Map<String, dynamic> json) =>
+      _$LAServerFromJson(json);
   // Basic
   String id;
   String name;
@@ -39,32 +65,6 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   // Relations
   String projectId;
-
-  LAServer(
-      {String? id,
-      required this.name,
-      String? ip,
-      this.sshPort = 22,
-      this.sshUser,
-      List<String>? aliases,
-      List<String>? gateways,
-      this.sshKey,
-      this.reachable = ServiceStatus.unknown,
-      this.sshReachable = ServiceStatus.unknown,
-      this.sudoEnabled = ServiceStatus.unknown,
-      this.osName = "",
-      this.osVersion = "",
-      required this.projectId})
-      : id = id ?? ObjectId().toString(),
-        aliases = aliases ?? [],
-        gateways = gateways ?? [],
-        ip = ip ?? "" {
-    assert(LARegExp.hostnameRegexp.hasMatch(name),
-        "'$name' is a invalid server name");
-  }
-
-  factory LAServer.fromJson(Map<String, dynamic> json) =>
-      _$LAServerFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$LAServerToJson(this);
@@ -122,9 +122,9 @@ class LAServer implements IsJsonSerializable<LAServer> {
   }
 
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {
-    if (servers.map((s) => s.id).toList().contains(laServer.id)) {
+    if (servers.map((LAServer s) => s.id).toList().contains(laServer.id)) {
       servers = servers
-          .map((current) => current.id == laServer.id ? laServer : current)
+          .map((LAServer current) => current.id == laServer.id ? laServer : current)
           .toList();
     } else {
       servers.add(laServer);
@@ -134,8 +134,8 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   static List<LAServer> upsertByName(
       List<LAServer> servers, LAServer laServer) {
-    if (servers.map((s) => s.name).toList().contains(laServer.name)) {
-      servers = servers.map((current) {
+    if (servers.map((LAServer s) => s.name).toList().contains(laServer.name)) {
+      servers = servers.map((LAServer current) {
         if (current.name == laServer.name) {
           // set the same previous id;
           laServer.id = current.id;

@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/components/serverDetailsCard.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/sshKey.dart';
-import 'package:la_toolkit/redux/actions.dart';
+import 'serverDetailsCard.dart';
+import '../models/appState.dart';
+import '../models/la_project.dart';
+import '../models/sshKey.dart';
+import '../redux/actions.dart';
+
+import '../models/laServer.dart';
+import 'package:redux/src/store.dart';
 
 class ServersDetailsCardList extends StatelessWidget {
-  final FocusNode focusNode;
 
-  const ServersDetailsCardList(this.focusNode, {Key? key}) : super(key: key);
+  const ServersDetailsCardList(this.focusNode, {super.key});
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersCardListViewModel>(
-        distinct: false,
-        converter: (store) {
+        converter: (Store<AppState> store) {
           return _ServersCardListViewModel(
               currentProject: store.state.currentProject,
               sshKeys: store.state.sshKeys,
-              onSaveCurrentProject: (project) {
+              onSaveCurrentProject: (LAProject project) {
                 store.dispatch(SaveCurrentProject(project));
               });
         },
         builder: (BuildContext context, _ServersCardListViewModel vm) {
-          final project = vm.currentProject;
+          final LAProject project = vm.currentProject;
           return ListView.builder(
-              scrollDirection: Axis.vertical,
               shrinkWrap: true,
               itemCount: project.numServers(),
               // itemCount: appStateProv.appState.projects.length,
@@ -34,11 +35,11 @@ class ServersDetailsCardList extends StatelessWidget {
                 return ServerDetailsCard(
                     server: project.servers[index],
                     index: index,
-                    onSave: (server) {
+                    onSave: (LAServer server) {
                       project.upsertServer(server);
                       vm.onSaveCurrentProject(project);
                     },
-                    onAllSameSshKey: (sshKey) {
+                    onAllSameSshKey: (SshKey? sshKey) {
                       for (int i = 0; i < project.servers.length; i++) {
                         project.servers[i].sshKey = sshKey;
                       }
@@ -47,7 +48,7 @@ class ServersDetailsCardList extends StatelessWidget {
                     isFirst: _isFirstServer(index, project.servers.length),
                     sshKeys: vm.sshKeys,
                     ansibleUser:
-                        project.getVariableValue("ansible_user").toString());
+                        project.getVariableValue('ansible_user').toString());
               });
         });
   }
@@ -58,6 +59,11 @@ class ServersDetailsCardList extends StatelessWidget {
 }
 
 class _ServersCardListViewModel {
+
+  _ServersCardListViewModel(
+      {required this.currentProject,
+      required this.sshKeys,
+      required this.onSaveCurrentProject});
   final List<SshKey> sshKeys;
   final LAProject currentProject;
   final void Function(LAProject project) onSaveCurrentProject;
@@ -72,9 +78,4 @@ class _ServersCardListViewModel {
 
   @override
   int get hashCode => sshKeys.hashCode ^ currentProject.hashCode;
-
-  _ServersCardListViewModel(
-      {required this.currentProject,
-      required this.sshKeys,
-      required this.onSaveCurrentProject});
 }

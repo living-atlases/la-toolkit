@@ -10,7 +10,7 @@ class LALatLng extends LatLng {
   LALatLng({required double latitude, required double longitude})
       : super(latitude, longitude);
 
-  LALatLng.from(double latitude, double longitude) : super(latitude, longitude);
+  LALatLng.from(super.latitude, super.longitude);
 
   @override
   factory LALatLng.fromJson(Map<String, dynamic> json) =>

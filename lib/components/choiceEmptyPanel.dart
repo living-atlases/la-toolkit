@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ChoiceEmptyPanel extends StatelessWidget {
+  const ChoiceEmptyPanel(
+      {super.key, required this.title, required this.body, required this.footer});
   final String title;
   final String body;
   final String footer;
-  const ChoiceEmptyPanel(
-      {Key? key, required this.title, required this.body, required this.footer})
-      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Center(

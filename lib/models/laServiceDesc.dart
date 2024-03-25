@@ -1,40 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/models/laServiceDepsDesc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'LAServiceConstants.dart';
+import 'basic_service.dart';
+import 'laServiceDepsDesc.dart';
 import 'laServiceName.dart';
 
 class LAServiceDesc {
-  String name;
-  String nameInt;
-  String group;
-  String? alias;
-  String desc;
-  IconData icon;
-  bool optional;
-  bool withoutUrl;
-  LAServiceName? depends;
-  bool forceSubdomain;
-  String? sample;
-  String? hint;
-  bool recommended;
-  String path;
-  String? iniPath;
-  String? repository;
-  bool initUse;
-  bool admin;
-  bool alaAdmin;
-  bool hubCapable;
-  bool allowMultipleDeploys;
-  String? artifacts;
-  bool dockerSupport;
-
-  // used for spatial-service apikeys/userdetails/etc
-  bool isSubService;
-  LAServiceName? parentService;
-
   LAServiceDesc(
       {required this.name,
       required this.nameInt,
@@ -65,6 +38,34 @@ class LAServiceDesc {
       this.repository,
       this.parentService,
       this.dockerSupport = false});
+
+  String name;
+  String nameInt;
+  String group;
+  String? alias;
+  String desc;
+  IconData icon;
+  bool optional;
+  bool withoutUrl;
+  LAServiceName? depends;
+  bool forceSubdomain;
+  String? sample;
+  String? hint;
+  bool recommended;
+  String path;
+  String? iniPath;
+  String? repository;
+  bool initUse;
+  bool admin;
+  bool alaAdmin;
+  bool hubCapable;
+  bool allowMultipleDeploys;
+  String? artifacts;
+  bool dockerSupport;
+
+  // used for spatial-service apikeys/userdetails/etc
+  bool isSubService;
+  LAServiceName? parentService;
 
   @override
   bool operator ==(Object other) =>
@@ -121,9 +122,9 @@ class LAServiceDesc {
       dockerSupport.hashCode ^
       hubCapable.hashCode;
 
-  static final Map<String, LAServiceDesc> _map = {
+  static final Map<String, LAServiceDesc> _map = <String, LAServiceDesc>{
     dockerSwarm: LAServiceDesc(
-      name: "docker swarm",
+      name: 'docker swarm',
       nameInt: dockerSwarm,
       group: dockerSwarm,
       icon: MdiIcons.ferry,
@@ -131,34 +132,32 @@ class LAServiceDesc {
       allowMultipleDeploys: true,
       desc: 'docker swarm deployment support (in development)',
       optional: true,
-      isSubService: false,
-      path: "",
+      path: '',
     ),
     collectory: LAServiceDesc(
-        name: "collections",
+        name: 'collections',
         nameInt: collectory,
-        group: "collectory",
-        desc: "biodiversity collections",
+        group: 'collectory',
+        desc: 'biodiversity collections',
         optional: false,
-        sample: "https://collections.ala.org.au",
+        sample: 'https://collections.ala.org.au',
         icon: MdiIcons.formatListBulletedType,
         admin: true,
         alaAdmin: true,
         // multiple with last with precedence
         artifacts: 'ala-collectory collectory',
-        allowMultipleDeploys: false,
         repository: 'https://github.com/AtlasOfLivingAustralia/collectory/',
         dockerSupport: true,
-        path: ""),
+        path: ''),
     alaHub: LAServiceDesc(
-        name: "records",
-        alias: "biocache-hub",
-        nameInt: "ala_hub",
-        group: "biocache-hub",
-        desc: "occurrences search frontend (aka biocache-hub)",
+        name: 'records',
+        alias: 'biocache-hub',
+        nameInt: 'ala_hub',
+        group: 'biocache-hub',
+        desc: 'occurrences search frontend (aka biocache-hub)',
         optional: false,
         hint: "Typically 'records' or similar",
-        sample: "https://biocache.ala.org.au",
+        sample: 'https://biocache.ala.org.au',
         icon: Icons.web,
         admin: true,
         alaAdmin: true,
@@ -167,165 +166,156 @@ class LAServiceDesc {
         allowMultipleDeploys: true,
         repository: 'https://github.com/AtlasOfLivingAustralia/biocache-hubs',
         dockerSupport: true,
-        path: ""),
+        path: ''),
     biocacheService: LAServiceDesc(
-        name: "records-ws",
-        alias: "biocache-service",
-        nameInt: "biocache_service",
-        group: "biocache-service-clusterdb",
-        desc: "occurrences web service (aka biocache-service)",
+        name: 'records-ws',
+        alias: 'biocache-service',
+        nameInt: 'biocache_service',
+        group: 'biocache-service-clusterdb',
+        desc: 'occurrences web service (aka biocache-service)',
         optional: false,
         icon: MdiIcons.databaseSearchOutline,
-        sample: "https://biocache.ala.org.au/ws",
-        artifacts: "biocache-service",
+        sample: 'https://biocache.ala.org.au/ws',
+        artifacts: 'biocache-service',
         allowMultipleDeploys: true,
         repository:
             'https://github.com/AtlasOfLivingAustralia/biocache-service',
         dockerSupport: true,
-        path: ""),
+        path: ''),
     bie: LAServiceDesc(
-        name: "species",
-        alias: "bie",
-        nameInt: "ala_bie",
-        group: "bie-hub",
-        desc: "species search frontend",
+        name: 'species',
+        alias: 'bie',
+        nameInt: 'ala_bie',
+        group: 'bie-hub',
+        desc: 'species search frontend',
         optional: true,
         initUse: true,
         icon: MdiIcons.beeFlower,
-        sample: "https://bie.ala.org.au",
-        admin: false,
+        sample: 'https://bie.ala.org.au',
         alaAdmin: true,
         hubCapable: true,
         allowMultipleDeploys: true,
-        artifacts: "ala-bie ala-bie-hub",
+        artifacts: 'ala-bie ala-bie-hub',
         repository: 'https://github.com/AtlasOfLivingAustralia/ala-bie-hub',
         dockerSupport: true,
-        path: ""),
+        path: ''),
     bieIndex: LAServiceDesc(
-        name: "species-ws",
-        alias: "bie-index",
-        nameInt: "bie_index",
-        group: "bie-index",
-        desc: "species web service",
+        name: 'species-ws',
+        alias: 'bie-index',
+        nameInt: 'bie_index',
+        group: 'bie-index',
+        desc: 'species web service',
         depends: LAServiceName.ala_bie,
         icon: MdiIcons.familyTree,
         optional: false,
-        sample: "https://bie.ala.org.au/ws",
+        sample: 'https://bie.ala.org.au/ws',
         admin: true,
         alaAdmin: true,
-        artifacts: "bie-index",
+        artifacts: 'bie-index',
         allowMultipleDeploys: true,
         repository: 'https://github.com/AtlasOfLivingAustralia/bie-index',
         dockerSupport: true,
-        path: ""),
+        path: ''),
     images: LAServiceDesc(
-        name: "images",
-        nameInt: "images",
-        group: "image-service",
-        desc: "images service",
+        name: 'images',
+        nameInt: 'images',
+        group: 'image-service',
+        desc: 'images service',
         optional: true,
         initUse: true,
         alaAdmin: true,
-        sample: "https://images.ala.org.au",
+        sample: 'https://images.ala.org.au',
         icon: MdiIcons.imageMultipleOutline,
         admin: true,
-        artifacts: "image-service",
-        allowMultipleDeploys: false,
+        artifacts: 'image-service',
         repository: 'https://github.com/AtlasOfLivingAustralia/image-service',
-        path: ""),
+        path: ''),
     speciesLists: LAServiceDesc(
-        name: "lists",
-        nameInt: "species_lists",
-        group: "species-list",
-        desc: "user provided species lists",
+        name: 'lists',
+        nameInt: 'species_lists',
+        group: 'species-list',
+        desc: 'user provided species lists',
         depends: LAServiceName.ala_bie,
         optional: true,
         alaAdmin: true,
         initUse: true,
         icon: Icons.playlist_add_outlined,
-        sample: "https://lists.ala.org.au",
+        sample: 'https://lists.ala.org.au',
         admin: true,
-        artifacts: "specieslist-webapp",
-        allowMultipleDeploys: false,
+        artifacts: 'specieslist-webapp',
         repository:
             'https://github.com/AtlasOfLivingAustralia/specieslist-webapp',
         dockerSupport: true,
-        path: ""),
+        path: ''),
     regions: LAServiceDesc(
         name: regions,
         nameInt: regions,
         group: regions,
-        desc: "regional data frontend",
+        desc: 'regional data frontend',
         depends: LAServiceName.spatial,
         optional: true,
         initUse: true,
         // icon: MdiIcons.mapSearchOutline,
         icon: MdiIcons.foodSteak,
-        sample: "https://regions.ala.org.au",
+        sample: 'https://regions.ala.org.au',
         alaAdmin: true,
         hubCapable: true,
         allowMultipleDeploys: true,
         // ALA does not have this service redundant
-        artifacts: "regions",
+        artifacts: 'regions',
         repository: 'https://github.com/AtlasOfLivingAustralia/regions',
-        path: ""),
+        path: ''),
     logger: LAServiceDesc(
-        name: "logger",
-        nameInt: "logger",
-        group: "logger-service",
-        desc: "event logging (downloads stats, etc)",
+        name: 'logger',
+        nameInt: 'logger',
+        group: 'logger-service',
+        desc: 'event logging (downloads stats, etc)',
         optional: false,
         icon: MdiIcons.mathLog,
-        sample: "https://logger.ala.org.au",
+        sample: 'https://logger.ala.org.au',
         admin: true,
         alaAdmin: true,
-        artifacts: "logger-service",
-        allowMultipleDeploys: false,
+        artifacts: 'logger-service',
         repository: 'https://github.com/AtlasOfLivingAustralia/logger-service',
-        path: ""),
+        path: ''),
     solr: LAServiceDesc(
         name: solr,
         nameInt: solr,
-        group: "solr7-server",
-        desc: "species and/or biocache-store indexing",
+        group: 'solr7-server',
+        desc: 'species and/or biocache-store indexing',
         optional: false,
         icon: MdiIcons.weatherSunny,
-        admin: false,
-        alaAdmin: false,
         initUse: true,
         artifacts: 'solr',
-        allowMultipleDeploys: false,
-        path: ""),
+        path: ''),
     cas: LAServiceDesc(
-        name: "auth",
-        alias: "cas",
+        name: 'auth',
+        alias: 'cas',
         nameInt: cas,
-        group: "cas-servers",
-        desc: "CAS authentication system",
+        group: 'cas-servers',
+        desc: 'CAS authentication system',
         optional: true,
         initUse: true,
         forceSubdomain: true,
-        sample: "https://auth.ala.org.au/cas/",
+        sample: 'https://auth.ala.org.au/cas/',
         icon: MdiIcons.accountCheckOutline,
-        artifacts: "cas",
+        artifacts: 'cas',
         recommended: true,
-        admin: false,
-        alaAdmin: false,
         // Issue https://github.com/living-atlases/la-toolkit/issues/8
-        iniPath: "",
+        iniPath: '',
         repository: 'https://github.com/AtlasOfLivingAustralia/ala-cas-5',
         dockerSupport: true,
-        path: "/cas"),
+        path: '/cas'),
     userdetails: LAServiceDesc(
         nameInt: userdetails,
-        name: "User Details",
+        name: 'User Details',
         path: '/userdetails',
-        group: "cas-servers",
+        group: 'cas-servers',
         optional: true,
         initUse: true,
-        desc: "",
+        desc: '',
         icon: MdiIcons.accountGroup,
-        artifacts: "userdetails",
+        artifacts: 'userdetails',
         admin: true,
         alaAdmin: true,
         parentService: LAServiceName.cas,
@@ -334,26 +324,26 @@ class LAServiceDesc {
         isSubService: true),
     apikey: LAServiceDesc(
         nameInt: apikey,
-        name: "API keys",
+        name: 'API keys',
         path: '/apikey',
         icon: MdiIcons.api,
-        group: "cas-servers",
+        group: 'cas-servers',
         optional: true,
         initUse: true,
         isSubService: true,
         parentService: LAServiceName.cas,
-        desc: "",
+        desc: '',
         repository: 'https://github.com/AtlasOfLivingAustralia/apikey',
-        artifacts: "apikey"),
+        artifacts: 'apikey'),
     casManagement: LAServiceDesc(
         nameInt: casManagement,
-        name: "CAS Management",
+        name: 'CAS Management',
         path: '/cas-management',
-        artifacts: "cas-management",
-        group: "cas-servers",
+        artifacts: 'cas-management',
+        group: 'cas-servers',
         optional: true,
         initUse: true,
-        desc: "",
+        desc: '',
         parentService: LAServiceName.cas,
         icon: MdiIcons.accountNetwork,
         repository:
@@ -361,18 +351,18 @@ class LAServiceDesc {
         dockerSupport: true,
         isSubService: true),
     spatial: LAServiceDesc(
-        name: "spatial",
-        nameInt: "spatial",
-        group: "spatial",
-        desc: "spatial front-end",
+        name: 'spatial',
+        nameInt: 'spatial',
+        group: 'spatial',
+        desc: 'spatial front-end',
         optional: true,
         initUse: true,
         forceSubdomain: true,
         icon: MdiIcons.layers,
-        sample: "https://spatial.ala.org.au",
+        sample: 'https://spatial.ala.org.au',
         artifacts: 'spatial-hub',
         repository: 'https://github.com/AtlasOfLivingAustralia/spatial-hub',
-        path: ""),
+        path: ''),
     spatialService: LAServiceDesc(
       name: 'Spatial Webservice',
       nameInt: spatialService,
@@ -382,11 +372,11 @@ class LAServiceDesc {
       alaAdmin: true,
       isSubService: true,
       parentService: LAServiceName.spatial,
-      group: "spatial-service",
+      group: 'spatial-service',
       optional: true,
       initUse: true,
       repository: 'https://github.com/AtlasOfLivingAustralia/spatial-service',
-      desc: "",
+      desc: '',
     ),
     'geoserver': LAServiceDesc(
         name: 'Geoserver',
@@ -394,379 +384,336 @@ class LAServiceDesc {
         path: '/geoserver',
         isSubService: true,
         parentService: LAServiceName.spatial,
-        group: "geoserver",
+        group: 'geoserver',
         optional: true,
         initUse: true,
-        desc: "",
+        desc: '',
         icon: MdiIcons.layersSearch),
     webapi: LAServiceDesc(
-        name: "webapi",
-        nameInt: "webapi",
-        group: "webapi_standalone",
-        desc: "API documentation service (deprecated)",
+        name: 'webapi',
+        nameInt: 'webapi',
+        group: 'webapi_standalone',
+        desc: 'API documentation service (deprecated)',
         optional: true,
-        initUse: false,
         //  sample: "https://api.ala.org.au",
         icon: Icons.integration_instructions_outlined,
         admin: true,
         artifacts: 'webapi',
-        path: ""),
+        path: ''),
     dashboard: LAServiceDesc(
-        name: "dashboard",
-        nameInt: "dashboard",
-        group: "dashboard",
-        desc: "Dashboard with portal stats",
+        name: 'dashboard',
+        nameInt: 'dashboard',
+        group: 'dashboard',
+        desc: 'Dashboard with portal stats',
         optional: true,
-        initUse: false,
-        sample: "https://dashboard.ala.org.au",
+        sample: 'https://dashboard.ala.org.au',
         icon: MdiIcons.tabletDashboard,
         alaAdmin: true,
         artifacts: 'dashboard',
-        allowMultipleDeploys: false,
         repository: 'https://github.com/AtlasOfLivingAustralia/dashboard',
-        path: ""),
+        path: ''),
     sds: LAServiceDesc(
-        name: "sds",
-        nameInt: "sds",
-        group: "sds",
-        desc: "Sensitive Data Service (SDS)",
+        name: 'sds',
+        nameInt: 'sds',
+        group: 'sds',
+        desc: 'Sensitive Data Service (SDS)',
         optional: true,
-        initUse: false,
-        sample: "https://sds.ala.org.au",
+        sample: 'https://sds.ala.org.au',
         depends: LAServiceName.species_lists,
         icon: Icons.blur_circular,
-        admin: false,
         alaAdmin: true,
-        allowMultipleDeploys: false,
-        artifacts: "sds-webapp2",
+        artifacts: 'sds-webapp2',
         repository: 'https://github.com/AtlasOfLivingAustralia/sds',
-        path: ""),
+        path: ''),
     alerts: LAServiceDesc(
-        name: "alerts",
-        nameInt: "alerts",
-        group: "alerts-service",
+        name: 'alerts',
+        nameInt: 'alerts',
+        group: 'alerts-service',
         desc:
-            "users can subscribe to notifications about new species occurrences they are interested, regions, etc",
+            'users can subscribe to notifications about new species occurrences they are interested, regions, etc',
         optional: true,
         alaAdmin: true,
-        initUse: false,
-        sample: "https://alerts.ala.org.au",
+        sample: 'https://alerts.ala.org.au',
         icon: Icons.notifications_active_outlined,
         admin: true,
-        artifacts: "alerts",
-        allowMultipleDeploys: false,
+        artifacts: 'alerts',
         repository: 'https://github.com/AtlasOfLivingAustralia/alerts',
-        path: ""),
+        path: ''),
     doi: LAServiceDesc(
-        name: "doi",
-        nameInt: "doi",
-        group: "doi-service",
-        desc: "mainly used for generating DOIs of user downloads",
+        name: 'doi',
+        nameInt: 'doi',
+        group: 'doi-service',
+        desc: 'mainly used for generating DOIs of user downloads',
         optional: true,
         alaAdmin: true,
-        initUse: false,
-        sample: "https://doi.ala.org.au",
+        sample: 'https://doi.ala.org.au',
         icon: MdiIcons.link,
         admin: true,
-        allowMultipleDeploys: false,
-        artifacts: "doi-service",
+        artifacts: 'doi-service',
         repository: 'https://github.com/AtlasOfLivingAustralia/doi-service',
-        path: ""),
+        path: ''),
     branding: LAServiceDesc(
-        name: "branding",
-        nameInt: "branding",
-        group: "branding",
-        desc: "Web branding used by all services",
+        name: 'branding',
+        nameInt: 'branding',
+        group: 'branding',
+        desc: 'Web branding used by all services',
         icon: Icons.format_paint,
-        sample: "Styling-the-web-app",
-        withoutUrl: false,
+        sample: 'Styling-the-web-app',
         optional: false,
-        alaAdmin: false,
         allowMultipleDeploys: true,
         hubCapable: true,
         repository: 'https://github.com/living-atlases/base-branding',
-        path: "brand-${DateTime.now().year}"),
+        path: 'brand-${DateTime.now().year}'),
     biocacheCli: LAServiceDesc(
-        name: "biocache-cli",
-        alias: "biocache-store",
-        nameInt: "biocache_cli",
-        group: "biocache-cli",
+        name: 'biocache-cli',
+        alias: 'biocache-store',
+        nameInt: 'biocache_cli',
+        group: 'biocache-cli',
         desc:
-            "manages the loading, sampling, processing and indexing of occurrence records",
+            'manages the loading, sampling, processing and indexing of occurrence records',
         optional: true,
         withoutUrl: true,
         initUse: true,
         icon: MdiIcons.powershell,
-        artifacts: "biocache-store",
+        artifacts: 'biocache-store',
         allowMultipleDeploys: true,
         repository: 'https://github.com/AtlasOfLivingAustralia/biocache-store',
-        path: ""),
+        path: ''),
     nameindexer: LAServiceDesc(
-        name: "nameindexer",
-        nameInt: "nameindexer",
-        group: "nameindexer",
-        desc: "nameindexer",
+        name: 'nameindexer',
+        nameInt: 'nameindexer',
+        group: 'nameindexer',
+        desc: 'nameindexer',
         optional: true,
         withoutUrl: true,
         initUse: true,
         icon: MdiIcons.tournament,
-        artifacts: "ala-name-matching",
+        artifacts: 'ala-name-matching',
         allowMultipleDeploys: true,
-        path: ""),
+        path: ''),
     namematchingService: LAServiceDesc(
-        name: "namematching",
+        name: 'namematching',
         nameInt: namematchingService,
-        group: "namematching-service",
-        desc: "namematching webservice",
+        group: 'namematching-service',
+        desc: 'namematching webservice',
         optional: true,
-        withoutUrl: false,
-        initUse: false,
         icon: MdiIcons.textSearch,
         artifacts: namematchingService,
-        sample: "https://namematching-ws.ala.org.au/",
+        sample: 'https://namematching-ws.ala.org.au/',
         allowMultipleDeploys: true,
-        admin: false,
-        alaAdmin: false,
         dockerSupport: true,
-        path: ""),
+        path: ''),
     sensitiveDataService: LAServiceDesc(
-        name: "sensitive-data-service",
+        name: 'sensitive-data-service',
         nameInt: sensitiveDataService,
-        group: "sensitive-data-service",
-        desc: "Web services for sensitive data evaluation",
+        group: 'sensitive-data-service',
+        desc: 'Web services for sensitive data evaluation',
         optional: true,
-        withoutUrl: false,
-        initUse: false,
         icon: MdiIcons.blurLinear,
         artifacts: sensitiveDataService,
-        sample: "https://sensitive-ws-test.ala.org.au",
+        sample: 'https://sensitive-ws-test.ala.org.au',
         allowMultipleDeploys: true,
         depends: LAServiceName.sds,
-        admin: false,
-        alaAdmin: false,
         dockerSupport: true,
-        path: ""),
+        path: ''),
     dataQuality: LAServiceDesc(
-        name: "data-quality",
+        name: 'data-quality',
         nameInt: dataQuality,
-        group: "data_quality_filter_service",
-        desc: "Data Quality Filter Service",
+        group: 'data_quality_filter_service',
+        desc: 'Data Quality Filter Service',
         optional: true,
-        withoutUrl: false,
-        initUse: false,
         // icon: MdiIcons.airFilter,
         icon: MdiIcons.filterPlusOutline,
-        artifacts: "data-quality-filter-service",
-        sample: "https://data-quality-service.ala.org.au",
-        allowMultipleDeploys: false,
+        artifacts: 'data-quality-filter-service',
+        sample: 'https://data-quality-service.ala.org.au',
         alaAdmin: true,
-        admin: false,
-        path: ""),
+        path: ''),
     biocacheBackend: LAServiceDesc(
-        name: "biocache-store",
+        name: 'biocache-store',
         nameInt: biocacheBackend,
-        group: "biocache-db",
-        desc: "cassandra and biocache-store backend",
+        group: 'biocache-db',
+        desc: 'cassandra and biocache-store backend',
         withoutUrl: true,
         optional: true,
         initUse: true,
-        allowMultipleDeploys: false,
         icon: MdiIcons.eyeOutline,
-        path: ""),
+        path: ''),
     pipelines: LAServiceDesc(
         name: pipelines,
         nameInt: pipelines,
-        group: "pipelines",
+        group: 'pipelines',
         desc:
-            "Pipelines for data processing and indexing of biodiversity data (replacement to biocache-store)",
+            'Pipelines for data processing and indexing of biodiversity data (replacement to biocache-store)',
         optional: true,
         withoutUrl: true,
-        admin: false,
-        alaAdmin: false,
         // We use apt for check versions, but we set this to get the version
         artifacts: pipelines,
         icon: MdiIcons.pipe,
         allowMultipleDeploys: true,
-        path: ""),
+        path: ''),
     events: LAServiceDesc(
         name: events,
         nameInt: events,
         group: events,
-        desc: "events extended-data-model",
+        desc: 'events extended-data-model',
         depends: LAServiceName.pipelines,
         optional: true,
         icon: Icons.event,
-        initUse: false,
-        sample: "https://events.test.ala.org.au/",
-        alaAdmin: false,
-        hubCapable: false,
+        sample: 'https://events.test.ala.org.au/',
         forceSubdomain: true,
-        allowMultipleDeploys: false,
-        artifacts: "atlasoflivingaustralia/es2vt",
-        path: ""),
+        artifacts: 'atlasoflivingaustralia/es2vt',
+        path: ''),
     eventsElasticSearch: LAServiceDesc(
-        name: "events-elasticsearch",
+        name: 'events-elasticsearch',
         nameInt: eventsElasticSearch,
         group: eventsElasticSearch,
-        desc: "elasticsearch for events",
+        desc: 'elasticsearch for events',
         depends: LAServiceName.events,
         optional: true,
         icon: Icons.manage_search,
-        initUse: false,
-        //sample: "https://events.test.ala.org.au/",
-        alaAdmin: false,
         withoutUrl: true,
-        hubCapable: false,
         allowMultipleDeploys: true,
         // artifacts: "atlasoflivingaustralia/es2vt",
-        path: ""),
+        path: ''),
     spark: LAServiceDesc(
         name: spark,
         nameInt: spark,
         group: spark,
-        desc: "Spark cluster for Pipelines",
+        desc: 'Spark cluster for Pipelines',
         optional: true,
         withoutUrl: true,
-        admin: false,
-        alaAdmin: false,
         icon: MdiIcons.shape,
         allowMultipleDeploys: true,
         parentService: LAServiceName.pipelines,
-        path: ""),
+        path: ''),
     hadoop: LAServiceDesc(
         name: hadoop,
         nameInt: hadoop,
         group: hadoop,
-        desc: "Hadoop cluster for Pipelines",
+        desc: 'Hadoop cluster for Pipelines',
         optional: true,
         withoutUrl: true,
-        admin: false,
-        alaAdmin: false,
         icon: MdiIcons.elephant,
         allowMultipleDeploys: true,
         parentService: LAServiceName.pipelines,
-        path: ""),
+        path: ''),
     pipelinesJenkins: LAServiceDesc(
         name: pipelinesJenkins,
         nameInt: pipelinesJenkins,
         group: pipelinesJenkins,
-        desc: "Jenkins for pipelines",
+        desc: 'Jenkins for pipelines',
         optional: true,
         withoutUrl: true,
-        admin: false,
-        alaAdmin: false,
         // We use apt for check versions
         icon: MdiIcons.accountMinusOutline,
         allowMultipleDeploys: true,
         depends: LAServiceName.pipelines,
-        path: ""),
+        path: ''),
     solrcloud: LAServiceDesc(
         name: solrcloud,
         nameInt: solrcloud,
         group: solrcloud,
-        desc: "pipelines indexing",
+        desc: 'pipelines indexing',
         optional: true,
         icon: MdiIcons.weatherSunny,
-        admin: false,
-        alaAdmin: false,
         artifacts: solrcloud,
         allowMultipleDeploys: true,
         depends: LAServiceName.pipelines,
         withoutUrl: true,
         dockerSupport: true,
-        path: ""),
+        path: ''),
     zookeeper: LAServiceDesc(
         name: zookeeper,
         nameInt: zookeeper,
         group: zookeeper,
-        desc: "zookeeper, for solrcloud coordination",
+        desc: 'zookeeper, for solrcloud coordination',
         optional: true,
         icon: MdiIcons.shovel,
-        admin: false,
-        alaAdmin: false,
         // artifact: 'solr',
         depends: LAServiceName.pipelines,
         withoutUrl: true,
         allowMultipleDeploys: true,
         dockerSupport: true,
-        path: ""),
+        path: ''),
     biocollect: LAServiceDesc(
         name: biocollect,
         nameInt: biocollect,
         group: biocollect,
         forceSubdomain: true,
-        allowMultipleDeploys: false,
         icon: Icons.compost,
         desc: 'advanced data collection tool for biodiversity science',
-        sample: "https://biocollect.ala.org.au/acsa",
-        artifacts: "biocollect",
+        sample: 'https://biocollect.ala.org.au/acsa',
+        artifacts: 'biocollect',
         optional: true,
-        path: ""),
+        path: ''),
     pdfgen: LAServiceDesc(
         name: pdfgen,
         nameInt: pdfgen,
         group: pdfgen,
-        allowMultipleDeploys: false,
         desc: 'Service for turning .docs into .pdfs (used by biocollect)',
         icon: MdiIcons.filePdfBox,
         depends: LAServiceName.biocollect,
-        artifacts: "pdfgen",
+        artifacts: 'pdfgen',
         optional: true,
-        path: ""),
+        path: ''),
     ecodata: LAServiceDesc(
         name: ecodata,
         nameInt: ecodata,
         group: ecodata,
         forceSubdomain: true,
         icon: Icons.playlist_add_circle,
-        allowMultipleDeploys: false,
         depends: LAServiceName.biocollect,
-        artifacts: "ecodata",
+        artifacts: 'ecodata',
         desc: 'provides primarily data services for BioCollect applications',
         optional: true,
-        path: ""),
+        path: ''),
     ecodataReporting: LAServiceDesc(
         name: 'ecodata-reporting',
         nameInt: ecodataReporting,
         group: 'ecodata-reporting',
         forceSubdomain: true,
         icon: Icons.playlist_add_check_circle,
-        allowMultipleDeploys: false,
-        artifacts: "ecodata",
+        artifacts: 'ecodata',
         depends: LAServiceName.biocollect,
         desc: 'provides reporting service for ecodata',
         optional: true,
         parentService: LAServiceName.events,
-        path: ""),
+        path: ''),
     gatus: LAServiceDesc(
         name: gatus,
         nameInt: gatus,
         group: gatus,
-        forceSubdomain: false,
         icon: MdiIcons.listStatus,
         allowMultipleDeploys: true,
         depends: LAServiceName.docker_swarm,
         desc: 'gatus monitoring service',
         optional: true,
         sample: 'https://status.twin.sh/',
-        initUse: false,
-        isSubService: false,
         dockerSupport: true,
-        path: ""),
+        path: ''),
     portainer: LAServiceDesc(
         name: portainer,
         nameInt: portainer,
         group: portainer,
-        forceSubdomain: false,
         optional: true,
         allowMultipleDeploys: true,
-        desc: "portainer docker management service",
+        desc: 'portainer docker management service',
         depends: LAServiceName.docker_swarm,
         icon: MdiIcons.crane,
-        initUse: false,
-        isSubService: false,
         dockerSupport: true,
-        path: ""),
+        path: ''),
+    cassandra: LAServiceDesc(
+        name: cassandra,
+        nameInt: cassandra,
+        group: cassandra,
+        optional: true,
+        allowMultipleDeploys: true,
+        desc: 'biocache cassandra DB for annotations, persistent queries',
+        depends: LAServiceName.pipelines,
+        icon: MdiIcons.eyeOutline,
+        dockerSupport: true,
+        withoutUrl: true,
+        path: ''),
   };
 
   static LAServiceDesc get(String nameInt) {
@@ -784,15 +731,15 @@ class LAServiceDesc {
   static final List<LAServiceDesc> _list = _map.values.toList();
 
   static List<LAServiceDesc> get listDockerCapable => _listDockerCapable ??=
-      _list.where((s) => s.dockerSupport == true).toList();
+      _list.where((LAServiceDesc s) => s.dockerSupport == true).toList();
   static List<LAServiceDesc>? _listDockerCapable;
 
-  static List<String> get listDockerCapableS =>
-      _listDockerCapableS ??= listDockerCapable.map((s) => s.nameInt).toList();
+  static List<String> get listDockerCapableS => _listDockerCapableS ??=
+      listDockerCapable.map((LAServiceDesc s) => s.nameInt).toList();
   static List<String>? _listDockerCapableS;
 
-  static List<LAServiceDesc> get listWithArtifact =>
-      _listWithArtifact ??= _list.where((sd) => sd.artifacts != null).toList();
+  static List<LAServiceDesc> get listWithArtifact => _listWithArtifact ??=
+      _list.where((LAServiceDesc sd) => sd.artifacts != null).toList();
   static List<LAServiceDesc>? _listWithArtifact;
 
   static List<LAServiceDesc> get listHubCapable => _listHubCapable ??=
@@ -802,22 +749,24 @@ class LAServiceDesc {
   static List<LAServiceDesc> list(bool isHub) => isHub ? listHubCapable : _list;
 
   static List<LAServiceDesc> get listRedundant => _listRedundant ??=
-      _list.where((s) => s.allowMultipleDeploys == true).toList();
+      _list.where((LAServiceDesc s) => s.allowMultipleDeploys == true).toList();
   static List<LAServiceDesc>? _listRedundant;
 
   static List<LAServiceDesc> listNoSub(bool isHub) {
     return isHub
         ? listHubCapable
-        : (_listNoSub ??= _list.where((s) => s.isSubService != true).toList());
+        : (_listNoSub ??=
+            _list.where((LAServiceDesc s) => s.isSubService != true).toList());
   }
 
   static List<LAServiceDesc>? _listNoSub;
 
   static List<String> listS(bool isHub) {
     if (isHub) {
-      return _listSHub ??= listHubCapable.map((s) => s.nameInt).toList();
+      return _listSHub ??=
+          listHubCapable.map((LAServiceDesc s) => s.nameInt).toList();
     } else {
-      return _listS ??= _list.map((s) => s.nameInt).toList();
+      return _listS ??= _list.map((LAServiceDesc s) => s.nameInt).toList();
     }
   }
 
@@ -837,19 +786,21 @@ class LAServiceDesc {
 
   static List<LAServiceDesc> _sortedListFrom(List<LAServiceDesc> list) {
     return List<LAServiceDesc>.from(list)
-      ..sort((a, b) => compareAsciiUpperCase(a.name, b.name));
+      ..sort((LAServiceDesc a, LAServiceDesc b) =>
+          compareAsciiUpperCase(a.name, b.name));
   }
 
   static List<LAServiceDesc> childServices(String parentNameInt) {
     return _childServices[parentNameInt] ??= _map.values
-        .where((s) =>
+        .where((LAServiceDesc s) =>
             s.parentService != null && s.parentService!.toS() == parentNameInt)
         .toList();
   }
 
-  static final Map<String, List<LAServiceDesc>> _childServices = {};
+  static final Map<String, List<LAServiceDesc>> _childServices =
+      <String, List<LAServiceDesc>>{};
 
-  static final List<String> internalServices = [
+  static final List<String> internalServices = <String>[
     nameindexer,
     biocacheBackend,
     biocacheCli,
@@ -858,10 +809,11 @@ class LAServiceDesc {
     pipelines,
     hadoop,
     events,
-    dockerSwarm
+    dockerSwarm,
+    cassandra
   ];
 
-  static final List<String> subServices = [
+  static final List<String> subServices = <String>[
     apikey,
     casManagement,
     userdetails,
@@ -878,7 +830,7 @@ class LAServiceDesc {
     bool compatible = true;
     if (otherService == this) return true;
 
-    Map<String, LAServiceDepsDesc> deps =
+    final Map<String, LAServiceDepsDesc> deps =
         LAServiceDepsDesc.getDeps(alaInstallVersion);
 
     if (name == cas && otherService == LAServiceDesc.get(pipelines) ||
@@ -887,8 +839,9 @@ class LAServiceDesc {
       return false;
     }
 
-    for (var service in deps[nameInt]!.serviceDepends) {
-      for (var otherService in deps[otherService.nameInt]!.serviceDepends) {
+    for (final BasicService service in deps[nameInt]!.serviceDepends) {
+      for (final BasicService otherService
+          in deps[otherService.nameInt]!.serviceDepends) {
         compatible = compatible && service.isCompatible(otherService);
         /* This fails for http port etc
         for (var port in service.tcp) {
@@ -906,7 +859,7 @@ class LAServiceDesc {
     String name;
     String? alias;
     try {
-      if ([toolkit, alaInstall, generator].contains(sw)) {
+      if (<String>[toolkit, alaInstall, generator].contains(sw)) {
         name = sw;
       } else {
         final LAServiceDesc laServiceDesc = LAServiceDesc.get(sw);
@@ -914,43 +867,43 @@ class LAServiceDesc {
         alias = laServiceDesc.alias;
       }
     } catch (e) {
-      print("Processing software $sw: $e");
+      print('Processing software $sw: $e');
       name = sw;
     }
     return "$name${alias != null ? ' ($alias)' : ''}";
   }
 
-  static final Map<String, String> swToAnsibleVars = {
-    "collectory": 'collectory_version',
-    "ala_hub": 'biocache_hub_version',
-    "biocache_service": 'biocache_service_version',
-    "ala_bie": 'bie_hub_version',
-    "bie_index": 'bie_index_version',
-    "images": "image_service_version",
-    "species_lists": "species_list_version",
-    "regions": "regions_version",
-    "logger": "logger_version",
-    "cas": "cas_version",
-    "userdetails": "user_details_version",
-    "apikey": "apikey_version",
-    "cas_management": "cas_management_version",
-    "spatial": "spatial_hub_version",
-    "spatial_service": "spatial_service_version",
-    "webapi": "webapi_version",
-    "dashboard": "dashboard_version",
-    "sds": "sds_version",
-    "alerts": "alerts_version",
-    "doi": "doi_service_version",
-    "biocache_cli": "biocache_cli_version",
-    "nameindexer": "ala_name_matching_version",
-    "namemaching_service": "ala_namematching_service_version",
-    "sensitive_data__service": "ala_sensitive_data_service_version",
-    "data_quality": "data_quality_filter_service_version",
-    "solr": "solr_version",
-    "solrcloud": "solrcloud_version",
-    biocollect: "biocollect_version",
-    ecodata: "ecodata_version",
-    pdfgen: "pdf_service_version"
+  static final Map<String, String> swToAnsibleVars = <String, String>{
+    'collectory': 'collectory_version',
+    'ala_hub': 'biocache_hub_version',
+    'biocache_service': 'biocache_service_version',
+    'ala_bie': 'bie_hub_version',
+    'bie_index': 'bie_index_version',
+    'images': 'image_service_version',
+    'species_lists': 'species_list_version',
+    'regions': 'regions_version',
+    'logger': 'logger_version',
+    'cas': 'cas_version',
+    'userdetails': 'user_details_version',
+    'apikey': 'apikey_version',
+    'cas_management': 'cas_management_version',
+    'spatial': 'spatial_hub_version',
+    'spatial_service': 'spatial_service_version',
+    'webapi': 'webapi_version',
+    'dashboard': 'dashboard_version',
+    'sds': 'sds_version',
+    'alerts': 'alerts_version',
+    'doi': 'doi_service_version',
+    'biocache_cli': 'biocache_cli_version',
+    'nameindexer': 'ala_name_matching_version',
+    'namemaching_service': 'ala_namematching_service_version',
+    'sensitive_data__service': 'ala_sensitive_data_service_version',
+    'data_quality': 'data_quality_filter_service_version',
+    'solr': 'solr_version',
+    'solrcloud': 'solrcloud_version',
+    biocollect: 'biocollect_version',
+    ecodata: 'ecodata_version',
+    pdfgen: 'pdf_service_version'
   };
 
   @override

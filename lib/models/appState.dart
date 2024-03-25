@@ -4,13 +4,13 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:la_toolkit/components/appSnackBarMessage.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/sshKey.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../components/appSnackBarMessage.dart';
 import 'commonCmd.dart';
 import 'laReleases.dart';
+import 'la_project.dart';
+import 'sshKey.dart';
 
 part 'appState.g.dart';
 
@@ -43,6 +43,39 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class AppState {
+  AppState(
+      {List<LAProject>? projects,
+      this.failedLoad = false,
+      this.firstUsage = true,
+      LAProject? currentProject,
+      this.currentStep = 0,
+      this.currentTuneTab = 0,
+      LAProjectViewStatus? status,
+      List<String>? alaInstallReleases,
+      List<String>? generatorReleases,
+      List<AppSnackBarMessage>? appSnackBarMessages,
+      Map<String, LAReleases>? laReleases,
+      CommonCmd? repeatCmd,
+      this.pkgInfo,
+      this.backendVersion,
+      this.lastSwCheck,
+      bool? loading,
+      bool? depsLoading,
+      List<SshKey>? sshKeys})
+      : projects = projects ?? <LAProject>[],
+        sshKeys = sshKeys ?? <SshKey>[],
+        status = status ?? LAProjectViewStatus.view,
+        currentProject = currentProject ?? LAProject(),
+        alaInstallReleases = alaInstallReleases ?? <String>[],
+        generatorReleases = generatorReleases ?? <String>[],
+        repeatCmd = repeatCmd ?? CommonCmd(),
+        laReleases = laReleases ?? <String, LAReleases>{},
+        loading = loading ?? false,
+        depsLoading = depsLoading ?? false,
+        appSnackBarMessages = appSnackBarMessages ?? <AppSnackBarMessage>[];
+
+  factory AppState.fromJson(Map<String, dynamic> json) =>
+      _$AppStateFromJson(json);
   @JsonKey(includeToJson: false, includeFromJson: false)
   final bool failedLoad;
   final bool firstUsage;
@@ -68,40 +101,6 @@ class AppState {
   @JsonKey(includeToJson: false, includeFromJson: false)
   final bool depsLoading;
   final DateTime? lastSwCheck;
-
-  AppState(
-      {List<LAProject>? projects,
-      this.failedLoad = false,
-      this.firstUsage = true,
-      LAProject? currentProject,
-      this.currentStep = 0,
-      this.currentTuneTab = 0,
-      LAProjectViewStatus? status,
-      List<String>? alaInstallReleases,
-      List<String>? generatorReleases,
-      List<AppSnackBarMessage>? appSnackBarMessages,
-      Map<String, LAReleases>? laReleases,
-      CommonCmd? repeatCmd,
-      this.pkgInfo,
-      this.backendVersion,
-      this.lastSwCheck,
-      bool? loading,
-      bool? depsLoading,
-      List<SshKey>? sshKeys})
-      : projects = projects ?? [],
-        sshKeys = sshKeys ?? [],
-        status = status ?? LAProjectViewStatus.view,
-        currentProject = currentProject ?? LAProject(),
-        alaInstallReleases = alaInstallReleases ?? [],
-        generatorReleases = generatorReleases ?? [],
-        repeatCmd = repeatCmd ?? CommonCmd(),
-        laReleases = laReleases ?? {},
-        loading = loading ?? false,
-        depsLoading = loading ?? false,
-        appSnackBarMessages = appSnackBarMessages ?? [];
-
-  factory AppState.fromJson(Map<String, dynamic> json) =>
-      _$AppStateFromJson(json);
 
   Map<String, dynamic> toJson() => _$AppStateToJson(this);
 

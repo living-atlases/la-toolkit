@@ -229,8 +229,8 @@ LAServer _$LAServerFromJson(Map<String, dynamic> json) => LAServer(
       sudoEnabled:
           $enumDecodeNullable(_$ServiceStatusEnumMap, json['sudoEnabled']) ??
               ServiceStatus.unknown,
-      osName: json['osName'] as String? ?? "",
-      osVersion: json['osVersion'] as String? ?? "",
+      osName: json['osName'] as String? ?? '',
+      osVersion: json['osVersion'] as String? ?? '',
       projectId: json['projectId'] as String,
     );
 

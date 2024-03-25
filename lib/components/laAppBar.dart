@@ -1,15 +1,15 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_toolkit/utils/utils.dart';
 
 import '../laTheme.dart';
 import '../routes.dart';
+import '../utils/utils.dart';
 import 'la_icon.dart';
 
 class LAAppBar extends AppBar {
   LAAppBar(
-      {Key? key,
+      {super.key,
       required BuildContext context,
       required String title,
       String? projectIcon,
@@ -17,7 +17,7 @@ class LAAppBar extends AppBar {
       NamedBeamLocation? backLocation,
       bool showBack = false,
       List<Widget>? actions,
-      Widget? leading,
+      super.leading,
       IconData? titleIcon,
       bool loading = false,
       VoidCallback? onBack,
@@ -38,7 +38,14 @@ class LAAppBar extends AppBar {
                 );
               },
             ),*/
-            key: key,
+            backgroundColor: LAColorTheme.laPalette.shade800,
+            actionsIconTheme: IconThemeData(
+              color: Colors.grey.shade300,
+              size: 28,
+            ),
+            iconTheme: IconThemeData(
+              color: Colors.grey.shade300,
+            ),
             toolbarHeight: kToolbarHeight * 1.2,
             actions: actions == null
                 ? List<Widget>.empty(growable: true)
@@ -46,23 +53,24 @@ class LAAppBar extends AppBar {
                     <Widget>[
                       Container(margin: const EdgeInsets.only(right: 20.0))
                     ],
-            leading: leading,
             bottom: PreferredSize(
                 preferredSize: const Size(double.infinity, 1.0),
                 child: loading
-                    ? const LinearProgressIndicator(
+                    ? LinearProgressIndicator(
                         minHeight: 6,
-                        backgroundColor: LAColorTheme.laPaletteAccent,
+                        backgroundColor: LAColorTheme.laPalette.shade200,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            LAColorTheme.laPalette.shade900),
                       )
                     : Container()),
             title: SizedBox(
               height: kToolbarHeight * 1.2,
-              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              child: Row(children: <Widget>[
                 if (showBack)
                   IconButton(
-                      tooltip: "Back",
-                      icon: const Icon(Icons.arrow_back,
-                          size: 28, color: Colors.black),
+                      tooltip: 'Back',
+                      icon: Icon(Icons.arrow_back,
+                          size: 28, color: Colors.grey.shade300),
                       onPressed: () {
                         if (beforeBack != null) beforeBack();
                         if (backLocation != null) {
@@ -80,7 +88,7 @@ class LAAppBar extends AppBar {
                       }),
                 if (showLaIcon)
                   IconButton(
-                      tooltip: "Homepage",
+                      tooltip: 'Homepage',
                       icon:
                           const Icon(LAIcon.la, size: 34, color: Colors.white),
                       onPressed: () {
@@ -88,7 +96,7 @@ class LAAppBar extends AppBar {
                       }),
                 Container(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(children: [
+                    child: Row(children: <Widget>[
                       if (projectIcon != null && !AppUtils.isDemo())
                         const SizedBox(width: 8),
                       if (projectIcon != null && !AppUtils.isDemo())
@@ -99,11 +107,11 @@ class LAAppBar extends AppBar {
                       if (titleIcon != null)
                         Icon(titleIcon, size: 26, color: Colors.white),
                       if (titleIcon != null) const SizedBox(width: 8),
-                      tooltip != null
-                          ? Tooltip(
-                              message: "Version: $tooltip",
-                              child: _title(title))
-                          : _title(title)
+                      if (tooltip != null)
+                        Tooltip(
+                            message: 'Version: $tooltip', child: _title(title))
+                      else
+                        _title(title)
                     ]))
               ]),
             ));
@@ -111,9 +119,11 @@ class LAAppBar extends AppBar {
   static Text _title(String title) {
     return Text(title,
         style: GoogleFonts.signika(
-            textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 26,
-                fontWeight: FontWeight.w400)));
+          textStyle: TextStyle(
+            color: Colors.grey.shade300,
+            fontSize: 26,
+            fontWeight: FontWeight.w400,
+          ),
+        ));
   }
 }

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:la_toolkit/utils/cardConstants.dart';
+import '../utils/cardConstants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TipsCard extends StatelessWidget {
+  const TipsCard(
+      {super.key,
+      required this.text,
+      this.margin = const EdgeInsets.fromLTRB(0, 30, 0, 0)});
   final String text;
   final EdgeInsets? margin;
-  const TipsCard(
-      {Key? key,
-      required this.text,
-      this.margin = const EdgeInsets.fromLTRB(0, 30, 0, 0)})
-      : super(key: key);
-  static const _markdownColor = Colors.black54;
-  static const _markdownStyle = TextStyle(color: _markdownColor);
+  static const Color _markdownColor = Colors.black54;
+  static const TextStyle _markdownStyle = TextStyle(color: _markdownColor);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,7 @@ class TipsCard extends StatelessWidget {
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               const Padding(
                   padding: EdgeInsets.fromLTRB(20, 20, 0, 20),
                   child: Icon(Icons.info, color: Colors.grey)),
@@ -37,7 +36,7 @@ class TipsCard extends StatelessWidget {
                             color: _markdownColor,
                             decoration: TextDecoration.underline),
                       ),
-                      onTapLink: (text, href, title) async {
+                      onTapLink: (String text, String? href, String title) async {
                         if (href != null) await launchUrl(Uri.parse(href));
                       },
                       data: text))

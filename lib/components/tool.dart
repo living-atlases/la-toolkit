@@ -2,13 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class Tool {
-  final Widget icon;
-  final String title;
-  final String? tooltip;
-  final bool enabled;
-  final bool askConfirmation;
-  final int grid;
-  VoidCallback action;
 
   Tool(
       {required this.icon,
@@ -18,4 +11,11 @@ class Tool {
       this.enabled = false,
       this.askConfirmation = false,
       this.grid = 2});
+  final Widget icon;
+  final String title;
+  final String? tooltip;
+  final bool enabled;
+  final bool askConfirmation;
+  final int grid;
+  VoidCallback action;
 }

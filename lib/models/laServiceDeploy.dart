@@ -12,6 +12,25 @@ part 'laServiceDeploy.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
+
+  LAServiceDeploy(
+      {String? id,
+      required this.serviceId,
+      required this.serverId,
+      required this.clusterId,
+      this.additionalVariables = '',
+      required this.projectId,
+      Map<String, String>? softwareVersions,
+      this.checkedAt,
+      DeploymentType? type,
+      ServiceStatus? status})
+      : id = id ?? ObjectId().toString(),
+        softwareVersions = softwareVersions ?? <String, String>{},
+        type = type ?? DeploymentType.vm,
+        status = status ?? ServiceStatus.unknown;
+
+  factory LAServiceDeploy.fromJson(Map<String, dynamic> json) =>
+      _$LAServiceDeployFromJson(json);
   String id;
   String serviceId;
   String? serverId;
@@ -22,25 +41,6 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
   ServiceStatus status;
   int? checkedAt;
   DeploymentType type;
-
-  LAServiceDeploy(
-      {String? id,
-      required this.serviceId,
-      required this.serverId,
-      required this.clusterId,
-      this.additionalVariables = "",
-      required this.projectId,
-      Map<String, String>? softwareVersions,
-      this.checkedAt,
-      DeploymentType? type,
-      ServiceStatus? status})
-      : id = id ?? ObjectId().toString(),
-        softwareVersions = softwareVersions ?? {},
-        type = type ?? DeploymentType.vm,
-        status = status ?? ServiceStatus.unknown;
-
-  factory LAServiceDeploy.fromJson(Map<String, dynamic> json) =>
-      _$LAServiceDeployFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$LAServiceDeployToJson(this);

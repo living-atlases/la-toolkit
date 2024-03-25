@@ -14,19 +14,19 @@ LoggingMiddleware<dynamic> customLogPrinter<State>({
     dynamic action,
     DateTime timestamp,
   ) {
-    return " Action: >>>> $action <<<< }";
+    return ' Action: >>>> $action <<<< }';
   }
 
-  final middleware = LoggingMiddleware<State>(
+  final LoggingMiddleware<State> middleware = LoggingMiddleware<State>(
     logger: logger,
     level: level,
     formatter: onlyLogActionFormatter,
   );
 
   middleware.logger.onRecord
-      .where((record) => record.loggerName == middleware.logger.name)
+      .where((LogRecord record) => record.loggerName == middleware.logger.name)
       .listen((Object object) {
-    debugPrint("##################### $object");
+    debugPrint('##################### $object');
   });
 
   return middleware;

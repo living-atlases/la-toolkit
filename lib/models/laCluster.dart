@@ -10,6 +10,16 @@ part 'laCluster.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LACluster implements IsJsonSerializable<LACluster> {
+
+  LACluster(
+      {String? id,
+      this.name = 'Docker Swarm Cluster',
+      this.type = DeploymentType.dockerSwarm,
+      required this.projectId})
+      : id = id ?? ObjectId().toString();
+
+  factory LACluster.fromJson(Map<String, dynamic> json) =>
+      _$LAClusterFromJson(json);
   // Basic
   String id;
   String name;
@@ -19,16 +29,6 @@ class LACluster implements IsJsonSerializable<LACluster> {
 
   // Relations
   String projectId;
-
-  LACluster(
-      {String? id,
-      this.name = "Docker Swarm Cluster",
-      this.type = DeploymentType.dockerSwarm,
-      required this.projectId})
-      : id = id ?? ObjectId().toString();
-
-  factory LACluster.fromJson(Map<String, dynamic> json) =>
-      _$LAClusterFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$LAClusterToJson(this);
@@ -54,9 +54,9 @@ class LACluster implements IsJsonSerializable<LACluster> {
 
   static List<LACluster> upsertById(
       List<LACluster> clusters, LACluster cluster) {
-    if (clusters.map((s) => s.id).toList().contains(cluster.id)) {
+    if (clusters.map((LACluster s) => s.id).toList().contains(cluster.id)) {
       clusters = clusters
-          .map((current) => current.id == cluster.id ? cluster : current)
+          .map((LACluster current) => current.id == cluster.id ? cluster : current)
           .toList();
     } else {
       clusters.add(cluster);
@@ -66,8 +66,8 @@ class LACluster implements IsJsonSerializable<LACluster> {
 
   static List<LACluster> upsertByName(
       List<LACluster> clusters, LACluster cluster) {
-    if (clusters.map((s) => s.name).toList().contains(cluster.name)) {
-      clusters = clusters.map((current) {
+    if (clusters.map((LACluster s) => s.name).toList().contains(cluster.name)) {
+      clusters = clusters.map((LACluster current) {
         if (current.name == cluster.name) {
           // set the same previous id;
           cluster.id = current.id;

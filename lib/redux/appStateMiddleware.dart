@@ -41,14 +41,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
   Future<AppState> getState() async {
     AppState appState;
-    const bool failedLoad = false;
 
     String? asS;
     await _initPrefs();
     asS = _pref!.getString(key);
 
     if (asS == null || asS.isEmpty || asS == '{}') {
-      appState = initialEmptyAppState(failedLoad: failedLoad);
+      appState = initialEmptyAppState();
     } else {
       try {
         final Map<String, dynamic> asJ =
@@ -69,8 +68,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         firstUsage: !failedLoad,
         currentProject: LAProject(),
         projects: List<LAProject>.empty(),
-        sshKeys: List<SshKey>.empty(),
-        currentStep: 0);
+        sshKeys: List<SshKey>.empty());
   }
 
   @override

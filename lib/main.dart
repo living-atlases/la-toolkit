@@ -189,7 +189,7 @@ class LaToolkitApp extends StatelessWidget {
                       ],
                       background: Container(color: const Color(0xFFF5F5F5))),
               title: appName,
-              theme: LAColorTheme.laThemeData,
+              theme: LAColorTheme.themeData,
               debugShowCheckedModeBanner: AppUtils.isDev(),
             )));
   }

@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AdminIconButton extends StatelessWidget {
+  const AdminIconButton(
+      {super.key,
+      required this.url,
+      this.tooltip,
+      this.alaAdmin = false,
+      this.min = false,
+      this.color,
+      this.size});
+
   static IconData alaAdminIcon = Icons.admin_panel_settings_outlined;
   static IconData adminIcon = Icons.admin_panel_settings_rounded;
 
@@ -12,28 +21,19 @@ class AdminIconButton extends StatelessWidget {
   final double? size;
   final bool min;
 
-  const AdminIconButton(
-      {Key? key,
-      required this.url,
-      this.tooltip,
-      this.alaAdmin = false,
-      this.min = false,
-      this.color,
-      this.size})
-      : super(key: key);
   @override
   Widget build(BuildContext context) {
-    var icon =
+    final Icon icon =
         Icon(alaAdmin ? alaAdminIcon : adminIcon, color: color, size: size);
-    var btn = min
-        ? InkWell(child: icon, onTap: () async => await go())
+    final StatelessWidget btn = min
+        ? InkWell(child: icon, onTap: () async => go())
         : IconButton(
             icon: icon,
-            tooltip: alaAdmin ? "alaAdmin section" : "Admin section",
-            onPressed: () async => await go());
-    return tooltip != null ? Tooltip(message: tooltip!, child: btn) : btn;
+            tooltip: alaAdmin ? 'alaAdmin section' : 'Admin section',
+            onPressed: () async => go());
+    return tooltip != null ? Tooltip(message: tooltip, child: btn) : btn;
   }
 
   Future<bool> go() async =>
-      await launchUrl(Uri.parse(url + (alaAdmin ? '/alaAdmin' : '//admin')));
+      launchUrl(Uri.parse(url + (alaAdmin ? '/alaAdmin' : '//admin')));
 }

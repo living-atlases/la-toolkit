@@ -21,7 +21,7 @@ void main() {
   });
 
   test('child services without parent', () {
-    for (LAServiceDesc s in LAServiceDesc.list(true)) {
+    for (final LAServiceDesc s in LAServiceDesc.list(true)) {
       if (s.isSubService) {
         expect(s.parentService != null, equals(true));
       }
@@ -29,7 +29,7 @@ void main() {
   });
 
   test('Compare services creation', () {
-    expect("collectory".toServiceDescName() == LAServiceName.collectory,
+    expect('collectory'.toServiceDescName() == LAServiceName.collectory,
         equals(true));
   });
 
@@ -42,7 +42,7 @@ void main() {
   });
 
   test('Compare services enum', () {
-    expect(collectory == "collectory", equals(true));
+    expect(collectory == 'collectory', equals(true));
   });
 
   test('Compare services name and map', () {

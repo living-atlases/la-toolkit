@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/redux/app_actions.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:tuple/tuple.dart';
@@ -23,6 +22,7 @@ import 'models/laServer.dart';
 import 'models/la_project.dart';
 import 'models/la_service.dart';
 import 'models/prodServiceDesc.dart';
+import 'redux/app_actions.dart';
 
 class PortalStatusPage extends StatefulWidget {
   const PortalStatusPage({super.key});
@@ -59,10 +59,10 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
         final List<Widget> resultWidgets = <Widget>[];
-        for (String serverId in vm.checkResults.keys) {
+        for (final String serverId in vm.checkResults.keys) {
           final LAServer s =
               vm.project.servers.firstWhere((LAServer s) => s.id == serverId);
-          resultWidgets.add(TextTitle(text: s.name, separator: false));
+          resultWidgets.add(TextTitle(text: s.name));
           vm.checkResults[serverId]!.forEach((dynamic check) {
             final ServiceStatus st = int.parse(check['code'] as String) == 0
                 ? ServiceStatus.success
@@ -86,7 +86,6 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                     context: context,
                     titleIcon: Icons.fact_check,
                     title: pageTitle,
-                    showLaIcon: false,
                     showBack: true,
                     loading: vm.loading,
                     actions: <Widget>[
@@ -155,16 +154,16 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                                       results: vm.checkResults),
                                 if (_tab == 1)
                                   const TextTitle(
-                                      text: 'Services', separator: false),
+                                      text: 'Services'),
                                 if (_tab == 1)
                                   ServicesStatusPanel(
                                       services:
                                           vm.serverServicesToMonitor.item1),
                                 if (_tab == 2)
                                   const TextTitle(
-                                      text: 'Details', separator: false),
+                                      text: 'Details'),
                                 if (_tab == 2)
-                                  for (Widget w in resultWidgets) w
+                                  for (final Widget w in resultWidgets) w
                               ])),
                           Expanded(
                             flex: 0, // 10%

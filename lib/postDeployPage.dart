@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/projectTunePage.dart';
-import 'package:la_toolkit/redux/app_actions.dart';
-import 'package:la_toolkit/utils/utils.dart';
+import 'models/appState.dart';
+import 'projectTunePage.dart';
+import 'redux/app_actions.dart';
+import 'utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:redux/src/store.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
@@ -13,14 +14,15 @@ import 'components/scrollPanel.dart';
 import 'components/serverSelector.dart';
 import 'laTheme.dart';
 import 'models/deployCmd.dart';
+import 'models/laServer.dart';
 import 'models/laVariableDesc.dart';
 import 'models/la_project.dart';
 import 'models/postDeployCmd.dart';
 
 class PostDeployPage extends StatefulWidget {
-  static const routeName = "postdeploy";
 
-  const PostDeployPage({Key? key}) : super(key: key);
+  const PostDeployPage({super.key});
+  static const String routeName = 'postdeploy';
 
   @override
   State<PostDeployPage> createState() => _PostDeployPageState();
@@ -33,17 +35,17 @@ class _PostDeployPageState extends State<PostDeployPage> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       // Fails the switch distinct: true,
-      converter: (store) {
+      converter: (Store<AppState> store) {
         return _ViewModel(
             project: store.state.currentProject,
-            onCancel: (project) {},
-            onSaveDeployCmd: (cmd) {
+            onCancel: (LAProject project) {},
+            onSaveDeployCmd: (DeployCmd cmd) {
               store.dispatch(SaveCurrentCmd(cmd: cmd));
             },
-            onUpdateProject: (project) {
+            onUpdateProject: (LAProject project) {
               store.dispatch(UpdateProject(project));
             },
-            onDoPostDeployTasks: (project, cmd) =>
+            onDoPostDeployTasks: (LAProject project, PostDeployCmd cmd) =>
                 DeployUtils.deployActionLaunch(
                     context: context,
                     store: store,
@@ -54,12 +56,12 @@ class _PostDeployPageState extends State<PostDeployPage> {
                 : store.state.repeatCmd as PostDeployCmd);
       },
       builder: (BuildContext context, _ViewModel vm) {
-        String execBtn = "Run tasks";
-        PostDeployCmd cmd = vm.cmd;
-        VoidCallback? onTap = cmd.configurePostfix
+        const String execBtn = 'Run tasks';
+        final PostDeployCmd cmd = vm.cmd;
+        final VoidCallback? onTap = cmd.configurePostfix
             ? () => vm.onDoPostDeployTasks(vm.project, cmd)
             : null;
-        String pageTitle = "${vm.project.shortName} Post-Deploy Tasks";
+        final String pageTitle = '${vm.project.shortName} Post-Deploy Tasks';
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -70,28 +72,26 @@ class _PostDeployPageState extends State<PostDeployPage> {
                     titleIcon: Icons.foundation,
                     showBack: true,
                     title: pageTitle,
-                    showLaIcon: false,
-                    actions: const []),
+                    actions: const <Widget>[]),
                 body: ScrollPanel(
                     withPadding: true,
                     child: Row(
                       children: <Widget>[
                         Expanded(
-                          flex: 1, // 10%
                           child: Container(),
                         ),
                         Expanded(
                             flex: 8, // 80%,
                             child: Column(
-                              children: [
+                              children: <Widget>[
                                 /* const SizedBox(height: 20),
                             const Text('Tasks:', style: DeployUtils.titleStyle), */
                                 const SizedBox(height: 20),
                                 DeployTaskSwitch(
-                                    title: "Configure postfix email service",
+                                    title: 'Configure postfix email service',
                                     initialValue: cmd.configurePostfix,
-                                    help: "Postfix-configuration",
-                                    onChanged: (newValue) {
+                                    help: 'Postfix-configuration',
+                                    onChanged: (bool newValue) {
                                       cmd.configurePostfix = newValue;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
@@ -101,17 +101,17 @@ class _PostDeployPageState extends State<PostDeployPage> {
                                 ServerSelector(
                                     selectorKey:
                                         GlobalKey<FormFieldState<dynamic>>(),
-                                    title: "Do the Post-deploy in servers:",
+                                    title: 'Do the Post-deploy in servers:',
                                     modalTitle:
-                                        "Choose some servers if you want to limit the Post-deploy to them",
-                                    placeHolder: "All servers",
+                                        'Choose some servers if you want to limit the Post-deploy to them',
+                                    placeHolder: 'All servers',
                                     initialValue: cmd.limitToServers,
                                     hosts: vm.project
                                         .serversWithServices()
-                                        .map((e) => e.name)
+                                        .map((LAServer e) => e.name)
                                         .toList(),
                                     icon: MdiIcons.server,
-                                    onChange: (limitToServers) {
+                                    onChange: (List<String> limitToServers) {
                                       cmd.limitToServers = limitToServers;
                                       vm.onSaveDeployCmd(cmd);
                                     }),
@@ -120,7 +120,6 @@ class _PostDeployPageState extends State<PostDeployPage> {
                               ],
                             )),
                         Expanded(
-                          flex: 1, // 10%
                           child: Container(),
                         )
                       ],
@@ -131,20 +130,20 @@ class _PostDeployPageState extends State<PostDeployPage> {
 }
 
 class PostDeployFields extends StatelessWidget {
-  const PostDeployFields({Key? key}) : super(key: key);
+  const PostDeployFields({super.key});
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _PostDeployFieldsViewModel>(
-        converter: (store) {
+        converter: (Store<AppState> store) {
       return _PostDeployFieldsViewModel(
           project: store.state.currentProject,
-          onUpdateProject: (project) => store.dispatch(UpdateProject(project)));
+          onUpdateProject: (LAProject project) => store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _PostDeployFieldsViewModel vm) {
-      List<Widget> items = [];
-      for (var varName in PostDeployCmd.postDeployVariables) {
+      final List<Widget> items = <Widget>[];
+      for (final String varName in PostDeployCmd.postDeployVariables) {
         items.add(const SizedBox(height: 20));
-        items.add(MessageItem(vm.project, LAVariableDesc.get(varName), (value) {
+        items.add(MessageItem(vm.project, LAVariableDesc.get(varName), (Object value) {
           vm.project.setVariable(LAVariableDesc.get(varName), value);
           vm.onUpdateProject(vm.project);
         }).buildTitle(context));
@@ -155,20 +154,14 @@ class PostDeployFields extends StatelessWidget {
 }
 
 class _PostDeployFieldsViewModel {
-  final LAProject project;
-  final void Function(LAProject project) onUpdateProject;
 
   _PostDeployFieldsViewModel(
       {required this.project, required this.onUpdateProject});
+  final LAProject project;
+  final void Function(LAProject project) onUpdateProject;
 }
 
 class _ViewModel {
-  final LAProject project;
-  final PostDeployCmd cmd;
-  final Function(LAProject, PostDeployCmd) onDoPostDeployTasks;
-  final Function(LAProject) onCancel;
-  final Function(LAProject) onUpdateProject;
-  final Function(DeployCmd) onSaveDeployCmd;
 
   _ViewModel(
       {required this.project,
@@ -177,6 +170,12 @@ class _ViewModel {
       required this.onUpdateProject,
       required this.onSaveDeployCmd,
       required this.onCancel});
+  final LAProject project;
+  final PostDeployCmd cmd;
+  final Function(LAProject, PostDeployCmd) onDoPostDeployTasks;
+  final Function(LAProject) onCancel;
+  final Function(LAProject) onUpdateProject;
+  final Function(DeployCmd) onSaveDeployCmd;
 
   @override
   bool operator ==(Object other) =>

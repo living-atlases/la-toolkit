@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/components/adminIconButton.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/LAServiceConstants.dart';
-import 'package:la_toolkit/models/la_service.dart';
-import 'package:la_toolkit/models/prodServiceDesc.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
-import 'package:la_toolkit/utils/cardConstants.dart';
+import 'adminIconButton.dart';
+import '../laTheme.dart';
+import '../models/LAServiceConstants.dart';
+import '../models/la_service.dart';
+import '../models/prodServiceDesc.dart';
+import '../utils/StringUtils.dart';
+import '../utils/cardConstants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ServiceStatusCard extends StatelessWidget {
+
+  const ServiceStatusCard(this.service, {super.key});
   final ProdServiceDesc service;
   static const TextStyle subtitle = TextStyle(color: LAColorTheme.inactive);
 
-  const ServiceStatusCard(this.service, {Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    double iconDefSize = 18;
+    const double iconDefSize = 18;
 
     // print(service.serviceDeploys);
     return IntrinsicWidth(
@@ -26,16 +26,16 @@ class ServiceStatusCard extends StatelessWidget {
             margin: const EdgeInsets.all(10),
             child: Padding(
                 padding: const EdgeInsets.all(5),
-                child: Row(children: [
+                child: Row(children: <Widget>[
                   Tooltip(
                       message:
-                          "Status: ${StringUtils.capitalize(service.status.toSforHumans())}",
+                          'Status: ${StringUtils.capitalize(service.status.toSforHumans())}',
                       child: Icon(service.icon,
                           size: 30, color: service.status.color)),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(service.name,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16)),
@@ -51,10 +51,10 @@ class ServiceStatusCard extends StatelessWidget {
 
 class ServiceSmallLinks extends StatelessWidget {
   const ServiceSmallLinks({
-    Key? key,
+    super.key,
     required this.service,
     required this.iconDefSize,
-  }) : super(key: key);
+  });
 
   final ProdServiceDesc service;
   final double iconDefSize;
@@ -64,7 +64,7 @@ class ServiceSmallLinks extends StatelessWidget {
     return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
+        children: <Widget>[
           if (service.nameInt != biocacheBackend)
             SimpleServiceStatusItem(
                 icon: Tooltip(
@@ -81,7 +81,7 @@ class ServiceSmallLinks extends StatelessWidget {
                     url: service.url,
                     color: LAColorTheme.link,
                     size: iconDefSize,
-                    tooltip: "Admin section",
+                    tooltip: 'Admin section',
                     min: true)),
           if (service.alaAdmin)
             SimpleServiceStatusItem(
@@ -89,7 +89,7 @@ class ServiceSmallLinks extends StatelessWidget {
                     url: service.url,
                     color: LAColorTheme.link,
                     size: iconDefSize,
-                    tooltip: "AlaAdmin section",
+                    tooltip: 'AlaAdmin section',
                     min: true,
                     alaAdmin: true)),
         ]);
@@ -97,14 +97,13 @@ class ServiceSmallLinks extends StatelessWidget {
 }
 
 class SimpleServiceStatusItem extends StatelessWidget {
-  final Widget icon;
 
-  const SimpleServiceStatusItem({Key? key, required this.icon})
-      : super(key: key);
+  const SimpleServiceStatusItem({super.key, required this.icon});
+  final Widget icon;
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
+    return Row(children: <Widget>[
       icon,
     ]);
   }

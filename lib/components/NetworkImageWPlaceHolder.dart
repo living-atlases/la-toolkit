@@ -2,15 +2,15 @@ import 'package:flutter/widgets.dart';
 
 /* Not used yet */
 class NetworkImageWPlaceHolder extends StatelessWidget {
-  final String url;
-  final double height;
-  final double width;
 
   const NetworkImageWPlaceHolder(
       {super.key,
       required this.url,
       required this.height,
       required this.width});
+  final String url;
+  final double height;
+  final double width;
 
   @override
   Widget build(BuildContext context) {

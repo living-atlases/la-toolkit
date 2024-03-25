@@ -1,14 +1,10 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
+import '../laTheme.dart';
+import '../models/laServiceDesc.dart';
+import '../utils/StringUtils.dart';
 
 class ServicesChipPanel extends StatefulWidget {
-  final Function(List<String>) onChange;
-  final List<String> services;
-  final List<String> initialValue;
-  final bool isHub;
 
   const ServicesChipPanel(
       {super.key,
@@ -16,17 +12,21 @@ class ServicesChipPanel extends StatefulWidget {
       required this.services,
       required this.initialValue,
       required this.isHub});
+  final Function(List<String>) onChange;
+  final List<String> services;
+  final List<String> initialValue;
+  final bool isHub;
 
   @override
   State<ServicesChipPanel> createState() => _ServicesChipPanelState();
 }
 
 class _ServicesChipPanelState extends State<ServicesChipPanel> {
-  static const padding = EdgeInsets.fromLTRB(5, -2, 5, -2);
-  static const margin = EdgeInsets.fromLTRB(0, 10, 0, 10);
-  final _chipsKey = GlobalKey();
-  final _formKey = GlobalKey<FormState>();
-  final allStyle = const C2ChoiceStyle(
+  static const EdgeInsets padding = EdgeInsets.fromLTRB(5, -2, 5, -2);
+  static const EdgeInsets margin = EdgeInsets.fromLTRB(0, 10, 0, 10);
+  final GlobalKey<State<StatefulWidget>> _chipsKey = GlobalKey();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final C2ChoiceStyle allStyle = const C2ChoiceStyle(
     labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     // color: Colors.red,
     // margin: EdgeInsets.fromLTRB(0, 40, 40, 20),
@@ -37,11 +37,11 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
   );
   late List<String> formValue; // LAServiceDesc.list[3].name];
   List<String> _selectAllOrElements(List<String> values) {
-    List<String> newVal = values.isNotEmpty
+    final List<String> newVal = values.isNotEmpty
         ? values.last == 'all'
-            ? ['all']
-            : values.where((item) => item != 'all').toList()
-        : [];
+            ? <String>['all']
+            : values.where((String item) => item != 'all').toList()
+        : <String>[];
     // print(newVal);
     return newVal;
   }
@@ -56,7 +56,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
   Widget build(BuildContext context) {
     return Form(
         key: _formKey,
-        child: Column(children: [
+        child: Column(children: <Widget>[
           FormField<List<String>>(
             autovalidateMode: AutovalidateMode.always,
             initialValue: formValue,
@@ -71,7 +71,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
             validator: (List<String>? value) {
               return null;
             },
-            builder: (state) {
+            builder: (FormFieldState<List<String>> state) {
               return Row(
                 children: <Widget>[
                   Expanded(
@@ -81,7 +81,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                       key: _chipsKey,
                       value: formValue,
                       // state.value, // _selectAllOrElements(state.value),
-                      onChanged: (values) {
+                      onChanged: (List<String> values) {
                         setState(() {
                           formValue = _selectAllOrElements(values);
                           widget.onChange(formValue);
@@ -92,22 +92,22 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                       runSpacing: -10,
                       choiceItems: C2Choice.listFrom<String, LAServiceDesc>(
                           source: LAServiceDesc.list(widget.isHub)
-                              .where((s) => widget.services.contains(s.nameInt))
+                              .where((LAServiceDesc s) => widget.services.contains(s.nameInt))
                               .toList(),
-                          value: (i, v) => v.nameInt,
-                          label: (i, v) => v.name,
-                          tooltip: (i, v) => StringUtils.capitalize(v.desc),
+                          value: (int i, LAServiceDesc v) => v.nameInt,
+                          label: (int i, LAServiceDesc v) => v.name,
+                          tooltip: (int i, LAServiceDesc v) => StringUtils.capitalize(v.desc),
                           /* style: (i, v) {
                             if (i == 0) {
                             return null;
                           }, */
-                          disabled: (i, v) => false)
+                          disabled: (int i, LAServiceDesc v) => false)
                         ..add(C2Choice<String>(
                             value: 'all',
                             label: 'all',
                             activeStyle: allStyle,
                             style: allStyle)),
-                      choiceBuilder: (item) {
+                      choiceBuilder: (C2Choice<String> item) {
                         if (item.value == 'all') {
                           return CustomChip(
                               label: item.label!,
@@ -150,16 +150,9 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
 }
 
 class CustomChip extends StatelessWidget {
-  final String label;
-  final Color? color;
-  final double width;
-  final double height;
-  final EdgeInsetsGeometry? margin;
-  final bool selected;
-  final Function(bool selected) onSelect;
 
   const CustomChip({
-    Key? key,
+    super.key,
     required this.label,
     this.color,
     required this.width,
@@ -167,7 +160,14 @@ class CustomChip extends StatelessWidget {
     this.margin,
     required this.selected,
     required this.onSelect,
-  }) : super(key: key);
+  });
+  final String label;
+  final Color? color;
+  final double width;
+  final double height;
+  final EdgeInsetsGeometry? margin;
+  final bool selected;
+  final Function(bool selected) onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +186,6 @@ class CustomChip extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(selected ? 20 : 20)),
         border: Border.all(
           color: selected ? (color ?? LAColorTheme.laPalette) : Colors.grey,
-          width: 1,
         ),
       ),
       child: InkWell(

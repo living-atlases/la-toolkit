@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/utils/utils.dart';
+import '../laTheme.dart';
+import '../utils/utils.dart';
 
 import 'tool.dart';
 
 class ToolShortcut extends StatelessWidget {
-  final Tool tool;
+  const ToolShortcut({super.key, required this.tool});
 
-  const ToolShortcut({Key? key, required this.tool}) : super(key: key);
+  final Tool tool;
 
   @override
   Widget build(BuildContext context) {
     // https://api.flutter.dev/flutter/material/Colors/grey-constant.html
-    Color color = tool.enabled ? LAColorTheme.laPalette : Colors.grey[500]!;
-    Color backgroundColor = tool.enabled ? Colors.white : Colors.grey[200]!;
-    double elevation = tool.enabled ? 4 : 0;
-    Widget btn = ElevatedButton(
+    final Color color =
+        tool.enabled ? LAColorTheme.laPalette : Colors.grey[500]!;
+    final Color backgroundColor =
+        tool.enabled ? Colors.white : Colors.grey[200]!;
+    final double elevation = tool.enabled ? 4 : 0;
+    final Widget btn = ElevatedButton(
       style: TextButton.styleFrom(
 // ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
@@ -31,14 +33,13 @@ class ToolShortcut extends StatelessWidget {
           ? null
           : () {
               if (tool.askConfirmation) {
-                UiUtils.showAlertDialog(context, () => tool.action(), () => {});
+                UiUtils.showAlertDialog(context, () => tool.action(), () {});
               } else {
                 tool.action();
               }
             },
 
       child: Column(
-        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -65,9 +66,9 @@ class ToolShortcut extends StatelessWidget {
     );
     if (tool.tooltip != null) {
       return Tooltip(
-        waitDuration: const Duration(seconds: 1, milliseconds: 0),
+        waitDuration: const Duration(seconds: 1),
         padding: const EdgeInsets.all(10),
-        message: tool.tooltip!,
+        message: tool.tooltip,
         child: btn,
       );
     }

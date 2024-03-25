@@ -167,6 +167,7 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.docker_swarm: 'docker_swarm',
   LAServiceName.gatus: 'gatus',
   LAServiceName.portainer: 'portainer',
+  LAServiceName.cassandra: 'cassandra',
 };
 
 const _$LAVariableStatusEnumMap = {

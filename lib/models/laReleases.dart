@@ -9,10 +9,6 @@ part 'laReleases.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAReleases {
-  final String name;
-  final String artifacts;
-  final String? latest;
-  final List<String> versions;
 
   const LAReleases(
       {required this.name,
@@ -22,6 +18,10 @@ class LAReleases {
 
   factory LAReleases.fromJson(Map<String, dynamic> json) =>
       _$LAReleasesFromJson(json);
+  final String name;
+  final String artifacts;
+  final String? latest;
+  final List<String> versions;
 
   Map<String, dynamic> toJson() => _$LAReleasesToJson(this);
 

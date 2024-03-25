@@ -3,25 +3,26 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:la_toolkit/redux/actions.dart';
-import 'package:la_toolkit/routes.dart';
-import 'package:la_toolkit/utils/utils.dart';
+import 'redux/actions.dart';
+import 'routes.dart';
+import 'utils/utils.dart';
+import 'package:redux/src/store.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'laTheme.dart';
 import 'models/appState.dart';
 
 class Intro extends StatefulWidget {
-  const Intro({Key? key}) : super(key: key);
+  const Intro({super.key});
 
   @override
   State<Intro> createState() => _IntroState();
 }
 
 class _IntroState extends State<Intro> {
-  final introKey = GlobalKey<IntroductionScreenState>();
-  static const _markdownColor = LAColorTheme.inactive;
-  static const _markdownStyle = TextStyle(fontSize: 18);
+  final GlobalKey<IntroductionScreenState> introKey = GlobalKey<IntroductionScreenState>();
+  static const MaterialColor _markdownColor = LAColorTheme.inactive;
+  static const TextStyle _markdownStyle = TextStyle(fontSize: 18);
 
   Widget _buildTitle(String title) {
     return Text(title,
@@ -34,15 +35,15 @@ class _IntroState extends State<Intro> {
 
   @override
   Widget build(BuildContext context) {
-    const bodyStyle = TextStyle(fontSize: 19.0);
-    const pageDecoration = PageDecoration(
+    const TextStyle bodyStyle = TextStyle(fontSize: 19.0);
+    const PageDecoration pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
       bodyTextStyle: bodyStyle,
       bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       pageColor: Colors.white,
       imagePadding: EdgeInsets.zero,
     );
-    return StoreConnector<AppState, _IntroViewModel>(converter: (store) {
+    return StoreConnector<AppState, _IntroViewModel>(converter: (Store<AppState> store) {
       return _IntroViewModel(
         state: store.state,
         onAddProject: () {
@@ -54,20 +55,22 @@ class _IntroState extends State<Intro> {
     }, builder: (BuildContext context, _IntroViewModel vm) {
       return IntroductionScreen(
         key: introKey,
-        pages: [
+        pages: <PageViewModel>[
           PageViewModel(
-            titleWidget: _buildTitle("Welcome to the\nLiving Atlases Toolkit"),
-            body: '''This tool facilitates the installation,
+            titleWidget: _buildTitle('Welcome to the\nLiving Atlases Toolkit'),
+            body: '''
+This tool facilitates the installation,
 maintenance and monitor of
 Living Atlases portals''',
             image: _buildImage(),
             decoration: pageDecoration,
           ),
           PageViewModel(
-            titleWidget: _buildTitle("How?"),
+            titleWidget: _buildTitle('How?'),
             bodyWidget: _introText(
                 text:
-                    '''A Living Atlas (LA) can be deployed and maintained using:
+                    '''
+A Living Atlas (LA) can be deployed and maintained using:
 1) the [Atlas of Living Australia](https://ala.org.au/) (ALA) Free and Open Source Software, with
 2) the [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/), the official [ansible](https://www.ansible.com/) code that automatically deploy and maintain a Living Atlas (LA) portal
 3) some configuration that describes your LA portal that is used by ala-install''',
@@ -77,28 +80,28 @@ Living Atlases portals''',
           ),
           PageViewModel(
             titleWidget: _buildTitle(
-                "This LA Toolkit\nputs all these parts together..."),
+                'This LA Toolkit\nputs all these parts together...'),
             body:
-                "...with an user friendly interface , and an up-to-date environment\nto perform the common maintenance tasks of a LA portal",
+                '...with an user friendly interface , and an up-to-date environment\nto perform the common maintenance tasks of a LA portal',
             image: _buildImage('la-toolkit-intro-images-3.png', 150),
             decoration: pageDecoration,
           ),
           if (AppUtils.isDemo())
             PageViewModel(
-              titleWidget: _buildTitle("Just a demo"),
+              titleWidget: _buildTitle('Just a demo'),
               body:
-                  "Right now this website is only a demo\nof our toolkit for demonstration purposes",
+                  'Right now this website is only a demo\nof our toolkit for demonstration purposes',
               image: _buildImage('la-toolkit-intro-images-4.png', 150),
               decoration: pageDecoration,
             ),
           PageViewModel(
-            title: "Ready to start?",
+            title: 'Ready to start?',
             bodyWidget: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Click on ", style: bodyStyle),
+              children: <Widget>[
+                Text('Click on ', style: bodyStyle),
                 Icon(Icons.add_circle),
-                Text(" to create your first Living Atlas project",
+                Text(' to create your first Living Atlas project',
                     style: bodyStyle),
               ],
             ),
@@ -139,8 +142,6 @@ Living Atlases portals''',
         width: MediaQuery.of(context).size.width * 0.5,
         child: markdown
             ? MarkdownBody(
-                shrinkWrap: true,
-                fitContent: true,
                 styleSheet: MarkdownStyleSheet(
                   h2: _markdownStyle,
                   p: _markdownStyle,
@@ -148,7 +149,7 @@ Living Atlases portals''',
                       color: _markdownColor,
                       decoration: TextDecoration.underline),
                 ),
-                onTapLink: (text, href, title) async =>
+                onTapLink: (String text, String? href, String title) async =>
                     await launchUrl(Uri.parse(href!)),
                 data: text)
             : Text(text,
@@ -169,12 +170,12 @@ Living Atlases portals''',
 }
 
 class _IntroViewModel {
-  final AppState state;
-  final void Function() onIntroEnd;
-  final void Function() onAddProject;
 
   _IntroViewModel(
       {required this.state,
       required this.onIntroEnd,
       required this.onAddProject});
+  final AppState state;
+  final void Function() onIntroEnd;
+  final void Function() onAddProject;
 }

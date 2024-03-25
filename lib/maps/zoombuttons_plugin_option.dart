@@ -4,20 +4,6 @@ import 'package:flutter_map/plugin_api.dart';
 // https://github.com/fleaflet/flutter_map/blob/8c49bfa1d9bdd2b1c1e9ce4ba01660ba12a2d8ef/example/lib/pages/zoombuttons_plugin_option.dart
 
 class FlutterMapZoomButtons extends StatelessWidget {
-  final double minZoom;
-  final double maxZoom;
-  final bool mini;
-  final double padding;
-  final Alignment alignment;
-  final Color? zoomInColor;
-  final Color? zoomInColorIcon;
-  final Color? zoomOutColor;
-  final Color? zoomOutColorIcon;
-  final IconData zoomInIcon;
-  final IconData zoomOutIcon;
-
-  final FitBoundsOptions options =
-      const FitBoundsOptions(padding: EdgeInsets.all(12));
 
   const FlutterMapZoomButtons({
     super.key,
@@ -33,10 +19,24 @@ class FlutterMapZoomButtons extends StatelessWidget {
     this.zoomOutColorIcon,
     this.zoomOutIcon = Icons.zoom_out,
   });
+  final double minZoom;
+  final double maxZoom;
+  final bool mini;
+  final double padding;
+  final Alignment alignment;
+  final Color? zoomInColor;
+  final Color? zoomInColorIcon;
+  final Color? zoomOutColor;
+  final Color? zoomOutColorIcon;
+  final IconData zoomInIcon;
+  final IconData zoomOutIcon;
+
+  final FitBoundsOptions options =
+      const FitBoundsOptions(padding: EdgeInsets.all(12));
 
   @override
   Widget build(BuildContext context) {
-    final map = FlutterMapState.of(context);
+    final FlutterMapState map = FlutterMapState.of(context);
     return Align(
       alignment: alignment,
       child: Column(
@@ -50,9 +50,9 @@ class FlutterMapZoomButtons extends StatelessWidget {
               mini: mini,
               backgroundColor: zoomInColor ?? Theme.of(context).primaryColor,
               onPressed: () {
-                final bounds = map.bounds;
-                final centerZoom = map.getBoundsCenterZoom(bounds, options);
-                var zoom = centerZoom.zoom + 1;
+                final LatLngBounds bounds = map.bounds;
+                final CenterZoom centerZoom = map.getBoundsCenterZoom(bounds, options);
+                double zoom = centerZoom.zoom + 1;
                 if (zoom > maxZoom) {
                   zoom = maxZoom;
                 }
@@ -70,9 +70,9 @@ class FlutterMapZoomButtons extends StatelessWidget {
               mini: mini,
               backgroundColor: zoomOutColor ?? Theme.of(context).primaryColor,
               onPressed: () {
-                final bounds = map.bounds;
-                final centerZoom = map.getBoundsCenterZoom(bounds, options);
-                var zoom = centerZoom.zoom - 1;
+                final LatLngBounds bounds = map.bounds;
+                final CenterZoom centerZoom = map.getBoundsCenterZoom(bounds, options);
+                double zoom = centerZoom.zoom - 1;
                 if (zoom < minZoom) {
                   zoom = minZoom;
                 }

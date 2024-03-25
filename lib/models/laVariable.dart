@@ -13,16 +13,6 @@ enum LAVariableStatus { deployed, undeployed }
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAVariable implements IsJsonSerializable<LAVariable> {
-  // Basic
-  String id;
-  String nameInt;
-  LAServiceName service;
-  Object? value;
-  String projectId;
-
-  // Status
-  LAVariableStatus status = LAVariableStatus.undeployed;
-  static const String varInvPrefix = "LA_variable_";
 
   LAVariable(
       {String? id,
@@ -40,6 +30,16 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
 
   factory LAVariable.fromJson(Map<String, dynamic> json) =>
       _$LAVariableFromJson(json);
+  // Basic
+  String id;
+  String nameInt;
+  LAServiceName service;
+  Object? value;
+  String projectId;
+
+  // Status
+  LAVariableStatus status = LAVariableStatus.undeployed;
+  static const String varInvPrefix = 'LA_variable_';
   @override
   Map<String, dynamic> toJson() => _$LAVariableToJson(this);
 

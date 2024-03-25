@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:la_toolkit/models/basic_service.dart';
+import 'basic_service.dart';
 
 import 'host_service_check.dart';
 import 'laServer.dart';
@@ -13,27 +13,29 @@ part 'hostServicesChecks.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class HostsServicesChecks {
-  // Server Id to check
-  Map<String, Map<String, HostServiceCheck>> checks = {};
-
   HostsServicesChecks();
 
   factory HostsServicesChecks.fromJson(Map<String, dynamic> json) =>
       _$HostsServicesChecksFromJson(json);
 
+  // Server Id to check
+  Map<String, Map<String, HostServiceCheck>> checks =
+      <String, Map<String, HostServiceCheck>>{};
+
   Map<String, dynamic> toJson() => _$HostsServicesChecksToJson(this);
 
   void setUrls(LAServiceDeploy sd, List<String> urls, String name,
       List<String> serversIds, bool full) {
-    List<String> list = sd.serverId != null ? [sd.serverId!] : [];
+    final List<String> list =
+        sd.serverId != null ? <String>[sd.serverId!] : <String>[];
 
-    for (String serverId in full ? serversIds : list) {
-      Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
-      for (String url in urls) {
-        HostServiceCheck ch = hChecks.values.firstWhere(
-            (ch) => ch.type == ServiceCheckType.url && ch.args == url,
-            orElse: () {
-          var ch = HostServiceCheck(
+    for (final String serverId in full ? serversIds : list) {
+      final Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
+      for (final String url in urls) {
+        final HostServiceCheck ch = hChecks.values.firstWhere(
+            (HostServiceCheck ch) =>
+                ch.type == ServiceCheckType.url && ch.args == url, orElse: () {
+          final HostServiceCheck ch = HostServiceCheck(
               name: name, type: ServiceCheckType.url, args: url);
           hChecks[ch.id] = ch;
           return ch;
@@ -50,23 +52,25 @@ class HostsServicesChecks {
     // For now, don't check docker swarm services
     if (sd.serverId == null) return;
     if (deps != null) {
-      BasicService.toCheck(deps).forEach((dep) {
-        for (num tcp in dep.tcp) {
+      BasicService.toCheck(deps).forEach((BasicService dep) {
+        for (final num tcp in dep.tcp) {
           // Some services should be checked also from others servers like solr/cassandra
-          for (String serverId in full && dep.reachableFromOtherServers
+          for (final String serverId in full && dep.reachableFromOtherServers
               ? serversIds
-              : [sd.serverId!]) {
-            Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
-            HostServiceCheck ch = hChecks.values.firstWhere(
-                (ch) => ch.type == ServiceCheckType.tcp && ch.args == "$tcp",
+              : <String>[sd.serverId!]) {
+            final Map<String, HostServiceCheck> hChecks =
+                _getServiceCheck(serverId);
+            final HostServiceCheck ch = hChecks.values.firstWhere(
+                (HostServiceCheck ch) =>
+                    ch.type == ServiceCheckType.tcp && ch.args == '$tcp',
                 orElse: () {
-              var ch = HostServiceCheck(
+              final HostServiceCheck ch = HostServiceCheck(
                   name: name,
                   type: ServiceCheckType.tcp,
                   host: tcp == 8983 || tcp == 9000 || server.id != serverId
                       ? server.name
-                      : "localhost",
-                  args: "$tcp");
+                      : 'localhost',
+                  args: '$tcp');
               hChecks[ch.id] = ch;
               return ch;
             });
@@ -75,14 +79,16 @@ class HostsServicesChecks {
             hChecks[ch.id] = ch;
           }
         }
-        String serverId = sd.serverId!;
-        Map<String, HostServiceCheck> hChecks = _getServiceCheck(serverId);
-        for (num udp in dep.udp) {
-          HostServiceCheck ch = hChecks.values.firstWhere(
-              (ch) => ch.type == ServiceCheckType.udp && ch.args == "$udp",
+        final String serverId = sd.serverId!;
+        final Map<String, HostServiceCheck> hChecks =
+            _getServiceCheck(serverId);
+        for (final num udp in dep.udp) {
+          final HostServiceCheck ch = hChecks.values.firstWhere(
+              (HostServiceCheck ch) =>
+                  ch.type == ServiceCheckType.udp && ch.args == '$udp',
               orElse: () {
-            var ch = HostServiceCheck(
-                name: name, type: ServiceCheckType.udp, args: "$udp");
+            final HostServiceCheck ch = HostServiceCheck(
+                name: name, type: ServiceCheckType.udp, args: '$udp');
             hChecks[ch.id] = ch;
             return ch;
           });
@@ -90,10 +96,11 @@ class HostsServicesChecks {
           ch.services.add(sd.serviceId);
           hChecks[ch.id] = ch;
         }
-        HostServiceCheck ch = hChecks.values.firstWhere(
-            (ch) => ch.type == ServiceCheckType.other && ch.args == dep.name,
+        final HostServiceCheck ch = hChecks.values.firstWhere(
+            (HostServiceCheck ch) =>
+                ch.type == ServiceCheckType.other && ch.args == dep.name,
             orElse: () {
-          var ch = HostServiceCheck(
+          final HostServiceCheck ch = HostServiceCheck(
               name: name, type: ServiceCheckType.other, args: dep.name);
           hChecks[ch.id] = ch;
           return ch;
@@ -107,7 +114,7 @@ class HostsServicesChecks {
   }
 
   Map<String, HostServiceCheck> _getServiceCheck(String server) {
-    return checks.putIfAbsent(server, () => {});
+    return checks.putIfAbsent(server, () => <String, HostServiceCheck>{});
   }
 
   @override
@@ -128,15 +135,14 @@ class HostsServicesChecks {
 
 @JsonSerializable(createToJson: false)
 class HostServicesChecks {
-  final HashSet<num> tcpPorts = HashSet<num>();
-  final HashSet<num> udpPorts = HashSet<num>();
-  final HashSet<String> otherChecks = HashSet<String>();
-  final List<String> urls = [];
-
   HostServicesChecks();
 
   factory HostServicesChecks.fromJson(Map<String, dynamic> json) =>
       _$HostServicesChecksFromJson(json);
+  final HashSet<num> tcpPorts = HashSet<num>();
+  final HashSet<num> udpPorts = HashSet<num>();
+  final HashSet<String> otherChecks = HashSet<String>();
+  final List<String> urls = <String>[];
 
   @override
   String toString() {
@@ -144,7 +150,7 @@ class HostServicesChecks {
   }
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> toJ = {};
+    final Map<String, dynamic> toJ = <String, dynamic>{};
     // jsonEncode(
     toJ['tcpPorts'] = tcpPorts.toList();
     toJ['udpPorts'] = udpPorts.toList();

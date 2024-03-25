@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/utils/cardConstants.dart';
+import '../models/laServer.dart';
+import '../utils/cardConstants.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
 class ServerSelector extends StatefulWidget {
+
+  const ServerSelector(
+      {super.key,
+      required this.selectorKey,
+      required this.hosts,
+      required this.icon,
+      required this.initialValue,
+      required this.title,
+      required this.placeHolder,
+      required this.modalTitle,
+      this.exclude,
+      required this.onChange});
   final GlobalKey<FormFieldState<dynamic>> selectorKey;
   final List<String> hosts;
   final IconData icon;
@@ -17,25 +29,12 @@ class ServerSelector extends StatefulWidget {
   final Function(List<String>) onChange;
   final LAServer? exclude;
 
-  const ServerSelector(
-      {Key? key,
-      required this.selectorKey,
-      required this.hosts,
-      required this.icon,
-      required this.initialValue,
-      required this.title,
-      required this.placeHolder,
-      required this.modalTitle,
-      this.exclude,
-      required this.onChange})
-      : super(key: key);
-
   @override
   State<ServerSelector> createState() => _ServerSelectorState();
 }
 
 class _ServerSelectorState extends State<ServerSelector> {
-  List<String> _selected = [];
+  List<String> _selected = <String>[];
 
   @override
   void initState() {
@@ -45,7 +44,7 @@ class _ServerSelectorState extends State<ServerSelector> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> serverList = widget.hosts;
+    final List<String> serverList = widget.hosts;
     if (widget.exclude != null) serverList.remove(widget.exclude!.name);
     return Card(
         elevation: CardConstants.defaultElevation,
@@ -58,7 +57,7 @@ class _ServerSelectorState extends State<ServerSelector> {
               MultiSelectDialogField<String>(
                 listType: MultiSelectListType.LIST,
                 searchable: true,
-                confirmText: const Text("CONFIRM"),
+                confirmText: const Text('CONFIRM'),
                 //selectedColor: Theme.of(context).primaryColor.withOpacity(.2),
                 decoration: const BoxDecoration(
                     //color: Colors.grey.shade100
@@ -71,7 +70,7 @@ class _ServerSelectorState extends State<ServerSelector> {
                     style: const TextStyle(fontSize: 16)),
                 initialValue: _selected,
                 items: serverList
-                    .map((host) => MultiSelectItem<String>(host, host))
+                    .map((String host) => MultiSelectItem<String>(host, host))
                     .toList(),
                 onConfirm: (List<String> values) {
                   widget.onChange(values);
@@ -95,15 +94,13 @@ class _ServerSelectorState extends State<ServerSelector> {
                   }, */
                 ),
               ),
-              _selected.isEmpty
-                  ? Container(
+              if (_selected.isEmpty) Container(
                       padding: const EdgeInsets.all(10),
                       alignment: Alignment.centerLeft,
                       child: Text(
                         widget.placeHolder,
                         style: const TextStyle(color: Colors.black45),
-                      ))
-                  : const Text(""),
+                      )) else const Text(''),
             ],
           ),
         ));

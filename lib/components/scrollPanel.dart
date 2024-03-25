@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
 class ScrollPanel extends StatelessWidget {
+
+  const ScrollPanel(
+      {super.key,
+      required this.child,
+      this.withPadding = false,
+      this.padding = 80});
   final Widget child;
   final bool withPadding;
   final double padding;
-
-  const ScrollPanel(
-      {Key? key,
-      required this.child,
-      this.withPadding = false,
-      this.padding = 80})
-      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +19,6 @@ class ScrollPanel extends StatelessWidget {
         child: Scrollbar(
             child: SingleChildScrollView(
                 primary: true,
-                scrollDirection: Axis.vertical,
                 child: withPadding
                     ? Container(
                         margin: EdgeInsets.symmetric(

@@ -3,14 +3,11 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:latlong2/latlong.dart';
 
 import './scalebar_utils.dart' as util;
 
 class ScaleLayerPluginOption {
-  TextStyle? textStyle;
-  Color lineColor;
-  double lineWidth;
-  final EdgeInsets? padding;
 
   ScaleLayerPluginOption({
     this.textStyle,
@@ -18,11 +15,17 @@ class ScaleLayerPluginOption {
     this.lineWidth = 2,
     this.padding,
   });
+  TextStyle? textStyle;
+  Color lineColor;
+  double lineWidth;
+  final EdgeInsets? padding;
 }
 
 class ScaleLayerWidget extends StatelessWidget {
+
+  ScaleLayerWidget({super.key, required this.options});
   final ScaleLayerPluginOption options;
-  final scale = [
+  final List<int> scale = <int>[
     25000000,
     15000000,
     8000000,
@@ -48,22 +51,20 @@ class ScaleLayerWidget extends StatelessWidget {
     5
   ];
 
-  ScaleLayerWidget({super.key, required this.options});
-
   @override
   Widget build(BuildContext context) {
-    final map = FlutterMapState.of(context);
-    final zoom = map.zoom;
-    final distance = scale[max(0, min(20, zoom.round() + 2))].toDouble();
-    final center = map.center;
-    final start = map.project(center);
-    final targetPoint =
+    final FlutterMapState map = FlutterMapState.of(context);
+    final double zoom = map.zoom;
+    final double distance = scale[max(0, min(20, zoom.round() + 2))].toDouble();
+    final LatLng center = map.center;
+    final CustomPoint<double> start = map.project(center);
+    final LatLng targetPoint =
         util.calculateEndingGlobalCoordinates(center, 90, distance);
-    final end = map.project(targetPoint);
-    final displayDistance = distance > 999
+    final CustomPoint<double> end = map.project(targetPoint);
+    final String displayDistance = distance > 999
         ? '${(distance / 1000).toStringAsFixed(0)} km'
         : '${distance.toStringAsFixed(0)} m';
-    final width = (end.x - (start.x));
+    final double width = end.x - (start.x);
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints bc) {
@@ -95,29 +96,29 @@ class ScalePainter extends CustomPainter {
 
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
-    final paint = Paint()
+    final ui.Paint paint = Paint()
       ..color = lineColor!
       ..strokeCap = StrokeCap.square
       ..strokeWidth = lineWidth!;
 
-    const sizeForStartEnd = 4;
-    final paddingLeft =
+    const int sizeForStartEnd = 4;
+    final double paddingLeft =
         padding == null ? 0.0 : padding!.left + sizeForStartEnd / 2;
-    var paddingTop = padding == null ? 0.0 : padding!.top;
+    double paddingTop = padding == null ? 0.0 : padding!.top;
 
-    final textSpan = TextSpan(style: textStyle, text: text);
-    final textPainter =
+    final TextSpan textSpan = TextSpan(style: textStyle, text: text);
+    final TextPainter textPainter =
         TextPainter(text: textSpan, textDirection: TextDirection.ltr)..layout();
     textPainter.paint(canvas,
         Offset(width / 2 - textPainter.width / 2 + paddingLeft, paddingTop));
     paddingTop += textPainter.height;
-    final p1 = Offset(paddingLeft, sizeForStartEnd + paddingTop);
-    final p2 = Offset(paddingLeft + width, sizeForStartEnd + paddingTop);
+    final ui.Offset p1 = Offset(paddingLeft, sizeForStartEnd + paddingTop);
+    final ui.Offset p2 = Offset(paddingLeft + width, sizeForStartEnd + paddingTop);
     // draw start line
     canvas.drawLine(Offset(paddingLeft, paddingTop),
         Offset(paddingLeft, sizeForStartEnd + paddingTop), paint);
     // draw middle line
-    final middleX = width / 2 + paddingLeft - lineWidth! / 2;
+    final double middleX = width / 2 + paddingLeft - lineWidth! / 2;
     canvas.drawLine(Offset(middleX, paddingTop + sizeForStartEnd / 2),
         Offset(middleX, sizeForStartEnd + paddingTop), paint);
     // draw end line

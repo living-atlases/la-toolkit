@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/components/serviceStatusCard.dart';
-import 'package:la_toolkit/models/LAServiceConstants.dart';
-import 'package:la_toolkit/models/prodServiceDesc.dart';
+import 'serviceStatusCard.dart';
+import '../models/LAServiceConstants.dart';
+import '../models/prodServiceDesc.dart';
 
 class ServicesStatusPanel extends StatelessWidget {
+  const ServicesStatusPanel({super.key, required this.services});
   final List<ProdServiceDesc> services;
-  const ServicesStatusPanel({Key? key, required this.services})
-      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<ProdServiceDesc> filteredServices = services
-        .where((s) =>
+    final List<ProdServiceDesc> filteredServices = services
+        .where((ProdServiceDesc s) =>
             s.nameInt != branding &&
             s.nameInt != nameindexer &&
             s.nameInt != biocacheCli)
         .toList();
-    return Wrap(children: [
-      for (var service in filteredServices) ServiceStatusCard(service)
+    return Wrap(children: <Widget>[
+      for (final ProdServiceDesc service in filteredServices) ServiceStatusCard(service)
     ]);
   }
 }

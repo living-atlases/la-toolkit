@@ -12,15 +12,15 @@ class MapUtils {
 
   static List<List<double>> toSquare(
       double p01, double p00, double p11, double p10) {
-    double x1 = p01;
-    double y1 = p00;
-    double x2 = p11;
-    double y2 = p10;
-    List<List<double>> area = [
-      [p00, p01],
-      [y2 - (y2 - y1), x2],
-      [p10, p11],
-      [y2, x2 - (x2 - x1)]
+    final double x1 = p01;
+    final double y1 = p00;
+    final double x2 = p11;
+    final double y2 = p10;
+    final List<List<double>> area = <List<double>>[
+      <double>[p00, p01],
+      <double>[y2 - (y2 - y1), x2],
+      <double>[p10, p11],
+      <double>[y2, x2 - (x2 - x1)]
     ];
     return area;
   }
@@ -28,25 +28,30 @@ class MapUtils {
   static Map<String, dynamic> toInvVariables(LatLng p1, LatLng p2) {
     // double? p10, double? p1.longitude, double? p2.latitude, double? p2.longitude) {
 
-    LatLng center = MapUtils.center(p1, p2);
-    List<double> bbox = [p1.latitude, p1.longitude, p2.latitude, p2.longitude];
-    List<List<double>> square =
+    final LatLng center = MapUtils.center(p1, p2);
+    final List<double> bbox = <double>[
+      p1.latitude,
+      p1.longitude,
+      p2.latitude,
+      p2.longitude
+    ];
+    final List<List<double>> square =
         MapUtils.toSquare(p1.longitude, p1.latitude, p2.longitude, p2.latitude);
 
-    Map<String, Object> polygon = {
+    final Map<String, Object> polygon = <String, Object>{
       'type': 'Polygon',
-      'coordinates': [
-        [square[0], square[1], square[2], square[3], square[0]]
+      'coordinates': <List<List<double>>>[
+        <List<double>>[square[0], square[1], square[2], square[3], square[0]]
       ]
     };
-    return {
+    return <String, Object>{
       'LA_collectory_map_centreMapLat': center.latitude,
       'LA_collectory_map_centreMapLng': center.longitude,
       'LA_spatial_map_lan': center.latitude,
       'LA_spatial_map_lng': center.longitude,
       'LA_regions_map_bounds': '$bbox',
       'LA_spatial_map_bbox': '$bbox',
-      "LA_spatial_map_areaSqKm": MapUtils.areaKm2(polygon)
+      'LA_spatial_map_areaSqKm': MapUtils.areaKm2(polygon)
     };
   }
 

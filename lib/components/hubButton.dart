@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/redux/actions.dart';
+import '../redux/actions.dart';
 
 import '../laTheme.dart';
 
 class HubButton extends StatelessWidget {
-  final String text;
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback onPressed;
-  final bool isActionBtn;
 
   const HubButton(
       {super.key,
@@ -17,6 +12,11 @@ class HubButton extends StatelessWidget {
       required this.tooltip,
       required this.onPressed,
       required this.isActionBtn});
+  final String text;
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+  final bool isActionBtn;
 
   @override
   Widget build(BuildContext context) {

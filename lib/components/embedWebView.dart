@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/utils/utils.dart'; // https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
 // ignore: implementation_imports
 import 'package:pointer_interceptor/src/shim/dart_ui.dart' as ui;
 import 'package:universal_html/html.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../laTheme.dart';
 import '../notInDemo.dart';
+import '../utils/utils.dart'; // https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
 
 class EmbedWebView extends StatefulWidget {
-  final String src;
-  final double? height, width;
-  final bool notify;
 
   const EmbedWebView(
-      {Key? key,
+      {super.key,
       required this.src,
       this.height,
       this.width,
-      required this.notify})
-      : super(key: key);
+      required this.notify});
+  final String src;
+  final double? height, width;
+  final bool notify;
 
   @override
   State<StatefulWidget> createState() {
@@ -40,8 +39,8 @@ class EmbedWebViewState extends State<EmbedWebView>
       ..width = '100%'
       ..src = widget.src
       ..style.border = 'none'
-      ..style.overflow = "hidden"
-      ..allow = "autoplay"
+      ..style.overflow = 'hidden'
+      ..allow = 'autoplay'
       ..allowFullscreen = true;
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
@@ -49,7 +48,7 @@ class EmbedWebViewState extends State<EmbedWebView>
       (int viewId) => iframeElement,
     );
     if (!AppUtils.isDemo() && widget.notify) {
-      final uri = Uri.parse(widget.src.replaceAll("http", "ws"));
+      final Uri uri = Uri.parse(widget.src.replaceAll('http', 'ws'));
       _channel = WebSocketChannel.connect(uri);
 
       ///
@@ -101,11 +100,11 @@ class EmbedWebViewState extends State<EmbedWebView>
   }
 
   void onWebsocketEnd() {
-    String? perm = html.Notification.permission;
-    if (perm == "granted") {
-      html.Notification("LA Toolkit: Command finished",
+    final String? perm = html.Notification.permission;
+    if (perm == 'granted') {
+      html.Notification('LA Toolkit: Command finished',
           icon:
-              "https://raw.githubusercontent.com/living-atlases/artwork/master/icon-white.png");
+              'https://raw.githubusercontent.com/living-atlases/artwork/master/icon-white.png');
     }
   }
 }

@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/sshKey.dart';
-import 'package:la_toolkit/utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../laTheme.dart';
+import '../models/laServer.dart';
+import '../models/sshKey.dart';
+import '../utils/utils.dart';
+
 class ServerSshKeySelector extends StatefulWidget {
+
+  const ServerSshKeySelector(
+      {super.key,
+      required this.server,
+      this.currentSshKey,
+      required this.sshKeys,
+      required this.isFirst,
+      required this.onSave,
+      required this.onAllSameSshKey});
   final LAServer server;
   final SshKey? currentSshKey;
   final List<SshKey> sshKeys;
   final bool isFirst;
   final Function(LAServer) onSave;
   final Function(SshKey?) onAllSameSshKey;
-
-  const ServerSshKeySelector(
-      {Key? key,
-      required this.server,
-      this.currentSshKey,
-      required this.sshKeys,
-      required this.isFirst,
-      required this.onSave,
-      required this.onAllSameSshKey})
-      : super(key: key);
 
   @override
   State<ServerSshKeySelector> createState() => _ServerSshKeySelectorState();
@@ -39,28 +39,27 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
-      isDense: false,
       // isExpanded: true,
       underline: Container(),
 
-      disabledHint: const Text("No ssh keys available"),
+      disabledHint: const Text('No ssh keys available'),
       hint: Row(
-        children: [
+        children: <Widget>[
           if (_sshKey != null)
             Icon(MdiIcons.key, color: LAColorTheme.laPalette),
           if (_sshKey != null) const SizedBox(width: 5),
-          Text(_sshKey != null ? _sshKey!.name : "No SSH key selected"),
+          Text(_sshKey != null ? _sshKey!.name : 'No SSH key selected'),
         ],
       ),
       items: widget.sshKeys
           // For now we only support keys with no passphrase
-          .where((k) => k.encrypted != true)
+          .where((SshKey k) => k.encrypted != true)
           .toList()
           .map((SshKey sshKey) {
         return DropdownMenuItem(
           value: sshKey,
           child: Row(
-            children: [
+            children: <Widget>[
               Icon(MdiIcons.key),
               const SizedBox(
                 width: 10,
@@ -88,11 +87,11 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
             }, () {
               widget.server.sshKey = value;
             },
-                title: "Use this ssh key always",
+                title: 'Use this ssh key always',
                 subtitle:
-                    "Do you want to use this ssh key in all your servers?",
-                confirmBtn: "YES",
-                cancelBtn: "NO");
+                    'Do you want to use this ssh key in all your servers?',
+                confirmBtn: 'YES',
+                cancelBtn: 'NO');
           } else {
             widget.server.sshKey = value;
           }

@@ -150,7 +150,7 @@ extension $SshKeyCopyWith on SshKey {
 
 SshKey _$SshKeyFromJson(Map<String, dynamic> json) => SshKey(
       name: json['name'] as String,
-      publicKey: json['publicKey'] as String? ?? "",
+      publicKey: json['publicKey'] as String? ?? '',
       type: json['type'] as String?,
       size: json['size'] as int?,
       desc: json['desc'] as String,

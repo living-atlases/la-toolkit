@@ -39,25 +39,27 @@ final String biocollect = LAServiceName.biocollect.toS();
 final String pdfgen = LAServiceName.pdfgen.toS();
 final String ecodata = LAServiceName.ecodata.toS();
 final String ecodataReporting = LAServiceName.ecodata_reporting.toS();
-const String toolkit = "laToolkit";
-const String alaInstall = "ala-install";
-const String generator = "la-generator";
-const String tomcat = "tomcat";
-const String ansible = "ansible";
-const String java = "java";
+const String toolkit = 'laToolkit';
+const String alaInstall = 'ala-install';
+const String generator = 'la-generator';
+const String tomcat = 'tomcat';
+const String ansible = 'ansible';
+const String java = 'java';
 final String events = LAServiceName.events.toS();
 final String eventsElasticSearch = LAServiceName.events_elasticsearch.toS();
 final String dockerSwarm = LAServiceName.docker_swarm.toS();
 final String gatus = LAServiceName.gatus.toS();
 final String portainer = LAServiceName.portainer.toS();
+final String cassandra = LAServiceName.cassandra.toS();
 
-const List<String> laTools = [alaInstall, generator, toolkit];
-const List<String> laToolsNoAlaInstall = [generator, toolkit];
-List<String> servicesWithoutUrlButShow = [
+const List<String> laTools = <String>[alaInstall, generator, toolkit];
+const List<String> laToolsNoAlaInstall = <String>[generator, toolkit];
+List<String> servicesWithoutUrlButShow = <String>[
   biocacheBackend,
   eventsElasticSearch,
   pipelines,
   solrcloud,
   dockerSwarm,
-  zookeeper
+  zookeeper,
+  cassandra
 ];

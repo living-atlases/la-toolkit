@@ -2,34 +2,35 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:la_toolkit/models/appState.dart';
-import 'package:la_toolkit/models/laProjectStatus.dart';
-import 'package:la_toolkit/models/la_project.dart';
+import 'package:redux/src/store.dart';
 import 'package:timelines/timelines.dart';
 
 import '../laTheme.dart';
+import '../models/appState.dart';
+import '../models/laProjectStatus.dart';
+import '../models/la_project.dart';
 
 Color completeColor = LAColorTheme.laPalette.shade400;
 Color inProgressColor = LAColorTheme.laPalette.shade900;
-const todoColor = Colors.grey;
-const _iconsVerticalPadding = 4.0;
+const MaterialColor todoColor = Colors.grey;
+const double _iconsVerticalPadding = 4.0;
 
 class LAProjectTimeline extends StatelessWidget {
+
+  LAProjectTimeline({super.key, required this.project});
   final int size = LAProjectStatus.values.length;
   final LAProject project;
-
-  LAProjectTimeline({Key? key, required this.project}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _LAProjectTimelineViewModel>(
         distinct: true,
-        converter: (store) {
+        converter: (Store<AppState> store) {
           return _LAProjectTimelineViewModel(
               status: project.status, isHub: project.isHub);
         },
         builder: (BuildContext context, _LAProjectTimelineViewModel vm) {
-          bool small = MediaQuery.of(context).size.width < 750;
+          final bool small = MediaQuery.of(context).size.width < 750;
           return Visibility(
               visible: !small,
               child: SizedBox(
@@ -46,7 +47,7 @@ class LAProjectTimeline extends StatelessWidget {
                     builder: TimelineTileBuilder.connected(
                       connectionDirection: ConnectionDirection.before,
                       itemExtentBuilder: (_, __) => 100,
-                      oppositeContentsBuilder: (context, index) {
+                      oppositeContentsBuilder: (BuildContext context, int index) {
                         return Padding(
                           padding: const EdgeInsets.only(
                               bottom: _iconsVerticalPadding),
@@ -61,7 +62,7 @@ class LAProjectTimeline extends StatelessWidget {
                           ),
                         );
                       },
-                      contentsBuilder: (context, index) {
+                      contentsBuilder: (BuildContext context, int index) {
                         return Padding(
                           // Top of step titles
                           padding: EdgeInsets.only(
@@ -79,7 +80,7 @@ class LAProjectTimeline extends StatelessWidget {
                           ),
                         );
                       },
-                      indicatorBuilder: (_, index) {
+                      indicatorBuilder: (_, int index) {
                         Color color;
                         Widget? child;
                         if (index == vm.status.value) {
@@ -105,7 +106,7 @@ class LAProjectTimeline extends StatelessWidget {
                         // <= to show spinner
                         if (index < vm.status.value) {
                           return Stack(
-                            children: [
+                            children: <Widget>[
                               CustomPaint(
                                 size: const Size(30.0, 30.0),
                                 painter: _BezierPainter(
@@ -123,7 +124,7 @@ class LAProjectTimeline extends StatelessWidget {
                           );
                         } else {
                           return Stack(
-                            children: [
+                            children: <Widget>[
                               CustomPaint(
                                 size: const Size(15.0, 15.0),
                                 painter: _BezierPainter(
@@ -139,19 +140,19 @@ class LAProjectTimeline extends StatelessWidget {
                           );
                         }
                       },
-                      connectorBuilder: (_, index, type) {
+                      connectorBuilder: (_, int index, ConnectorType type) {
                         if (index > 0) {
                           if (index == vm.status.value) {
-                            final prevColor = getColor(vm.status, index - 1);
-                            final color = getColor(vm.status, index);
+                            final Color prevColor = getColor(vm.status, index - 1);
+                            final Color color = getColor(vm.status, index);
                             List<Color> gradientColors;
                             if (type == ConnectorType.start) {
-                              gradientColors = [
+                              gradientColors = <Color>[
                                 Color.lerp(prevColor, color, 0.5)!,
                                 color
                               ];
                             } else {
-                              gradientColors = [
+                              gradientColors = <Color>[
                                 prevColor,
                                 Color.lerp(prevColor, color, 0.5)!
                               ];
@@ -190,10 +191,10 @@ class LAProjectTimeline extends StatelessWidget {
 }
 
 class _LAProjectTimelineViewModel {
-  final LAProjectStatus status;
-  final bool isHub;
 
   _LAProjectTimelineViewModel({required this.status, required this.isHub});
+  final LAProjectStatus status;
+  final bool isHub;
 
   @override
   bool operator ==(Object other) =>
@@ -228,11 +229,11 @@ class _BezierPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final Paint paint = Paint()
       ..style = PaintingStyle.fill
       ..color = color;
 
-    final radius = size.width / 2;
+    final double radius = size.width / 2;
 
     double angle;
     Offset offset1;

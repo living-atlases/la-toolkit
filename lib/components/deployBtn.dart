@@ -3,12 +3,11 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 class LaunchBtn extends StatelessWidget {
   LaunchBtn({
-    Key? key,
+    super.key,
     this.onTap,
     required this.execBtn,
     IconData? icon,
-  })  : icon = icon ?? MdiIcons.rocketLaunch,
-        super(key: key);
+  })  : icon = icon ?? MdiIcons.rocketLaunch;
 
   final VoidCallback? onTap;
   final String execBtn;
@@ -19,7 +18,6 @@ class LaunchBtn extends StatelessWidget {
     return Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
           const SizedBox(height: 40),
           ButtonTheme(

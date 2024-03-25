@@ -1,29 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:la_toolkit/components/renameServerIcon.dart';
-import 'package:la_toolkit/laTheme.dart';
-import 'package:la_toolkit/models/laServer.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/models/la_service.dart';
-import 'package:la_toolkit/utils/cardConstants.dart';
-import 'package:la_toolkit/utils/utils.dart';
+import 'renameServerIcon.dart';
+import '../laTheme.dart';
+import '../models/laServer.dart';
+import '../models/laServiceDesc.dart';
+import '../models/la_service.dart';
+import '../utils/cardConstants.dart';
+import '../utils/utils.dart';
 
 import '../models/deploymentType.dart';
 import '../models/laCluster.dart';
 
 class ServerServicesEditCard extends StatefulWidget {
-  final LAServer? server;
-  final LACluster? cluster;
-  final List<String> currentServerServices;
-  final List<LAService> availableServicesForServer;
-  final bool isHub;
-  final List<LAService> allServices;
-  final Function(List<String>) onAssigned;
-  final Function(String) onUnassigned;
-  final Function(LAServer) onDeleted;
-  final Function(String) onRename;
-  final Function() onEditing;
-  final DeploymentType type;
-
   const ServerServicesEditCard(
       {super.key,
       this.server,
@@ -39,6 +26,19 @@ class ServerServicesEditCard extends StatefulWidget {
       required this.onRename,
       required this.onEditing});
 
+  final LAServer? server;
+  final LACluster? cluster;
+  final List<String> currentServerServices;
+  final List<LAService> availableServicesForServer;
+  final bool isHub;
+  final List<LAService> allServices;
+  final Function(List<String>) onAssigned;
+  final Function(String) onUnassigned;
+  final Function(LAServer) onDeleted;
+  final Function(String) onRename;
+  final Function() onEditing;
+  final DeploymentType type;
+
   @override
   State<ServerServicesEditCard> createState() => _ServerServicesEditCardState();
 }
@@ -46,10 +46,10 @@ class ServerServicesEditCard extends StatefulWidget {
 class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
   @override
   Widget build(BuildContext context) {
-    List<Widget> chips = [];
-    for (LAService service in widget.allServices) {
-      LAServiceDesc serviceDesc = LAServiceDesc.get(service.nameInt);
-      bool isInThisServer =
+    final List<Widget> chips = <Widget>[];
+    for (final LAService service in widget.allServices) {
+      final LAServiceDesc serviceDesc = LAServiceDesc.get(service.nameInt);
+      final bool isInThisServer =
           widget.currentServerServices.contains(serviceDesc.nameInt);
       if (!LAServiceDesc.subServices.contains(service.nameInt) &&
           (widget.availableServicesForServer.contains(service) ||
@@ -79,42 +79,45 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
               padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(
                           isAServer
                               ? widget.server!.name
-                              : "Docker swarm cluster",
+                              : 'Docker swarm cluster',
                           style: const TextStyle(
                               color: LAColorTheme.inactive, fontSize: 20)),
-                      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                        if (isAServer)
-                          RenameServerIcon(widget.server!, widget.onEditing,
-                              (String newName) {
-                            widget.onRename(newName);
-                          }),
-                        if (isAServer)
-                          Tooltip(
-                              message: "Delete this server",
-                              child: IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.grey,
-                                  ),
-                                  onPressed: () {
-                                    widget.onEditing();
-                                    UiUtils.showAlertDialog(
-                                      context,
-                                      () => widget.onDeleted(widget.server!),
-                                      () => {},
-                                      title:
-                                          "Deleting server '${widget.server!.name}'",
-                                    );
-                                  })),
-                      ])),
+                      trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            if (isAServer)
+                              RenameServerIcon(widget.server!, widget.onEditing,
+                                  (String newName) {
+                                widget.onRename(newName);
+                              }),
+                            if (isAServer)
+                              Tooltip(
+                                  message: 'Delete this server',
+                                  child: IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        widget.onEditing();
+                                        UiUtils.showAlertDialog(
+                                          context,
+                                          () =>
+                                              widget.onDeleted(widget.server!),
+                                          () {},
+                                          title:
+                                              "Deleting server '${widget.server!.name}'",
+                                        );
+                                      })),
+                          ])),
                   const SizedBox(height: 10),
                   // ignore: sized_box_for_whitespace
                   Container(
@@ -131,16 +134,16 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
 }
 
 class _ServiceChip extends StatelessWidget {
-  final bool isSelected;
-  final LAServiceDesc service;
-  final VoidCallback onSelected;
-  final VoidCallback onDeleted;
-
   const _ServiceChip(
       {required this.service,
       required this.isSelected,
       required this.onSelected,
       required this.onDeleted});
+
+  final bool isSelected;
+  final LAServiceDesc service;
+  final VoidCallback onSelected;
+  final VoidCallback onDeleted;
 
   @override
   Widget build(BuildContext context) {

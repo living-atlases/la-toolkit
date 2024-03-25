@@ -168,7 +168,7 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) =>
       serviceId: json['serviceId'] as String,
       serverId: json['serverId'] as String?,
       clusterId: json['clusterId'] as String?,
-      additionalVariables: json['additionalVariables'] as String? ?? "",
+      additionalVariables: json['additionalVariables'] as String? ?? '',
       projectId: json['projectId'] as String,
       softwareVersions:
           (json['softwareVersions'] as Map<String, dynamic>?)?.map(

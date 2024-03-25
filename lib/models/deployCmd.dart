@@ -1,10 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:la_toolkit/models/LAServiceConstants.dart';
-import 'package:la_toolkit/models/commonCmd.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
+
+import '../utils/StringUtils.dart';
+import 'LAServiceConstants.dart';
+import 'commonCmd.dart';
+import 'laServiceDesc.dart';
 
 part 'deployCmd.g.dart';
 
@@ -13,16 +14,6 @@ part 'deployCmd.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class DeployCmd extends CommonCmd {
-  List<String> deployServices;
-  List<String> limitToServers;
-  List<String> skipTags;
-  List<String> tags;
-  bool advanced;
-  bool onlyProperties;
-  bool continueEvenIfFails;
-  bool debug;
-  bool dryRun;
-
   DeployCmd({
     List<String>? deployServices,
     List<String>? limitToServers,
@@ -33,10 +24,23 @@ class DeployCmd extends CommonCmd {
     this.continueEvenIfFails = false,
     this.debug = false,
     this.dryRun = false,
-  })  : deployServices = deployServices ?? [],
-        limitToServers = limitToServers ?? [],
-        skipTags = skipTags ?? [],
-        tags = tags ?? [] /* super(type: CmdType.deploy, properties: {} )*/;
+  })  : deployServices = deployServices ?? <String>[],
+        limitToServers = limitToServers ?? <String>[],
+        skipTags = skipTags ?? <String>[],
+        tags = tags ??
+            <String>[] /* super(type: CmdType.deploy, properties: {} )*/;
+
+  factory DeployCmd.fromJson(Map<String, dynamic> json) =>
+      _$DeployCmdFromJson(json);
+  List<String> deployServices;
+  List<String> limitToServers;
+  List<String> skipTags;
+  List<String> tags;
+  bool advanced;
+  bool onlyProperties;
+  bool continueEvenIfFails;
+  bool debug;
+  bool dryRun;
 
   @override
   bool operator ==(Object other) =>
@@ -71,31 +75,34 @@ class DeployCmd extends CommonCmd {
   }
 
   String get desc {
-    bool isAll = const ListEquality().equals(deployServices, ['all']);
+    final bool isAll =
+        const ListEquality().equals(deployServices, <String>['all']);
     String services = 'deploy of';
 
-    var serviceLength = deployServices.length;
+    final int serviceLength = deployServices.length;
     if (isAll) {
       services = 'full deploy';
     } else if (serviceLength <= 5) {
-      List<String> servicesForHuman = deployServices
-          .map((serviceName) => serviceName == "lists"
+      final List<String> servicesForHuman = deployServices
+          .map((String serviceName) => serviceName == 'lists'
               ? LAServiceDesc.get(speciesLists).name
               : LAServiceDesc.get(serviceName).name)
           .toList();
-      servicesForHuman.asMap().forEach((i, value) => services += i == 0
-          ? ' $value'
-          : i < serviceLength - 1
-              ? ', $value'
-              : ' and $value');
+      servicesForHuman
+          .asMap()
+          .forEach((int i, String value) => services += i == 0
+              ? ' $value'
+              : i < serviceLength - 1
+                  ? ', $value'
+                  : ' and $value');
       services += ' service${serviceLength > 1 ? 's' : ''}';
     } else {
       services += ' some services';
     }
 
-    String servers = toStringServers();
+    final String servers = toStringServers();
     String prefix = '';
-    List<String> lTags = List<String>.from(tags);
+    final List<String> lTags = List<String>.from(tags);
     if (onlyProperties) lTags.add('properties');
     if (lTags.isNotEmpty && lTags.length <= 3) {
       prefix += ' (tags: ${lTags.join(', ')})';
@@ -121,10 +128,7 @@ class DeployCmd extends CommonCmd {
 
   bool get isFullDeploy => deployServices.contains('all');
 
-  factory DeployCmd.fromJson(Map<String, dynamic> json) =>
-      _$DeployCmdFromJson(json);
-
   Map<String, dynamic> toJson() => _$DeployCmdToJson(this);
 
-  String getTitle() => "Deployment Results";
+  String getTitle() => 'Deployment Results';
 }

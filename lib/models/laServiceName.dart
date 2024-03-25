@@ -59,7 +59,8 @@ enum LAServiceName {
   // ignore: constant_identifier_names
   docker_swarm,
   gatus,
-  portainer
+  portainer,
+  cassandra
 }
 
 extension ParseToString on LAServiceName {
@@ -70,9 +71,8 @@ extension ParseToString on LAServiceName {
 
 extension EnumParser on String {
   LAServiceName toServiceDescName() {
-    return LAServiceName.values.firstWhere((e) =>
+    return LAServiceName.values.firstWhere((LAServiceName e) =>
         e.toString().toLowerCase() ==
-        '${(LAServiceName).toString()}.$this'
-            .toLowerCase()); //return null if not found
+        '$LAServiceName.$this'.toLowerCase()); //return null if not found
   }
 }

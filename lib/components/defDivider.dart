@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
 
 class DefDivider extends Divider {
-  const DefDivider({Key? key}) : super(key: key, indent: 20);
+  const DefDivider({super.key}) : super(indent: 20);
 }

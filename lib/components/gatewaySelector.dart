@@ -11,17 +11,15 @@ import '../utils/utils.dart';
 import 'serverSelector.dart';
 
 class GatewaySelector extends StatelessWidget {
-  final bool firstServer;
-  final LAServer exclude;
 
   const GatewaySelector(
-      {Key? key, required this.firstServer, required this.exclude})
-      : super(key: key);
+      {super.key, required this.firstServer, required this.exclude});
+  final bool firstServer;
+  final LAServer exclude;
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _GatewaySelectorViewModel>(
-        distinct: false,
         converter: (Store<AppState> store) {
           return _GatewaySelectorViewModel(
               project: store.state.currentProject,
@@ -60,7 +58,7 @@ class GatewaySelector extends StatelessWidget {
               print('Gateway ids: $gatewaysIds');
               if (firstServer) {
                 UiUtils.showAlertDialog(context, () {
-                  for (LAServer s in vm.project.servers) {
+                  for (final LAServer s in vm.project.servers) {
                     if (!gatewaysIds.contains(s.id)) {
                       print('Setting gateways for ${s.name}');
                       s.gateways = gatewaysIds;
@@ -88,14 +86,14 @@ class GatewaySelector extends StatelessWidget {
 }
 
 class _GatewaySelectorViewModel {
-  final LAProject project;
-  final LAServer server;
-  final void Function(LAProject project) onSaveProject;
 
   _GatewaySelectorViewModel(
       {required this.project,
       required this.server,
       required this.onSaveProject});
+  final LAProject project;
+  final LAServer server;
+  final void Function(LAProject project) onSaveProject;
 
   @override
   bool operator ==(Object other) =>
