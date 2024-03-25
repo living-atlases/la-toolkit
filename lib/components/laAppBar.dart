@@ -79,8 +79,8 @@ class LAAppBar extends AppBar {
                           try {
                             context.beamBack();
                           } catch (e) {
-                            print('Error in beam back');
-                            print(e);
+                            debugPrint('Error in beam back');
+                            debugPrint(e.toString());
                             BeamerCond.of(context, HomeLocation());
                           }
                         }

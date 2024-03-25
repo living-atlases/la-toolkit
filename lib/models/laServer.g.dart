@@ -243,15 +243,15 @@ Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
       'sshUser': instance.sshUser,
       'sshKey': instance.sshKey?.toJson(),
       'gateways': instance.gateways,
-      'reachable': _$ServiceStatusEnumMap[instance.reachable]!,
-      'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable]!,
-      'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled]!,
+      'reachable': _$ServiceStatusEnumMap[instance.reachable],
+      'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable],
+      'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled],
       'osName': instance.osName,
       'osVersion': instance.osVersion,
       'projectId': instance.projectId,
     };
 
-const _$ServiceStatusEnumMap = {
+const Map<ServiceStatus, String> _$ServiceStatusEnumMap = <ServiceStatus, String>{
   ServiceStatus.unknown: 'unknown',
   ServiceStatus.success: 'success',
   ServiceStatus.failed: 'failed',

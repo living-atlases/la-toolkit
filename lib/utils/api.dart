@@ -494,7 +494,7 @@ class Api {
     final Map<String, dynamic> projectJ = project.toJson();
     final Map<String, dynamic> projectGenJson = project.toGeneratorJson();
     projectJ['genConf'] = projectGenJson;
-    projectJ['parent'] = project.parent != null ? project.parent!.id : null;
+    projectJ['parent'] = project.parent?.id;
     return projectJ;
   }
 

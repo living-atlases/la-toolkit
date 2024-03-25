@@ -12,7 +12,7 @@ class GenericSelector<T> extends StatefulWidget {
   final Function(T) onChange;
 
   @override
-  State<GenericSelector<T>> createState() => _GenericSelectorState();
+  State<GenericSelector<T>> createState() => _GenericSelectorState<T>();
 }
 
 class _GenericSelectorState<T> extends State<GenericSelector<T>> {
@@ -40,7 +40,7 @@ class _GenericSelectorState<T> extends State<GenericSelector<T>> {
               : 'Nothing selected'),
         ],
       ),
-      items: widget.values.map((entry) {
+      items: widget.values.map((T entry) {
         return DropdownMenuItem<T>(
           value: entry,
           child: Row(

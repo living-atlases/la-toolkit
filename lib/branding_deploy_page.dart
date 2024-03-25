@@ -114,15 +114,4 @@ class _ViewModel {
   final BrandingDeployCmd cmd;
   final Function(LAProject) onCancel;
   final Function(DeployCmd) onSaveDeployCmd;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _ViewModel &&
-          runtimeType == other.runtimeType &&
-          cmd == other.cmd &&
-          project == other.project;
-
-  @override
-  int get hashCode => project.hashCode ^ project.hashCode ^ cmd.hashCode;
 }

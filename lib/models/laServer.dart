@@ -2,12 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'sshKey.dart';
-import '../utils/regexp.dart';
 import 'package:objectid/objectid.dart';
 
+import '../utils/regexp.dart';
 import 'isJsonSerializable.dart';
 import 'la_service.dart';
+import 'sshKey.dart';
 
 part 'laServer.g.dart';
 

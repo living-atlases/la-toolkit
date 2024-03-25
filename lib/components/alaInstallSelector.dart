@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'software_selector.dart';
+import 'package:redux/src/store.dart';
+
 import '../models/appState.dart';
 import '../models/la_project.dart';
-import 'package:redux/src/store.dart';
+import 'software_selector.dart';
 
 class ALAInstallSelector extends StatefulWidget {
 

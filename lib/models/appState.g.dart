@@ -275,7 +275,7 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
           ?.map((e) => e as String)
           .toList(),
       laReleases: (json['laReleases'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, LAReleases.fromJson(e as Map<String, dynamic>)),
+        (String k, e) => MapEntry(k, LAReleases.fromJson(e as Map<String, dynamic>)),
       ),
       lastSwCheck: json['lastSwCheck'] == null
           ? null
@@ -288,18 +288,18 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
 Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'firstUsage': instance.firstUsage,
       'currentProject': instance.currentProject.toJson(),
-      'status': _$LAProjectViewStatusEnumMap[instance.status]!,
+      'status': _$LAProjectViewStatusEnumMap[instance.status],
       'currentStep': instance.currentStep,
       'currentTuneTab': instance.currentTuneTab,
-      'projects': instance.projects.map((e) => e.toJson()).toList(),
+      'projects': instance.projects.map((LAProject e) => e.toJson()).toList(),
       'alaInstallReleases': instance.alaInstallReleases,
       'generatorReleases': instance.generatorReleases,
-      'laReleases': instance.laReleases.map((k, e) => MapEntry(k, e.toJson())),
-      'sshKeys': instance.sshKeys.map((e) => e.toJson()).toList(),
+      'laReleases': instance.laReleases.map((String k, LAReleases e) => MapEntry(k, e.toJson())),
+      'sshKeys': instance.sshKeys.map((SshKey e) => e.toJson()).toList(),
       'lastSwCheck': instance.lastSwCheck?.toIso8601String(),
     };
 
-const _$LAProjectViewStatusEnumMap = {
+const Map<LAProjectViewStatus, String> _$LAProjectViewStatusEnumMap = <LAProjectViewStatus, String>{
   LAProjectViewStatus.view: 'view',
   LAProjectViewStatus.edit: 'edit',
   LAProjectViewStatus.servers: 'servers',

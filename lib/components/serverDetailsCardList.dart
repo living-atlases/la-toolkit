@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'serverDetailsCard.dart';
+import 'package:redux/src/store.dart';
+
 import '../models/appState.dart';
+import '../models/laServer.dart';
 import '../models/la_project.dart';
 import '../models/sshKey.dart';
 import '../redux/actions.dart';
-
-import '../models/laServer.dart';
-import 'package:redux/src/store.dart';
+import 'serverDetailsCard.dart';
 
 class ServersDetailsCardList extends StatelessWidget {
 

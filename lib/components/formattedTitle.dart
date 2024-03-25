@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/StringUtils.dart';
 
 import '../laTheme.dart';
+import '../utils/StringUtils.dart';
 
 class FormattedTitle extends StatelessWidget {
 

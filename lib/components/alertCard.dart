@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AlertCard extends StatelessWidget {
-
   const AlertCard(
       {super.key,
       required this.message,
@@ -9,6 +8,7 @@ class AlertCard extends StatelessWidget {
       this.action,
       this.icon,
       this.color});
+
   final String message;
   final String? actionText;
   final VoidCallback? action;
@@ -32,7 +32,9 @@ class AlertCard extends StatelessWidget {
                       ? TextButton(
                           child: Text(actionText!),
                           onPressed: () {
-                            if (action != null) action!();
+                            if (action != null) {
+                              action!();
+                            }
                           },
                         )
                       : null,

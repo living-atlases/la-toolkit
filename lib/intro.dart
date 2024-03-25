@@ -3,14 +3,14 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'redux/actions.dart';
-import 'routes.dart';
-import 'utils/utils.dart';
 import 'package:redux/src/store.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'laTheme.dart';
 import 'models/appState.dart';
+import 'redux/actions.dart';
+import 'routes.dart';
+import 'utils/utils.dart';
 
 class Intro extends StatefulWidget {
   const Intro({super.key});

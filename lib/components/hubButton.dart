@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../redux/actions.dart';
 
 import '../laTheme.dart';
+import '../redux/actions.dart';
 
 class HubButton extends StatelessWidget {
 

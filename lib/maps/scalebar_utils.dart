@@ -20,8 +20,8 @@ LatLng calculateEndingGlobalCoordinates(
 
   const double a = mSemiMajorAxis;
   const double b = mSemiMinorAxis;
-  final double aSquared = a * a;
-  final double bSquared = b * b;
+  const double aSquared = a * a;
+  const double bSquared = b * b;
   const double f = mFlattening;
   final double phi1 = toRadians(start.latitude);
   final double alpha1 = toRadians(startBearing);

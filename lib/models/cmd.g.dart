@@ -91,11 +91,11 @@ Cmd _$CmdFromJson(Map<String, dynamic> json) => Cmd(
 
 Map<String, dynamic> _$CmdToJson(Cmd instance) => <String, dynamic>{
       'id': instance.id,
-      'type': _$CmdTypeEnumMap[instance.type]!,
+      'type': _$CmdTypeEnumMap[instance.type],
       'properties': instance.properties,
     };
 
-const _$CmdTypeEnumMap = {
+const Map<CmdType, String> _$CmdTypeEnumMap = <CmdType, String>{
   CmdType.brandingDeploy: 'brandingDeploy',
   CmdType.deploy: 'deploy',
   CmdType.preDeploy: 'preDeploy',

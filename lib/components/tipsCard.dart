@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import '../utils/cardConstants.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../utils/cardConstants.dart';
 
 class TipsCard extends StatelessWidget {
   const TipsCard(

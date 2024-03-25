@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../laTheme.dart';
 import '../utils/debounce.dart';
-
 import 'help_icon.dart';
 
 class GenericTextFormField extends StatefulWidget {
-
   const GenericTextFormField(
       {super.key,
       this.label,
@@ -32,6 +31,7 @@ class GenericTextFormField extends StatefulWidget {
       this.enabled = true,
       this.selected = true,
       this.contentPadding});
+
   final String? label;
   final String? hint;
   final TextStyle? hintStyle;
@@ -166,7 +166,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
             ]));
   }
 
-  onChange(String value) {
+  void onChange(String value) {
     debouncer.run(() {
       setState(() {
         delayedValue = value;

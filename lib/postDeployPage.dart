@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'models/appState.dart';
-import 'projectTunePage.dart';
-import 'redux/app_actions.dart';
-import 'utils/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/src/store.dart';
 
@@ -13,11 +9,15 @@ import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/serverSelector.dart';
 import 'laTheme.dart';
+import 'models/appState.dart';
 import 'models/deployCmd.dart';
 import 'models/laServer.dart';
 import 'models/laVariableDesc.dart';
 import 'models/la_project.dart';
 import 'models/postDeployCmd.dart';
+import 'projectTunePage.dart';
+import 'redux/app_actions.dart';
+import 'utils/utils.dart';
 
 class PostDeployPage extends StatefulWidget {
 

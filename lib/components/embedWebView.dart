@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:pointer_interceptor/src/shim/dart_ui.dart' as ui;
-import 'package:universal_html/html.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:universal_html/html.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../laTheme.dart';
@@ -10,13 +10,13 @@ import '../notInDemo.dart';
 import '../utils/utils.dart'; // https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
 
 class EmbedWebView extends StatefulWidget {
-
   const EmbedWebView(
       {super.key,
       required this.src,
       this.height,
       this.width,
       required this.notify});
+
   final String src;
   final double? height, width;
   final bool notify;
@@ -62,7 +62,7 @@ class EmbedWebViewState extends State<EmbedWebView>
           // debugPrint('ws channel closed');
           onWebsocketEnd();
         },
-        onError: (error) {
+        onError: (Object error) {
           // debugPrint('ws error $error');
         },
       );

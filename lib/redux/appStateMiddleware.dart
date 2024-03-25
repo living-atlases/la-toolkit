@@ -498,7 +498,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           continue;
         }
         if (service == events) {
-          // TODO (vjrj): Process docker tags as versions too
+          // TODO(vjrj): Process docker tags as versions too
           releases[events] = LAReleases(
               name: events,
               latest: 'latest',

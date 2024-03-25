@@ -1,7 +1,8 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
-import '../utils/StringUtils.dart';
 import 'package:objectid/objectid.dart';
+
+import '../utils/StringUtils.dart';
 
 part 'cmd.g.dart';
 
