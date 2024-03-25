@@ -221,19 +221,21 @@ PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) => PreDeployCmd(
       addAdditionalDeps: json['addAdditionalDeps'] as bool? ?? true,
       rootBecome: json['rootBecome'] as bool?,
       limitToServers: (json['limitToServers'] as List<dynamic>?)
-          ?.map((e) => e as String)
+          ?.map((dynamic e) => e as String)
           .toList(),
       skipTags: (json['skipTags'] as List<dynamic>?)
-          ?.map((e) => e as String)
+          ?.map((dynamic e) => e as String)
           .toList(),
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      tags: (json['tags'] as List<dynamic>?)
+          ?.map((dynamic e) => e as String)
+          .toList(),
       advanced: json['advanced'] as bool? ?? false,
       continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
       debug: json['debug'] as bool? ?? false,
       dryRun: json['dryRun'] as bool? ?? false,
     )
       ..deployServices = (json['deployServices'] as List<dynamic>)
-          .map((e) => e as String)
+          .map((dynamic e) => e as String)
           .toList()
       ..onlyProperties = json['onlyProperties'] as bool;
 

@@ -83,7 +83,7 @@ Future<void> main() async {
   );
   store.onChange.listen((AppState state) {
     // Disable for now
-    log('On store change: ${state.printShort()}');
+    log('On store change: ${state.debugPrintShort()}');
     try {
       appStateMiddleware.saveAppState(state);
     } catch (e) {
@@ -138,7 +138,7 @@ Future<void> main() async {
   });
 
   // https://github.com/slovnicki/beamer/tree/master/package#tips-and-common-issues
-  // This does not work in production as /project is a sails blueprint path also
+  // This does not work in production as /project is a sails bluedebugPrint path also
   // Beamer.setPathUrlStrategy();
 
   if (initialState.failedLoad) {

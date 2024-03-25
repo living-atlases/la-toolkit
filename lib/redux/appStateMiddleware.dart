@@ -533,8 +533,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         releases[service] = servReleases;
       } catch (e) {
         if (kDebugMode) {
-          print('----- Error getting $service deps ($e)');
-          // print(stacktrace);
+          debugPrint('----- Error getting $service deps ($e)');
+          // debugPrint(stacktrace);
         }
       }
     }
@@ -584,13 +584,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     });
   }
 
-  genSshConf(LAProject project, [bool forceRoot = false]) async {
+  Future<void> genSshConf(LAProject project, [bool forceRoot = false]) async {
     if (project.isCreated) {
       await Api.genSshConf(project, forceRoot);
     }
   }
 
-  saveAppState(AppState state) async {
+  Future<void> saveAppState(AppState state) async {
     await _initPrefs();
 
     final Map<String, dynamic> toJ = state.toJson();

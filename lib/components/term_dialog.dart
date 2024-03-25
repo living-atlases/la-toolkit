@@ -16,7 +16,7 @@ class TermDialog {
       required int pid,
       required bool notify,
       VoidCallback? onClose}) async {
-    // print("${getInitialUrl(port)}");
+    // debugPrint("${getInitialUrl(port)}");
     await showFloatingModalBottomSheet(
         // This can be added to the custom modal
         // expand: false,

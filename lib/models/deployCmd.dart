@@ -103,13 +103,15 @@ class DeployCmd extends CommonCmd {
     final String servers = toStringServers();
     String prefix = '';
     final List<String> lTags = List<String>.from(tags);
-    if (onlyProperties) lTags.add('properties');
+    if (onlyProperties) {
+      lTags.add('properties');
+    }
     if (lTags.isNotEmpty && lTags.length <= 3) {
       prefix += ' (tags: ${lTags.join(', ')})';
     } else if (lTags.length > 3) {
       prefix = ' (only some tasks)';
     }
-    String result = "$services$servers$prefix";
+    String result = '$services$servers$prefix';
     result = dryRun ? 'Dry run $result' : StringUtils.capitalize(result);
     return result;
   }

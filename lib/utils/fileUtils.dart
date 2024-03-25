@@ -1,8 +1,8 @@
 // import 'package:file_picker/file_picker.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_html/html.dart';
 
@@ -18,7 +18,7 @@ class FileUtils {
     const String errorMessage = 'User canceled the picker or invalid file';
 
     uploadInput.onAbort.listen((html.Event event) {
-      print('On file upload abort');
+      debugPrint('On file upload abort');
       completer.completeError(errorMessage);
     });
 
@@ -27,22 +27,22 @@ class FileUtils {
     });
 
     uploadInput.onEnded.listen((html.Event event) {
-      print('On file upload ended');
+      debugPrint('On file upload ended');
       completer.completeError(errorMessage);
     });
 
     uploadInput.onError.listen((html.Event e) {
-      print('On file upload error ($e)');
+      debugPrint('On file upload error ($e)');
       completer.completeError(errorMessage);
     });
 
     // Trying to solve the cancel file dialog without success
     // https://stackoverflow.com/questions/4628544/how-to-detect-when-cancel-is-clicked-on-file-input?page=1&tab=active#tab-top
     uploadInput.onClick.listen((html.MouseEvent event) {
-      print('Clicked');
+      debugPrint('Clicked');
       BodyElement().onFocus.first.then((html.Event event) {
 //      BodyElement().onFocus.listen((event) {
-        print(event);
+        debugPrint(event.toString());
         completer.completeError(errorMessage);
       });
     });
@@ -64,7 +64,7 @@ class FileUtils {
     final String content = await completer.future;
 
     uploadInput.remove();
-    print('End of getYoRcJson');
+    debugPrint('End of getYoRcJson');
     return content;
   }
 
@@ -73,7 +73,7 @@ class FileUtils {
       html.FileUploadInputElement uploadInput,
       Completer<String> completer,
       String errorMessage) async {
-    print(e.type);
+    debugPrint(e.type);
 
     final List<html.File>? files = uploadInput.files;
 
@@ -85,15 +85,15 @@ class FileUtils {
           final String content = utf8.decode(u8);
           completer.complete(content);
         } else {
-          print('error reading the .yo-rc.json');
+          debugPrint('error reading the .yo-rc.json');
           completer.completeError(errorMessage);
         }
       } else {
-        print('error reading the .yo-rc.json');
+        debugPrint('error reading the .yo-rc.json');
         completer.completeError(errorMessage);
       }
     } else {
-      print('No file selected');
+      debugPrint('No file selected');
       completer.completeError(errorMessage);
     }
   }
@@ -102,7 +102,8 @@ class FileUtils {
     Uint8List? file;
     final html.FileReader reader = FileReader();
     reader.readAsDataUrl(blob.slice(0, blob.size, blob.type));
-    reader.onError.listen((html.ProgressEvent error) => completer.completeError(error));
+    reader.onError
+        .listen((html.ProgressEvent error) => completer.completeError(error));
     reader.onLoadEnd.listen((html.ProgressEvent event) {
       final String r = reader.result.toString().split(',').last;
       final Uint8List data = const Base64Decoder().convert(r);

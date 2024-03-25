@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
@@ -94,7 +95,7 @@ AppState _onFetchAlaInstallReleases(
 
 AppState _onLAVersionsSwCheckEnd(
     AppState state, OnLAVersionsSwCheckEnd action) {
-  print(action.releases);
+  debugPrint(action.releases.toString());
   return state.copyWith(
       laReleases: action.releases,
       lastSwCheck: action.time,
@@ -264,15 +265,15 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
     try {
       ps.add(LAProject.fromJson(pJson as Map<String, dynamic>));
     } catch (e) {
-      print('Failed to retrieve project');
-      print(pJson);
+      debugPrint('Failed to retrieve project');
+      debugPrint(pJson.toString());
     }
   }
   final LAProject currentProject = action.setCurrentProject
       ? ps.firstWhere((LAProject p) => p.id == state.currentProject.id,
           orElse: () => ps.isNotEmpty ? ps[0] : LAProject())
       : state.currentProject;
-  // print("Next project ${currentProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+  // debugPrint("Next project ${currentProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
   return state.copyWith(
       currentProject: currentProject, projects: ps, loading: false);
 }
@@ -304,7 +305,7 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
     // If we update a parent project, stay in hub project
     nextProject = state.currentProject;
   }
-  // print("Next project ${nextProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+  // debugPrint("Next project ${nextProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
   return state.copyWith(
       currentProject: nextProject, projects: ps, loading: false);
 }
@@ -440,7 +441,7 @@ AppState _onShowedSnackBar(AppState state, OnShowedSnackBar action) {
 }
 
 AppState _prepareDeployProject(AppState state, PrepareDeployProject action) {
-  // print("REPEAT-CMD ${action.repeatCmd}");
+  // debugPrint("REPEAT-CMD ${action.repeatCmd}");
   return state.copyWith(repeatCmd: action.deployCmd);
 }
 
@@ -475,7 +476,7 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
     final LAServiceDeploy sd =
         LAServiceDeploy.fromJson(sdJ as Map<String, dynamic>);
     sds.add(sd);
-    // print(sdJ);
+    // debugPrint(sdJ);
   }
   if (currentProject.id == pId) {
     currentProject.serviceDeploys = sds;

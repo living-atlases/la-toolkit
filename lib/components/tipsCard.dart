@@ -9,6 +9,7 @@ class TipsCard extends StatelessWidget {
       {super.key,
       required this.text,
       this.margin = const EdgeInsets.fromLTRB(0, 30, 0, 0)});
+
   final String text;
   final EdgeInsets? margin;
   static const Color _markdownColor = Colors.black54;
@@ -37,8 +38,11 @@ class TipsCard extends StatelessWidget {
                             color: _markdownColor,
                             decoration: TextDecoration.underline),
                       ),
-                      onTapLink: (String text, String? href, String title) async {
-                        if (href != null) await launchUrl(Uri.parse(href));
+                      onTapLink:
+                          (String text, String? href, String title) async {
+                        if (href != null) {
+                          await launchUrl(Uri.parse(href));
+                        }
                       },
                       data: text))
             ]));

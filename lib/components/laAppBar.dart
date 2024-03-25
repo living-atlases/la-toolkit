@@ -72,7 +72,9 @@ class LAAppBar extends AppBar {
                       icon: Icon(Icons.arrow_back,
                           size: 28, color: Colors.grey.shade300),
                       onPressed: () {
-                        if (beforeBack != null) beforeBack();
+                        if (beforeBack != null) {
+                          beforeBack();
+                        }
                         if (backLocation != null) {
                           BeamerCond.of(context, backLocation);
                         } else {

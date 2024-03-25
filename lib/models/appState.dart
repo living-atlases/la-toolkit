@@ -165,7 +165,7 @@ class AppState {
     }
   }
 
-  String printShort() {
+  String debugPrintShort() {
     return '''=== AppState ${loading ? '(loading)' : ''} ${depsLoading ? '(depsLoading)' : ''} ===''';
   }
 

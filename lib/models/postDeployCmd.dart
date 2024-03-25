@@ -1,7 +1,7 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
-import '../utils/StringUtils.dart';
 
+import '../utils/StringUtils.dart';
 import 'deployCmd.dart';
 
 part 'postDeployCmd.g.dart';
@@ -9,7 +9,6 @@ part 'postDeployCmd.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class PostDeployCmd extends DeployCmd {
-
   PostDeployCmd(
       {this.configurePostfix = true,
       super.limitToServers,
@@ -19,9 +18,7 @@ class PostDeployCmd extends DeployCmd {
       super.continueEvenIfFails,
       super.debug,
       super.dryRun})
-      : super(
-            deployServices: <String>['all'],
-            onlyProperties: false);
+      : super(deployServices: <String>['all'], onlyProperties: false);
 
   factory PostDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PostDeployCmdFromJson(json);
@@ -50,7 +47,9 @@ class PostDeployCmd extends DeployCmd {
   @override
   List<String> get tags {
     final List<String> tags = <String>[];
-    if (configurePostfix) tags.add('post-task-postfix');
+    if (configurePostfix) {
+      tags.add('post-task-postfix');
+    }
     return tags;
   }
 

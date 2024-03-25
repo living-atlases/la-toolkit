@@ -156,7 +156,7 @@ Map<String, dynamic> _$LAServiceToJson(LAService instance) => <String, dynamic>{
       'usesSubdomain': instance.usesSubdomain,
       'iniPath': instance.iniPath,
       'suburl': instance.suburl,
-      'status': _$ServiceStatusEnumMap[instance.status]!,
+      'status': _$ServiceStatusEnumMap[instance.status],
       'projectId': instance.projectId,
     };
 

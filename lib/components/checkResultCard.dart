@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../models/la_service.dart';
 
 class CheckResultCard extends StatelessWidget {
-
   const CheckResultCard(
       {super.key,
       required this.status,
@@ -10,6 +10,7 @@ class CheckResultCard extends StatelessWidget {
       required this.subtitle,
       this.actionText,
       this.action});
+
   final ServiceStatus status;
   final String title;
   final String subtitle;
@@ -32,7 +33,9 @@ class CheckResultCard extends StatelessWidget {
                       ? TextButton(
                           child: Text(actionText!),
                           onPressed: () {
-                            if (action != null) action!();
+                            if (action != null) {
+                              action!();
+                            }
                           },
                         )
                       : null,

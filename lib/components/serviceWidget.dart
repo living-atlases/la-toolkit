@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../laTheme.dart';
@@ -228,7 +228,7 @@ class ServiceWidget extends StatelessWidget {
                               searchHint:
                                   "Select one server to deploy this service:",
                               onChanged: (value) {
-                                print(value);
+                                debugPrint(value);
                                 // service.servers[0] = value;
                               },
                               /* dialogBox: false,
@@ -306,14 +306,4 @@ class _LAServiceViewModel {
   final LAProject currentProject;
   final void Function(LAService service) onEditService;
   final void Function(LAProject project) onSaveProject;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _LAServiceViewModel &&
-          runtimeType == other.runtimeType &&
-          currentProject == other.currentProject;
-
-  @override
-  int get hashCode => currentProject.hashCode;
 }

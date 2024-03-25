@@ -70,12 +70,12 @@ class _CountDownWidgetState extends State<CountDownWidget> {
               // This Callback will execute when the Countdown Starts.
               onStart: () {
                 // Here, do whatever you want
-                // print('Countdown Started');
+                // debugPrint('Countdown Started');
               },
               // This Callback will execute when the Countdown Ends.
               onComplete: () {
                 // Here, do whatever you want
-                // print('Countdown Ended');
+                // debugPrint('Countdown Ended');
                 _controller.start();
                 widget.onReload();
               },

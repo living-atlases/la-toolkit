@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'components/app_snack_bar.dart';
@@ -228,8 +228,8 @@ class SshKeyPage extends StatelessWidget {
 }
 
 class SshKeysTable extends StatelessWidget {
-
   const SshKeysTable({super.key, required this.vm});
+
   final SshKeyViewModel vm;
 
   @override
@@ -295,12 +295,12 @@ class SshKeysTable extends StatelessWidget {
 }
 
 class SshKeyViewModel {
-
   SshKeyViewModel(
       {required this.state,
       required this.onAddKey,
       required this.onScanKeys,
       required this.onImportKey});
+
   final AppState state;
   final void Function(String) onAddKey;
   final void Function() onScanKeys;

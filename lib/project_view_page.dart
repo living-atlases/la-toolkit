@@ -161,7 +161,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 BeamerCond.of(context, LAProjectViewLocation());
               },
               onOpenParent: (LAProject hub) {
-                // print(hub.parent);
+                // debugPrint(hub.parent);
                 store.dispatch(OpenProjectTools(hub.parent!));
               });
         },

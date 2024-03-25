@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 
 import 'components/GenericSelector.dart';
 import 'components/laAppBar.dart';
@@ -10,8 +10,8 @@ import 'components/software_selector.dart';
 import 'models/appState.dart';
 
 class SandboxPage extends StatefulWidget {
-
   const SandboxPage({super.key});
+
   static const String routeName = 'sandbox';
 
   @override
@@ -25,12 +25,14 @@ class _SandboxPageState extends State<SandboxPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _SandboxViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _SandboxViewModel>(
+        converter: (Store<AppState> store) {
       return _SandboxViewModel(
         state: store.state,
       );
     }, builder: (BuildContext context, _SandboxViewModel vm) {
-      final List<DropdownMenuItem<String>> releases = <DropdownMenuItem<String>>[];
+      final List<DropdownMenuItem<String>> releases =
+          <DropdownMenuItem<String>>[];
       for (final String element in vm.state.alaInstallReleases) {
         releases.add(DropdownMenuItem(value: element, child: Text(element)));
       }
@@ -59,19 +61,19 @@ class _SandboxPageState extends State<SandboxPage> {
                     values: const <String>['a', 'b', 'c'],
                     currentValue: 'b',
                     onChange: (String v) {
-                      print(v);
+                      debugPrint(v);
                     }),
                 SoftwareSelector(
                   versions: const <String>['a', 'b'],
                   onChange: (String? value) {
-                    print(value);
+                    debugPrint(value);
                   },
                   label: 'Test',
                 ),
                 SoftwareSelector(
                   versions: const <String>['a', 'b'],
                   onChange: (String? value) {
-                    print(value);
+                    debugPrint(value);
                   },
                   label: 'Test',
                 ),
@@ -87,7 +89,7 @@ class _SandboxPageState extends State<SandboxPage> {
                     );
                   }).toList(),
                   onChanged: (String? value) {
-                    print(value);
+                    debugPrint(value);
                   },
                 ),
               ],
@@ -98,7 +100,7 @@ class _SandboxPageState extends State<SandboxPage> {
 }
 
 class _SandboxViewModel {
-
   _SandboxViewModel({required this.state});
+
   final AppState state;
 }

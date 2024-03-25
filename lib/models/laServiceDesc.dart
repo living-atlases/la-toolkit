@@ -867,7 +867,7 @@ class LAServiceDesc {
         alias = laServiceDesc.alias;
       }
     } catch (e) {
-      print('Processing software $sw: $e');
+      debugPrint('Processing software $sw: $e');
       name = sw;
     }
     return "$name${alias != null ? ' ($alias)' : ''}";

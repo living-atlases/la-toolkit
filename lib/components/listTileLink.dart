@@ -30,7 +30,7 @@ class ListTileLink extends StatelessWidget {
           ? Tooltip(message: tooltip, child: Text(title))
           : Text(title),
       onTap: () async {
-        // print(url);
+        // debugPrint(url);
         await launchUrl(Uri.parse(url));
       },
       trailing: Wrap(

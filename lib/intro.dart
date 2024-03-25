@@ -3,7 +3,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'laTheme.dart';
@@ -20,7 +20,8 @@ class Intro extends StatefulWidget {
 }
 
 class _IntroState extends State<Intro> {
-  final GlobalKey<IntroductionScreenState> introKey = GlobalKey<IntroductionScreenState>();
+  final GlobalKey<IntroductionScreenState> introKey =
+      GlobalKey<IntroductionScreenState>();
   static const MaterialColor _markdownColor = LAColorTheme.inactive;
   static const TextStyle _markdownStyle = TextStyle(fontSize: 18);
 
@@ -43,7 +44,8 @@ class _IntroState extends State<Intro> {
       pageColor: Colors.white,
       imagePadding: EdgeInsets.zero,
     );
-    return StoreConnector<AppState, _IntroViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _IntroViewModel>(
+        converter: (Store<AppState> store) {
       return _IntroViewModel(
         state: store.state,
         onAddProject: () {
@@ -68,8 +70,7 @@ Living Atlases portals''',
           PageViewModel(
             titleWidget: _buildTitle('How?'),
             bodyWidget: _introText(
-                text:
-                    '''
+                text: '''
 A Living Atlas (LA) can be deployed and maintained using:
 1) the [Atlas of Living Australia](https://ala.org.au/) (ALA) Free and Open Source Software, with
 2) the [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/), the official [ansible](https://www.ansible.com/) code that automatically deploy and maintain a Living Atlas (LA) portal
@@ -150,7 +151,7 @@ A Living Atlas (LA) can be deployed and maintained using:
                       decoration: TextDecoration.underline),
                 ),
                 onTapLink: (String text, String? href, String title) async =>
-                    await launchUrl(Uri.parse(href!)),
+                    launchUrl(Uri.parse(href!)),
                 data: text)
             : Text(text,
                 textAlign: TextAlign.left,
@@ -170,11 +171,11 @@ A Living Atlas (LA) can be deployed and maintained using:
 }
 
 class _IntroViewModel {
-
   _IntroViewModel(
       {required this.state,
       required this.onIntroEnd,
       required this.onAddProject});
+
   final AppState state;
   final void Function() onIntroEnd;
   final void Function() onAddProject;

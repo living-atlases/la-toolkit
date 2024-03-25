@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
@@ -20,8 +20,8 @@ import 'redux/app_actions.dart';
 import 'utils/utils.dart';
 
 class PostDeployPage extends StatefulWidget {
-
   const PostDeployPage({super.key});
+
   static const String routeName = 'postdeploy';
 
   @override
@@ -138,12 +138,14 @@ class PostDeployFields extends StatelessWidget {
         converter: (Store<AppState> store) {
       return _PostDeployFieldsViewModel(
           project: store.state.currentProject,
-          onUpdateProject: (LAProject project) => store.dispatch(UpdateProject(project)));
+          onUpdateProject: (LAProject project) =>
+              store.dispatch(UpdateProject(project)));
     }, builder: (BuildContext context, _PostDeployFieldsViewModel vm) {
       final List<Widget> items = <Widget>[];
       for (final String varName in PostDeployCmd.postDeployVariables) {
         items.add(const SizedBox(height: 20));
-        items.add(MessageItem(vm.project, LAVariableDesc.get(varName), (Object value) {
+        items.add(MessageItem(vm.project, LAVariableDesc.get(varName),
+            (Object value) {
           vm.project.setVariable(LAVariableDesc.get(varName), value);
           vm.onUpdateProject(vm.project);
         }).buildTitle(context));
@@ -154,15 +156,14 @@ class PostDeployFields extends StatelessWidget {
 }
 
 class _PostDeployFieldsViewModel {
-
   _PostDeployFieldsViewModel(
       {required this.project, required this.onUpdateProject});
+
   final LAProject project;
   final void Function(LAProject project) onUpdateProject;
 }
 
 class _ViewModel {
-
   _ViewModel(
       {required this.project,
       required this.onDoPostDeployTasks,
@@ -170,6 +171,7 @@ class _ViewModel {
       required this.onUpdateProject,
       required this.onSaveDeployCmd,
       required this.onCancel});
+
   final LAProject project;
   final PostDeployCmd cmd;
   final Function(LAProject, PostDeployCmd) onDoPostDeployTasks;

@@ -42,7 +42,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
             ? <String>['all']
             : values.where((String item) => item != 'all').toList()
         : <String>[];
-    // print(newVal);
+    // debugPrint(newVal);
     return newVal;
   }
 
@@ -63,7 +63,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
             onSaved: (List<String>? val) {
               setState(() {
                 if (val != null) {
-                  // print('$val');
+                  // debugPrint('$val');
                   formValue = val;
                 }
               });
@@ -86,7 +86,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                           formValue = _selectAllOrElements(values);
                           widget.onChange(formValue);
                         });
-                        // print("onChanged: $values");
+                        // debugPrint("onChanged: $values");
                         // return state.didChange(values);
                       },
                       runSpacing: -10,

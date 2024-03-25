@@ -152,7 +152,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
     _brandings.insert(0, _selected[0]);
     return Container(
       alignment: Alignment.center,
-      padding: const EdgeInsets.all(0),
+      padding: EdgeInsets.zero,
       child: Column(
         children: <Widget>[
           MultiSelectChipField<Branding>(

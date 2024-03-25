@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 import 'package:timelines/timelines.dart';
 
 import '../laTheme.dart';
@@ -16,8 +16,8 @@ const MaterialColor todoColor = Colors.grey;
 const double _iconsVerticalPadding = 4.0;
 
 class LAProjectTimeline extends StatelessWidget {
-
   LAProjectTimeline({super.key, required this.project});
+
   final int size = LAProjectStatus.values.length;
   final LAProject project;
 
@@ -47,7 +47,8 @@ class LAProjectTimeline extends StatelessWidget {
                     builder: TimelineTileBuilder.connected(
                       connectionDirection: ConnectionDirection.before,
                       itemExtentBuilder: (_, __) => 100,
-                      oppositeContentsBuilder: (BuildContext context, int index) {
+                      oppositeContentsBuilder:
+                          (BuildContext context, int index) {
                         return Padding(
                           padding: const EdgeInsets.only(
                               bottom: _iconsVerticalPadding),
@@ -143,7 +144,8 @@ class LAProjectTimeline extends StatelessWidget {
                       connectorBuilder: (_, int index, ConnectorType type) {
                         if (index > 0) {
                           if (index == vm.status.value) {
-                            final Color prevColor = getColor(vm.status, index - 1);
+                            final Color prevColor =
+                                getColor(vm.status, index - 1);
                             final Color color = getColor(vm.status, index);
                             List<Color> gradientColors;
                             if (type == ConnectorType.start) {
@@ -191,8 +193,8 @@ class LAProjectTimeline extends StatelessWidget {
 }
 
 class _LAProjectTimelineViewModel {
-
   _LAProjectTimelineViewModel({required this.status, required this.isHub});
+
   final LAProjectStatus status;
   final bool isHub;
 

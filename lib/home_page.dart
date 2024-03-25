@@ -167,8 +167,8 @@ class _HomePageState extends State<HomePage> {
         curve: Curves.bounceIn,
         overlayColor: Colors.black,
         overlayOpacity: 0.5,
-        // onOpen: () => print('OPENING DIAL'),
-        // onClose: () => print('DIAL CLOSED'),
+        // onOpen: () => debugPrint('OPENING DIAL'),
+        // onClose: () => debugPrint('DIAL CLOSED'),
         tooltip: 'More options',
         heroTag: 'speed-dial-more-tag',
         backgroundColor: LAColorTheme.laPalette,
@@ -188,7 +188,7 @@ class _HomePageState extends State<HomePage> {
             onTap: () async {
               vm.onAddTemplates();
             },
-            // onLongPress: () => print('FIRST CHILD LONG PRESS'),
+            // onLongPress: () => debugPrint('FIRST CHILD LONG PRESS'),
           ),
           SpeedDialChild(
             child: const Icon(Icons.upload_rounded),
@@ -197,7 +197,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Import previous generated inventories',
             labelStyle: const TextStyle(fontSize: 18.0),
             onTap: () => showAlertDialog(context, vm),
-            // onLongPress: () => print('SECOND CHILD LONG PRESS'),
+            // onLongPress: () => debugPrint('SECOND CHILD LONG PRESS'),
           ),
           if (vm.state.projects.isNotEmpty)
             SpeedDialChild(
@@ -207,7 +207,7 @@ class _HomePageState extends State<HomePage> {
               label: 'Create a new LA Project',
               labelStyle: const TextStyle(fontSize: 18.0),
               onTap: () => vm.onAddProject(),
-              // onLongPress: () => print('SECOND CHILD LONG PRESS'),
+              // onLongPress: () => debugPrint('SECOND CHILD LONG PRESS'),
             ),
         ]);
   }
@@ -248,10 +248,16 @@ class _HomePageState extends State<HomePage> {
                 if (!mounted) {
                   return;
                 }
+                if (!context.mounted) {
+                  return;
+                }
                 onFinish(context, true);
               }
             } catch (e) {
               if (!mounted) {
+                return;
+              }
+              if (!context.mounted) {
                 return;
               }
               onFinish(context, true);

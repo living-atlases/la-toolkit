@@ -14,7 +14,6 @@ part 'laServer.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServer implements IsJsonSerializable<LAServer> {
-
   LAServer(
       {String? id,
       required this.name,
@@ -31,15 +30,15 @@ class LAServer implements IsJsonSerializable<LAServer> {
       this.osVersion = '',
       required this.projectId})
       : id = id ?? ObjectId().toString(),
+        assert(LARegExp.hostnameRegexp.hasMatch(name),
+            "'$name' is a invalid server name"),
         aliases = aliases ?? <String>[],
         gateways = gateways ?? <String>[],
-        ip = ip ?? '' {
-    assert(LARegExp.hostnameRegexp.hasMatch(name),
-        "'$name' is a invalid server name");
-  }
+        ip = ip ?? '';
 
   factory LAServer.fromJson(Map<String, dynamic> json) =>
       _$LAServerFromJson(json);
+
   // Basic
   String id;
   String name;
@@ -124,7 +123,8 @@ class LAServer implements IsJsonSerializable<LAServer> {
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {
     if (servers.map((LAServer s) => s.id).toList().contains(laServer.id)) {
       servers = servers
-          .map((LAServer current) => current.id == laServer.id ? laServer : current)
+          .map((LAServer current) =>
+              current.id == laServer.id ? laServer : current)
           .toList();
     } else {
       servers.add(laServer);

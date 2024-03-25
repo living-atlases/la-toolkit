@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 
 import 'components/deployBtn.dart';
 import 'components/deployTaskSwitch.dart';
@@ -18,8 +18,8 @@ import 'redux/app_actions.dart';
 import 'utils/utils.dart';
 
 class PreDeployPage extends StatefulWidget {
-
   const PreDeployPage({super.key});
+
   static const String routeName = 'predeploy';
 
   @override
@@ -62,7 +62,8 @@ class _PreDeployPageState extends State<PreDeployPage> {
                 cmd.addAdditionalDeps
             ? () => vm.onDoDeployTaskSwitchs(vm.project, cmd)
             : null;
-        final String defUser = vm.project.getVariableValue('ansible_user').toString();
+        final String defUser =
+            vm.project.getVariableValue('ansible_user').toString();
         final String pageTitle = '${vm.project.shortName} Pre-Deploy Tasks';
         return Title(
             title: pageTitle,
@@ -168,8 +169,9 @@ class _PreDeployPageState extends State<PreDeployPage> {
                                         .map((LAServer e) => e.name)
                                         .toList(),
                                     icon: MdiIcons.server,
-                                    onChange: (List<String> limitToServers) => setState(() =>
-                                        cmd.limitToServers = limitToServers)),
+                                    onChange: (List<String> limitToServers) =>
+                                        setState(() => cmd.limitToServers =
+                                            limitToServers)),
                                 const SizedBox(height: 20),
                                 LaunchBtn(onTap: onTap, execBtn: execBtn),
                               ],
@@ -185,27 +187,16 @@ class _PreDeployPageState extends State<PreDeployPage> {
 }
 
 class _ViewModel {
-
   _ViewModel(
       {required this.project,
       required this.onDoDeployTaskSwitchs,
       required this.cmd,
       required this.onSaveDeployCmd,
       required this.onCancel});
+
   final LAProject project;
   final Function(LAProject, PreDeployCmd) onDoDeployTaskSwitchs;
   final PreDeployCmd cmd;
   final Function(LAProject) onCancel;
   final Function(DeployCmd) onSaveDeployCmd;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _ViewModel &&
-          runtimeType == other.runtimeType &&
-          cmd == other.cmd &&
-          project == other.project;
-
-  @override
-  int get hashCode => project.hashCode ^ project.hashCode ^ cmd.hashCode;
 }

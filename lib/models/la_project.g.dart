@@ -523,7 +523,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'createdAt': instance.createdAt,
       'alaInstallRelease': instance.alaInstallRelease,
       'generatorRelease': instance.generatorRelease,
-      'status': _$LAProjectStatusEnumMap[instance.status]!,
+      'status': _$LAProjectStatusEnumMap[instance.status],
       'isCreated': instance.isCreated,
       'fstDeployed': instance.fstDeployed,
       'advancedEdit': instance.advancedEdit,

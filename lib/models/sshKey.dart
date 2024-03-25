@@ -14,7 +14,7 @@ class SshKey {
       this.type,
       this.size,
       required this.desc,
-      this.fingerprint,
+      this.fingerdebugPrint,
       required this.encrypted,
       this.missing = false});
 
@@ -26,7 +26,7 @@ class SshKey {
   String? type;
   int? size;
   String desc;
-  String? fingerprint;
+  String? fingerdebugPrint;
   bool encrypted;
   bool missing;
 
@@ -47,7 +47,7 @@ class SshKey {
           type == other.type &&
           size == other.size &&
           desc == other.desc &&
-          fingerprint == other.fingerprint &&
+          fingerdebugPrint == other.fingerdebugPrint &&
           encrypted == other.encrypted;
 
   @override
@@ -57,6 +57,6 @@ class SshKey {
       type.hashCode ^
       size.hashCode ^
       desc.hashCode ^
-      fingerprint.hashCode ^
+      fingerdebugPrint.hashCode ^
       encrypted.hashCode;
 }

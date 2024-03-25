@@ -197,7 +197,7 @@ Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
       'invDir': instance.invDir,
       'cwd': instance.cwd,
       'cmd': instance.cmd.toJson(),
-      'result': _$CmdResultEnumMap[instance.result]!,
+      'result': _$CmdResultEnumMap[instance.result],
       'createdAt': instance.createdAt,
       'duration': instance.duration,
     };

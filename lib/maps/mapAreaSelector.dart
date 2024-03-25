@@ -3,7 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 
 import '../laTheme.dart';
 import '../models/appState.dart';
@@ -91,7 +91,7 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
                         area[2] = latLng;
                       }
                       firstPoint = !firstPoint;
-                      print('area: $firstPoint $area');
+                      debugPrint('area: $firstPoint $area');
                       _updateArea(vm);
                     },
                     maxZoom: _maxZoom,
@@ -170,9 +170,9 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
         return Icon(Icons.circle, size: 20, color: LAColorTheme.laPalette);
       },
       onDragStart: (DragStartDetails details, LatLng point) =>
-          print('Start point $point'),
+          debugPrint('Start point $point'),
       onDragEnd: (DragEndDetails details, LatLng endPoint) {
-        print('End point $endPoint');
+        debugPrint('End point $endPoint');
         final List<LatLng?> lArea = projectArea;
         if (initialPoint == area[0]) {
           lArea[0] = lArea[4] = endPoint;
@@ -182,14 +182,14 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
         area = lArea;
         _updateArea(vm);
         firstPoint = !firstPoint;
-        print('area: $firstPoint $area');
+        debugPrint('area: $firstPoint $area');
       },
       onDragUpdate: (DragUpdateDetails details, LatLng point) {},
       onTap: (LatLng point) {
-        print('on tap');
+        debugPrint('on tap');
       },
       onLongPress: (LatLng point) {
-        print('on long press');
+        debugPrint('on long press');
       },
       scrollNearEdgeRatio: 1.0,
     );

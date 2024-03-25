@@ -19,7 +19,7 @@ abstract class _$SshKeyCWProxy {
 
   SshKey desc(String desc);
 
-  SshKey fingerprint(String? fingerprint);
+  SshKey fingerdebugPrint(String? fingerdebugPrint);
 
   SshKey encrypted(bool encrypted);
 
@@ -38,7 +38,7 @@ abstract class _$SshKeyCWProxy {
     String? type,
     int? size,
     String? desc,
-    String? fingerprint,
+    String? fingerdebugPrint,
     bool? encrypted,
     bool? missing,
   });
@@ -69,7 +69,7 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
   SshKey desc(String desc) => this(desc: desc);
 
   @override
-  SshKey fingerprint(String? fingerprint) => this(fingerprint: fingerprint);
+  SshKey fingerdebugPrint(String? fingerdebugPrint) => this(fingerdebugPrint: fingerdebugPrint);
 
   @override
   SshKey encrypted(bool encrypted) => this(encrypted: encrypted);
@@ -92,7 +92,7 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
     Object? type = const $CopyWithPlaceholder(),
     Object? size = const $CopyWithPlaceholder(),
     Object? desc = const $CopyWithPlaceholder(),
-    Object? fingerprint = const $CopyWithPlaceholder(),
+    Object? fingerdebugPrint = const $CopyWithPlaceholder(),
     Object? encrypted = const $CopyWithPlaceholder(),
     Object? missing = const $CopyWithPlaceholder(),
   }) {
@@ -122,10 +122,10 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
           ? _value.desc
           // ignore: cast_nullable_to_non_nullable
           : desc as String,
-      fingerprint: fingerprint == const $CopyWithPlaceholder()
-          ? _value.fingerprint
+      fingerdebugPrint: fingerdebugPrint == const $CopyWithPlaceholder()
+          ? _value.fingerdebugPrint
           // ignore: cast_nullable_to_non_nullable
-          : fingerprint as String?,
+          : fingerdebugPrint as String?,
       encrypted: encrypted == const $CopyWithPlaceholder() || encrypted == null
           ? _value.encrypted
           // ignore: cast_nullable_to_non_nullable
@@ -154,7 +154,7 @@ SshKey _$SshKeyFromJson(Map<String, dynamic> json) => SshKey(
       type: json['type'] as String?,
       size: json['size'] as int?,
       desc: json['desc'] as String,
-      fingerprint: json['fingerprint'] as String?,
+      fingerdebugPrint: json['fingerdebugPrint'] as String?,
       encrypted: json['encrypted'] as bool,
       missing: json['missing'] as bool? ?? false,
     );
@@ -165,7 +165,7 @@ Map<String, dynamic> _$SshKeyToJson(SshKey instance) => <String, dynamic>{
       'type': instance.type,
       'size': instance.size,
       'desc': instance.desc,
-      'fingerprint': instance.fingerprint,
+      'fingerdebugPrint': instance.fingerdebugPrint,
       'encrypted': instance.encrypted,
       'missing': instance.missing,
     };

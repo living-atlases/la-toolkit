@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
 
 import 'components/app_snack_bar.dart';
@@ -90,7 +90,7 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
             BeamerCond.of(context, LAProjectViewLocation());
           },
           onSaveCurrentProject: (LAProject project) {
-            print('On Save Current Project');
+            debugPrint('On Save Current Project');
             project.validateCreation();
             store.dispatch(SaveCurrentProject(project));
           },
@@ -99,10 +99,11 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
             store.dispatch(GotoStepEditProject(step));
           });
     }, builder: (BuildContext context, _ProjectPageViewModel vm) {
-      print('build project servers page');
+      debugPrint('build project servers page');
       final LAProject project = vm.project;
 
-      print('Building project servers currentStep: $_step key: $_scaffoldKey');
+      debugPrint(
+          'Building project servers currentStep: $_step key: $_scaffoldKey');
       final List<Step> steps = <Step>[];
       steps.add(Step(
           isActive: _setIsActive(_step, _serversToServiceStep),

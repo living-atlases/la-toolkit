@@ -22,7 +22,7 @@ class StringUtils {
     // replace 1.0 with 1.0.0
     version = version.replaceAllMapped(
         RegExp(r'^([\^>=< ]+|)([0-9]+\.[0-9]+)$'),
-        (Match m) => "${m[1]}${m[2]}.0");
+        (Match m) => '${m[1]}${m[2]}.0');
     // replace 1.0-SNAPSHOT with 1.0.0-SNAPSHOT
     version = version.replaceAllMapped(RegExp(r'^([0-9]+\.[0-9]+)(-[A-Z]+)$'),
         (Match m) => '${m[1]}.0${m[2]}');
@@ -38,7 +38,7 @@ class StringUtils {
         (Match m) => '${m[1]}-${m[2]}');
     // replace 1 with 1.0.0
     version = version.replaceAllMapped(
-        RegExp(r'^([\^>=< ]+|)([0-9]+)$'), (Match m) => "${m[1]}${m[2]}.0.0");
+        RegExp(r'^([\^>=< ]+|)([0-9]+)$'), (Match m) => '${m[1]}${m[2]}.0.0');
     return version;
   }
 }

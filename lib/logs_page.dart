@@ -20,7 +20,7 @@ class LogsHistoryPage extends StatelessWidget {
   static const String routeName = 'logs';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // https://sailsjs.com/documentation/reference/blueprint-api/find-where
+  // https://sailsjs.com/documentation/reference/bluedebugPrint-api/find-where
   // Pagination
   // http://127.0.0.1:1337/CmdHistoryEntry?populate=cmd&where={%22projectId%22:%22609a1d0756d6b525227ce1e6%22}&sort=createdAt%20DESC
   // ?limit=100

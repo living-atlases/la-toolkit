@@ -8,7 +8,6 @@ import '../models/laServer.dart';
 import '../utils/cardConstants.dart';
 
 class ServerSelector extends StatefulWidget {
-
   const ServerSelector(
       {super.key,
       required this.selectorKey,
@@ -20,6 +19,7 @@ class ServerSelector extends StatefulWidget {
       required this.modalTitle,
       this.exclude,
       required this.onChange});
+
   final GlobalKey<FormFieldState<dynamic>> selectorKey;
   final List<String> hosts;
   final IconData icon;
@@ -46,7 +46,9 @@ class _ServerSelectorState extends State<ServerSelector> {
   @override
   Widget build(BuildContext context) {
     final List<String> serverList = widget.hosts;
-    if (widget.exclude != null) serverList.remove(widget.exclude!.name);
+    if (widget.exclude != null) {
+      serverList.remove(widget.exclude!.name);
+    }
     return Card(
         elevation: CardConstants.defaultElevation,
         // color: Colors.black12,
@@ -95,13 +97,16 @@ class _ServerSelectorState extends State<ServerSelector> {
                   }, */
                 ),
               ),
-              if (_selected.isEmpty) Container(
-                      padding: const EdgeInsets.all(10),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        widget.placeHolder,
-                        style: const TextStyle(color: Colors.black45),
-                      )) else const Text(''),
+              if (_selected.isEmpty)
+                Container(
+                    padding: const EdgeInsets.all(10),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.placeHolder,
+                      style: const TextStyle(color: Colors.black45),
+                    ))
+              else
+                const Text(''),
             ],
           ),
         ));

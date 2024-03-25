@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 
 import '../models/appState.dart';
 import '../models/la_project.dart';
 import 'software_selector.dart';
 
 class GeneratorSelector extends StatefulWidget {
-
   const GeneratorSelector({super.key, required this.onChange});
+
   final Function(String?) onChange;
 
   @override
@@ -34,7 +34,7 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
 }
 
 class _GeneratorSelectorViewModel {
-
   _GeneratorSelectorViewModel({required this.state});
+
   final AppState state;
 }

@@ -20,7 +20,6 @@ import 'sandboxPage.dart';
 import 'sshKeysPage.dart';
 
 class Routes {
-
   factory Routes() {
     return _instance;
   }
@@ -30,7 +29,8 @@ class Routes {
             notFoundPage: notFoundPage,
             // Better show a NotFoundPage
             // notFoundRedirect: HomeLocation(),
-            locationBuilder: BeamerLocationBuilder(beamLocations: <BeamLocation<RouteInformationSerializable>>[
+            locationBuilder: BeamerLocationBuilder(beamLocations: <BeamLocation<
+                RouteInformationSerializable<dynamic>>>[
               HomeLocation(),
               LAProjectEditLocation(),
               LAProjectServersLocation(),
@@ -69,7 +69,7 @@ abstract class NamedBeamLocation extends BeamLocation<BeamState> {
 }
 
 class BeamerCond {
-  static of(BuildContext context, NamedBeamLocation loc) {
+  static void of(BuildContext context, NamedBeamLocation loc) {
     Beamer.of(context).beamToNamed(loc.route);
   }
 }
@@ -79,7 +79,8 @@ class HomeLocation extends NamedBeamLocation {
   List<String> get pathPatterns => <String>['/'];
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: const ValueKey('home'),
             child: const HomePage(),
@@ -92,7 +93,8 @@ class HomeLocation extends NamedBeamLocation {
 
 class LAProjectEditLocation extends NamedBeamLocation {
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: ValueKey(route),
             child: LAProjectEditPage(),
@@ -105,7 +107,8 @@ class LAProjectEditLocation extends NamedBeamLocation {
 
 class LAProjectServersLocation extends NamedBeamLocation {
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: ValueKey(route),
             child: const LAProjectServersPage(),
@@ -118,7 +121,8 @@ class LAProjectServersLocation extends NamedBeamLocation {
 
 class LAProjectViewLocation extends NamedBeamLocation {
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: ValueKey(route),
             popToNamed: '/',
@@ -134,7 +138,8 @@ class SandboxLocation extends NamedBeamLocation {
   String get route => SandboxPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: ValueKey(route),
             child: const SandboxPage(),
@@ -147,7 +152,8 @@ class LAProjectTuneLocation extends NamedBeamLocation {
   String get route => LAProjectTunePage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: ValueKey(route),
             child: const LAProjectTunePage(),
@@ -160,7 +166,8 @@ class PreDeployLocation extends NamedBeamLocation {
   String get route => PreDeployPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         const BeamPage(
             key: ValueKey(PreDeployPage.routeName), child: PreDeployPage())
       ];
@@ -171,7 +178,8 @@ class BrandingDeployLocation extends NamedBeamLocation {
   String get route => BrandingDeployPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         const BeamPage(
             key: ValueKey(BrandingDeployPage.routeName),
             child: BrandingDeployPage())
@@ -183,7 +191,8 @@ class PostDeployLocation extends NamedBeamLocation {
   String get route => PostDeployPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         const BeamPage(
             key: ValueKey(PostDeployPage.routeName), child: PostDeployPage())
       ];
@@ -194,7 +203,8 @@ class LogsHistoryLocation extends NamedBeamLocation {
   String get route => LogsHistoryPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: ValueKey(route),
             child: LogsHistoryPage(),
@@ -207,7 +217,8 @@ class SshKeysLocation extends NamedBeamLocation {
   String get route => SshKeyPage.routeName;
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: ValueKey(route),
             child: SshKeyPage(),
@@ -226,10 +237,12 @@ class DeployLocation extends NamedBeamLocation {
 
 class CmdTermLocation extends BeamLocation<BeamState> {
   @override
-  List<String> get pathPatterns => <String>['/${CmdTermPage.routeName}/:port/:pid'];
+  List<String> get pathPatterns =>
+      <String>['/${CmdTermPage.routeName}/:port/:pid'];
 
   @override
-  List<BeamPage> buildPages(BuildContext context, BeamState state) => <BeamPage>[
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
         BeamPage(
             key: ValueKey(
                 '${CmdTermPage.routeName}-${state.pathParameters['port']}-${state.pathParameters['pid']}'),
@@ -257,7 +270,9 @@ class PortalStatusLocation extends NamedBeamLocation {
 
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
-      <BeamPage>[BeamPage(key: ValueKey(route), child: const PortalStatusPage())];
+      <BeamPage>[
+        BeamPage(key: ValueKey(route), child: const PortalStatusPage())
+      ];
 }
 
 class PipelinesLocation extends NamedBeamLocation {

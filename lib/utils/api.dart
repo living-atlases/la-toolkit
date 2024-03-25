@@ -44,7 +44,7 @@ class Api {
     final List<Map<String, dynamic>> servers =
         project.toJson()['servers'] as List<Map<String, dynamic>>;
     final String user = project.getVariableValue('ansible_user')!.toString();
-    // print(user);
+    // debugPrint(user);
     final Response response = await http.post(url,
         headers: <String, String>{'Content-type': 'application/json'},
         body: utf8.encode(json.encode(<String, Object>{
@@ -105,7 +105,7 @@ class Api {
       final Map<String, dynamic> l =
           json.decode(response.body) as Map<String, dynamic>;
       // for (var element in l.keys) {
-      // print("out: ${l[element]['out']}");
+      // debugPrint("out: ${l[element]['out']}");
       // }
       return l;
     } else {

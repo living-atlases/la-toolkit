@@ -33,7 +33,7 @@ class HelpIcon extends StatelessWidget {
   Widget _createIcon(String url) {
     return IconButton(
         onPressed: () async {
-          // print("Opening help page: $url");
+          // debugPrint("Opening help page: $url");
           await launchUrl(Uri.parse(url));
         },
         icon: const Icon(Icons.help_outline),

@@ -110,7 +110,7 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
             step: step,
             lastBuilt: lastBuilt,
             onPressed: () {
-              // print("lastclicked $lastClicked index: $index");
+              // debugPrint("lastclicked $lastClicked index: $index");
               final bool val = cmd.steps.contains(step.name);
               setState(() {
                 if (isShiftPressed) {

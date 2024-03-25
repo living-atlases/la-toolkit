@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:latlong2/latlong.dart';
 
 const double piOver180 = pi / 180.0;
+
 double toDegrees(double radians) {
   return radians / piOver180;
 }
@@ -84,7 +85,9 @@ LatLng calculateEndingGlobalCoordinates(
     sigma = sOverbA + deltaSigma;
 
     // break after converging to tolerance
-    if ((sigma - prevSigma).abs() < 0.0000000000001) break;
+    if ((sigma - prevSigma).abs() < 0.0000000000001) {
+      break;
+    }
 
     prevSigma = sigma;
   }

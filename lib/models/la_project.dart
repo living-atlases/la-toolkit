@@ -150,12 +150,12 @@ class LAProject implements IsJsonSerializable<LAProject> {
       service.usesSubdomain = useSub;
       if (debug) {
         if (kDebugMode) {
-          print('domain: $domain');
+          debugPrint('domain: $domain');
         }
       }
       if (debug) {
         if (kDebugMode) {
-          print(
+          debugPrint(
               '$n (LA_use_$n): $useIt subdomain (LA_${n}_uses_subdomain): $useSub');
         }
       }
@@ -177,7 +177,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
       if (debug) {
         if (kDebugMode) {
-          print(
+          debugPrint(
               "$n: url: $url path: '$invPath' initPath: '${service.iniPath}' useSub: $useSub suburl: ${service.suburl} hostname: $hostnames");
         }
       }
@@ -202,7 +202,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     for (final LAServer server in p.servers) {
       if (debug) {
-        // print("server ${server.name} has ${tempServerServices[server.id]!}");
+        // debugPrint("server ${server.name} has ${tempServerServices[server.id]!}");
       }
       final Map<String, String> swVersions = <String, String>{};
       final dynamic impVersions = a('software_versions');
@@ -343,11 +343,13 @@ class LAProject implements IsJsonSerializable<LAProject> {
       msgErr +=
           'or Clusters in $longName ($id) are inconsistent (clusterServices: ${clusterServices.length} servers: ${clusters.length}';
       if (kDebugMode) {
-        print(msgErr);
-        print('servers (${servers.length}): $servers');
-        print('serverServices (${serverServices.length}): $serverServices');
-        print('clusters (${clusters.length}): $clusters');
-        print('clusterServices (${clusterServices.length}): $clusterServices');
+        debugPrint(msgErr);
+        debugPrint('servers (${servers.length}): $servers');
+        debugPrint(
+            'serverServices (${serverServices.length}): $serverServices');
+        debugPrint('clusters (${clusters.length}): $clusters');
+        debugPrint(
+            'clusterServices (${clusterServices.length}): $clusterServices');
       }
       final Exception error = Exception(msgErr);
       throw error;
@@ -364,7 +366,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     if (debug) {
       if (kDebugMode) {
-        print("Step 1 valid: ${valid ? 'yes' : 'no'}");
+        debugPrint("Step 1 valid: ${valid ? 'yes' : 'no'}");
       }
     }
 
@@ -376,7 +378,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     if (debug) {
       if (kDebugMode) {
-        print("Step 2 valid: ${valid ? 'yes' : 'no'}");
+        debugPrint("Step 2 valid: ${valid ? 'yes' : 'no'}");
       }
     }
     // If the previous steps are correct, this is also correct
@@ -384,7 +386,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     valid = valid && allServicesAssigned();
     if (debug) {
       if (kDebugMode) {
-        print("Step 3 valid: ${valid ? 'yes' : 'no'}");
+        debugPrint("Step 3 valid: ${valid ? 'yes' : 'no'}");
       }
     }
 
@@ -396,7 +398,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     if (debug) {
       if (kDebugMode) {
-        print("Step 4 valid: ${valid ? 'yes' : 'no'}");
+        debugPrint("Step 4 valid: ${valid ? 'yes' : 'no'}");
       }
     }
 
@@ -416,7 +418,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     if (debug) {
       if (kDebugMode) {
-        print(
+        debugPrint(
             "Valid at end: ${valid ? 'yes' : 'no'}, tempStatus: ${status.title}");
       }
     }
@@ -429,9 +431,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
     if (!ok && debug) {
       if (kDebugMode) {
-        print(
+        debugPrint(
             'Not the same services in use ${getServicesNameListInUse().length} as assigned ${getServicesAssigned().length}');
-        print(
+        debugPrint(
             "Services unassigned: ${getServicesNameListInUse().where((String s) => !getServicesAssigned().contains(s)).toList().join(',')}");
       }
     }
@@ -546,7 +548,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
           .join('\n');
     } catch (e) {
       if (kDebugMode) {
-        print('Error in toString: $e');
+        debugPrint('Error in toString: $e');
       }
     }
     return '''
@@ -597,7 +599,7 @@ check results length: ${checkResults.length}''';
     }
     final LAService curService =
         services.firstWhere((LAService s) => s.nameInt == nameInt, orElse: () {
-      // print("Creating service $nameInt as is not present");
+      // debugPrint("Creating service $nameInt as is not present");
       final LAService newService =
           LAService.fromDesc(LAServiceDesc.get(nameInt), id);
       services.add(newService);
@@ -832,7 +834,7 @@ check results length: ${checkResults.length}''';
         getServiceDeploysForSomeService(serviceName);
     if (AppUtils.isDev()) {
       if (kDebugMode) {
-        print(
+        debugPrint(
             'Setting ${serviceDeploysForName.length} service deploys for service $serviceName and release $release');
       }
     }
@@ -1460,7 +1462,7 @@ check results length: ${checkResults.length}''';
           .firstWhere((LAService s) => s.id == sd.serviceId, orElse: () {
         final String msg = 'Missing serviceId ${sd.serviceId}';
         if (kDebugMode) {
-          print(msg);
+          debugPrint(msg);
         }
         throw Exception(msg);
       });
@@ -1506,7 +1508,7 @@ check results length: ${checkResults.length}''';
         final Set<String> incompatible = <String>{};
         for (final String first in serverServices) {
           for (final String second in serverServices) {
-            // print("$first compatible with $second");
+            // debugPrint("$first compatible with $second");
             if (first != second &&
                 !LAServiceDesc.get(first).isCompatibleWith(
                     alaInstallRelease, LAServiceDesc.get(second))) {

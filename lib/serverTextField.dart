@@ -48,7 +48,7 @@ class ServerTextField extends StatelessWidget {
                 suffixIcon: IconButton(
                     icon: const Icon(Icons.add_circle),
                     onPressed: () {
-                      print('Trying to add server/s ${controller.text}');
+                      debugPrint('Trying to add server/s ${controller.text}');
                       if (formKey.currentState != null &&
                           formKey.currentState!.validate()) {
                         addServer(controller.text);

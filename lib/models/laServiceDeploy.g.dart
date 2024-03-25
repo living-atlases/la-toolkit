@@ -188,9 +188,9 @@ Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) =>
       'projectId': instance.projectId,
       'additionalVariables': instance.additionalVariables,
       'softwareVersions': instance.softwareVersions,
-      'status': _$ServiceStatusEnumMap[instance.status]!,
+      'status': _$ServiceStatusEnumMap[instance.status],
       'checkedAt': instance.checkedAt,
-      'type': _$DeploymentTypeEnumMap[instance.type]!,
+      'type': _$DeploymentTypeEnumMap[instance.type],
     };
 
 const _$DeploymentTypeEnumMap = {

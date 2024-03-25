@@ -97,7 +97,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             project.getVariableValue('oidc_use') as bool? ?? false;
         final String? userDetailsVersion =
             project.getSwVersionOfService(userdetails);
-        // print('useOidc: $useOidc userDetails version: $userDetailsVersion');
+        // debugPrint('useOidc: $useOidc userDetails version: $userDetailsVersion');
         lints.addAll(<Widget>[
           if (vm.sshKeys.isEmpty)
             AlertCard(

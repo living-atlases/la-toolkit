@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:redux/src/store.dart';
-
+import 'package:redux/redux.dart';
 import '../models/appState.dart';
 import '../models/laServer.dart';
 import '../models/la_project.dart';
@@ -31,7 +30,7 @@ class GatewaySelector extends StatelessWidget {
           .where((LAServer s) => vm.server.gateways.contains(s.id))
           .map((LAServer s) => s.name)
           .toList();
-      // print("Building gateway selector for ${vm.server.name}");
+      // debugPrint("Building gateway selector for ${vm.server.name}");
       return ServerSelector(
         selectorKey: GlobalKey<FormFieldState<dynamic>>(),
         exclude: vm.server,
@@ -48,18 +47,18 @@ class GatewaySelector extends StatelessWidget {
                     "If you access to this server using another server as a ssh gateway, you should add the gateway also as a server and select later here.",
                 footer: "For more info see our ssh documentation in our wiki"), */
         onChange: (List<String> gatewaysNames) {
-          print(
+          debugPrint(
               'Gateway name-------------------------------------: $gatewaysNames');
           final List<String> gatewaysIds = vm.project.servers
               .where((LAServer s) => gatewaysNames.contains(s.name))
               .map((LAServer s) => s.id)
               .toList();
-          print('Gateway ids: $gatewaysIds');
+          debugPrint('Gateway ids: $gatewaysIds');
           if (firstServer) {
             UiUtils.showAlertDialog(context, () {
               for (final LAServer s in vm.project.servers) {
                 if (!gatewaysIds.contains(s.id)) {
-                  print('Setting gateways for ${s.name}');
+                  debugPrint('Setting gateways for ${s.name}');
                   s.gateways = gatewaysIds;
                   vm.project.upsertServer(s);
                 }

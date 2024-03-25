@@ -284,14 +284,4 @@ class _ProjectsPageViewModel {
   final void Function(LAProject project) onOpenProjectTools;
   final void Function(LAProject project) onDeleteProject;
   final void Function() onCreateProject;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _ProjectsPageViewModel &&
-          runtimeType == other.runtimeType &&
-          state.projects == other.state.projects;
-
-  @override
-  int get hashCode => state.projects.hashCode;
 }

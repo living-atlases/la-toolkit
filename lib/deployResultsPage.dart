@@ -2,7 +2,7 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:redux/src/store.dart';
+import 'package:redux/redux.dart';
 
 import 'components/laAppBar.dart';
 import 'components/project_drawer.dart';
@@ -21,8 +21,8 @@ import 'utils/api.dart';
 import 'utils/utils.dart';
 
 class CmdResultsPage extends StatefulWidget {
-
   const CmdResultsPage({super.key});
+
   static const String routeName = 'cmd-results';
 
   @override
@@ -52,14 +52,16 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
         final CmdHistoryDetails? cmdHistoryDetails = vm.project.lastCmdDetails;
 
         if (cmdHistoryDetails != null) {
-          final List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
+          final List<Widget> resultsDetails =
+              cmdHistoryDetails.detailsWidgetList;
           final bool failed = cmdHistoryDetails.failed;
           final CmdResult result = cmdHistoryDetails.result;
           final CmdHistoryEntry cmdEntry = cmdHistoryDetails.cmd!;
-          // print(result);
+          // debugPrint(result);
           final bool nothingDone = !failed && cmdHistoryDetails.nothingDone;
-          final bool noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
-          print(
+          final bool noFailedButDone =
+              !failed && !cmdHistoryDetails.nothingDone;
+          debugPrint(
               'failed $failed, nothingDone: $nothingDone, noFailedButDone: $noFailedButDone, numFails ${cmdHistoryDetails.numFailures()}');
           final String title = cmdEntry.getTitle();
           final String desc = cmdEntry.getDesc();
@@ -204,7 +206,8 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                   if (cmdHistoryDetails.port == null)
                                     const Text(
                                         "For some reason, we couldn't open a terminal with these logs. Possible fix: restart your la-toolkit container"),
-                                  TipsCard(text: '''## Tips with the logs
+                                  TipsCard(text: '''
+## Tips with the logs
 This logs are located in the file `logs/${cmdHistoryDetails.cmd!.logsPrefix}-${cmdHistoryDetails.cmd!.logsSuffix}.log`.
 
 This term shows the end of that log file using the command `less`. You can use your mouse scroll or the keyboard:
@@ -247,11 +250,11 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
 }
 
 class _DeployResultsViewModel {
-
   _DeployResultsViewModel(
       {required this.project,
       required this.onClose,
       required this.onOpenDeployResults});
+
   final LAProject project;
   final Function(LAProject, CmdHistoryDetails cmdDetails) onClose;
   final void Function(CmdHistoryEntry entry) onOpenDeployResults;

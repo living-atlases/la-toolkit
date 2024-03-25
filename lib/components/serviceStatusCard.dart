@@ -10,8 +10,8 @@ import '../utils/cardConstants.dart';
 import 'adminIconButton.dart';
 
 class ServiceStatusCard extends StatelessWidget {
-
   const ServiceStatusCard(this.service, {super.key});
+
   final ProdServiceDesc service;
   static const TextStyle subtitle = TextStyle(color: LAColorTheme.inactive);
 
@@ -19,7 +19,7 @@ class ServiceStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const double iconDefSize = 18;
 
-    // print(service.serviceDeploys);
+    // debugPrint(service.serviceDeploys);
     return IntrinsicWidth(
         child: Card(
             elevation: CardConstants.defaultElevation,
@@ -73,8 +73,7 @@ class ServiceSmallLinks extends StatelessWidget {
                     child: InkWell(
                       child: Icon(Icons.link,
                           size: iconDefSize, color: LAColorTheme.link),
-                      onTap: () async =>
-                          await launchUrl(Uri.parse(service.url)),
+                      onTap: () async => launchUrl(Uri.parse(service.url)),
                     ))),
           if (service.admin)
             SimpleServiceStatusItem(
@@ -98,8 +97,8 @@ class ServiceSmallLinks extends StatelessWidget {
 }
 
 class SimpleServiceStatusItem extends StatelessWidget {
-
   const SimpleServiceStatusItem({super.key, required this.icon});
+
   final Widget icon;
 
   @override

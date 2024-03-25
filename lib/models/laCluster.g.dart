@@ -103,7 +103,7 @@ LACluster _$LAClusterFromJson(Map<String, dynamic> json) => LACluster(
 Map<String, dynamic> _$LAClusterToJson(LACluster instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'type': _$DeploymentTypeEnumMap[instance.type]!,
+      'type': _$DeploymentTypeEnumMap[instance.type],
       'projectId': instance.projectId,
     };
 

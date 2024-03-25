@@ -1,7 +1,7 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
-import '../utils/StringUtils.dart';
 
+import '../utils/StringUtils.dart';
 import 'deployCmd.dart';
 
 part 'preDeployCmd.g.dart';
@@ -9,7 +9,6 @@ part 'preDeployCmd.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class PreDeployCmd extends DeployCmd {
-
   PreDeployCmd(
       {this.addAnsibleUser = false,
       this.addSshKeys = false,
@@ -26,9 +25,7 @@ class PreDeployCmd extends DeployCmd {
       super.debug,
       super.dryRun})
       : rootBecome = rootBecome ?? false,
-        super(
-            deployServices: <String>['all'],
-            onlyProperties: false);
+        super(deployServices: <String>['all'], onlyProperties: false);
 
   factory PreDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PreDeployCmdFromJson(json);
@@ -58,13 +55,27 @@ class PreDeployCmd extends DeployCmd {
   @override
   String get desc {
     final List<String> tasks = <String>[];
-    if (addAnsibleUser) tasks.add('add default user');
-    if (addSshKeys) tasks.add('add ssh keys');
-    if (giveSudo) tasks.add('add sudo permissions');
-    if (etcHosts) tasks.add("setup '/etc/hosts'");
-    if (solrLimits) tasks.add('setup solr limits');
-    if (addAdditionalDeps) tasks.add('additional deps install');
-    if (rootBecome) tasks.add('as root');
+    if (addAnsibleUser) {
+      tasks.add('add default user');
+    }
+    if (addSshKeys) {
+      tasks.add('add ssh keys');
+    }
+    if (giveSudo) {
+      tasks.add('add sudo permissions');
+    }
+    if (etcHosts) {
+      tasks.add("setup '/etc/hosts'");
+    }
+    if (solrLimits) {
+      tasks.add('setup solr limits');
+    }
+    if (addAdditionalDeps) {
+      tasks.add('additional deps install');
+    }
+    if (rootBecome) {
+      tasks.add('as root');
+    }
     final String result =
         'pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
     return dryRun ? 'Dry run $result' : StringUtils.capitalize(result);

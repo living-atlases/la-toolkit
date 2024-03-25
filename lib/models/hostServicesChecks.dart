@@ -3,8 +3,8 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'basic_service.dart';
 
+import 'basic_service.dart';
 import 'host_service_check.dart';
 import 'laServer.dart';
 import 'laServiceDeploy.dart';
@@ -50,7 +50,9 @@ class HostsServicesChecks {
   void add(LAServiceDeploy sd, LAServer server, List<BasicService>? deps,
       String name, List<String> serversIds, bool full) {
     // For now, don't check docker swarm services
-    if (sd.serverId == null) return;
+    if (sd.serverId == null) {
+      return;
+    }
     if (deps != null) {
       BasicService.toCheck(deps).forEach((BasicService dep) {
         for (final num tcp in dep.tcp) {

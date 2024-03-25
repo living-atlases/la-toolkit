@@ -10,6 +10,6 @@ class CASUtils {
   }
 
   static Future<String> gen512CasKey() async {
-    return await Api.genCasKey(512);
+    return Api.genCasKey(512);
   }
 }
