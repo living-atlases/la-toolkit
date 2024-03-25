@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../laTheme.dart';
 import 'help_icon.dart';
 
 class DeployTaskSwitch extends StatelessWidget {
@@ -22,8 +21,8 @@ class DeployTaskSwitch extends StatelessWidget {
     return SwitchListTile(
         // contentPadding: EdgeInsets.zero,
         value: initialValue,
-        title: Text(title,
-            style: TextStyle(color: LAColorTheme.themeData.hintColor)),
+        title:
+            Text(title, style: TextStyle(color: Theme.of(context).hintColor)),
         secondary: help != null ? HelpIcon(wikipage: help!) : null,
         onChanged: (bool newValue) {
           onChanged(newValue);

@@ -500,8 +500,10 @@ class HeadingItem implements ListItem {
     return Text(heading,
         style: !subheading
             ? Theme.of(context).textTheme.headlineSmall
-            : Theme.of(context).textTheme.titleLarge!.copyWith(
-                fontSize: 18, color: LAColorTheme.themeData.hintColor));
+            : Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(fontSize: 18, color: Theme.of(context).hintColor));
   }
 
   @override
@@ -533,7 +535,7 @@ class MessageItem implements ListItem {
                 contentPadding: EdgeInsets.zero,
                 value: initialValue as bool? ?? defValue as bool? ?? false,
                 title: Text(varDesc.name,
-                    style: TextStyle(color: LAColorTheme.themeData.hintColor)),
+                    style: TextStyle(color: Theme.of(context).hintColor)),
                 onChanged: (bool newValue) {
                   onChanged(newValue);
                 })

@@ -25,11 +25,10 @@ class ServiceWidget extends StatelessWidget {
   final String serviceName;
   final FocusNode? collectoryFocusNode;
 
-  final TextStyle domainTextStyle =
-      TextStyle(fontSize: 16, color: LAColorTheme.themeData.hintColor);
-
   @override
   Widget build(BuildContext context) {
+    final TextStyle domainTextStyle =
+        TextStyle(fontSize: 16, color: Theme.of(context).hintColor);
     return StoreConnector<AppState, _LAServiceViewModel>(
         // It seems that the comparison of projects are not working properly
         // distinct: true,

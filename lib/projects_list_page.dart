@@ -257,7 +257,7 @@ class ProjectCard extends StatelessWidget {
                     ? ImageIcon(
                         NetworkImage(AppUtils.proxyImg(project
                             .getVariableValue('favicon_url')! as String)),
-                        color: Colors.white,
+                        color: Theme.of(context).primaryColor,
                         size: 35)
                     : Text(project.shortName.length > 3
                         ? project.shortName.substring(0, 1)

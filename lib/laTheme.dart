@@ -26,14 +26,6 @@ class LAColorTheme {
   });
   static const Color _laPaletteAccentValue = Color(0xFFB6FFB6);
 
-  static ThemeData get themeData {
-    return ThemeData(
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: laPalette,
-      ).copyWith(secondary: _laPaletteAccentValue),
-    );
-  }
-
   static const MaterialColor inactive = Colors.blueGrey;
   static final Color link = Colors.blueAccent.shade100;
   static final Color unDeployedColor = LAColorTheme.laPalette.shade800;

@@ -6,10 +6,12 @@ import 'package:beamer/beamer.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:json_theme/json_theme.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -17,7 +19,6 @@ import 'package:sails_io/sails_io.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
 
 import 'components/appSnackBarMessage.dart';
-import 'laTheme.dart';
 import 'models/appState.dart';
 import 'redux/appStateMiddleware.dart';
 import 'redux/app_actions.dart';
@@ -30,6 +31,9 @@ import 'utils/utils.dart';
 Future<void> main() async {
   final AppStateMiddleware appStateMiddleware = AppStateMiddleware();
   WidgetsFlutterBinding.ensureInitialized();
+  final String themeStr = await rootBundle.loadString('appainter_theme.json');
+  final dynamic themeJson = jsonDecode(themeStr);
+  final ThemeData theme = ThemeDecoder.decodeThemeData(themeJson)!;
 
   const String dotFile =
       kReleaseMode ? 'env.production.txt' : 'env.development.txt';
@@ -147,15 +151,15 @@ Future<void> main() async {
         AppSnackBarMessage.ok('Failed to retrieve your configuration')));
   }
 
-  runApp(LaToolkitApp(store: store));
+  runApp(LaToolkitApp(store: store, theme: theme));
   /* }); */
 }
 
 class LaToolkitApp extends StatelessWidget {
-  LaToolkitApp({super.key, required this.store});
+  LaToolkitApp({super.key, required this.store, required this.theme});
 
   final Store<AppState> store;
-
+  final ThemeData theme;
   static String appName = 'Living Atlases Toolkit';
 
   final BeamerDelegate _routerDelegate = Routes().routerDelegate;
@@ -189,7 +193,7 @@ class LaToolkitApp extends StatelessWidget {
                       ],
                       background: Container(color: const Color(0xFFF5F5F5))),
               title: appName,
-              theme: LAColorTheme.themeData,
+              theme: theme,
               debugShowCheckedModeBanner: AppUtils.isDev(),
             )));
   }
