@@ -58,6 +58,10 @@ class ServerStatusCard extends StatelessWidget {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                              ),
                               elevation: 10,
                               shadowColor: Colors.green,
                               minimumSize: Size.zero,
