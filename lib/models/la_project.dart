@@ -1274,10 +1274,16 @@ check results length: ${checkResults.length}''';
       for (final LAServiceDeploy sd in service.serviceDeploys) {
         hostsChecks.setUrls(
             sd, service.urls, service.nameInt, serversIds, full);
-        final LAServer server =
-            servers.firstWhere((LAServer s) => s.id == sd.serverId);
-        hostsChecks.add(
-            sd, server, service.deps, service.nameInt, serversIds, full);
+        try {
+          final LAServer server =
+              servers.firstWhere((LAServer s) => s.id == sd.serverId);
+          hostsChecks.add(
+              sd, server, service.deps, service.nameInt, serversIds, full);
+        } catch (e) {
+          if (kDebugMode) {
+            debugPrint('Error in _getHostServicesChecks: $e with SD: $sd');
+          }
+        }
       }
     }
     return hostsChecks;
