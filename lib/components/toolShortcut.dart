@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../laTheme.dart';
 import '../utils/utils.dart';
-
 import 'tool.dart';
 
 class ToolShortcut extends StatelessWidget {
@@ -22,6 +22,9 @@ class ToolShortcut extends StatelessWidget {
 // ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         elevation: elevation,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
         shadowColor: LAColorTheme.laPalette,
         // primary: Colors.white,
         padding: const EdgeInsets.all(8.0),
