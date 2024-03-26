@@ -14,7 +14,7 @@ import 'components/laAppBar.dart';
 import 'components/project_drawer.dart';
 import 'components/scrollPanel.dart';
 import 'components/serverSelector.dart';
-import 'components/servicesChipPanel.dart';
+import 'components/services_chip_panel.dart';
 import 'components/tagsSelector.dart';
 import 'components/terms_drawer.dart';
 import 'components/tipsCard.dart';
@@ -176,6 +176,9 @@ class _DeployPageState extends State<DeployPage> {
                                       ),
                                       trailing: Switch(
                                           value: advanced,
+                                          // This does not work after hot reload
+                                          // during development, so exit and enter
+                                          // again in deploy
                                           onChanged: (bool value) => setState(
                                               () => cmd.advanced = value))),
                                   if (advanced)
