@@ -29,17 +29,18 @@ class TermDialog {
                 appBar: AppBar(
                   leading: Icon(
                     MdiIcons.console,
-                    color: Colors.white,
+                    // color: Colors.white,
                   ),
                   title: Text(
                     title,
-                    style: const TextStyle(color: Colors.white),
+                    // style: const TextStyle(color: Colors.white),
                   ),
                   actions: <Widget>[
                     Tooltip(
                         message: 'Close the console',
                         child: TextButton(
-                            child: const Icon(Icons.close, color: Colors.white),
+                            child: const Icon(Icons.close),
+                            //, color: Colors.white),
                             onPressed: () {
                               Navigator.of(context).pop();
                             })),
