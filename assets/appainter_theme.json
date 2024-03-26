@@ -136,8 +136,8 @@
   "materialTapTargetSize": "shrinkWrap",
   "platform": "linux",
   "primaryColor": "#ff226c2e",
-  "primaryColorDark": "#ff1976d2",
-  "primaryColorLight": "#ffbbdefb",
+  "primaryColorDark": "#ff488d48",
+  "primaryColorLight": "#ffa1cba1",
   "primaryIconTheme": {
     "color": "#ffffffff"
   },
@@ -154,11 +154,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 16,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 0.5,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "bodyMedium": {
       "color": "#fffcfdf7",
@@ -172,11 +168,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 14,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 0.25,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "bodySmall": {
       "color": "#fffcfdf7",
@@ -190,11 +182,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 12,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 0.4,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "displayLarge": {
       "color": "#fffcfdf7",
@@ -208,11 +196,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 96,
-      "fontWeight": "w300",
-      "inherit": false,
-      "letterSpacing": -1.5,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "displayMedium": {
       "color": "#fffcfdf7",
@@ -226,11 +210,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 60,
-      "fontWeight": "w300",
-      "inherit": false,
-      "letterSpacing": -0.5,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "displaySmall": {
       "color": "#fffcfdf7",
@@ -244,11 +224,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 48,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 0,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "headlineLarge": {
       "color": "#fffcfdf7",
@@ -262,11 +238,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 40,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 0.25,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "headlineMedium": {
       "color": "#fffcfdf7",
@@ -280,11 +252,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 34,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 0.25,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "headlineSmall": {
       "color": "#fffcfdf7",
@@ -298,11 +266,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 24,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 0,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "labelLarge": {
       "color": "#fffcfdf7",
@@ -316,11 +280,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 14,
-      "fontWeight": "w500",
-      "inherit": false,
-      "letterSpacing": 1.25,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "labelMedium": {
       "color": "#fffcfdf7",
@@ -334,11 +294,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 11,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 1.5,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "labelSmall": {
       "color": "#fffcfdf7",
@@ -352,11 +308,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 10,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 1.5,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "titleLarge": {
       "color": "#fffcfdf7",
@@ -370,11 +322,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 20,
-      "fontWeight": "w500",
-      "inherit": false,
-      "letterSpacing": 0.15,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "titleMedium": {
       "color": "#fffcfdf7",
@@ -388,11 +336,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 16,
-      "fontWeight": "w400",
-      "inherit": false,
-      "letterSpacing": 0.15,
-      "textBaseline": "alphabetic"
+      "inherit": true
     },
     "titleSmall": {
       "color": "#fffcfdf7",
@@ -406,11 +350,7 @@
         "Liberation Sans",
         "Arial"
       ],
-      "fontSize": 14,
-      "fontWeight": "w500",
-      "inherit": false,
-      "letterSpacing": 0.1,
-      "textBaseline": "alphabetic"
+      "inherit": true
     }
   },
   "scaffoldBackgroundColor": "#fffcfdf7",
@@ -423,13 +363,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 16,
       "fontWeight": "w400",
@@ -441,13 +377,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 14,
       "fontWeight": "w400",
@@ -459,13 +391,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 12,
       "fontWeight": "w400",
@@ -477,13 +405,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_300",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 96,
       "fontWeight": "w300",
@@ -495,13 +419,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_300",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 60,
       "fontWeight": "w300",
@@ -513,13 +433,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 48,
       "fontWeight": "w400",
@@ -531,13 +447,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 40,
       "fontWeight": "w400",
@@ -549,13 +461,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 34,
       "fontWeight": "w400",
@@ -567,13 +475,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 24,
       "fontWeight": "w400",
@@ -585,13 +489,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_500",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 14,
       "fontWeight": "w500",
@@ -603,13 +503,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 11,
       "fontWeight": "w400",
@@ -621,13 +517,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 10,
       "fontWeight": "w400",
@@ -639,13 +531,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_500",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 20,
       "fontWeight": "w500",
@@ -657,13 +545,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_regular",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 16,
       "fontWeight": "w400",
@@ -675,13 +559,9 @@
       "color": "#ff1a1c19",
       "decoration": "none",
       "decorationColor": "#ff1a1c19",
-      "fontFamily": "Roboto",
+      "fontFamily": "Roboto_500",
       "fontFamilyFallback": [
-        "Ubuntu",
-        "Cantarell",
-        "DejaVu Sans",
-        "Liberation Sans",
-        "Arial"
+        "Roboto"
       ],
       "fontSize": 14,
       "fontWeight": "w500",
