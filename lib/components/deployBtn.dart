@@ -7,7 +7,7 @@ class LaunchBtn extends StatelessWidget {
     this.onTap,
     required this.execBtn,
     IconData? icon,
-  })  : icon = icon ?? MdiIcons.rocketLaunch;
+  }) : icon = icon ?? MdiIcons.rocketLaunch;
 
   final VoidCallback? onTap;
   final String execBtn;
@@ -26,9 +26,8 @@ class LaunchBtn extends StatelessWidget {
               child: ElevatedButton.icon(
                   onPressed: onTap,
                   style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
+                      //backgroundColor: Theme.of(context).primaryColor,
                       minimumSize: const Size(140, 50),
-                      // primary: LAColorTheme.laPalette,
                       // padding: const EdgeInsets.all(8.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
