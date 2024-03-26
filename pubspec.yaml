@@ -45,10 +45,10 @@ dependencies:
   flutter_advanced_switch: ^3.0.0
   # Used for service selection (for instance in service deploy)
   # https://github.com/davigmacode/flutter_chips_choice/pull/21
-  chips_choice: # 2.0.1
+  chips_choice: ^3.0.1
     #path: ../flutter/flutter_chips_choice
-    git:
-      url: https://github.com/vjrj/flutter_chips_choice.git
+    #git:
+    #  url: https://github.com/vjrj/flutter_chips_choice.git
   percent_indicator: ^4.2.3
   rflutter_alert: ^2.0.2
   # xterm: ^1.1.1+1
