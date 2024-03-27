@@ -64,7 +64,7 @@ class _BrandingTileState extends State<BrandingTile> {
             Icons.format_paint /* , size: 60, color: LAColorTheme.laPalette*/),
         title: 'Select your branding theme',
         style: const AlertStyle(
-            constraints: BoxConstraints.expand(height: 600, width: 600)),
+            constraints: BoxConstraints.expand(height: 700, width: 600)),
         content: Column(
           children: <Widget>[
             const TextWithHelp(
