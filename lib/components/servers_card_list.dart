@@ -113,7 +113,8 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                           .getServerServices(serverId: widget.server!.id)
                       : widget.project
                           .getClusterServices(clusterId: widget.cluster!.id),
-                  availableServicesForServer: servicesAssignable[id]!,
+                  availableServicesForServer:
+                      servicesAssignable[id] ?? <LAService>[],
                   allServices: widget.project.services,
                   onAssigned: (List<String> list) {
                     widget.project.assignByType(id, type, list);

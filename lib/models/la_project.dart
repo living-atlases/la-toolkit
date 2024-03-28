@@ -339,9 +339,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if (servers.length != serverServices.length ||
         clusters.length != clusterServices.length) {
       String msgErr =
-          'Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length}';
+          'Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length})';
       msgErr +=
-          'or Clusters in $longName ($id) are inconsistent (clusterServices: ${clusterServices.length} servers: ${clusters.length}';
+          ' or Clusters are inconsistent (clusterServices: ${clusterServices.length} clusters: ${clusters.length})';
       if (kDebugMode) {
         debugPrint(msgErr);
         debugPrint('servers (${servers.length}): $servers');
@@ -351,8 +351,15 @@ class LAProject implements IsJsonSerializable<LAProject> {
         debugPrint(
             'clusterServices (${clusterServices.length}): $clusterServices');
       }
-      final Exception error = Exception(msgErr);
-      throw error;
+      debugPrint(msgErr);
+      debugPrint('Remove orphans');
+      // FIXME: In the backend, there are still inconsistencies
+      serverServices.removeWhere((String serverId, _) =>
+          !servers.any((LAServer server) => server.id == serverId));
+      clusterServices.removeWhere((String clusterId, _) =>
+          !clusters.any((LACluster cluster) => cluster.id == clusterId));
+      // final Exception error = Exception(msgErr);
+      // throw error;
     }
 
     valid = valid &&
@@ -784,7 +791,10 @@ check results length: ${checkResults.length}''';
     }
     if (serviceName == dockerSwarm && isDockerClusterConfigured()) {
       // For now, we remove all cluster because we only support one unique cluster
-      clusters.clear();
+      if (getServiceDeploysForSomeService(dockerSwarm).isEmpty) {
+        clusters.clear();
+        clusterServices.clear();
+      }
     }
   }
 
