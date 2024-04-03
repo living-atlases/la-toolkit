@@ -31,7 +31,8 @@ import 'utils/utils.dart';
 Future<void> main() async {
   final AppStateMiddleware appStateMiddleware = AppStateMiddleware();
   WidgetsFlutterBinding.ensureInitialized();
-  final String themeStr = await rootBundle.loadString('appainter_theme.json');
+  final String themeStr =
+      await rootBundle.loadString('assets/appainter_theme.json');
   final dynamic themeJson = jsonDecode(themeStr);
   final ThemeData theme = ThemeDecoder.decodeThemeData(themeJson)!;
 

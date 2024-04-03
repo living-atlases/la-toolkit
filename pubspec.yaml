@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # version: 1.0.0+1
-version: 1.5.4
+version: 1.5.5
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -48,7 +48,7 @@ dependencies:
   chips_choice: ^3.0.1
     #path: ../flutter/flutter_chips_choice
     #git:
-    #  url: https://github.com/vjrj/flutter_chips_choice.git
+  #  url: https://github.com/vjrj/flutter_chips_choice.git
   percent_indicator: ^4.2.3
   rflutter_alert: ^2.0.2
   # xterm: ^1.1.1+1
