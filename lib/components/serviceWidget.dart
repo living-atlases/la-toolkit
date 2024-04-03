@@ -17,7 +17,7 @@ import 'genericTextFormField.dart';
 import 'help_icon.dart';
 
 class ServiceWidget extends StatelessWidget {
-  ServiceWidget(
+  const ServiceWidget(
       {super.key,
       required this.serviceName,
       required this.collectoryFocusNode});
