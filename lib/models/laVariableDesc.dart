@@ -19,7 +19,8 @@ enum LAVariableSubcategory {
   apikeys,
   otherKeys,
   ssl,
-  pipelines
+  pipelines,
+  events
 }
 
 extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
@@ -31,6 +32,8 @@ extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
         return 'Data Quality';
       case LAVariableSubcategory.cache:
         return 'Cache';
+      case LAVariableSubcategory.events:
+        return 'Events';
       case LAVariableSubcategory.downloads:
         return 'Downloads';
       case LAVariableSubcategory.ssl:
@@ -46,7 +49,6 @@ extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
 }
 
 class LAVariableDesc {
-
   LAVariableDesc(
       {required this.name,
       required this.nameInt,
@@ -65,6 +67,7 @@ class LAVariableDesc {
       this.protected = false,
       this.onlyHub = false,
       this.allowEmpty = true});
+
   String name;
   String nameInt;
   LAServiceName service;
@@ -319,6 +322,16 @@ class LAVariableDesc {
         help:
             'https://support.ala.org.au/support/solutions/articles/6000240256-getting-started-with-the-data-quality-filters',
         type: LAVariableType.bool),
+    'enable_events': LAVariableDesc(
+        name: 'Enable Events ~ Extended Data Model (in development)?',
+        nameInt: 'enable_events',
+        subcategory: LAVariableSubcategory.events,
+        depends: LAServiceName.events,
+        service: LAServiceName.ala_hub,
+        defValue: (_) => false,
+        help:
+            'https://ala.org.au/current-projects/extended-data-model-project/',
+        type: LAVariableType.bool),
     'maxmind_account_id': LAVariableDesc(
         name: 'MaxMind Account ID',
         nameInt: 'maxmind_account_id',
@@ -346,6 +359,24 @@ class LAVariableDesc {
         depends: LAServiceName.cas,
         service: LAServiceName.cas,
         defValue: (_) => false,
+        type: LAVariableType.bool),
+    'jwt_in_use': LAVariableDesc(
+        name: 'Use JWT for incoming requests?',
+        nameInt: 'jwt_in_use',
+        depends: LAServiceName.cas,
+        service: LAServiceName.cas,
+        defValue: (_) => true,
+        help:
+            'https://github.com/AtlasOfLivingAustralia/ala-security-project/tree/develop/ala-ws-security-plugin',
+        type: LAVariableType.bool),
+    'jwt_out_use': LAVariableDesc(
+        name: 'Use JWT for outgoing requests? (experimental)',
+        nameInt: 'jwt_out_use',
+        depends: LAServiceName.cas,
+        service: LAServiceName.cas,
+        defValue: (_) => false,
+        help:
+            'https://github.com/AtlasOfLivingAustralia/ala-security-project/tree/develop/ala-ws-plugin#external-configuration-properties',
         type: LAVariableType.bool),
     'pac4j_cookie_signing_key': LAVariableDesc(
         name: 'CAS PAC4J Signing key',
@@ -441,7 +472,8 @@ class LAVariableDesc {
           final List<String> options = <String>[];
           for (final LAServiceDeploy sd
               in p.getServiceDeploysForSomeService(pipelines)) {
-            options.add(p.servers.firstWhere((LAServer s) => s.id == sd.serverId).name);
+            options.add(
+                p.servers.firstWhere((LAServer s) => s.id == sd.serverId).name);
           }
           return options;
         },
