@@ -679,6 +679,20 @@ class LAServiceDesc {
         optional: true,
         parentService: LAServiceName.events,
         path: ''),
+    dockerCommon: LAServiceDesc(
+      name: 'docker common',
+      nameInt: dockerCommon,
+      group: dockerCommon,
+      icon: Icons.share,
+      depends: LAServiceName.docker_swarm,
+      dockerSupport: true,
+      withoutUrl: true,
+      allowMultipleDeploys: true,
+      desc:
+          'docker common services like nginx and postfix used by the rest of the services',
+      optional: true,
+      path: '',
+    ),
     gatus: LAServiceDesc(
         name: gatus,
         nameInt: gatus,
@@ -810,6 +824,7 @@ class LAServiceDesc {
     hadoop,
     events,
     dockerSwarm,
+    dockerCommon,
     cassandra
   ];
 

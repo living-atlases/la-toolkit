@@ -1415,6 +1415,7 @@ void main() {
         events,
         eventsElasticSearch,
         dockerSwarm,
+        dockerCommon,
         gatus,
         portainer,
         cassandra
@@ -1476,6 +1477,7 @@ void main() {
         events,
         eventsElasticSearch,
         dockerSwarm,
+        dockerCommon,
         gatus,
         portainer,
         cassandra
@@ -1529,6 +1531,7 @@ void main() {
         eventsElasticSearch,
         dockerSwarm,
         gatus,
+        dockerCommon,
         portainer,
         cassandra
       ].contains(service.nameInt)) {

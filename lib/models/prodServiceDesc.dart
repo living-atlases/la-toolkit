@@ -7,7 +7,6 @@ import 'laServiceDeploy.dart';
 import 'la_service.dart';
 
 class ProdServiceDesc {
-
   ProdServiceDesc(
       {required this.icon,
       required this.name,
@@ -23,12 +22,14 @@ class ProdServiceDesc {
       required this.status}) {
     if (nameInt != biocacheBackend &&
         nameInt != nameindexer &&
+        nameInt != dockerCommon &&
         nameInt != biocacheCli) {
       urls.add(url);
       if (alaAdmin) urls.add('$url/alaAdmin/');
       if (admin) urls.add('$url/admin/');
     }
   }
+
   final IconData icon;
   final String name;
   final String nameInt;

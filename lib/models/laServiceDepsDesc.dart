@@ -232,6 +232,8 @@ class LAServiceDepsDesc {
     ),
     dockerSwarm: LAServiceDepsDesc(
         nameInt: dockerSwarm, serviceDepends: <BasicService>[]),
+    dockerCommon: LAServiceDepsDesc(
+        nameInt: dockerCommon, serviceDepends: <BasicService>[]),
     gatus: LAServiceDepsDesc(nameInt: gatus, serviceDepends: <BasicService>[]),
     portainer:
         LAServiceDepsDesc(nameInt: portainer, serviceDepends: <BasicService>[]),
