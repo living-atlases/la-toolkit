@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:redux/redux.dart';
+import 'package:stack_trace/stack_trace.dart';
 import 'package:universal_html/html.dart' as html;
 
 import '../components/appSnackBarMessage.dart';
@@ -228,7 +229,7 @@ AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
         LAProject.fromJson(action.projectsJson[0] as Map<String, dynamic>);
     ps = List<LAProject>.from(state.projects)..insert(0, newP);
   } else {
-    for (final pJson in action.projectsJson) {
+    for (final dynamic pJson in action.projectsJson) {
       final LAProject p = LAProject.fromJson(pJson as Map<String, dynamic>);
       p.validateCreation();
       ps.add(p);
@@ -247,7 +248,7 @@ AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
     ps = List<LAProject>.from(state.projects)
       ..removeWhere((LAProject item) => item.id == action.project.id);
   } else {
-    for (final pJson in action.projectsJson) {
+    for (final dynamic pJson in action.projectsJson) {
       ps.add(LAProject.fromJson(pJson as Map<String, dynamic>));
     }
   }
@@ -261,12 +262,14 @@ AppState _projectsLoad(AppState state, ProjectsLoad action) {
 
 AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
   final List<LAProject> ps = <LAProject>[];
-  for (final pJson in action.projectsJson) {
+  for (final dynamic pJson in action.projectsJson) {
     try {
       ps.add(LAProject.fromJson(pJson as Map<String, dynamic>));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Exception: $e\nStack trace: ${Chain.forTrace(stackTrace)}');
       debugPrint('Failed to retrieve project');
-      debugPrint(pJson.toString());
+
+      //  debugPrint(pJson.toString());
     }
   }
   final LAProject currentProject = action.setCurrentProject
@@ -293,7 +296,7 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
             project.id == updatedP.id ? updatedP : project)
         .toList();
   } else {
-    for (final pJson in action.projectsJson) {
+    for (final dynamic pJson in action.projectsJson) {
       ps.add(LAProject.fromJson(pJson as Map<String, dynamic>));
     }
   }
@@ -339,6 +342,7 @@ AppState _onTestConnectivityResults(
     currentProject.upsertServer(server);
   }
 
+  // ignore: avoid_dynamic_calls
   action.results['servers'].forEach((dynamic server) {
     currentProject
         .upsertServer(LAServer.fromJson(server as Map<String, dynamic>));
@@ -362,7 +366,7 @@ AppState _onTestConnectivityResults(
           .toList());
 }
 
-ServiceStatus serviceStatus(result) {
+ServiceStatus serviceStatus(bool result) {
   return (result == true) ? ServiceStatus.success : ServiceStatus.failed;
 }
 
@@ -472,7 +476,7 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   // List<dynamic> results = response['results'];
   final List<dynamic> sdsJ = response['serviceDeploys'] as List<dynamic>;
   final List<LAServiceDeploy> sds = <LAServiceDeploy>[];
-  for (final sdJ in sdsJ) {
+  for (final dynamic sdJ in sdsJ) {
     final LAServiceDeploy sd =
         LAServiceDeploy.fromJson(sdJ as Map<String, dynamic>);
     sds.add(sd);
