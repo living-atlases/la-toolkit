@@ -151,6 +151,7 @@ class ProjectCard extends StatelessWidget {
               child: GestureDetector(
                   onTap: () => onOpen(),
                   child: Card(
+                    elevation: 5,
                     child: Container(
                       height: 220.0,
                       margin: const EdgeInsets.fromLTRB(30, 12, 20, 30),
