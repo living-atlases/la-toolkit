@@ -148,6 +148,7 @@ dependencies:
   yaml: ^3.1.2
   yaml_extension: ^1.0.2
   json_theme: ^6.4.1
+  stack_trace: ^1.11.1
 
 dependency_overrides:
   intl: ^0.18.1
