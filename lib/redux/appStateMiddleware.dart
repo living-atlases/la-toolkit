@@ -91,6 +91,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         const int limitResults = 6;
         alaInstallReleases.removeRange(alaInstallReleases.length - limitResults,
             alaInstallReleases.length);
+        alaInstallReleases.add('la-develop');
         alaInstallReleases.add('upstream');
         alaInstallReleases.add('custom');
         if (!const ListEquality()

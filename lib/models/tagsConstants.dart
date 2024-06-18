@@ -345,6 +345,7 @@ class TagsConstants {
     'v2.1.7': v2_1_7,
     'upstream': v2_1_7,
     'custom': v2_1_7,
+    'la-develop': v2_1_7,
   };
 
   static List<String> getTagsFor(String? alaInstallVersion) {

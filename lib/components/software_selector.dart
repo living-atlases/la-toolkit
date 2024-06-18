@@ -1,5 +1,5 @@
-import 'package:badges/badges.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
 class SoftwareSelector extends StatelessWidget {
@@ -57,7 +57,9 @@ Choose the latest release to update your portal.
     final bool outDated = initialValueStillNotEmpty &&
         versions.isNotEmpty &&
         (versions.first != initialValue &&
-            (initialValue != 'custom' && initialValue != 'upstream'));
+            (initialValue != 'custom' &&
+                initialValue != 'upstream' &&
+                initialValue != 'la-develop'));
 
     final String currentValueOrFirst =
         initialValueStillNotEmpty && versions.contains(initialValue)

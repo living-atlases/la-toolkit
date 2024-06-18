@@ -44,7 +44,9 @@ class DependenciesManager {
           log('Checking dependencies for $sw');
         }
         final String swForHumans = LAServiceDesc.swNameWithAliasForHumans(sw);
-        if (version != 'custom' && version != 'upstream') {
+        if (version != 'custom' &&
+            version != 'upstream' &&
+            version != 'la-develop') {
           if (Dependencies.map[sw] != null) {
             final Version versionP = v(version);
             Dependencies.map[sw]!.forEach((VersionConstraint mainConstraint,
@@ -72,6 +74,7 @@ class DependenciesManager {
                   } else {
                     if (versionOfDep != 'custom' &&
                         versionOfDep != 'upstream' &&
+                        versionOfDep != 'la-develop' &&
                         !constraint.allows(v(versionOfDep))) {
                       lintErrors.add(sw == toolkit
                           ? '$dependency recommended version should be $constraint'
@@ -106,7 +109,9 @@ class DependenciesManager {
           if (debug) {
             log('Checking dependencies for $sw');
           }
-          if (version != 'custom' && version != 'upstream') {
+          if (version != 'custom' &&
+              version != 'upstream' &&
+              version != 'la-develop') {
             if (MigrationNotes.map[sw] != null) {
               final Version versionP = v(version);
               MigrationNotes.map[sw]!.forEach((VersionConstraint mainConstraint,
@@ -206,7 +211,9 @@ class DependenciesManager {
         if (version != null) {
           final Map<VersionConstraint, Map<String, VersionConstraint>>? deps =
               Dependencies.map[sw];
-          if (version != 'custom' && version != 'upstream') {
+          if (version != 'custom' &&
+              version != 'upstream' &&
+              version != 'la-develop') {
             if (deps != null) {
               final Version versionP = v(version);
               deps.forEach((VersionConstraint mainConstraint,
@@ -234,8 +241,10 @@ class DependenciesManager {
         }
       }
       if (swGroups.length > 1) {
+        // lintErrors.add(
+        //   'Warning: Different versions of $swToCheck in server ${server.name}: ${_versionGroupsForHumans(swGroups, swToCheck)}');
         lintErrors.add(
-            'Incompatible versions of $swToCheck in server ${server.name}: ${_versionGroupsForHumans(swGroups, swToCheck)}');
+            'Warning: In server ${server.name}, ${_versionGroupsForHumans(swGroups, swToCheck)}');
       }
       return lintErrors.toList();
     } catch (e, stacktrace) {
