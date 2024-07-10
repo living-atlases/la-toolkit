@@ -1,5 +1,5 @@
-import 'dart:convert' as convert;
 import 'dart:async';
+import 'dart:convert' as convert;
 import 'dart:convert';
 import 'dart:math';
 
@@ -11,12 +11,12 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:redux/redux.dart';
+import 'package:universal_html/js_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/app_snack_bar.dart';
@@ -26,8 +26,11 @@ import 'components/scrollPanel.dart';
 import 'laTheme.dart';
 import 'models/LAServiceConstants.dart';
 import 'models/appState.dart';
+import 'models/laServer.dart';
+import 'models/laServiceDeploy.dart';
 import 'models/la_project.dart';
 import 'redux/actions.dart';
+import 'utils/StringUtils.dart';
 
 class CompareDataPage extends StatefulWidget {
   const CompareDataPage({super.key});
@@ -42,16 +45,18 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
   int _tab = 0;
-  static const int recordsNumber = 5;
+  static const int recordsNumber = 10;
   late LAProject _p;
   late bool _withPipeline;
-  late String _solrHost;
+  String? _solrHost;
   late String _collectoryHost;
   static const String gbifDatasetId = 'gbifDatasetId';
   final Map<String, dynamic> recordsWithDifferences = <String, dynamic>{};
   Map<String, String>? errorMessages;
   Map<String, Map<String, int>> statistics = <String, Map<String, int>>{};
   late String _alaHubUrl;
+
+  bool _compareWithGBIFEnabled = false;
 
   Uri asUri(String base, String path, Map<String, String> params,
       [bool debug = false]) {
@@ -114,7 +119,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
         doSolrQuery: (String query, Function(Map<String, dynamic>) onResult) {
           store.dispatch(SolrQuery(
               project: _p.id,
-              solrHost: _solrHost,
+              solrHost: _solrHost!,
               query: query,
               onResult: onResult));
         },
@@ -130,12 +135,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
     }, builder: (BuildContext context, _CompareDataViewModel vm) {
       _p = vm.state.currentProject;
       _withPipeline = _p.isPipelinesInUse;
-      _solrHost = _p
-          .getServerById(_p
-              .getServiceDeploysForSomeService(
-                  _withPipeline ? solrcloud : solr)[0]
-              .serverId!)!
-          .name;
       _collectoryHost = _p
           .getServerById(
               _p.getServiceDeploysForSomeService(collectory)[0].serverId!)!
@@ -143,17 +142,31 @@ class _CompareDataPageState extends State<CompareDataPage> {
       final Map<String, dynamic> services =
           _p.getServiceDetailsForVersionCheck();
       _alaHubUrl = (services[alaHub] as Map<String, dynamic>)['url'] as String;
-      final List<DropdownMenuItem<String>> releases =
+
+      final List<String> solrHosts = <String>[];
+      for (final String service in <String>[solr, solrcloud]) {
+        _p
+            .getServiceDeploysForSomeService(service)
+            .forEach((LAServiceDeploy sd) {
+          if (sd.serverId == null) {
+            // TODO docker cluster
+          } else {
+            final LAServer? server = _p.getServerById(sd.serverId!);
+            solrHosts.add(server!.name);
+          }
+        });
+      }
+
+      final List<DropdownMenuItem<String>> solrHostsMenuItems =
           <DropdownMenuItem<String>>[];
-      for (final String element in vm.state.alaInstallReleases) {
+      for (final String element in solrHosts) {
         // ignore: always_specify_types
-        releases.add(DropdownMenuItem(value: element, child: Text(element)));
+        solrHostsMenuItems.add(
+            DropdownMenuItem<String>(value: element, child: Text(element)));
       }
 
       return Scaffold(
           key: _scaffoldKey,
-          // backgroundColor: Colors.white,
-
           appBar: LAAppBar(
             context: context,
             title: 'Compare Data',
@@ -165,7 +178,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
             backgroundColor: LAColorTheme.laPalette.shade300,
             color: Colors.black,
             activeColor: Colors.black,
-
             style: TabStyle.react,
             items: const <TabItem<dynamic>>[
               TabItem<dynamic>(
@@ -201,42 +213,84 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF. The comparison focuses on several key fields such as kingdom, phylum, class, order, family, genus, species, and scientific name. Additionally, it considers other fields like country, etc'),
                         const SizedBox(height: 10),
                         if (_tab == 0)
+                          ButtonTheme(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
+                              child: DropdownButton<String>(
+                                  underline: DropdownButtonHideUnderline(
+                                    child: Container(),
+                                  ),
+                                  disabledHint:
+                                      const Text('No solr host available'),
+                                  hint: const Text('Select Solr host'),
+                                  value: _solrHost,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      if (newValue != null) {
+                                        _solrHost = newValue;
+                                        _compareWithGBIFEnabled = true;
+                                      }
+                                    });
+                                  },
+                                  // isExpanded: true,
+                                  elevation: 16,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  items: solrHostsMenuItems)),
+                        if (_tab == 0)
                           LaunchBtn(
                             icon: Icons.settings,
                             execBtn: 'Run',
-                            onTap: () async {
-                              final Map<String, dynamic> results =
-                                  await _compareWithGBIF(vm);
-                              setState(() {
-                                statistics = results['statistics']
-                                    as Map<String, Map<String, int>>;
-                                errorMessages = results['errorMessages']
-                                    as Map<String, String>;
-                              });
-                            },
+                            onTap: !_compareWithGBIFEnabled
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      errorMessages = null;
+                                      _compareWithGBIFEnabled = false;
+                                    });
+                                    final Map<String, dynamic> results =
+                                        await _compareWithGBIF(vm);
+                                    setState(() {
+                                      statistics = results['statistics']
+                                          as Map<String, Map<String, int>>;
+                                      errorMessages = results['errorMessages']
+                                          as Map<String, String>;
+                                      _compareWithGBIFEnabled = true;
+                                    });
+                                  },
                           ),
+                        if (_tab == 0) const SizedBox(height: 10),
                         if (_tab == 0 && errorMessages != null)
                           Container(
                               alignment: Alignment.topLeft,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: errorMessages!.entries
-                                    .map((MapEntry<String, String> entry) {
+                                children: errorMessages!.entries.mapIndexed(
+                                    (int index,
+                                        MapEntry<String, String> entry) {
+                                  final Color backgroundColor = index.isOdd
+                                      ? Colors.white
+                                      : Colors.transparent;
                                   return ListTile(
-                                      leading: GestureDetector(
-                                          onTap: () => FlutterClipboard.copy(
-                                                  entry.key)
-                                              .then((dynamic value) =>
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                          const SnackBar(
-                                                              content: Text(
-                                                    'Copied to clipboard',
-                                                    style: TextStyle(
-                                                        fontFamily: 'Courier',
-                                                        fontSize: 14),
-                                                  )))),
-                                          child: Text(entry.key)),
+                                      tileColor: backgroundColor,
+                                      leading: entry.key == 'TOTAL'
+                                          ? null
+                                          : GestureDetector(
+                                              onTap: () => FlutterClipboard
+                                                      .copy(entry.key)
+                                                  .then((dynamic value) =>
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              const SnackBar(
+                                                                  content: Text(
+                                                        'Copied to clipboard',
+                                                        style: TextStyle(
+                                                            fontFamily:
+                                                                'Courier',
+                                                            fontSize: 14),
+                                                      )))),
+                                              child: Text(entry.key)),
                                       title: Flexible(
                                           // height: 40,
                                           child: MarkdownBody(
@@ -284,6 +338,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final Map<String, dynamic> laRecords = await getRandomLARecords(vm);
 
     final Map<String, dynamic> recordsGBIFIds = <String, dynamic>{};
+    final Map<String, String> initialMessages = <String, String>{};
+    final Map<String, String> notFoundMessages = <String, String>{};
 
     for (final Map<String, dynamic> record
         in laRecords.values.cast<Map<String, dynamic>>()) {
@@ -321,18 +377,22 @@ class _CompareDataPageState extends State<CompareDataPage> {
             debugPrint((result['results'] as List<dynamic>)[0].toString());
           }
         } else {
-          debugPrint(
-              'Record not found with occurrenceId: $occId and datasetKey: ${record[gbifDatasetId]} and occurrenceId: $occIDEnc');
+          notFoundMessages[occId] =
+              'Record not found with occurrenceId: [$occId](https://$_alaHubUrl/occurrences/$occId) and datasetKey: ${record[gbifDatasetId]} and occurrenceId: $occId';
         }
       } else {
         debugPrint('Error: ${response.statusCode}');
       }
     }
+    initialMessages['TOTAL'] =
+        'Number of LA records processed ${laRecords.length}, number of GBIF records found fot these records: ${recordsGBIFIds.length}';
+    initialMessages.addAll(notFoundMessages);
     final Map<String, dynamic> results =
-        generateStatistics(laRecords, recordsGBIFIds);
-    debugPrint('Results: $results');
-    debugPrint(
-        'Number of LA records: ${laRecords.length}, number of GBIF records found fot these records: ${recordsGBIFIds.length}');
+        generateStatistics(laRecords, recordsGBIFIds, initialMessages);
+    if (debug) {
+      debugPrint('Results: $results');
+    }
+
     return results;
   }
 
@@ -417,8 +477,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return records;
   }
 
-  Map<String, dynamic> generateStatistics(
-      Map<String, dynamic> recordsLA, Map<String, dynamic> recordsGBIF) {
+  Map<String, dynamic> generateStatistics(Map<String, dynamic> recordsLA,
+      Map<String, dynamic> recordsGBIF, Map<String, String> initialMessages) {
     final List<String> comparisonFields = <String>[
       'kingdom',
       'phylum',
@@ -446,7 +506,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       'nulls': <String, int>{}
     };
 
-    final Map<String, String> errorMessages = <String, String>{};
+    final Map<String, String> errorMessages = initialMessages;
 
     for (final String field in comparisonFields) {
       stats['matches']![field] = 0;
@@ -568,4 +628,11 @@ class _CompareDataViewModel {
       doSolrQuery;
   final void Function(String query, Function(Map<String, dynamic>) onResult)
       doMySqlQuery;
+}
+
+extension IterableExtensions<E> on Iterable<E> {
+  Iterable<T> mapIndexed<T>(T Function(int index, E element) f) {
+    int index = 0;
+    return map((e) => f(index++, e));
+  }
 }
