@@ -1,7 +1,9 @@
+import 'dart:convert' as convert;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:clipboard/clipboard.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -9,11 +11,13 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:la_toolkit/utils/StringUtils.dart';
+
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:redux/redux.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'components/app_snack_bar.dart';
 import 'components/deployBtn.dart';
@@ -38,14 +42,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
   int _tab = 0;
-  static const int recordsNumber = 2;
+  static const int recordsNumber = 5;
   late LAProject _p;
   late bool _withPipeline;
   late String _solrHost;
   late String _collectoryHost;
   static const String gbifDatasetId = 'gbifDatasetId';
   final Map<String, dynamic> recordsWithDifferences = <String, dynamic>{};
-  Map<String, String> errorMessages = <String, String>{};
+  Map<String, String>? errorMessages;
   Map<String, Map<String, int>> statistics = <String, Map<String, int>>{};
   late String _alaHubUrl;
 
@@ -166,7 +170,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
             items: const <TabItem<dynamic>>[
               TabItem<dynamic>(
                   icon: Icons.image_search_outlined,
-                  title: 'GBIF taxon comparative'),
+                  title: 'Compare with GBIF'),
               TabItem<dynamic>(
                   icon: Icons.compare_arrows,
                   title: 'Solr indexes comparative'),
@@ -191,12 +195,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
                         child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        // Add
-                        // https://pub.dev/packages/circular_countdown_timer
-                        // or similar and a sliderdesc
+                        if (_tab == 0) const SizedBox(height: 20),
                         if (_tab == 0)
                           const Text(
                               'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF. The comparison focuses on several key fields such as kingdom, phylum, class, order, family, genus, species, and scientific name. Additionally, it considers other fields like country, etc'),
+                        const SizedBox(height: 10),
                         if (_tab == 0)
                           LaunchBtn(
                             icon: Icons.settings,
@@ -212,22 +215,52 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               });
                             },
                           ),
-                        Column(
-                          children: errorMessages.entries
-                              .map((MapEntry<String, String> entry) {
-                            return ListTile(
-                                title: Text('ID: ${entry.key}'),
-                                subtitle: SizedBox(
-                                  height: 10,
-                                  child: Markdown(data: entry.value),
-                                ));
-                          }).toList(),
-                        ),
-                        if (errorMessages.isNotEmpty)
+                        if (_tab == 0 && errorMessages != null)
+                          Container(
+                              alignment: Alignment.topLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: errorMessages!.entries
+                                    .map((MapEntry<String, String> entry) {
+                                  return ListTile(
+                                      leading: GestureDetector(
+                                          onTap: () => FlutterClipboard.copy(
+                                                  entry.key)
+                                              .then((dynamic value) =>
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                          const SnackBar(
+                                                              content: Text(
+                                                    'Copied to clipboard',
+                                                    style: TextStyle(
+                                                        fontFamily: 'Courier',
+                                                        fontSize: 14),
+                                                  )))),
+                                          child: Text(entry.key)),
+                                      title: Flexible(
+                                          // height: 40,
+                                          child: MarkdownBody(
+                                        data: entry.value,
+                                        onTapLink: (String text, String? url,
+                                            String title) {
+                                          launchUrl(Uri.parse(url!));
+                                        },
+                                      )));
+                                }).toList(),
+                              )),
+                        if (_tab == 0 &&
+                            errorMessages != null &&
+                            errorMessages!.isEmpty)
+                          const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Text('No differences found')),
+                        if (_tab == 0 &&
+                            errorMessages != null &&
+                            errorMessages!.isNotEmpty)
                           ElevatedButton(
                             onPressed: () {
                               if (errorMessages != null) {
-                                _generatePdf(errorMessages);
+                                _generatePdf(errorMessages!);
                               }
                             },
                             child: const Text('Generate PDF'),
@@ -243,6 +276,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   // static const String gbifBaseUrl = 'https://api.gbif-uat.org/v1';
+
   static const String gbifBaseUrl = 'https://api.gbif.org/v1';
 
   Future<Map<String, dynamic>> _compareWithGBIF(_CompareDataViewModel vm,
@@ -273,8 +307,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
         if (debug) {
           debugPrint(response.body);
         }
+        final String body = convert.utf8.decode(response.bodyBytes);
         final Map<String, dynamic> result =
-            jsonDecode(response.body) as Map<String, dynamic>;
+            jsonDecode(body) as Map<String, dynamic>;
         if (result['count'] == 1) {
           recordsGBIFIds[id] = (result['results'] as List<dynamic>)[0];
           // debugPrint('ALA record via its API: ');
@@ -437,10 +472,23 @@ class _CompareDataPageState extends State<CompareDataPage> {
               recordLA['scientificName'] as String?;
           final String? authorshipLA =
               recordLA['scientificNameAuthorship'] as String?;
-          final String? fullScientificNameLA =
-              scientificNameLA != null && authorshipLA != null
-                  ? '$scientificNameLA $authorshipLA'
-                  : null;
+          final String? rawScientificNameLA =
+              recordLA['raw_scientificName'] as String?;
+          final String? rawAuthorshipLA =
+              recordLA['raw_scientificNameAuthorship'] as String?;
+
+          String? fullScientificNameLA;
+          if (scientificNameLA != null) {
+            fullScientificNameLA = authorshipLA != null
+                ? '$scientificNameLA $authorshipLA'
+                : scientificNameLA;
+          }
+          String? fullRawScientificNameLA;
+          if (rawScientificNameLA != null) {
+            fullRawScientificNameLA = rawAuthorshipLA != null
+                ? '$rawScientificNameLA $rawAuthorshipLA'
+                : rawScientificNameLA;
+          }
           final String? scientificNameGBIF =
               recordGBIF['scientificName'] as String?;
 
@@ -454,7 +502,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
             stats['mismatches']!['scientificName'] =
                 stats['mismatches']!['scientificName']! + 1;
             errors.add(
-                'Scientific name differs: [$fullScientificNameLA]($_alaHubUrl/$id) vs [$scientificNameGBIF](https://gbif.org/occurrence/${recordGBIF['key']})');
+                "1. **Scientific name** differs: [$fullScientificNameLA]($_alaHubUrl/occurrences/$id) (raw: '$fullRawScientificNameLA') vs [$scientificNameGBIF](https://gbif.org/occurrence/${recordGBIF['key']})");
           }
         } else {
           final String? value1 = recordLA[field] as String?;
@@ -467,13 +515,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
           } else {
             stats['mismatches']![field] = stats['mismatches']![field]! + 1;
             errors.add(
-                '$field differs: [$value1]($_alaHubUrl/$id) vs [$value2](https://gbif.org/occurrence/${recordGBIF['key']})');
+                '1. _${StringUtils.capitalize(field)}_ differs: [$value1]($_alaHubUrl/occurrences/$id) vs [$value2](https://gbif.org/occurrence/${recordGBIF['key']})');
           }
         }
       }
 
       if (errors.isNotEmpty) {
-        errorMessages[id] = errors.join('<br>');
+        errorMessages[id] = errors.join('  \n');
       }
     }
 
@@ -483,31 +531,21 @@ class _CompareDataPageState extends State<CompareDataPage> {
     };
   }
 
-  String generateMarkdown(Map<String, String> errorMessages) {
-    final StringBuffer markdown = StringBuffer();
-
-    errorMessages.forEach((String id, String message) {
-      markdown.writeln('### ID: $id');
-      markdown.writeln(message);
-      markdown.writeln('\n');
-    });
-
-    return markdown.toString();
-  }
-
   Future<void> _generatePdf(Map<String, String> errorMessages) async {
     final pw.Document pdf = pw.Document();
 
-    final String markdownContent = generateMarkdown(errorMessages);
+//    final String markdownContent = generateMarkdown(errorMessages);
 
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
-          final String htmlContent = md.markdownToHtml(markdownContent);
-          final HtmlWidget htmlWidget = HtmlWidget(htmlContent);
+          const String htmlContent =
+              '<h1>Test</h1>'; // md.markdownToHtml(markdownContent);
+          final HtmlWidget htmlWidget = const HtmlWidget(htmlContent);
 
           return pw.Center(
-            child: pw.Text(htmlWidget.toString()),
+            // child: pw.Text(htmlWidget.toString()),
+            child: pw.Text(htmlContent),
           );
         },
       ),
