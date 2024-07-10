@@ -1500,6 +1500,10 @@ check results length: ${checkResults.length}''';
     return servers.firstWhereOrNull((LAServer s) => s.name == name);
   }
 
+  LAServer? getServerById(String id) {
+    return servers.firstWhereOrNull((LAServer s) => s.id == id);
+  }
+
   bool get isPipelinesInUse => !isHub && getService(pipelines).use;
 
   bool get isDockerEnabled => !isHub && getService(dockerSwarm).use;

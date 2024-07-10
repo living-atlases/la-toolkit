@@ -110,6 +110,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                     project: project,
                     commonCmd: DeployCmd());
               },
+              onDataCompare: (LAProject project) {
+                BeamerCond.of(context, CompareDataLocation());
+              },
               onDelProject: (LAProject project) {
                 store.dispatch(DelProject(project));
                 BeamerCond.of(context, HomeLocation());
@@ -258,6 +261,13 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 icon: const Icon(Icons.pie_chart),
                 title: "Stats",
                 action: () => {}), */
+            Tool(
+                icon: const Icon(Icons.compare),
+                title: 'Compare',
+                tooltip:
+                    'This tool allows you, for instance, to compare some records between your LA portal and your GBIF data',
+                enabled: isCreatedAndAccessibleOrInProduction,
+                action: () => vm.onDataCompare(vm.project)),
             if (!project.isHub)
               Tool(
                   icon: const Icon(Icons.file_download),
@@ -541,6 +551,7 @@ class _ProjectPageViewModel {
       required this.onGenInvProject,
       required this.onTestConnProject,
       required this.onPortalStatus,
+      required this.onDataCompare,
       required this.onCreateHub});
 
   final LAProject project;
@@ -561,6 +572,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onPostDeployTasks;
   final void Function(LAProject project) onPortalStatus;
   final void Function(LAProject project) onPipelinesTasks;
+  final void Function(LAProject project) onDataCompare;
   final void Function(LAProject project) onCreateHub;
   final void Function(LAProject project, LAProject hub) onOpenHub;
 

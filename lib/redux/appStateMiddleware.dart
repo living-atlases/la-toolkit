@@ -476,6 +476,16 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           casOauthAccessTokenSigningKey: casOauthAccessTokenSigningKey,
           casOauthAccessTokenEncryptionKey: casOauthAccessTokenEncryptionKey));
     }
+    if (action is SolrQuery) {
+      final Map<String, dynamic> result =
+          await Api.solrQuery(action.project, action.solrHost, action.query);
+      action.onResult(result);
+    }
+    if (action is MySqlQuery) {
+      final Map<String, dynamic> result = await Api.mySqlQuery(
+          action.project, action.mySqlHost, action.db, action.query);
+      action.onResult(result);
+    }
     next(action);
   }
 

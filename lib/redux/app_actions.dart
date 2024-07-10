@@ -440,3 +440,31 @@ class OnSelectTuneTab extends AppActions {
 
   int currentTab;
 }
+
+class SolrQuery extends AppActions {
+  SolrQuery(
+      {required this.project,
+      required this.solrHost,
+      required this.query,
+      required this.onResult});
+
+  final String project;
+  final String solrHost;
+  final String query;
+  Function(Map<String, dynamic>) onResult;
+}
+
+class MySqlQuery extends AppActions {
+  MySqlQuery(
+      {required this.project,
+      required this.mySqlHost,
+      required this.db,
+      required this.query,
+      required this.onResult});
+
+  final String project;
+  final String mySqlHost;
+  final String db;
+  final String query;
+  Function(Map<String, dynamic>) onResult;
+}

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'branding_deploy_page.dart';
 import 'cmdTermPage.dart';
+import 'compare_data_page.dart';
 import 'deployResultsPage.dart';
 import 'deploy_page.dart';
 import 'home_page.dart';
@@ -45,7 +46,8 @@ class Routes {
               BrandingDeployLocation(),
               CmdResultsLocation(),
               PortalStatusLocation(),
-              PipelinesLocation()
+              PipelinesLocation(),
+              CompareDataLocation()
               // disabled for now CmdTermLocation()
             ]));
   static const BeamPage notFoundPage = BeamPage(
@@ -282,4 +284,15 @@ class PipelinesLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
       <BeamPage>[BeamPage(key: ValueKey(route), child: const PipelinesPage())];
+}
+
+class CompareDataLocation extends NamedBeamLocation {
+  @override
+  String get route => CompareDataPage.routeName;
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
+        BeamPage(key: ValueKey(route), child: const CompareDataPage())
+      ];
 }
