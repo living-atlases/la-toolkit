@@ -195,7 +195,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
               padding: 40,
               child: Row(children: <Widget>[
                 Expanded(
-                  flex: 2,
+                  //flex: 1,
                   child: Container(),
                 ),
                 Expanded(
@@ -321,7 +321,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                           ),
                         if (_tab == 0 && statistics != null)
                           SizedBox(
-                              width: 1000,
+                              width: double.infinity,
                               height: 600,
                               child: Padding(
                                   padding: const EdgeInsets.all(16.0),
@@ -330,7 +330,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                       ],
                     ))),
                 Expanded(
-                  flex: 2,
+                  // flex: 1,
                   child: Container(),
                 ),
               ]))));
