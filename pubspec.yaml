@@ -149,9 +149,6 @@ dependencies:
   yaml_extension: ^1.0.2
   json_theme: ^6.4.1
   stack_trace: ^1.11.1
-  pdf: ^3.11.0
-  printing: ^5.13.1
-  flutter_widget_from_html: ^0.15.1
   markdown: ^7.2.2
 
 dependency_overrides:

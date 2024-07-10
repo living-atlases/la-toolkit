@@ -293,6 +293,9 @@ class CompareDataLocation extends NamedBeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) =>
       <BeamPage>[
-        BeamPage(key: ValueKey(route), child: const CompareDataPage())
+        BeamPage(
+            key: ValueKey(route),
+            child: const CompareDataPage(),
+            title: 'Compare Data')
       ];
 }

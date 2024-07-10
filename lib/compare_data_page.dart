@@ -8,18 +8,15 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:markdown/markdown.dart' as md;
 import 'package:redux/redux.dart';
-import 'package:universal_html/js_util.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/app_snack_bar.dart';
+import 'components/compare_gbif_charts.dart';
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
@@ -53,7 +50,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   static const String gbifDatasetId = 'gbifDatasetId';
   final Map<String, dynamic> recordsWithDifferences = <String, dynamic>{};
   Map<String, String>? errorMessages;
-  Map<String, Map<String, int>> statistics = <String, Map<String, int>>{};
+  Map<String, Map<String, int>>? statistics;
   late String _alaHubUrl;
 
   bool _compareWithGBIFEnabled = false;
@@ -207,6 +204,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
                         child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
+                        // mainAxisSize: MainAxisSize.min,
+
                         if (_tab == 0) const SizedBox(height: 20),
                         if (_tab == 0)
                           const Text(
@@ -246,6 +245,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                 : () async {
                                     setState(() {
                                       errorMessages = null;
+                                      statistics = null;
                                       _compareWithGBIFEnabled = false;
                                     });
                                     final Map<String, dynamic> results =
@@ -304,7 +304,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               )),
                         if (_tab == 0 &&
                             errorMessages != null &&
-                            errorMessages!.isEmpty)
+                            errorMessages!.length == 1)
                           const Padding(
                               padding: EdgeInsets.all(12.0),
                               child: Text('No differences found')),
@@ -314,11 +314,19 @@ class _CompareDataPageState extends State<CompareDataPage> {
                           ElevatedButton(
                             onPressed: () {
                               if (errorMessages != null) {
-                                _generatePdf(errorMessages!);
+                                _generateAndDownloadHtml(errorMessages!);
                               }
                             },
-                            child: const Text('Generate PDF'),
+                            child: const Text('Download issues'),
                           ),
+                        if (_tab == 0 && statistics != null)
+                          SizedBox(
+                              width: 1000,
+                              height: 600,
+                              child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: CompareGbifCharts(
+                                      statistics: statistics!)))
                       ],
                     ))),
                 Expanded(
@@ -377,19 +385,19 @@ class _CompareDataPageState extends State<CompareDataPage> {
             debugPrint((result['results'] as List<dynamic>)[0].toString());
           }
         } else {
-          notFoundMessages[occId] =
-              'Record not found with occurrenceId: [$occId](https://$_alaHubUrl/occurrences/$occId) and datasetKey: ${record[gbifDatasetId]} and occurrenceId: $occId';
+          notFoundMessages[id] =
+              'Record not found with id: [$id](https://${_alaHubUrl}occurrences/$id) and datasetKey: ${record[gbifDatasetId]} and occurrenceId: $occId';
         }
       } else {
         debugPrint('Error: ${response.statusCode}');
       }
     }
     initialMessages['TOTAL'] =
-        'Number of LA records processed ${laRecords.length}, number of GBIF records found fot these records: ${recordsGBIFIds.length}';
+        'Number of LA records processed ${laRecords.length}, number of GBIF records found for these records: ${recordsGBIFIds.length}';
     initialMessages.addAll(notFoundMessages);
     final Map<String, dynamic> results =
         generateStatistics(laRecords, recordsGBIFIds, initialMessages);
-    if (debug) {
+    if (true) {
       debugPrint('Results: $results');
     }
 
@@ -562,7 +570,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
             stats['mismatches']!['scientificName'] =
                 stats['mismatches']!['scientificName']! + 1;
             errors.add(
-                "1. **Scientific name** differs: [$fullScientificNameLA]($_alaHubUrl/occurrences/$id) (raw: '$fullRawScientificNameLA') vs [$scientificNameGBIF](https://gbif.org/occurrence/${recordGBIF['key']})");
+                "1. **Scientific name** differs: [$fullScientificNameLA](${_alaHubUrl}occurrences/$id) (raw: '$fullRawScientificNameLA') vs [$scientificNameGBIF](https://gbif.org/occurrence/${recordGBIF['key']})");
           }
         } else {
           final String? value1 = recordLA[field] as String?;
@@ -575,7 +583,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
           } else {
             stats['mismatches']![field] = stats['mismatches']![field]! + 1;
             errors.add(
-                '1. _${StringUtils.capitalize(field)}_ differs: [$value1]($_alaHubUrl/occurrences/$id) vs [$value2](https://gbif.org/occurrence/${recordGBIF['key']})');
+                '1. _${StringUtils.capitalize(field)}_ differs: [$value1](${_alaHubUrl}occurrences/$id) vs [$value2](https://gbif.org/occurrence/${recordGBIF['key']})');
           }
         }
       }
@@ -591,29 +599,22 @@ class _CompareDataPageState extends State<CompareDataPage> {
     };
   }
 
-  Future<void> _generatePdf(Map<String, String> errorMessages) async {
-    final pw.Document pdf = pw.Document();
+  void _generateAndDownloadHtml(Map<String, String> errors) {
+    final StringBuffer markdownContent = StringBuffer();
+    markdownContent.write('# Error Report\n');
+    errors.forEach((String key, String value) {
+      markdownContent.write('## $key\n');
+      markdownContent.write('$value\n');
+    });
 
-//    final String markdownContent = generateMarkdown(errorMessages);
+    final String htmlContent = md.markdownToHtml(markdownContent.toString());
 
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          const String htmlContent =
-              '<h1>Test</h1>'; // md.markdownToHtml(markdownContent);
-          final HtmlWidget htmlWidget = const HtmlWidget(htmlContent);
-
-          return pw.Center(
-            // child: pw.Text(htmlWidget.toString()),
-            child: pw.Text(htmlContent),
-          );
-        },
-      ),
-    );
-
-    await Printing.layoutPdf(
-      onLayout: (PdfPageFormat format) async => pdf.save(),
-    );
+    final html.Blob blob = html.Blob(<String>[htmlContent], 'text/html');
+    final String url = html.Url.createObjectUrlFromBlob(blob);
+    html.AnchorElement(href: url)
+      ..setAttribute('download', 'error_report.html')
+      ..click();
+    html.Url.revokeObjectUrl(url);
   }
 }
 
@@ -633,6 +634,6 @@ class _CompareDataViewModel {
 extension IterableExtensions<E> on Iterable<E> {
   Iterable<T> mapIndexed<T>(T Function(int index, E element) f) {
     int index = 0;
-    return map((e) => f(index++, e));
+    return map((E e) => f(index++, e));
   }
 }
