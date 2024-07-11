@@ -42,7 +42,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
   int _tab = 0;
-  static const int recordsNumber = 10;
+  static const int recordsNumber = 4;
   late LAProject _p;
   late bool _withPipeline;
   String? _solrHost;
@@ -273,7 +273,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                       : Colors.transparent;
                                   return ListTile(
                                       tileColor: backgroundColor,
-                                      leading: entry.key == 'TOTAL'
+                                      leading: entry.key == 'TOTAL' ||
+                                              entry.key == 'SUMMARY'
                                           ? null
                                           : GestureDetector(
                                               onTap: () => FlutterClipboard
@@ -593,6 +594,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
       }
     }
 
+    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    final String prettyprint = encoder.convert(stats);
+    errorMessages['SUMMARY'] = prettyprint;
     return <String, dynamic>{
       'statistics': stats,
       'errorMessages': errorMessages

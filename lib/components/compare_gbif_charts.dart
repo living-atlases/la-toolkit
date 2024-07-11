@@ -26,10 +26,7 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                   maxY: _getMaxY(),
                   barGroups: _createBarGroups(),
                   titlesData: FlTitlesData(
-                    topTitles: const AxisTitles(
-                        // sideTitles: SideTitles(
-                        //   showTitles: false),
-                        ),
+                    topTitles: const AxisTitles(),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
@@ -129,8 +126,6 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                     ),
                   ),
                   gridData: FlGridData(
-                    /*show: true,
-                    drawVerticalLine: true,*/
                     getDrawingHorizontalLine: (double value) {
                       return const FlLine(
                         color: Color(0xffe7e8ec),
@@ -148,7 +143,6 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                     show: true,
                     border: Border.all(
                       color: const Color(0xffe7e8ec),
-                      // width: 1,
                     ),
                   ),
                   barTouchData: BarTouchData(
@@ -202,7 +196,7 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
           height: 16,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(8),
+            shape: BoxShape.circle,
           ),
         ),
         const SizedBox(width: 4),
@@ -238,18 +232,21 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
             toY: matches[keys[i]]!.toDouble(),
             color: Colors.green,
             width: 8,
+            borderRadius: BorderRadius.circular(10),
           ),
           BarChartRodData(
             fromY: 0,
             toY: mismatches[keys[i]]!.toDouble(),
             color: Colors.red,
             width: 8,
+            borderRadius: BorderRadius.circular(10),
           ),
           BarChartRodData(
             fromY: 0,
             toY: nulls[keys[i]]!.toDouble(),
             color: Colors.grey,
             width: 8,
+            borderRadius: BorderRadius.circular(10),
           ),
         ],
         showingTooltipIndicators: <int>[0, 1, 2],
