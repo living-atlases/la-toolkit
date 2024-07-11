@@ -10,6 +10,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
@@ -28,6 +29,7 @@ import 'models/laServiceDeploy.dart';
 import 'models/la_project.dart';
 import 'redux/actions.dart';
 import 'utils/StringUtils.dart';
+import 'utils/query_utils.dart';
 
 class CompareDataPage extends StatefulWidget {
   const CompareDataPage({super.key});
@@ -42,7 +44,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
   int _tab = 0;
-  static const int recordsNumber = 4;
+  static const int recordsNumber = 1;
   late LAProject _p;
   late bool _withPipeline;
   String? _solrHost;
@@ -292,15 +294,17 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                                             fontSize: 14),
                                                       )))),
                                               child: Text(entry.key)),
-                                      title: Flexible(
-                                          // height: 40,
-                                          child: MarkdownBody(
-                                        data: entry.value,
-                                        onTapLink: (String text, String? url,
-                                            String title) {
-                                          launchUrl(Uri.parse(url!));
-                                        },
-                                      )));
+                                      title: Row(children: <Widget>[
+                                        Flexible(
+                                            // height: 40,
+                                            child: MarkdownBody(
+                                          data: entry.value,
+                                          onTapLink: (String text, String? url,
+                                              String title) {
+                                            launchUrl(Uri.parse(url!));
+                                          },
+                                        ))
+                                      ]));
                                 }).toList(),
                               )),
                         if (_tab == 0 &&
@@ -584,18 +588,43 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   void _generateAndDownloadHtml(Map<String, String> errors) {
     final StringBuffer markdownContent = StringBuffer();
-    markdownContent.write('# Error Report\n');
+    markdownContent.write('# Issues Report\n');
     errors.forEach((String key, String value) {
-      markdownContent.write('## $key\n');
+      markdownContent.write('### $key\n');
       markdownContent.write('$value\n');
     });
 
     final String htmlContent = md.markdownToHtml(markdownContent.toString());
 
-    final html.Blob blob = html.Blob(<String>[htmlContent], 'text/html');
+    final String styledHtmlContent = '''
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <style>
+      body {
+        font-family: 'sans', sans-serif;
+      }
+      h1 {
+        color: green;
+      }
+      h3 {
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    $htmlContent
+  </body>
+  </html>
+  ''';
+
+    final DateTime now = DateTime.now();
+    final String formattedDate = DateFormat('yyyyMMddhhmm').format(now);
+    final html.Blob blob = html.Blob(<String>[styledHtmlContent], 'text/html');
     final String url = html.Url.createObjectUrlFromBlob(blob);
     html.AnchorElement(href: url)
-      ..setAttribute('download', 'error_report.html')
+      ..setAttribute(
+          'download', '${formattedDate}_la_gbif_comparative_issues_report.html')
       ..click();
     html.Url.revokeObjectUrl(url);
   }
@@ -619,25 +648,4 @@ extension IterableExtensions<E> on Iterable<E> {
     int index = 0;
     return map((E e) => f(index++, e));
   }
-}
-
-enum ComparisonFields {
-  scientificName,
-  kingdom,
-  phylum,
-  classField,
-  order,
-  family,
-  genus,
-  species,
-  country,
-  stateProvince,
-  locality,
-  eventDate,
-  recordedBy,
-  catalogNumber,
-  basisOfRecord,
-  collectionCode,
-  occurrenceStatus,
-  habitat
 }

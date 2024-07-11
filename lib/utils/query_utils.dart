@@ -1,0 +1,20 @@
+enum ComparisonFields {
+  scientificName,
+  kingdom,
+  phylum,
+  classField,
+  order,
+  family,
+  genus,
+  species,
+  country,
+  stateProvince,
+  locality,
+  eventDate,
+  recordedBy,
+  catalogNumber,
+  basisOfRecord,
+  collectionCode,
+  occurrenceStatus,
+  habitat
+}
