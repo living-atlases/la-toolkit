@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -622,6 +623,7 @@ class Api {
         throw Exception('Failed to query solr (${response.reasonPhrase}))');
       }
     } catch (e) {
+      debugPrint('Error during solrQuery: $e');
       throw Exception('Failed to query solr ($e)');
     }
   }
@@ -649,6 +651,7 @@ class Api {
         throw Exception('Failed to query mysql (${response.reasonPhrase}))');
       }
     } catch (e) {
+      debugPrint('Error during mySqlQuery: $e');
       throw Exception('Failed to query mysql ($e)');
     }
   }

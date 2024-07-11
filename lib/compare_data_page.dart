@@ -398,7 +398,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
     initialMessages.addAll(notFoundMessages);
     final Map<String, dynamic> results =
         generateStatistics(laRecords, recordsGBIFIds, initialMessages);
-    if (true) {
+    if (debug) {
       debugPrint('Results: $results');
     }
 
@@ -488,27 +488,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   Map<String, dynamic> generateStatistics(Map<String, dynamic> recordsLA,
       Map<String, dynamic> recordsGBIF, Map<String, String> initialMessages) {
-    final List<String> comparisonFields = <String>[
-      'kingdom',
-      'phylum',
-      'class',
-      'order',
-      'family',
-      'genus',
-      'species',
-      'scientificName',
-      'country',
-      'stateProvince',
-      'locality',
-      'eventDate',
-      'recordedBy',
-      'catalogNumber',
-      'basisOfRecord',
-      'collectionCode',
-      'occurrenceStatus',
-      'habitat'
-    ];
-
     final Map<String, Map<String, int>> stats = <String, Map<String, int>>{
       'matches': <String, int>{},
       'mismatches': <String, int>{},
@@ -517,7 +496,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     final Map<String, String> errorMessages = initialMessages;
 
-    for (final String field in comparisonFields) {
+    for (final String field in ComparisonFields.values.asNameMap().keys) {
       stats['matches']![field] = 0;
       stats['mismatches']![field] = 0;
       stats['nulls']![field] = 0;
@@ -535,7 +514,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
       final List<String> errors = <String>[];
 
-      for (final String field in comparisonFields) {
+      for (final String field in ComparisonFields.values.asNameMap().keys) {
         if (field == 'scientificName') {
           final String? scientificNameLA =
               recordLA['scientificName'] as String?;
@@ -640,4 +619,25 @@ extension IterableExtensions<E> on Iterable<E> {
     int index = 0;
     return map((E e) => f(index++, e));
   }
+}
+
+enum ComparisonFields {
+  scientificName,
+  kingdom,
+  phylum,
+  classField,
+  order,
+  family,
+  genus,
+  species,
+  country,
+  stateProvince,
+  locality,
+  eventDate,
+  recordedBy,
+  catalogNumber,
+  basisOfRecord,
+  collectionCode,
+  occurrenceStatus,
+  habitat
 }

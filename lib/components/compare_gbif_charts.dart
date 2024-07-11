@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../compare_data_page.dart';
+
 class CompareGbifCharts extends StatefulWidget {
   const CompareGbifCharts({super.key, required this.statistics});
 
@@ -36,76 +38,17 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                             fontWeight: FontWeight.bold,
                             fontSize: 10,
                           );
-                          Widget text;
-                          switch (value.toInt()) {
-                            case 0:
-                              text = const Text('scientificName', style: style);
-                              break;
-                            case 1:
-                              text = const Text('kingdom', style: style);
-                              break;
-                            case 2:
-                              text = const Text('phylum', style: style);
-                              break;
-                            case 3:
-                              text = const Text('class', style: style);
-                              break;
-                            case 4:
-                              text = const Text('order', style: style);
-                              break;
-                            case 5:
-                              text = const Text('family', style: style);
-                              break;
-                            case 6:
-                              text = const Text('genus', style: style);
-                              break;
-                            case 7:
-                              text = const Text('species', style: style);
-                              break;
-                            case 8:
-                              text = const Text('country', style: style);
-                              break;
-                            case 9:
-                              text = const Text('stateProvince', style: style);
-                              break;
-                            case 10:
-                              text = const Text('locality', style: style);
-                              break;
-                            case 11:
-                              text = const Text('eventDate', style: style);
-                              break;
-                            case 12:
-                              text = const Text('recordedBy', style: style);
-                              break;
-                            case 13:
-                              text = const Text('catalogNumber', style: style);
-                              break;
-                            case 14:
-                              text = const Text('basisOfRecord', style: style);
-                              break;
-                            case 15:
-                              text = const Text('collectionCode', style: style);
-                              break;
-                            case 16:
-                              text =
-                                  const Text('occurrenceStatus', style: style);
-                              break;
-                            case 17:
-                              text = const Text('habitat', style: style);
-                              break;
-                            default:
-                              text = const Text('', style: style);
-                              break;
-                          }
+                          final ComparisonFields field =
+                              ComparisonFields.values[value.toInt()];
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             child: RotatedBox(
                               quarterTurns: 3,
-                              child: text,
+                              child: Text(field.name, style: style),
                             ),
                           );
                         },
-                        reservedSize: 60,
+                        reservedSize: 100,
                       ),
                     ),
                     leftTitles: AxisTitles(
@@ -147,13 +90,17 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                   ),
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: Colors.blueGrey,
+                      tooltipBgColor: Colors.transparent,
                       getTooltipItem: (BarChartGroupData group, int groupIndex,
                           BarChartRodData rod, int rodIndex) {
                         return BarTooltipItem(
                           rod.toY.toString(),
-                          const TextStyle(
-                            color: Colors.white,
+                          TextStyle(
+                            color: rodIndex == 0
+                                ? Colors.green
+                                : rodIndex == 1
+                                    ? Colors.red
+                                    : Colors.grey,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
@@ -221,29 +168,30 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
     final Map<String, int> matches = widget.statistics['matches']!;
     final Map<String, int> mismatches = widget.statistics['mismatches']!;
     final Map<String, int> nulls = widget.statistics['nulls']!;
-    final List<String> keys = matches.keys.toList();
 
-    return List<BarChartGroupData>.generate(keys.length, (int i) {
+    return List<BarChartGroupData>.generate(ComparisonFields.values.length,
+        (int i) {
+      final String key = ComparisonFields.values[i].name;
       return BarChartGroupData(
         x: i,
         barRods: <BarChartRodData>[
           BarChartRodData(
             fromY: 0,
-            toY: matches[keys[i]]!.toDouble(),
+            toY: matches[key]?.toDouble() ?? 0,
             color: Colors.green,
             width: 8,
             borderRadius: BorderRadius.circular(10),
           ),
           BarChartRodData(
             fromY: 0,
-            toY: mismatches[keys[i]]!.toDouble(),
+            toY: mismatches[key]?.toDouble() ?? 0,
             color: Colors.red,
             width: 8,
             borderRadius: BorderRadius.circular(10),
           ),
           BarChartRodData(
             fromY: 0,
-            toY: nulls[keys[i]]!.toDouble(),
+            toY: nulls[key]?.toDouble() ?? 0,
             color: Colors.grey,
             width: 8,
             borderRadius: BorderRadius.circular(10),
