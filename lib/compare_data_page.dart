@@ -48,14 +48,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
   late LAProject _p;
   late bool _withPipeline;
   String? _solrHost;
+  String? _coreOrCollection;
   late String _collectoryHost;
   static const String gbifDatasetId = 'gbifDatasetId';
   final Map<String, dynamic> recordsWithDifferences = <String, dynamic>{};
   Map<String, String>? errorMessages;
   Map<String, Map<String, int>>? statistics;
   late String _alaHubUrl;
-
   bool _compareWithGBIFEnabled = false;
+  List<String> _coreOrCollections = <String>[];
 
   Uri asUri(String base, String path, Map<String, String> params,
       [bool debug = false]) {
@@ -229,7 +230,16 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                     setState(() {
                                       if (newValue != null) {
                                         _solrHost = newValue;
-                                        _compareWithGBIFEnabled = true;
+                                      }
+                                    });
+                                    setState(() {
+                                      if (newValue != null) {
+                                        fetchCoreOrCollections(vm)
+                                            .then((List<String> result) {
+                                          setState(() {
+                                            _coreOrCollections = result;
+                                          });
+                                        });
                                       }
                                     });
                                   },
@@ -238,6 +248,43 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20),
                                   items: solrHostsMenuItems)),
+                        /* if (_coreOrCollections.isEmpty)
+                          const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: CircularProgressIndicator()), */
+                        if (_coreOrCollections.isNotEmpty)
+                          const SizedBox(height: 10),
+                        if (_coreOrCollections.isNotEmpty)
+                          ButtonTheme(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
+                              child: DropdownButton<String>(
+                                  underline: DropdownButtonHideUnderline(
+                                    child: Container(),
+                                  ),
+                                  disabledHint:
+                                      const Text('No collection available'),
+                                  hint: const Text('Select collection'),
+                                  value: _coreOrCollection,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      if (newValue != null) {
+                                        _coreOrCollection = newValue;
+                                        _compareWithGBIFEnabled = true;
+                                        debugPrint(
+                                            'Selected: $_coreOrCollection');
+                                      }
+                                    });
+                                  },
+                                  elevation: 16,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  items: _coreOrCollections
+                                      .map((String element) =>
+                                          DropdownMenuItem<String>(
+                                              value: element,
+                                              child: Text(element)))
+                                      .toList())),
                         if (_tab == 0)
                           LaunchBtn(
                             icon: Icons.settings,
@@ -417,7 +464,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       vm.doSolrQuery(
           getFacetData(
               solrBase: 'http://localhost:8983',
-              collection: 'biocache',
+              collection: _coreOrCollection!,
               q: 'dataResourceUid:*',
               facetField:
                   _withPipeline ? 'dataResourceUid' : 'data_resource_uid',
@@ -468,7 +515,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
       vm.doSolrQuery(
           Uri.parse(
-                  'http://localhost:8983/solr/biocache/select?q=dataResourceUid:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false')
+                  'http://localhost:8983/solr/${_coreOrCollection!}/select?q=dataResourceUid:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false')
               .toString(), (Map<String, dynamic> result) {
         final Map<String, dynamic> occ =
             ((result['response'] as Map<String, dynamic>)['docs']
@@ -630,6 +677,46 @@ class _CompareDataPageState extends State<CompareDataPage> {
           'download', '${formattedDate}_la_gbif_comparative_issues_report.html')
       ..click();
     html.Url.revokeObjectUrl(url);
+  }
+
+  Future<List<String>> getCoreOrCollections(_CompareDataViewModel vm) async {
+    final Completer<List<String>> collCompleter = Completer<List<String>>();
+    final Completer<List<String>> aliasCompleter = Completer<List<String>>();
+
+    vm.doSolrQuery('http://localhost:8983/solr/admin/collections?action=LIST',
+        (Map<String, dynamic> result) {
+      final List<String> results = <String>[];
+      final List<dynamic> docs = result['collections'] as List<dynamic>;
+
+      for (final dynamic doc in docs) {
+        results.add(doc.toString());
+      }
+      collCompleter.complete(results);
+    });
+
+    vm.doSolrQuery(
+        'http://localhost:8983/solr/admin/collections?action=LISTALIASES',
+        (Map<String, dynamic> result) {
+      final List<String> results = <String>[];
+      final Map<String, dynamic> aliases =
+          result['aliases'] as Map<String, dynamic>;
+
+      // ignore: prefer_foreach
+      for (final String alias in aliases.keys) {
+        results.add(alias);
+      }
+
+      aliasCompleter.complete(results);
+    });
+
+    final List<String> results = <String>[];
+    results.addAll(await collCompleter.future);
+    results.addAll(await aliasCompleter.future);
+    return results;
+  }
+
+  Future<List<String>> fetchCoreOrCollections(_CompareDataViewModel vm) async {
+    return getCoreOrCollections(vm);
   }
 }
 
