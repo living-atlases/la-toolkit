@@ -150,6 +150,7 @@ dependencies:
   json_theme: ^6.4.1
   stack_trace: ^1.11.1
   markdown: ^7.2.2
+  intl: ^0.18.1
 
 dependency_overrides:
   intl: ^0.18.1

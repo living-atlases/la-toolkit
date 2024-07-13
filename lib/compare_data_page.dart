@@ -44,7 +44,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
   int _tab = 0;
-  static const int recordsNumber = 1;
+  static const int recordsNumber = 400;
   late LAProject _p;
   late bool _withPipeline;
   String? _solrHost;
@@ -211,7 +211,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                         if (_tab == 0) const SizedBox(height: 20),
                         if (_tab == 0)
                           const Text(
-                              'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF. The comparison focuses on several key fields such as kingdom, phylum, class, order, family, genus, species, and scientific name. Additionally, it considers other fields like country, etc'),
+                              'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'),
                         const SizedBox(height: 10),
                         if (_tab == 0)
                           ButtonTheme(
@@ -371,6 +371,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       if (debug) {
         debugPrint(gbifRecordUri.toString());
       }
+      await Future<void>.delayed(const Duration(milliseconds: 200));
       final Response response = await http.get(gbifRecordUri);
       if (response.statusCode == 200) {
         if (debug) {
@@ -500,7 +501,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     final Map<String, String> errorMessages = initialMessages;
 
-    for (final String field in ComparisonFields.values.asNameMap().keys) {
+    for (final ComparisonField eField in ComparisonField.values) {
+      final String field = eField.getName;
       stats['matches']![field] = 0;
       stats['mismatches']![field] = 0;
       stats['nulls']![field] = 0;
@@ -518,7 +520,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
       final List<String> errors = <String>[];
 
-      for (final String field in ComparisonFields.values.asNameMap().keys) {
+      for (final ComparisonField efield in ComparisonField.values) {
+        final String field = efield.getName;
         if (field == 'scientificName') {
           final String? scientificNameLA =
               recordLA['scientificName'] as String?;

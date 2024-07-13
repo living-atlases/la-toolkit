@@ -38,13 +38,13 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                             fontWeight: FontWeight.bold,
                             fontSize: 10,
                           );
-                          final ComparisonFields field =
-                              ComparisonFields.values[value.toInt()];
+                          final ComparisonField field =
+                              ComparisonField.values[value.toInt()];
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             child: RotatedBox(
                               quarterTurns: 3,
-                              child: Text(field.name, style: style),
+                              child: Text(field.getName, style: style),
                             ),
                           );
                         },
@@ -169,9 +169,9 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
     final Map<String, int> mismatches = widget.statistics['mismatches']!;
     final Map<String, int> nulls = widget.statistics['nulls']!;
 
-    return List<BarChartGroupData>.generate(ComparisonFields.values.length,
+    return List<BarChartGroupData>.generate(ComparisonField.values.length,
         (int i) {
-      final String key = ComparisonFields.values[i].name;
+      final String key = ComparisonField.values[i].getName;
       return BarChartGroupData(
         x: i,
         barRods: <BarChartRodData>[

@@ -1,4 +1,4 @@
-enum ComparisonFields {
+enum ComparisonField {
   scientificName,
   kingdom,
   phylum,
@@ -17,4 +17,16 @@ enum ComparisonFields {
   collectionCode,
   occurrenceStatus,
   habitat
+}
+
+extension ComparisonFieldsExtension on ComparisonField {
+  String get getName {
+    switch (this) {
+      case ComparisonField.classField:
+        return 'class';
+      // ignore: no_default_cases
+      default:
+        return toString().split('.').last;
+    }
+  }
 }
