@@ -446,11 +446,13 @@ class SolrQuery extends AppActions {
       {required this.project,
       required this.solrHost,
       required this.query,
+      required this.onError,
       required this.onResult});
 
   final String project;
   final String solrHost;
   final String query;
+  final Function(String) onError;
   Function(Map<String, dynamic>) onResult;
 }
 
@@ -460,11 +462,13 @@ class MySqlQuery extends AppActions {
       required this.mySqlHost,
       required this.db,
       required this.query,
+      required this.onError,
       required this.onResult});
 
   final String project;
   final String mySqlHost;
   final String db;
   final String query;
+  final Function(String) onError;
   Function(Map<String, dynamic>) onResult;
 }

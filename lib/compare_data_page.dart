@@ -50,6 +50,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   late bool _withPipeline;
   String? _solrHost;
   String? _coreOrCollection;
+  String? _coreOrCollection2;
   late String _collectoryHost;
   static const String gbifDatasetId = 'gbifDatasetId';
   final Map<String, dynamic> recordsWithDifferences = <String, dynamic>{};
@@ -59,7 +60,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
   bool _compareWithGBIFEnabled = false;
   List<String> _coreOrCollections = <String>[];
 
-  CompareDataPagePhase _currentPhase = CompareDataPagePhase.getSolrHosts;
+  CompareWithGbifDataPhase _currentPhaseTab0 =
+      CompareWithGbifDataPhase.getSolrHosts;
+  CompareSolrIndexesPhase _currentPhaseTab1 =
+      CompareSolrIndexesPhase.getSolrHosts;
+  bool _somethingFailed = false;
 
   Uri asUri(String base, String path, Map<String, String> params,
       [bool debug = false]) {
@@ -119,19 +124,23 @@ class _CompareDataPageState extends State<CompareDataPage> {
         converter: (Store<AppState> store) {
       return _CompareDataViewModel(
         state: store.state,
-        doSolrQuery: (String query, Function(Map<String, dynamic>) onResult) {
+        doSolrQuery: (String query, Function(Map<String, dynamic>) onResult,
+            Function(String) onError) {
           store.dispatch(SolrQuery(
               project: _p.id,
               solrHost: _solrHost!,
               query: query,
+              onError: onError,
               onResult: onResult));
         },
-        doMySqlQuery: (String query, Function(Map<String, dynamic>) onResult) {
+        doMySqlQuery: (String query, Function(Map<String, dynamic>) onResult,
+            Function(String) onError) {
           store.dispatch(MySqlQuery(
               project: _p.id,
               mySqlHost: _collectoryHost,
               db: 'collectory',
               query: query,
+              onError: onError,
               onResult: onResult));
         },
       );
@@ -166,6 +175,26 @@ class _CompareDataPageState extends State<CompareDataPage> {
         // ignore: always_specify_types
         solrHostsMenuItems.add(
             DropdownMenuItem<String>(value: element, child: Text(element)));
+      }
+      void onCoreOrCollectionSelected(String? value) {
+        setState(() {
+          if (value != null) {
+            _coreOrCollection = value;
+            if (_tab == 0) {
+              _compareWithGBIFEnabled = true;
+            }
+            _somethingFailed = false;
+          }
+        });
+      }
+
+      void onSndCoreOrCollectionSelected(String? value) {
+        setState(() {
+          if (value != null) {
+            _coreOrCollection2 = value;
+          }
+          _somethingFailed = false;
+        });
       }
 
       return Scaffold(
@@ -212,89 +241,64 @@ class _CompareDataPageState extends State<CompareDataPage> {
                       children: <Widget>[
                         // mainAxisSize: MainAxisSize.min,
 
-                        if (_tab == 0) const SizedBox(height: 20),
-                        if (_tab == 0)
-                          const Text(
-                              'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'),
+                        const SizedBox(height: 20),
+
+                        Text(_tab == 0
+                            ? 'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'
+                            : 'This tool compare two solr cores or two solrcloud collections in your LA Portal'),
                         const SizedBox(height: 10),
 
                         if (_tab == 0)
-                          CompareDataTimeline(
-                            currentPhase: _currentPhase,
-                          ),
-                        if (_tab == 0)
-                          ButtonTheme(
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.padded,
-                              child: DropdownButton<String>(
-                                  underline: DropdownButtonHideUnderline(
-                                    child: Container(),
-                                  ),
-                                  disabledHint:
-                                      const Text('No solr host available'),
-                                  hint: const Text('Select Solr host'),
-                                  value: _solrHost,
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      if (newValue != null) {
-                                        _solrHost = newValue;
-                                      }
-                                    });
-                                    setState(() {
-                                      if (newValue != null) {
-                                        _currentPhase =
-                                            CompareDataPagePhase.getCores;
-                                        fetchCoreOrCollections(vm)
-                                            .then((List<String> result) {
-                                          setState(() {
-                                            _coreOrCollections = result;
-                                          });
+                          CompareDataTimeline<CompareWithGbifDataPhase>(
+                              currentPhase: _currentPhaseTab0,
+                              failed: _somethingFailed,
+                              phaseValues:
+                                  CompareWithGbifDataPhase.values.toList()),
+                        if (_tab == 1)
+                          CompareDataTimeline<CompareSolrIndexesPhase>(
+                              currentPhase: _currentPhaseTab1,
+                              failed: _somethingFailed,
+                              phaseValues:
+                                  CompareSolrIndexesPhase.values.toList()),
+                        ButtonTheme(
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            child: DropdownButton<String>(
+                                underline: DropdownButtonHideUnderline(
+                                  child: Container(),
+                                ),
+                                disabledHint:
+                                    const Text('No solr host available'),
+                                hint: const Text('Select Solr host'),
+                                value: _solrHost,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    if (newValue != null) {
+                                      _solrHost = newValue;
+                                    }
+                                  });
+                                  setState(() {
+                                    if (newValue != null) {
+                                      _currentPhaseTab0 =
+                                          CompareWithGbifDataPhase.getCores;
+                                      _currentPhaseTab1 =
+                                          CompareSolrIndexesPhase.getCores;
+                                      fetchCoreOrCollections(vm)
+                                          .then((List<String> result) {
+                                        setState(() {
+                                          _coreOrCollections = result;
                                         });
-                                      }
-                                    });
-                                  },
-                                  // isExpanded: true,
-                                  elevation: 16,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  items: solrHostsMenuItems)),
-                        /* if (_coreOrCollections.isEmpty)
-                          const Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: CircularProgressIndicator()), */
-                        if (_coreOrCollections.isNotEmpty)
-                          const SizedBox(height: 10),
-                        if (_coreOrCollections.isNotEmpty)
-                          ButtonTheme(
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.padded,
-                              child: DropdownButton<String>(
-                                  underline: DropdownButtonHideUnderline(
-                                    child: Container(),
-                                  ),
-                                  disabledHint:
-                                      const Text('No collection available'),
-                                  hint: const Text('Select collection'),
-                                  value: _coreOrCollection,
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      if (newValue != null) {
-                                        _coreOrCollection = newValue;
-                                        _compareWithGBIFEnabled = true;
-                                        debugPrint(
-                                            'Selected: $_coreOrCollection');
-                                      }
-                                    });
-                                  },
-                                  elevation: 16,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  items: _coreOrCollections
-                                      .map((String element) =>
-                                          DropdownMenuItem<String>(
-                                              value: element,
-                                              child: Text(element)))
-                                      .toList())),
+                                      });
+                                    }
+                                  });
+                                },
+                                // isExpanded: true,
+                                elevation: 16,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                items: solrHostsMenuItems)),
+                        _coreDropdownMenu(onCoreOrCollectionSelected),
+                        if (_tab == 1)
+                          _coreDropdownMenu(onSndCoreOrCollectionSelected),
                         if (_tab == 0)
                           LaunchBtn(
                             icon: Icons.settings,
@@ -406,7 +410,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   Future<Map<String, dynamic>> _compareWithGBIF(_CompareDataViewModel vm,
       [bool debug = false]) async {
     setState(() {
-      _currentPhase = CompareDataPagePhase.getRandomLARecords;
+      _currentPhaseTab0 = CompareWithGbifDataPhase.getRandomLARecords;
     });
     final Map<String, dynamic> laRecords = await getRandomLARecords(vm);
 
@@ -415,7 +419,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final Map<String, String> notFoundMessages = <String, String>{};
 
     setState(() {
-      _currentPhase = CompareDataPagePhase.getGBIFRecords;
+      _currentPhaseTab0 = CompareWithGbifDataPhase.getGBIFRecords;
     });
 
     for (final Map<String, dynamic> record
@@ -493,8 +497,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
             result['facet_counts']['facet_fields']['dataResourceUid']
                 as Map<String, dynamic>);
         setState(() {
-          _currentPhase = CompareDataPagePhase.getDrs;
+          _currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
         });
+      }, (String error) {
+        debugPrint('Error: $error');
+        _somethingFailed = true;
       });
     } catch (e) {
       debugPrint('Error: $e');
@@ -505,22 +512,23 @@ class _CompareDataPageState extends State<CompareDataPage> {
   Future<Map<String, dynamic>> getCollectoryDrs(_CompareDataViewModel vm) {
     final Completer<Map<String, dynamic>> completer =
         Completer<Map<String, dynamic>>();
-    try {
-      vm.doMySqlQuery(
-          'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json FROM data_resource dr;',
-          (Map<String, dynamic> result) {
-        completer.complete(result);
-      });
-    } catch (e) {
-      debugPrint('Error: $e');
-    }
+
+    vm.doMySqlQuery(
+        'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json FROM data_resource dr;',
+        (Map<String, dynamic> result) {
+      completer.complete(result);
+    }, (String error) {
+      debugPrint('Error: $error');
+      _somethingFailed = true;
+    });
+
     return completer.future;
   }
 
   Future<Map<String, dynamic>> getRandomLARecords(
       _CompareDataViewModel vm) async {
     setState(() {
-      _currentPhase = CompareDataPagePhase.getDrs;
+      _currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
     });
 
     final Map<String, dynamic> dataResources = await getDrs(vm);
@@ -528,7 +536,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     final Map<String, dynamic> records = <String, dynamic>{};
     setState(() {
-      _currentPhase = CompareDataPagePhase.getRandomLARecords;
+      _currentPhaseTab0 = CompareWithGbifDataPhase.getRandomLARecords;
     });
 
     for (int i = 0; i < recordsNumber; i++) {
@@ -557,6 +565,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
           records[id] = occ;
         }
         completer.complete();
+      }, (String error) {
+        debugPrint('Error: $error');
+        _somethingFailed = true;
       });
 
       await completer.future;
@@ -659,7 +670,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
     errorMessages['SUMMARY'] = prettyprint;
 
     setState(() {
-      _currentPhase = CompareDataPagePhase.finished;
+      _currentPhaseTab0 = CompareWithGbifDataPhase.finished;
     });
 
     return <String, dynamic>{
@@ -724,6 +735,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
         results.add(doc.toString());
       }
       collCompleter.complete(results);
+    }, (String error) {
+      debugPrint('Error: $error');
+      _somethingFailed = true;
     });
 
     vm.doSolrQuery(
@@ -739,6 +753,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
       }
 
       aliasCompleter.complete(results);
+    }, (String error) {
+      debugPrint('Error: $error');
+      _somethingFailed = true;
     });
 
     final List<String> results = <String>[];
@@ -750,6 +767,33 @@ class _CompareDataPageState extends State<CompareDataPage> {
   Future<List<String>> fetchCoreOrCollections(_CompareDataViewModel vm) async {
     return getCoreOrCollections(vm);
   }
+
+  Widget _coreDropdownMenu(Function(String?) onCoreSelected) {
+    return _coreOrCollections.isEmpty
+        ? Container()
+        : Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: ButtonTheme(
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                child: DropdownButton<String>(
+                    underline: DropdownButtonHideUnderline(
+                      child: Container(),
+                    ),
+                    disabledHint: const Text('No collection available'),
+                    hint: const Text('Select collection'),
+                    value: _coreOrCollection,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        onCoreSelected(newValue);
+                      });
+                    },
+                    elevation: 16,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    items: _coreOrCollections
+                        .map((String element) => DropdownMenuItem<String>(
+                            value: element, child: Text(element)))
+                        .toList())));
+  }
 }
 
 class _CompareDataViewModel {
@@ -759,10 +803,10 @@ class _CompareDataViewModel {
       required this.doMySqlQuery});
 
   final AppState state;
-  final void Function(String query, Function(Map<String, dynamic>) onResult)
-      doSolrQuery;
-  final void Function(String query, Function(Map<String, dynamic>) onResult)
-      doMySqlQuery;
+  final void Function(String query, Function(Map<String, dynamic>) onResult,
+      Function(String) onError) doSolrQuery;
+  final void Function(String query, Function(Map<String, dynamic>) onResult,
+      Function(String) onError) doMySqlQuery;
 }
 
 extension IterableExtensions<E> on Iterable<E> {
