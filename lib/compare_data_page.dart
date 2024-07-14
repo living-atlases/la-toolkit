@@ -17,6 +17,7 @@ import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'components/app_snack_bar.dart';
+import 'components/compare_data_timeline.dart';
 import 'components/compare_gbif_charts.dart';
 import 'components/deployBtn.dart';
 import 'components/laAppBar.dart';
@@ -44,7 +45,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
   int _tab = 0;
-  static const int recordsNumber = 400;
+  static const int recordsNumber = 4;
   late LAProject _p;
   late bool _withPipeline;
   String? _solrHost;
@@ -57,6 +58,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
   late String _alaHubUrl;
   bool _compareWithGBIFEnabled = false;
   List<String> _coreOrCollections = <String>[];
+
+  CompareDataPagePhase _currentPhase = CompareDataPagePhase.getSolrHosts;
 
   Uri asUri(String base, String path, Map<String, String> params,
       [bool debug = false]) {
@@ -214,6 +217,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
                           const Text(
                               'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'),
                         const SizedBox(height: 10),
+
+                        if (_tab == 0)
+                          CompareDataTimeline(
+                            currentPhase: _currentPhase,
+                          ),
                         if (_tab == 0)
                           ButtonTheme(
                               materialTapTargetSize:
@@ -234,6 +242,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                     });
                                     setState(() {
                                       if (newValue != null) {
+                                        _currentPhase =
+                                            CompareDataPagePhase.getCores;
                                         fetchCoreOrCollections(vm)
                                             .then((List<String> result) {
                                           setState(() {
@@ -395,11 +405,18 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   Future<Map<String, dynamic>> _compareWithGBIF(_CompareDataViewModel vm,
       [bool debug = false]) async {
+    setState(() {
+      _currentPhase = CompareDataPagePhase.getRandomLARecords;
+    });
     final Map<String, dynamic> laRecords = await getRandomLARecords(vm);
 
     final Map<String, dynamic> recordsGBIFIds = <String, dynamic>{};
     final Map<String, String> initialMessages = <String, String>{};
     final Map<String, String> notFoundMessages = <String, String>{};
+
+    setState(() {
+      _currentPhase = CompareDataPagePhase.getGBIFRecords;
+    });
 
     for (final Map<String, dynamic> record
         in laRecords.values.cast<Map<String, dynamic>>()) {
@@ -475,6 +492,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
             // ignore: avoid_dynamic_calls
             result['facet_counts']['facet_fields']['dataResourceUid']
                 as Map<String, dynamic>);
+        setState(() {
+          _currentPhase = CompareDataPagePhase.getDrs;
+        });
       });
     } catch (e) {
       debugPrint('Error: $e');
@@ -499,10 +519,17 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   Future<Map<String, dynamic>> getRandomLARecords(
       _CompareDataViewModel vm) async {
+    setState(() {
+      _currentPhase = CompareDataPagePhase.getDrs;
+    });
+
     final Map<String, dynamic> dataResources = await getDrs(vm);
     final Map<String, dynamic> drs = await getCollectoryDrs(vm);
 
     final Map<String, dynamic> records = <String, dynamic>{};
+    setState(() {
+      _currentPhase = CompareDataPagePhase.getRandomLARecords;
+    });
 
     for (int i = 0; i < recordsNumber; i++) {
       final int drOffset = Random().nextInt(dataResources.length);
@@ -630,6 +657,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
     const JsonEncoder encoder = JsonEncoder.withIndent('  ');
     final String prettyprint = encoder.convert(stats);
     errorMessages['SUMMARY'] = prettyprint;
+
+    setState(() {
+      _currentPhase = CompareDataPagePhase.finished;
+    });
+
     return <String, dynamic>{
       'statistics': stats,
       'errorMessages': errorMessages
