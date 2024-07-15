@@ -105,7 +105,7 @@ class CompareDataTimelineState<T extends CompareDataTimelinePhase>
               ),
               node: TimelineNode(
                   indicator: CustomPaint(
-                    size: Size(20.0, 20.0),
+                    size: const Size(20.0, 20.0),
                     painter: IconPainter(
                       icon: isFailed
                           ? Icons.error
@@ -138,10 +138,10 @@ class CompareDataTimelineState<T extends CompareDataTimelinePhase>
 }
 
 class IconPainter extends CustomPainter {
+  IconPainter({required this.icon, required this.color});
+
   final IconData icon;
   final Color color;
-
-  IconPainter({required this.icon, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
