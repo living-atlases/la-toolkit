@@ -456,6 +456,21 @@ class SolrQuery extends AppActions {
   Function(Map<String, dynamic>) onResult;
 }
 
+class SolrRawQuery extends AppActions {
+  SolrRawQuery(
+      {required this.project,
+      required this.solrHost,
+      required this.query,
+      required this.onError,
+      required this.onResult});
+
+  final String project;
+  final String solrHost;
+  final String query;
+  final Function(String) onError;
+  Function(dynamic) onResult;
+}
+
 class MySqlQuery extends AppActions {
   MySqlQuery(
       {required this.project,

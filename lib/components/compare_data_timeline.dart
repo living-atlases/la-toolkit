@@ -26,6 +26,7 @@ abstract class CompareDataTimelinePhase {
 enum CompareWithGbifDataPhase implements CompareDataTimelinePhase {
   getSolrHosts,
   getCores,
+  detectSolrIndexType,
   getDrs,
   getRandomLARecords,
   getGBIFRecords,
@@ -40,6 +41,8 @@ enum CompareWithGbifDataPhase implements CompareDataTimelinePhase {
         return 'Get Cores/Collections';
       case getDrs:
         return 'Get all drs';
+      case detectSolrIndexType:
+        return 'Is a Pipeline index?';
       case getRandomLARecords:
         return 'Get Random LA Records';
       case getGBIFRecords:
@@ -53,6 +56,7 @@ enum CompareWithGbifDataPhase implements CompareDataTimelinePhase {
 enum CompareSolrIndexesPhase implements CompareDataTimelinePhase {
   getSolrHosts,
   getCores,
+  detectSolrIndexType,
   compareIndexes,
   finished;
 
@@ -63,6 +67,8 @@ enum CompareSolrIndexesPhase implements CompareDataTimelinePhase {
         return 'Get Solr Hosts';
       case getCores:
         return 'Get Cores/Collections';
+      case detectSolrIndexType:
+        return 'Is a Pipeline index?';
       case compareIndexes:
         return 'Compare indexes';
       case finished:

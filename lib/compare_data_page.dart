@@ -46,10 +46,11 @@ class CompareDataPage extends StatefulWidget {
 class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
-  int _tab = 0;
-  static const int recordsNumber = 100;
-  late LAProject _p;
-  late bool _withPipeline;
+  int tab = 1;
+  static const int recordsNumber = 2;
+  late LAProject p;
+  bool isPipelineIndex1 = false;
+  bool isPipelineIndex2 = false;
   String? solrHost1;
   String? solrHost2;
   String? coreOrCollection1;
@@ -59,42 +60,30 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final Map<String, dynamic> recordsWithDifferences = <String, dynamic>{};
   Map<String, String>? errorMessages;
   Map<String, Map<String, int>>? statistics;
-  late String _alaHubUrl;
-  bool _launchEnabled = false;
-  List<String> _coreOrCollections = <String>[];
+  late String alaHubUrl;
+  late String collectoryUrl;
+  bool launchEnabled = false;
+  List<String> coreOrCollections1 = <String>[];
+  List<String> coreOrCollections2 = <String>[];
   bool compareDrs = true;
   bool compareSpecies = true;
+  bool compareInst = true;
   bool truncateSpecies = true;
   bool compareLayers = true;
   bool compareHubs = true;
-
-  CompareWithGbifDataPhase _currentPhaseTab0 =
+  Map<String, SolrCompareResult> compareResults = <String, SolrCompareResult>{};
+  static const String totals = 'totals';
+  final List<String> compareTitles = <String>[];
+  final List<String> solrCompareHosts = <String>[];
+  final List<String> coreOrCollectionList = <String>[];
+  final List<String> layers = <String>[];
+  CompareWithGbifDataPhase currentPhaseTab0 =
       CompareWithGbifDataPhase.getSolrHosts;
-  CompareSolrIndexesPhase _currentPhaseTab1 =
+  CompareSolrIndexesPhase currentPhaseTab1 =
       CompareSolrIndexesPhase.getSolrHosts;
-  bool _somethingFailed = false;
-
-  Uri asUri(String base, String path, Map<String, String> params,
-      [bool debug = false]) {
-    Uri uri = Uri.parse(base + path);
-    if (params.isNotEmpty) {
-      uri = uri.replace(queryParameters: params);
-    }
-    uri = uri.replace(scheme: base.startsWith('https') ? 'https' : 'http');
-    if (debug) {
-      debugPrint('INFO: Reading url: $uri');
-    }
-    return uri;
-  }
-
-  String getQueryData(
-      {required String solrBase,
-      required String collection,
-      required String q,
-      bool debug = false}) {
-    return urlFormat(
-        solrBase, '/solr/$collection/select', <String, String>{'q': q}, debug);
-  }
+  bool somethingFailed = false;
+  bool csvFormat = false;
+  String indexDiffReport = '';
 
   @override
   Widget build(BuildContext context) {
@@ -102,11 +91,20 @@ class _CompareDataPageState extends State<CompareDataPage> {
         converter: (Store<AppState> store) {
       return _CompareDataViewModel(
         state: store.state,
-        doSolrQuery: (String query, Function(Map<String, dynamic>) onResult,
-            Function(String) onError) {
+        doSolrQuery: (String solrHost, String query,
+            Function(Map<String, dynamic>) onResult, Function(String) onError) {
           store.dispatch(SolrQuery(
-              project: _p.id,
-              solrHost: solrHost1!,
+              project: p.id,
+              solrHost: solrHost,
+              query: query,
+              onError: onError,
+              onResult: onResult));
+        },
+        doSolrRawQuery: (String solrHost, String query,
+            Function(dynamic) onResult, Function(String) onError) {
+          store.dispatch(SolrRawQuery(
+              project: p.id,
+              solrHost: solrHost,
               query: query,
               onError: onError,
               onResult: onResult));
@@ -114,7 +112,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
         doMySqlQuery: (String query, Function(Map<String, dynamic>) onResult,
             Function(String) onError) {
           store.dispatch(MySqlQuery(
-              project: _p.id,
+              project: p.id,
               mySqlHost: collectoryHost,
               db: 'collectory',
               query: query,
@@ -123,25 +121,26 @@ class _CompareDataPageState extends State<CompareDataPage> {
         },
       );
     }, builder: (BuildContext context, _CompareDataViewModel vm) {
-      _p = vm.state.currentProject;
-      _withPipeline = _p.isPipelinesInUse;
-      collectoryHost = _p
+      p = vm.state.currentProject;
+
+      collectoryHost = p
           .getServerById(
-              _p.getServiceDeploysForSomeService(collectory)[0].serverId!)!
+              p.getServiceDeploysForSomeService(collectory)[0].serverId!)!
           .name;
       final Map<String, dynamic> services =
-          _p.getServiceDetailsForVersionCheck();
-      _alaHubUrl = (services[alaHub] as Map<String, dynamic>)['url'] as String;
-
+          p.getServiceDetailsForVersionCheck();
+      alaHubUrl = (services[alaHub] as Map<String, dynamic>)['url'] as String;
+      collectoryUrl =
+          (services[collectory] as Map<String, dynamic>)['url'] as String;
       final List<String> solrHosts = <String>[];
       for (final String service in <String>[solr, solrcloud]) {
-        _p
+        p
             .getServiceDeploysForSomeService(service)
             .forEach((LAServiceDeploy sd) {
           if (sd.serverId == null) {
             // TODO docker cluster
           } else {
-            final LAServer? server = _p.getServerById(sd.serverId!);
+            final LAServer? server = p.getServerById(sd.serverId!);
             solrHosts.add(server!.name);
           }
         });
@@ -158,10 +157,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
         setState(() {
           if (value != null) {
             coreOrCollection1 = value;
-            if (_tab == 0) {
-              _launchEnabled = true;
+            if (tab == 0) {
+              launchEnabled = true;
+            } else {
+              if (coreOrCollection2 != null) {
+                launchEnabled = true;
+              }
             }
-            _somethingFailed = false;
+            somethingFailed = false;
           }
         });
       }
@@ -170,8 +173,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
         setState(() {
           if (value != null) {
             coreOrCollection2 = value;
+            if (coreOrCollection1 != null) {
+              launchEnabled = true;
+            }
           }
-          _somethingFailed = false;
+          somethingFailed = false;
         });
       }
 
@@ -199,7 +205,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
             ],
             initialActiveIndex: 0,
             //optional, default as 0
-            onTap: (int i) => setState(() => _tab = i),
+            onTap: (int i) => setState(() => tab = i),
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
@@ -221,21 +227,21 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
                         const SizedBox(height: 20),
 
-                        Text(_tab == 0
+                        Text(tab == 0
                             ? 'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'
                             : 'This tool compare two solr cores or two solrcloud collections in your LA Portal'),
                         const SizedBox(height: 10),
 
-                        if (_tab == 0)
+                        if (tab == 0)
                           CompareDataTimeline<CompareWithGbifDataPhase>(
-                              currentPhase: _currentPhaseTab0,
-                              failed: _somethingFailed,
+                              currentPhase: currentPhaseTab0,
+                              failed: somethingFailed,
                               phaseValues:
                                   CompareWithGbifDataPhase.values.toList()),
-                        if (_tab == 1)
+                        if (tab == 1)
                           CompareDataTimeline<CompareSolrIndexesPhase>(
-                              currentPhase: _currentPhaseTab1,
-                              failed: _somethingFailed,
+                              currentPhase: currentPhaseTab1,
+                              failed: somethingFailed,
                               phaseValues:
                                   CompareSolrIndexesPhase.values.toList()),
                         ButtonTheme(
@@ -256,14 +262,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   });
                                   setState(() {
                                     if (newValue != null) {
-                                      _currentPhaseTab0 =
+                                      currentPhaseTab0 =
                                           CompareWithGbifDataPhase.getCores;
-                                      _currentPhaseTab1 =
+                                      currentPhaseTab1 =
                                           CompareSolrIndexesPhase.getCores;
-                                      fetchCoreOrCollections(vm)
+                                      fetchCoreOrCollections(vm, solrHost1!)
                                           .then((List<String> result) {
                                         setState(() {
-                                          _coreOrCollections = result;
+                                          coreOrCollections1 = result;
                                         });
                                       });
                                     }
@@ -274,10 +280,49 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 20),
                                 items: solrHostsMenuItems)),
-                        _coreDropdownMenu(onCoreOrCollectionSelected),
-                        if (_tab == 1)
-                          _coreDropdownMenu(onSndCoreOrCollectionSelected),
-                        if (_tab == 1)
+                        if (tab == 1)
+                          ButtonTheme(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
+                              child: DropdownButton<String>(
+                                  underline: DropdownButtonHideUnderline(
+                                    child: Container(),
+                                  ),
+                                  disabledHint:
+                                      const Text('No solr host available'),
+                                  hint: const Text('Select Solr host'),
+                                  value: solrHost2,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      if (newValue != null) {
+                                        solrHost2 = newValue;
+                                      }
+                                    });
+                                    setState(() {
+                                      if (solrHost2 != null &&
+                                          solrHost1 != null) {
+                                        currentPhaseTab1 =
+                                            CompareSolrIndexesPhase.getCores;
+                                        fetchCoreOrCollections(vm, solrHost2!)
+                                            .then((List<String> result) {
+                                          setState(() {
+                                            coreOrCollections2 = result;
+                                          });
+                                        });
+                                      }
+                                    });
+                                  },
+                                  // isExpanded: true,
+                                  elevation: 16,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  items: solrHostsMenuItems)),
+                        _coreDropdownMenu(coreOrCollections1, coreOrCollection1,
+                            onCoreOrCollectionSelected),
+                        if (tab == 1)
+                          _coreDropdownMenu(coreOrCollections2,
+                              coreOrCollection2, onSndCoreOrCollectionSelected),
+                        if (tab == 1)
                           Column(
                             children: <Widget>[
                               SwitchListTile(
@@ -286,6 +331,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                 onChanged: (bool value) {
                                   setState(() {
                                     compareDrs = value;
+                                  });
+                                },
+                              ),
+                              SwitchListTile(
+                                title: const Text('Compare Institutions'),
+                                value: compareInst,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    compareInst = value;
                                   });
                                 },
                               ),
@@ -327,41 +381,40 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               ),
                             ],
                           ),
-                        if (_tab == 0)
-                          LaunchBtn(
-                              icon: Icons.settings,
-                              execBtn: 'Run',
-                              onTap: !_launchEnabled
-                                  ? null
-                                  : () async {
-                                      if (_tab == 0) {
-                                        setState(() {
-                                          errorMessages = null;
-                                          statistics = null;
-                                          _launchEnabled = false;
-                                        });
-                                        final Map<String, dynamic> results =
-                                            await _compareWithGBIF(vm);
-                                        setState(() {
-                                          statistics = results['statistics']
-                                              as Map<String, Map<String, int>>;
-                                          errorMessages =
-                                              results['errorMessages']
-                                                  as Map<String, String>;
-                                          _launchEnabled = true;
-                                        });
-                                      } else {
-                                        setState(() {
-                                          _launchEnabled = false;
-                                        });
-                                        await _compareSolrIndexes(vm);
-                                        setState(() {
-                                          _launchEnabled = true;
-                                        });
-                                      }
-                                    }),
-                        if (_tab == 0) const SizedBox(height: 10),
-                        if (_tab == 0 && errorMessages != null)
+                        LaunchBtn(
+                            icon: Icons.settings,
+                            execBtn: 'Run',
+                            onTap: !launchEnabled
+                                ? null
+                                : () async {
+                                    if (tab == 0) {
+                                      setState(() {
+                                        errorMessages = null;
+                                        statistics = null;
+                                        launchEnabled = false;
+                                      });
+                                      final Map<String, dynamic> results =
+                                          await _compareWithGBIF(vm);
+                                      setState(() {
+                                        statistics = results['statistics']
+                                            as Map<String, Map<String, int>>;
+                                        errorMessages = results['errorMessages']
+                                            as Map<String, String>;
+                                        launchEnabled = true;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        launchEnabled = false;
+                                        indexDiffReport = '';
+                                      });
+                                      await _compareSolrIndexes(vm);
+                                      setState(() {
+                                        launchEnabled = true;
+                                      });
+                                    }
+                                  }),
+                        if (tab == 0) const SizedBox(height: 10),
+                        if (tab == 0 && errorMessages != null)
                           Container(
                               alignment: Alignment.topLeft,
                               child: Column(
@@ -406,31 +459,46 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                       ]));
                                 }).toList(),
                               )),
-                        if (_tab == 0 &&
+                        if (tab == 0 &&
                             errorMessages != null &&
                             errorMessages!.length == 1)
                           const Padding(
                               padding: EdgeInsets.all(12.0),
                               child: Text('No differences found')),
-                        if (_tab == 0 &&
+                        if (tab == 0 &&
                             errorMessages != null &&
                             errorMessages!.isNotEmpty)
                           ElevatedButton(
                             onPressed: () {
                               if (errorMessages != null) {
-                                _generateAndDownloadHtml(errorMessages!);
+                                _generateAndDownloadHtmlForErrors(
+                                    errorMessages!);
                               }
                             },
                             child: const Text('Download issues'),
                           ),
-                        if (_tab == 0 && statistics != null)
+                        if (tab == 0 && statistics != null)
                           SizedBox(
                               width: double.infinity,
                               height: 600,
                               child: Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: CompareGbifCharts(
-                                      statistics: statistics!)))
+                                      statistics: statistics!))),
+                        if (tab == 1) const SizedBox(height: 10),
+                        if (tab == 1 && indexDiffReport.isNotEmpty)
+                          MarkdownBody(data: indexDiffReport),
+                        if (tab == 1) const SizedBox(height: 10),
+                        if (tab == 1 && indexDiffReport.isNotEmpty)
+                          ElevatedButton(
+                            onPressed: () {
+                              if (indexDiffReport.isNotEmpty) {
+                                _generateAndDownloadHtmlForContent(
+                                    indexDiffReport);
+                              }
+                            },
+                            child: const Text('Download report'),
+                          ),
                       ],
                     ))),
                 Expanded(
@@ -441,6 +509,19 @@ class _CompareDataPageState extends State<CompareDataPage> {
     });
   }
 
+  Uri asUri(String base, String path, Map<String, String> params,
+      [bool debug = false]) {
+    Uri uri = Uri.parse(base + path);
+    if (params.isNotEmpty) {
+      uri = uri.replace(queryParameters: params);
+    }
+    uri = uri.replace(scheme: base.startsWith('https') ? 'https' : 'http');
+    if (debug) {
+      debugPrint('INFO: Reading url: $uri');
+    }
+    return uri;
+  }
+
   // static const String gbifBaseUrl = 'https://api.gbif-uat.org/v1';
 
   static const String gbifBaseUrl = 'https://api.gbif.org/v1';
@@ -448,8 +529,18 @@ class _CompareDataPageState extends State<CompareDataPage> {
   Future<Map<String, dynamic>> _compareWithGBIF(_CompareDataViewModel vm,
       [bool debug = false]) async {
     setState(() {
-      _currentPhaseTab0 = CompareWithGbifDataPhase.getRandomLARecords;
+      currentPhaseTab0 = CompareWithGbifDataPhase.detectSolrIndexType;
     });
+
+    try {
+      isPipelineIndex1 =
+          await isAPipelinesIndex(vm, solrHost1!, coreOrCollection1!);
+    } catch (e) {
+      setState(() {
+        currentPhaseTab0 = CompareWithGbifDataPhase.detectSolrIndexType;
+      });
+    }
+
     final Map<String, dynamic> laRecords = await getRandomLARecords(vm);
 
     final Map<String, dynamic> recordsGBIFIds = <String, dynamic>{};
@@ -457,7 +548,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final Map<String, String> notFoundMessages = <String, String>{};
 
     setState(() {
-      _currentPhaseTab0 = CompareWithGbifDataPhase.getGBIFRecords;
+      currentPhaseTab0 = CompareWithGbifDataPhase.getGBIFRecords;
     });
 
     for (final Map<String, dynamic> record
@@ -498,7 +589,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
           }
         } else {
           notFoundMessages[id] =
-              'Record not found with id: [$id](https://${_alaHubUrl}occurrences/$id) and datasetKey: ${record[gbifDatasetId]} and occurrenceId: $occId';
+              'Record not found with id: [$id](https://${alaHubUrl}occurrences/$id) and datasetKey: ${record[gbifDatasetId]} and occurrenceId: $occId';
         }
       } else {
         debugPrint('Error: ${response.statusCode}');
@@ -516,25 +607,26 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return results;
   }
 
-  Future<Map<String, dynamic>> getDrs(SolrQueryExecutor vm) async {
+  Future<Map<String, dynamic>> getDrs(
+      SolrQueryExecutor vm, String solrHost) async {
     final Map<String, dynamic>? result = await getFacetData(
+        solrHost: solrHost,
         solrExec: vm,
-        solrBase: 'http://localhost:8983',
         collection: coreOrCollection1!,
         q: 'dataResourceUid:*',
-        facetField: _withPipeline ? 'dataResourceUid' : 'data_resource_uid',
+        facetField: isPipelineIndex1 ? 'dataResourceUid' : 'data_resource_uid',
         facetLimit: -1,
         sort: 'index');
 
     if (result == null) {
-      _somethingFailed = true;
+      somethingFailed = true;
       return <String, dynamic>{};
     }
     // ignore: avoid_dynamic_calls
     final Map<String, dynamic> drs = result['facet_counts']['facet_fields']
         ['dataResourceUid'] as Map<String, dynamic>;
     setState(() {
-      _currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
+      currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
     });
     return drs;
   }
@@ -549,7 +641,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       completer.complete(result);
     }, (String error) {
       debugPrint('Error: $error');
-      _somethingFailed = true;
+      somethingFailed = true;
     });
 
     return completer.future;
@@ -558,15 +650,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
   Future<Map<String, dynamic>> getRandomLARecords(_CompareDataViewModel vm,
       [bool withRank = true]) async {
     setState(() {
-      _currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
+      currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
     });
 
-    final Map<String, dynamic> dataResources = await getDrs(vm);
+    final Map<String, dynamic> dataResources = await getDrs(vm, solrHost1!);
     final Map<String, dynamic> drs = await getCollectoryDrs(vm);
 
     final Map<String, dynamic> records = <String, dynamic>{};
     setState(() {
-      _currentPhaseTab0 = CompareWithGbifDataPhase.getRandomLARecords;
+      currentPhaseTab0 = CompareWithGbifDataPhase.getRandomLARecords;
     });
 
     for (int i = 0; i < recordsNumber; i++) {
@@ -579,6 +671,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       final Completer<void> completer = Completer<void>();
 
       vm.doSolrQuery(
+          solrHost1!,
           Uri.parse(withRank
                   ? 'http://localhost:8983/solr/${coreOrCollection1!}/select?q=dataResourceUid:${dataResource.key}&rank:[* TO *]&rows=1&wt=json&start=$recordOffset&facet=false'
                   : 'http://localhost:8983/solr/${coreOrCollection1!}/select?q=dataResourceUid:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false')
@@ -598,7 +691,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
         completer.complete();
       }, (String error) {
         debugPrint('Error: $error');
-        _somethingFailed = true;
+        somethingFailed = true;
       });
 
       await completer.future;
@@ -673,7 +766,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
             stats['mismatches']!['scientificName'] =
                 stats['mismatches']!['scientificName']! + 1;
             errors.add(
-                "1. **Scientific name** differs: [$fullScientificNameLA](${_alaHubUrl}occurrences/$id) (raw: '$fullRawScientificNameLA') vs [$scientificNameGBIF](https://gbif.org/occurrence/${recordGBIF['key']})");
+                "1. **Scientific name** differs: [$fullScientificNameLA](${alaHubUrl}occurrences/$id) (raw: '$fullRawScientificNameLA') vs [$scientificNameGBIF](https://gbif.org/occurrence/${recordGBIF['key']})");
           }
         } else {
           final String? value1 = recordLA[field] as String?;
@@ -686,7 +779,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
           } else {
             stats['mismatches']![field] = stats['mismatches']![field]! + 1;
             errors.add(
-                '1. _${StringUtils.capitalize(field)}_ differs: [$value1](${_alaHubUrl}occurrences/$id) vs [$value2](https://gbif.org/occurrence/${recordGBIF['key']})');
+                '1. _${StringUtils.capitalize(field)}_ differs: [$value1](${alaHubUrl}occurrences/$id) vs [$value2](https://gbif.org/occurrence/${recordGBIF['key']})');
           }
         }
       }
@@ -701,7 +794,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
     errorMessages['SUMMARY'] = prettyprint;
 
     setState(() {
-      _currentPhaseTab0 = CompareWithGbifDataPhase.finished;
+      currentPhaseTab0 = CompareWithGbifDataPhase.finished;
     });
 
     return <String, dynamic>{
@@ -710,15 +803,20 @@ class _CompareDataPageState extends State<CompareDataPage> {
     };
   }
 
-  void _generateAndDownloadHtml(Map<String, String> errors) {
-    final StringBuffer markdownContent = StringBuffer();
-    markdownContent.write('# Issues Report\n');
-    errors.forEach((String key, String value) {
-      markdownContent.write('### $key\n');
-      markdownContent.write('$value\n');
-    });
+  void _generateAndDownloadHtmlForErrors(Map<String, String> errors) {
+    final StringBuffer markdownContent = errorsToMarkDown(errors);
+    const String fileName = 'la_gbif_comparative_issues_report';
+    _generateAndDownloadHtml(markdownContent.toString(), fileName);
+  }
 
-    final String htmlContent = md.markdownToHtml(markdownContent.toString());
+  void _generateAndDownloadHtmlForContent(String content) {
+    final StringBuffer markdownContent = toMarkDown(content);
+    const String fileName = 'la_indexes_comparative_report';
+    _generateAndDownloadHtml(markdownContent.toString(), fileName);
+  }
+
+  void _generateAndDownloadHtml(String content, String fileName) {
+    final String htmlContent = md.markdownToHtml(content);
 
     final String styledHtmlContent = '''
   <!DOCTYPE html>
@@ -746,18 +844,36 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final String formattedDate = DateFormat('yyyyMMddhhmm').format(now);
     final html.Blob blob = html.Blob(<String>[styledHtmlContent], 'text/html');
     final String url = html.Url.createObjectUrlFromBlob(blob);
+
     html.AnchorElement(href: url)
-      ..setAttribute(
-          'download', '${formattedDate}_la_gbif_comparative_issues_report.html')
+      ..setAttribute('download', '${formattedDate}_$fileName.html')
       ..click();
     html.Url.revokeObjectUrl(url);
   }
 
-  Future<List<String>> getCoreOrCollections(_CompareDataViewModel vm) async {
+  StringBuffer errorsToMarkDown(Map<String, String> errors) {
+    final StringBuffer markdownContent = StringBuffer();
+    markdownContent.write('# Issues Report\n');
+    errors.forEach((String key, String value) {
+      markdownContent.write('### $key\n');
+      markdownContent.write('$value\n');
+    });
+    return markdownContent;
+  }
+
+  StringBuffer toMarkDown(String content) {
+    final StringBuffer markdownContent = StringBuffer();
+    markdownContent.write(content);
+    return markdownContent;
+  }
+
+  Future<List<String>> getCoreOrCollections(
+      _CompareDataViewModel vm, String solrHost) async {
     final Completer<List<String>> collCompleter = Completer<List<String>>();
     final Completer<List<String>> aliasCompleter = Completer<List<String>>();
 
-    vm.doSolrQuery('http://localhost:8983/solr/admin/collections?action=LIST',
+    vm.doSolrQuery(
+        solrHost, 'http://localhost:8983/solr/admin/collections?action=LIST',
         (Map<String, dynamic> result) {
       final List<String> results = <String>[];
       final List<dynamic> docs = result['collections'] as List<dynamic>;
@@ -768,10 +884,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
       collCompleter.complete(results);
     }, (String error) {
       debugPrint('Error: $error');
-      _somethingFailed = true;
+      somethingFailed = true;
     });
 
-    vm.doSolrQuery(
+    vm.doSolrQuery(solrHost,
         'http://localhost:8983/solr/admin/collections?action=LISTALIASES',
         (Map<String, dynamic> result) {
       final List<String> results = <String>[];
@@ -786,7 +902,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       aliasCompleter.complete(results);
     }, (String error) {
       debugPrint('Error: $error');
-      _somethingFailed = true;
+      somethingFailed = true;
     });
 
     final List<String> results = <String>[];
@@ -795,12 +911,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return results;
   }
 
-  Future<List<String>> fetchCoreOrCollections(_CompareDataViewModel vm) async {
-    return getCoreOrCollections(vm);
+  Future<List<String>> fetchCoreOrCollections(
+      _CompareDataViewModel vm, String solrHost) async {
+    return getCoreOrCollections(vm, solrHost);
   }
 
-  Widget _coreDropdownMenu(Function(String?) onCoreSelected) {
-    return _coreOrCollections.isEmpty
+  Widget _coreDropdownMenu(List<String> coreOrCollections,
+      String? initialSelection, Function(String?) onCoreSelected) {
+    return coreOrCollections1.isEmpty
         ? Container()
         : Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -812,7 +930,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                     ),
                     disabledHint: const Text('No collection available'),
                     hint: const Text('Select collection'),
-                    value: coreOrCollection1,
+                    value: initialSelection,
                     onChanged: (String? newValue) {
                       setState(() {
                         onCoreSelected(newValue);
@@ -820,86 +938,54 @@ class _CompareDataPageState extends State<CompareDataPage> {
                     },
                     elevation: 16,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    items: _coreOrCollections
+                    items: coreOrCollections
                         .map((String element) => DropdownMenuItem<String>(
                             value: element, child: Text(element)))
                         .toList())));
   }
 
-  Future<void> _compareSolrIndexes(_CompareDataViewModel vm) async {
-    return;
-  }
-}
-
-class SolrComparator {
-  SolrComparator(
-      {required this.solrHost1,
-      required this.solrHost2,
-      required this.coreOrCollection1,
-      required this.coreOrCollection2,
-      required this.collectoryUrl,
-      required this.layers,
-      required this.compareDrs,
-      required this.compareSpecies,
-      required this.truncateSpecies,
-      required this.compareInst,
-      required this.compareLayers,
-      required this.compareHubs,
-      required this.csvFormat,
-      required this.debug,
-      required this.vm}) {
-    solrS.add(solrHost1);
-    solrS.add(solrHost2);
-    collectionS.add(coreOrCollection1);
-    collectionS.add(coreOrCollection2);
-    titleS.addAll(
+  Future<void> _compareSolrIndexes(SolrQueryExecutor solrExec,
+      [bool debug = false]) async {
+    solrCompareHosts.add(solrHost1!);
+    solrCompareHosts.add(solrHost2!);
+    coreOrCollectionList.add(coreOrCollection1!);
+    coreOrCollectionList.add(coreOrCollection2!);
+    compareTitles.addAll(
         <String>['solrA $coreOrCollection1', 'solrB $coreOrCollection2']);
-    SolrCompareResult.csvFormat = csvFormat;
-  }
+    SolrCompareResult.csvFormat = false;
 
-  final String solrHost1;
-  final String solrHost2;
-  final String coreOrCollection1;
-  final String coreOrCollection2;
-  final String collectoryUrl;
-  final bool compareDrs;
-  final bool compareSpecies;
-  final bool truncateSpecies;
-  final bool compareInst;
-  final bool compareLayers;
-  final bool compareHubs;
-  final bool csvFormat;
-  final String totals = 'totals';
-  final List<String> titleS = <String>[];
-  Map<String, SolrCompareResult> results = <String, SolrCompareResult>{};
-  final List<String> solrS = <String>[];
-  final List<String> collectionS = <String>[];
-  final bool debug;
-  final List<String> layers;
-  final SolrQueryExecutor vm;
+    setState(() {
+      currentPhaseTab1 = CompareSolrIndexesPhase.detectSolrIndexType;
+    });
 
-  Future<void> run() async {
+    isPipelineIndex1 =
+        await isAPipelinesIndex(solrExec, solrHost1!, coreOrCollection1!);
+    isPipelineIndex2 =
+        await isAPipelinesIndex(solrExec, solrHost2!, coreOrCollection2!);
+
     if (compareDrs) {
-      await queryTotals(solrS, '/select', <String, String>{
+      await queryTotals(solrExec, solrCompareHosts, '/select', <String, String>{
         'q': '*:*',
         'rows': '0',
         'wt': 'json',
         'facet': 'false'
       });
-      final List<Map<String, dynamic>> resources = await urlGet(
+      final List<dynamic> resources = await httpGet(
               collectoryUrl, '/ws/dataResource', <String, String>{}, debug)
-          as List<Map<String, dynamic>>;
-      for (final Map<String, dynamic> dr in resources) {
-        results.putIfAbsent(dr['uid'] as String,
+          as List<dynamic>;
+
+      for (final dynamic ddr in resources) {
+        final Map<String, dynamic> dr = ddr as Map<String, dynamic>;
+        compareResults.putIfAbsent(dr['uid'] as String,
             () => SolrCompareResult.empty(dr['uid'] as String));
       }
-      await getDrTotals();
+      await getDrTotals(solrExec);
 
-      printHeader();
+      printHeader('Datasets');
       printSorted();
       int a = 0;
       int b = 0;
-      for (final SolrCompareResult r in results.values) {
+      for (final SolrCompareResult r in compareResults.values) {
         if (r.key != totals) {
           a = a + r.a;
           b = b + r.b;
@@ -909,15 +995,15 @@ class SolrComparator {
       if (debug) {
         debugPrint(mapped.toString());
       }
-      final SolrCompareResult unmapped =
-          SolrCompareResult('Unmapped', results.entries.first.value.a - a)
-              .setB(results.entries.first.value.b - b);
+      final SolrCompareResult unmapped = SolrCompareResult(
+              'Unmapped', compareResults.entries.first.value.a - a)
+          .setB(compareResults.entries.first.value.b - b);
       if (debug) {
         debugPrint(unmapped.toString());
       }
       if (debug) {
         final Map<SolrCompareResult, SolrCompareResult> diff =
-            Map<SolrCompareResult, SolrCompareResult>.from(results)
+            Map<SolrCompareResult, SolrCompareResult>.from(compareResults)
               ..removeWhere(
                   (SolrCompareResult e, SolrCompareResult v) => v.d != 0);
         debugPrint('results size: ${diff.length}');
@@ -925,170 +1011,50 @@ class SolrComparator {
       reset();
     }
     if (compareSpecies) {
-      await getFieldDiff('taxon_name', 'scientificName');
+      await getFieldDiff('taxon_name', 'scientificName', solrExec);
       if (truncateSpecies) {
-        results.removeWhere(
+        compareResults.removeWhere(
             (String k, SolrCompareResult v) => v.d < 10000 && v.d > -10000);
       }
-      printHeader();
+      printHeader('Species');
       printSorted();
       reset();
     }
 
     if (compareInst) {
-      await getFieldDiff('institution_name', 'institutionName');
-      printHeader();
+      await getFieldDiff('institution_name', 'institutionName', solrExec);
+      printHeader('Institutions');
       printSorted();
       reset();
     }
     if (compareLayers) {
       for (final String l in layers) {
-        await getFieldDiff(l, l);
+        await getFieldDiff(l, l, solrExec);
       }
-      printHeader();
+      printHeader('Layers');
       printSorted();
       reset();
     }
     if (compareHubs) {
-      await getFieldDiff('data_hub_uid', 'dataHubUid');
-      printHeader();
+      await getFieldDiff('data_hub_uid', 'dataHubUid', solrExec);
+      printHeader('Hubs');
       printSorted();
       reset();
     }
   }
 
-  void printHeader() {
+  void printHeader(String title) {
     if (csvFormat) {
-      debugPrint(';${titleS[0]};${titleS[1]};difference');
+      reportPrint(';${compareTitles[0]};${compareTitles[1]};difference');
     } else {
-      debugPrint('|  |  ${titleS[0]}  | ${titleS[1]} | difference |');
-      debugPrint(
+      reportPrint(
+          '| $title |  ${compareTitles[0]}  | ${compareTitles[1]} | difference |');
+      reportPrint(
           '| ------------- | ------------- | ------------- | ------------- |');
     }
   }
 
-  void reset() {
-    results = <String, SolrCompareResult>{};
-    debugPrint('');
-    debugPrint('');
-  }
-
-  void printSorted() {
-    final List<SolrCompareResult> sorted = results.values.toList();
-    sorted
-        .sort((SolrCompareResult a, SolrCompareResult b) => a.d.compareTo(b.d));
-    for (final SolrCompareResult r in sorted) {
-      if (r.d != 0) {
-        debugPrint(r.toString());
-      }
-    }
-  }
-
-  Future<List> getDrTotals() async {
-    return Future.wait(solrS.mapIndexed((int i, String solrBase) async {
-      final String field = await isAPipelinesIndex(solrBase, collectionS[i])
-          ? 'dataResourceUid'
-          : 'data_resource_uid';
-      final Map<String, dynamic>? response = await getFacetData(
-          solrExec: vm,
-          solrBase: solrBase,
-          collection: collectionS[i],
-          q: '$field:*',
-          facetField: field,
-          facetLimit: -1,
-          sort: 'index');
-      if (response == null) {
-        // FIXME error handling
-        return;
-      }
-      final Map<String, dynamic> drs =
-          ((response['facet_counts'] as Map<String, dynamic>)['facet_fields']
-              as Map<String, dynamic>)[field] as Map<String, dynamic>;
-      for (final MapEntry<String, dynamic> e in drs.entries) {
-        String key;
-        if (!results.containsKey(e.key)) {
-          // debugPrint('${e.key} not found in collectory');
-          key = '~~${e.key}~~';
-          results.putIfAbsent(key, () => SolrCompareResult(key, 0));
-        } else {
-          key = e.key;
-        }
-        if (i == 0) {
-          results.update(
-              key, (SolrCompareResult el) => el.setA(e.value as int));
-        } else {
-          results.update(
-              key, (SolrCompareResult el) => el.setB(e.value as int));
-        }
-      }
-    }));
-  }
-
-  Future<List> getFieldDiff(String bStoreField, String pipelinesField) async {
-    return Future.wait(solrS.mapIndexed((int i, String solrBase) async {
-      final String field = await isAPipelinesIndex(solrBase, collectionS[i])
-          ? pipelinesField
-          : bStoreField;
-      final Map<String, dynamic>? response = await getFacetData(
-          solrExec: vm,
-          solrBase: solrBase,
-          collection: collectionS[i],
-          q: '$field:*',
-          facetField: field,
-          facetLimit: -1,
-          sort: 'index');
-      if (response == null) {
-        // FIXME error handling
-        return;
-      }
-      final Map<String, dynamic> results =
-          ((response['facet_counts'] as Map<String, dynamic>)['facet_fields']
-              as Map<String, dynamic>)[field] as Map<String, dynamic>;
-      for (final MapEntry<String, dynamic> entry in results.entries) {
-        storeResults(entry.key, entry.value as int, i);
-      }
-    }));
-  }
-
-  Future<bool> isAPipelinesIndex(String solrBase, String collection) async {
-    final Uri uri = asUri(
-        solrBase,
-        '/solr/$collection/select',
-        <String, String>{
-          'q': '*:*',
-          'wt': 'csv',
-          'rows': '0',
-          'facet': '',
-          'fl': 'data*'
-        },
-        debug);
-    final Response response = await http.get(uri);
-    return response.body.contains('dataResourceUid');
-  }
-
-  Future<List<void>> queryTotals(
-      List<String> solrS, String query, Map<String, String> params) async {
-    return Future.wait(solrS.mapIndexed((int i, String solrBase) async {
-      final Map<String, dynamic> response =
-          await urlGet(solrBase, '/solr/${collectionS[i]}$query', params)
-              as Map<String, dynamic>;
-      storeResults(totals,
-          (response['response'] as Map<String, dynamic>)['numFound'] as int, i);
-    }));
-  }
-
-  void storeResults(String key, int num, int index) {
-    if (!results.containsKey(key)) {
-      results.putIfAbsent(key, () => SolrCompareResult.empty(key));
-    }
-    if (index == 0) {
-      results.update(key, (SolrCompareResult el) => el.setA(num));
-    } else {
-      results.update(key, (SolrCompareResult el) => el.setB(num));
-    }
-  }
-
-  Future<dynamic> urlGet(String base, String path, Map<String, String> params,
+  Future<dynamic> httpGet(String base, String path, Map<String, String> params,
       [bool debug = false]) async {
     final Uri uri = asUri(base, path, params, debug);
     try {
@@ -1100,8 +1066,187 @@ class SolrComparator {
     }
   }
 
+  void reset() {
+    compareResults = <String, SolrCompareResult>{};
+    reportPrint('');
+    reportPrint('');
+  }
+
+  void printSorted() {
+    final List<SolrCompareResult> sorted = compareResults.values.toList();
+    bool empty = true;
+    //   debugPrint(sorted.toString());
+    sorted
+        .sort((SolrCompareResult a, SolrCompareResult b) => a.d.compareTo(b.d));
+    for (final SolrCompareResult r in sorted) {
+      if (r.d != 0) {
+        empty = false;
+        reportPrint(r.toString());
+      }
+    }
+    if (empty) {
+      reportPrint('No differences found');
+    }
+  }
+
+  Future<void> getDrTotals(SolrQueryExecutor queryExec) async {
+    solrCompareHosts.mapIndexed((int i, String solrHost) async {
+      final String field =
+          (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
+              ? 'dataResourceUid'
+              : 'data_resource_uid';
+      final Map<String, dynamic>? response = await getFacetData(
+          solrHost: solrHost,
+          solrExec: queryExec,
+          collection: coreOrCollectionList[i],
+          q: '$field:*',
+          facetField: field,
+          facetLimit: -1,
+          sort: 'index');
+      if (response == null) {
+        somethingFailed = true;
+      } else {
+        final Map<String, dynamic> drs =
+            ((response['facet_counts'] as Map<String, dynamic>)['facet_fields']
+                as Map<String, dynamic>)[field] as Map<String, dynamic>;
+        for (final MapEntry<String, dynamic> e in drs.entries) {
+          String key;
+          if (!compareResults.containsKey(e.key)) {
+            // debugPrint('${e.key} not found in collectory');
+            key = '~~${e.key}~~';
+            compareResults.putIfAbsent(key, () => SolrCompareResult(key, 0));
+          } else {
+            key = e.key;
+          }
+          if (i == 0) {
+            compareResults.update(
+                key, (SolrCompareResult el) => el.setA(e.value as int));
+          } else {
+            compareResults.update(
+                key, (SolrCompareResult el) => el.setB(e.value as int));
+          }
+        }
+      }
+    });
+  }
+
+  Future<void> getFieldDiff(String bStoreField, String pipelinesField,
+      SolrQueryExecutor queryExec) async {
+    solrCompareHosts.mapIndexed((int i, String solrHost) async {
+      final String field =
+          (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
+              ? pipelinesField
+              : bStoreField;
+      final Map<String, dynamic>? response = await getFacetData(
+          solrHost: solrHost,
+          solrExec: queryExec,
+          collection: coreOrCollectionList[i],
+          q: '$field:*',
+          facetField: field,
+          facetLimit: -1,
+          sort: 'index');
+      if (response == null) {
+        somethingFailed = true;
+      }
+      final Map<String, dynamic> results =
+          ((response!['facet_counts'] as Map<String, dynamic>)['facet_fields']
+              as Map<String, dynamic>)[field] as Map<String, dynamic>;
+      for (final MapEntry<String, dynamic> entry in results.entries) {
+        storeResults(entry.key, entry.value as int, i);
+      }
+    });
+  }
+
+  Future<bool> isAPipelinesIndex(
+      SolrQueryExecutor solrExec, String solrHost, String collection,
+      [bool debug = false]) async {
+    try {
+      final String response = await doSolrRawQuery(
+          solrExec,
+          solrHost,
+          '/solr/$collection/select',
+          <String, String>{
+            'q': '*:*',
+            'wt': 'csv',
+            'rows': '0',
+            'facet': '',
+            'fl': 'data*'
+          },
+          debug) as String;
+      return response.contains('dataResourceUid');
+    } catch (all) {
+      somethingFailed = true;
+      _handleError('Error checking if is a pipelines index: $all');
+      rethrow;
+    }
+  }
+
+  Future<List<void>> queryTotals(SolrQueryExecutor solrExec, List<String> solrS,
+      String query, Map<String, String> params) async {
+    return Future.wait(solrS.mapIndexed((int i, String solrHost) async {
+      final Map<String, dynamic> response = await doSolrQuery(
+          solrExec, solrHost, '/solr/${coreOrCollectionList[i]}$query', params);
+      storeResults(totals,
+          (response['response'] as Map<String, dynamic>)['numFound'] as int, i);
+    }));
+  }
+
+  void storeResults(String key, int num, int index) {
+    if (!compareResults.containsKey(key)) {
+      compareResults.putIfAbsent(key, () => SolrCompareResult.empty(key));
+    }
+    if (index == 0) {
+      compareResults.update(key, (SolrCompareResult el) => el.setA(num));
+    } else {
+      compareResults.update(key, (SolrCompareResult el) => el.setB(num));
+    }
+  }
+
+  Future<Map<String, dynamic>> doSolrQuery(SolrQueryExecutor solrExec,
+      String solrHost, String path, Map<String, String> params,
+      [bool debug = false]) async {
+    final Uri uri = asUri('http://localhost:8983', path, params, debug);
+    try {
+      final Completer<Map<String, dynamic>> completer =
+          Completer<Map<String, dynamic>>();
+      solrExec.query(solrHost, uri.toString(), (Map<String, dynamic> response) {
+        completer.complete(response);
+      }, (String message) {
+        _handleError('Error reading url: $uri $message');
+      });
+      return completer.future;
+    } catch (all) {
+      somethingFailed = true;
+      _handleError('Error reading url: $uri $all');
+      rethrow;
+    }
+  }
+
+  Future<dynamic> doSolrRawQuery(SolrQueryExecutor solrExec, String solrHost,
+      String path, Map<String, String> params,
+      [bool debug = false]) async {
+    final Uri uri = asUri('http://localhost:8983', path, params, debug);
+    try {
+      final Completer<dynamic> completer = Completer<dynamic>();
+      solrExec.rawQuery(solrHost, uri.toString(), (dynamic response) {
+        completer.complete(response);
+      }, (String message) {
+        _handleError('Error reading url: $uri $message');
+      });
+      return completer.future;
+    } catch (all) {
+      somethingFailed = true;
+      _handleError('Error reading url: $uri $all');
+      rethrow;
+    }
+  }
+
   void _handleError(String msg) {
     debugPrint(msg);
+  }
+
+  void reportPrint(String msg) {
+    indexDiffReport += '$msg\n';
   }
 }
 
@@ -1134,8 +1279,6 @@ class SolrCompareResult {
     return this;
   }
 
-  // FIXME use a better locale
-  // final NumberFormat formatter = NumberFormat.decimalPattern(locale);
   String _f(int n) => intl.NumberFormat.decimalPattern('en').format(n);
 
   @override
@@ -1153,17 +1296,32 @@ class _CompareDataViewModel implements SolrQueryExecutor {
   _CompareDataViewModel(
       {required this.state,
       required this.doSolrQuery,
+      required this.doSolrRawQuery,
       required this.doMySqlQuery});
 
   final AppState state;
-  final void Function(String query, Function(Map<String, dynamic>) onResult,
+  final void Function(
+      String solrHost,
+      String query,
+      Function(Map<String, dynamic>) onResult,
       Function(String) onError) doSolrQuery;
+  final void Function(String solrHost, String query, Function(dynamic) onResult,
+      Function(String) onError) doSolrRawQuery;
   final void Function(String query, Function(Map<String, dynamic>) onResult,
       Function(String) onError) doMySqlQuery;
 
   @override
-  void query(String query, Function(Map<String, dynamic> p1) onResult,
+  void query(
+      String solrHost,
+      String query,
+      Function(Map<String, dynamic> result) onResult,
       Function(String message) onError) {
-    doSolrQuery(query, onResult, onError);
+    doSolrQuery(solrHost, query, onResult, onError);
+  }
+
+  @override
+  void rawQuery(String solrHost, String query,
+      Function(dynamic result) onResult, Function(String message) onError) {
+    doSolrRawQuery(solrHost, query, onResult, onError);
   }
 }

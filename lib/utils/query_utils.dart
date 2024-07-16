@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 abstract class SolrQueryExecutor {
-  void query(String query, Function(Map<String, dynamic>) onResult,
+  void query(String solrHost, String query,
+      Function(Map<String, dynamic>) onResult, Function(String) onError);
+
+  void rawQuery(String solrHost, String query, Function(dynamic) onResult,
       Function(String) onError);
 }
 
@@ -85,7 +88,7 @@ Uri asUri(String base, String path, Map<String, String> params,
 
 Future<Map<String, dynamic>?> getFacetData(
     {required SolrQueryExecutor solrExec,
-    required String solrBase,
+    required String solrHost,
     required String collection,
     required String q,
     required String facetField,
@@ -95,8 +98,9 @@ Future<Map<String, dynamic>?> getFacetData(
       Completer<Map<String, dynamic>?>();
   try {
     solrExec.query(
+        solrHost,
         buildFacetDataQuery(
-            solrBase: solrBase,
+            solrBase: 'http://localhost:8983',
             collection: collection,
             q: q,
             facetField: facetField,

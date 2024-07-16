@@ -485,6 +485,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         action.onError(e.toString());
       }
     }
+    if (action is SolrRawQuery) {
+      try {
+        final dynamic result = await Api.solrRawQuery(
+            action.project, action.solrHost, action.query);
+        action.onResult(result);
+      } catch (e) {
+        action.onError(e.toString());
+      }
+    }
     if (action is MySqlQuery) {
       try {
         final Map<String, dynamic> result = await Api.mySqlQuery(

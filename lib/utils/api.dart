@@ -628,6 +628,31 @@ class Api {
     }
   }
 
+  static Future<dynamic> solrRawQuery(
+      String projectId, String solrHost, String query) async {
+    if (AppUtils.isDemo()) {
+      return <String, dynamic>{};
+    }
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/solr-query');
+    try {
+      final Response response = await http.post(url,
+          headers: <String, String>{'Content-type': 'application/json'},
+          body: utf8.encode(json.encode(<String, Object>{
+            'id': projectId,
+            'sshHost': solrHost,
+            'query': query
+          })));
+      if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        throw Exception('Failed to query solr (${response.reasonPhrase}))');
+      }
+    } catch (e) {
+      debugPrint('Error during solrQuery: $e');
+      throw Exception('Failed to query solr ($e)');
+    }
+  }
+
   static Future<Map<String, dynamic>> mySqlQuery(
       String projectId, String mysqlHost, String db, String query) async {
     if (AppUtils.isDemo()) {
