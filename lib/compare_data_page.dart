@@ -17,7 +17,6 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
-
 import 'components/app_snack_bar.dart';
 import 'components/compare_data_timeline.dart';
 import 'components/compare_gbif_charts.dart';
@@ -46,7 +45,7 @@ class CompareDataPage extends StatefulWidget {
 class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
-  int tab = 1;
+  int tab = 0;
   static const int recordsNumber = 2;
   late LAProject p;
   bool isPipelineIndex1 = false;
@@ -252,7 +251,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                 ),
                                 disabledHint:
                                     const Text('No solr host available'),
-                                hint: const Text('Select Solr host'),
+                                hint: Text(
+                                    'Select Solr host${tab == 1 ? ' A' : ''}'),
                                 value: solrHost1,
                                 onChanged: (String? newValue) {
                                   setState(() {
@@ -290,7 +290,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   ),
                                   disabledHint:
                                       const Text('No solr host available'),
-                                  hint: const Text('Select Solr host'),
+                                  hint: Text(
+                                      'Select Solr host${tab == 1 ? ' B' : ''}'),
                                   value: solrHost2,
                                   onChanged: (String? newValue) {
                                     setState(() {
@@ -318,10 +319,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                       horizontal: 20),
                                   items: solrHostsMenuItems)),
                         _coreDropdownMenu(coreOrCollections1, coreOrCollection1,
-                            onCoreOrCollectionSelected),
+                            onCoreOrCollectionSelected, tab == 1 ? ' A' : ''),
                         if (tab == 1)
-                          _coreDropdownMenu(coreOrCollections2,
-                              coreOrCollection2, onSndCoreOrCollectionSelected),
+                          _coreDropdownMenu(
+                              coreOrCollections2,
+                              coreOrCollection2,
+                              onSndCoreOrCollectionSelected,
+                              tab == 1 ? ' B' : ''),
                         if (tab == 1)
                           Column(
                             children: <Widget>[
@@ -816,7 +820,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   void _generateAndDownloadHtml(String content, String fileName) {
-    final String htmlContent = md.markdownToHtml(content);
+    final String htmlContent =
+        md.markdownToHtml(content, extensionSet: md.ExtensionSet.gitHubWeb);
 
     final String styledHtmlContent = '''
   <!DOCTYPE html>
@@ -916,8 +921,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return getCoreOrCollections(vm, solrHost);
   }
 
-  Widget _coreDropdownMenu(List<String> coreOrCollections,
-      String? initialSelection, Function(String?) onCoreSelected) {
+  Widget _coreDropdownMenu(
+      List<String> coreOrCollections,
+      String? initialSelection,
+      Function(String?) onCoreSelected,
+      String colSuffix) {
     return coreOrCollections1.isEmpty
         ? Container()
         : Padding(
@@ -929,7 +937,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                       child: Container(),
                     ),
                     disabledHint: const Text('No collection available'),
-                    hint: const Text('Select collection'),
+                    hint: Text('Select collection$colSuffix'),
                     value: initialSelection,
                     onChanged: (String? newValue) {
                       setState(() {
@@ -962,6 +970,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
         await isAPipelinesIndex(solrExec, solrHost1!, coreOrCollection1!);
     isPipelineIndex2 =
         await isAPipelinesIndex(solrExec, solrHost2!, coreOrCollection2!);
+
+    setState(() {
+      currentPhaseTab1 = CompareSolrIndexesPhase.compareIndexes;
+    });
 
     if (compareDrs) {
       await queryTotals(solrExec, solrCompareHosts, '/select', <String, String>{
@@ -1041,6 +1053,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
       printSorted();
       reset();
     }
+    setState(() {
+      currentPhaseTab1 = CompareSolrIndexesPhase.finished;
+    });
   }
 
   void printHeader(String title) {
@@ -1247,6 +1262,39 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   void reportPrint(String msg) {
     indexDiffReport += '$msg\n';
+  }
+
+  double getZValue(double confidenceLevel) {
+    if (confidenceLevel == 0.90) {
+      return 1.645;
+    }
+    if (confidenceLevel == 0.95) {
+      return 1.96;
+    }
+    if (confidenceLevel == 0.99) {
+      return 2.576;
+    }
+    // Add more if needed
+    return 0;
+  }
+
+  int calculateSampleSize(
+      double confidenceLevel, double marginOfError, int populationSize) {
+    final double Z = getZValue(confidenceLevel);
+    const double p = 0.5;
+    final double e = marginOfError;
+
+    final double numerator = pow(Z, 2) * p * (1 - p);
+    final num denominator = pow(e, 2);
+
+    int sampleSize = (numerator / denominator).ceil();
+
+    if (populationSize != null && populationSize > 0) {
+      sampleSize =
+          (sampleSize / (1 + ((sampleSize - 1) / populationSize))).ceil();
+    }
+
+    return sampleSize;
   }
 }
 
