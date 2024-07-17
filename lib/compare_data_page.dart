@@ -46,7 +46,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool firstPoint = true;
   int tab = 0;
-  static const int recordsNumber = 2;
   late LAProject p;
   bool isPipelineIndex1 = false;
   bool isPipelineIndex2 = false;
@@ -75,7 +74,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final List<String> compareTitles = <String>[];
   final List<String> solrCompareHosts = <String>[];
   final List<String> coreOrCollectionList = <String>[];
-  final List<String> layers = <String>[];
+  List<String> layers = <String>[];
   CompareWithGbifDataPhase currentPhaseTab0 =
       CompareWithGbifDataPhase.getSolrHosts;
   CompareSolrIndexesPhase currentPhaseTab1 =
@@ -83,6 +82,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
   bool somethingFailed = false;
   bool csvFormat = false;
   String indexDiffReport = '';
+  final List<int> recordsNumberOptions = <int>[2, 5, 10, 20, 50, 100, 200, 500];
+  int numberOfRecords = 5;
+  int populationSize = 1000000;
 
   @override
   Widget build(BuildContext context) {
@@ -320,6 +322,33 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   items: solrHostsMenuItems)),
                         _coreDropdownMenu(coreOrCollections1, coreOrCollection1,
                             onCoreOrCollectionSelected, tab == 1 ? ' A' : ''),
+                        if (tab == 0)
+                          SizedBox(
+                              width: 200,
+                              child: ButtonTheme(
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.padded,
+                                  child: InputDecorator(
+                                      decoration: const InputDecoration(
+                                        labelText: 'Num. of records to compare',
+                                      ),
+                                      child: DropdownButton<int>(
+                                        underline: DropdownButtonHideUnderline(
+                                            child: Container()),
+                                        value: numberOfRecords,
+                                        items: recordsNumberOptions
+                                            .map((int value) {
+                                          return DropdownMenuItem<int>(
+                                            value: value,
+                                            child: Text(value.toString()),
+                                          );
+                                        }).toList(),
+                                        onChanged: (int? newValue) {
+                                          setState(() {
+                                            numberOfRecords = newValue!;
+                                          });
+                                        },
+                                      )))),
                         if (tab == 1)
                           _coreDropdownMenu(
                               coreOrCollections2,
@@ -366,15 +395,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                 },
                               ),
                               SwitchListTile(
-                                title: const Text('Compare Layers'),
-                                value: compareLayers,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    compareLayers = value;
-                                  });
-                                },
-                              ),
-                              SwitchListTile(
                                 title: const Text('Compare Hubs'),
                                 value: compareHubs,
                                 onChanged: (bool value) {
@@ -383,8 +403,30 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   });
                                 },
                               ),
+                              SwitchListTile(
+                                title: const Text('Compare Layers'),
+                                value: compareLayers,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    compareLayers = value;
+                                  });
+                                },
+                              ),
                             ],
                           ),
+                        if (tab == 1 && compareLayers)
+                          SizedBox(
+                              width: 400,
+                              child: TextField(
+                                onChanged: (String value) {
+                                  setState(() {
+                                    layers = value.split(',');
+                                  });
+                                },
+                                decoration: const InputDecoration(
+                                  labelText: 'Layer fields to compare',
+                                ),
+                              )),
                         LaunchBtn(
                             icon: Icons.settings,
                             execBtn: 'Run',
@@ -498,10 +540,21 @@ class _CompareDataPageState extends State<CompareDataPage> {
                             onPressed: () {
                               if (indexDiffReport.isNotEmpty) {
                                 _generateAndDownloadHtmlForContent(
-                                    indexDiffReport);
+                                    indexDiffReport, true);
                               }
                             },
                             child: const Text('Download report'),
+                          ),
+                        if (tab == 1) const SizedBox(height: 10),
+                        if (tab == 1 && indexDiffReport.isNotEmpty)
+                          ElevatedButton(
+                            onPressed: () {
+                              if (indexDiffReport.isNotEmpty) {
+                                _generateAndDownloadHtmlForContent(
+                                    indexDiffReport, false);
+                              }
+                            },
+                            child: const Text('Download markdown report'),
                           ),
                       ],
                     ))),
@@ -665,7 +718,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       currentPhaseTab0 = CompareWithGbifDataPhase.getRandomLARecords;
     });
 
-    for (int i = 0; i < recordsNumber; i++) {
+    for (int i = 0; i < numberOfRecords; i++) {
       final int drOffset = Random().nextInt(dataResources.length);
       final MapEntry<String, dynamic> dataResource =
           dataResources.entries.toList()[drOffset];
@@ -813,10 +866,27 @@ class _CompareDataPageState extends State<CompareDataPage> {
     _generateAndDownloadHtml(markdownContent.toString(), fileName);
   }
 
-  void _generateAndDownloadHtmlForContent(String content) {
+  void _generateAndDownloadHtmlForContent(String content, bool asHtml) {
     final StringBuffer markdownContent = toMarkDown(content);
     const String fileName = 'la_indexes_comparative_report';
-    _generateAndDownloadHtml(markdownContent.toString(), fileName);
+    if (asHtml) {
+      _generateAndDownloadHtml(markdownContent.toString(), fileName);
+    } else {
+      _generateAndDownloadMd(markdownContent, fileName);
+    }
+  }
+
+  void _generateAndDownloadMd(StringBuffer markdownContent, String fileName) {
+    final DateTime now = DateTime.now();
+    final String formattedDate = DateFormat('yyyyMMddhhmm').format(now);
+    final html.Blob blob =
+        html.Blob(<String>[markdownContent.toString()], 'text/markdown');
+    final String url = html.Url.createObjectUrlFromBlob(blob);
+
+    html.AnchorElement(href: url)
+      ..setAttribute('download', '${formattedDate}_$fileName.md')
+      ..click();
+    html.Url.revokeObjectUrl(url);
   }
 
   void _generateAndDownloadHtml(String content, String fileName) {
