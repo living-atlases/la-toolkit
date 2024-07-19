@@ -123,7 +123,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
       );
     }, builder: (BuildContext context, _CompareDataViewModel vm) {
       p = vm.state.currentProject;
-
       collectoryHost = p
           .getServerById(
               p.getServiceDeploysForSomeService(collectory)[0].serverId!)!
@@ -139,7 +138,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
             .getServiceDeploysForSomeService(service)
             .forEach((LAServiceDeploy sd) {
           if (sd.serverId == null) {
-            // TODO docker cluster
+            final String dockerHost = p
+                .getServerById(p
+                    .getServiceDeploysForSomeService(dockerSwarm)[0]
+                    .serverId!)!
+                .name;
+            if (!solrHosts.contains(dockerHost)) {
+              solrHosts.add(dockerHost);
+            }
           } else {
             final LAServer? server = p.getServerById(sd.serverId!);
             solrHosts.add(server!.name);
@@ -361,6 +367,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               coreOrCollection2,
                               onSndCoreOrCollectionSelected,
                               tab == 1 ? ' B' : ''),
+                        const SizedBox(height: 10),
                         if (coreOrCollection1 != null)
                           Text(
                               isPipelineIndex1
@@ -1229,10 +1236,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
                   .containsKey(field)) {
             debugPrint('$isPipelineIndex1 $isPipelineIndex2 $field');
             debugPrint(
-                'Error: The response ${response.toString()} does not have facet_counts/facet_fields/$field');
+                'Error: The response $response does not have facet_counts/facet_fields/$field');
           }
-          Map<String, dynamic> drs = response['facet_counts']['facet_fields']
-              [field] as Map<String, dynamic>;
+          final Map<String, dynamic> drs = response['facet_counts']
+              ['facet_fields'][field] as Map<String, dynamic>;
           /* final Map<String, dynamic> drs = ((response['facet_counts']
                   as Map<String, dynamic>)['facet_fields']
               as Map<String, dynamic>)[field] as Map<String, dynamic>; */
@@ -1292,9 +1299,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
                       as Map<String, dynamic>)
                   .containsKey(field)) {
             debugPrint(
-                'Error: The response ${response.toString()} does not have facet_counts/facet_fields/$field');
+                'Error: The response $response does not have facet_counts/facet_fields/$field');
           }
-          Map<String, dynamic> results = response['facet_counts']
+          final Map<String, dynamic> results = response['facet_counts']
               ['facet_fields'][field] as Map<String, dynamic>;
           /* final Map<String, dynamic> results =
             ((response!['facet_counts'] as Map<String, dynamic>)['facet_fields']
