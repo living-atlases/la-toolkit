@@ -1229,15 +1229,17 @@ class _CompareDataPageState extends State<CompareDataPage> {
               response['facet_counts'] is! Map<String, dynamic> ||
               !(response['facet_counts'] as Map<String, dynamic>)
                   .containsKey('facet_fields') ||
-              response['facet_counts']['facet_fields']
+              (response['facet_counts'] as Map<String, dynamic>)['facet_fields']
                   is! Map<String, dynamic> ||
-              !(response['facet_counts']['facet_fields']
+              !((response['facet_counts']
+                          as Map<String, dynamic>)['facet_fields']
                       as Map<String, dynamic>)
                   .containsKey(field)) {
             debugPrint('$isPipelineIndex1 $isPipelineIndex2 $field');
             debugPrint(
                 'Error: The response $response does not have facet_counts/facet_fields/$field');
           }
+          // ignore: avoid_dynamic_calls
           final Map<String, dynamic> drs = response['facet_counts']
               ['facet_fields'][field] as Map<String, dynamic>;
           /* final Map<String, dynamic> drs = ((response['facet_counts']
@@ -1293,14 +1295,16 @@ class _CompareDataPageState extends State<CompareDataPage> {
               response['facet_counts'] is! Map<String, dynamic> ||
               !(response['facet_counts'] as Map<String, dynamic>)
                   .containsKey('facet_fields') ||
-              response['facet_counts']['facet_fields']
+              (response['facet_counts'] as Map<String, dynamic>)['facet_fields']
                   is! Map<String, dynamic> ||
-              !(response['facet_counts']['facet_fields']
+              !((response['facet_counts']
+                          as Map<String, dynamic>)['facet_fields']
                       as Map<String, dynamic>)
                   .containsKey(field)) {
             debugPrint(
                 'Error: The response $response does not have facet_counts/facet_fields/$field');
           }
+          // ignore: avoid_dynamic_calls
           final Map<String, dynamic> results = response['facet_counts']
               ['facet_fields'][field] as Map<String, dynamic>;
           /* final Map<String, dynamic> results =
