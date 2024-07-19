@@ -155,9 +155,12 @@ class _CompareDataPageState extends State<CompareDataPage> {
             DropdownMenuItem<String>(value: element, child: Text(element)));
       }
       void onCoreOrCollectionSelected(String? value) {
-        setState(() {
+        setState(() async {
           if (value != null) {
+            _setCheckIndexPhase();
             coreOrCollection1 = value;
+            isPipelineIndex1 =
+                await isAPipelinesIndex(vm, solrHost1!, coreOrCollection1!);
             if (tab == 0) {
               launchEnabled = true;
             } else {
@@ -171,14 +174,17 @@ class _CompareDataPageState extends State<CompareDataPage> {
       }
 
       void onSndCoreOrCollectionSelected(String? value) {
-        setState(() {
+        setState(() async {
           if (value != null) {
+            _setCheckIndexPhase();
             coreOrCollection2 = value;
             if (coreOrCollection1 != null) {
               launchEnabled = true;
             }
           }
           somethingFailed = false;
+          isPipelineIndex2 =
+              await isAPipelinesIndex(vm, solrHost2!, coreOrCollection2!);
         });
       }
 
@@ -355,6 +361,18 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               coreOrCollection2,
                               onSndCoreOrCollectionSelected,
                               tab == 1 ? ' B' : ''),
+                        if (coreOrCollection1 != null)
+                          Text(
+                              isPipelineIndex1
+                                  ? "'$coreOrCollection1' is a pipelines index"
+                                  : "'$coreOrCollection1' is a normal index",
+                              style: const TextStyle(color: Colors.grey)),
+                        if (tab == 1 && coreOrCollection2 != null)
+                          Text(
+                              isPipelineIndex2
+                                  ? "'$coreOrCollection2' is a pipelines index"
+                                  : "'$coreOrCollection2' is a normal index",
+                              style: const TextStyle(color: Colors.grey)),
                         if (tab == 1)
                           Column(
                             children: <Widget>[
@@ -438,6 +456,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                         errorMessages = null;
                                         statistics = null;
                                         launchEnabled = false;
+                                        somethingFailed = false;
                                       });
                                       final Map<String, dynamic> results =
                                           await _compareWithGBIF(vm);
@@ -452,6 +471,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                       setState(() {
                                         launchEnabled = false;
                                         indexDiffReport = '';
+                                        somethingFailed = false;
                                       });
                                       await _compareSolrIndexes(vm);
                                       setState(() {
@@ -564,6 +584,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
                 ),
               ]))));
     });
+  }
+
+  void _setCheckIndexPhase() {
+    if (tab == 1) {
+      currentPhaseTab1 = CompareSolrIndexesPhase.detectSolrIndexType;
+    } else {
+      currentPhaseTab0 = CompareWithGbifDataPhase.detectSolrIndexType;
+    }
   }
 
   Uri asUri(String base, String path, Map<String, String> params,
@@ -727,11 +755,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
       final Completer<void> completer = Completer<void>();
 
+      final String field =
+          isPipelineIndex1 ? 'dataResourceUid' : 'data_resource_uid';
+
       vm.doSolrQuery(
           solrHost1!,
           Uri.parse(withRank
-                  ? 'http://localhost:8983/solr/${coreOrCollection1!}/select?q=dataResourceUid:${dataResource.key}&rank:[* TO *]&rows=1&wt=json&start=$recordOffset&facet=false'
-                  : 'http://localhost:8983/solr/${coreOrCollection1!}/select?q=dataResourceUid:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false')
+                  ? 'http://localhost:8983/solr/${coreOrCollection1!}/select?q=$field:${dataResource.key}&rank:[* TO *]&rows=1&wt=json&start=$recordOffset&facet=false'
+                  : 'http://localhost:8983/solr/${coreOrCollection1!}/select?q=$field:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false')
               .toString(), (Map<String, dynamic> result) {
         final Map<String, dynamic> occ =
             ((result['response'] as Map<String, dynamic>)['docs']
@@ -1033,15 +1064,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
     SolrCompareResult.csvFormat = false;
 
     setState(() {
-      currentPhaseTab1 = CompareSolrIndexesPhase.detectSolrIndexType;
-    });
-
-    isPipelineIndex1 =
-        await isAPipelinesIndex(solrExec, solrHost1!, coreOrCollection1!);
-    isPipelineIndex2 =
-        await isAPipelinesIndex(solrExec, solrHost2!, coreOrCollection2!);
-
-    setState(() {
       currentPhaseTab1 = CompareSolrIndexesPhase.compareIndexes;
     });
 
@@ -1175,76 +1197,118 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Future<void> getDrTotals(SolrQueryExecutor queryExec) async {
-    solrCompareHosts.mapIndexed((int i, String solrHost) async {
-      final String field =
-          (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
-              ? 'dataResourceUid'
-              : 'data_resource_uid';
-      final Map<String, dynamic>? response = await getFacetData(
-          solrHost: solrHost,
-          solrExec: queryExec,
-          collection: coreOrCollectionList[i],
-          q: '$field:*',
-          facetField: field,
-          facetLimit: -1,
-          sort: 'index');
-      if (response == null) {
-        somethingFailed = true;
-      } else {
-        final Map<String, dynamic> drs =
-            ((response['facet_counts'] as Map<String, dynamic>)['facet_fields']
-                as Map<String, dynamic>)[field] as Map<String, dynamic>;
-        for (final MapEntry<String, dynamic> e in drs.entries) {
-          String key;
-          if (!compareResults.containsKey(e.key)) {
-            // debugPrint('${e.key} not found in collectory');
-            key = '~~${e.key}~~';
-            compareResults.putIfAbsent(key, () => SolrCompareResult(key, 0));
-          } else {
-            key = e.key;
+    try {
+      await Future.wait(
+          solrCompareHosts.mapIndexed((int i, String solrHost) async {
+        final String field =
+            (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
+                ? 'dataResourceUid'
+                : 'data_resource_uid';
+        final Map<String, dynamic>? response = await getFacetData(
+            solrHost: solrHost,
+            solrExec: queryExec,
+            collection: coreOrCollectionList[i],
+            q: '$field:*',
+            facetField: field,
+            facetLimit: -1,
+            sort: 'index');
+        if (response == null) {
+          somethingFailed = true;
+        } else {
+          if (!response.containsKey('facet_counts') ||
+              response['facet_counts'] is! Map<String, dynamic> ||
+              !(response['facet_counts'] as Map<String, dynamic>)
+                  .containsKey('facet_fields') ||
+              response['facet_counts']['facet_fields']
+                  is! Map<String, dynamic> ||
+              !(response['facet_counts']['facet_fields']
+                      as Map<String, dynamic>)
+                  .containsKey(field)) {
+            debugPrint(
+                'Error: The response ${response.toString()} does not have facet_counts/facet_fields/$field');
           }
-          if (i == 0) {
-            compareResults.update(
-                key, (SolrCompareResult el) => el.setA(e.value as int));
-          } else {
-            compareResults.update(
-                key, (SolrCompareResult el) => el.setB(e.value as int));
+          Map<String, dynamic> drs = response['facet_counts']['facet_fields']
+              [field] as Map<String, dynamic>;
+          /* final Map<String, dynamic> drs = ((response['facet_counts']
+                  as Map<String, dynamic>)['facet_fields']
+              as Map<String, dynamic>)[field] as Map<String, dynamic>; */
+          for (final MapEntry<String, dynamic> e in drs.entries) {
+            String key;
+            if (!compareResults.containsKey(e.key)) {
+              // debugPrint('${e.key} not found in collectory');
+              key = '~~${e.key}~~';
+              compareResults.putIfAbsent(key, () => SolrCompareResult(key, 0));
+            } else {
+              key = e.key;
+            }
+            if (i == 0) {
+              compareResults.update(
+                  key, (SolrCompareResult el) => el.setA(e.value as int));
+            } else {
+              compareResults.update(
+                  key, (SolrCompareResult el) => el.setB(e.value as int));
+            }
           }
         }
-      }
-    });
+      }));
+    } catch (all) {
+      debugPrint('Error: $all');
+      somethingFailed = true;
+      rethrow;
+    }
   }
 
   Future<void> getFieldDiff(String bStoreField, String pipelinesField,
       SolrQueryExecutor queryExec) async {
-    solrCompareHosts.mapIndexed((int i, String solrHost) async {
-      final String field =
-          (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
-              ? pipelinesField
-              : bStoreField;
-      final Map<String, dynamic>? response = await getFacetData(
-          solrHost: solrHost,
-          solrExec: queryExec,
-          collection: coreOrCollectionList[i],
-          q: '$field:*',
-          facetField: field,
-          facetLimit: -1,
-          sort: 'index');
-      if (response == null) {
-        somethingFailed = true;
-      }
-      final Map<String, dynamic> results =
-          ((response!['facet_counts'] as Map<String, dynamic>)['facet_fields']
-              as Map<String, dynamic>)[field] as Map<String, dynamic>;
-      for (final MapEntry<String, dynamic> entry in results.entries) {
-        storeResults(entry.key, entry.value as int, i);
-      }
-    });
+    try {
+      await Future.wait(
+          solrCompareHosts.mapIndexed((int i, String solrHost) async {
+        final String field =
+            (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
+                ? pipelinesField
+                : bStoreField;
+        final Map<String, dynamic>? response = await getFacetData(
+            solrHost: solrHost,
+            solrExec: queryExec,
+            collection: coreOrCollectionList[i],
+            q: '$field:*',
+            facetField: field,
+            facetLimit: -1,
+            sort: 'index');
+        if (response == null) {
+          somethingFailed = true;
+        } else {
+          if (!response.containsKey('facet_counts') ||
+              response['facet_counts'] is! Map<String, dynamic> ||
+              !(response['facet_counts'] as Map<String, dynamic>)
+                  .containsKey('facet_fields') ||
+              response['facet_counts']['facet_fields']
+                  is! Map<String, dynamic> ||
+              !(response['facet_counts']['facet_fields']
+                      as Map<String, dynamic>)
+                  .containsKey(field)) {
+            debugPrint(
+                'Error: The response ${response.toString()} does not have facet_counts/facet_fields/$field');
+          }
+          Map<String, dynamic> results = response['facet_counts']
+              ['facet_fields'][field] as Map<String, dynamic>;
+          /* final Map<String, dynamic> results =
+            ((response!['facet_counts'] as Map<String, dynamic>)['facet_fields']
+                as Map<String, dynamic>)[field] as Map<String, dynamic>; */
+          for (final MapEntry<String, dynamic> entry in results.entries) {
+            storeResults(entry.key, entry.value as int, i);
+          }
+        }
+      }));
+    } catch (all) {
+      somethingFailed = true;
+      rethrow;
+    }
   }
 
   Future<bool> isAPipelinesIndex(
       SolrQueryExecutor solrExec, String solrHost, String collection,
-      [bool debug = false]) async {
+      [bool debug = true]) async {
     try {
       final String response = await doSolrRawQuery(
           solrExec,
@@ -1258,6 +1322,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
             'fl': 'data*'
           },
           debug) as String;
+      debugPrint('Response: $response');
       return response.contains('dataResourceUid');
     } catch (all) {
       somethingFailed = true;
