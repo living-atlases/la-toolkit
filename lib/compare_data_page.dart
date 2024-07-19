@@ -1055,10 +1055,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   Future<void> _compareSolrIndexes(SolrQueryExecutor solrExec,
       [bool debug = false]) async {
+    solrCompareHosts.clear();
     solrCompareHosts.add(solrHost1!);
     solrCompareHosts.add(solrHost2!);
+    coreOrCollectionList.clear();
     coreOrCollectionList.add(coreOrCollection1!);
     coreOrCollectionList.add(coreOrCollection2!);
+    compareTitles.clear();
     compareTitles.addAll(
         <String>['solrA $coreOrCollection1', 'solrB $coreOrCollection2']);
     SolrCompareResult.csvFormat = false;
@@ -1224,6 +1227,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
               !(response['facet_counts']['facet_fields']
                       as Map<String, dynamic>)
                   .containsKey(field)) {
+            debugPrint('$isPipelineIndex1 $isPipelineIndex2 $field');
             debugPrint(
                 'Error: The response ${response.toString()} does not have facet_counts/facet_fields/$field');
           }
