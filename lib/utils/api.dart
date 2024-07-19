@@ -608,6 +608,7 @@ class Api {
     }
     final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/solr-query');
     try {
+      // debugPrint('solrQuery: ($solrHost) $query');
       final Response response = await http.post(url,
           headers: <String, String>{'Content-type': 'application/json'},
           body: utf8.encode(json.encode(<String, Object>{
@@ -620,11 +621,12 @@ class Api {
             jsonDecode(response.body) as Map<String, dynamic>;
         return jsonResponse;
       } else {
-        throw Exception('Failed to query solr (${response.reasonPhrase}))');
+        throw Exception(
+            "Failed to query solr '$query' (${response.reasonPhrase}))");
       }
     } catch (e) {
       debugPrint('Error during solrQuery: $e');
-      throw Exception('Failed to query solr ($e)');
+      throw Exception("Failed to query solr '$query' ($e)");
     }
   }
 
@@ -635,6 +637,7 @@ class Api {
     }
     final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/solr-query');
     try {
+      // debugPrint('solrRawQuery: ($solrHost) $query');
       final Response response = await http.post(url,
           headers: <String, String>{'Content-type': 'application/json'},
           body: utf8.encode(json.encode(<String, Object>{
