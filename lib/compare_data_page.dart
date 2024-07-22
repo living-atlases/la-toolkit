@@ -445,7 +445,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               child: TextField(
                                 onChanged: (String value) {
                                   setState(() {
-                                    layers = value.split(',');
+                                    layers =
+                                        // value.replaceAll(' ', '').split(',');
+                                        value
+                                            .split(RegExp(r'[,\s]+'))
+                                            .where((String layer) =>
+                                                layer.isNotEmpty)
+                                            .toList();
                                   });
                                 },
                                 decoration: const InputDecoration(
@@ -1127,8 +1133,22 @@ class _CompareDataPageState extends State<CompareDataPage> {
     if (compareSpecies) {
       await getFieldDiff('taxon_name', 'scientificName', solrExec);
       if (truncateSpecies) {
+        debugPrint(compareResults.length.toString());
+        final List<MapEntry<String, SolrCompareResult>> speciesList =
+            compareResults.entries.toList()
+              ..sort((MapEntry<String, SolrCompareResult> a,
+                      MapEntry<String, SolrCompareResult> b) =>
+                  b.value.d.compareTo(a.value.d));
+
+        final Map<String, SolrCompareResult> truncatedResults =
+            Map<String, SolrCompareResult>.fromEntries(speciesList.take(20));
+        compareResults
+          ..clear()
+          ..addAll(truncatedResults);
+        debugPrint(compareResults.length.toString());
+        /* Only bigger differences
         compareResults.removeWhere(
-            (String k, SolrCompareResult v) => v.d < 10000 && v.d > -10000);
+            (String k, SolrCompareResult v) => v.d < 10000 && v.d > -10000); */
       }
       printHeader('Species');
       printSorted();
