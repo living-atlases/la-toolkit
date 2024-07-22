@@ -78,8 +78,7 @@ class TermDialog {
         containerWidget: (_, Animation<double> animation, Widget child) =>
             FloatingModal(
               child: child,
-            ),
-        expand: false);
+            ));
 
     return result;
   }
