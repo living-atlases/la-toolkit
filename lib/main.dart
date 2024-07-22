@@ -17,7 +17,6 @@ import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:sails_io/sails_io.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
-import 'package:stack_trace/stack_trace.dart';
 
 import 'components/appSnackBarMessage.dart';
 import 'models/appState.dart';
