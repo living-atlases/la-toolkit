@@ -49,6 +49,8 @@ services:
       # TOOLKIT_PUBLIC_URL: "toolkit.l-a.site"
       # TOOLKIT_HTTPS: "true"
       # TOOLKIT_TERM_PROXY: "true"
+      #
+      # see: apache-vhost-sample.conf for a sample apache vhost configuration 
 
 
     # The volumes should be writeable by your user so maybe you have to set your uid:gid here
