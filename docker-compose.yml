@@ -21,11 +21,35 @@ services:
       # db user/pass (should match the same mongo vars LA_USER/LA_PASS)
       DATABASE_URL: mongodb://la_toolkit_user:la_toolkit_changeme@mongo:27017/la_toolkit
       NODE_ENV: production
-      # Advanced optional URLs (useful to enable https and use a proxy)
       # TOOLKIT_SENTRY_DSN: "SOME_DSN"
+      #
+      # Advanced optional URLs (useful to enable https and use a proxy)
       # TOOLKIT_PUBLIC_URL: "localhost:2010" or "toolkit.example.com"
       # TOOLKIT_HTTPS: "false"
       # TOOLKIT_TERM_PROXY: "false"
+      # In a simple desktop deployment, the toolkit uses localhost to connect to
+      # the backend and later opens other ports to show the terminal or SSH into 
+      # servers, etc. 
+      # However, in an public server deployment, a different schema is needed. 
+      # Instead of connecting to localhost:SOMEPORT via websocket, we connect to
+      # la-toolkit.l-a.site/ttySOMEPORT, or similar and the proxy configuration 
+      # redirects to the internal server:SOMEPORT. 
+      # The TOOLKIT_TERM_PROXY flag allows the terminal to use the localhost 
+      # schema if false or the proxy schema if true.
+      #
+      # In other words, if you are using the toolkit in a desktop, you don't 
+      # need to configure nothing, but if you are trying to connect to a toolkit 
+      # in an internal network without proxy configuration, SSL configuration, etc.
+      # configure it as follows:
+      # TOOLKIT_PUBLIC_URL: "10.1.2.3:2010"
+      # TOOLKIT_HTTPS: "false"
+      # TOOLKIT_TERM_PROXY: "false"
+      #
+      # But if you run the toolkit under a proxy, configure it instead as follows:
+      # TOOLKIT_PUBLIC_URL: "toolkit.l-a.site"
+      # TOOLKIT_HTTPS: "true"
+      # TOOLKIT_TERM_PROXY: "true"
+
 
     # The volumes should be writeable by your user so maybe you have to set your uid:gid here
     # user: 1000:1000
