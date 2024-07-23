@@ -7,8 +7,9 @@ import '../utils/regexp.dart';
 import 'genericTextFormField.dart';
 
 class RenameServerIcon extends StatelessWidget {
+  const RenameServerIcon(this.server, this.onEditing, this.onRename,
+      {super.key});
 
-  const RenameServerIcon(this.server, this.onEditing, this.onRename, {super.key});
   final Function(String) onRename;
   final Function() onEditing;
   final LAServer server;
@@ -52,7 +53,7 @@ class RenameServerIcon extends StatelessWidget {
                 regexp: LARegExp.hostnameRegexp,
                 error: 'This is not a valid server name',
                 onChanged: (String value) {
-                  name = value;
+                  name = value.trim().toLowerCase();
                 }),
             const SizedBox(
               height: 20,
@@ -66,7 +67,7 @@ class RenameServerIcon extends StatelessWidget {
               if (name != null) {
                 if (LARegExp.hostnameRegexp.hasMatch(name!)) {
                   Navigator.pop(context);
-                  onRename(name!);
+                  onRename(name!.trim().toLowerCase());
                 }
               }
             },

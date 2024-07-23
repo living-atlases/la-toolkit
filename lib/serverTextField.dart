@@ -5,13 +5,13 @@ import 'project_edit_page.dart';
 import 'utils/regexp.dart';
 
 class ServerTextField extends StatelessWidget {
-
   const ServerTextField(
       {super.key,
       required this.controller,
       required this.focusNode,
       required this.formKey,
       required this.onAddServer});
+
   final TextEditingController controller;
   final FocusNode focusNode;
 
@@ -32,7 +32,7 @@ class ServerTextField extends StatelessWidget {
             cursorColor: Colors.orange,
             style: LAColorTheme.unDeployedTextStyle,
             onFieldSubmitted: (String value) {
-              addServer(value);
+              addServer(value.toLowerCase());
             },
             focusNode: focusNode,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -51,6 +51,7 @@ class ServerTextField extends StatelessWidget {
                       debugPrint('Trying to add server/s ${controller.text}');
                       if (formKey.currentState != null &&
                           formKey.currentState!.validate()) {
+                        controller.text = controller.text.toLowerCase();
                         addServer(controller.text);
                       }
                     },
