@@ -159,7 +159,8 @@ class DeployUtils {
       required Store<AppState> store,
       required LAProject project,
       required CommonCmd commonCmd}) {
-    context.loaderOverlay.show(widget: const LoadingTextOverlay());
+    context.loaderOverlay
+        .show(widgetBuilder: (progress) => const LoadingTextOverlay());
     store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {
