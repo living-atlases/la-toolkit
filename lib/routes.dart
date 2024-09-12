@@ -72,7 +72,7 @@ abstract class NamedBeamLocation extends BeamLocation<BeamState> {
 
 class BeamerCond {
   static void of(BuildContext context, NamedBeamLocation loc) {
-    Beamer.of(context).beamToNamed(loc.route);
+    Beamer.of(context).beamToNamed('/' + loc.route);
   }
 }
 
