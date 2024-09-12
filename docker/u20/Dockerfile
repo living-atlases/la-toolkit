@@ -95,7 +95,7 @@ RUN su - ubuntu -c 'cd /home/ubuntu/base-branding && git submodule update --init
 # yeoman, LA generator, sails and related
 RUN su - ubuntu -c 'mkdir -p "/home/ubuntu/.npm-packages/lib"'
 RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
-RUN su - ubuntu -c 'npm install -g yo'
+RUN su - ubuntu -c 'npm install -g yo@4.3.1'
 RUN su - ubuntu -c 'npm install -g yarn'
 RUN su - ubuntu -c 'npm install -g brunch'
 RUN su - ubuntu -c 'npm install -g sails'
