@@ -102,10 +102,13 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
         debugPrint(
             'ala-install $alaInstallVersion, generator: $generatorVersion');
         // debugPrint('useOidc: $useOidc userDetails version: $userDetailsVersion');
+        final bool generatorForLADevelop = generatorVersion != null &&
+            VersionConstraint.parse('>= 1.5.4').allows(v(generatorVersion));
+        debugPrint(
+            'If generator for la-develop: $generatorForLADevelop and ala-install version: $alaInstallVersion');
         lints.insertAll(0, <Widget>[
           if (!project.isHub &&
-              generatorVersion != null &&
-              VersionConstraint.parse('>= 1.5.4').allows(v(generatorVersion)) &&
+              generatorForLADevelop &&
               alaInstallVersion != null &&
               alaInstallVersion != 'la-develop')
             const AlertCard(
