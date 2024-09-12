@@ -497,13 +497,13 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return allReady;
   }
 
-  bool allServersWithOs(String name, String version) {
-    bool allReady = true;
-    serversWithServices().forEach((LAServer s) {
-      allReady = allReady && s.osName == name;
-      allReady = allReady && s.osVersion == version;
-    });
-    return allReady;
+  bool allServersWithSupportedOs(String name, String version) {
+    for (final LAServer s in serversWithServices()) {
+      if (s.osName != name || v(s.osVersion).compareTo(v(version)) < 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   List<String> getServersNameList() {
