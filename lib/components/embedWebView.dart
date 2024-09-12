@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
 // ignore: implementation_imports
-import 'package:pointer_interceptor/src/shim/dart_ui.dart' as ui;
+import 'dart:ui_web' as ui;
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_html/html.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -43,10 +45,13 @@ class EmbedWebViewState extends State<EmbedWebView>
       ..allow = 'autoplay'
       ..allowFullscreen = true;
     // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-      widget.src,
-      (int viewId) => iframeElement,
-    );
+
+    if (kIsWeb) {
+      ui.platformViewRegistry.registerViewFactory(
+        widget.src,
+        (int viewId) => iframeElement,
+      );
+    }
     if (!AppUtils.isDemo() && widget.notify) {
       final Uri uri = Uri.parse(widget.src.replaceAll('http', 'ws'));
       _channel = WebSocketChannel.connect(uri);
