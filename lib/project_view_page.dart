@@ -56,7 +56,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
   }
 
   Future<void> showOverlay(BuildContext context) async {
-    context.loaderOverlay.show(widget: const LoadingTextOverlay());
+    context.loaderOverlay.show(widgetBuilder: (progress) {
+      return const LoadingTextOverlay();
+    });
     await Future<void>.delayed(const Duration(milliseconds: 1000));
   }
 
