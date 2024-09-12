@@ -447,7 +447,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             color: allReady ? LAColorTheme.up : LAColorTheme.down),
         title: 'Servers Status',
         style: const AlertStyle(
-            constraints: BoxConstraints.expand(height: 600, width: 600)),
+            constraints: BoxConstraints.expand(height: 600, width: 800)),
         content: Column(
             children: List<Widget>.from(<Widget>[
           const SizedBox(height: 20),
