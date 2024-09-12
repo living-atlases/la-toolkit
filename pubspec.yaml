@@ -31,17 +31,17 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^1.0.1
-  google_fonts: ^5.1.0
+  google_fonts: ^6.2.1
 
   # ui
   introduction_screen: ^3.1.11
   # https://github.com/Cretezy/flutter_linkify/issues/79
   flutter_linkify: ^6.0.0
   url_launcher: ^6.0.2
-  flutter_markdown: ^0.6.1
+  flutter_markdown: ^0.7.3+1
   timelines: ^0.1.0
   responsive_grid: ^2.0.0
-  feedback: ^2.2.1
+  feedback: ^3.1.0
   flutter_advanced_switch: ^3.0.0
   # Used for service selection (for instance in service deploy)
   # https://github.com/davigmacode/flutter_chips_choice/pull/21
@@ -54,15 +54,15 @@ dependencies:
   # xterm: ^1.1.1+1
   clipboard: ^0.1.3
   # loading spinner
-  loader_overlay: ^2.0.1
+  loader_overlay: ^4.0.1
   # used for terms
-  # modal_bottom_sheet: ^2.0.0
+  modal_bottom_sheet: ^3.0.0
   # https://stackoverflow.com/questions/74751803/error-modalbottomsheetroute-is-imported-from-both
-  modal_bottom_sheet:
-    git:
-      url: https://github.com/followthemoney1/modal_bottom_sheet.git
-      ref: main
-      path: modal_bottom_sheet
+  #modal_bottom_sheet:
+  #  git:
+  #    url: https://github.com/followthemoney1/modal_bottom_sheet.git
+  #    ref: main
+  #    path: modal_bottom_sheet
   # web_browser: ^0.5.0
   # bottom floating button
   flutter_speed_dial: ^7.0.0
@@ -70,7 +70,7 @@ dependencies:
   flutter_staggered_animations: ^1.0.0
   # date
   simple_moment: ^1.1.0
-  duration: ^3.0.6
+  duration: ^4.0.3
   # navigation
   beamer: ^1.1.0
   # version comparison
@@ -83,7 +83,7 @@ dependencies:
   #  git:
   #    url: https://github.com/Ksomething/flutter_xlider.git
   #    ref: 6c8fd24
-  fl_chart: ^0.63.0
+  fl_chart: ^0.69.0
   multi_select_flutter: ^4.0.0
   convex_bottom_bar: ^3.0.0
   tap_debouncer: ^2.0.0
@@ -116,11 +116,11 @@ dependencies:
 
   # utils
   flutter_dotenv: ^5.0.2 # ^3.1.0
-  package_info_plus: ^4.1.0
+  package_info_plus: ^8.0.2
   tuple: ^2.0.0
   # intl: ^0.17.0
 
-  cron: ^0.5.1
+  cron: ^0.6.1
   universal_html: ^2.0.4
 
   # map
@@ -132,19 +132,19 @@ dependencies:
       ref: feature/migrate-to-null-safety-dart-2.12
   latlong2: ^0.9.0
   # universal_ui: ^0.0.8
-  pointer_interceptor: ^0.9.0+1
+  pointer_interceptor: ^0.10.1+2
   timeline_tile: ^2.0.0
   toggle_switch: ^2.1.0
   sails_io: ^0.0.2
   infinite_scroll_pagination: ^4.0.0
-  rxdart: ^0.27.3
-  web_socket_channel: ^2.2.0
+  rxdart: ^0.28.0
+  web_socket_channel: ^3.0.1
   collection: ^1.17.1
   redux: ^5.0.0
   socket_io_client: ^1.0.2
   logging: ^1.2.0
   flutter_map_dragmarker: ^5.0.0
-  sentry_flutter: ^7.9.0
+  sentry_flutter: ^8.9.0
   yaml: ^3.1.2
   yaml_extension: ^1.0.2
   json_theme: ^6.4.1
@@ -164,7 +164,7 @@ dev_dependencies:
 
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.3
+  flutter_lints: ^4.0.0
   # integration_test:
   #  sdk: flutter
 
@@ -183,6 +183,8 @@ flutter:
   assets:
     - assets/env.development.txt
     - assets/env.production.txt
+    - env.development.txt
+    - env.production.txt
     - assets/la-toolkit-templates.json
     - assets/images/la-icon.png
     - assets/images/ala-icon.png
