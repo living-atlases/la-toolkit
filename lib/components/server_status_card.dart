@@ -76,7 +76,8 @@ class ServerStatusCard extends StatelessWidget {
                         ))
                   ]),
                   const SizedBox(width: 20),
-                  Column(
+                  Expanded(
+                      child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(server.name,
@@ -103,7 +104,7 @@ class ServerStatusCard extends StatelessWidget {
                                   style: ServiceStatusCard.subtitle),
                             )),
                     ],
-                  ),
+                  )),
                   const SizedBox(width: 20),
                   // Expanded(
                   if (!extendedStatus) ConnectivityStatus(server: server),
