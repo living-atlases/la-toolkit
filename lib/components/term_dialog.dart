@@ -7,7 +7,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../utils/StringUtils.dart';
 import '../utils/api.dart';
 import '../utils/utils.dart';
-import 'embedWebView.dart';
+import 'embed_web_view.dart';
 
 class TermDialog {
   static Future<void> show(BuildContext context,
