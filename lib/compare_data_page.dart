@@ -69,6 +69,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   bool truncateSpecies = true;
   bool compareLayers = true;
   bool compareHubs = true;
+  String? recordToCompare;
   Map<String, SolrCompareResult> compareResults = <String, SolrCompareResult>{};
   static const String totals = 'totals';
   final List<String> compareTitles = <String>[];
@@ -79,6 +80,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
       CompareWithGbifDataPhase.getSolrHosts;
   CompareSolrIndexesPhase currentPhaseTab1 =
       CompareSolrIndexesPhase.getSolrHosts;
+  CompareOneWithGbifDataPhase currentPhaseTab2 =
+      CompareOneWithGbifDataPhase.getSolrHosts;
   bool somethingFailed = false;
   bool csvFormat = false;
   String indexDiffReport = '';
@@ -160,14 +163,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
         solrHostsMenuItems.add(
             DropdownMenuItem<String>(value: element, child: Text(element)));
       }
-      void onCoreOrCollectionSelected(String? value) {
-        setState(() async {
+      Future<void> onCoreOrCollectionSelected(String? value) async {
+        setState(() {
           if (value != null) {
             _setCheckIndexPhase();
             coreOrCollection1 = value;
-            isPipelineIndex1 =
-                await isAPipelinesIndex(vm, solrHost1!, coreOrCollection1!);
+
             if (tab == 0) {
+              launchEnabled = true;
+            } else if (tab == 2 && recordToCompare != null) {
               launchEnabled = true;
             } else {
               if (coreOrCollection2 != null) {
@@ -177,10 +181,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
             somethingFailed = false;
           }
         });
+        if (value != null) {
+          isPipelineIndex1 =
+              await isAPipelinesIndex(vm, solrHost1!, coreOrCollection1!);
+          setState(() {});
+        }
       }
 
-      void onSndCoreOrCollectionSelected(String? value) {
-        setState(() async {
+      Future<void> onSndCoreOrCollectionSelected(String? value) async {
+        setState(() {
           if (value != null) {
             _setCheckIndexPhase();
             coreOrCollection2 = value;
@@ -189,9 +198,12 @@ class _CompareDataPageState extends State<CompareDataPage> {
             }
           }
           somethingFailed = false;
+        });
+        if (value != null) {
           isPipelineIndex2 =
               await isAPipelinesIndex(vm, solrHost2!, coreOrCollection2!);
-        });
+          setState(() {});
+        }
       }
 
       return Scaffold(
@@ -215,6 +227,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
               TabItem<dynamic>(
                   icon: Icons.compare_arrows,
                   title: 'Solr indexes comparative'),
+              TabItem<dynamic>(
+                  icon: Icons.repeat_one, title: 'Compare one record'),
             ],
             initialActiveIndex: 0,
             //optional, default as 0
@@ -242,7 +256,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
                         Text(tab == 0
                             ? 'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'
-                            : 'This tool compare two solr cores or two solrcloud collections in your LA Portal'),
+                            : tab == 1
+                                ? 'This tool compare two solr cores or two solrcloud collections in your LA Portal'
+                                : 'This tool compare one LA record with the equivalent in GBIF'),
                         const SizedBox(height: 10),
 
                         if (tab == 0)
@@ -257,6 +273,12 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               failed: somethingFailed,
                               phaseValues:
                                   CompareSolrIndexesPhase.values.toList()),
+                        if (tab == 2)
+                          CompareDataTimeline<CompareOneWithGbifDataPhase>(
+                              currentPhase: currentPhaseTab2,
+                              failed: somethingFailed,
+                              phaseValues:
+                                  CompareOneWithGbifDataPhase.values.toList()),
                         ButtonTheme(
                             materialTapTargetSize: MaterialTapTargetSize.padded,
                             child: DropdownButton<String>(
@@ -458,13 +480,26 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   labelText: 'Layer fields to compare',
                                 ),
                               )),
+                        if (tab == 2)
+                          SizedBox(
+                              width: 400,
+                              child: TextField(
+                                onChanged: (String value) {
+                                  setState(() {
+                                    recordToCompare = value;
+                                  });
+                                },
+                                decoration: const InputDecoration(
+                                  labelText: 'LA Record id to compare',
+                                ),
+                              )),
                         LaunchBtn(
                             icon: Icons.settings,
                             execBtn: 'Run',
                             onTap: !launchEnabled
                                 ? null
                                 : () async {
-                                    if (tab == 0) {
+                                    if (tab == 0 || tab == 2) {
                                       setState(() {
                                         errorMessages = null;
                                         statistics = null;
@@ -472,7 +507,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                         somethingFailed = false;
                                       });
                                       final Map<String, dynamic> results =
-                                          await _compareWithGBIF(vm);
+                                          await _compareWithGBIF(vm, tab == 2);
                                       setState(() {
                                         statistics = results['statistics']
                                             as Map<String, Map<String, int>>;
@@ -492,8 +527,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                       });
                                     }
                                   }),
-                        if (tab == 0) const SizedBox(height: 10),
-                        if (tab == 0 && errorMessages != null)
+                        if (tab == 0 || tab == 2) const SizedBox(height: 10),
+                        if ((tab == 0 || tab == 2) && errorMessages != null)
                           Container(
                               alignment: Alignment.topLeft,
                               child: Column(
@@ -538,13 +573,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                       ]));
                                 }).toList(),
                               )),
-                        if (tab == 0 &&
+                        if ((tab == 0 || tab == 2) &&
                             errorMessages != null &&
                             errorMessages!.length == 1)
                           const Padding(
                               padding: EdgeInsets.all(12.0),
                               child: Text('No differences found')),
-                        if (tab == 0 &&
+                        if ((tab == 0 || tab == 2) &&
                             errorMessages != null &&
                             errorMessages!.isNotEmpty)
                           ElevatedButton(
@@ -556,7 +591,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                             },
                             child: const Text('Download issues'),
                           ),
-                        if (tab == 0 && statistics != null)
+                        if ((tab == 0 || tab == 2) && statistics != null)
                           SizedBox(
                               width: double.infinity,
                               height: 600,
@@ -624,10 +659,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   static const String gbifBaseUrl = 'https://api.gbif.org/v1';
 
-  Future<Map<String, dynamic>> _compareWithGBIF(_CompareDataViewModel vm,
-      [bool debug = false]) async {
+  Future<Map<String, dynamic>> _compareWithGBIF(
+      _CompareDataViewModel vm, bool onlyOneRecord,
+      [bool debug = true]) async {
     setState(() {
-      currentPhaseTab0 = CompareWithGbifDataPhase.detectSolrIndexType;
+      if (onlyOneRecord) {
+        currentPhaseTab2 = CompareOneWithGbifDataPhase.detectSolrIndexType;
+      } else {
+        currentPhaseTab0 = CompareWithGbifDataPhase.detectSolrIndexType;
+      }
     });
 
     try {
@@ -635,18 +675,27 @@ class _CompareDataPageState extends State<CompareDataPage> {
           await isAPipelinesIndex(vm, solrHost1!, coreOrCollection1!);
     } catch (e) {
       setState(() {
-        currentPhaseTab0 = CompareWithGbifDataPhase.detectSolrIndexType;
+        if (onlyOneRecord) {
+          currentPhaseTab2 = CompareOneWithGbifDataPhase.detectSolrIndexType;
+        } else {
+          currentPhaseTab0 = CompareWithGbifDataPhase.detectSolrIndexType;
+        }
       });
     }
 
-    final Map<String, dynamic> laRecords = await getRandomLARecords(vm);
+    final Map<String, dynamic> laRecords =
+        !onlyOneRecord ? await getRandomLARecords(vm) : await getLARecord(vm);
 
     final Map<String, dynamic> recordsGBIFIds = <String, dynamic>{};
     final Map<String, String> initialMessages = <String, String>{};
     final Map<String, String> notFoundMessages = <String, String>{};
 
     setState(() {
-      currentPhaseTab0 = CompareWithGbifDataPhase.getGBIFRecords;
+      if (onlyOneRecord) {
+        currentPhaseTab2 = CompareOneWithGbifDataPhase.getGBIFRecord;
+      } else {
+        currentPhaseTab0 = CompareWithGbifDataPhase.getGBIFRecords;
+      }
     });
 
     for (final Map<String, dynamic> record
@@ -696,8 +745,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
     initialMessages['TOTAL'] =
         'Number of LA records processed ${laRecords.length}, number of GBIF records found for these records: ${recordsGBIFIds.length}';
     initialMessages.addAll(notFoundMessages);
-    final Map<String, dynamic> results =
-        generateStatistics(laRecords, recordsGBIFIds, initialMessages);
+    final Map<String, dynamic> results = generateStatistics(
+        laRecords, recordsGBIFIds, initialMessages, onlyOneRecord);
     if (debug) {
       debugPrint('Results: $results');
     }
@@ -745,8 +794,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return completer.future;
   }
 
-  Future<Map<String, dynamic>> getRandomLARecords(_CompareDataViewModel vm,
-      [bool withRank = true]) async {
+  Future<Map<String, dynamic>> getRandomLARecords(
+      _CompareDataViewModel vm) async {
     setState(() {
       currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
     });
@@ -773,9 +822,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
       vm.doSolrQuery(
           solrHost1!,
-          Uri.parse(withRank
-                  ? 'http://localhost:8983/solr/${coreOrCollection1!}/select?q=$field:${dataResource.key}&rank:[* TO *]&rows=1&wt=json&start=$recordOffset&facet=false'
-                  : 'http://localhost:8983/solr/${coreOrCollection1!}/select?q=$field:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false')
+          Uri.parse(
+                  'http://localhost:8983/solr/${coreOrCollection1!}/select?q=$field:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false')
               .toString(), (Map<String, dynamic> result) {
         final Map<String, dynamic> occ =
             ((result['response'] as Map<String, dynamic>)['docs']
@@ -801,8 +849,55 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return records;
   }
 
-  Map<String, dynamic> generateStatistics(Map<String, dynamic> recordsLA,
-      Map<String, dynamic> recordsGBIF, Map<String, String> initialMessages) {
+  Future<Map<String, dynamic>> getLARecord(_CompareDataViewModel vm) async {
+    setState(() {
+      currentPhaseTab2 = CompareOneWithGbifDataPhase.getLARecord;
+    });
+
+    Map<String, dynamic>? record;
+
+    setState(() {
+      currentPhaseTab2 = CompareOneWithGbifDataPhase.getDrs;
+    });
+
+    final Map<String, dynamic> drs = await getCollectoryDrs(vm);
+    final Completer<void> completer = Completer<void>();
+
+    vm.doSolrQuery(
+        solrHost1!,
+        Uri.parse(
+                'http://localhost:8983/solr/${coreOrCollection1!}/select?q=id:$recordToCompare&rows=1&wt=json&facet=false')
+            .toString(), (Map<String, dynamic> result) {
+      final Map<String, dynamic> occ =
+          ((result['response'] as Map<String, dynamic>)['docs']
+              as List<dynamic>)[0] as Map<String, dynamic>;
+
+      final String? id = occ['id'] as String?;
+      final String? gbifDrId = drs[occ['dataResourceUid']] as String?;
+
+      // SKIP DRS with null gbif_registry_key
+      if (id != null && gbifDrId != null) {
+        occ[gbifDatasetId] = gbifDrId;
+        record = occ;
+      }
+      completer.complete();
+    }, (String error) {
+      debugPrint('Error: $error');
+      somethingFailed = true;
+    });
+
+    await completer.future;
+    final Map<String, dynamic> result = <String, dynamic>{
+      '$recordToCompare': record ?? <String, dynamic>{}
+    };
+    return result;
+  }
+
+  Map<String, dynamic> generateStatistics(
+      Map<String, dynamic> recordsLA,
+      Map<String, dynamic> recordsGBIF,
+      Map<String, String> initialMessages,
+      bool onlyOneRecord) {
     final Map<String, Map<String, int>> stats = <String, Map<String, int>>{
       'matches': <String, int>{},
       'mismatches': <String, int>{},
@@ -895,7 +990,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
     errorMessages['SUMMARY'] = prettyprint;
 
     setState(() {
-      currentPhaseTab0 = CompareWithGbifDataPhase.finished;
+      if (onlyOneRecord) {
+        currentPhaseTab2 = CompareOneWithGbifDataPhase.finished;
+      } else {
+        currentPhaseTab0 = CompareWithGbifDataPhase.finished;
+      }
     });
 
     return <String, dynamic>{

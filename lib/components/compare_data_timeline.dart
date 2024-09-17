@@ -77,6 +77,36 @@ enum CompareSolrIndexesPhase implements CompareDataTimelinePhase {
   }
 }
 
+enum CompareOneWithGbifDataPhase implements CompareDataTimelinePhase {
+  getSolrHosts,
+  getCores,
+  detectSolrIndexType,
+  getDrs,
+  getLARecord,
+  getGBIFRecord,
+  finished;
+
+  @override
+  String title() {
+    switch (this) {
+      case getSolrHosts:
+        return 'Get Solr Hosts';
+      case getCores:
+        return 'Get Cores/Collections';
+      case detectSolrIndexType:
+        return 'Is a Pipeline index?';
+      case getDrs:
+        return 'Get dr';
+      case getLARecord:
+        return 'Get LA Record';
+      case getGBIFRecord:
+        return 'Get GBIF Record';
+      case finished:
+        return 'Finished';
+    }
+  }
+}
+
 class CompareDataTimelineState<T extends CompareDataTimelinePhase>
     extends State<CompareDataTimeline<T>> {
   @override

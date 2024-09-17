@@ -90,7 +90,8 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                   ),
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: Colors.transparent,
+                      getTooltipColor: (BarChartGroupData group) =>
+                          Colors.transparent,
                       getTooltipItem: (BarChartGroupData group, int groupIndex,
                           BarChartRodData rod, int rodIndex) {
                         return BarTooltipItem(
