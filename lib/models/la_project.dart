@@ -1111,9 +1111,11 @@ check results length: ${checkResults.length}''';
         }
       });
     }
-    conf['LA_software_versions'] = swVersions.values.toList()
-      ..sort((List<dynamic> a, List<dynamic> b) =>
-          compareAsciiUpperCase(a[0] as String, b[0] as String));
+    final List<List<dynamic>> swVersionsList = swVersions.values.toList();
+    swVersionsList.sort((List<dynamic> a, List<dynamic> b) =>
+        compareAsciiUpperCase(a[0] as String, b[0] as String));
+
+    conf['LA_software_versions'] = swVersionsList;
 
     for (final LAVariable variable in variables) {
       conf['${LAVariable.varInvPrefix}${variable.nameInt}'] = variable.value;
