@@ -217,19 +217,19 @@ class ProjectCard extends StatelessWidget {
                                     "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
                                 onOpen: (LinkableElement link) async =>
                                     launchUrl(Uri.parse(link.url))),
-                            ButtonBar(
-                                alignment: MainAxisAlignment.center,
-                                buttonPadding:
-                                    const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                                children: <Widget>[
-                                  Wrap(
-                                      //  direction: Axis.horizontal,
-                                      // crossAxisAlignment:
-                                      //    WrapCrossAlignment.start,
-                                      children: <Widget>[
-                                        LAProjectTimeline(project: project),
-                                        // Text('Configured: '),
-                                        /* LinearPercentIndicator(
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                              child: OverflowBar(
+                                  alignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Wrap(
+                                        //  direction: Axis.horizontal,
+                                        // crossAxisAlignment:
+                                        //    WrapCrossAlignment.start,
+                                        children: <Widget>[
+                                          LAProjectTimeline(project: project),
+                                          // Text('Configured: '),
+                                          /* LinearPercentIndicator(
                                           width: 300,
                                           // MediaQuery.of(context).size.width - 50,
                                           animation: true,
@@ -242,8 +242,9 @@ class ProjectCard extends StatelessWidget {
                                               LinearStrokeCap.roundAll,
                                           progressColor: LAColorTheme
                                               .laThemeData.primaryColorLight), */
-                                      ]),
-                                ]),
+                                        ]),
+                                  ]),
+                            )
                           ]),
                     ),
                   ))),
