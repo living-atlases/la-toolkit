@@ -31,7 +31,7 @@ class ServersDetailsCardList extends StatelessWidget {
           // itemCount: appStateProv.appState.projects.length,
           itemBuilder: (BuildContext context, int index) {
             return ServerDetailsCard(
-                server: project.servers[index],
+                server: project.servers.reversed.toList()[index],
                 index: index,
                 onSave: (LAServer server) {
                   project.upsertServer(server);
