@@ -102,18 +102,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
         debugPrint(
             'ala-install $alaInstallVersion, generator: $generatorVersion');
         // debugPrint('useOidc: $useOidc userDetails version: $userDetailsVersion');
-        final bool generatorForLADevelop = generatorVersion != null &&
-            VersionConstraint.parse('>= 1.5.4').allows(v(generatorVersion));
-        debugPrint(
-            'If generator for la-develop: $generatorForLADevelop and ala-install version: $alaInstallVersion');
         lints.insertAll(0, <Widget>[
-          if (!project.isHub &&
-              generatorForLADevelop &&
-              alaInstallVersion != null &&
-              alaInstallVersion != 'la-develop')
-            const AlertCard(
-                message:
-                    "It's recommended to use the 'la-develop' version of ala-install with this la-generator version"),
           if (vm.sshKeys.isEmpty)
             AlertCard(
                 message: "You don't have any SSH key",
