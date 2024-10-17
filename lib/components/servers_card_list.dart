@@ -30,11 +30,11 @@ class ServersCardList extends StatelessWidget {
       final LAProject project = vm.currentProject;
       final bool dockerEnabled = project.isDockerClusterConfigured();
       return Wrap(children: <Widget>[
-        for (final LAServer server in project.servers)
-          ServerServicesHoverCard(server: server, project: project, vm: vm),
         if (dockerEnabled)
           for (final LACluster cluster in project.clusters)
             ServerServicesHoverCard(cluster: cluster, project: project, vm: vm),
+        for (final LAServer server in project.servers)
+          ServerServicesHoverCard(server: server, project: project, vm: vm),
       ]);
     });
   }
