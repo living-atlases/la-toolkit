@@ -12,11 +12,9 @@ import 'renameServerIcon.dart';
 import 'serverSshKeySelector.dart';
 
 class ServerDetailsCard extends StatelessWidget {
-
   const ServerDetailsCard(
       {super.key,
       required this.server,
-      required this.index,
       required this.onSave,
       required this.onAllSameSshKey,
       required this.advancedEdit,
@@ -24,7 +22,7 @@ class ServerDetailsCard extends StatelessWidget {
       required this.sshKeys,
       required this.ansibleUser});
   final LAServer server;
-  final int index;
+
   final Function(LAServer) onSave;
   final Function(SshKey?) onAllSameSshKey;
   final bool advancedEdit;
@@ -91,95 +89,92 @@ class ServerDetailsCard extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      /* SizedBox(height: 10),
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  /* SizedBox(height: 10),
                                     Text("Advanced optional settings:",
                                         style: TextStyle(fontSize: 16)),*/
-                      // SizedBox(height: 10),
-                      if (advancedEdit)
-                        Flexible(
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Flexible(
-                                  child: GatewaySelector(
-                                      key: ValueKey(server.name +
-                                          server.gateways.hashCode.toString()),
-                                      firstServer: isFirst,
-                                      exclude: server),
-                                ),
-                                HelpIcon(
-                                    wikipage: 'SSH-For-Beginners#Gateways'),
-                                const SizedBox(width: 20),
-                                Flexible(
-                                  child: GenericTextFormField(
-                                      // SSH Port
-                                      label: 'SSH alternative Port',
-                                      hint: 'Only if this is different than 22',
-                                      error: 'Invalid port',
-                                      initialValue: server.sshPort != 22
-                                          ? server.sshPort.toString()
-                                          : null,
-                                      allowEmpty: true,
-                                      isDense: true,
-                                      regexp: LARegExp.portNumber,
-                                      onChanged: (String value) {
-                                        server.sshPort = value.isNotEmpty
-                                            ? int.parse(value)
-                                            : 22;
-                                        onSave(server);
-                                      }),
-                                ),
-                                HelpIcon(
-                                    wikipage: 'SSH-For-Beginners#ssh-ports'),
-                                const SizedBox(width: 20),
-                                Flexible(
-                                  child: GenericTextFormField(
-                                      // SSH User
-                                      label: 'SSH alternative username',
-                                      hint:
-                                          "Only if it's different than '$ansibleUser' in this server",
-                                      error: 'Invalid username',
-                                      initialValue: server.sshUser ?? '',
-                                      isDense: true,
-                                      regexp: LARegExp.username,
-                                      allowEmpty: true,
-                                      onChanged: (String value) {
-                                        server.sshUser = value;
-                                        onSave(server);
-                                      }),
-                                )
-                              ]),
-                        ),
-                      if (advancedEdit)
-                        Flexible(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Flexible(
-                                child: GenericTextFormField(
-                                    // ALIASES
-                                    label:
-                                        'Aliases (other names you give to this server separated by spaces)',
-                                    /* hint:
+                  // SizedBox(height: 10),
+                  if (advancedEdit)
+                    Flexible(
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Flexible(
+                              child: GatewaySelector(
+                                  key: ValueKey(server.name +
+                                      server.gateways.hashCode.toString()),
+                                  firstServer: isFirst,
+                                  exclude: server),
+                            ),
+                            HelpIcon(wikipage: 'SSH-For-Beginners#Gateways'),
+                            const SizedBox(width: 20),
+                            Flexible(
+                              child: GenericTextFormField(
+                                  // SSH Port
+                                  label: 'SSH alternative Port',
+                                  hint: 'Only if this is different than 22',
+                                  error: 'Invalid port',
+                                  initialValue: server.sshPort != 22
+                                      ? server.sshPort.toString()
+                                      : null,
+                                  allowEmpty: true,
+                                  isDense: true,
+                                  regexp: LARegExp.portNumber,
+                                  onChanged: (String value) {
+                                    server.sshPort = value.isNotEmpty
+                                        ? int.parse(value)
+                                        : 22;
+                                    onSave(server);
+                                  }),
+                            ),
+                            HelpIcon(wikipage: 'SSH-For-Beginners#ssh-ports'),
+                            const SizedBox(width: 20),
+                            Flexible(
+                              child: GenericTextFormField(
+                                  // SSH User
+                                  label: 'SSH alternative username',
+                                  hint:
+                                      "Only if it's different than '$ansibleUser' in this server",
+                                  error: 'Invalid username',
+                                  initialValue: server.sshUser ?? '',
+                                  isDense: true,
+                                  regexp: LARegExp.username,
+                                  allowEmpty: true,
+                                  onChanged: (String value) {
+                                    server.sshUser = value;
+                                    onSave(server);
+                                  }),
+                            )
+                          ]),
+                    ),
+                  if (advancedEdit)
+                    Flexible(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Flexible(
+                            child: GenericTextFormField(
+                                // ALIASES
+                                label:
+                                    'Aliases (other names you give to this server separated by spaces)',
+                                /* hint:
                                                     'e.g. \'${_project.getService('collectory')?.url(_project.domain)} ${_project.getService('ala_hub')?.url(_project.domain)} ${_project.getService('ala_bie')?.suburl}\' ', */
-                                    error: 'Wrong aliases.',
-                                    initialValue: server.aliases.join(' '),
-                                    isDense: true,
-                                    /* isCollapsed: true, */
-                                    regexp: LARegExp.aliasesRegexp,
-                                    onChanged: (String value) {
-                                      server.aliases = value.split(' ');
-                                      onSave(server);
-                                    }),
-                              ),
-                            ],
+                                error: 'Wrong aliases.',
+                                initialValue: server.aliases.join(' '),
+                                isDense: true,
+                                /* isCollapsed: true, */
+                                regexp: LARegExp.aliasesRegexp,
+                                onChanged: (String value) {
+                                  server.aliases = value.split(' ');
+                                  onSave(server);
+                                }),
                           ),
-                        ),
-                    ]),
+                        ],
+                      ),
+                    ),
+                ]),
               )
             ]));
   }
