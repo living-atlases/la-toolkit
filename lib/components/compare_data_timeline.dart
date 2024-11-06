@@ -77,7 +77,7 @@ enum CompareSolrIndexesPhase implements CompareDataTimelinePhase {
   }
 }
 
-enum CompareOneWithGbifDataPhase implements CompareDataTimelinePhase {
+enum CompareSomeWithGbifDataPhase implements CompareDataTimelinePhase {
   getSolrHosts,
   getCores,
   detectSolrIndexType,
