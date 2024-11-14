@@ -664,7 +664,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   Future<Map<String, dynamic>> _compareWithGBIF(
       _CompareDataViewModel vm, bool notRandom,
-      [bool debug = true]) async {
+      [bool debug = false]) async {
     setState(() {
       if (notRandom) {
         currentPhaseTab2 = CompareSomeWithGbifDataPhase.detectSolrIndexType;
