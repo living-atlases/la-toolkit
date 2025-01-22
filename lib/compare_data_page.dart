@@ -83,6 +83,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
       CompareSolrIndexesPhase.getSolrHosts;
   CompareSomeWithGbifDataPhase currentPhaseTab2 =
       CompareSomeWithGbifDataPhase.getSolrHosts;
+  CompareCollectionsWithGbifDataPhase currentPhaseTab3 =
+      CompareCollectionsWithGbifDataPhase.getDrs;
   bool somethingFailed = false;
   bool csvFormat = false;
   String indexDiffReport = '';
@@ -224,12 +226,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
             items: const <TabItem<dynamic>>[
               TabItem<dynamic>(
                   icon: Icons.image_search_outlined,
-                  title: 'Compare with GBIF'),
+                  title: 'Compare records with GBIF'),
               TabItem<dynamic>(
                   icon: Icons.compare_arrows,
                   title: 'Solr indexes comparative'),
               TabItem<dynamic>(
                   icon: Icons.repeat_one, title: 'Compare some records'),
+              TabItem<dynamic>(
+                  icon: Icons.difference,
+                  title: 'Compare collections with GBIF'),
             ],
             initialActiveIndex: 0,
             //optional, default as 0
@@ -259,7 +264,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
                             ? 'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'
                             : tab == 1
                                 ? 'This tool compare two solr cores or two solrcloud collections in your LA Portal'
-                                : 'This tool compare some LA records or a data resource with the equivalent in GBIF'),
+                                : tab == 2
+                                    ? 'This tool compare some LA records or a data resource with the equivalent in GBIF'
+                                    : 'This tools compare the Collections metadata with GBIF'),
                         const SizedBox(height: 10),
 
                         if (tab == 0)
@@ -280,43 +287,53 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               failed: somethingFailed,
                               phaseValues:
                                   CompareSomeWithGbifDataPhase.values.toList()),
-                        ButtonTheme(
-                            materialTapTargetSize: MaterialTapTargetSize.padded,
-                            child: DropdownButton<String>(
-                                underline: DropdownButtonHideUnderline(
-                                  child: Container(),
-                                ),
-                                disabledHint:
-                                    const Text('No solr host available'),
-                                hint: Text(
-                                    'Select Solr host${tab == 1 ? ' A' : ''}'),
-                                value: solrHost1,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    if (newValue != null) {
-                                      solrHost1 = newValue;
-                                    }
-                                  });
-                                  setState(() {
-                                    if (newValue != null) {
-                                      currentPhaseTab0 =
-                                          CompareWithGbifDataPhase.getCores;
-                                      currentPhaseTab1 =
-                                          CompareSolrIndexesPhase.getCores;
-                                      fetchCoreOrCollections(vm, solrHost1!)
-                                          .then((List<String> result) {
-                                        setState(() {
-                                          coreOrCollections1 = result;
+                        if (tab == 3)
+                          CompareDataTimeline<
+                                  CompareCollectionsWithGbifDataPhase>(
+                              currentPhase: currentPhaseTab3,
+                              failed: somethingFailed,
+                              phaseValues: CompareCollectionsWithGbifDataPhase
+                                  .values
+                                  .toList()),
+                        if (tab != 3)
+                          ButtonTheme(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
+                              child: DropdownButton<String>(
+                                  underline: DropdownButtonHideUnderline(
+                                    child: Container(),
+                                  ),
+                                  disabledHint:
+                                      const Text('No solr host available'),
+                                  hint: Text(
+                                      'Select Solr host${tab == 1 ? ' A' : ''}'),
+                                  value: solrHost1,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      if (newValue != null) {
+                                        solrHost1 = newValue;
+                                      }
+                                    });
+                                    setState(() {
+                                      if (newValue != null) {
+                                        currentPhaseTab0 =
+                                            CompareWithGbifDataPhase.getCores;
+                                        currentPhaseTab1 =
+                                            CompareSolrIndexesPhase.getCores;
+                                        fetchCoreOrCollections(vm, solrHost1!)
+                                            .then((List<String> result) {
+                                          setState(() {
+                                            coreOrCollections1 = result;
+                                          });
                                         });
-                                      });
-                                    }
-                                  });
-                                },
-                                // isExpanded: true,
-                                elevation: 16,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                items: solrHostsMenuItems)),
+                                      }
+                                    });
+                                  },
+                                  // isExpanded: true,
+                                  elevation: 16,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  items: solrHostsMenuItems)),
                         if (tab == 1)
                           ButtonTheme(
                               materialTapTargetSize:
