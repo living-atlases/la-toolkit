@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timelines/timelines.dart';
+import 'package:timelines_plus/timelines_plus.dart';
 
 class CompareDataTimeline<T extends CompareDataTimelinePhase>
     extends StatefulWidget {
@@ -101,6 +101,24 @@ enum CompareSomeWithGbifDataPhase implements CompareDataTimelinePhase {
         return 'Get LA Record';
       case getGBIFRecord:
         return 'Get GBIF Record';
+      case finished:
+        return 'Finished';
+    }
+  }
+}
+
+enum CompareCollectionsWithGbifDataPhase implements CompareDataTimelinePhase {
+  getDrs,
+  compareWithGbif,
+  finished;
+
+  @override
+  String title() {
+    switch (this) {
+      case getDrs:
+        return 'Get dr';
+      case compareWithGbif:
+        return 'Compare with GBIF';
       case finished:
         return 'Finished';
     }
