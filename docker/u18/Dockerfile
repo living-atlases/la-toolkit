@@ -12,10 +12,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         apt-get clean
 
 # Install ansible via PIP
-RUN python3 -m pip install --upgrade pip cffi \
-    pip install setuptools && \
-    pip install ansible==2.10.3 && \
-    pip install ansible-base==2.10.3
+RUN python3 -m pip install --upgrade pip cffi
+RUN python3 -m pip install setuptools
+RUN python3 -m pip install ansible==2.10.3 ansible-base==2.10.3
 
 # Install node via APT
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
