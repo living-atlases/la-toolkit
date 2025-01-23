@@ -1,0 +1,158 @@
+class _CompareDataPageState extends State<CompareDataPage> {
+  // Nuevas variables para almacenar resultados
+  Map<String, dynamic>? contactComparisonResults;
+  bool isComparingContacts = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, _CompareDataViewModel>(
+      converter: (Store<AppState> store) {
+        return _CompareDataViewModel(
+          state: store.state,
+          doSolrQuery: (String solrHost, String query,
+              Function(Map<String, dynamic>) onResult, Function(String) onError) {
+            store.dispatch(SolrQuery(
+                project: p.id,
+                solrHost: solrHost,
+                query: query,
+                onError: onError,
+                onResult: onResult));
+          },
+          doSolrRawQuery: (String solrHost, String query,
+              Function(dynamic) onResult, Function(String) onError) {
+            store.dispatch(SolrRawQuery(
+                project: p.id,
+                solrHost: solrHost,
+                query: query,
+                onError: onError,
+                onResult: onResult));
+          },
+          doMySqlQuery: (String query, Function(Map<String, dynamic>) onResult,
+              Function(String) onError) {
+            store.dispatch(MySqlQuery(
+                project: p.id,
+                mySqlHost: collectoryHost,
+                db: 'collectory',
+                query: query,
+                onError: onError,
+                onResult: onResult));
+          },
+        );
+      },
+      builder: (BuildContext context, _CompareDataViewModel vm) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Compare Data'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  onPressed: isComparingContacts
+                      ? null
+                      : () async {
+                          setState(() {
+                            isComparingContacts = true;
+                            contactComparisonResults = null;
+                          });
+                          final results = await compareContacts(
+                              '73319645-c321-48ed-b923-b3782a203589', vm);
+                          setState(() {
+                            contactComparisonResults = results;
+                            isComparingContacts = false;
+                          });
+                        },
+                  child: const Text('Compare Contacts with GBIF'),
+                ),
+                const SizedBox(height: 20),
+                if (isComparingContacts)
+                  const Center(child: CircularProgressIndicator()),
+                if (contactComparisonResults != null)
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: contactComparisonResults!['differences']
+                          .length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final difference = contactComparisonResults![
+                            'differences'][index];
+                        return ListTile(
+                          title: Text(
+                              'Contact: ${difference['gbifContact']['firstName']} ${difference['gbifContact']['lastName']}'),
+                          subtitle: Text(
+                            difference['type'] == 'missing_in_db'
+                                ? 'Missing in ALA database'
+                                : 'Mismatch: ${difference['differences']}',
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>> compareContacts(
+      String gbifDatasetId, _CompareDataViewModel vm) async {
+    final Uri gbifUri = Uri.parse('https://api.gbif.org/v1/dataset/$gbifDatasetId');
+    final http.Response response = await http.get(gbifUri);
+    if (response.statusCode != 200) {
+      throw Exception('Error al obtener datos de GBIF: ${response.statusCode}');
+    }
+    final Map<String, dynamic> gbifData = jsonDecode(response.body);
+    final List<dynamic> gbifContacts = gbifData['contacts'] as List<dynamic>;
+
+    final Completer<Map<String, dynamic>> dbCompleter = Completer<Map<String, dynamic>>();
+    vm.doMySqlQuery(
+      '''
+      SELECT c.first_name, c.last_name, c.organization, c.email, c.phone, cf.role
+      FROM contact c
+      JOIN contact_for cf ON c.id = cf.contact_id
+      JOIN data_resource dr ON dr.uid = cf.entity_uid
+      WHERE dr.gbif_registry_key = '$gbifDatasetId'
+      ''',
+      (Map<String, dynamic> result) {
+        dbCompleter.complete(result);
+      },
+      (String error) {
+        throw Exception('Error al obtener datos de ALA: $error');
+      },
+    );
+
+    final Map<String, dynamic> dbContacts = await dbCompleter.future;
+
+    final List<Map<String, dynamic>> differences = [];
+    for (final dynamic gbifContact in gbifContacts) {
+      final String gbifName = '${gbifContact['firstName']} ${gbifContact['lastName']}';
+      final Map<String, dynamic>? matchingDbContact = dbContacts.values.firstWhereOrNull(
+        (dynamic dbContact) =>
+            '${dbContact['first_name']} ${dbContact['last_name']}' == gbifName,
+      );
+
+      if (matchingDbContact == null) {
+        differences.add({'type': 'missing_in_db', 'gbifContact': gbifContact});
+      } else {
+        final Map<String, dynamic> mismatch = {};
+        for (final String key in ['organization', 'email', 'phone']) {
+          if (gbifContact[key] != matchingDbContact[key]) {
+            mismatch[key] = {
+              'gbif': gbifContact[key],
+              'db': matchingDbContact[key],
+            };
+          }
+        }
+        if (mismatch.isNotEmpty) {
+          differences.add({'type': 'mismatch', 'gbifContact': gbifContact, 'differences': mismatch});
+        }
+      }
+    }
+
+    return {'differences': differences};
+  }
+}
+

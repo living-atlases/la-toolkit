@@ -485,5 +485,5 @@ class MySqlQuery extends AppActions {
   final String db;
   final String query;
   final Function(String) onError;
-  Function(Map<String, dynamic>) onResult;
+  Function(dynamic) onResult;
 }

@@ -6,12 +6,12 @@ import 'dart:math';
 import 'package:clipboard/clipboard.dart';
 import 'package:collection/collection.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:intl/intl.dart' as intl;
 import 'package:intl/intl.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:redux/redux.dart';
@@ -31,6 +31,7 @@ import 'models/laServer.dart';
 import 'models/laServiceDeploy.dart';
 import 'models/la_project.dart';
 import 'redux/actions.dart';
+import 'solr_compare_result.dart';
 import 'utils/StringUtils.dart';
 import 'utils/query_utils.dart';
 
@@ -43,8 +44,44 @@ class CompareDataPage extends StatefulWidget {
   State<CompareDataPage> createState() => _CompareDataPageState();
 }
 
+class _CompareDataViewModel implements SolrQueryExecutor {
+  _CompareDataViewModel(
+      {required this.state,
+      required this.doSolrQuery,
+      required this.doSolrRawQuery,
+      required this.doMySqlQuery});
+
+  final AppState state;
+  final void Function(
+      String solrHost,
+      String query,
+      Function(Map<String, dynamic>) onResult,
+      Function(String) onError) doSolrQuery;
+  final void Function(String solrHost, String query, Function(dynamic) onResult,
+      Function(String) onError) doSolrRawQuery;
+  final void Function(
+          String query, Function(dynamic) onResult, Function(String) onError)
+      doMySqlQuery;
+
+  @override
+  void query(
+      String solrHost,
+      String query,
+      Function(Map<String, dynamic> result) onResult,
+      Function(String message) onError) {
+    doSolrQuery(solrHost, query, onResult, onError);
+  }
+
+  @override
+  void rawQuery(String solrHost, String query,
+      Function(dynamic result) onResult, Function(String message) onError) {
+    doSolrRawQuery(solrHost, query, onResult, onError);
+  }
+}
+
 class _CompareDataPageState extends State<CompareDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final RegExp commaSpaceSepRegExp = RegExp(r'[,\s]+');
   bool firstPoint = true;
   int tab = 0;
   late LAProject p;
@@ -71,6 +108,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   bool compareLayers = true;
   bool compareHubs = true;
   String? recordsToCompare;
+  String? drsToCompare;
   Map<String, SolrCompareResult> compareResults = <String, SolrCompareResult>{};
   static const String totals = 'totals';
   final List<String> compareTitles = <String>[];
@@ -116,7 +154,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
               onError: onError,
               onResult: onResult));
         },
-        doMySqlQuery: (String query, Function(Map<String, dynamic>) onResult,
+        doMySqlQuery: (String query, Function(dynamic) onResult,
             Function(String) onError) {
           store.dispatch(MySqlQuery(
               project: p.id,
@@ -128,6 +166,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
         },
       );
     }, builder: (BuildContext context, _CompareDataViewModel vm) {
+      if (tab == 3) {
+        launchEnabled = true;
+      }
       p = vm.state.currentProject;
       collectoryHost = p
           .getServerById(
@@ -488,7 +529,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                     layers =
                                         // value.replaceAll(' ', '').split(',');
                                         value
-                                            .split(RegExp(r'[,\s]+'))
+                                            .split(commaSpaceSepRegExp)
                                             .where((String layer) =>
                                                 layer.isNotEmpty)
                                             .toList();
@@ -513,38 +554,73 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                       'LA Record ids to compare or a data resource',
                                 ),
                               )),
+                        if (tab == 3)
+                          SizedBox(
+                              width: 400,
+                              child: TextFormField(
+                                // maxLines: 1,
+
+                                onChanged: (String value) {
+                                  setState(() {
+                                    drsToCompare = value;
+                                  });
+                                },
+                                initialValue: 'dr1278',
+                                decoration: const InputDecoration(
+                                  labelText:
+                                      'DRs to compare, or a number for n drs or blank for all',
+                                ),
+                              )),
                         LaunchBtn(
                             icon: Icons.settings,
                             execBtn: 'Run',
                             onTap: !launchEnabled
                                 ? null
                                 : () async {
-                                    if (tab == 0 || tab == 2) {
-                                      setState(() {
-                                        errorMessages = null;
-                                        statistics = null;
-                                        launchEnabled = false;
-                                        somethingFailed = false;
-                                      });
-                                      final Map<String, dynamic> results =
-                                          await _compareWithGBIF(vm, tab == 2);
-                                      setState(() {
-                                        statistics = results['statistics']
-                                            as Map<String, Map<String, int>>;
-                                        errorMessages = results['errorMessages']
-                                            as Map<String, String>;
-                                        launchEnabled = true;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        launchEnabled = false;
-                                        indexDiffReport = '';
-                                        somethingFailed = false;
-                                      });
-                                      await _compareSolrIndexes(vm);
-                                      setState(() {
-                                        launchEnabled = true;
-                                      });
+                                    switch (tab) {
+                                      case 0:
+                                      case 2:
+                                        setState(() {
+                                          errorMessages = null;
+                                          statistics = null;
+                                          launchEnabled = false;
+                                          somethingFailed = false;
+                                        });
+                                        final Map<String, dynamic> results =
+                                            await _compareRecordsWithGBIF(
+                                                vm, tab == 2);
+                                        setState(() {
+                                          statistics = results['statistics']
+                                              as Map<String, Map<String, int>>;
+                                          errorMessages =
+                                              results['errorMessages']
+                                                  as Map<String, String>;
+                                          launchEnabled = true;
+                                        });
+                                        break;
+                                      case 1:
+                                        setState(() {
+                                          launchEnabled = false;
+                                          indexDiffReport = '';
+                                          somethingFailed = false;
+                                        });
+                                        await _compareSolrIndexes(vm);
+                                        setState(() {
+                                          launchEnabled = true;
+                                        });
+                                        break;
+                                      case 3:
+                                        setState(() {
+                                          launchEnabled = false;
+                                          indexDiffReport = '';
+                                          somethingFailed = false;
+                                        });
+                                        await _compareCollectionsWithGBIF(
+                                            vm, drsToCompare);
+                                        setState(() {
+                                          launchEnabled = true;
+                                        });
+                                        break;
                                     }
                                   }),
                         if (tab == 0 || tab == 2) const SizedBox(height: 10),
@@ -565,20 +641,24 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                               entry.key == 'SUMMARY'
                                           ? null
                                           : GestureDetector(
-                                              onTap: () => FlutterClipboard
-                                                      .copy(entry.key)
-                                                  .then((dynamic value) =>
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                              const SnackBar(
-                                                                  content: Text(
-                                                        'Copied to clipboard',
-                                                        style: TextStyle(
-                                                            fontFamily:
-                                                                'Courier',
-                                                            fontSize: 14),
-                                                      )))),
+                                              onTap: () =>
+                                                  FlutterClipboard.copy(
+                                                          entry.key)
+                                                      .then((dynamic value) {
+                                                    if (!context.mounted) {
+                                                      return;
+                                                    }
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                            const SnackBar(
+                                                                content: Text(
+                                                      'Copied to clipboard',
+                                                      style: TextStyle(
+                                                          fontFamily: 'Courier',
+                                                          fontSize: 14),
+                                                    )));
+                                                  }),
                                               child: Text(entry.key)),
                                       title: Row(children: <Widget>[
                                         Flexible(
@@ -619,11 +699,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: CompareGbifCharts(
                                       statistics: statistics!))),
-                        if (tab == 1) const SizedBox(height: 10),
-                        if (tab == 1 && indexDiffReport.isNotEmpty)
+                        if (tab == 1 || tab == 3) const SizedBox(height: 10),
+                        if ((tab == 1 || tab == 3) &&
+                            indexDiffReport.isNotEmpty)
                           MarkdownBody(data: indexDiffReport),
-                        if (tab == 1) const SizedBox(height: 10),
-                        if (tab == 1 && indexDiffReport.isNotEmpty)
+                        if (tab == 1 || tab == 3) const SizedBox(height: 10),
+                        if ((tab == 1 || tab == 3) &&
+                            indexDiffReport.isNotEmpty)
                           ElevatedButton(
                             onPressed: () {
                               if (indexDiffReport.isNotEmpty) {
@@ -633,8 +715,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
                             },
                             child: const Text('Download report'),
                           ),
-                        if (tab == 1) const SizedBox(height: 10),
-                        if (tab == 1 && indexDiffReport.isNotEmpty)
+                        if (tab == 1 || tab == 3) const SizedBox(height: 10),
+                        if ((tab == 1 || tab == 3) &&
+                            indexDiffReport.isNotEmpty)
                           ElevatedButton(
                             onPressed: () {
                               if (indexDiffReport.isNotEmpty) {
@@ -679,7 +762,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
   static const String gbifBaseUrl = 'https://api.gbif.org/v1';
 
-  Future<Map<String, dynamic>> _compareWithGBIF(
+  Future<Map<String, dynamic>> _compareRecordsWithGBIF(
       _CompareDataViewModel vm, bool notRandom,
       [bool debug = false]) async {
     setState(() {
@@ -804,8 +887,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     vm.doMySqlQuery(
         'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json FROM data_resource dr;',
-        (Map<String, dynamic> result) {
-      completer.complete(result);
+        (dynamic result) {
+      completer.complete(result as Map<String, dynamic>);
     }, (String error) {
       debugPrint('Error: $error');
       somethingFailed = true;
@@ -887,7 +970,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       uuids = await getUUIDsFromDataResource(recordsToCompare!, vm);
     } else {
       uuids = recordsToCompare!
-          .split(RegExp(r'[,\s]+'))
+          .split(commaSpaceSepRegExp)
           .where((String uuid) => uuid.isNotEmpty)
           .toList();
     }
@@ -1683,80 +1766,239 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     return uuids;
   }
-}
 
-class SolrCompareResult {
-  SolrCompareResult(this.key, this.a) : b = 0;
+  Future<Map<String, dynamic>> _compareDrsWithGbif(
+      Uri gbifUri, String gbifDrId, _CompareDataViewModel vm) async {
+    final http.Response response = await http.get(gbifUri);
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Error obtaining the GBIF dataset: ${response.statusCode}');
+    }
+    final String body = convert.utf8.decode(response.bodyBytes);
+    final Map<String, dynamic> gbifData =
+        json.decode(body) as Map<String, dynamic>;
+    final List<dynamic> gbifContacts = gbifData['contacts'] as List<dynamic>;
 
-  SolrCompareResult.empty(this.key)
-      : a = 0,
-        b = 0;
-  static bool csvFormat = false;
+    final Completer<List<dynamic>> dbCompleter = Completer<List<dynamic>>();
+    final String query = '''
+SELECT JSON_ARRAYAGG(
+         JSON_OBJECT(
+           'first_name', c.first_name,
+           'last_name', c.last_name,
+           'email', c.email,
+           'phone', c.phone,
+           'role', cf.role
+         )
+       ) AS result_json        
+    FROM contact c
+    JOIN contact_for cf ON c.id = cf.contact_id
+    JOIN data_resource dr ON dr.uid = cf.entity_uid
+    WHERE dr.gbif_registry_key = '$gbifDrId'
+    ''';
+    vm.doMySqlQuery(
+      query,
+      (dynamic result) {
+        dbCompleter.complete(result as List<dynamic>);
+      },
+      (String error) {
+        throw Exception('Error fetching contacts from the database: $error');
+      },
+    );
 
-  final String key;
-  int a;
-  int b;
+    final List<dynamic> dbContacts = await dbCompleter.future;
 
-  int get d => b - a;
+    final List<Map<String, dynamic>> differences = <Map<String, dynamic>>[];
 
-  @override
-  String toString() => csvFormat
-      ? '$key;${_f(a)};${_f(b)};${d > 0 ? '+' : ''}${_f(d)}'
-      : '|$key|${_f(a)}|${_f(b)}|${d > 0 ? '+' : ''}${_f(d)}|';
+    // Check GBIF contacts against DB
+    for (final dynamic gbifContactRaw in gbifContacts) {
+      final Map<String, dynamic> gbifContact =
+          gbifContactRaw as Map<String, dynamic>;
 
-  SolrCompareResult setA(int a) {
-    this.a = a;
-    return this;
+      final String gbifName =
+          '${gbifContact['firstName']} ${gbifContact['lastName']}';
+      final Map<String, dynamic>? matchingDbContact =
+          dbContacts.firstWhereOrNull(
+        (dynamic dbContactRaw) {
+          final Map<String, dynamic> dbContact =
+              dbContactRaw as Map<String, dynamic>;
+          return '${dbContact['first_name']} ${dbContact['last_name']}' ==
+              gbifName;
+        },
+      ) as Map<String, dynamic>?;
+
+      if (matchingDbContact == null) {
+        differences.add(<String, dynamic>{
+          'type': 'missing_in_db',
+          'gbifContact': gbifContact
+        });
+      } else {
+        final Map<String, dynamic> mismatch = <String, dynamic>{};
+        for (final String key in <String>['email', 'phone']) {
+          final String dbContactValue = matchingDbContact[key] as String? ?? '';
+          final List<String> dbContactValueL = <String>[dbContactValue];
+          final List<dynamic> gbifContactValue =
+              gbifContact[key] as List<dynamic>? ?? <dynamic>[];
+          final List<String> gbifContactValueL =
+              gbifContactValue.map((dynamic e) => e as String).toList();
+          if (gbifContactValue.isEmpty && dbContactValue.isEmpty) {
+            continue;
+          }
+          if (!listEquals(gbifContactValueL, dbContactValueL)) {
+            mismatch[key] = <String, dynamic>{
+              '$gbifName (gbif)': gbifContactValueL,
+              '${matchingDbContact['first_name']} ${matchingDbContact['last_name']} (collectory)':
+                  dbContactValueL,
+            };
+          }
+        }
+        if (mismatch.isNotEmpty) {
+          differences.add(<String, dynamic>{
+            'type': 'mismatch',
+            'gbifContact': gbifContact,
+            'differences': mismatch
+          });
+        }
+      }
+    }
+
+    // Check DB contacts against GBIF
+    for (final dynamic dbContactRaw in dbContacts) {
+      final Map<String, dynamic> dbContact =
+          dbContactRaw as Map<String, dynamic>;
+
+      final String dbName =
+          '${dbContact['first_name']} ${dbContact['last_name']}';
+      final bool existsInGbif = gbifContacts.any((dynamic gbifContactRaw) {
+        final Map<String, dynamic> gbifContact =
+            gbifContactRaw as Map<String, dynamic>;
+        return '${gbifContact['firstName']} ${gbifContact['lastName']}' ==
+            dbName;
+      });
+
+      if (!existsInGbif) {
+        differences.add(<String, dynamic>{
+          'type': 'missing_in_gbif',
+          'dbContact': dbContact
+        });
+      }
+    }
+
+    // Check for contact number differences
+    if (gbifContacts.length != dbContacts.length) {
+      differences.add(<String, dynamic>{
+        'type': 'contact_number_difference',
+        'gbifContactCount': gbifContacts.length,
+        'dbContactCount': dbContacts.length
+      });
+    }
+
+    return <String, dynamic>{'differences': differences};
   }
 
-  SolrCompareResult setB(int b) {
-    this.b = b;
-    return this;
-  }
+  Future<void> _compareCollectionsWithGBIF(
+      _CompareDataViewModel vm, String? drsToCompareS,
+      [bool debug = false]) async {
+    try {
+      setState(() {
+        currentPhaseTab3 = CompareCollectionsWithGbifDataPhase.getDrs;
+      });
 
-  String _f(int n) => intl.NumberFormat.decimalPattern('en').format(n);
+      final Map<String, dynamic> allDrs = await getCollectoryDrs(vm);
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is SolrCompareResult &&
-          runtimeType == other.runtimeType &&
-          key == other.key;
+      List<String> drsToCompare;
+      final bool compareAll = drsToCompareS == null || drsToCompareS.isEmpty;
+      if (!compareAll && drsToCompareS.startsWith('dr')) {
+        drsToCompare = drsToCompareS
+            .split(commaSpaceSepRegExp)
+            .where((String dr) => dr.isNotEmpty && allDrs.containsKey(dr))
+            .toList();
+      } else if (drsToCompareS != null && int.tryParse(drsToCompareS) != null) {
+        // parse a sublists of drs
+        drsToCompare =
+            allDrs.keys.toList().sublist(0, int.parse(drsToCompareS));
+      } else {
+        drsToCompare = allDrs.keys.toList();
+      }
 
-  @override
-  int get hashCode => key.hashCode ^ a.hashCode ^ b.hashCode;
-}
+      setState(() {
+        currentPhaseTab3 = CompareCollectionsWithGbifDataPhase.compareWithGbif;
+      });
 
-class _CompareDataViewModel implements SolrQueryExecutor {
-  _CompareDataViewModel(
-      {required this.state,
-      required this.doSolrQuery,
-      required this.doSolrRawQuery,
-      required this.doMySqlQuery});
+      final int totalResources = drsToCompare.length;
+      int resourcesWithDifferences = 0;
+      int resourcesWithoutDifferences = 0;
+      int totalDifferences = 0;
 
-  final AppState state;
-  final void Function(
-      String solrHost,
-      String query,
-      Function(Map<String, dynamic>) onResult,
-      Function(String) onError) doSolrQuery;
-  final void Function(String solrHost, String query, Function(dynamic) onResult,
-      Function(String) onError) doSolrRawQuery;
-  final void Function(String query, Function(Map<String, dynamic>) onResult,
-      Function(String) onError) doMySqlQuery;
+      compareTitles.clear();
+      compareTitles.addAll(<String>['Data Resource', 'Status', 'Details']);
 
-  @override
-  void query(
-      String solrHost,
-      String query,
-      Function(Map<String, dynamic> result) onResult,
-      Function(String message) onError) {
-    doSolrQuery(solrHost, query, onResult, onError);
-  }
+      indexDiffReport = '';
 
-  @override
-  void rawQuery(String solrHost, String query,
-      Function(dynamic result) onResult, Function(String message) onError) {
-    doSolrRawQuery(solrHost, query, onResult, onError);
+      setState(() {
+        currentPhaseTab3 = CompareCollectionsWithGbifDataPhase.finished;
+      });
+
+      reportPrint('\n## Details\n');
+
+      reportPrint('|  | Description |');
+      reportPrint('|-----------------|-------------------------------|');
+
+      for (final String dr in drsToCompare) {
+        if (debug) {
+          debugPrint('Comparing data resource: $dr');
+        }
+        final String? gbifDrId = allDrs[dr] as String?;
+        if (gbifDrId == null) {
+          debugPrint('GBIF dataset ID not found for data resource: $dr');
+          continue;
+        }
+        final String gbifUriS = 'https://api.gbif.org/v1/dataset/$gbifDrId';
+        final Uri gbifUri = Uri.parse(gbifUriS);
+        final Map<String, dynamic> comparison =
+            await _compareDrsWithGbif(gbifUri, gbifDrId, vm);
+        final List<Map<String, dynamic>> differences =
+            comparison['differences'] as List<Map<String, dynamic>>;
+
+        if (differences.isNotEmpty) {
+          resourcesWithDifferences++;
+          totalDifferences += differences.length;
+          reportPrint(
+              '| **$dr** | Differences Found (${differences.length}) |');
+          for (final Map<String, dynamic> difference in differences) {
+            if (difference['type'] == 'missing_in_db') {
+              reportPrint(
+                  '| Missing in Collectory | ${difference['gbifContact']} |');
+            } else if (difference['type'] == 'missing_in_gbif') {
+              reportPrint('| Missing in GBIF | ${difference['dbContact']} |');
+            } else if (difference['type'] == 'mismatch') {
+              reportPrint('| Mismatch | ${difference['differences']} |');
+            } else if (difference['type'] == 'contact_number_difference') {
+              reportPrint(
+                  '| Contact Number Difference | [GBIF]($gbifUriS): ${difference['gbifContactCount']}, Collectory: ${difference['dbContactCount']} |');
+            }
+          }
+        } else {
+          resourcesWithoutDifferences++;
+          reportPrint('| $dr | No Differences |');
+        }
+      }
+
+      // Add summary to the report
+      reportPrint('\n## Summary\n');
+      reportPrint(
+          '| Total Resources | Resources with Differences | Resources without Differences | Total Differences |');
+      reportPrint(
+          '|-----------------|----------------------------|-------------------------------|-------------------|');
+      reportPrint(
+          '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalDifferences |');
+
+      setState(() {
+        currentPhaseTab3 = CompareCollectionsWithGbifDataPhase.finished;
+      });
+    } catch (all) {
+      debugPrint('Error: $all');
+      somethingFailed = true;
+      rethrow;
+    }
   }
 }

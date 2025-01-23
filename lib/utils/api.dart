@@ -656,7 +656,7 @@ class Api {
     }
   }
 
-  static Future<Map<String, dynamic>> mySqlQuery(
+  static Future<dynamic> mySqlQuery(
       String projectId, String mysqlHost, String db, String query) async {
     if (AppUtils.isDemo()) {
       return <String, dynamic>{};
@@ -672,8 +672,7 @@ class Api {
             'query': query
           })));
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse =
-            jsonDecode(response.body) as Map<String, dynamic>;
+        final dynamic jsonResponse = jsonDecode(response.body) as dynamic;
         return jsonResponse;
       } else {
         throw Exception('Failed to query mysql (${response.reasonPhrase}))');

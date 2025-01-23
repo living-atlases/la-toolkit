@@ -496,7 +496,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is MySqlQuery) {
       try {
-        final Map<String, dynamic> result = await Api.mySqlQuery(
+        final dynamic result = await Api.mySqlQuery(
             action.project, action.mySqlHost, action.db, action.query);
         action.onResult(result);
       } catch (e) {

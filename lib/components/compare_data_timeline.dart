@@ -40,7 +40,7 @@ enum CompareWithGbifDataPhase implements CompareDataTimelinePhase {
       case getCores:
         return 'Get Cores/Collections';
       case getDrs:
-        return 'Get all drs';
+        return 'Get all Datasets';
       case detectSolrIndexType:
         return 'Is a Pipeline index?';
       case getRandomLARecords:
@@ -96,7 +96,7 @@ enum CompareSomeWithGbifDataPhase implements CompareDataTimelinePhase {
       case detectSolrIndexType:
         return 'Is a Pipeline index?';
       case getDrs:
-        return 'Get dr';
+        return 'Get Datasets';
       case getLARecord:
         return 'Get LA Record';
       case getGBIFRecord:
@@ -116,7 +116,7 @@ enum CompareCollectionsWithGbifDataPhase implements CompareDataTimelinePhase {
   String title() {
     switch (this) {
       case getDrs:
-        return 'Get dr';
+        return 'Get Datasets';
       case compareWithGbif:
         return 'Compare with GBIF';
       case finished:
