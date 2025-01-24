@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert' as convert;
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:collection/collection.dart';
@@ -1168,20 +1170,33 @@ class _CompareDataPageState extends State<CompareDataPage> {
     }
   }
 
-  void _generateAndDownloadMd(StringBuffer markdownContent, String fileName) {
+  Future<void> _generateAndDownloadMd(
+      StringBuffer markdownContent, String fileName) async {
     final DateTime now = DateTime.now();
     final String formattedDate = DateFormat('yyyyMMddhhmm').format(now);
     final html.Blob blob =
         html.Blob(<String>[markdownContent.toString()], 'text/markdown');
-    final String url = html.Url.createObjectUrlFromBlob(blob);
+    final String fileNameWithDate = '${formattedDate}_$fileName.md';
+    if (kIsWeb) {
+      final String url = html.Url.createObjectUrlFromBlob(blob);
 
-    html.AnchorElement(href: url)
-      ..setAttribute('download', '${formattedDate}_$fileName.md')
-      ..click();
-    html.Url.revokeObjectUrl(url);
+      html.AnchorElement(href: url)
+        ..setAttribute('download', fileNameWithDate)
+        ..click();
+      html.Url.revokeObjectUrl(url);
+    } else {
+      final Directory? downloadsDirectory = await getDownloadsDirectory();
+      if (downloadsDirectory == null) {
+        return;
+      }
+      final String filePath = '${downloadsDirectory.path}/$fileNameWithDate';
+      final File file = File(filePath);
+
+      await file.writeAsString(markdownContent.toString());
+    }
   }
 
-  void _generateAndDownloadHtml(String content, String fileName) {
+  Future<void> _generateAndDownloadHtml(String content, String fileName) async {
     final String htmlContent =
         md.markdownToHtml(content, extensionSet: md.ExtensionSet.gitHubWeb);
 
@@ -1209,13 +1224,26 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     final DateTime now = DateTime.now();
     final String formattedDate = DateFormat('yyyyMMddhhmm').format(now);
-    final html.Blob blob = html.Blob(<String>[styledHtmlContent], 'text/html');
-    final String url = html.Url.createObjectUrlFromBlob(blob);
+    final String fileNameAndDate = '${formattedDate}_$fileName.html';
 
-    html.AnchorElement(href: url)
-      ..setAttribute('download', '${formattedDate}_$fileName.html')
-      ..click();
-    html.Url.revokeObjectUrl(url);
+    if (kIsWeb) {
+      final html.Blob blob =
+          html.Blob(<String>[styledHtmlContent], 'text/html');
+      final String url = html.Url.createObjectUrlFromBlob(blob);
+      html.AnchorElement(href: url)
+        ..setAttribute('download', fileNameAndDate)
+        ..click();
+      html.Url.revokeObjectUrl(url);
+    } else {
+      final Directory? downloadsDirectory = await getDownloadsDirectory();
+      if (downloadsDirectory == null) {
+        return;
+      }
+      final String filePath = '${downloadsDirectory.path}/$fileNameAndDate';
+      final File file = File(filePath);
+
+      file.writeAsString(styledHtmlContent);
+    }
   }
 
   StringBuffer errorsToMarkDown(Map<String, String> errors) {
