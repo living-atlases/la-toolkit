@@ -1810,19 +1810,26 @@ SELECT JSON_ARRAYAGG(
 
     final List<Map<String, dynamic>> differences = <Map<String, dynamic>>[];
 
+    final Set<String> processedContacts = <String>{};
+
     // Check GBIF contacts against DB
     for (final dynamic gbifContactRaw in gbifContacts) {
       final Map<String, dynamic> gbifContact =
           gbifContactRaw as Map<String, dynamic>;
-
       final String gbifName =
-          '${gbifContact['firstName']} ${gbifContact['lastName']}';
+          '${gbifContact['firstName']} ${_normalizeLastName(gbifContact['lastName'] as String?)}';
+
+      if (processedContacts.contains(gbifName)) {
+        continue;
+      }
+      processedContacts.add(gbifName);
+
       final Map<String, dynamic>? matchingDbContact =
           dbContacts.firstWhereOrNull(
         (dynamic dbContactRaw) {
           final Map<String, dynamic> dbContact =
               dbContactRaw as Map<String, dynamic>;
-          return '${dbContact['first_name']} ${dbContact['last_name']}' ==
+          return '${dbContact['first_name']} ${_normalizeLastName(dbContact['last_name'] as String?)}' ==
               gbifName;
         },
       ) as Map<String, dynamic>?;
@@ -1834,20 +1841,19 @@ SELECT JSON_ARRAYAGG(
         });
       } else {
         final Map<String, dynamic> mismatch = <String, dynamic>{};
+        final String collectoryName =
+            '${matchingDbContact['first_name']} ${_normalizeLastName(matchingDbContact['last_name'] as String?)}';
         for (final String key in <String>['email', 'phone']) {
-          final String collectoryName =
-              '${matchingDbContact['first_name']} ${matchingDbContact['last_name']}';
           if (key == 'phone') {
             final String dbPhoneValue = matchingDbContact[key] as String? ?? '';
             final List<String> gbifPhoneValues =
                 (gbifContact[key] as List<dynamic>? ?? <dynamic>[])
                     .map((dynamic e) => e as String)
                     .toList();
-
-            bool phoneMatch = false;
             if (gbifPhoneValues.isEmpty && dbPhoneValue.isEmpty) {
               continue;
             }
+            bool phoneMatch = false;
 
             for (final String gbifPhone in gbifPhoneValues) {
               try {
@@ -1860,7 +1866,7 @@ SELECT JSON_ARRAYAGG(
                   break;
                 }
               } catch (_) {
-                // Skip invalid phone numbers
+                // Ignore other errors
               }
             }
 
@@ -1884,6 +1890,7 @@ SELECT JSON_ARRAYAGG(
             }
           }
         }
+
         if (mismatch.isNotEmpty) {
           differences.add(<String, dynamic>{
             'type': 'contact_mismatch',
@@ -1900,7 +1907,7 @@ SELECT JSON_ARRAYAGG(
           dbContactRaw as Map<String, dynamic>;
 
       final String dbName =
-          '${dbContact['first_name']} ${dbContact['last_name']}';
+          '${dbContact['first_name']} ${_normalizeLastName(dbContact['last_name'] as String?)}';
       final bool existsInGbif = gbifContacts.any((dynamic gbifContactRaw) {
         final Map<String, dynamic> gbifContact =
             gbifContactRaw as Map<String, dynamic>;
@@ -2058,12 +2065,12 @@ SELECT JSON_ARRAYAGG(
 
   PhoneNumber _phoneNumberParse(String value) {
     try {
-      return PhoneNumber.parse(value);
+      return PhoneNumber.findPotentialPhoneNumbers(value).first;
     } catch (_) {
       try {
         return PhoneNumber.parse(value, callerCountry: IsoCode.AU);
       } catch (_) {
-        return PhoneNumber.findPotentialPhoneNumbers(value).first;
+        return PhoneNumber.parse(value);
       }
     }
   }
@@ -2087,5 +2094,14 @@ SELECT JSON_ARRAYAGG(
       }
     }
     return summary;
+  }
+
+  String _normalizeLastName(String? lastName) {
+    if (lastName == null) {
+      return '';
+    }
+    // Only the first last name is used
+    // See https://eml.ecoinformatics.org/schema/eml-party_xsd (surName)
+    return lastName.split(' ').first;
   }
 }
