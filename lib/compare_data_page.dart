@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
@@ -1828,32 +1829,64 @@ SELECT JSON_ARRAYAGG(
 
       if (matchingDbContact == null) {
         differences.add(<String, dynamic>{
-          'type': 'missing_in_db',
-          'gbifContact': gbifContact
+          'type': 'contact_missing_in_db',
+          'gbifContact': _summarizeContact(gbifContact)
         });
       } else {
         final Map<String, dynamic> mismatch = <String, dynamic>{};
         for (final String key in <String>['email', 'phone']) {
-          final String dbContactValue = matchingDbContact[key] as String? ?? '';
-          final List<String> dbContactValueL = <String>[dbContactValue];
-          final List<dynamic> gbifContactValue =
-              gbifContact[key] as List<dynamic>? ?? <dynamic>[];
-          final List<String> gbifContactValueL =
-              gbifContactValue.map((dynamic e) => e as String).toList();
-          if (gbifContactValue.isEmpty && dbContactValue.isEmpty) {
-            continue;
-          }
-          if (!listEquals(gbifContactValueL, dbContactValueL)) {
-            mismatch[key] = <String, dynamic>{
-              '$gbifName (gbif)': gbifContactValueL,
-              '${matchingDbContact['first_name']} ${matchingDbContact['last_name']} (collectory)':
-                  dbContactValueL,
-            };
+          final String collectoryName =
+              '${matchingDbContact['first_name']} ${matchingDbContact['last_name']}';
+          if (key == 'phone') {
+            final String dbPhoneValue = matchingDbContact[key] as String? ?? '';
+            final List<String> gbifPhoneValues =
+                (gbifContact[key] as List<dynamic>? ?? <dynamic>[])
+                    .map((dynamic e) => e as String)
+                    .toList();
+
+            bool phoneMatch = false;
+            if (gbifPhoneValues.isEmpty && dbPhoneValue.isEmpty) {
+              continue;
+            }
+
+            for (final String gbifPhone in gbifPhoneValues) {
+              try {
+                final PhoneNumber dbPhoneParsed =
+                    _phoneNumberParse(dbPhoneValue);
+                final PhoneNumber gbifPhoneParsed =
+                    _phoneNumberParse(gbifPhone);
+                if (dbPhoneParsed == gbifPhoneParsed) {
+                  phoneMatch = true;
+                  break;
+                }
+              } catch (_) {
+                // Skip invalid phone numbers
+              }
+            }
+
+            if (!phoneMatch) {
+              mismatch[key] =
+                  '$gbifName (gbif): $gbifPhoneValues --> $collectoryName (collectory): $dbPhoneValue';
+            }
+          } else {
+            final String dbContactValue =
+                matchingDbContact[key] as String? ?? '';
+            final List<String> gbifContactValue =
+                (gbifContact[key] as List<dynamic>? ?? <dynamic>[])
+                    .map((dynamic e) => e as String)
+                    .toList();
+            if (gbifContactValue.isEmpty && dbContactValue.isEmpty) {
+              continue;
+            }
+            if (!listEquals(gbifContactValue, <String>[dbContactValue])) {
+              mismatch[key] =
+                  '$gbifName (gbif): $gbifContactValue --> $collectoryName (collectory): $dbContactValue';
+            }
           }
         }
         if (mismatch.isNotEmpty) {
           differences.add(<String, dynamic>{
-            'type': 'mismatch',
+            'type': 'contact_mismatch',
             'gbifContact': gbifContact,
             'differences': mismatch
           });
@@ -1877,8 +1910,8 @@ SELECT JSON_ARRAYAGG(
 
       if (!existsInGbif) {
         differences.add(<String, dynamic>{
-          'type': 'missing_in_gbif',
-          'dbContact': dbContact
+          'type': 'contact_missing_in_gbif',
+          'dbContact': _summarizeContact(dbContact)
         });
       }
     }
@@ -1965,13 +1998,15 @@ SELECT JSON_ARRAYAGG(
           reportPrint(
               '| **$dr** | Differences Found (${differences.length}) |');
           for (final Map<String, dynamic> difference in differences) {
-            if (difference['type'] == 'missing_in_db') {
+            if (difference['type'] == 'contact_missing_in_db') {
               reportPrint(
-                  '| Missing in Collectory | ${difference['gbifContact']} |');
-            } else if (difference['type'] == 'missing_in_gbif') {
-              reportPrint('| Missing in GBIF | ${difference['dbContact']} |');
-            } else if (difference['type'] == 'mismatch') {
-              reportPrint('| Mismatch | ${difference['differences']} |');
+                  '| Contact missing in Collectory | ${_contactForHumans(difference['gbifContact'] as Map<String, dynamic>)} |');
+            } else if (difference['type'] == 'contact_missing_in_gbif') {
+              reportPrint(
+                  '| Contact missing in GBIF | ${_contactForHumans(difference['dbContact'] as Map<String, dynamic>)} |');
+            } else if (difference['type'] == 'contact_mismatch') {
+              reportPrint(
+                  '| Contact mismatch | ${difference['differences']} |');
             } else if (difference['type'] == 'contact_number_difference') {
               reportPrint(
                   '| Contact Number Difference | [GBIF]($gbifUriS): ${difference['gbifContactCount']}, Collectory: ${difference['dbContactCount']} |');
@@ -2000,5 +2035,57 @@ SELECT JSON_ARRAYAGG(
       somethingFailed = true;
       rethrow;
     }
+  }
+
+  Map<String, dynamic> _summarizeContact(Map<String, dynamic> contact) {
+    // Only return some fields if exists
+    final Map<String, dynamic> summary = <String, dynamic>{};
+    for (final String key in <String>[
+      'first_name',
+      'last_name',
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'organization'
+    ]) {
+      if (contact.containsKey(key) && contact[key] != null) {
+        summary[key] = contact[key];
+      }
+    }
+    return summary;
+  }
+
+  PhoneNumber _phoneNumberParse(String value) {
+    try {
+      return PhoneNumber.parse(value);
+    } catch (_) {
+      try {
+        return PhoneNumber.parse(value, callerCountry: IsoCode.AU);
+      } catch (_) {
+        return PhoneNumber.findPotentialPhoneNumbers(value).first;
+      }
+    }
+  }
+
+  String _contactForHumans(Map<String, dynamic> contact) {
+    String summary = '';
+    for (final String key in <String>[
+      'first_name',
+      'last_name',
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'organization'
+    ]) {
+      if (contact.containsKey(key) && contact[key] != null) {
+        if (summary.isNotEmpty) {
+          summary += ', ';
+        }
+        summary += '_${key}_: ${contact[key]}';
+      }
+    }
+    return summary;
   }
 }

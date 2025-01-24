@@ -151,6 +151,7 @@ dependencies:
   stack_trace: ^1.11.1
   markdown: ^7.2.2
   intl: ^0.18.1
+  phone_numbers_parser: ^9.0.3
 
 dependency_overrides:
   intl: ^0.18.1
