@@ -2114,7 +2114,9 @@ SELECT JSON_ARRAYAGG(
       'phone',
       'organization'
     ]) {
-      if (contact.containsKey(key) && contact[key] != null) {
+      if (contact.containsKey(key) &&
+          contact[key] != null &&
+          contact[key] != '') {
         if (summary.isNotEmpty) {
           summary += ', ';
         }
