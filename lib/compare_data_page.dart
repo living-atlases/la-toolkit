@@ -3,7 +3,6 @@ import 'dart:convert' as convert;
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:path_provider/path_provider.dart';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:collection/collection.dart';
@@ -16,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:path_provider/path_provider.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
@@ -889,7 +889,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
         Completer<Map<String, dynamic>>();
 
     vm.doMySqlQuery(
-        'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json FROM data_resource dr;',
+        'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json FROM data_resource dr ORDER BY dr.last_updated DESC',
         (dynamic result) {
       completer.complete(result as Map<String, dynamic>);
     }, (String error) {
@@ -1806,7 +1806,16 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final String body = convert.utf8.decode(response.bodyBytes);
     final Map<String, dynamic> gbifData =
         json.decode(body) as Map<String, dynamic>;
-    final List<dynamic> gbifContacts = gbifData['contacts'] as List<dynamic>;
+
+    final Set<String> uniqueGbifContacts = <String>{};
+    final List<dynamic> gbifContacts =
+        // ignore: avoid_dynamic_calls
+        gbifData['contacts'].where((dynamic contact) {
+      final Map<String, dynamic> gbifContact = contact as Map<String, dynamic>;
+      final String uniqueKey =
+          '${gbifContact['firstName']} ${_normalizeLastName(gbifContact['lastName'] as String?)} ${gbifContact['email']}';
+      return uniqueGbifContacts.add(uniqueKey);
+    }).toList() as List<dynamic>;
 
     final Completer<List<dynamic>> dbCompleter = Completer<List<dynamic>>();
     final String query = '''
@@ -1837,6 +1846,8 @@ SELECT JSON_ARRAYAGG(
     final List<dynamic> dbContacts = await dbCompleter.future;
 
     final List<Map<String, dynamic>> differences = <Map<String, dynamic>>[];
+    final List<Map<String, dynamic>> differencesStats =
+        <Map<String, dynamic>>[];
 
     final Set<String> processedContacts = <String>{};
 
@@ -1952,15 +1963,22 @@ SELECT JSON_ARRAYAGG(
     }
 
     // Check for contact number differences
-    if (gbifContacts.length != dbContacts.length) {
-      differences.add(<String, dynamic>{
-        'type': 'contact_number_difference',
-        'gbifContactCount': gbifContacts.length,
-        'dbContactCount': dbContacts.length
-      });
-    }
 
-    return <String, dynamic>{'differences': differences};
+    final Set<String> uniqueGbifNames = gbifContacts
+        .map((dynamic gbifContact) =>
+            '${(gbifContact as Map<String, dynamic>)['firstName']} ${_normalizeLastName(gbifContact['lastName'] as String?)} ${gbifContact['email']}')
+        .toSet();
+
+    differencesStats.add(<String, dynamic>{
+      'type': 'contact_number_difference',
+      'gbifContactCount': uniqueGbifNames.length,
+      'dbContactCount': dbContacts.length
+    });
+
+    return <String, dynamic>{
+      'differences': differences,
+      'differencesStats': differencesStats
+    };
   }
 
   Future<void> _compareCollectionsWithGBIF(
@@ -2026,6 +2044,8 @@ SELECT JSON_ARRAYAGG(
             await _compareDrsWithGbif(gbifUri, gbifDrId, vm);
         final List<Map<String, dynamic>> differences =
             comparison['differences'] as List<Map<String, dynamic>>;
+        final List<Map<String, dynamic>> differencesStats =
+            comparison['differencesStats'] as List<Map<String, dynamic>>;
 
         if (differences.isNotEmpty) {
           resourcesWithDifferences++;
@@ -2042,15 +2062,15 @@ SELECT JSON_ARRAYAGG(
             } else if (difference['type'] == 'contact_mismatch') {
               reportPrint(
                   '| Contact mismatch | ${difference['differences']} |');
-            } else if (difference['type'] == 'contact_number_difference') {
-              reportPrint(
-                  '| Contact Number Difference | [GBIF]($gbifUriS): ${difference['gbifContactCount']}, Collectory: ${difference['dbContactCount']} |');
             }
           }
         } else {
           resourcesWithoutDifferences++;
           reportPrint('| $dr | No Differences |');
         }
+        final Map<String, dynamic> stats = differencesStats[0];
+        reportPrint(
+            '| Contact totals | [GBIF]($gbifUriS): ${stats['gbifContactCount']}, Collectory: ${stats['dbContactCount']} |');
       }
 
       // Add summary to the report
@@ -2082,7 +2102,10 @@ SELECT JSON_ARRAYAGG(
       'lastName',
       'email',
       'phone',
-      'organization'
+      'organization',
+      'organizationName',
+      'positionName',
+      'userId'
     ]) {
       if (contact.containsKey(key) && contact[key] != null) {
         summary[key] = contact[key];
@@ -2112,7 +2135,10 @@ SELECT JSON_ARRAYAGG(
       'lastName',
       'email',
       'phone',
-      'organization'
+      'organization',
+      'organizationName',
+      'positionName',
+      'userId'
     ]) {
       if (contact.containsKey(key) &&
           contact[key] != null &&
