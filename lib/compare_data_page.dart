@@ -2107,7 +2107,7 @@ SELECT JSON_ARRAYAGG(
       'positionName',
       'userId'
     ]) {
-      if (contact.containsKey(key) && contact[key] != null) {
+      if (_hasSomeValue(contact, key)) {
         summary[key] = contact[key];
       }
     }
@@ -2140,9 +2140,7 @@ SELECT JSON_ARRAYAGG(
       'positionName',
       'userId'
     ]) {
-      if (contact.containsKey(key) &&
-          contact[key] != null &&
-          contact[key] != '') {
+      if (_hasSomeValue(contact, key)) {
         if (summary.isNotEmpty) {
           summary += ', ';
         }
@@ -2150,6 +2148,14 @@ SELECT JSON_ARRAYAGG(
       }
     }
     return summary;
+  }
+
+  bool _hasSomeValue(Map<String, dynamic> contact, String key) {
+    return contact.containsKey(key) &&
+        contact[key] != null &&
+        ((contact[key] is String && (contact[key] as String).isNotEmpty) ||
+            (contact[key] is List &&
+                (contact[key] as List<dynamic>).isNotEmpty));
   }
 
   String _normalizeLastName(String? lastName) {
