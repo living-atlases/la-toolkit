@@ -1812,7 +1812,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
         // ignore: avoid_dynamic_calls
         gbifData['contacts'].where((dynamic contact) {
       final Map<String, dynamic> gbifContact = contact as Map<String, dynamic>;
-      final String uniqueKey = _generateGbifKey(gbifContact);
+      final String uniqueKey = _generateKey(gbifContact);
       return uniqueGbifContacts.add(uniqueKey);
     }).toList() as List<dynamic>;
 
@@ -1820,10 +1820,12 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final String query = '''
 SELECT JSON_ARRAYAGG(
          JSON_OBJECT(
-           'first_name', c.first_name,
-           'last_name', c.last_name,
+           'firstName', c.first_name,
+           'lastName', c.last_name,
            'email', c.email,
            'phone', c.phone,
+           'organization', c.organization_name,
+           'position', c.position_name,
            'role', cf.role
          )
        ) AS result_json        
@@ -1854,7 +1856,7 @@ SELECT JSON_ARRAYAGG(
     for (final dynamic gbifContactRaw in gbifContacts) {
       final Map<String, dynamic> gbifContact =
           gbifContactRaw as Map<String, dynamic>;
-      final String gbifName = _generateGbifKey(gbifContact);
+      final String gbifName = _generateKey(gbifContact);
 
       if (processedContacts.contains(gbifName)) {
         continue;
@@ -1866,7 +1868,8 @@ SELECT JSON_ARRAYAGG(
         (dynamic dbContactRaw) {
           final Map<String, dynamic> dbContact =
               dbContactRaw as Map<String, dynamic>;
-          return _generateDbKey(dbContact) == gbifName;
+          final String dbKey = _generateKey(dbContact);
+          return dbKey == gbifName;
         },
       ) as Map<String, dynamic>?;
 
@@ -1877,13 +1880,13 @@ SELECT JSON_ARRAYAGG(
         });
       } else {
         final Map<String, dynamic> mismatch = <String, dynamic>{};
-        final String collectoryName = _generateDbKey(matchingDbContact);
+        final String collectoryName = _generateKey(matchingDbContact);
 
         for (final String key in <String>[
           'email',
           'phone',
-          'organizationName',
-          'positionName',
+          'organization',
+          'position',
           'userId'
         ]) {
           if (key == 'phone') {
@@ -1942,16 +1945,19 @@ SELECT JSON_ARRAYAGG(
           } else {
             final String dbContactValue =
                 matchingDbContact[key] as String? ?? '';
-            final List<String> gbifContactValue =
-                (gbifContact[key] as List<dynamic>? ?? <dynamic>[])
-                    .map((dynamic e) => e as String)
-                    .toList();
-            if (gbifContactValue.isEmpty && dbContactValue.isEmpty) {
-              continue;
-            }
-            if (!listEquals(gbifContactValue, <String>[dbContactValue])) {
-              mismatch[key] =
-                  '$gbifName (gbif): $gbifContactValue --> $collectoryName (collectory): $dbContactValue';
+            if (gbifContact[key] is List<dynamic>) {
+              debugPrint('Current gbifKey: $key');
+              final List<String> gbifContactValue =
+                  (gbifContact[key] as List<dynamic>? ?? <dynamic>[])
+                      .map((dynamic e) => e as String)
+                      .toList();
+              if (gbifContactValue.isEmpty && dbContactValue.isEmpty) {
+                continue;
+              }
+              if (!listEquals(gbifContactValue, <String>[dbContactValue])) {
+                mismatch[key] =
+                    '$gbifName (gbif): $gbifContactValue --> $collectoryName (collectory): $dbContactValue';
+              }
             }
           }
         }
@@ -1971,12 +1977,12 @@ SELECT JSON_ARRAYAGG(
       final Map<String, dynamic> dbContact =
           dbContactRaw as Map<String, dynamic>;
 
-      final String dbName = _generateDbKey(dbContact);
+      final String dbName = _generateKey(dbContact);
 
       final bool existsInGbif = gbifContacts.any((dynamic gbifContactRaw) {
         final Map<String, dynamic> gbifContact =
             gbifContactRaw as Map<String, dynamic>;
-        return _generateGbifKey(gbifContact) == dbName;
+        return _generateKey(gbifContact) == dbName;
       });
 
       if (!existsInGbif) {
@@ -2006,11 +2012,8 @@ SELECT JSON_ARRAYAGG(
     };
   }
 
-  String _generateGbifKey(Map<String, dynamic> gbifContact) =>
-      '${gbifContact['organizationName'] ?? ''} ${gbifContact['positionName'] ?? ''} ${gbifContact['firstName']} ${_normalizeLastName(gbifContact['lastName'] as String?)}';
-
-  String _generateDbKey(Map<String, dynamic> dbContact) =>
-      '${dbContact['organizationName'] ?? ''} ${dbContact['positionName'] ?? ''} ${dbContact['first_name']} ${_normalizeLastName(dbContact['last_name'] as String?)}';
+  String _generateKey(Map<String, dynamic> c) =>
+      '${c['organization'] ?? ''} ${c['position'] is List<dynamic> && (c['position'] as List<dynamic>).isNotEmpty ? (c['position'] as List<dynamic>)[0] : c['position'] is String ? c['position'] : ''} ${c['firstName']} ${_normalizeLastName(c['lastName'] as String?)}';
 
   Future<void> _compareCollectionsWithGBIF(
       _CompareDataViewModel vm, String? drsToCompareS,
@@ -2135,6 +2138,7 @@ SELECT JSON_ARRAYAGG(
       'phone',
       'organization',
       'organizationName',
+      'position',
       'positionName',
       'userId'
     ]) {
@@ -2168,6 +2172,7 @@ SELECT JSON_ARRAYAGG(
       'phone',
       'organization',
       'organizationName',
+      'position',
       'positionName',
       'userId'
     ]) {
