@@ -2013,7 +2013,7 @@ SELECT JSON_ARRAYAGG(
   }
 
   String _generateKey(Map<String, dynamic> c) =>
-      '${c['organization'] ?? ''} ${c['position'] is List<dynamic> && (c['position'] as List<dynamic>).isNotEmpty ? (c['position'] as List<dynamic>)[0] : c['position'] is String ? c['position'] : ''} ${c['firstName']} ${_normalizeLastName(c['lastName'] as String?)}';
+      '${c['organization'] ?? ''} ${c['position'] is List<dynamic> && (c['position'] as List<dynamic>).isNotEmpty ? (c['position'] as List<dynamic>)[0] : c['position'] is String ? c['position'] : ''} ${c['firstName'] ?? ''} ${_normalizeLastName(c['lastName'] as String?)}';
 
   Future<void> _compareCollectionsWithGBIF(
       _CompareDataViewModel vm, String? drsToCompareS,
