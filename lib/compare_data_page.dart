@@ -111,7 +111,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
   bool compareLayers = true;
   bool compareHubs = true;
   String? recordsToCompare;
-  String? drsToCompare;
+  String drsToCompare = '10';
   Map<String, SolrCompareResult> compareResults = <String, SolrCompareResult>{};
   static const String totals = 'totals';
   final List<String> compareTitles = <String>[];
@@ -568,7 +568,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                     drsToCompare = value;
                                   });
                                 },
-                                initialValue: 'dr1278',
+                                initialValue: drsToCompare,
                                 decoration: const InputDecoration(
                                   labelText:
                                       'DRs to compare, or a number for n drs or blank for all',
