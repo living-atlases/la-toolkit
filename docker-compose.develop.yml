@@ -84,7 +84,6 @@ services:
       - MD5=TRUE
       - COMPRESSION=XZ
       - TZ=Europe/Copenhagen
-    restart: always
     volumes:
       - /data/la-toolkit/backups:/backups
 
