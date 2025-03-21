@@ -1513,11 +1513,13 @@ check results length: ${checkResults.length}''';
   LAServer? getPipelinesMaster() {
     if (isPipelinesInUse && getVariableOrNull('pipelines_master') != null) {
       // && getServiceDeploysForSomeService(pipelines).length > 0) {
-      final String? masterName =
-          getVariableOrNull('pipelines_master')!.value as String?;
-      if (masterName != null) {
-        masterPipelinesServer = getServerByName(masterName);
-        return masterPipelinesServer;
+      if (getVariableOrNull('pipelines_master')!.value is String?) {
+        final String? masterName =
+            getVariableOrNull('pipelines_master')!.value as String?;
+        if (masterName != null) {
+          masterPipelinesServer = getServerByName(masterName);
+          return masterPipelinesServer;
+        }
       }
     }
     return null;
