@@ -63,7 +63,9 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
   @override
   void dispose() {
     super.dispose();
-    context.loaderOverlay.hide();
+    if (context.mounted) {
+      context.loaderOverlay.hide();
+    }
   }
 
   _onPressed(vm) {
@@ -188,7 +190,9 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
         final bool showSoftwareVersions =
             project.showSoftwareVersions && vm.softwareReleasesReady;
         final bool showToolkitDeps = project.showToolkitDeps;
-        context.loaderOverlay.hide();
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,

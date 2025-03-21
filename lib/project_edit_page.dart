@@ -67,7 +67,9 @@ class LAProjectEditPage extends StatelessWidget {
         // with true fails ssl y ssh advanced, and delete
         // distinct: false,
         onInitialBuild: (_) {
-      context.loaderOverlay.hide();
+      if (context.mounted) {
+        context.loaderOverlay.hide();
+      }
     }, converter: (Store<AppState> store) {
       return ProjectPageViewModel(
           state: store.state,
@@ -309,7 +311,9 @@ If you are unsure type something like "server1, server2, server3".
                               collectoryFocusNode: _focusNodes[_servicesStep]))
                 ],
               ))));
-      context.loaderOverlay.hide();
+      if (context.mounted) {
+        context.loaderOverlay.hide();
+      }
       return Title(
           title:
               '${project.shortName}: ${vm.state.status.getTitle(project.isHub)}',

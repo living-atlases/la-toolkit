@@ -100,11 +100,15 @@ class TermDialog {
     context.loaderOverlay.show();
     Api.term(
         onStart: (String cmd, int port, int ttydPid) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           TermDialog.show(context, port: port, pid: ttydPid, notify: notify);
         },
         onError: (int error) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           UiUtils.termErrorAlert(context, error.toString());
         },
         projectId: projectId,

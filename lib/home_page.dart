@@ -68,7 +68,9 @@ class _HomePageState extends State<HomePage> {
               state: store.state,
               onImportProject: (String yoRc) {
                 store.dispatch(ImportProject(yoRcJson: yoRc));
-                context.loaderOverlay.hide();
+                if (mounted) {
+                  context.loaderOverlay.hide();
+                }
                 BeamerCond.of(context, LAProjectEditLocation());
               },
               onAddProject: () {
@@ -81,7 +83,9 @@ class _HomePageState extends State<HomePage> {
               onAddTemplates: () {
                 context.loaderOverlay.show();
                 store.dispatch(AddTemplateProjects(onAdded: (int numA) {
-                  context.loaderOverlay.hide();
+                  if (mounted) {
+                    context.loaderOverlay.hide();
+                  }
                   /* ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('Added $num sample LA Projects'),
                       )); */
@@ -97,7 +101,9 @@ class _HomePageState extends State<HomePage> {
           if (vm.state.loading) {
             context.loaderOverlay.show();
           } else {
-            context.loaderOverlay.hide();
+            if (mounted) {
+              context.loaderOverlay.hide();
+            }
           }
           final bool notFirstUse = !vm.state.firstUsage;
           return notFirstUse || !kReleaseMode
@@ -276,8 +282,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onFinish(BuildContext context, bool withError) {
-    context.loaderOverlay.hide();
-    Navigator.pop(context);
+    if (mounted) {
+      context.loaderOverlay.hide();
+      Navigator.pop(context);
+    }
     if (withError) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(

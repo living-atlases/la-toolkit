@@ -160,11 +160,13 @@ class DeployUtils {
       required LAProject project,
       required CommonCmd commonCmd}) {
     context.loaderOverlay
-        .show(widgetBuilder: (progress) => const LoadingTextOverlay());
+        .show(widgetBuilder: (dynamic progress) => const LoadingTextOverlay());
     store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           if (commonCmd is PreDeployCmd) {
             BeamerCond.of(context, PreDeployLocation());
           } else if (commonCmd is PostDeployCmd) {
@@ -179,7 +181,9 @@ class DeployUtils {
         },
         deployCmd: commonCmd,
         onError: (String e) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           UiUtils.showSnackBarError(context, e);
         }));
   }
@@ -197,7 +201,9 @@ class DeployUtils {
           onReady: () {},
           deployCmd: deployCmd,
           onError: (String e) {
-            context.loaderOverlay.hide();
+            if (context.mounted) {
+              context.loaderOverlay.hide();
+            }
             UiUtils.showSnackBarError(context, e);
           }));
     }
@@ -205,7 +211,9 @@ class DeployUtils {
         project: project,
         cmd: deployCmd,
         onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
           TermDialog.show(context,
@@ -218,11 +226,15 @@ class DeployUtils {
               store
                   .dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
             }
+            //  if (context.mounted) {
             // context.loaderOverlay.hide();
+//}
           });
         },
         onError: (int error) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               action: SnackBarAction(
                 label: 'OK',
@@ -245,7 +257,9 @@ class DeployUtils {
         project: project,
         cmd: deployCmd,
         onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
           TermDialog.show(context,
@@ -258,7 +272,9 @@ class DeployUtils {
           });
         },
         onError: (int error) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               action: SnackBarAction(
                 label: 'OK',
@@ -281,7 +297,9 @@ class DeployUtils {
         project: project,
         cmd: cmd,
         onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
           TermDialog.show(context,
@@ -294,7 +312,9 @@ class DeployUtils {
           });
         },
         onError: (int error) {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               action: SnackBarAction(
                 label: 'OK',
@@ -314,11 +334,15 @@ class DeployUtils {
         cmdHistoryEntry: cmdHistory,
         fstRetrieved: fstRetrieved,
         onReady: () {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           BeamerCond.of(context, CmdResultsLocation());
         },
         onFailed: () {
-          context.loaderOverlay.hide();
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content:
                 const Text('There was some problem retrieving the results'),

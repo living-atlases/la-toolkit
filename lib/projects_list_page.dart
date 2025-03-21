@@ -54,7 +54,9 @@ class _LAProjectsListState extends State<LAProjectsList> {
             onDeleteProject: (LAProject project) {
               store.dispatch(DelProject(project));
               BeamerCond.of(context, HomeLocation());
-              context.loaderOverlay.hide();
+              if (context.mounted) {
+                context.loaderOverlay.hide();
+              }
               //context.beamToNamed(HomePage.routeName);
             },
             onOpenProjectTools: (LAProject project) {

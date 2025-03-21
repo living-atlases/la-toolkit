@@ -145,7 +145,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   }
                 }, () {
                   if (!silence) {
-                    context.loaderOverlay.hide();
+                    if (context.mounted) {
+                      context.loaderOverlay.hide();
+                    }
                   }
                 }));
               },
@@ -437,7 +439,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
 
   void _showServersStatus(BuildContext context, LAProject currentProject) {
     final bool allReady = currentProject.allServersWithServicesReady();
-    context.loaderOverlay.hide();
+    if (context.mounted) {
+      context.loaderOverlay.hide();
+    }
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
@@ -476,7 +480,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
   }
 
   void onFinish(BuildContext context, bool withError) {
-    context.loaderOverlay.hide();
+    if (context.mounted) {
+      context.loaderOverlay.hide();
+    }
     Navigator.pop(context);
     if (withError) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

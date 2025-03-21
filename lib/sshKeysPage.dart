@@ -35,8 +35,11 @@ class SshKeyPage extends StatelessWidget {
             onAddKey: (String name) => store.dispatch(OnAddSshKey(name)),
             onImportKey: (String name, String publicKey, String privateKey) =>
                 store.dispatch(OnImportSshKey(name, publicKey, privateKey)),
-            onScanKeys: () => store
-                .dispatch(OnSshKeysScan(() => context.loaderOverlay.hide())));
+            onScanKeys: () => store.dispatch(OnSshKeysScan(() {
+                  if (context.mounted) {
+                    context.loaderOverlay.hide();
+                  }
+                })));
       },
       builder: (BuildContext context, SshKeyViewModel vm) {
         return Scaffold(

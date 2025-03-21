@@ -64,7 +64,9 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectPageViewModel>(onInitialBuild: (_) {
-      context.loaderOverlay.hide();
+      if (context.mounted) {
+        context.loaderOverlay.hide();
+      }
     }, converter: (Store<AppState> store) {
       return _ProjectPageViewModel(
           state: store.state,
@@ -164,7 +166,9 @@ If you have doubts or need to ask for some information, save this project and co
                 const SizedBox(height: 20),
                 ServersDetailsCardList(_focusNodes[_serversAdditional]!),
               ]))));
-      context.loaderOverlay.hide();
+      if (context.mounted) {
+        context.loaderOverlay.hide();
+      }
       return Title(
           title:
               '${project.shortName}: ${vm.state.status.getTitle(project.isHub)}',
