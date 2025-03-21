@@ -2149,12 +2149,13 @@ SELECT JSON_ARRAYAGG(
     return summary;
   }
 
-  PhoneNumber _phoneNumberParse(String value) {
+  PhoneNumber _phoneNumberParse(String value, [IsoCode? callerCountry]) {
     try {
       return PhoneNumber.findPotentialPhoneNumbers(value).first;
     } catch (_) {
       try {
-        return PhoneNumber.parse(value, callerCountry: IsoCode.AU);
+        return PhoneNumber.parse(value,
+            callerCountry: callerCountry ?? IsoCode.ES);
       } catch (_) {
         return PhoneNumber.parse(value);
       }
