@@ -68,7 +68,7 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
     final bool isAServer = widget.server != null;
     final DeploymentType type =
         isAServer ? DeploymentType.vm : DeploymentType.dockerSwarm;
-    final String id = isAServer ? widget.server!.id : widget.cluster!.id;
+    final String sId = isAServer ? widget.server!.id : widget.cluster!.id;
     final String name = isAServer ? widget.server!.name : widget.cluster!.name;
     final Map<String, List<LAService>> servicesAssignable =
         widget.project.getServerServicesAssignable(type);
@@ -114,14 +114,14 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                       : widget.project
                           .getClusterServices(clusterId: widget.cluster!.id),
                   availableServicesForServer:
-                      servicesAssignable[id] ?? <LAService>[],
+                      servicesAssignable[sId] ?? <LAService>[],
                   allServices: widget.project.services,
                   onAssigned: (List<String> list) {
-                    widget.project.assignByType(id, type, list);
+                    widget.project.assignByType(sId, type, list);
                     widget.vm.onSaveCurrentProject(widget.project);
                   },
                   onUnassigned: (String service) {
-                    widget.project.unAssignByType(id, type, service);
+                    widget.project.unAssignByType(sId, type, service);
                     widget.vm.onSaveCurrentProject(widget.project);
                   },
                   onRename: (String newName) {
@@ -145,7 +145,7 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                         _editing = true;
                       }))
               : ServerServicesViewCard(
-                  id: id,
+                  id: sId,
                   name: name,
                   type: type,
                   project: widget.project,

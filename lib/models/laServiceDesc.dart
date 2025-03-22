@@ -478,6 +478,7 @@ class LAServiceDesc {
         artifacts: 'biocache-store',
         allowMultipleDeploys: true,
         repository: 'https://github.com/AtlasOfLivingAustralia/biocache-store',
+        parentService: LAServiceName.biocache_backend,
         path: ''),
     nameindexer: LAServiceDesc(
         name: 'nameindexer',
@@ -489,6 +490,7 @@ class LAServiceDesc {
         initUse: true,
         icon: MdiIcons.tournament,
         artifacts: 'ala-name-matching',
+        parentService: LAServiceName.biocache_backend,
         allowMultipleDeploys: true,
         path: ''),
     namematchingService: LAServiceDesc(

@@ -767,18 +767,21 @@ check results length: ${checkResults.length}''';
     unAssignByType(server.id, DeploymentType.vm, serviceName);
   }
 
-  void unAssignByType(String id, DeploymentType type, String serviceName) {
+  void unAssignByType(
+      String sIdOrCid, DeploymentType type, String serviceName) {
     final bool isServer = type == DeploymentType.vm;
-    final String? serverId = isServer ? id : null;
-    final String? clusterId = !isServer ? id : null;
+    final String? serverId = isServer ? sIdOrCid : null;
+    final String? clusterId = !isServer ? sIdOrCid : null;
     HashSet<String> servicesToDel = HashSet<String>();
     servicesToDel.add(serviceName);
     servicesToDel = _addSubServices(servicesToDel);
-    if (isServer && serverServices[id] != null) {
-      serverServices[id]?.removeWhere((String c) => servicesToDel.contains(c));
+    if (isServer && serverServices[sIdOrCid] != null) {
+      serverServices[sIdOrCid]
+          ?.removeWhere((String c) => servicesToDel.contains(c));
     }
-    if (!isServer && clusterServices[id] != null) {
-      clusterServices[id]?.removeWhere((String c) => servicesToDel.contains(c));
+    if (!isServer && clusterServices[sIdOrCid] != null) {
+      clusterServices[sIdOrCid]
+          ?.removeWhere((String c) => servicesToDel.contains(c));
     }
     for (final String sN in servicesToDel) {
       final LAService service = getService(sN);
