@@ -149,9 +149,11 @@ class _PipelinesPageState extends State<PipelinesPage> {
                                       ],
                                       radiusStyle: true,
                                       onToggle: (int? index) {
-                                        log('Current mode $index');
-                                        cmd = cmd.copyWith(mode: index);
-                                        vm.onSaveCmd(cmd);
+                                        if (index != null) {
+                                          log('Current mode $index');
+                                          cmd = cmd.copyWith(mode: index);
+                                          vm.onSaveCmd(cmd);
+                                        }
                                       },
                                     )),
                                 if (((cmd.steps.contains(clustering) ||
