@@ -332,8 +332,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                       // backRoute: HomePage.routeName,
                       projectIcon: projectIconUrl,
                       actions: <Widget>[
-                        if (project.isCreated)
-                          TermsDrawer.appBarIcon(vm.project, _scaffoldKey)
+                        TermsDrawer.appBarIcon(vm.project, _scaffoldKey)
                       ],
                       title: pageTitle),
                   body: ScrollPanel(
