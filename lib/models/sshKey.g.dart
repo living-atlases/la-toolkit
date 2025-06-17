@@ -32,15 +32,15 @@ abstract class _$SshKeyCWProxy {
   /// SshKey(...).copyWith(id: 12, name: "My name")
   /// ````
   SshKey call({
-    String? name,
-    String? privateKey,
-    String? publicKey,
+    String name,
+    String privateKey,
+    String publicKey,
     String? type,
     int? size,
-    String? desc,
+    String desc,
     String? fingerdebugPrint,
-    bool? encrypted,
-    bool? missing,
+    bool encrypted,
+    bool missing,
   });
 }
 
@@ -69,7 +69,8 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
   SshKey desc(String desc) => this(desc: desc);
 
   @override
-  SshKey fingerdebugPrint(String? fingerdebugPrint) => this(fingerdebugPrint: fingerdebugPrint);
+  SshKey fingerdebugPrint(String? fingerdebugPrint) =>
+      this(fingerdebugPrint: fingerdebugPrint);
 
   @override
   SshKey encrypted(bool encrypted) => this(encrypted: encrypted);
@@ -97,16 +98,15 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
     Object? missing = const $CopyWithPlaceholder(),
   }) {
     return SshKey(
-      name: name == const $CopyWithPlaceholder() || name == null
+      name: name == const $CopyWithPlaceholder()
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      privateKey:
-          privateKey == const $CopyWithPlaceholder() || privateKey == null
-              ? _value.privateKey
-              // ignore: cast_nullable_to_non_nullable
-              : privateKey as String,
-      publicKey: publicKey == const $CopyWithPlaceholder() || publicKey == null
+      privateKey: privateKey == const $CopyWithPlaceholder()
+          ? _value.privateKey
+          // ignore: cast_nullable_to_non_nullable
+          : privateKey as String,
+      publicKey: publicKey == const $CopyWithPlaceholder()
           ? _value.publicKey
           // ignore: cast_nullable_to_non_nullable
           : publicKey as String,
@@ -118,7 +118,7 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
           ? _value.size
           // ignore: cast_nullable_to_non_nullable
           : size as int?,
-      desc: desc == const $CopyWithPlaceholder() || desc == null
+      desc: desc == const $CopyWithPlaceholder()
           ? _value.desc
           // ignore: cast_nullable_to_non_nullable
           : desc as String,
@@ -126,11 +126,11 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
           ? _value.fingerdebugPrint
           // ignore: cast_nullable_to_non_nullable
           : fingerdebugPrint as String?,
-      encrypted: encrypted == const $CopyWithPlaceholder() || encrypted == null
+      encrypted: encrypted == const $CopyWithPlaceholder()
           ? _value.encrypted
           // ignore: cast_nullable_to_non_nullable
           : encrypted as bool,
-      missing: missing == const $CopyWithPlaceholder() || missing == null
+      missing: missing == const $CopyWithPlaceholder()
           ? _value.missing
           // ignore: cast_nullable_to_non_nullable
           : missing as bool,
@@ -152,7 +152,7 @@ SshKey _$SshKeyFromJson(Map<String, dynamic> json) => SshKey(
       name: json['name'] as String,
       publicKey: json['publicKey'] as String? ?? '',
       type: json['type'] as String?,
-      size: json['size'] as int?,
+      size: (json['size'] as num?)?.toInt(),
       desc: json['desc'] as String,
       fingerdebugPrint: json['fingerdebugPrint'] as String?,
       encrypted: json['encrypted'] as bool,

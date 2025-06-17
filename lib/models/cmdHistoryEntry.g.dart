@@ -37,16 +37,16 @@ abstract class _$CmdHistoryEntryCWProxy {
   /// ````
   CmdHistoryEntry call({
     String? id,
-    String? logsPrefix,
-    String? logsSuffix,
+    String logsPrefix,
+    String logsSuffix,
     String? desc,
     String? invDir,
     String? cwd,
-    String? rawCmd,
-    Cmd? cmd,
+    String rawCmd,
+    Cmd cmd,
     int? createdAt,
     double? duration,
-    CmdResult? result,
+    CmdResult result,
   });
 }
 
@@ -115,16 +115,14 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      logsPrefix:
-          logsPrefix == const $CopyWithPlaceholder() || logsPrefix == null
-              ? _value.logsPrefix
-              // ignore: cast_nullable_to_non_nullable
-              : logsPrefix as String,
-      logsSuffix:
-          logsSuffix == const $CopyWithPlaceholder() || logsSuffix == null
-              ? _value.logsSuffix
-              // ignore: cast_nullable_to_non_nullable
-              : logsSuffix as String,
+      logsPrefix: logsPrefix == const $CopyWithPlaceholder()
+          ? _value.logsPrefix
+          // ignore: cast_nullable_to_non_nullable
+          : logsPrefix as String,
+      logsSuffix: logsSuffix == const $CopyWithPlaceholder()
+          ? _value.logsSuffix
+          // ignore: cast_nullable_to_non_nullable
+          : logsSuffix as String,
       desc: desc == const $CopyWithPlaceholder()
           ? _value.desc
           // ignore: cast_nullable_to_non_nullable
@@ -137,11 +135,11 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
           ? _value.cwd
           // ignore: cast_nullable_to_non_nullable
           : cwd as String?,
-      rawCmd: rawCmd == const $CopyWithPlaceholder() || rawCmd == null
+      rawCmd: rawCmd == const $CopyWithPlaceholder()
           ? _value.rawCmd
           // ignore: cast_nullable_to_non_nullable
           : rawCmd as String,
-      cmd: cmd == const $CopyWithPlaceholder() || cmd == null
+      cmd: cmd == const $CopyWithPlaceholder()
           ? _value.cmd
           // ignore: cast_nullable_to_non_nullable
           : cmd as Cmd,
@@ -153,7 +151,7 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
           ? _value.duration
           // ignore: cast_nullable_to_non_nullable
           : duration as double?,
-      result: result == const $CopyWithPlaceholder() || result == null
+      result: result == const $CopyWithPlaceholder()
           ? _value.result
           // ignore: cast_nullable_to_non_nullable
           : result as CmdResult,
@@ -181,7 +179,7 @@ CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) =>
       cwd: json['cwd'] as String?,
       rawCmd: json['rawCmd'] as String,
       cmd: Cmd.fromJson(json['cmd'] as Map<String, dynamic>),
-      createdAt: json['createdAt'] as int?,
+      createdAt: (json['createdAt'] as num?)?.toInt(),
       duration: (json['duration'] as num?)?.toDouble(),
       result: $enumDecodeNullable(_$CmdResultEnumMap, json['result']) ??
           CmdResult.unknown,
@@ -197,7 +195,7 @@ Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
       'invDir': instance.invDir,
       'cwd': instance.cwd,
       'cmd': instance.cmd.toJson(),
-      'result': _$CmdResultEnumMap[instance.result],
+      'result': _$CmdResultEnumMap[instance.result]!,
       'createdAt': instance.createdAt,
       'duration': instance.duration,
     };

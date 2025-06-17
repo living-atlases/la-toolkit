@@ -333,7 +333,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return MapUtils.center(mapBoundsFstPoint, mapBoundsSndPoint);
   }
 
-  bool validateCreation({bool debug = false}) {
+  bool validateCreation({bool debug = true}) {
     bool valid = true;
     LAProjectStatus tempStatus = LAProjectStatus.created;
     if (servers.length != serverServices.length ||

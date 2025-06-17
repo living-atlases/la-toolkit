@@ -42,20 +42,20 @@ abstract class _$PreDeployCmdCWProxy {
   /// PreDeployCmd(...).copyWith(id: 12, name: "My name")
   /// ````
   PreDeployCmd call({
-    bool? addAnsibleUser,
-    bool? addSshKeys,
-    bool? giveSudo,
-    bool? etcHosts,
-    bool? solrLimits,
-    bool? addAdditionalDeps,
+    bool addAnsibleUser,
+    bool addSshKeys,
+    bool giveSudo,
+    bool etcHosts,
+    bool solrLimits,
+    bool addAdditionalDeps,
     bool? rootBecome,
     List<String>? limitToServers,
     List<String>? skipTags,
     List<String>? tags,
-    bool? advanced,
-    bool? continueEvenIfFails,
-    bool? debug,
-    bool? dryRun,
+    bool advanced,
+    bool continueEvenIfFails,
+    bool debug,
+    bool dryRun,
   });
 }
 
@@ -136,31 +136,27 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
     Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PreDeployCmd(
-      addAnsibleUser: addAnsibleUser == const $CopyWithPlaceholder() ||
-              addAnsibleUser == null
+      addAnsibleUser: addAnsibleUser == const $CopyWithPlaceholder()
           ? _value.addAnsibleUser
           // ignore: cast_nullable_to_non_nullable
           : addAnsibleUser as bool,
-      addSshKeys:
-          addSshKeys == const $CopyWithPlaceholder() || addSshKeys == null
-              ? _value.addSshKeys
-              // ignore: cast_nullable_to_non_nullable
-              : addSshKeys as bool,
-      giveSudo: giveSudo == const $CopyWithPlaceholder() || giveSudo == null
+      addSshKeys: addSshKeys == const $CopyWithPlaceholder()
+          ? _value.addSshKeys
+          // ignore: cast_nullable_to_non_nullable
+          : addSshKeys as bool,
+      giveSudo: giveSudo == const $CopyWithPlaceholder()
           ? _value.giveSudo
           // ignore: cast_nullable_to_non_nullable
           : giveSudo as bool,
-      etcHosts: etcHosts == const $CopyWithPlaceholder() || etcHosts == null
+      etcHosts: etcHosts == const $CopyWithPlaceholder()
           ? _value.etcHosts
           // ignore: cast_nullable_to_non_nullable
           : etcHosts as bool,
-      solrLimits:
-          solrLimits == const $CopyWithPlaceholder() || solrLimits == null
-              ? _value.solrLimits
-              // ignore: cast_nullable_to_non_nullable
-              : solrLimits as bool,
-      addAdditionalDeps: addAdditionalDeps == const $CopyWithPlaceholder() ||
-              addAdditionalDeps == null
+      solrLimits: solrLimits == const $CopyWithPlaceholder()
+          ? _value.solrLimits
+          // ignore: cast_nullable_to_non_nullable
+          : solrLimits as bool,
+      addAdditionalDeps: addAdditionalDeps == const $CopyWithPlaceholder()
           ? _value.addAdditionalDeps
           // ignore: cast_nullable_to_non_nullable
           : addAdditionalDeps as bool,
@@ -180,21 +176,19 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
           ? _value.tags
           // ignore: cast_nullable_to_non_nullable
           : tags as List<String>?,
-      advanced: advanced == const $CopyWithPlaceholder() || advanced == null
+      advanced: advanced == const $CopyWithPlaceholder()
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
           : advanced as bool,
-      continueEvenIfFails:
-          continueEvenIfFails == const $CopyWithPlaceholder() ||
-                  continueEvenIfFails == null
-              ? _value.continueEvenIfFails
-              // ignore: cast_nullable_to_non_nullable
-              : continueEvenIfFails as bool,
-      debug: debug == const $CopyWithPlaceholder() || debug == null
+      continueEvenIfFails: continueEvenIfFails == const $CopyWithPlaceholder()
+          ? _value.continueEvenIfFails
+          // ignore: cast_nullable_to_non_nullable
+          : continueEvenIfFails as bool,
+      debug: debug == const $CopyWithPlaceholder()
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
           : debug as bool,
-      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
+      dryRun: dryRun == const $CopyWithPlaceholder()
           ? _value.dryRun
           // ignore: cast_nullable_to_non_nullable
           : dryRun as bool,
@@ -221,21 +215,19 @@ PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) => PreDeployCmd(
       addAdditionalDeps: json['addAdditionalDeps'] as bool? ?? true,
       rootBecome: json['rootBecome'] as bool?,
       limitToServers: (json['limitToServers'] as List<dynamic>?)
-          ?.map((dynamic e) => e as String)
+          ?.map((e) => e as String)
           .toList(),
       skipTags: (json['skipTags'] as List<dynamic>?)
-          ?.map((dynamic e) => e as String)
+          ?.map((e) => e as String)
           .toList(),
-      tags: (json['tags'] as List<dynamic>?)
-          ?.map((dynamic e) => e as String)
-          .toList(),
+      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       advanced: json['advanced'] as bool? ?? false,
       continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
       debug: json['debug'] as bool? ?? false,
       dryRun: json['dryRun'] as bool? ?? false,
     )
       ..deployServices = (json['deployServices'] as List<dynamic>)
-          .map((dynamic e) => e as String)
+          .map((e) => e as String)
           .toList()
       ..onlyProperties = json['onlyProperties'] as bool;
 

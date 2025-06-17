@@ -22,7 +22,7 @@ Map<String, dynamic> _$HostServiceCheckToJson(HostServiceCheck instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'type': _$ServiceCheckTypeEnumMap[instance.type],
+      'type': _$ServiceCheckTypeEnumMap[instance.type]!,
       'host': instance.host,
       'args': instance.args,
       'serviceDeploys': HostServiceCheck._toJson(instance.serviceDeploys),

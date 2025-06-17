@@ -83,21 +83,21 @@ abstract class _$LAProjectCWProxy {
   /// ````
   LAProject call({
     String? id,
-    String? longName,
-    String? shortName,
+    String longName,
+    String shortName,
     String? domain,
     String? dirName,
-    bool? useSSL,
-    bool? isCreated,
-    bool? isHub,
+    bool useSSL,
+    bool isCreated,
+    bool isHub,
     bool? fstDeployed,
-    String? additionalVariables,
-    LAProjectStatus? status,
+    String additionalVariables,
+    LAProjectStatus status,
     String? alaInstallRelease,
     String? generatorRelease,
     LALatLng? mapBoundsFstPoint,
     LALatLng? mapBoundsSndPoint,
-    String? theme,
+    String theme,
     double? mapZoom,
     CmdHistoryEntry? lastCmdEntry,
     CmdHistoryDetails? lastCmdDetails,
@@ -292,11 +292,11 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      longName: longName == const $CopyWithPlaceholder() || longName == null
+      longName: longName == const $CopyWithPlaceholder()
           ? _value.longName
           // ignore: cast_nullable_to_non_nullable
           : longName as String,
-      shortName: shortName == const $CopyWithPlaceholder() || shortName == null
+      shortName: shortName == const $CopyWithPlaceholder()
           ? _value.shortName
           // ignore: cast_nullable_to_non_nullable
           : shortName as String,
@@ -308,15 +308,15 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.dirName
           // ignore: cast_nullable_to_non_nullable
           : dirName as String?,
-      useSSL: useSSL == const $CopyWithPlaceholder() || useSSL == null
+      useSSL: useSSL == const $CopyWithPlaceholder()
           ? _value.useSSL
           // ignore: cast_nullable_to_non_nullable
           : useSSL as bool,
-      isCreated: isCreated == const $CopyWithPlaceholder() || isCreated == null
+      isCreated: isCreated == const $CopyWithPlaceholder()
           ? _value.isCreated
           // ignore: cast_nullable_to_non_nullable
           : isCreated as bool,
-      isHub: isHub == const $CopyWithPlaceholder() || isHub == null
+      isHub: isHub == const $CopyWithPlaceholder()
           ? _value.isHub
           // ignore: cast_nullable_to_non_nullable
           : isHub as bool,
@@ -324,13 +324,11 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.fstDeployed
           // ignore: cast_nullable_to_non_nullable
           : fstDeployed as bool?,
-      additionalVariables:
-          additionalVariables == const $CopyWithPlaceholder() ||
-                  additionalVariables == null
-              ? _value.additionalVariables
-              // ignore: cast_nullable_to_non_nullable
-              : additionalVariables as String,
-      status: status == const $CopyWithPlaceholder() || status == null
+      additionalVariables: additionalVariables == const $CopyWithPlaceholder()
+          ? _value.additionalVariables
+          // ignore: cast_nullable_to_non_nullable
+          : additionalVariables as String,
+      status: status == const $CopyWithPlaceholder()
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
           : status as LAProjectStatus,
@@ -350,7 +348,7 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.mapBoundsSndPoint
           // ignore: cast_nullable_to_non_nullable
           : mapBoundsSndPoint as LALatLng?,
-      theme: theme == const $CopyWithPlaceholder() || theme == null
+      theme: theme == const $CopyWithPlaceholder()
           ? _value.theme
           // ignore: cast_nullable_to_non_nullable
           : theme as String,
@@ -492,7 +490,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) => LAProject(
       hubs: (json['hubs'] as List<dynamic>?)
           ?.map((e) => LAProject.fromJson(e as Map<String, dynamic>))
           .toList(),
-      createdAt: json['createdAt'] as int?,
+      createdAt: (json['createdAt'] as num?)?.toInt(),
       serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
         (k, e) =>
             MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
@@ -502,7 +500,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) => LAProject(
             MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
       ),
     )
-      ..clientMigration = json['clientMigration'] as int?
+      ..clientMigration = (json['clientMigration'] as num?)?.toInt()
       ..lastSwCheck = json['lastSwCheck'] == null
           ? null
           : DateTime.parse(json['lastSwCheck'] as String);
@@ -523,7 +521,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'createdAt': instance.createdAt,
       'alaInstallRelease': instance.alaInstallRelease,
       'generatorRelease': instance.generatorRelease,
-      'status': _$LAProjectStatusEnumMap[instance.status],
+      'status': _$LAProjectStatusEnumMap[instance.status]!,
       'isCreated': instance.isCreated,
       'fstDeployed': instance.fstDeployed,
       'advancedEdit': instance.advancedEdit,

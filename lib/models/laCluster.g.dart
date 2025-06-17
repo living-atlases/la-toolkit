@@ -23,9 +23,9 @@ abstract class _$LAClusterCWProxy {
   /// ````
   LACluster call({
     String? id,
-    String? name,
-    DeploymentType? type,
-    String? projectId,
+    String name,
+    DeploymentType type,
+    String projectId,
   });
 }
 
@@ -66,15 +66,15 @@ class _$LAClusterCWProxyImpl implements _$LAClusterCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      name: name == const $CopyWithPlaceholder() || name == null
+      name: name == const $CopyWithPlaceholder()
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      type: type == const $CopyWithPlaceholder() || type == null
+      type: type == const $CopyWithPlaceholder()
           ? _value.type
           // ignore: cast_nullable_to_non_nullable
           : type as DeploymentType,
-      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
+      projectId: projectId == const $CopyWithPlaceholder()
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -103,7 +103,7 @@ LACluster _$LAClusterFromJson(Map<String, dynamic> json) => LACluster(
 Map<String, dynamic> _$LAClusterToJson(LACluster instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'type': _$DeploymentTypeEnumMap[instance.type],
+      'type': _$DeploymentTypeEnumMap[instance.type]!,
       'projectId': instance.projectId,
     };
 

@@ -30,14 +30,14 @@ abstract class _$PostDeployCmdCWProxy {
   /// PostDeployCmd(...).copyWith(id: 12, name: "My name")
   /// ````
   PostDeployCmd call({
-    bool? configurePostfix,
+    bool configurePostfix,
     List<String>? limitToServers,
     List<String>? skipTags,
     List<String>? tags,
-    bool? advanced,
-    bool? continueEvenIfFails,
-    bool? debug,
-    bool? dryRun,
+    bool advanced,
+    bool continueEvenIfFails,
+    bool debug,
+    bool dryRun,
   });
 }
 
@@ -93,8 +93,7 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
     Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PostDeployCmd(
-      configurePostfix: configurePostfix == const $CopyWithPlaceholder() ||
-              configurePostfix == null
+      configurePostfix: configurePostfix == const $CopyWithPlaceholder()
           ? _value.configurePostfix
           // ignore: cast_nullable_to_non_nullable
           : configurePostfix as bool,
@@ -110,21 +109,19 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
           ? _value.tags
           // ignore: cast_nullable_to_non_nullable
           : tags as List<String>?,
-      advanced: advanced == const $CopyWithPlaceholder() || advanced == null
+      advanced: advanced == const $CopyWithPlaceholder()
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
           : advanced as bool,
-      continueEvenIfFails:
-          continueEvenIfFails == const $CopyWithPlaceholder() ||
-                  continueEvenIfFails == null
-              ? _value.continueEvenIfFails
-              // ignore: cast_nullable_to_non_nullable
-              : continueEvenIfFails as bool,
-      debug: debug == const $CopyWithPlaceholder() || debug == null
+      continueEvenIfFails: continueEvenIfFails == const $CopyWithPlaceholder()
+          ? _value.continueEvenIfFails
+          // ignore: cast_nullable_to_non_nullable
+          : continueEvenIfFails as bool,
+      debug: debug == const $CopyWithPlaceholder()
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
           : debug as bool,
-      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
+      dryRun: dryRun == const $CopyWithPlaceholder()
           ? _value.dryRun
           // ignore: cast_nullable_to_non_nullable
           : dryRun as bool,

@@ -43,19 +43,19 @@ abstract class _$LAServerCWProxy {
   /// ````
   LAServer call({
     String? id,
-    String? name,
+    String name,
     String? ip,
-    int? sshPort,
+    int sshPort,
     String? sshUser,
     List<String>? aliases,
     List<String>? gateways,
     SshKey? sshKey,
-    ServiceStatus? reachable,
-    ServiceStatus? sshReachable,
-    ServiceStatus? sudoEnabled,
-    String? osName,
-    String? osVersion,
-    String? projectId,
+    ServiceStatus reachable,
+    ServiceStatus sshReachable,
+    ServiceStatus sudoEnabled,
+    String osName,
+    String osVersion,
+    String projectId,
   });
 }
 
@@ -138,7 +138,7 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      name: name == const $CopyWithPlaceholder() || name == null
+      name: name == const $CopyWithPlaceholder()
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
@@ -146,7 +146,7 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
           ? _value.ip
           // ignore: cast_nullable_to_non_nullable
           : ip as String?,
-      sshPort: sshPort == const $CopyWithPlaceholder() || sshPort == null
+      sshPort: sshPort == const $CopyWithPlaceholder()
           ? _value.sshPort
           // ignore: cast_nullable_to_non_nullable
           : sshPort as int,
@@ -166,29 +166,27 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
           ? _value.sshKey
           // ignore: cast_nullable_to_non_nullable
           : sshKey as SshKey?,
-      reachable: reachable == const $CopyWithPlaceholder() || reachable == null
+      reachable: reachable == const $CopyWithPlaceholder()
           ? _value.reachable
           // ignore: cast_nullable_to_non_nullable
           : reachable as ServiceStatus,
-      sshReachable:
-          sshReachable == const $CopyWithPlaceholder() || sshReachable == null
-              ? _value.sshReachable
-              // ignore: cast_nullable_to_non_nullable
-              : sshReachable as ServiceStatus,
-      sudoEnabled:
-          sudoEnabled == const $CopyWithPlaceholder() || sudoEnabled == null
-              ? _value.sudoEnabled
-              // ignore: cast_nullable_to_non_nullable
-              : sudoEnabled as ServiceStatus,
-      osName: osName == const $CopyWithPlaceholder() || osName == null
+      sshReachable: sshReachable == const $CopyWithPlaceholder()
+          ? _value.sshReachable
+          // ignore: cast_nullable_to_non_nullable
+          : sshReachable as ServiceStatus,
+      sudoEnabled: sudoEnabled == const $CopyWithPlaceholder()
+          ? _value.sudoEnabled
+          // ignore: cast_nullable_to_non_nullable
+          : sudoEnabled as ServiceStatus,
+      osName: osName == const $CopyWithPlaceholder()
           ? _value.osName
           // ignore: cast_nullable_to_non_nullable
           : osName as String,
-      osVersion: osVersion == const $CopyWithPlaceholder() || osVersion == null
+      osVersion: osVersion == const $CopyWithPlaceholder()
           ? _value.osVersion
           // ignore: cast_nullable_to_non_nullable
           : osVersion as String,
-      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
+      projectId: projectId == const $CopyWithPlaceholder()
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -210,7 +208,7 @@ LAServer _$LAServerFromJson(Map<String, dynamic> json) => LAServer(
       id: json['id'] as String?,
       name: json['name'] as String,
       ip: json['ip'] as String?,
-      sshPort: json['sshPort'] as int? ?? 22,
+      sshPort: (json['sshPort'] as num?)?.toInt() ?? 22,
       sshUser: json['sshUser'] as String?,
       aliases:
           (json['aliases'] as List<dynamic>?)?.map((e) => e as String).toList(),
@@ -243,15 +241,15 @@ Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
       'sshUser': instance.sshUser,
       'sshKey': instance.sshKey?.toJson(),
       'gateways': instance.gateways,
-      'reachable': _$ServiceStatusEnumMap[instance.reachable],
-      'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable],
-      'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled],
+      'reachable': _$ServiceStatusEnumMap[instance.reachable]!,
+      'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable]!,
+      'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled]!,
       'osName': instance.osName,
       'osVersion': instance.osVersion,
       'projectId': instance.projectId,
     };
 
-const Map<ServiceStatus, String> _$ServiceStatusEnumMap = <ServiceStatus, String>{
+const _$ServiceStatusEnumMap = {
   ServiceStatus.unknown: 'unknown',
   ServiceStatus.success: 'success',
   ServiceStatus.failed: 'failed',

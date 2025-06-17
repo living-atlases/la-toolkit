@@ -32,12 +32,12 @@ abstract class _$PipelinesCmdCWProxy {
   PipelinesCmd call({
     String? drs,
     Set<String>? steps,
-    String? master,
-    bool? debug,
-    bool? allDrs,
-    bool? allSteps,
-    bool? dryRun,
-    int? mode,
+    String master,
+    bool debug,
+    bool allDrs,
+    bool allSteps,
+    bool dryRun,
+    int mode,
   });
 }
 
@@ -98,27 +98,27 @@ class _$PipelinesCmdCWProxyImpl implements _$PipelinesCmdCWProxy {
           ? _value.steps
           // ignore: cast_nullable_to_non_nullable
           : steps as Set<String>?,
-      master: master == const $CopyWithPlaceholder() || master == null
+      master: master == const $CopyWithPlaceholder()
           ? _value.master
           // ignore: cast_nullable_to_non_nullable
           : master as String,
-      debug: debug == const $CopyWithPlaceholder() || debug == null
+      debug: debug == const $CopyWithPlaceholder()
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
           : debug as bool,
-      allDrs: allDrs == const $CopyWithPlaceholder() || allDrs == null
+      allDrs: allDrs == const $CopyWithPlaceholder()
           ? _value.allDrs
           // ignore: cast_nullable_to_non_nullable
           : allDrs as bool,
-      allSteps: allSteps == const $CopyWithPlaceholder() || allSteps == null
+      allSteps: allSteps == const $CopyWithPlaceholder()
           ? _value.allSteps
           // ignore: cast_nullable_to_non_nullable
           : allSteps as bool,
-      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
+      dryRun: dryRun == const $CopyWithPlaceholder()
           ? _value.dryRun
           // ignore: cast_nullable_to_non_nullable
           : dryRun as bool,
-      mode: mode == const $CopyWithPlaceholder() || mode == null
+      mode: mode == const $CopyWithPlaceholder()
           ? _value.mode
           // ignore: cast_nullable_to_non_nullable
           : mode as int,
@@ -144,7 +144,7 @@ PipelinesCmd _$PipelinesCmdFromJson(Map<String, dynamic> json) => PipelinesCmd(
       allDrs: json['allDrs'] as bool? ?? false,
       allSteps: json['allSteps'] as bool? ?? false,
       dryRun: json['dryRun'] as bool? ?? false,
-      mode: json['mode'] as int? ?? 1,
+      mode: (json['mode'] as num?)?.toInt() ?? 1,
     );
 
 Map<String, dynamic> _$PipelinesCmdToJson(PipelinesCmd instance) =>

@@ -18,8 +18,8 @@ abstract class _$LALatLngCWProxy {
   /// LALatLng(...).copyWith(id: 12, name: "My name")
   /// ````
   LALatLng call({
-    double? latitude,
-    double? longitude,
+    double latitude,
+    double longitude,
   });
 }
 
@@ -48,11 +48,11 @@ class _$LALatLngCWProxyImpl implements _$LALatLngCWProxy {
     Object? longitude = const $CopyWithPlaceholder(),
   }) {
     return LALatLng(
-      latitude: latitude == const $CopyWithPlaceholder() || latitude == null
+      latitude: latitude == const $CopyWithPlaceholder()
           ? _value.latitude
           // ignore: cast_nullable_to_non_nullable
           : latitude as double,
-      longitude: longitude == const $CopyWithPlaceholder() || longitude == null
+      longitude: longitude == const $CopyWithPlaceholder()
           ? _value.longitude
           // ignore: cast_nullable_to_non_nullable
           : longitude as double,

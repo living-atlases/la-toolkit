@@ -22,10 +22,10 @@ abstract class _$LAReleasesCWProxy {
   /// LAReleases(...).copyWith(id: 12, name: "My name")
   /// ````
   LAReleases call({
-    String? name,
-    String? artifacts,
+    String name,
+    String artifacts,
     String? latest,
-    List<String>? versions,
+    List<String> versions,
   });
 }
 
@@ -62,11 +62,11 @@ class _$LAReleasesCWProxyImpl implements _$LAReleasesCWProxy {
     Object? versions = const $CopyWithPlaceholder(),
   }) {
     return LAReleases(
-      name: name == const $CopyWithPlaceholder() || name == null
+      name: name == const $CopyWithPlaceholder()
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      artifacts: artifacts == const $CopyWithPlaceholder() || artifacts == null
+      artifacts: artifacts == const $CopyWithPlaceholder()
           ? _value.artifacts
           // ignore: cast_nullable_to_non_nullable
           : artifacts as String,
@@ -74,7 +74,7 @@ class _$LAReleasesCWProxyImpl implements _$LAReleasesCWProxy {
           ? _value.latest
           // ignore: cast_nullable_to_non_nullable
           : latest as String?,
-      versions: versions == const $CopyWithPlaceholder() || versions == null
+      versions: versions == const $CopyWithPlaceholder()
           ? _value.versions
           // ignore: cast_nullable_to_non_nullable
           : versions as List<String>,

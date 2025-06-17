@@ -51,11 +51,11 @@ abstract class _$AppStateCWProxy {
   /// ````
   AppState call({
     List<LAProject>? projects,
-    bool? failedLoad,
-    bool? firstUsage,
+    bool failedLoad,
+    bool firstUsage,
     LAProject? currentProject,
-    int? currentStep,
-    int? currentTuneTab,
+    int currentStep,
+    int currentTuneTab,
     LAProjectViewStatus? status,
     List<String>? alaInstallReleases,
     List<String>? generatorReleases,
@@ -171,27 +171,23 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
           ? _value.projects
           // ignore: cast_nullable_to_non_nullable
           : projects as List<LAProject>?,
-      failedLoad:
-          failedLoad == const $CopyWithPlaceholder() || failedLoad == null
-              ? _value.failedLoad
-              // ignore: cast_nullable_to_non_nullable
-              : failedLoad as bool,
-      firstUsage:
-          firstUsage == const $CopyWithPlaceholder() || firstUsage == null
-              ? _value.firstUsage
-              // ignore: cast_nullable_to_non_nullable
-              : firstUsage as bool,
+      failedLoad: failedLoad == const $CopyWithPlaceholder()
+          ? _value.failedLoad
+          // ignore: cast_nullable_to_non_nullable
+          : failedLoad as bool,
+      firstUsage: firstUsage == const $CopyWithPlaceholder()
+          ? _value.firstUsage
+          // ignore: cast_nullable_to_non_nullable
+          : firstUsage as bool,
       currentProject: currentProject == const $CopyWithPlaceholder()
           ? _value.currentProject
           // ignore: cast_nullable_to_non_nullable
           : currentProject as LAProject?,
-      currentStep:
-          currentStep == const $CopyWithPlaceholder() || currentStep == null
-              ? _value.currentStep
-              // ignore: cast_nullable_to_non_nullable
-              : currentStep as int,
-      currentTuneTab: currentTuneTab == const $CopyWithPlaceholder() ||
-              currentTuneTab == null
+      currentStep: currentStep == const $CopyWithPlaceholder()
+          ? _value.currentStep
+          // ignore: cast_nullable_to_non_nullable
+          : currentStep as int,
+      currentTuneTab: currentTuneTab == const $CopyWithPlaceholder()
           ? _value.currentTuneTab
           // ignore: cast_nullable_to_non_nullable
           : currentTuneTab as int,
@@ -265,8 +261,8 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
       currentProject: json['currentProject'] == null
           ? null
           : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
-      currentStep: json['currentStep'] as int? ?? 0,
-      currentTuneTab: json['currentTuneTab'] as int? ?? 0,
+      currentStep: (json['currentStep'] as num?)?.toInt() ?? 0,
+      currentTuneTab: (json['currentTuneTab'] as num?)?.toInt() ?? 0,
       status: $enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
       alaInstallReleases: (json['alaInstallReleases'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -275,7 +271,7 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
           ?.map((e) => e as String)
           .toList(),
       laReleases: (json['laReleases'] as Map<String, dynamic>?)?.map(
-        (String k, e) => MapEntry(k, LAReleases.fromJson(e as Map<String, dynamic>)),
+        (k, e) => MapEntry(k, LAReleases.fromJson(e as Map<String, dynamic>)),
       ),
       lastSwCheck: json['lastSwCheck'] == null
           ? null
@@ -288,18 +284,18 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
 Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
       'firstUsage': instance.firstUsage,
       'currentProject': instance.currentProject.toJson(),
-      'status': _$LAProjectViewStatusEnumMap[instance.status],
+      'status': _$LAProjectViewStatusEnumMap[instance.status]!,
       'currentStep': instance.currentStep,
       'currentTuneTab': instance.currentTuneTab,
-      'projects': instance.projects.map((LAProject e) => e.toJson()).toList(),
+      'projects': instance.projects.map((e) => e.toJson()).toList(),
       'alaInstallReleases': instance.alaInstallReleases,
       'generatorReleases': instance.generatorReleases,
-      'laReleases': instance.laReleases.map((String k, LAReleases e) => MapEntry(k, e.toJson())),
-      'sshKeys': instance.sshKeys.map((SshKey e) => e.toJson()).toList(),
+      'laReleases': instance.laReleases.map((k, e) => MapEntry(k, e.toJson())),
+      'sshKeys': instance.sshKeys.map((e) => e.toJson()).toList(),
       'lastSwCheck': instance.lastSwCheck?.toIso8601String(),
     };
 
-const Map<LAProjectViewStatus, String> _$LAProjectViewStatusEnumMap = <LAProjectViewStatus, String>{
+const _$LAProjectViewStatusEnumMap = {
   LAProjectViewStatus.view: 'view',
   LAProjectViewStatus.edit: 'edit',
   LAProjectViewStatus.servers: 'servers',

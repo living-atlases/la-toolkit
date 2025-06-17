@@ -31,13 +31,13 @@ abstract class _$LAServiceCWProxy {
   /// ````
   LAService call({
     String? id,
-    String? nameInt,
-    String? iniPath,
-    bool? use,
-    bool? usesSubdomain,
+    String nameInt,
+    String iniPath,
+    bool use,
+    bool usesSubdomain,
     ServiceStatus? status,
-    String? suburl,
-    String? projectId,
+    String suburl,
+    String projectId,
   });
 }
 
@@ -95,32 +95,31 @@ class _$LAServiceCWProxyImpl implements _$LAServiceCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      nameInt: nameInt == const $CopyWithPlaceholder() || nameInt == null
+      nameInt: nameInt == const $CopyWithPlaceholder()
           ? _value.nameInt
           // ignore: cast_nullable_to_non_nullable
           : nameInt as String,
-      iniPath: iniPath == const $CopyWithPlaceholder() || iniPath == null
+      iniPath: iniPath == const $CopyWithPlaceholder()
           ? _value.iniPath
           // ignore: cast_nullable_to_non_nullable
           : iniPath as String,
-      use: use == const $CopyWithPlaceholder() || use == null
+      use: use == const $CopyWithPlaceholder()
           ? _value.use
           // ignore: cast_nullable_to_non_nullable
           : use as bool,
-      usesSubdomain:
-          usesSubdomain == const $CopyWithPlaceholder() || usesSubdomain == null
-              ? _value.usesSubdomain
-              // ignore: cast_nullable_to_non_nullable
-              : usesSubdomain as bool,
+      usesSubdomain: usesSubdomain == const $CopyWithPlaceholder()
+          ? _value.usesSubdomain
+          // ignore: cast_nullable_to_non_nullable
+          : usesSubdomain as bool,
       status: status == const $CopyWithPlaceholder()
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
           : status as ServiceStatus?,
-      suburl: suburl == const $CopyWithPlaceholder() || suburl == null
+      suburl: suburl == const $CopyWithPlaceholder()
           ? _value.suburl
           // ignore: cast_nullable_to_non_nullable
           : suburl as String,
-      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
+      projectId: projectId == const $CopyWithPlaceholder()
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -156,7 +155,7 @@ Map<String, dynamic> _$LAServiceToJson(LAService instance) => <String, dynamic>{
       'usesSubdomain': instance.usesSubdomain,
       'iniPath': instance.iniPath,
       'suburl': instance.suburl,
-      'status': _$ServiceStatusEnumMap[instance.status],
+      'status': _$ServiceStatusEnumMap[instance.status]!,
       'projectId': instance.projectId,
     };
 

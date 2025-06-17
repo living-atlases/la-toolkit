@@ -16,7 +16,7 @@ abstract class _$BrandingDeployCmdCWProxy {
   /// BrandingDeployCmd(...).copyWith(id: 12, name: "My name")
   /// ````
   BrandingDeployCmd call({
-    bool? debug,
+    bool debug,
   });
 }
 
@@ -41,7 +41,7 @@ class _$BrandingDeployCmdCWProxyImpl implements _$BrandingDeployCmdCWProxy {
     Object? debug = const $CopyWithPlaceholder(),
   }) {
     return BrandingDeployCmd(
-      debug: debug == const $CopyWithPlaceholder() || debug == null
+      debug: debug == const $CopyWithPlaceholder()
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
           : debug as bool,

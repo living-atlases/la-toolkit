@@ -36,10 +36,10 @@ abstract class _$CmdHistoryDetailsCWProxy {
     int? port,
     int? pid,
     double? duration,
-    int? code,
-    List<dynamic>? results,
-    String? logs,
-    String? logsColorized,
+    int code,
+    List<dynamic> results,
+    String logs,
+    String logsColorized,
     bool? fstRetrieved,
   });
 }
@@ -115,23 +115,22 @@ class _$CmdHistoryDetailsCWProxyImpl implements _$CmdHistoryDetailsCWProxy {
           ? _value.duration
           // ignore: cast_nullable_to_non_nullable
           : duration as double?,
-      code: code == const $CopyWithPlaceholder() || code == null
+      code: code == const $CopyWithPlaceholder()
           ? _value.code
           // ignore: cast_nullable_to_non_nullable
           : code as int,
-      results: results == const $CopyWithPlaceholder() || results == null
+      results: results == const $CopyWithPlaceholder()
           ? _value.results
           // ignore: cast_nullable_to_non_nullable
           : results as List<dynamic>,
-      logs: logs == const $CopyWithPlaceholder() || logs == null
+      logs: logs == const $CopyWithPlaceholder()
           ? _value.logs
           // ignore: cast_nullable_to_non_nullable
           : logs as String,
-      logsColorized:
-          logsColorized == const $CopyWithPlaceholder() || logsColorized == null
-              ? _value.logsColorized
-              // ignore: cast_nullable_to_non_nullable
-              : logsColorized as String,
+      logsColorized: logsColorized == const $CopyWithPlaceholder()
+          ? _value.logsColorized
+          // ignore: cast_nullable_to_non_nullable
+          : logsColorized as String,
       fstRetrieved: fstRetrieved == const $CopyWithPlaceholder()
           ? _value.fstRetrieved
           // ignore: cast_nullable_to_non_nullable
@@ -153,10 +152,10 @@ extension $CmdHistoryDetailsCopyWith on CmdHistoryDetails {
 
 CmdHistoryDetails _$CmdHistoryDetailsFromJson(Map<String, dynamic> json) =>
     CmdHistoryDetails(
-      port: json['port'] as int?,
-      pid: json['pid'] as int?,
+      port: (json['port'] as num?)?.toInt(),
+      pid: (json['pid'] as num?)?.toInt(),
       duration: (json['duration'] as num?)?.toDouble(),
-      code: json['code'] as int,
+      code: (json['code'] as num).toInt(),
       results: json['results'] as List<dynamic>,
       logs: json['logs'] as String,
       logsColorized: json['logsColorized'] as String,

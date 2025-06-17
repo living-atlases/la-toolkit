@@ -35,11 +35,11 @@ abstract class _$LAServiceDeployCWProxy {
   /// ````
   LAServiceDeploy call({
     String? id,
-    String? serviceId,
+    String serviceId,
     String? serverId,
     String? clusterId,
-    String? additionalVariables,
-    String? projectId,
+    String additionalVariables,
+    String projectId,
     Map<String, String>? softwareVersions,
     int? checkedAt,
     DeploymentType? type,
@@ -110,7 +110,7 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      serviceId: serviceId == const $CopyWithPlaceholder() || serviceId == null
+      serviceId: serviceId == const $CopyWithPlaceholder()
           ? _value.serviceId
           // ignore: cast_nullable_to_non_nullable
           : serviceId as String,
@@ -122,13 +122,11 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
           ? _value.clusterId
           // ignore: cast_nullable_to_non_nullable
           : clusterId as String?,
-      additionalVariables:
-          additionalVariables == const $CopyWithPlaceholder() ||
-                  additionalVariables == null
-              ? _value.additionalVariables
-              // ignore: cast_nullable_to_non_nullable
-              : additionalVariables as String,
-      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
+      additionalVariables: additionalVariables == const $CopyWithPlaceholder()
+          ? _value.additionalVariables
+          // ignore: cast_nullable_to_non_nullable
+          : additionalVariables as String,
+      projectId: projectId == const $CopyWithPlaceholder()
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -174,7 +172,7 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) =>
           (json['softwareVersions'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
-      checkedAt: json['checkedAt'] as int?,
+      checkedAt: (json['checkedAt'] as num?)?.toInt(),
       type: $enumDecodeNullable(_$DeploymentTypeEnumMap, json['type']),
       status: $enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
     );
@@ -188,9 +186,9 @@ Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) =>
       'projectId': instance.projectId,
       'additionalVariables': instance.additionalVariables,
       'softwareVersions': instance.softwareVersions,
-      'status': _$ServiceStatusEnumMap[instance.status],
+      'status': _$ServiceStatusEnumMap[instance.status]!,
       'checkedAt': instance.checkedAt,
-      'type': _$DeploymentTypeEnumMap[instance.type],
+      'type': _$DeploymentTypeEnumMap[instance.type]!,
     };
 
 const _$DeploymentTypeEnumMap = {

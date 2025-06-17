@@ -21,8 +21,8 @@ abstract class _$CmdCWProxy {
   /// ````
   Cmd call({
     String? id,
-    CmdType? type,
-    Map<String, dynamic>? properties,
+    CmdType type,
+    Map<String, dynamic> properties,
   });
 }
 
@@ -60,15 +60,14 @@ class _$CmdCWProxyImpl implements _$CmdCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      type: type == const $CopyWithPlaceholder() || type == null
+      type: type == const $CopyWithPlaceholder()
           ? _value.type
           // ignore: cast_nullable_to_non_nullable
           : type as CmdType,
-      properties:
-          properties == const $CopyWithPlaceholder() || properties == null
-              ? _value.properties
-              // ignore: cast_nullable_to_non_nullable
-              : properties as Map<String, dynamic>,
+      properties: properties == const $CopyWithPlaceholder()
+          ? _value.properties
+          // ignore: cast_nullable_to_non_nullable
+          : properties as Map<String, dynamic>,
     );
   }
 }
@@ -91,11 +90,11 @@ Cmd _$CmdFromJson(Map<String, dynamic> json) => Cmd(
 
 Map<String, dynamic> _$CmdToJson(Cmd instance) => <String, dynamic>{
       'id': instance.id,
-      'type': _$CmdTypeEnumMap[instance.type],
+      'type': _$CmdTypeEnumMap[instance.type]!,
       'properties': instance.properties,
     };
 
-const Map<CmdType, String> _$CmdTypeEnumMap = <CmdType, String>{
+const _$CmdTypeEnumMap = {
   CmdType.brandingDeploy: 'brandingDeploy',
   CmdType.deploy: 'deploy',
   CmdType.preDeploy: 'preDeploy',

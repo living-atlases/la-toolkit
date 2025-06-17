@@ -25,10 +25,10 @@ abstract class _$LAVariableCWProxy {
   /// ````
   LAVariable call({
     String? id,
-    String? nameInt,
-    LAServiceName? service,
+    String nameInt,
+    LAServiceName service,
     Object? value,
-    String? projectId,
+    String projectId,
   });
 }
 
@@ -73,19 +73,19 @@ class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      nameInt: nameInt == const $CopyWithPlaceholder() || nameInt == null
+      nameInt: nameInt == const $CopyWithPlaceholder()
           ? _value.nameInt
           // ignore: cast_nullable_to_non_nullable
           : nameInt as String,
-      service: service == const $CopyWithPlaceholder() || service == null
+      service: service == const $CopyWithPlaceholder()
           ? _value.service
           // ignore: cast_nullable_to_non_nullable
           : service as LAServiceName,
       value: value == const $CopyWithPlaceholder()
           ? _value.value
           // ignore: cast_nullable_to_non_nullable
-          : value,
-      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
+          : value as Object?,
+      projectId: projectId == const $CopyWithPlaceholder()
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -115,10 +115,10 @@ Map<String, dynamic> _$LAVariableToJson(LAVariable instance) =>
     <String, dynamic>{
       'id': instance.id,
       'nameInt': instance.nameInt,
-      'service': _$LAServiceNameEnumMap[instance.service],
+      'service': _$LAServiceNameEnumMap[instance.service]!,
       'value': instance.value,
       'projectId': instance.projectId,
-      'status': _$LAVariableStatusEnumMap[instance.status],
+      'status': _$LAVariableStatusEnumMap[instance.status]!,
     };
 
 const _$LAServiceNameEnumMap = {
@@ -165,6 +165,7 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.events: 'events',
   LAServiceName.events_elasticsearch: 'events_elasticsearch',
   LAServiceName.docker_swarm: 'docker_swarm',
+  LAServiceName.docker_common: 'docker_common',
   LAServiceName.gatus: 'gatus',
   LAServiceName.portainer: 'portainer',
   LAServiceName.cassandra: 'cassandra',
