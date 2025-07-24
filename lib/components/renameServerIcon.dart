@@ -30,7 +30,7 @@ class RenameServerIcon extends StatelessWidget {
             }));
   }
 
-  _generateRenameDialog(
+  void _generateRenameDialog(
       {required BuildContext context,
       required Function(String) onRename,
       required LAServer server}) {
