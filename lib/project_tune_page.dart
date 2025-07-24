@@ -68,7 +68,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
     }
   }
 
-  _onPressed(vm) {
+  void _onPressed(_ProjectTuneViewModel vm) {
     setState(() {
       _loading = true;
     });
@@ -625,11 +625,11 @@ class _ProjectTuneViewModel {
           softwareReleasesReady == other.softwareReleasesReady &&
           const DeepCollectionEquality.unordered()
               .equals(laReleases, other.laReleases) &&
-          const ListEquality()
+          const ListEquality<String>()
               .equals(generatorReleases, other.generatorReleases) &&
-          const ListEquality()
+          const ListEquality<String>()
               .equals(alaInstallReleases, other.alaInstallReleases) &&
-          const ListEquality().equals(sshKeys, other.sshKeys) &&
+          const ListEquality<SshKey>().equals(sshKeys, other.sshKeys) &&
           status == other.status;
 
   @override
@@ -639,8 +639,8 @@ class _ProjectTuneViewModel {
       currentTab.hashCode ^
       depsLoading.hashCode ^
       softwareReleasesReady.hashCode ^
-      const ListEquality().hash(sshKeys) ^
-      const ListEquality().hash(generatorReleases) ^
-      const ListEquality().hash(alaInstallReleases) ^
+      const ListEquality<SshKey>().hash(sshKeys) ^
+      const ListEquality<String>().hash(generatorReleases) ^
+      const ListEquality<String>().hash(alaInstallReleases) ^
       const DeepCollectionEquality.unordered().hash(laReleases);
 }

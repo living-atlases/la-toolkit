@@ -20,9 +20,9 @@ import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
 
 import 'components/appSnackBarMessage.dart';
 import 'models/appState.dart';
-import 'redux/appStateMiddleware.dart';
 import 'redux/app_actions.dart';
 import 'redux/app_reducer.dart';
+import 'redux/app_state_middleware.dart';
 import 'redux/loggingMiddleware.dart';
 import 'routes.dart';
 import 'utils/debounce.dart';

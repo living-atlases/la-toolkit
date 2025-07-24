@@ -233,7 +233,7 @@ void main() {
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(4));
     // no ssh keys
-    expect(testProject.validateCreation(debug: true), equals(false));
+    expect(testProject.validateCreation(), equals(false));
     vm1.sshKey = SshKey(name: 'k1', desc: '', encrypted: false);
     vm2.sshKey = SshKey(name: 'k2', desc: '', encrypted: false);
     vm3.sshKey = SshKey(name: 'k3', desc: '', encrypted: false);
@@ -254,7 +254,7 @@ void main() {
     testProject.getServicesNameListInUse().forEach((String service) {
       expect(testProject.getHostnames(service).isNotEmpty, equals(true));
     });
-    expect(testProject.validateCreation(debug: true), equals(true));
+    expect(testProject.validateCreation(), equals(true));
     expect(
         testProject.servers
             .where((LAServer element) => element.name == 'vm2')
