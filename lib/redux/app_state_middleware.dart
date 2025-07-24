@@ -72,7 +72,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   }
 
   @override
-  call(Store<AppState> store, action, next) async {
+  Future<void> call(Store<AppState> store, action, next) async {
     if (action is OnFetchSoftwareDepsState) {
       // ALA-INSTALL RELEASES
       final Uri alaInstallReleasesApiUrl = Uri.https('api.github.com',

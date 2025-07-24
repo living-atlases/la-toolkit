@@ -283,14 +283,12 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                             project.fstDeployed = true;
                                             project.status =
                                                 LAProjectStatus.inProduction;
-                                            project.validateCreation(
-                                                debug: true);
+                                            project.validateCreation();
                                             vm.onSaveProject(project);
                                           } else {
                                             project.status =
                                                 LAProjectStatus.firstDeploy;
-                                            project.validateCreation(
-                                                debug: true);
+                                            project.validateCreation();
                                             vm.onSaveProject(project);
                                           }
                                         })),
