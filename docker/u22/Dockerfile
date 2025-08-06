@@ -17,7 +17,7 @@ RUN python3 -m pip install setuptools
 RUN python3 -m pip install ansible==10.3.0 ansible-core==2.17.3
 
 # Install node via APT
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
         DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y nodejs && \
         rm -rf /var/lib/apt/lists/* && \
         apt-get clean
