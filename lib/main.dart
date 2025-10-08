@@ -6,12 +6,10 @@ import 'package:beamer/beamer.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:json_theme/json_theme.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -32,10 +30,14 @@ Future<void> main() async {
   //Chain.capture(() async {
   final AppStateMiddleware appStateMiddleware = AppStateMiddleware();
   WidgetsFlutterBinding.ensureInitialized();
-  final String themeStr =
-      await rootBundle.loadString('assets/appainter_theme.json');
-  final dynamic themeJson = jsonDecode(themeStr);
-  final ThemeData theme = ThemeDecoder.decodeThemeData(themeJson)!;
+
+  final ThemeData theme = ThemeData.from(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: const Color(0xff226c2e),
+      // brightness: Brightness.light,
+    ),
+    useMaterial3: true,
+  );
 
   const String dotFile =
       kReleaseMode ? 'env.production.txt' : 'env.development.txt';
@@ -173,7 +175,7 @@ class LaToolkitApp extends StatelessWidget {
         store: store,
         child: GlobalLoaderOverlay(
             // useDefaultLoading: true,
-            overlayColor: Colors.grey.withOpacity(0.5),
+            overlayColor: Colors.grey.withValues(alpha: 0.5),
             child: MaterialApp.router(
               routerDelegate: _routerDelegate,
               routeInformationParser: BeamerParser(),
