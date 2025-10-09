@@ -47,7 +47,7 @@ dependencies:
   # https://github.com/davigmacode/flutter_chips_choice/pull/21
   chips_choice: ^3.0.1
     #path: ../flutter/flutter_chips_choice
-    #git:
+  #git:
   #  url: https://github.com/vjrj/flutter_chips_choice.git
   percent_indicator: ^4.2.3
   rflutter_alert: ^2.0.2
@@ -205,7 +205,6 @@ flutter:
     - assets/images/themes/slate.png
     - assets/images/themes/superhero.png
     - assets/images/themes/yeti.png
-    - assets/appainter_theme.json
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
