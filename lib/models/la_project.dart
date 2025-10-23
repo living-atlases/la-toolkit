@@ -1553,7 +1553,7 @@ check results length: ${checkResults.length}''';
     return allIncompatibilities;
   }
 
-  bool get showSoftwareVersions => !isHub && allServicesAssigned();
+  bool get showSoftwareVersions => !isHub;
 
   bool get showToolkitDeps => !isHub;
 
