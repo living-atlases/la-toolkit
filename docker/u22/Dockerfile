@@ -49,7 +49,7 @@ RUN mkdir -p /home/ubuntu/.ssh/assh.d && \
     chown ubuntu:ubuntu -R /home/ubuntu/.ssh
 
 # assh install
-RUN curl -L -o /tmp/assh.tar.gz -O https://github.com/moul/assh/releases/download/v2.15.0/assh_2.15.0_linux_amd64.tar.gz
+RUN curl -L -o /tmp/assh.tar.gz -O https://github.com/moul/assh/releases/download/v2.16.0/assh_2.16.0_linux_amd64.tar.gz
 RUN cd /tmp/ && tar xfvz assh.tar.gz assh && mv assh /usr/local/bin/
 RUN chown root:root /usr/local/bin/assh
 RUN echo 'alias ssh="assh wrapper ssh --"' >> /home/ubuntu/.profile
