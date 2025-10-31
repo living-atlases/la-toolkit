@@ -6,6 +6,7 @@ import 'package:redux/redux.dart';
 import '../models/appState.dart';
 import '../models/deploymentType.dart';
 import '../models/laCluster.dart';
+import '../models/laReleases.dart';
 import '../models/laServer.dart';
 import '../models/la_project.dart';
 import '../models/la_service.dart';
@@ -23,6 +24,7 @@ class ServersCardList extends StatelessWidget {
         converter: (Store<AppState> store) {
       return ServersCardListViewModel(
           currentProject: store.state.currentProject,
+          laReleases: store.state.laReleases,
           onSaveCurrentProject: (LAProject project) {
             store.dispatch(SaveCurrentProject(project));
           });
@@ -117,7 +119,8 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                       servicesAssignable[sId] ?? <LAService>[],
                   allServices: widget.project.services,
                   onAssigned: (List<String> list) {
-                    widget.project.assignByType(sId, type, list);
+                    widget.project.assignByType(
+                        sId, type, list, null, widget.vm.laReleases);
                     widget.vm.onSaveCurrentProject(widget.project);
                   },
                   onUnassigned: (String service) {
@@ -194,10 +197,13 @@ class ServerServicesViewCard extends StatelessWidget {
 @immutable
 class ServersCardListViewModel {
   const ServersCardListViewModel(
-      {required this.currentProject, required this.onSaveCurrentProject});
+      {required this.currentProject,
+      required this.onSaveCurrentProject,
+      required this.laReleases});
 
   final LAProject currentProject;
   final void Function(LAProject project) onSaveCurrentProject;
+  final Map<String, LAReleases> laReleases;
 
   @override
   bool operator ==(Object other) =>

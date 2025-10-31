@@ -26,6 +26,7 @@ import 'isJsonSerializable.dart';
 import 'laCluster.dart';
 import 'laLatLng.dart';
 import 'laProjectStatus.dart';
+import 'laReleases.dart';
 import 'laServer.dart';
 import 'laServiceDeploy.dart';
 import 'laServiceDepsDesc.dart';
@@ -704,14 +705,16 @@ check results length: ${checkResults.length}''';
   }
 
   void assign(LAServer server, List<String> assignedServices,
-      [Map<String, String>? softwareVersions]) {
-    assignByType(
-        server.id, DeploymentType.vm, assignedServices, softwareVersions);
+      [Map<String, String>? softwareVersions,
+      Map<String, LAReleases>? laReleases]) {
+    assignByType(server.id, DeploymentType.vm, assignedServices,
+        softwareVersions, laReleases);
   }
 
   void assignByType(
       String sOrCId, DeploymentType type, List<String> assignedServices,
-      [Map<String, String>? softwareVersions]) {
+      [Map<String, String>? softwareVersions,
+      Map<String, LAReleases>? laReleases]) {
     final bool isServer = type == DeploymentType.vm;
     final String? serverId = isServer ? sOrCId : null;
     final String? clusterId = !isServer ? sOrCId : null;
@@ -738,7 +741,8 @@ check results length: ${checkResults.length}''';
               sD.clusterId == clusterId &&
               sD.type == type &&
               sD.serviceId == service.id, orElse: () {
-        final Map<String, String> versions = getServiceDefaultVersions(service);
+        final Map<String, String> versions =
+            getServiceDefaultVersions(service, laReleases);
 
         // First, try to get version from existing deploys of the same service (already persisted in BD)
         final String? existingVersion = getServiceDeployRelease(sN);
@@ -1479,23 +1483,40 @@ check results length: ${checkResults.length}''';
       createdAt.hashCode ^
       mapZoom.hashCode;
 
-  Map<String, String> getServiceDefaultVersions(LAService service) {
+  Map<String, String> getServiceDefaultVersions(LAService service,
+      [Map<String, LAReleases>? laReleases]) {
     final Map<String, String> defVersions = <String, String>{};
     final String nameInt = service.nameInt;
-    if (alaInstallRelease != null) {
-      defVersions[nameInt] = _setDefSwVersion(nameInt);
+
+    // Priority 1: Try to use the latest available version from backend
+    if (laReleases != null && laReleases.containsKey(nameInt)) {
+      final String? latestVersion = laReleases[nameInt]!.latest;
+      if (latestVersion != null && latestVersion.isNotEmpty) {
+        defVersions[nameInt] = latestVersion;
+        return defVersions;
+      }
     }
-    defVersions.removeWhere((String key, String value) => value == '');
+
+    // Priority 2 (last resort): Use hardcoded default versions if backend not available
+    if (alaInstallRelease != null) {
+      final String version = _setDefSwVersion(nameInt);
+      // Keep the entry in the map even if empty, so dependency checks can find the service
+      // Use empty string '' instead of 'custom' to avoid breaking other code
+      defVersions[nameInt] = version; // Will be '' if no default version exists
+    }
+
     return defVersions;
   }
 
   /// Get the user-selected version for a service, or the default version if none selected
-  String? getSelectedOrDefaultVersion(String serviceName) {
+  String? getSelectedOrDefaultVersion(String serviceName,
+      [Map<String, LAReleases>? laReleases]) {
     if (selectedVersions.containsKey(serviceName)) {
       return selectedVersions[serviceName];
     }
     final LAService service = getService(serviceName);
-    final Map<String, String> defaults = getServiceDefaultVersions(service);
+    final Map<String, String> defaults =
+        getServiceDefaultVersions(service, laReleases);
     return defaults[serviceName];
   }
 

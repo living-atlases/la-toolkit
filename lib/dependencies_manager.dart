@@ -46,7 +46,8 @@ class DependenciesManager {
         final String swForHumans = LAServiceDesc.swNameWithAliasForHumans(sw);
         if (version != 'custom' &&
             version != 'upstream' &&
-            version != 'la-develop') {
+            version != 'la-develop' &&
+            version.isNotEmpty) {
           if (Dependencies.map[sw] != null) {
             final Version versionP = v(version);
             Dependencies.map[sw]!.forEach((VersionConstraint mainConstraint,
@@ -75,6 +76,7 @@ class DependenciesManager {
                     if (versionOfDep != 'custom' &&
                         versionOfDep != 'upstream' &&
                         versionOfDep != 'la-develop' &&
+                        versionOfDep.isNotEmpty &&
                         !constraint.allows(v(versionOfDep))) {
                       lintErrors.add(sw == toolkit
                           ? '$dependency recommended version should be $constraint'
@@ -111,7 +113,8 @@ class DependenciesManager {
           }
           if (version != 'custom' &&
               version != 'upstream' &&
-              version != 'la-develop') {
+              version != 'la-develop' &&
+              version.isNotEmpty) {
             if (MigrationNotes.map[sw] != null) {
               final Version versionP = v(version);
               MigrationNotes.map[sw]!.forEach((VersionConstraint mainConstraint,
@@ -213,7 +216,8 @@ class DependenciesManager {
               Dependencies.map[sw];
           if (version != 'custom' &&
               version != 'upstream' &&
-              version != 'la-develop') {
+              version != 'la-develop' &&
+              version.isNotEmpty) {
             if (deps != null) {
               final Version versionP = v(version);
               deps.forEach((VersionConstraint mainConstraint,
