@@ -15,12 +15,13 @@ abstract class _$LAReleasesCWProxy {
 
   LAReleases versions(List<String> versions);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAReleases(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAReleases(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAReleases(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAReleases call({
     String name,
     String artifacts,
@@ -29,32 +30,34 @@ abstract class _$LAReleasesCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAReleases.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAReleases.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfLAReleases.copyWith(...)` or call `instanceOfLAReleases.copyWith.fieldName(value)` for a single field.
 class _$LAReleasesCWProxyImpl implements _$LAReleasesCWProxy {
   const _$LAReleasesCWProxyImpl(this._value);
 
   final LAReleases _value;
 
   @override
-  LAReleases name(String name) => this(name: name);
+  LAReleases name(String name) => call(name: name);
 
   @override
-  LAReleases artifacts(String artifacts) => this(artifacts: artifacts);
+  LAReleases artifacts(String artifacts) => call(artifacts: artifacts);
 
   @override
-  LAReleases latest(String? latest) => this(latest: latest);
+  LAReleases latest(String? latest) => call(latest: latest);
 
   @override
-  LAReleases versions(List<String> versions) => this(versions: versions);
+  LAReleases versions(List<String> versions) => call(versions: versions);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAReleases(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAReleases(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAReleases(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAReleases call({
     Object? name = const $CopyWithPlaceholder(),
     Object? artifacts = const $CopyWithPlaceholder(),
@@ -62,11 +65,11 @@ class _$LAReleasesCWProxyImpl implements _$LAReleasesCWProxy {
     Object? versions = const $CopyWithPlaceholder(),
   }) {
     return LAReleases(
-      name: name == const $CopyWithPlaceholder()
+      name: name == const $CopyWithPlaceholder() || name == null
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      artifacts: artifacts == const $CopyWithPlaceholder()
+      artifacts: artifacts == const $CopyWithPlaceholder() || artifacts == null
           ? _value.artifacts
           // ignore: cast_nullable_to_non_nullable
           : artifacts as String,
@@ -74,7 +77,7 @@ class _$LAReleasesCWProxyImpl implements _$LAReleasesCWProxy {
           ? _value.latest
           // ignore: cast_nullable_to_non_nullable
           : latest as String?,
-      versions: versions == const $CopyWithPlaceholder()
+      versions: versions == const $CopyWithPlaceholder() || versions == null
           ? _value.versions
           // ignore: cast_nullable_to_non_nullable
           : versions as List<String>,
@@ -83,7 +86,8 @@ class _$LAReleasesCWProxyImpl implements _$LAReleasesCWProxy {
 }
 
 extension $LAReleasesCopyWith on LAReleases {
-  /// Returns a callable class that can be used as follows: `instanceOfLAReleases.copyWith(...)` or like so:`instanceOfLAReleases.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfLAReleases.copyWith(...)` or `instanceOfLAReleases.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$LAReleasesCWProxy get copyWith => _$LAReleasesCWProxyImpl(this);
 }

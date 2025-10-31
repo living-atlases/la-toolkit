@@ -35,12 +35,13 @@ abstract class _$LAServerCWProxy {
 
   LAServer projectId(String projectId);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAServer(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAServer(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAServer(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAServer call({
     String? id,
     String name,
@@ -59,64 +60,66 @@ abstract class _$LAServerCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAServer.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAServer.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfLAServer.copyWith(...)` or call `instanceOfLAServer.copyWith.fieldName(value)` for a single field.
 class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
   const _$LAServerCWProxyImpl(this._value);
 
   final LAServer _value;
 
   @override
-  LAServer id(String? id) => this(id: id);
+  LAServer id(String? id) => call(id: id);
 
   @override
-  LAServer name(String name) => this(name: name);
+  LAServer name(String name) => call(name: name);
 
   @override
-  LAServer ip(String? ip) => this(ip: ip);
+  LAServer ip(String? ip) => call(ip: ip);
 
   @override
-  LAServer sshPort(int sshPort) => this(sshPort: sshPort);
+  LAServer sshPort(int sshPort) => call(sshPort: sshPort);
 
   @override
-  LAServer sshUser(String? sshUser) => this(sshUser: sshUser);
+  LAServer sshUser(String? sshUser) => call(sshUser: sshUser);
 
   @override
-  LAServer aliases(List<String>? aliases) => this(aliases: aliases);
+  LAServer aliases(List<String>? aliases) => call(aliases: aliases);
 
   @override
-  LAServer gateways(List<String>? gateways) => this(gateways: gateways);
+  LAServer gateways(List<String>? gateways) => call(gateways: gateways);
 
   @override
-  LAServer sshKey(SshKey? sshKey) => this(sshKey: sshKey);
+  LAServer sshKey(SshKey? sshKey) => call(sshKey: sshKey);
 
   @override
-  LAServer reachable(ServiceStatus reachable) => this(reachable: reachable);
+  LAServer reachable(ServiceStatus reachable) => call(reachable: reachable);
 
   @override
   LAServer sshReachable(ServiceStatus sshReachable) =>
-      this(sshReachable: sshReachable);
+      call(sshReachable: sshReachable);
 
   @override
   LAServer sudoEnabled(ServiceStatus sudoEnabled) =>
-      this(sudoEnabled: sudoEnabled);
+      call(sudoEnabled: sudoEnabled);
 
   @override
-  LAServer osName(String osName) => this(osName: osName);
+  LAServer osName(String osName) => call(osName: osName);
 
   @override
-  LAServer osVersion(String osVersion) => this(osVersion: osVersion);
+  LAServer osVersion(String osVersion) => call(osVersion: osVersion);
 
   @override
-  LAServer projectId(String projectId) => this(projectId: projectId);
+  LAServer projectId(String projectId) => call(projectId: projectId);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAServer(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAServer(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAServer(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAServer call({
     Object? id = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
@@ -138,7 +141,7 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      name: name == const $CopyWithPlaceholder()
+      name: name == const $CopyWithPlaceholder() || name == null
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
@@ -146,7 +149,7 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
           ? _value.ip
           // ignore: cast_nullable_to_non_nullable
           : ip as String?,
-      sshPort: sshPort == const $CopyWithPlaceholder()
+      sshPort: sshPort == const $CopyWithPlaceholder() || sshPort == null
           ? _value.sshPort
           // ignore: cast_nullable_to_non_nullable
           : sshPort as int,
@@ -166,27 +169,29 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
           ? _value.sshKey
           // ignore: cast_nullable_to_non_nullable
           : sshKey as SshKey?,
-      reachable: reachable == const $CopyWithPlaceholder()
+      reachable: reachable == const $CopyWithPlaceholder() || reachable == null
           ? _value.reachable
           // ignore: cast_nullable_to_non_nullable
           : reachable as ServiceStatus,
-      sshReachable: sshReachable == const $CopyWithPlaceholder()
-          ? _value.sshReachable
-          // ignore: cast_nullable_to_non_nullable
-          : sshReachable as ServiceStatus,
-      sudoEnabled: sudoEnabled == const $CopyWithPlaceholder()
-          ? _value.sudoEnabled
-          // ignore: cast_nullable_to_non_nullable
-          : sudoEnabled as ServiceStatus,
-      osName: osName == const $CopyWithPlaceholder()
+      sshReachable:
+          sshReachable == const $CopyWithPlaceholder() || sshReachable == null
+              ? _value.sshReachable
+              // ignore: cast_nullable_to_non_nullable
+              : sshReachable as ServiceStatus,
+      sudoEnabled:
+          sudoEnabled == const $CopyWithPlaceholder() || sudoEnabled == null
+              ? _value.sudoEnabled
+              // ignore: cast_nullable_to_non_nullable
+              : sudoEnabled as ServiceStatus,
+      osName: osName == const $CopyWithPlaceholder() || osName == null
           ? _value.osName
           // ignore: cast_nullable_to_non_nullable
           : osName as String,
-      osVersion: osVersion == const $CopyWithPlaceholder()
+      osVersion: osVersion == const $CopyWithPlaceholder() || osVersion == null
           ? _value.osVersion
           // ignore: cast_nullable_to_non_nullable
           : osVersion as String,
-      projectId: projectId == const $CopyWithPlaceholder()
+      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -195,7 +200,8 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
 }
 
 extension $LAServerCopyWith on LAServer {
-  /// Returns a callable class that can be used as follows: `instanceOfLAServer.copyWith(...)` or like so:`instanceOfLAServer.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfLAServer.copyWith(...)` or `instanceOfLAServer.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$LAServerCWProxy get copyWith => _$LAServerCWProxyImpl(this);
 }

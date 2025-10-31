@@ -75,12 +75,15 @@ abstract class _$LAProjectCWProxy {
 
   LAProject runningVersions(Map<String, String>? runningVersions);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAProject(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  LAProject selectedVersions(Map<String, String>? selectedVersions);
+
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAProject(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAProject(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAProject call({
     String? id,
     String longName,
@@ -116,141 +119,148 @@ abstract class _$LAProjectCWProxy {
     Map<String, List<String>>? clusterServices,
     Map<String, dynamic>? checkResults,
     Map<String, String>? runningVersions,
+    Map<String, String>? selectedVersions,
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAProject.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAProject.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfLAProject.copyWith(...)` or call `instanceOfLAProject.copyWith.fieldName(value)` for a single field.
 class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
   const _$LAProjectCWProxyImpl(this._value);
 
   final LAProject _value;
 
   @override
-  LAProject id(String? id) => this(id: id);
+  LAProject id(String? id) => call(id: id);
 
   @override
-  LAProject longName(String longName) => this(longName: longName);
+  LAProject longName(String longName) => call(longName: longName);
 
   @override
-  LAProject shortName(String shortName) => this(shortName: shortName);
+  LAProject shortName(String shortName) => call(shortName: shortName);
 
   @override
-  LAProject domain(String? domain) => this(domain: domain);
+  LAProject domain(String? domain) => call(domain: domain);
 
   @override
-  LAProject dirName(String? dirName) => this(dirName: dirName);
+  LAProject dirName(String? dirName) => call(dirName: dirName);
 
   @override
-  LAProject useSSL(bool useSSL) => this(useSSL: useSSL);
+  LAProject useSSL(bool useSSL) => call(useSSL: useSSL);
 
   @override
-  LAProject isCreated(bool isCreated) => this(isCreated: isCreated);
+  LAProject isCreated(bool isCreated) => call(isCreated: isCreated);
 
   @override
-  LAProject isHub(bool isHub) => this(isHub: isHub);
+  LAProject isHub(bool isHub) => call(isHub: isHub);
 
   @override
-  LAProject fstDeployed(bool? fstDeployed) => this(fstDeployed: fstDeployed);
+  LAProject fstDeployed(bool? fstDeployed) => call(fstDeployed: fstDeployed);
 
   @override
   LAProject additionalVariables(String additionalVariables) =>
-      this(additionalVariables: additionalVariables);
+      call(additionalVariables: additionalVariables);
 
   @override
-  LAProject status(LAProjectStatus status) => this(status: status);
+  LAProject status(LAProjectStatus status) => call(status: status);
 
   @override
   LAProject alaInstallRelease(String? alaInstallRelease) =>
-      this(alaInstallRelease: alaInstallRelease);
+      call(alaInstallRelease: alaInstallRelease);
 
   @override
   LAProject generatorRelease(String? generatorRelease) =>
-      this(generatorRelease: generatorRelease);
+      call(generatorRelease: generatorRelease);
 
   @override
   LAProject mapBoundsFstPoint(LALatLng? mapBoundsFstPoint) =>
-      this(mapBoundsFstPoint: mapBoundsFstPoint);
+      call(mapBoundsFstPoint: mapBoundsFstPoint);
 
   @override
   LAProject mapBoundsSndPoint(LALatLng? mapBoundsSndPoint) =>
-      this(mapBoundsSndPoint: mapBoundsSndPoint);
+      call(mapBoundsSndPoint: mapBoundsSndPoint);
 
   @override
-  LAProject theme(String theme) => this(theme: theme);
+  LAProject theme(String theme) => call(theme: theme);
 
   @override
-  LAProject mapZoom(double? mapZoom) => this(mapZoom: mapZoom);
+  LAProject mapZoom(double? mapZoom) => call(mapZoom: mapZoom);
 
   @override
   LAProject lastCmdEntry(CmdHistoryEntry? lastCmdEntry) =>
-      this(lastCmdEntry: lastCmdEntry);
+      call(lastCmdEntry: lastCmdEntry);
 
   @override
   LAProject lastCmdDetails(CmdHistoryDetails? lastCmdDetails) =>
-      this(lastCmdDetails: lastCmdDetails);
+      call(lastCmdDetails: lastCmdDetails);
 
   @override
   LAProject advancedEdit(bool? advancedEdit) =>
-      this(advancedEdit: advancedEdit);
+      call(advancedEdit: advancedEdit);
 
   @override
   LAProject advancedTune(bool? advancedTune) =>
-      this(advancedTune: advancedTune);
+      call(advancedTune: advancedTune);
 
   @override
   LAProject variables(List<LAVariable>? variables) =>
-      this(variables: variables);
+      call(variables: variables);
 
   @override
   LAProject cmdHistoryEntries(List<CmdHistoryEntry>? cmdHistoryEntries) =>
-      this(cmdHistoryEntries: cmdHistoryEntries);
+      call(cmdHistoryEntries: cmdHistoryEntries);
 
   @override
-  LAProject servers(List<LAServer>? servers) => this(servers: servers);
+  LAProject servers(List<LAServer>? servers) => call(servers: servers);
 
   @override
-  LAProject clusters(List<LACluster>? clusters) => this(clusters: clusters);
+  LAProject clusters(List<LACluster>? clusters) => call(clusters: clusters);
 
   @override
-  LAProject services(List<LAService>? services) => this(services: services);
+  LAProject services(List<LAService>? services) => call(services: services);
 
   @override
   LAProject serviceDeploys(List<LAServiceDeploy>? serviceDeploys) =>
-      this(serviceDeploys: serviceDeploys);
+      call(serviceDeploys: serviceDeploys);
 
   @override
-  LAProject parent(LAProject? parent) => this(parent: parent);
+  LAProject parent(LAProject? parent) => call(parent: parent);
 
   @override
-  LAProject hubs(List<LAProject>? hubs) => this(hubs: hubs);
+  LAProject hubs(List<LAProject>? hubs) => call(hubs: hubs);
 
   @override
-  LAProject createdAt(int? createdAt) => this(createdAt: createdAt);
+  LAProject createdAt(int? createdAt) => call(createdAt: createdAt);
 
   @override
   LAProject serverServices(Map<String, List<String>>? serverServices) =>
-      this(serverServices: serverServices);
+      call(serverServices: serverServices);
 
   @override
   LAProject clusterServices(Map<String, List<String>>? clusterServices) =>
-      this(clusterServices: clusterServices);
+      call(clusterServices: clusterServices);
 
   @override
   LAProject checkResults(Map<String, dynamic>? checkResults) =>
-      this(checkResults: checkResults);
+      call(checkResults: checkResults);
 
   @override
   LAProject runningVersions(Map<String, String>? runningVersions) =>
-      this(runningVersions: runningVersions);
+      call(runningVersions: runningVersions);
+
+  @override
+  LAProject selectedVersions(Map<String, String>? selectedVersions) =>
+      call(selectedVersions: selectedVersions);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAProject(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAProject(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAProject(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAProject call({
     Object? id = const $CopyWithPlaceholder(),
     Object? longName = const $CopyWithPlaceholder(),
@@ -286,17 +296,18 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
     Object? clusterServices = const $CopyWithPlaceholder(),
     Object? checkResults = const $CopyWithPlaceholder(),
     Object? runningVersions = const $CopyWithPlaceholder(),
+    Object? selectedVersions = const $CopyWithPlaceholder(),
   }) {
     return LAProject(
       id: id == const $CopyWithPlaceholder()
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      longName: longName == const $CopyWithPlaceholder()
+      longName: longName == const $CopyWithPlaceholder() || longName == null
           ? _value.longName
           // ignore: cast_nullable_to_non_nullable
           : longName as String,
-      shortName: shortName == const $CopyWithPlaceholder()
+      shortName: shortName == const $CopyWithPlaceholder() || shortName == null
           ? _value.shortName
           // ignore: cast_nullable_to_non_nullable
           : shortName as String,
@@ -308,15 +319,15 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.dirName
           // ignore: cast_nullable_to_non_nullable
           : dirName as String?,
-      useSSL: useSSL == const $CopyWithPlaceholder()
+      useSSL: useSSL == const $CopyWithPlaceholder() || useSSL == null
           ? _value.useSSL
           // ignore: cast_nullable_to_non_nullable
           : useSSL as bool,
-      isCreated: isCreated == const $CopyWithPlaceholder()
+      isCreated: isCreated == const $CopyWithPlaceholder() || isCreated == null
           ? _value.isCreated
           // ignore: cast_nullable_to_non_nullable
           : isCreated as bool,
-      isHub: isHub == const $CopyWithPlaceholder()
+      isHub: isHub == const $CopyWithPlaceholder() || isHub == null
           ? _value.isHub
           // ignore: cast_nullable_to_non_nullable
           : isHub as bool,
@@ -324,11 +335,13 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.fstDeployed
           // ignore: cast_nullable_to_non_nullable
           : fstDeployed as bool?,
-      additionalVariables: additionalVariables == const $CopyWithPlaceholder()
-          ? _value.additionalVariables
-          // ignore: cast_nullable_to_non_nullable
-          : additionalVariables as String,
-      status: status == const $CopyWithPlaceholder()
+      additionalVariables:
+          additionalVariables == const $CopyWithPlaceholder() ||
+                  additionalVariables == null
+              ? _value.additionalVariables
+              // ignore: cast_nullable_to_non_nullable
+              : additionalVariables as String,
+      status: status == const $CopyWithPlaceholder() || status == null
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
           : status as LAProjectStatus,
@@ -348,7 +361,7 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.mapBoundsSndPoint
           // ignore: cast_nullable_to_non_nullable
           : mapBoundsSndPoint as LALatLng?,
-      theme: theme == const $CopyWithPlaceholder()
+      theme: theme == const $CopyWithPlaceholder() || theme == null
           ? _value.theme
           // ignore: cast_nullable_to_non_nullable
           : theme as String,
@@ -424,12 +437,17 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.runningVersions
           // ignore: cast_nullable_to_non_nullable
           : runningVersions as Map<String, String>?,
+      selectedVersions: selectedVersions == const $CopyWithPlaceholder()
+          ? _value.selectedVersions
+          // ignore: cast_nullable_to_non_nullable
+          : selectedVersions as Map<String, String>?,
     );
   }
 }
 
 extension $LAProjectCopyWith on LAProject {
-  /// Returns a callable class that can be used as follows: `instanceOfLAProject.copyWith(...)` or like so:`instanceOfLAProject.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfLAProject.copyWith(...)` or `instanceOfLAProject.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$LAProjectCWProxy get copyWith => _$LAProjectCWProxyImpl(this);
 }

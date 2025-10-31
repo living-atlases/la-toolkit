@@ -15,12 +15,13 @@ abstract class _$LAClusterCWProxy {
 
   LACluster projectId(String projectId);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LACluster(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LACluster(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LACluster(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LACluster call({
     String? id,
     String name,
@@ -29,32 +30,34 @@ abstract class _$LAClusterCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLACluster.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLACluster.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfLACluster.copyWith(...)` or call `instanceOfLACluster.copyWith.fieldName(value)` for a single field.
 class _$LAClusterCWProxyImpl implements _$LAClusterCWProxy {
   const _$LAClusterCWProxyImpl(this._value);
 
   final LACluster _value;
 
   @override
-  LACluster id(String? id) => this(id: id);
+  LACluster id(String? id) => call(id: id);
 
   @override
-  LACluster name(String name) => this(name: name);
+  LACluster name(String name) => call(name: name);
 
   @override
-  LACluster type(DeploymentType type) => this(type: type);
+  LACluster type(DeploymentType type) => call(type: type);
 
   @override
-  LACluster projectId(String projectId) => this(projectId: projectId);
+  LACluster projectId(String projectId) => call(projectId: projectId);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LACluster(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LACluster(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LACluster(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LACluster call({
     Object? id = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
@@ -66,15 +69,15 @@ class _$LAClusterCWProxyImpl implements _$LAClusterCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      name: name == const $CopyWithPlaceholder()
+      name: name == const $CopyWithPlaceholder() || name == null
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      type: type == const $CopyWithPlaceholder()
+      type: type == const $CopyWithPlaceholder() || type == null
           ? _value.type
           // ignore: cast_nullable_to_non_nullable
           : type as DeploymentType,
-      projectId: projectId == const $CopyWithPlaceholder()
+      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -83,7 +86,8 @@ class _$LAClusterCWProxyImpl implements _$LAClusterCWProxy {
 }
 
 extension $LAClusterCopyWith on LACluster {
-  /// Returns a callable class that can be used as follows: `instanceOfLACluster.copyWith(...)` or like so:`instanceOfLACluster.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfLACluster.copyWith(...)` or `instanceOfLACluster.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$LAClusterCWProxy get copyWith => _$LAClusterCWProxyImpl(this);
 }

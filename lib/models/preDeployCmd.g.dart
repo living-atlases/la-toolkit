@@ -35,12 +35,13 @@ abstract class _$PreDeployCmdCWProxy {
 
   PreDeployCmd dryRun(bool dryRun);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PreDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `PreDeployCmd(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// PreDeployCmd(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   PreDeployCmd call({
     bool addAnsibleUser,
     bool addSshKeys,
@@ -59,7 +60,8 @@ abstract class _$PreDeployCmdCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfPreDeployCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfPreDeployCmd.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfPreDeployCmd.copyWith(...)` or call `instanceOfPreDeployCmd.copyWith.fieldName(value)` for a single field.
 class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
   const _$PreDeployCmdCWProxyImpl(this._value);
 
@@ -67,58 +69,59 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
 
   @override
   PreDeployCmd addAnsibleUser(bool addAnsibleUser) =>
-      this(addAnsibleUser: addAnsibleUser);
+      call(addAnsibleUser: addAnsibleUser);
 
   @override
-  PreDeployCmd addSshKeys(bool addSshKeys) => this(addSshKeys: addSshKeys);
+  PreDeployCmd addSshKeys(bool addSshKeys) => call(addSshKeys: addSshKeys);
 
   @override
-  PreDeployCmd giveSudo(bool giveSudo) => this(giveSudo: giveSudo);
+  PreDeployCmd giveSudo(bool giveSudo) => call(giveSudo: giveSudo);
 
   @override
-  PreDeployCmd etcHosts(bool etcHosts) => this(etcHosts: etcHosts);
+  PreDeployCmd etcHosts(bool etcHosts) => call(etcHosts: etcHosts);
 
   @override
-  PreDeployCmd solrLimits(bool solrLimits) => this(solrLimits: solrLimits);
+  PreDeployCmd solrLimits(bool solrLimits) => call(solrLimits: solrLimits);
 
   @override
   PreDeployCmd addAdditionalDeps(bool addAdditionalDeps) =>
-      this(addAdditionalDeps: addAdditionalDeps);
+      call(addAdditionalDeps: addAdditionalDeps);
 
   @override
-  PreDeployCmd rootBecome(bool? rootBecome) => this(rootBecome: rootBecome);
+  PreDeployCmd rootBecome(bool? rootBecome) => call(rootBecome: rootBecome);
 
   @override
   PreDeployCmd limitToServers(List<String>? limitToServers) =>
-      this(limitToServers: limitToServers);
+      call(limitToServers: limitToServers);
 
   @override
-  PreDeployCmd skipTags(List<String>? skipTags) => this(skipTags: skipTags);
+  PreDeployCmd skipTags(List<String>? skipTags) => call(skipTags: skipTags);
 
   @override
-  PreDeployCmd tags(List<String>? tags) => this(tags: tags);
+  PreDeployCmd tags(List<String>? tags) => call(tags: tags);
 
   @override
-  PreDeployCmd advanced(bool advanced) => this(advanced: advanced);
+  PreDeployCmd advanced(bool advanced) => call(advanced: advanced);
 
   @override
   PreDeployCmd continueEvenIfFails(bool continueEvenIfFails) =>
-      this(continueEvenIfFails: continueEvenIfFails);
+      call(continueEvenIfFails: continueEvenIfFails);
 
   @override
-  PreDeployCmd debug(bool debug) => this(debug: debug);
+  PreDeployCmd debug(bool debug) => call(debug: debug);
 
   @override
-  PreDeployCmd dryRun(bool dryRun) => this(dryRun: dryRun);
+  PreDeployCmd dryRun(bool dryRun) => call(dryRun: dryRun);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PreDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `PreDeployCmd(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// PreDeployCmd(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   PreDeployCmd call({
     Object? addAnsibleUser = const $CopyWithPlaceholder(),
     Object? addSshKeys = const $CopyWithPlaceholder(),
@@ -136,27 +139,31 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
     Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PreDeployCmd(
-      addAnsibleUser: addAnsibleUser == const $CopyWithPlaceholder()
+      addAnsibleUser: addAnsibleUser == const $CopyWithPlaceholder() ||
+              addAnsibleUser == null
           ? _value.addAnsibleUser
           // ignore: cast_nullable_to_non_nullable
           : addAnsibleUser as bool,
-      addSshKeys: addSshKeys == const $CopyWithPlaceholder()
-          ? _value.addSshKeys
-          // ignore: cast_nullable_to_non_nullable
-          : addSshKeys as bool,
-      giveSudo: giveSudo == const $CopyWithPlaceholder()
+      addSshKeys:
+          addSshKeys == const $CopyWithPlaceholder() || addSshKeys == null
+              ? _value.addSshKeys
+              // ignore: cast_nullable_to_non_nullable
+              : addSshKeys as bool,
+      giveSudo: giveSudo == const $CopyWithPlaceholder() || giveSudo == null
           ? _value.giveSudo
           // ignore: cast_nullable_to_non_nullable
           : giveSudo as bool,
-      etcHosts: etcHosts == const $CopyWithPlaceholder()
+      etcHosts: etcHosts == const $CopyWithPlaceholder() || etcHosts == null
           ? _value.etcHosts
           // ignore: cast_nullable_to_non_nullable
           : etcHosts as bool,
-      solrLimits: solrLimits == const $CopyWithPlaceholder()
-          ? _value.solrLimits
-          // ignore: cast_nullable_to_non_nullable
-          : solrLimits as bool,
-      addAdditionalDeps: addAdditionalDeps == const $CopyWithPlaceholder()
+      solrLimits:
+          solrLimits == const $CopyWithPlaceholder() || solrLimits == null
+              ? _value.solrLimits
+              // ignore: cast_nullable_to_non_nullable
+              : solrLimits as bool,
+      addAdditionalDeps: addAdditionalDeps == const $CopyWithPlaceholder() ||
+              addAdditionalDeps == null
           ? _value.addAdditionalDeps
           // ignore: cast_nullable_to_non_nullable
           : addAdditionalDeps as bool,
@@ -176,19 +183,21 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
           ? _value.tags
           // ignore: cast_nullable_to_non_nullable
           : tags as List<String>?,
-      advanced: advanced == const $CopyWithPlaceholder()
+      advanced: advanced == const $CopyWithPlaceholder() || advanced == null
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
           : advanced as bool,
-      continueEvenIfFails: continueEvenIfFails == const $CopyWithPlaceholder()
-          ? _value.continueEvenIfFails
-          // ignore: cast_nullable_to_non_nullable
-          : continueEvenIfFails as bool,
-      debug: debug == const $CopyWithPlaceholder()
+      continueEvenIfFails:
+          continueEvenIfFails == const $CopyWithPlaceholder() ||
+                  continueEvenIfFails == null
+              ? _value.continueEvenIfFails
+              // ignore: cast_nullable_to_non_nullable
+              : continueEvenIfFails as bool,
+      debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
           : debug as bool,
-      dryRun: dryRun == const $CopyWithPlaceholder()
+      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
           ? _value.dryRun
           // ignore: cast_nullable_to_non_nullable
           : dryRun as bool,
@@ -197,7 +206,8 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
 }
 
 extension $PreDeployCmdCopyWith on PreDeployCmd {
-  /// Returns a callable class that can be used as follows: `instanceOfPreDeployCmd.copyWith(...)` or like so:`instanceOfPreDeployCmd.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfPreDeployCmd.copyWith(...)` or `instanceOfPreDeployCmd.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$PreDeployCmdCWProxy get copyWith => _$PreDeployCmdCWProxyImpl(this);
 }

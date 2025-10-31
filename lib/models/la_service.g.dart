@@ -23,12 +23,13 @@ abstract class _$LAServiceCWProxy {
 
   LAService projectId(String projectId);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAService(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAService(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAService(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAService call({
     String? id,
     String nameInt,
@@ -41,45 +42,47 @@ abstract class _$LAServiceCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAService.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAService.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfLAService.copyWith(...)` or call `instanceOfLAService.copyWith.fieldName(value)` for a single field.
 class _$LAServiceCWProxyImpl implements _$LAServiceCWProxy {
   const _$LAServiceCWProxyImpl(this._value);
 
   final LAService _value;
 
   @override
-  LAService id(String? id) => this(id: id);
+  LAService id(String? id) => call(id: id);
 
   @override
-  LAService nameInt(String nameInt) => this(nameInt: nameInt);
+  LAService nameInt(String nameInt) => call(nameInt: nameInt);
 
   @override
-  LAService iniPath(String iniPath) => this(iniPath: iniPath);
+  LAService iniPath(String iniPath) => call(iniPath: iniPath);
 
   @override
-  LAService use(bool use) => this(use: use);
+  LAService use(bool use) => call(use: use);
 
   @override
   LAService usesSubdomain(bool usesSubdomain) =>
-      this(usesSubdomain: usesSubdomain);
+      call(usesSubdomain: usesSubdomain);
 
   @override
-  LAService status(ServiceStatus? status) => this(status: status);
+  LAService status(ServiceStatus? status) => call(status: status);
 
   @override
-  LAService suburl(String suburl) => this(suburl: suburl);
+  LAService suburl(String suburl) => call(suburl: suburl);
 
   @override
-  LAService projectId(String projectId) => this(projectId: projectId);
+  LAService projectId(String projectId) => call(projectId: projectId);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAService(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAService(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAService(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAService call({
     Object? id = const $CopyWithPlaceholder(),
     Object? nameInt = const $CopyWithPlaceholder(),
@@ -95,31 +98,32 @@ class _$LAServiceCWProxyImpl implements _$LAServiceCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      nameInt: nameInt == const $CopyWithPlaceholder()
+      nameInt: nameInt == const $CopyWithPlaceholder() || nameInt == null
           ? _value.nameInt
           // ignore: cast_nullable_to_non_nullable
           : nameInt as String,
-      iniPath: iniPath == const $CopyWithPlaceholder()
+      iniPath: iniPath == const $CopyWithPlaceholder() || iniPath == null
           ? _value.iniPath
           // ignore: cast_nullable_to_non_nullable
           : iniPath as String,
-      use: use == const $CopyWithPlaceholder()
+      use: use == const $CopyWithPlaceholder() || use == null
           ? _value.use
           // ignore: cast_nullable_to_non_nullable
           : use as bool,
-      usesSubdomain: usesSubdomain == const $CopyWithPlaceholder()
-          ? _value.usesSubdomain
-          // ignore: cast_nullable_to_non_nullable
-          : usesSubdomain as bool,
+      usesSubdomain:
+          usesSubdomain == const $CopyWithPlaceholder() || usesSubdomain == null
+              ? _value.usesSubdomain
+              // ignore: cast_nullable_to_non_nullable
+              : usesSubdomain as bool,
       status: status == const $CopyWithPlaceholder()
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
           : status as ServiceStatus?,
-      suburl: suburl == const $CopyWithPlaceholder()
+      suburl: suburl == const $CopyWithPlaceholder() || suburl == null
           ? _value.suburl
           // ignore: cast_nullable_to_non_nullable
           : suburl as String,
-      projectId: projectId == const $CopyWithPlaceholder()
+      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -128,7 +132,8 @@ class _$LAServiceCWProxyImpl implements _$LAServiceCWProxy {
 }
 
 extension $LAServiceCopyWith on LAService {
-  /// Returns a callable class that can be used as follows: `instanceOfLAService.copyWith(...)` or like so:`instanceOfLAService.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfLAService.copyWith(...)` or `instanceOfLAService.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$LAServiceCWProxy get copyWith => _$LAServiceCWProxyImpl(this);
 }

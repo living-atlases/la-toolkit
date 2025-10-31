@@ -43,12 +43,13 @@ abstract class _$AppStateCWProxy {
 
   AppState sshKeys(List<SshKey>? sshKeys);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `AppState(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `AppState(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// AppState(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   AppState call({
     List<LAProject>? projects,
     bool failedLoad,
@@ -71,81 +72,83 @@ abstract class _$AppStateCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfAppState.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfAppState.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfAppState.copyWith(...)` or call `instanceOfAppState.copyWith.fieldName(value)` for a single field.
 class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
   const _$AppStateCWProxyImpl(this._value);
 
   final AppState _value;
 
   @override
-  AppState projects(List<LAProject>? projects) => this(projects: projects);
+  AppState projects(List<LAProject>? projects) => call(projects: projects);
 
   @override
-  AppState failedLoad(bool failedLoad) => this(failedLoad: failedLoad);
+  AppState failedLoad(bool failedLoad) => call(failedLoad: failedLoad);
 
   @override
-  AppState firstUsage(bool firstUsage) => this(firstUsage: firstUsage);
+  AppState firstUsage(bool firstUsage) => call(firstUsage: firstUsage);
 
   @override
   AppState currentProject(LAProject? currentProject) =>
-      this(currentProject: currentProject);
+      call(currentProject: currentProject);
 
   @override
-  AppState currentStep(int currentStep) => this(currentStep: currentStep);
+  AppState currentStep(int currentStep) => call(currentStep: currentStep);
 
   @override
   AppState currentTuneTab(int currentTuneTab) =>
-      this(currentTuneTab: currentTuneTab);
+      call(currentTuneTab: currentTuneTab);
 
   @override
-  AppState status(LAProjectViewStatus? status) => this(status: status);
+  AppState status(LAProjectViewStatus? status) => call(status: status);
 
   @override
   AppState alaInstallReleases(List<String>? alaInstallReleases) =>
-      this(alaInstallReleases: alaInstallReleases);
+      call(alaInstallReleases: alaInstallReleases);
 
   @override
   AppState generatorReleases(List<String>? generatorReleases) =>
-      this(generatorReleases: generatorReleases);
+      call(generatorReleases: generatorReleases);
 
   @override
   AppState appSnackBarMessages(List<AppSnackBarMessage>? appSnackBarMessages) =>
-      this(appSnackBarMessages: appSnackBarMessages);
+      call(appSnackBarMessages: appSnackBarMessages);
 
   @override
   AppState laReleases(Map<String, LAReleases>? laReleases) =>
-      this(laReleases: laReleases);
+      call(laReleases: laReleases);
 
   @override
-  AppState repeatCmd(CommonCmd? repeatCmd) => this(repeatCmd: repeatCmd);
+  AppState repeatCmd(CommonCmd? repeatCmd) => call(repeatCmd: repeatCmd);
 
   @override
-  AppState pkgInfo(PackageInfo? pkgInfo) => this(pkgInfo: pkgInfo);
+  AppState pkgInfo(PackageInfo? pkgInfo) => call(pkgInfo: pkgInfo);
 
   @override
   AppState backendVersion(String? backendVersion) =>
-      this(backendVersion: backendVersion);
+      call(backendVersion: backendVersion);
 
   @override
-  AppState lastSwCheck(DateTime? lastSwCheck) => this(lastSwCheck: lastSwCheck);
+  AppState lastSwCheck(DateTime? lastSwCheck) => call(lastSwCheck: lastSwCheck);
 
   @override
-  AppState loading(bool? loading) => this(loading: loading);
+  AppState loading(bool? loading) => call(loading: loading);
 
   @override
-  AppState depsLoading(bool? depsLoading) => this(depsLoading: depsLoading);
+  AppState depsLoading(bool? depsLoading) => call(depsLoading: depsLoading);
 
   @override
-  AppState sshKeys(List<SshKey>? sshKeys) => this(sshKeys: sshKeys);
+  AppState sshKeys(List<SshKey>? sshKeys) => call(sshKeys: sshKeys);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `AppState(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `AppState(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// AppState(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   AppState call({
     Object? projects = const $CopyWithPlaceholder(),
     Object? failedLoad = const $CopyWithPlaceholder(),
@@ -171,23 +174,27 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
           ? _value.projects
           // ignore: cast_nullable_to_non_nullable
           : projects as List<LAProject>?,
-      failedLoad: failedLoad == const $CopyWithPlaceholder()
-          ? _value.failedLoad
-          // ignore: cast_nullable_to_non_nullable
-          : failedLoad as bool,
-      firstUsage: firstUsage == const $CopyWithPlaceholder()
-          ? _value.firstUsage
-          // ignore: cast_nullable_to_non_nullable
-          : firstUsage as bool,
+      failedLoad:
+          failedLoad == const $CopyWithPlaceholder() || failedLoad == null
+              ? _value.failedLoad
+              // ignore: cast_nullable_to_non_nullable
+              : failedLoad as bool,
+      firstUsage:
+          firstUsage == const $CopyWithPlaceholder() || firstUsage == null
+              ? _value.firstUsage
+              // ignore: cast_nullable_to_non_nullable
+              : firstUsage as bool,
       currentProject: currentProject == const $CopyWithPlaceholder()
           ? _value.currentProject
           // ignore: cast_nullable_to_non_nullable
           : currentProject as LAProject?,
-      currentStep: currentStep == const $CopyWithPlaceholder()
-          ? _value.currentStep
-          // ignore: cast_nullable_to_non_nullable
-          : currentStep as int,
-      currentTuneTab: currentTuneTab == const $CopyWithPlaceholder()
+      currentStep:
+          currentStep == const $CopyWithPlaceholder() || currentStep == null
+              ? _value.currentStep
+              // ignore: cast_nullable_to_non_nullable
+              : currentStep as int,
+      currentTuneTab: currentTuneTab == const $CopyWithPlaceholder() ||
+              currentTuneTab == null
           ? _value.currentTuneTab
           // ignore: cast_nullable_to_non_nullable
           : currentTuneTab as int,
@@ -244,7 +251,8 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
 }
 
 extension $AppStateCopyWith on AppState {
-  /// Returns a callable class that can be used as follows: `instanceOfAppState.copyWith(...)` or like so:`instanceOfAppState.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfAppState.copyWith(...)` or `instanceOfAppState.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$AppStateCWProxy get copyWith => _$AppStateCWProxyImpl(this);
 }

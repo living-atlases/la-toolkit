@@ -13,12 +13,13 @@ abstract class _$CmdCWProxy {
 
   Cmd properties(Map<String, dynamic> properties);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Cmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `Cmd(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// Cmd(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   Cmd call({
     String? id,
     CmdType type,
@@ -26,30 +27,32 @@ abstract class _$CmdCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfCmd.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfCmd.copyWith(...)` or call `instanceOfCmd.copyWith.fieldName(value)` for a single field.
 class _$CmdCWProxyImpl implements _$CmdCWProxy {
   const _$CmdCWProxyImpl(this._value);
 
   final Cmd _value;
 
   @override
-  Cmd id(String? id) => this(id: id);
+  Cmd id(String? id) => call(id: id);
 
   @override
-  Cmd type(CmdType type) => this(type: type);
+  Cmd type(CmdType type) => call(type: type);
 
   @override
   Cmd properties(Map<String, dynamic> properties) =>
-      this(properties: properties);
+      call(properties: properties);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Cmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `Cmd(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// Cmd(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   Cmd call({
     Object? id = const $CopyWithPlaceholder(),
     Object? type = const $CopyWithPlaceholder(),
@@ -60,20 +63,22 @@ class _$CmdCWProxyImpl implements _$CmdCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      type: type == const $CopyWithPlaceholder()
+      type: type == const $CopyWithPlaceholder() || type == null
           ? _value.type
           // ignore: cast_nullable_to_non_nullable
           : type as CmdType,
-      properties: properties == const $CopyWithPlaceholder()
-          ? _value.properties
-          // ignore: cast_nullable_to_non_nullable
-          : properties as Map<String, dynamic>,
+      properties:
+          properties == const $CopyWithPlaceholder() || properties == null
+              ? _value.properties
+              // ignore: cast_nullable_to_non_nullable
+              : properties as Map<String, dynamic>,
     );
   }
 }
 
 extension $CmdCopyWith on Cmd {
-  /// Returns a callable class that can be used as follows: `instanceOfCmd.copyWith(...)` or like so:`instanceOfCmd.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfCmd.copyWith(...)` or `instanceOfCmd.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$CmdCWProxy get copyWith => _$CmdCWProxyImpl(this);
 }

@@ -27,12 +27,13 @@ abstract class _$LAServiceDeployCWProxy {
 
   LAServiceDeploy status(ServiceStatus? status);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAServiceDeploy(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAServiceDeploy(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAServiceDeploy(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAServiceDeploy call({
     String? id,
     String serviceId,
@@ -47,52 +48,54 @@ abstract class _$LAServiceDeployCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAServiceDeploy.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAServiceDeploy.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfLAServiceDeploy.copyWith(...)` or call `instanceOfLAServiceDeploy.copyWith.fieldName(value)` for a single field.
 class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
   const _$LAServiceDeployCWProxyImpl(this._value);
 
   final LAServiceDeploy _value;
 
   @override
-  LAServiceDeploy id(String? id) => this(id: id);
+  LAServiceDeploy id(String? id) => call(id: id);
 
   @override
-  LAServiceDeploy serviceId(String serviceId) => this(serviceId: serviceId);
+  LAServiceDeploy serviceId(String serviceId) => call(serviceId: serviceId);
 
   @override
-  LAServiceDeploy serverId(String? serverId) => this(serverId: serverId);
+  LAServiceDeploy serverId(String? serverId) => call(serverId: serverId);
 
   @override
-  LAServiceDeploy clusterId(String? clusterId) => this(clusterId: clusterId);
+  LAServiceDeploy clusterId(String? clusterId) => call(clusterId: clusterId);
 
   @override
   LAServiceDeploy additionalVariables(String additionalVariables) =>
-      this(additionalVariables: additionalVariables);
+      call(additionalVariables: additionalVariables);
 
   @override
-  LAServiceDeploy projectId(String projectId) => this(projectId: projectId);
+  LAServiceDeploy projectId(String projectId) => call(projectId: projectId);
 
   @override
   LAServiceDeploy softwareVersions(Map<String, String>? softwareVersions) =>
-      this(softwareVersions: softwareVersions);
+      call(softwareVersions: softwareVersions);
 
   @override
-  LAServiceDeploy checkedAt(int? checkedAt) => this(checkedAt: checkedAt);
+  LAServiceDeploy checkedAt(int? checkedAt) => call(checkedAt: checkedAt);
 
   @override
-  LAServiceDeploy type(DeploymentType? type) => this(type: type);
+  LAServiceDeploy type(DeploymentType? type) => call(type: type);
 
   @override
-  LAServiceDeploy status(ServiceStatus? status) => this(status: status);
+  LAServiceDeploy status(ServiceStatus? status) => call(status: status);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAServiceDeploy(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAServiceDeploy(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAServiceDeploy(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAServiceDeploy call({
     Object? id = const $CopyWithPlaceholder(),
     Object? serviceId = const $CopyWithPlaceholder(),
@@ -110,7 +113,7 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      serviceId: serviceId == const $CopyWithPlaceholder()
+      serviceId: serviceId == const $CopyWithPlaceholder() || serviceId == null
           ? _value.serviceId
           // ignore: cast_nullable_to_non_nullable
           : serviceId as String,
@@ -122,11 +125,13 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
           ? _value.clusterId
           // ignore: cast_nullable_to_non_nullable
           : clusterId as String?,
-      additionalVariables: additionalVariables == const $CopyWithPlaceholder()
-          ? _value.additionalVariables
-          // ignore: cast_nullable_to_non_nullable
-          : additionalVariables as String,
-      projectId: projectId == const $CopyWithPlaceholder()
+      additionalVariables:
+          additionalVariables == const $CopyWithPlaceholder() ||
+                  additionalVariables == null
+              ? _value.additionalVariables
+              // ignore: cast_nullable_to_non_nullable
+              : additionalVariables as String,
+      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -151,7 +156,8 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
 }
 
 extension $LAServiceDeployCopyWith on LAServiceDeploy {
-  /// Returns a callable class that can be used as follows: `instanceOfLAServiceDeploy.copyWith(...)` or like so:`instanceOfLAServiceDeploy.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfLAServiceDeploy.copyWith(...)` or `instanceOfLAServiceDeploy.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$LAServiceDeployCWProxy get copyWith => _$LAServiceDeployCWProxyImpl(this);
 }

@@ -17,12 +17,13 @@ abstract class _$LAVariableCWProxy {
 
   LAVariable projectId(String projectId);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAVariable(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAVariable(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAVariable(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAVariable call({
     String? id,
     String nameInt,
@@ -32,35 +33,37 @@ abstract class _$LAVariableCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLAVariable.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLAVariable.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfLAVariable.copyWith(...)` or call `instanceOfLAVariable.copyWith.fieldName(value)` for a single field.
 class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
   const _$LAVariableCWProxyImpl(this._value);
 
   final LAVariable _value;
 
   @override
-  LAVariable id(String? id) => this(id: id);
+  LAVariable id(String? id) => call(id: id);
 
   @override
-  LAVariable nameInt(String nameInt) => this(nameInt: nameInt);
+  LAVariable nameInt(String nameInt) => call(nameInt: nameInt);
 
   @override
-  LAVariable service(LAServiceName service) => this(service: service);
+  LAVariable service(LAServiceName service) => call(service: service);
 
   @override
-  LAVariable value(Object? value) => this(value: value);
+  LAVariable value(Object? value) => call(value: value);
 
   @override
-  LAVariable projectId(String projectId) => this(projectId: projectId);
+  LAVariable projectId(String projectId) => call(projectId: projectId);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LAVariable(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAVariable(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LAVariable(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LAVariable call({
     Object? id = const $CopyWithPlaceholder(),
     Object? nameInt = const $CopyWithPlaceholder(),
@@ -73,11 +76,11 @@ class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      nameInt: nameInt == const $CopyWithPlaceholder()
+      nameInt: nameInt == const $CopyWithPlaceholder() || nameInt == null
           ? _value.nameInt
           // ignore: cast_nullable_to_non_nullable
           : nameInt as String,
-      service: service == const $CopyWithPlaceholder()
+      service: service == const $CopyWithPlaceholder() || service == null
           ? _value.service
           // ignore: cast_nullable_to_non_nullable
           : service as LAServiceName,
@@ -85,7 +88,7 @@ class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
           ? _value.value
           // ignore: cast_nullable_to_non_nullable
           : value,
-      projectId: projectId == const $CopyWithPlaceholder()
+      projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
@@ -94,7 +97,8 @@ class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
 }
 
 extension $LAVariableCopyWith on LAVariable {
-  /// Returns a callable class that can be used as follows: `instanceOfLAVariable.copyWith(...)` or like so:`instanceOfLAVariable.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfLAVariable.copyWith(...)` or `instanceOfLAVariable.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$LAVariableCWProxy get copyWith => _$LAVariableCWProxyImpl(this);
 }

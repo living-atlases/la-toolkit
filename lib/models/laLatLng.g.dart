@@ -11,48 +11,51 @@ abstract class _$LALatLngCWProxy {
 
   LALatLng longitude(double longitude);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LALatLng(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LALatLng(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LALatLng(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LALatLng call({
     double latitude,
     double longitude,
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfLALatLng.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfLALatLng.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfLALatLng.copyWith(...)` or call `instanceOfLALatLng.copyWith.fieldName(value)` for a single field.
 class _$LALatLngCWProxyImpl implements _$LALatLngCWProxy {
   const _$LALatLngCWProxyImpl(this._value);
 
   final LALatLng _value;
 
   @override
-  LALatLng latitude(double latitude) => this(latitude: latitude);
+  LALatLng latitude(double latitude) => call(latitude: latitude);
 
   @override
-  LALatLng longitude(double longitude) => this(longitude: longitude);
+  LALatLng longitude(double longitude) => call(longitude: longitude);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `LALatLng(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LALatLng(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// LALatLng(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   LALatLng call({
     Object? latitude = const $CopyWithPlaceholder(),
     Object? longitude = const $CopyWithPlaceholder(),
   }) {
     return LALatLng(
-      latitude: latitude == const $CopyWithPlaceholder()
+      latitude: latitude == const $CopyWithPlaceholder() || latitude == null
           ? _value.latitude
           // ignore: cast_nullable_to_non_nullable
           : latitude as double,
-      longitude: longitude == const $CopyWithPlaceholder()
+      longitude: longitude == const $CopyWithPlaceholder() || longitude == null
           ? _value.longitude
           // ignore: cast_nullable_to_non_nullable
           : longitude as double,
@@ -61,7 +64,8 @@ class _$LALatLngCWProxyImpl implements _$LALatLngCWProxy {
 }
 
 extension $LALatLngCopyWith on LALatLng {
-  /// Returns a callable class that can be used as follows: `instanceOfLALatLng.copyWith(...)` or like so:`instanceOfLALatLng.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfLALatLng.copyWith(...)` or `instanceOfLALatLng.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$LALatLngCWProxy get copyWith => _$LALatLngCWProxyImpl(this);
 }

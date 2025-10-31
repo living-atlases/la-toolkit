@@ -9,39 +9,42 @@ part of 'brandingDeployCmd.dart';
 abstract class _$BrandingDeployCmdCWProxy {
   BrandingDeployCmd debug(bool debug);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BrandingDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `BrandingDeployCmd(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// BrandingDeployCmd(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   BrandingDeployCmd call({
     bool debug,
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfBrandingDeployCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfBrandingDeployCmd.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfBrandingDeployCmd.copyWith(...)` or call `instanceOfBrandingDeployCmd.copyWith.fieldName(value)` for a single field.
 class _$BrandingDeployCmdCWProxyImpl implements _$BrandingDeployCmdCWProxy {
   const _$BrandingDeployCmdCWProxyImpl(this._value);
 
   final BrandingDeployCmd _value;
 
   @override
-  BrandingDeployCmd debug(bool debug) => this(debug: debug);
+  BrandingDeployCmd debug(bool debug) => call(debug: debug);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BrandingDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `BrandingDeployCmd(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// BrandingDeployCmd(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   BrandingDeployCmd call({
     Object? debug = const $CopyWithPlaceholder(),
   }) {
     return BrandingDeployCmd(
-      debug: debug == const $CopyWithPlaceholder()
+      debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
           : debug as bool,
@@ -50,7 +53,8 @@ class _$BrandingDeployCmdCWProxyImpl implements _$BrandingDeployCmdCWProxy {
 }
 
 extension $BrandingDeployCmdCopyWith on BrandingDeployCmd {
-  /// Returns a callable class that can be used as follows: `instanceOfBrandingDeployCmd.copyWith(...)` or like so:`instanceOfBrandingDeployCmd.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfBrandingDeployCmd.copyWith(...)` or `instanceOfBrandingDeployCmd.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$BrandingDeployCmdCWProxy get copyWith =>
       _$BrandingDeployCmdCWProxyImpl(this);

@@ -29,12 +29,13 @@ abstract class _$CmdHistoryEntryCWProxy {
 
   CmdHistoryEntry result(CmdResult result);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `CmdHistoryEntry(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `CmdHistoryEntry(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// CmdHistoryEntry(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   CmdHistoryEntry call({
     String? id,
     String logsPrefix,
@@ -50,53 +51,55 @@ abstract class _$CmdHistoryEntryCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfCmdHistoryEntry.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfCmdHistoryEntry.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfCmdHistoryEntry.copyWith(...)` or call `instanceOfCmdHistoryEntry.copyWith.fieldName(value)` for a single field.
 class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
   const _$CmdHistoryEntryCWProxyImpl(this._value);
 
   final CmdHistoryEntry _value;
 
   @override
-  CmdHistoryEntry id(String? id) => this(id: id);
+  CmdHistoryEntry id(String? id) => call(id: id);
 
   @override
-  CmdHistoryEntry logsPrefix(String logsPrefix) => this(logsPrefix: logsPrefix);
+  CmdHistoryEntry logsPrefix(String logsPrefix) => call(logsPrefix: logsPrefix);
 
   @override
-  CmdHistoryEntry logsSuffix(String logsSuffix) => this(logsSuffix: logsSuffix);
+  CmdHistoryEntry logsSuffix(String logsSuffix) => call(logsSuffix: logsSuffix);
 
   @override
-  CmdHistoryEntry desc(String? desc) => this(desc: desc);
+  CmdHistoryEntry desc(String? desc) => call(desc: desc);
 
   @override
-  CmdHistoryEntry invDir(String? invDir) => this(invDir: invDir);
+  CmdHistoryEntry invDir(String? invDir) => call(invDir: invDir);
 
   @override
-  CmdHistoryEntry cwd(String? cwd) => this(cwd: cwd);
+  CmdHistoryEntry cwd(String? cwd) => call(cwd: cwd);
 
   @override
-  CmdHistoryEntry rawCmd(String rawCmd) => this(rawCmd: rawCmd);
+  CmdHistoryEntry rawCmd(String rawCmd) => call(rawCmd: rawCmd);
 
   @override
-  CmdHistoryEntry cmd(Cmd cmd) => this(cmd: cmd);
+  CmdHistoryEntry cmd(Cmd cmd) => call(cmd: cmd);
 
   @override
-  CmdHistoryEntry createdAt(int? createdAt) => this(createdAt: createdAt);
+  CmdHistoryEntry createdAt(int? createdAt) => call(createdAt: createdAt);
 
   @override
-  CmdHistoryEntry duration(double? duration) => this(duration: duration);
+  CmdHistoryEntry duration(double? duration) => call(duration: duration);
 
   @override
-  CmdHistoryEntry result(CmdResult result) => this(result: result);
+  CmdHistoryEntry result(CmdResult result) => call(result: result);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `CmdHistoryEntry(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `CmdHistoryEntry(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// CmdHistoryEntry(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   CmdHistoryEntry call({
     Object? id = const $CopyWithPlaceholder(),
     Object? logsPrefix = const $CopyWithPlaceholder(),
@@ -115,14 +118,16 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      logsPrefix: logsPrefix == const $CopyWithPlaceholder()
-          ? _value.logsPrefix
-          // ignore: cast_nullable_to_non_nullable
-          : logsPrefix as String,
-      logsSuffix: logsSuffix == const $CopyWithPlaceholder()
-          ? _value.logsSuffix
-          // ignore: cast_nullable_to_non_nullable
-          : logsSuffix as String,
+      logsPrefix:
+          logsPrefix == const $CopyWithPlaceholder() || logsPrefix == null
+              ? _value.logsPrefix
+              // ignore: cast_nullable_to_non_nullable
+              : logsPrefix as String,
+      logsSuffix:
+          logsSuffix == const $CopyWithPlaceholder() || logsSuffix == null
+              ? _value.logsSuffix
+              // ignore: cast_nullable_to_non_nullable
+              : logsSuffix as String,
       desc: desc == const $CopyWithPlaceholder()
           ? _value.desc
           // ignore: cast_nullable_to_non_nullable
@@ -135,11 +140,11 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
           ? _value.cwd
           // ignore: cast_nullable_to_non_nullable
           : cwd as String?,
-      rawCmd: rawCmd == const $CopyWithPlaceholder()
+      rawCmd: rawCmd == const $CopyWithPlaceholder() || rawCmd == null
           ? _value.rawCmd
           // ignore: cast_nullable_to_non_nullable
           : rawCmd as String,
-      cmd: cmd == const $CopyWithPlaceholder()
+      cmd: cmd == const $CopyWithPlaceholder() || cmd == null
           ? _value.cmd
           // ignore: cast_nullable_to_non_nullable
           : cmd as Cmd,
@@ -151,7 +156,7 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
           ? _value.duration
           // ignore: cast_nullable_to_non_nullable
           : duration as double?,
-      result: result == const $CopyWithPlaceholder()
+      result: result == const $CopyWithPlaceholder() || result == null
           ? _value.result
           // ignore: cast_nullable_to_non_nullable
           : result as CmdResult,
@@ -160,7 +165,8 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
 }
 
 extension $CmdHistoryEntryCopyWith on CmdHistoryEntry {
-  /// Returns a callable class that can be used as follows: `instanceOfCmdHistoryEntry.copyWith(...)` or like so:`instanceOfCmdHistoryEntry.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfCmdHistoryEntry.copyWith(...)` or `instanceOfCmdHistoryEntry.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$CmdHistoryEntryCWProxy get copyWith => _$CmdHistoryEntryCWProxyImpl(this);
 }

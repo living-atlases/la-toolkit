@@ -23,12 +23,13 @@ abstract class _$PostDeployCmdCWProxy {
 
   PostDeployCmd dryRun(bool dryRun);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PostDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `PostDeployCmd(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// PostDeployCmd(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   PostDeployCmd call({
     bool configurePostfix,
     List<String>? limitToServers,
@@ -41,7 +42,8 @@ abstract class _$PostDeployCmdCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfPostDeployCmd.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfPostDeployCmd.copyWith.fieldName(...)`
+/// Callable proxy for `copyWith` functionality.
+/// Use as `instanceOfPostDeployCmd.copyWith(...)` or call `instanceOfPostDeployCmd.copyWith.fieldName(value)` for a single field.
 class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
   const _$PostDeployCmdCWProxyImpl(this._value);
 
@@ -49,39 +51,40 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
 
   @override
   PostDeployCmd configurePostfix(bool configurePostfix) =>
-      this(configurePostfix: configurePostfix);
+      call(configurePostfix: configurePostfix);
 
   @override
   PostDeployCmd limitToServers(List<String>? limitToServers) =>
-      this(limitToServers: limitToServers);
+      call(limitToServers: limitToServers);
 
   @override
-  PostDeployCmd skipTags(List<String>? skipTags) => this(skipTags: skipTags);
+  PostDeployCmd skipTags(List<String>? skipTags) => call(skipTags: skipTags);
 
   @override
-  PostDeployCmd tags(List<String>? tags) => this(tags: tags);
+  PostDeployCmd tags(List<String>? tags) => call(tags: tags);
 
   @override
-  PostDeployCmd advanced(bool advanced) => this(advanced: advanced);
+  PostDeployCmd advanced(bool advanced) => call(advanced: advanced);
 
   @override
   PostDeployCmd continueEvenIfFails(bool continueEvenIfFails) =>
-      this(continueEvenIfFails: continueEvenIfFails);
+      call(continueEvenIfFails: continueEvenIfFails);
 
   @override
-  PostDeployCmd debug(bool debug) => this(debug: debug);
+  PostDeployCmd debug(bool debug) => call(debug: debug);
 
   @override
-  PostDeployCmd dryRun(bool dryRun) => this(dryRun: dryRun);
+  PostDeployCmd dryRun(bool dryRun) => call(dryRun: dryRun);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `PostDeployCmd(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// Creates a new instance with the provided field values.
+  /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `PostDeployCmd(...).copyWith.fieldName(value)`.
   ///
-  /// Usage
+  /// Example:
   /// ```dart
   /// PostDeployCmd(...).copyWith(id: 12, name: "My name")
-  /// ````
+  /// ```
   PostDeployCmd call({
     Object? configurePostfix = const $CopyWithPlaceholder(),
     Object? limitToServers = const $CopyWithPlaceholder(),
@@ -93,7 +96,8 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
     Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PostDeployCmd(
-      configurePostfix: configurePostfix == const $CopyWithPlaceholder()
+      configurePostfix: configurePostfix == const $CopyWithPlaceholder() ||
+              configurePostfix == null
           ? _value.configurePostfix
           // ignore: cast_nullable_to_non_nullable
           : configurePostfix as bool,
@@ -109,19 +113,21 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
           ? _value.tags
           // ignore: cast_nullable_to_non_nullable
           : tags as List<String>?,
-      advanced: advanced == const $CopyWithPlaceholder()
+      advanced: advanced == const $CopyWithPlaceholder() || advanced == null
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
           : advanced as bool,
-      continueEvenIfFails: continueEvenIfFails == const $CopyWithPlaceholder()
-          ? _value.continueEvenIfFails
-          // ignore: cast_nullable_to_non_nullable
-          : continueEvenIfFails as bool,
-      debug: debug == const $CopyWithPlaceholder()
+      continueEvenIfFails:
+          continueEvenIfFails == const $CopyWithPlaceholder() ||
+                  continueEvenIfFails == null
+              ? _value.continueEvenIfFails
+              // ignore: cast_nullable_to_non_nullable
+              : continueEvenIfFails as bool,
+      debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
           : debug as bool,
-      dryRun: dryRun == const $CopyWithPlaceholder()
+      dryRun: dryRun == const $CopyWithPlaceholder() || dryRun == null
           ? _value.dryRun
           // ignore: cast_nullable_to_non_nullable
           : dryRun as bool,
@@ -130,7 +136,8 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
 }
 
 extension $PostDeployCmdCopyWith on PostDeployCmd {
-  /// Returns a callable class that can be used as follows: `instanceOfPostDeployCmd.copyWith(...)` or like so:`instanceOfPostDeployCmd.copyWith.fieldName(...)`.
+  /// Returns a callable class used to build a new instance with modified fields.
+  /// Example: `instanceOfPostDeployCmd.copyWith(...)` or `instanceOfPostDeployCmd.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
   _$PostDeployCmdCWProxy get copyWith => _$PostDeployCmdCWProxyImpl(this);
 }
