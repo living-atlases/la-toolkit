@@ -76,7 +76,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
       Map<String, List<String>>? serverServices,
       Map<String, List<String>>? clusterServices,
       Map<String, dynamic>? checkResults,
-      Map<String, String>? runningVersions})
+      Map<String, String>? runningVersions,
+      Map<String, String>? selectedVersions})
       : id = id ?? ObjectId().toString(),
         domain = domain ?? (isHub ? 'somehubname.${parent!.domain}' : ''),
         servers = servers ?? <LAServer>[],
@@ -90,6 +91,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         serverServices = serverServices ?? <String, List<String>>{},
         clusterServices = clusterServices ?? <String, List<String>>{},
         runningVersions = runningVersions ?? <String, String>{},
+        selectedVersions = selectedVersions ?? <String, String>{},
         advancedEdit = advancedEdit ?? false,
         advancedTune = advancedTune ?? false,
         cmdHistoryEntries = cmdHistoryEntries ?? <CmdHistoryEntry>[],
@@ -312,6 +314,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
   LAProject? parent;
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, String> runningVersions;
+
+  // In-memory storage for user-selected versions per service (not persisted to avoid BD changes)
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  Map<String, String> selectedVersions;
 
   // Logs history -----
   CmdHistoryEntry? lastCmdEntry;
@@ -733,6 +739,17 @@ check results length: ${checkResults.length}''';
               sD.type == type &&
               sD.serviceId == service.id, orElse: () {
         final Map<String, String> versions = getServiceDefaultVersions(service);
+
+        // First, try to get version from existing deploys of the same service (already persisted in BD)
+        final String? existingVersion = getServiceDeployRelease(sN);
+        if (existingVersion != null && existingVersion.isNotEmpty) {
+          versions[sN] = existingVersion;
+        } else if (selectedVersions.containsKey(sN)) {
+          // Fallback to in-memory selected versions (for current session)
+          versions[sN] = selectedVersions[sN]!;
+        }
+
+        // Ansible versions have the highest priority
         if (softwareVersions != null) {
           final String? ansibleVar = LAServiceDesc.swToAnsibleVars[sN];
           if (ansibleVar != null) {
@@ -851,6 +868,9 @@ check results length: ${checkResults.length}''';
             'Setting ${serviceDeploysForName.length} service deploys for service $serviceName and release $release');
       }
     }
+    // Save the selected version persistently so it's preserved on reassignment
+    selectedVersions[serviceName] = release;
+
     for (final LAServiceDeploy sd in serviceDeploysForName) {
       sd.softwareVersions[serviceName] = release;
     }
@@ -1422,6 +1442,8 @@ check results length: ${checkResults.length}''';
               .equals(checkResults, other.checkResults) &&
           const DeepCollectionEquality.unordered()
               .equals(runningVersions, other.runningVersions) &&
+          const DeepCollectionEquality.unordered()
+              .equals(selectedVersions, other.selectedVersions) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -1453,6 +1475,7 @@ check results length: ${checkResults.length}''';
       const ListEquality<LAServiceDeploy>().hash(serviceDeploys) ^
       const DeepCollectionEquality.unordered().hash(checkResults) ^
       const DeepCollectionEquality.unordered().hash(runningVersions) ^
+      const DeepCollectionEquality.unordered().hash(selectedVersions) ^
       createdAt.hashCode ^
       mapZoom.hashCode;
 
@@ -1464,6 +1487,16 @@ check results length: ${checkResults.length}''';
     }
     defVersions.removeWhere((String key, String value) => value == '');
     return defVersions;
+  }
+
+  /// Get the user-selected version for a service, or the default version if none selected
+  String? getSelectedOrDefaultVersion(String serviceName) {
+    if (selectedVersions.containsKey(serviceName)) {
+      return selectedVersions[serviceName];
+    }
+    final LAService service = getService(serviceName);
+    final Map<String, String> defaults = getServiceDefaultVersions(service);
+    return defaults[serviceName];
   }
 
   String _setDefSwVersion(String nameInt) {
