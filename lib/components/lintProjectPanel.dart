@@ -109,10 +109,10 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 actionText: 'SOLVE',
                 action: () => BeamerCond.of(context, SshKeysLocation())),
           if (project.allServersWithServicesReady() &&
-              !project.allServersWithSupportedOs('Ubuntu', '18.04'))
+              !project.allServersWithSupportedOs('Ubuntu', '22.04'))
             const AlertCard(
                 message:
-                    'The current supported OS version are Ubuntu 18.04 and 20.04'),
+                    'The current supported OS version are Ubuntu 22.04 and 24.04 (under testing)'),
           if (basicDefined &&
               project.servers.isNotEmpty &&
               !project.allServicesAssigned())
