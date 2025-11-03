@@ -23,7 +23,6 @@
    * [Autogeneration of code](#autogeneration-of-code)
    * [Backend during development](#backend-during-development)
    * [Flutter build](#flutter-build)
-   * [Ubuntu 20 vs Ubuntu 18](#ubuntu-20-vs-ubuntu-18)
    * [Docker image build](#docker-image-build)
 * [Developed so far and Roadmap](#developed-so-far-and-roadmap)
 * [Screenshots](#screenshots)
