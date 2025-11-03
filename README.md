@@ -254,17 +254,12 @@ We need to have the frontend build prior to build the docker image:
 flutter test && flutter build web
 ```
 
-### Ubuntu 20 vs Ubuntu 18
-
-Right now there are two images based in Ubuntu 20.04 and 18.04 respectively. We have tested more u18 as deployment environment, but we are tryng to start using u20. So if you have some ansible issue during deploying (like python2/ptython3 issues), try 18.04 instead.
-
 ### Docker image build
 
 You will need to build the flutter web as described below prior to build a `la-toolkit` image.
 
 ```
-docker build . -f ./docker/u18/Dockerfile -t la-toolkit # for ubuntu 18.04
-docker build . -f ./docker/u20/Dockerfile -t la-toolkit/u20 # for ubuntu 20.04 (testing right now)
+docker build . -f ./docker/u22/Dockerfile -t la-toolkit/u22 
 ```
 
 ## Developed so far and Roadmap
