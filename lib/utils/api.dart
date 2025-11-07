@@ -95,22 +95,30 @@ class Api {
     if (AppUtils.isDemo()) {
       return <String, dynamic>{};
     }
+
+    if (servers.isEmpty) {
+      return <String, dynamic>{'servers': <dynamic>[]};
+    }
+
     final Uri url =
         AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/test-connectivity');
-    final Response response = await http.post(url,
-        headers: <String, String>{'Content-type': 'application/json'},
-        body: utf8.encode(json.encode(<String, List<LAServer>>{
-          'servers': servers,
-        })));
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> l =
-          json.decode(response.body) as Map<String, dynamic>;
-      // for (var element in l.keys) {
-      // debugPrint("out: ${l[element]['out']}");
-      // }
-      return l;
-    } else {
-      return <String, dynamic>{};
+    try {
+      final Response response = await http.post(url,
+          headers: <String, String>{'Content-type': 'application/json'},
+          body: utf8.encode(json.encode(<String, List<LAServer>>{
+            'servers': servers,
+          })));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> l =
+            json.decode(response.body) as Map<String, dynamic>;
+        return l;
+      } else {
+        log('Error testing connectivity: HTTP ${response.statusCode}');
+        return <String, dynamic>{'servers': <dynamic>[]};
+      }
+    } catch (e) {
+      log('Error testing connectivity: $e');
+      return <String, dynamic>{'servers': <dynamic>[]};
     }
   }
 

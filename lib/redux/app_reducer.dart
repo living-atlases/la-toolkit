@@ -343,10 +343,13 @@ AppState _onTestConnectivityResults(
   }
 
   // ignore: avoid_dynamic_calls
-  action.results['servers'].forEach((dynamic server) {
-    currentProject
-        .upsertServer(LAServer.fromJson(server as Map<String, dynamic>));
-  });
+  final servers = action.results['servers'];
+  if (servers != null) {
+    servers.forEach((dynamic server) {
+      currentProject
+          .upsertServer(LAServer.fromJson(server as Map<String, dynamic>));
+    });
+  }
 
   if (currentProject.status != LAProjectStatus.inProduction) {
     if (currentProject.allServersWithServicesReady() &&
