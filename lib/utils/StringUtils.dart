@@ -20,17 +20,17 @@ class StringUtils {
   // This convert a non semantic version to a semantic version similar one
   static String semantize(String version) {
     // Handle compound constraints like '>= 2.0 < 4.1'
-    final compoundMatch =
+    final RegExpMatch? compoundMatch =
         RegExp(r'^([><]=?)\s*([0-9.]+)\s+([><]=?)\s*([0-9.]+)$')
             .firstMatch(version);
     if (compoundMatch != null) {
-      final op1 = compoundMatch[1]!;
-      final ver1 = compoundMatch[2]!;
-      final op2 = compoundMatch[3]!;
-      final ver2 = compoundMatch[4]!;
+      final String op1 = compoundMatch[1]!;
+      final String ver1 = compoundMatch[2]!;
+      final String op2 = compoundMatch[3]!;
+      final String ver2 = compoundMatch[4]!;
       // Recursively semantize each version part
-      final semantized1 = semantize('$op1 $ver1').replaceAll(' ', '');
-      final semantized2 = semantize('$op2 $ver2').replaceAll(' ', '');
+      final String semantized1 = semantize('$op1 $ver1').replaceAll(' ', '');
+      final String semantized2 = semantize('$op2 $ver2').replaceAll(' ', '');
       return '$semantized1 $semantized2';
     }
 
