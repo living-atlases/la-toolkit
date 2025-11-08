@@ -364,12 +364,16 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
                 .then((_) => action.onReady());
             await Api.regenerateInv(
                 project: action.project, onError: action.onError);
+            // Regenerate SSH config after inventory regeneration to ensure latest data
+            await genSshConf(project);
           } else {
             await Api.generatorSelect(
                     action.project.generatorRelease!, action.onError)
                 .then((_) => action.onReady());
             await Api.regenerateInv(
                 project: action.project, onError: action.onError);
+            // Regenerate SSH config after inventory regeneration to ensure latest data
+            await genSshConf(project);
           }
           action.onReady();
         }
@@ -384,8 +388,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             action.project, (action.cmd as PreDeployCmd).rootBecome);
         Api.preDeploy(action);
       } else if (action.cmd.runtimeType == PostDeployCmd) {
+        await genSshConf(action.project);
         Api.postDeploy(action);
       } else {
+        await genSshConf(action.project);
         Api.ansiblew(action);
       }
     }
@@ -613,7 +619,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   }
 
   Future<void> genSshConf(LAProject project, [bool forceRoot = false]) async {
-    if (project.isCreated) {
+    // Generate SSH config if project has servers, regardless of isCreated status
+    if (project.servers.isNotEmpty) {
       await Api.genSshConf(project, forceRoot);
     }
   }
