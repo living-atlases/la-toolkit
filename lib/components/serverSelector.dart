@@ -44,6 +44,17 @@ class _ServerSelectorState extends State<ServerSelector> {
   }
 
   @override
+  void didUpdateWidget(ServerSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update selected values when initialValue changes from outside
+    if (widget.initialValue != oldWidget.initialValue) {
+      setState(() {
+        _selected = widget.initialValue;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<String> serverList = widget.hosts;
     if (widget.exclude != null) {
@@ -85,7 +96,7 @@ class _ServerSelectorState extends State<ServerSelector> {
                 },
                 chipDisplay: MultiSelectChipDisplay<String>(
                   // icon: Icon(widget.icon),
-                  chipColor: Colors.grey.withOpacity(.9),
+                  chipColor: Colors.grey.withValues(alpha: 0.9),
                   textStyle: const TextStyle(color: Colors.white),
 
                   shape: const RoundedRectangleBorder(
