@@ -56,16 +56,20 @@ class GatewaySelector extends StatelessWidget {
           debugPrint('Gateway ids: $gatewaysIds');
           if (firstServer) {
             UiUtils.showAlertDialog(context, () {
+              // YES: Apply to all servers
               for (final LAServer s in vm.project.servers) {
                 if (!gatewaysIds.contains(s.id)) {
                   debugPrint('Setting gateways for ${s.name}');
-                  s.gateways = gatewaysIds;
+                  s.gateways = List<String>.from(gatewaysIds);
                   vm.project.upsertServer(s);
                 }
               }
+              vm.onSaveProject(vm.project);
             }, () {
-              vm.server.gateways = gatewaysIds;
+              // NO: Apply only to this server
+              vm.server.gateways = List<String>.from(gatewaysIds);
               vm.project.upsertServer(vm.server);
+              vm.onSaveProject(vm.project);
             },
                 title: 'Use this gateway always',
                 subtitle:
@@ -73,10 +77,10 @@ class GatewaySelector extends StatelessWidget {
                 confirmBtn: 'YES',
                 cancelBtn: 'NO');
           } else {
-            vm.server.gateways = gatewaysIds;
+            vm.server.gateways = List<String>.from(gatewaysIds);
             vm.project.upsertServer(vm.server);
+            vm.onSaveProject(vm.project);
           }
-          vm.onSaveProject(vm.project);
         },
       );
     });
@@ -92,4 +96,17 @@ class _GatewaySelectorViewModel {
   final LAProject project;
   final LAServer server;
   final void Function(LAProject project) onSaveProject;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _GatewaySelectorViewModel &&
+          runtimeType == other.runtimeType &&
+          project == other.project &&
+          server == other.server &&
+          server.gateways == other.server.gateways;
+
+  @override
+  int get hashCode =>
+      project.hashCode ^ server.hashCode ^ server.gateways.hashCode;
 }
