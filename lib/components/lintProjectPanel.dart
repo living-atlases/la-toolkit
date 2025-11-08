@@ -185,7 +185,8 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               project.isPipelinesInUse &&
               project.getHostnames(pipelines).length < 3)
             AlertCard(
-                message: 'A pipelines cluster should have at least 3 servers',
+                message:
+                    'A pipelines cluster should have at least 3 servers (it have ${project.getHostnames(pipelines).length})',
                 actionText: 'SOLVE',
                 action: () => BeamerCond.of(context, LAProjectEditLocation())),
           if (basicDefined &&
@@ -195,7 +196,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               project.getHostnames(solrcloud).length.isEven)
             AlertCard(
                 message:
-                    'A solrcloud cluster should have a odd number of servers',
+                    'A solrcloud cluster should have a odd number of servers (it have ${project.getHostnames(solrcloud).length})',
                 actionText: 'SOLVE',
                 action: () => BeamerCond.of(context, LAProjectEditLocation())),
           if (basicDefined &&
@@ -205,7 +206,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               project.getHostnames(zookeeper).length.isEven)
             AlertCard(
                 message:
-                    'A zookeeper cluster should have a odd number of servers',
+                    'A zookeeper cluster should have a odd number of servers (it have ${project.getHostnames(zookeeper).length})',
                 actionText: 'SOLVE',
                 action: () => BeamerCond.of(context, LAProjectEditLocation())),
           if (project.isPipelinesInUse &&
