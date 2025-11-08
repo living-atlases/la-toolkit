@@ -58,6 +58,9 @@ class _DeployPageState extends State<DeployPage> {
         return _DeployViewModel(
             project: store.state.currentProject,
             cmd: store.state.repeatCmd,
+            onSaveDeployCmd: (DeployCmd cmd) {
+              store.dispatch(SaveCurrentCmd(cmd: cmd));
+            },
             onDeployProject: (LAProject project, DeployCmd cmd) =>
                 DeployUtils.deployActionLaunch(
                     context: context,
@@ -146,7 +149,9 @@ class _DeployPageState extends State<DeployPage> {
                                       isHub: vm.project.isHub,
                                       onChange: (List<String> s) =>
                                           setState(() {
-                                            cmd.deployServices = s;
+                                            cmd =
+                                                cmd.copyWith(deployServices: s);
+                                            vm.onSaveDeployCmd(cmd);
                                             _servicesToDeploy = s;
                                           })),
                                   if (vm.project.isDockerClusterConfigured())
@@ -159,16 +164,23 @@ class _DeployPageState extends State<DeployPage> {
                                             onChanged: (bool value) =>
                                                 setState(() {
                                                   if (value) {
-                                                    cmd.limitToServers =
-                                                        dockerServers;
+                                                    cmd = cmd.copyWith(
+                                                        limitToServers:
+                                                            dockerServers);
                                                   } else {
-                                                    cmd.limitToServers
-                                                        .removeWhere(
-                                                            (String s) =>
-                                                                dockerServers
+                                                    final List<String>
+                                                        newServers = cmd
+                                                            .limitToServers
+                                                            .where((String s) =>
+                                                                !dockerServers
                                                                     .contains(
-                                                                        s));
+                                                                        s))
+                                                            .toList();
+                                                    cmd = cmd.copyWith(
+                                                        limitToServers:
+                                                            newServers);
                                                   }
+                                                  vm.onSaveDeployCmd(cmd);
                                                 }))),
                                   ListTile(
                                       title: const Text(
@@ -176,11 +188,12 @@ class _DeployPageState extends State<DeployPage> {
                                       ),
                                       trailing: Switch(
                                           value: advanced,
-                                          // This does not work after hot reload
-                                          // during development, so exit and enter
-                                          // again in deploy
-                                          onChanged: (bool value) => setState(
-                                              () => cmd.advanced = value))),
+                                          onChanged: (bool value) =>
+                                              setState(() {
+                                                cmd = cmd.copyWith(
+                                                    advanced: value);
+                                                vm.onSaveDeployCmd(cmd);
+                                              }))),
                                   if (advanced)
                                     ServerSelector(
                                         selectorKey: GlobalKey<
@@ -197,9 +210,12 @@ class _DeployPageState extends State<DeployPage> {
                                         icon: MdiIcons.server,
                                         onChange:
                                             (List<String> limitToServers) =>
-                                                setState(() =>
-                                                    cmd.limitToServers =
-                                                        limitToServers)),
+                                                setState(() {
+                                                  cmd = cmd.copyWith(
+                                                      limitToServers:
+                                                          limitToServers);
+                                                  vm.onSaveDeployCmd(cmd);
+                                                })),
                                   if (advanced)
                                     TagsSelector(
                                         initialValue: cmd.tags,
@@ -213,7 +229,10 @@ class _DeployPageState extends State<DeployPage> {
                                         modalTitle:
                                             'Select the tags you want to limit to:',
                                         onChange: (List<String> tags) =>
-                                            setState(() => cmd.tags = tags)),
+                                            setState(() {
+                                              cmd = cmd.copyWith(tags: tags);
+                                              vm.onSaveDeployCmd(cmd);
+                                            })),
                                   if (advanced)
                                     TagsSelector(
                                         initialValue: cmd.skipTags,
@@ -227,8 +246,11 @@ class _DeployPageState extends State<DeployPage> {
                                         modalTitle:
                                             'Select the tags you want to skip:',
                                         onChange: (List<String> skipTags) =>
-                                            setState(
-                                                () => cmd.skipTags = skipTags)),
+                                            setState(() {
+                                              cmd = cmd.copyWith(
+                                                  skipTags: skipTags);
+                                              vm.onSaveDeployCmd(cmd);
+                                            })),
                                   if (advanced)
                                     const TipsCard(
                                         text:
@@ -241,9 +263,12 @@ class _DeployPageState extends State<DeployPage> {
                                         ),
                                         trailing: Switch(
                                             value: cmd.onlyProperties,
-                                            onChanged: (bool value) => setState(
-                                                () => cmd.onlyProperties =
-                                                    value))),
+                                            onChanged: (bool value) =>
+                                                setState(() {
+                                                  cmd = cmd.copyWith(
+                                                      onlyProperties: value);
+                                                  vm.onSaveDeployCmd(cmd);
+                                                }))),
                                   if (advanced) const DefDivider(),
                                   if (advanced)
                                     ListTile(
@@ -252,8 +277,12 @@ class _DeployPageState extends State<DeployPage> {
                                         ),
                                         trailing: Switch(
                                             value: cmd.debug,
-                                            onChanged: (bool value) => setState(
-                                                () => cmd.debug = value))),
+                                            onChanged: (bool value) =>
+                                                setState(() {
+                                                  cmd = cmd.copyWith(
+                                                      debug: value);
+                                                  vm.onSaveDeployCmd(cmd);
+                                                }))),
                                   if (advanced)
                                     /*  Not necessary now
                               ListTile(
@@ -272,8 +301,11 @@ class _DeployPageState extends State<DeployPage> {
                                           trailing: Switch(
                                               value: cmd.dryRun,
                                               onChanged: (bool value) =>
-                                                  setState(() =>
-                                                      cmd.dryRun = value))),
+                                                  setState(() {
+                                                    cmd = cmd.copyWith(
+                                                        dryRun: value);
+                                                    vm.onSaveDeployCmd(cmd);
+                                                  }))),
                                   if (advanced)
                                     TipsCard(
                                         text:
@@ -310,11 +342,13 @@ class _DeployViewModel {
       {required this.project,
       required this.cmd,
       required this.onCancel,
+      required this.onSaveDeployCmd,
       required this.onDeployProject});
 
   final LAProject project;
   final CommonCmd cmd;
   final Function(LAProject) onCancel;
+  final Function(DeployCmd) onSaveDeployCmd;
   final Function(LAProject, DeployCmd) onDeployProject;
 
   @override
