@@ -21,6 +21,7 @@ class ServerDetailsCard extends StatelessWidget {
       required this.isFirst,
       required this.sshKeys,
       required this.ansibleUser});
+
   final LAServer server;
 
   final Function(LAServer) onSave;
@@ -56,7 +57,7 @@ class ServerDetailsCard extends StatelessWidget {
                       const SizedBox(width: 40),
                       ServerSshKeySelector(
                           key: ValueKey(
-                              server.name + server.sshKey.hashCode.toString()),
+                              '${server.id}-ssh-${server.sshKey?.name ?? "none"}'),
                           server: server,
                           currentSshKey: server.sshKey,
                           isFirst: isFirst,
@@ -103,8 +104,8 @@ class ServerDetailsCard extends StatelessWidget {
                           children: <Widget>[
                             Flexible(
                               child: GatewaySelector(
-                                  key: ValueKey(server.name +
-                                      server.gateways.hashCode.toString()),
+                                  key: ValueKey(
+                                      '${server.id}-gw-${server.gateways.join(",")}'),
                                   firstServer: isFirst,
                                   exclude: server),
                             ),
