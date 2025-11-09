@@ -99,7 +99,10 @@ class CmdHistoryDetails {
             <String, List<AnsibleError>>{};
         final HashSet<String> plays = HashSet<String>();
         result['plays'].forEach((dynamic play) {
-          final String playName = play['play']['name'] as String;
+          final String playName =
+              play['play'] != null && play['play']['name'] != null
+                  ? play['play']['name'] as String
+                  : '';
           plays.add(playName);
           play['tasks'].forEach((dynamic task) {
             task['hosts'].keys.forEach((String host) {
@@ -111,8 +114,11 @@ class CmdHistoryDetails {
                   (task['hosts'][host]['unreachable'] != null &&
                       task['hosts'][host]['unreachable'] == true)) {
                 final String taskName =
-                    task['task'] != null ? task['task']['name'] as String : '';
-                String msg = task['hosts'][host] != null
+                    task['task'] != null && task['task']['name'] != null
+                        ? task['task']['name'] as String
+                        : '';
+                String msg = task['hosts'][host] != null &&
+                        task['hosts'][host]['msg'] != null
                     ? task['hosts'][host]['msg'] as String
                     : '';
                 if (task['hosts'][host]['results'] != null) {
