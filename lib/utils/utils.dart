@@ -107,46 +107,56 @@ class UiUtils {
   }
 
   static void showSnackBarError(BuildContext context, String e) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(e),
-      duration: const Duration(days: 365),
-      action: SnackBarAction(
-        label: 'OK',
-        onPressed: () {},
-      ),
-    ));
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e),
+        duration: const Duration(days: 365),
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: () {},
+        ),
+      ));
+    } catch (error) {
+      // Widget tree is no longer stable, cannot show snackbar
+      // This can happen if the widget was disposed before the error was shown
+    }
   }
 
   static void termErrorAlert(BuildContext context, String error) {
-    Alert(
-        context: context,
-        closeIcon: const Icon(Icons.close),
-        image: const Icon(Icons.error_outline,
-            size: 60, color: LAColorTheme.inactive),
-        title: 'ERROR',
-        style: const AlertStyle(
-            constraints: BoxConstraints.expand(height: 600, width: 600)),
-        content: Column(children: <Widget>[
-          Text(
-            'We had some problem ($error)',
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          // Text(error),
-        ]),
-        buttons: <DialogButton>[
-          DialogButton(
-            width: 450,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'OK',
-              style: TextStyle(color: Colors.white, fontSize: 20),
+    try {
+      Alert(
+          context: context,
+          closeIcon: const Icon(Icons.close),
+          image: const Icon(Icons.error_outline,
+              size: 60, color: LAColorTheme.inactive),
+          title: 'ERROR',
+          style: const AlertStyle(
+              constraints: BoxConstraints.expand(height: 600, width: 600)),
+          content: Column(children: <Widget>[
+            Text(
+              'We had some problem ($error)',
             ),
-          )
-        ]).show();
+            const SizedBox(
+              height: 20,
+            ),
+            // Text(error),
+          ]),
+          buttons: <DialogButton>[
+            DialogButton(
+              width: 450,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            )
+          ]).show();
+    } catch (e) {
+      // Widget tree is no longer stable, cannot show alert
+      // This can happen if the widget was disposed before the alert was shown
+    }
   }
 
   static bool isSmallScreen(BuildContext context) =>
