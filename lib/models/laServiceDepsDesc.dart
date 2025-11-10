@@ -181,10 +181,7 @@ class LAServiceDepsDesc {
     ),
     pipelines: LAServiceDepsDesc(
       nameInt: pipelines,
-      serviceDepends: <BasicService>[
-        NameMatchingService.def,
-        SensitiveDataService.def
-      ],
+      serviceDepends: <BasicService>[],
     ),
     spark: LAServiceDepsDesc(
       nameInt: spark,
