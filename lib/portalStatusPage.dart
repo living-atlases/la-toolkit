@@ -62,6 +62,11 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
       builder: (BuildContext context, _PortalStatusViewModel vm) {
         final List<Widget> resultWidgets = <Widget>[];
         for (final String serverId in vm.checkResults.keys) {
+          // Skip special keys like _monitoring_{serverId}
+          if (serverId.startsWith('_')) {
+            continue;
+          }
+
           final LAServer s =
               vm.project.servers.firstWhere((LAServer s) => s.id == serverId);
           resultWidgets.add(TextTitle(text: s.name));

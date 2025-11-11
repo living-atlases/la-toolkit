@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 
-import 'LAServiceConstants.dart';
 import 'basic_service.dart';
 import 'laServiceDeploy.dart';
 import 'la_service.dart';
@@ -19,11 +18,10 @@ class ProdServiceDesc {
       required this.serviceDeploys,
       this.help,
       required this.deps,
-      required this.status}) {
-    if (nameInt != biocacheBackend &&
-        nameInt != nameindexer &&
-        nameInt != dockerCommon &&
-        nameInt != biocacheCli) {
+      required this.status,
+      this.withoutUrl = false}) {
+    // Only add URL checks if the service is configured to have them
+    if (withoutUrl != null && !withoutUrl!) {
       urls.add(url);
       if (alaAdmin) urls.add('$url/alaAdmin/');
       if (admin) urls.add('$url/admin/');
@@ -43,6 +41,7 @@ class ProdServiceDesc {
   final List<BasicService>? deps;
   final List<String> urls = <String>[];
   final ServiceStatus status;
+  final bool? withoutUrl;
 
   @override
   bool operator ==(Object other) =>
@@ -58,6 +57,7 @@ class ProdServiceDesc {
           alaAdmin == other.alaAdmin &&
           help == other.help &&
           subtitle == other.subtitle &&
+          withoutUrl == other.withoutUrl &&
           const ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
           const ListEquality().equals(deps, other.deps) &&
           const ListEquality().equals(urls, other.urls) &&
@@ -73,6 +73,7 @@ class ProdServiceDesc {
       alaAdmin.hashCode ^
       help.hashCode ^
       subtitle.hashCode ^
+      withoutUrl.hashCode ^
       const ListEquality().hash(serviceDeploys) ^
       const ListEquality().hash(deps) ^
       const ListEquality().hash(urls) ^

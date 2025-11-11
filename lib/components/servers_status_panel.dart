@@ -41,18 +41,30 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
           final Map<String, dynamic> results = widget.results;
           return Wrap(children: <Widget>[
             for (final LAServer server in vm.project.serversWithServices())
-              ServerStatusCard(
-                server: server,
-                services: vm.project.getServerServicesFull(
-                    id: server.id, type: DeploymentType.vm),
-                alaInstallVersion: vm.project.alaInstallRelease!,
-                extendedStatus: widget.extendedStatus,
-                status: results.isNotEmpty && results[server.id] != null
-                    ? results[server.id]! as List<dynamic>
-                    : <dynamic>[],
-                onTerm: () => vm.openTerm(vm.project, server),
-                onRefresh: () => vm.refreshServer(vm.project, server.id),
-              )
+              () {
+                // Check if monitoring tools are installed for this server
+                final monitoringKey = '_monitoring_${server.id}';
+                final hasMonitoring = !results.containsKey(monitoringKey);
+                final monitoringError = hasMonitoring
+                    ? ''
+                    : (results[monitoringKey]?['error'] as String? ??
+                        'Monitoring tools not installed. Run pre-deploy step.');
+
+                return ServerStatusCard(
+                  server: server,
+                  services: vm.project.getServerServicesFull(
+                      id: server.id, type: DeploymentType.vm),
+                  alaInstallVersion: vm.project.alaInstallRelease!,
+                  extendedStatus: widget.extendedStatus,
+                  status: results.isNotEmpty && results[server.id] != null
+                      ? results[server.id]! as List<dynamic>
+                      : <dynamic>[],
+                  hasMonitoringTools: hasMonitoring,
+                  monitoringError: monitoringError,
+                  onTerm: () => vm.openTerm(vm.project, server),
+                  onRefresh: () => vm.refreshServer(vm.project, server.id),
+                );
+              }()
           ]);
         });
   }

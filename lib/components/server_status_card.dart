@@ -25,7 +25,9 @@ class ServerStatusCard extends StatelessWidget {
       required this.alaInstallVersion,
       required this.onTerm,
       required this.onRefresh,
-      required this.status});
+      required this.status,
+      this.hasMonitoringTools = true,
+      this.monitoringError = ''});
 
   final LAServer server;
   final bool extendedStatus;
@@ -34,6 +36,8 @@ class ServerStatusCard extends StatelessWidget {
   final VoidCallback onTerm;
   final VoidCallback onRefresh;
   final List<dynamic> status;
+  final bool hasMonitoringTools;
+  final String monitoringError;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +50,7 @@ class ServerStatusCard extends StatelessWidget {
         deps.addAll(BasicService.toCheck(serDepDesc.serviceDepends));
       }
     }
+
     return IntrinsicWidth(
         child: Card(
             elevation: CardConstants.defaultElevation,
@@ -53,6 +58,20 @@ class ServerStatusCard extends StatelessWidget {
             margin: const EdgeInsets.all(10),
             child: Stack(
               children: <Widget>[
+                // Warning icon si no tiene herramientas de monitorización
+                if (!hasMonitoringTools)
+                  Positioned(
+                    top: 5,
+                    right: 35,
+                    child: Tooltip(
+                      message: monitoringError,
+                      child: Icon(
+                        Icons.warning,
+                        color: Colors.orange,
+                        size: 22,
+                      ),
+                    ),
+                  ),
                 Positioned(
                   top: 5,
                   right: 5,

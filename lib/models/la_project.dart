@@ -1289,7 +1289,8 @@ check results length: ${checkResults.length}''';
           admin: desc.admin,
           alaAdmin: desc.alaAdmin,
           status: st,
-          help: help));
+          help: help,
+          withoutUrl: desc.withoutUrl));
     });
     return allServices;
   }
