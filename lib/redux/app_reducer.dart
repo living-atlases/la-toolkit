@@ -496,6 +496,17 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
         response['results'] as Map<String, dynamic>;
     final Map<String, dynamic> mergedResults =
         Map<String, dynamic>.from(currentProject.checkResults);
+
+    // Remove old _monitoring_ keys for servers that are in newResults
+    // This ensures warnings disappear when monitoring tools are installed
+    for (final String key in newResults.keys) {
+      if (!key.startsWith('_')) {
+        // This is a server ID - remove its monitoring key if it exists
+        final String monitoringKey = '_monitoring_$key';
+        mergedResults.remove(monitoringKey);
+      }
+    }
+
     mergedResults.addAll(newResults);
     currentProject.checkResults = mergedResults;
     return state.copyWith(
