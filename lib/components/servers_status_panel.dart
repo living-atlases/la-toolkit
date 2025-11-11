@@ -6,6 +6,7 @@ import '../models/appState.dart';
 import '../models/deploymentType.dart';
 import '../models/laServer.dart';
 import '../models/la_project.dart';
+import '../redux/app_actions.dart';
 import 'server_status_card.dart';
 import 'term_dialog.dart';
 
@@ -30,6 +31,10 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
             project: store.state.currentProject,
             openTerm: (LAProject project, LAServer server) =>
                 TermDialog.openTerm(context, false, project.id, server.name),
+            refreshServer: (LAProject project, String serverId) {
+              store.dispatch(
+                  TestServicesSingleServer(project, serverId, () {}, () {}));
+            },
           );
         },
         builder: (BuildContext context, _ServersStatusPanelViewModel vm) {
@@ -46,6 +51,7 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
                     ? results[server.id]! as List<dynamic>
                     : <dynamic>[],
                 onTerm: () => vm.openTerm(vm.project, server),
+                onRefresh: () => vm.refreshServer(vm.project, server.id),
               )
           ]);
         });
@@ -53,8 +59,12 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
 }
 
 class _ServersStatusPanelViewModel {
-  _ServersStatusPanelViewModel({required this.project, required this.openTerm});
+  _ServersStatusPanelViewModel(
+      {required this.project,
+      required this.openTerm,
+      required this.refreshServer});
 
   final LAProject project;
   final void Function(LAProject, LAServer) openTerm;
+  final void Function(LAProject, String) refreshServer;
 }

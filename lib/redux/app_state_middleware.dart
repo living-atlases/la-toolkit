@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -9,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
@@ -18,11 +20,13 @@ import '../models/LAServiceConstants.dart';
 import '../models/appState.dart';
 import '../models/cmdHistoryEntry.dart';
 import '../models/cmd_history_details.dart';
+import '../models/hostServicesChecks.dart';
 import '../models/laReleases.dart';
 import '../models/laServiceDesc.dart';
 import '../models/la_project.dart';
 import '../models/postDeployCmd.dart';
 import '../models/preDeployCmd.dart';
+import '../models/prodServiceDesc.dart';
 import '../models/sshKey.dart';
 import '../utils/api.dart';
 import '../utils/casUtils.dart';
@@ -317,6 +321,37 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         action.onFailed();
         store.dispatch(ShowSnackBar(AppSnackBarMessage(
             'Failed to test the connectivity with your servers.')));
+      }
+    }
+    if (action is TestServicesSingleServer) {
+      try {
+        // Set loading state
+        store.dispatch(Loading());
+
+        // Get full checks for all servers
+        final Tuple2<List<ProdServiceDesc>, HostsServicesChecks> allChecks =
+            action.project.serverServicesToMonitor();
+
+        // Filter to only the requested server
+        final HostsServicesChecks singleServerChecks = HostsServicesChecks();
+        if (allChecks.item2.checks.containsKey(action.serverId)) {
+          singleServerChecks.checks[action.serverId] =
+              allChecks.item2.checks[action.serverId]!;
+        }
+
+        Api.checkHostServices(action.project.id, singleServerChecks)
+            .then((Map<String, dynamic> results) {
+          action.onResults();
+          store.dispatch(OnTestServicesResults(results));
+        }).catchError((dynamic e) {
+          action.onFailed();
+          store.dispatch(ShowSnackBar(
+              AppSnackBarMessage('Failed to test services for this server.')));
+        });
+      } catch (e) {
+        action.onFailed();
+        store.dispatch(ShowSnackBar(
+            AppSnackBarMessage('Failed to test services for this server.')));
       }
     }
     if (action is OnSshKeysScan) {

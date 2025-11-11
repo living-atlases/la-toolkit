@@ -453,6 +453,28 @@ class Api {
     }
   }
 
+  static Future<Map<String, dynamic>> checkHostServicesWithStreaming(
+      String projectId, HostsServicesChecks hostsServicesChecks) async {
+    if (AppUtils.isDemo()) {
+      return <String, dynamic>{};
+    }
+    final Uri url = AppUtils.uri(
+        dotenv.env['BACKEND']!, '/api/v1/test-host-services-stream');
+    final Response response = await http.post(url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(<String, Object>{
+          'projectId': projectId,
+          'hostsServices': hostsServicesChecks.toJson(),
+        })));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> l =
+          json.decode(response.body) as Map<String, dynamic>;
+      return l;
+    } else {
+      return <String, dynamic>{};
+    }
+  }
+
   static Future<List<dynamic>> updateProject(
       {required LAProject project}) async {
     return addOrUpdateProject(project, 'update');

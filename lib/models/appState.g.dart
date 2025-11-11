@@ -43,6 +43,9 @@ abstract class _$AppStateCWProxy {
 
   AppState sshKeys(List<SshKey>? sshKeys);
 
+  AppState serviceCheckProgress(
+      Map<String, Map<String, dynamic>>? serviceCheckProgress);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `AppState(...).copyWith.fieldName(value)`.
   ///
@@ -69,6 +72,7 @@ abstract class _$AppStateCWProxy {
     bool? loading,
     bool? depsLoading,
     List<SshKey>? sshKeys,
+    Map<String, Map<String, dynamic>>? serviceCheckProgress,
   });
 }
 
@@ -141,6 +145,11 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
   AppState sshKeys(List<SshKey>? sshKeys) => call(sshKeys: sshKeys);
 
   @override
+  AppState serviceCheckProgress(
+          Map<String, Map<String, dynamic>>? serviceCheckProgress) =>
+      call(serviceCheckProgress: serviceCheckProgress);
+
+  @override
 
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `AppState(...).copyWith.fieldName(value)`.
@@ -168,6 +177,7 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
     Object? loading = const $CopyWithPlaceholder(),
     Object? depsLoading = const $CopyWithPlaceholder(),
     Object? sshKeys = const $CopyWithPlaceholder(),
+    Object? serviceCheckProgress = const $CopyWithPlaceholder(),
   }) {
     return AppState(
       projects: projects == const $CopyWithPlaceholder()
@@ -246,6 +256,10 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
           ? _value.sshKeys
           // ignore: cast_nullable_to_non_nullable
           : sshKeys as List<SshKey>?,
+      serviceCheckProgress: serviceCheckProgress == const $CopyWithPlaceholder()
+          ? _value.serviceCheckProgress
+          // ignore: cast_nullable_to_non_nullable
+          : serviceCheckProgress as Map<String, Map<String, dynamic>>?,
     );
   }
 }

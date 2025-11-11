@@ -55,6 +55,8 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, TestServicesProject>(_testServicesProject),
   TypedReducer<AppState, OnTestConnectivityResults>(_onTestConnectivityResults),
   TypedReducer<AppState, OnTestServicesResults>(_onTestServicesResults),
+  TypedReducer<AppState, OnTestServicesProgress>(_onTestServicesProgress),
+  TypedReducer<AppState, OnTestServicesComplete>(_onTestServicesComplete),
   TypedReducer<AppState, OnSshKeysScan>(_onSshKeysScan),
   TypedReducer<AppState, OnSshKeysScanned>(_onSshKeysScanned),
   TypedReducer<AppState, OnAddSshKey>(_onAddSshKey),
@@ -326,7 +328,9 @@ AppState _testConnectivityProject(
 }
 
 AppState _testServicesProject(AppState state, TestServicesProject action) {
-  return state.copyWith(loading: true);
+  // Clear previous progress when starting new checks
+  return state.copyWith(
+      loading: true, serviceCheckProgress: <String, Map<String, dynamic>>{});
 }
 
 AppState _onTestConnectivityResults(
@@ -487,13 +491,84 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   }
   if (currentProject.id == pId) {
     currentProject.serviceDeploys = sds;
-    currentProject.checkResults = response['results'] as Map<String, dynamic>;
+    // Merge new results with existing ones instead of replacing
+    final Map<String, dynamic> newResults =
+        response['results'] as Map<String, dynamic>;
+    final Map<String, dynamic> mergedResults =
+        Map<String, dynamic>.from(currentProject.checkResults);
+    mergedResults.addAll(newResults);
+    currentProject.checkResults = mergedResults;
     return state.copyWith(
         loading: false,
         currentProject: currentProject,
         projects: replaceProject(state, currentProject));
   }
   // for (String serverName in response.keys) {}
+  return state;
+}
+
+AppState _onTestServicesProgress(
+    AppState state, OnTestServicesProgress action) {
+  final LAProject currentProject = state.currentProject;
+  final Map<String, Map<String, dynamic>> progressMap =
+      Map<String, Map<String, dynamic>>.from(state.serviceCheckProgress);
+
+  // Update progress for this server
+  progressMap[action.serverId] = <String, dynamic>{
+    'serverName': action.serverName,
+    'status': action.status,
+    'resultsCount': action.results?.length ?? 0,
+  };
+
+  // Update check results progressively
+  if (action.results != null && action.results!.isNotEmpty) {
+    final Map<String, dynamic> currentResults =
+        Map<String, dynamic>.from(currentProject.checkResults);
+
+    // Update or add results for this server
+    if (currentResults.containsKey(action.serverId)) {
+      // Append new results
+      final List<dynamic> existingResults =
+          currentResults[action.serverId] as List<dynamic>;
+      currentResults[action.serverId] = <dynamic>[
+        ...existingResults,
+        ...action.results!
+      ];
+    } else {
+      currentResults[action.serverId] = action.results;
+    }
+
+    currentProject.checkResults = currentResults;
+
+    return state.copyWith(
+        currentProject: currentProject,
+        serviceCheckProgress: progressMap,
+        projects: replaceProject(state, currentProject));
+  }
+
+  return state.copyWith(serviceCheckProgress: progressMap);
+}
+
+AppState _onTestServicesComplete(
+    AppState state, OnTestServicesComplete action) {
+  final LAProject currentProject = state.currentProject;
+  final Map<String, dynamic> response = action.results;
+  final String pId = response['projectId'] as String;
+  final List<dynamic> sdsJ = response['serviceDeploys'] as List<dynamic>;
+  final List<LAServiceDeploy> sds = <LAServiceDeploy>[];
+  for (final dynamic sdJ in sdsJ) {
+    final LAServiceDeploy sd =
+        LAServiceDeploy.fromJson(sdJ as Map<String, dynamic>);
+    sds.add(sd);
+  }
+  if (currentProject.id == pId) {
+    currentProject.serviceDeploys = sds;
+    currentProject.checkResults = response['results'] as Map<String, dynamic>;
+    return state.copyWith(
+        loading: false,
+        currentProject: currentProject,
+        projects: replaceProject(state, currentProject));
+  }
   return state;
 }
 

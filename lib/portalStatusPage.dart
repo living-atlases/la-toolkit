@@ -13,6 +13,7 @@ import 'components/checkResultCard.dart';
 import 'components/laAppBar.dart';
 import 'components/scrollPanel.dart';
 import 'components/servers_status_panel.dart';
+import 'components/service_check_progress_indicator.dart';
 import 'components/servicesStatusPanel.dart';
 import 'components/textTitle.dart';
 import 'laTheme.dart';
@@ -48,6 +49,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
             serverServicesToMonitor:
                 store.state.currentProject.serverServicesToMonitor(),
             loading: store.state.loading,
+            serviceCheckProgress: store.state.serviceCheckProgress,
             checkServices: (HostsServicesChecks hostsServicesChecks) {
               store.dispatch(TestServicesProject(
                   store.state.currentProject,
@@ -144,6 +146,29 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                           Expanded(
                               flex: 10, // 80%,
                               child: Column(children: <Widget>[
+                                // Show progress indicators if checks are running
+                                if (vm.loading &&
+                                    vm.serviceCheckProgress.isNotEmpty)
+                                  Column(
+                                    children: <Widget>[
+                                      const TextTitle(
+                                          text: 'Checking Services...'),
+                                      const SizedBox(height: 16),
+                                      for (final MapEntry<String,
+                                              Map<String, dynamic>> entry
+                                          in vm.serviceCheckProgress.entries)
+                                        ServiceCheckProgressIndicator(
+                                          serverName: entry.value['serverName']
+                                              as String,
+                                          status:
+                                              entry.value['status'] as String,
+                                          resultsCount: entry
+                                              .value['resultsCount'] as int,
+                                        ),
+                                      const SizedBox(height: 24),
+                                      const Divider(),
+                                    ],
+                                  ),
                                 // Add
                                 // https://pub.dev/packages/circular_countdown_timer
                                 // or similar and a sliderdesc
@@ -153,15 +178,12 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                                       extendedStatus: true,
                                       results: vm.checkResults),
                                 if (_tab == 1)
-                                  const TextTitle(
-                                      text: 'Services'),
+                                  const TextTitle(text: 'Services'),
                                 if (_tab == 1)
                                   ServicesStatusPanel(
                                       services:
                                           vm.serverServicesToMonitor.item1),
-                                if (_tab == 2)
-                                  const TextTitle(
-                                      text: 'Details'),
+                                if (_tab == 2) const TextTitle(text: 'Details'),
                                 if (_tab == 2)
                                   for (final Widget w in resultWidgets) w
                               ])),
@@ -188,6 +210,7 @@ class _PortalStatusViewModel {
       required this.checkResults,
       required this.loading,
       required this.checkServices,
+      required this.serviceCheckProgress,
       required this.serverServicesToMonitor});
 
   final LAProject project;
@@ -196,6 +219,7 @@ class _PortalStatusViewModel {
       serverServicesToMonitor;
   final void Function(HostsServicesChecks) checkServices;
   final bool loading;
+  final Map<String, Map<String, dynamic>> serviceCheckProgress;
 
   @override
   bool operator ==(Object other) =>
@@ -203,6 +227,8 @@ class _PortalStatusViewModel {
       other is _PortalStatusViewModel &&
           runtimeType == other.runtimeType &&
           loading == other.loading &&
+          const DeepCollectionEquality.unordered()
+              .equals(serviceCheckProgress, other.serviceCheckProgress) &&
           const DeepCollectionEquality.unordered()
               .equals(checkResults, other.checkResults) &&
           serverServicesToMonitor == other.serverServicesToMonitor &&
@@ -213,5 +239,6 @@ class _PortalStatusViewModel {
       project.hashCode ^
       loading.hashCode ^
       serverServicesToMonitor.hashCode ^
-      const DeepCollectionEquality.unordered().hash(checkResults);
+      const DeepCollectionEquality.unordered().hash(checkResults) ^
+      const DeepCollectionEquality.unordered().hash(serviceCheckProgress);
 }

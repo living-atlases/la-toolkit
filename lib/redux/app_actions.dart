@@ -327,6 +327,16 @@ class TestServicesProject extends AppActions {
   VoidCallback onFailed;
 }
 
+class TestServicesSingleServer extends AppActions {
+  TestServicesSingleServer(
+      this.project, this.serverId, this.onResults, this.onFailed);
+
+  LAProject project;
+  String serverId;
+  VoidCallback onResults;
+  VoidCallback onFailed;
+}
+
 class OnTestConnectivityResults extends AppActions {
   OnTestConnectivityResults(this.results);
 
@@ -397,6 +407,22 @@ class OnAppPackageInfo extends AppActions {
 
 class OnTestServicesResults extends AppActions {
   OnTestServicesResults(this.results);
+
+  Map<String, dynamic> results;
+}
+
+class OnTestServicesProgress extends AppActions {
+  OnTestServicesProgress(
+      this.serverId, this.serverName, this.status, this.results);
+
+  String serverId;
+  String serverName;
+  String status;
+  List<dynamic>? results;
+}
+
+class OnTestServicesComplete extends AppActions {
+  OnTestServicesComplete(this.results);
 
   Map<String, dynamic> results;
 }

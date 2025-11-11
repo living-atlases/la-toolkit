@@ -24,6 +24,7 @@ class ServerStatusCard extends StatelessWidget {
       required this.services,
       required this.alaInstallVersion,
       required this.onTerm,
+      required this.onRefresh,
       required this.status});
 
   final LAServer server;
@@ -31,6 +32,7 @@ class ServerStatusCard extends StatelessWidget {
   final List<LAService> services;
   final String alaInstallVersion;
   final VoidCallback onTerm;
+  final VoidCallback onRefresh;
   final List<dynamic> status;
 
   @override
@@ -49,68 +51,92 @@ class ServerStatusCard extends StatelessWidget {
             elevation: CardConstants.defaultElevation,
             // color: Colors.black12,
             margin: const EdgeInsets.all(10),
-            child: Padding(
-                padding: EdgeInsets.all(extendedStatus ? 10 : 5),
-                child: Row(children: <Widget>[
-                  Column(children: <Widget>[
-                    Tooltip(
-                        message: 'Open a terminal in ${server.name}',
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5)),
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  top: 5,
+                  right: 5,
+                  child: Tooltip(
+                    message: 'Refresh status for ${server.name}',
+                    child: IconButton(
+                      iconSize: 18,
+                      padding: const EdgeInsets.all(4),
+                      constraints: const BoxConstraints(),
+                      onPressed: () => onRefresh(),
+                      icon: Icon(
+                        MdiIcons.reload,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                    padding: EdgeInsets.all(extendedStatus ? 10 : 5),
+                    child: Row(children: <Widget>[
+                      Column(children: <Widget>[
+                        Tooltip(
+                            message: 'Open a terminal in ${server.name}',
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                  ),
+                                  elevation: 10,
+                                  shadowColor: Colors.green,
+                                  minimumSize: Size.zero,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(1, 1, 1, 0),
+                                  enableFeedback: true),
+                              onPressed: () => onTerm(),
+                              child: Icon(
+                                MdiIcons.console,
+                                color: statusUpDownColor(),
+                                size: 36,
                               ),
-                              elevation: 10,
-                              shadowColor: Colors.green,
-                              minimumSize: Size.zero,
-                              padding: const EdgeInsets.fromLTRB(1, 1, 1, 0),
-                              enableFeedback: true),
-                          onPressed: () => onTerm(),
-                          child: Icon(
-                            MdiIcons.console,
-                            color: statusUpDownColor(),
-                            size: 36,
-                          ),
-                        ))
-                  ]),
-                  const SizedBox(width: 20),
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(server.name,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      const SizedBox(height: 5),
-                      Text('IP: ${server.ip}', style: GoogleFonts.robotoMono()),
-                      if (extendedStatus) const SizedBox(height: 10),
-                      if (extendedStatus)
-                        // ignore: sized_box_for_whitespace
-                        Container(
-                            width: 140,
-                            child: ConnectivityStatus(server: server)),
-                      if (extendedStatus) const SizedBox(height: 10),
-                      if (extendedStatus)
-                        // ignore: sized_box_for_whitespace
-                        Container(
-                            width: 140,
-                            child: RichText(
-                              overflow: TextOverflow.visible,
-                              // softWrap: true,
-                              text: TextSpan(
-                                  text: LAService.servicesForHumans(services),
-                                  style: ServiceStatusCard.subtitle),
                             )),
-                    ],
-                  )),
-                  const SizedBox(width: 20),
-                  // Expanded(
-                  if (!extendedStatus) ConnectivityStatus(server: server),
-                  if (extendedStatus) const SizedBox(width: 10),
-                  if (extendedStatus) DepsPanel(deps, status),
-                ]))));
+                      ]),
+                      const SizedBox(width: 20),
+                      Expanded(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(server.name,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                          const SizedBox(height: 5),
+                          Text('IP: ${server.ip}',
+                              style: GoogleFonts.robotoMono()),
+                          if (extendedStatus) const SizedBox(height: 10),
+                          if (extendedStatus)
+                            // ignore: sized_box_for_whitespace
+                            Container(
+                                width: 140,
+                                child: ConnectivityStatus(server: server)),
+                          if (extendedStatus) const SizedBox(height: 10),
+                          if (extendedStatus)
+                            // ignore: sized_box_for_whitespace
+                            Container(
+                                width: 140,
+                                child: RichText(
+                                  overflow: TextOverflow.visible,
+                                  // softWrap: true,
+                                  text: TextSpan(
+                                      text:
+                                          LAService.servicesForHumans(services),
+                                      style: ServiceStatusCard.subtitle),
+                                )),
+                        ],
+                      )),
+                      const SizedBox(width: 20),
+                      // Expanded(
+                      if (!extendedStatus) ConnectivityStatus(server: server),
+                      if (extendedStatus) const SizedBox(width: 10),
+                      if (extendedStatus) DepsPanel(deps, status),
+                    ])),
+              ],
+            )));
   }
 
   Color statusUpDownColor() {

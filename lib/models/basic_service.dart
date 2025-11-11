@@ -193,19 +193,12 @@ class ElasticSearch extends BasicService {
 }
 
 class Spark extends BasicService {
-  Spark(String version)
-      : super(name: 'spark', version: version, tcp: <num>[
-          8081,
-          7077,
-          65000,
-          8080,
-          8085,
-        ]);
+  Spark(String version) : super(name: 'spark', version: version);
   static final Spark def = Spark('');
 }
 
-class Hadoop extends Tcp {
-  Hadoop(String version) : super('hadoop', version, 9000);
+class Hadoop extends BasicService {
+  Hadoop(String version) : super(name: 'hadoop', version: version);
   static final Hadoop def = Hadoop('');
 }
 

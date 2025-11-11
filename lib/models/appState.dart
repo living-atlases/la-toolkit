@@ -61,7 +61,8 @@ class AppState {
       this.lastSwCheck,
       bool? loading,
       bool? depsLoading,
-      List<SshKey>? sshKeys})
+      List<SshKey>? sshKeys,
+      Map<String, Map<String, dynamic>>? serviceCheckProgress})
       : projects = projects ?? <LAProject>[],
         sshKeys = sshKeys ?? <SshKey>[],
         status = status ?? LAProjectViewStatus.view,
@@ -72,6 +73,8 @@ class AppState {
         laReleases = laReleases ?? <String, LAReleases>{},
         loading = loading ?? false,
         depsLoading = depsLoading ?? false,
+        serviceCheckProgress =
+            serviceCheckProgress ?? <String, Map<String, dynamic>>{},
         appSnackBarMessages = appSnackBarMessages ?? <AppSnackBarMessage>[];
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
@@ -100,6 +103,8 @@ class AppState {
   final bool loading;
   @JsonKey(includeToJson: false, includeFromJson: false)
   final bool depsLoading;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  final Map<String, Map<String, dynamic>> serviceCheckProgress;
   final DateTime? lastSwCheck;
 
   Map<String, dynamic> toJson() => _$AppStateToJson(this);
@@ -127,6 +132,8 @@ class AppState {
           listEquals(appSnackBarMessages, other.appSnackBarMessages) &&
           const DeepCollectionEquality.unordered()
               .equals(laReleases, other.laReleases) &&
+          const DeepCollectionEquality.unordered()
+              .equals(serviceCheckProgress, other.serviceCheckProgress) &&
           listEquals(sshKeys, other.sshKeys);
 
   @override
@@ -148,6 +155,7 @@ class AppState {
       const ListEquality().hash(alaInstallReleases) ^
       const ListEquality().hash(generatorReleases) ^
       const DeepCollectionEquality.unordered().hash(laReleases) ^
+      const DeepCollectionEquality.unordered().hash(serviceCheckProgress) ^
       const ListEquality().hash(sshKeys);
 
   static LAProjectViewStatus statusFromString(String s) {

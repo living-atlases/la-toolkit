@@ -90,7 +90,6 @@ class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
           : value,
       projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
-          // ignore: cast_nullable_to_non_nullable
           : projectId as String,
     );
   }
