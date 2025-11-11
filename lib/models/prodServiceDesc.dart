@@ -21,7 +21,7 @@ class ProdServiceDesc {
       required this.status,
       this.withoutUrl = false}) {
     // Only add URL checks if the service is configured to have them
-    if (withoutUrl != null && !withoutUrl!) {
+    if (!withoutUrl) {
       urls.add(url);
       if (alaAdmin) urls.add('$url/alaAdmin/');
       if (admin) urls.add('$url/admin/');
@@ -41,7 +41,7 @@ class ProdServiceDesc {
   final List<BasicService>? deps;
   final List<String> urls = <String>[];
   final ServiceStatus status;
-  final bool? withoutUrl;
+  final bool withoutUrl;
 
   @override
   bool operator ==(Object other) =>
