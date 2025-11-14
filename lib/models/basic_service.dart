@@ -37,24 +37,16 @@ class BasicService {
           name == other.name;
 
   @override
-  int get hashCode =>
-      version.hashCode ^ name.hashCode ^ tcp.hashCode ^ udp.hashCode;
+  int get hashCode => version.hashCode ^ name.hashCode ^ tcp.hashCode ^ udp.hashCode;
 
   static List<BasicService> toCheck(List<BasicService> deps) {
-    return deps
-        .where((BasicService dep) => dep.name != PostGis.def.name)
-        .toList();
+    return deps.where((BasicService dep) => dep.name != PostGis.def.name).toList();
   }
 }
 
 abstract class Tcp extends BasicService {
-  Tcp(String name, String version, int port,
-      [bool reachableFromOtherServers = false])
-      : super(
-            name: name,
-            version: version,
-            tcp: <int>[port],
-            reachableFromOtherServers: reachableFromOtherServers);
+  Tcp(String name, String version, int port, [bool reachableFromOtherServers = false])
+      : super(name: name, version: version, tcp: <int>[port], reachableFromOtherServers: reachableFromOtherServers);
 }
 
 class Cas extends Tcp {
@@ -83,87 +75,58 @@ class Doi extends Tcp {
 }
 
 class NameMatchingService extends BasicService {
-  NameMatchingService(String version)
-      : super(
-            name: 'namematching-service',
-            version: version,
-            tcp: <num>[9179, 9180]);
+  NameMatchingService(String version) : super(name: 'namematching-service', version: version, tcp: <num>[9179, 9180]);
   static final NameMatchingService def = NameMatchingService('');
 }
 
 class SensitiveDataService extends BasicService {
   SensitiveDataService(String version)
-      : super(
-            name: 'sensitive-data-service',
-            version: version,
-            tcp: <num>[9189, 9190]);
+      : super(name: 'sensitive-data-service', version: version, tcp: <num>[9189, 9190]);
   static final SensitiveDataService def = SensitiveDataService('');
 }
 
 class Nginx extends BasicService {
-  Nginx(String version)
-      : super(
-            name: 'nginx',
-            version: version,
-            tcp: <num>[80, 443],
-            reachableFromOtherServers: true);
+  Nginx(String version) : super(name: 'nginx', version: version, tcp: <num>[80, 443], reachableFromOtherServers: true);
   static final Nginx def = Nginx('');
 }
 
 class Postfix extends BasicService {
-  Postfix(String version)
-      : super(name: 'postfix', version: version, tcp: <num>[25]);
+  Postfix(String version) : super(name: 'postfix', version: version, tcp: <num>[25]);
   static final Postfix def = Postfix('');
 }
 
 class Solr extends BasicService {
-  Solr(String version)
-      : super(
-            name: 'solr',
-            version: version,
-            tcp: <num>[8983],
-            reachableFromOtherServers: true);
+  Solr(String version) : super(name: 'solr', version: version, tcp: <num>[8983], reachableFromOtherServers: true);
   static final Solr v7 = Solr('7');
   static final Solr v8 = Solr('8');
 }
 
 class SolrCloud extends BasicService {
   SolrCloud(String version)
-      : super(
-            name: 'solrcloud',
-            version: version,
-            tcp: <num>[8983, 2181],
-            reachableFromOtherServers: true);
+      : super(name: 'solrcloud', version: version, tcp: <num>[8983, 2181], reachableFromOtherServers: true);
   static final Solr v8 = Solr('8');
 }
 
 class Cassandra extends BasicService {
   Cassandra(String version)
-      : super(
-            name: 'cassandra',
-            version: version,
-            tcp: <num>[9042],
-            reachableFromOtherServers: true);
+      : super(name: 'cassandra', version: version, tcp: <num>[9042], reachableFromOtherServers: true);
   static final Cassandra v2 = Cassandra('2');
   static final Cassandra v3 = Cassandra('3');
 }
 
 class Tomcat extends BasicService {
-  Tomcat(String version)
-      : super(name: 'tomcat', version: version, tcp: <num>[8080]);
+  Tomcat(String version) : super(name: 'tomcat', version: version, tcp: <num>[8080]);
   static final Tomcat def = Tomcat('');
 }
 
 class MySql extends BasicService {
-  MySql(String version)
-      : super(name: 'mysql', version: version, tcp: <num>[3306]);
+  MySql(String version) : super(name: 'mysql', version: version, tcp: <num>[3306]);
 
   static final MySql def = MySql('');
 }
 
 class PostgresSql extends BasicService {
-  PostgresSql(String version)
-      : super(name: 'postgresql', version: version, tcp: <num>[5432]);
+  PostgresSql(String version) : super(name: 'postgresql', version: version, tcp: <num>[5432]);
 
   static final PostgresSql def = PostgresSql('');
 }
@@ -175,16 +138,14 @@ class PostGis extends BasicService {
 }
 
 class Mongo extends BasicService {
-  Mongo(String version)
-      : super(name: 'mongo', version: version, tcp: <num>[27017]);
+  Mongo(String version) : super(name: 'mongo', version: version, tcp: <num>[27017]);
 
   static final Mongo v4_0 = Mongo('4.0');
 }
 
 // FIXME Move this to dependencies
 class ElasticSearch extends BasicService {
-  ElasticSearch(String version)
-      : super(name: 'elasticsearch', version: version, tcp: <num>[9200]);
+  ElasticSearch(String version) : super(name: 'elasticsearch', version: version, tcp: <num>[9200]);
   static final ElasticSearch v5_6_6 = ElasticSearch('5.6.6');
   static final ElasticSearch v7_7_1 = ElasticSearch('7.7.1');
   static final ElasticSearch v7_3_0 = ElasticSearch('7.3.0');
@@ -213,8 +174,7 @@ class Ecodata extends Tcp {
 }
 
 class EcodataReporting extends Tcp {
-  EcodataReporting(String version)
-      : super('ecodata-reporting', version, 9005, false);
+  EcodataReporting(String version) : super('ecodata-reporting', version, 9005, false);
   static final EcodataReporting def = EcodataReporting('');
 }
 

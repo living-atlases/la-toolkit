@@ -56,16 +56,13 @@ class TermDialog {
     }
   }
 
-  static String getInitialUrl(int port) => (dotenv.env['TERM_PROXY'] ?? 'false')
-          .parseBool()
+  static String getInitialUrl(int port) => (dotenv.env['TERM_PROXY'] ?? 'false').parseBool()
       ? '${AppUtils.scheme}://${dotenv.env['BACKEND']!.split(":")[0]}/ttyd$port'
       : '${AppUtils.scheme}://${dotenv.env['BACKEND']!.split(":")[0]}:$port/';
 
   static Widget termArea(int port, bool notify) {
     return InteractiveViewer(
-        child: Container(
-            alignment: Alignment.center,
-            child: EmbedWebView(src: getInitialUrl(port), notify: notify)));
+        child: Container(alignment: Alignment.center, child: EmbedWebView(src: getInitialUrl(port), notify: notify)));
   }
 
   static Future<T?> showFloatingModalBottomSheet<T>({
@@ -76,8 +73,7 @@ class TermDialog {
     final T? result = await showCustomModalBottomSheet(
         context: context,
         builder: builder,
-        containerWidget: (_, Animation<double> animation, Widget child) =>
-            FloatingModal(
+        containerWidget: (_, Animation<double> animation, Widget child) => FloatingModal(
               child: child,
             ));
 
@@ -95,8 +91,7 @@ class TermDialog {
   }
 
   // Opens a bash or a ssh on server
-  static void openTerm(BuildContext context, bool notify,
-      [String? projectId, String? server]) {
+  static void openTerm(BuildContext context, bool notify, [String? projectId, String? server]) {
     // context.loaderOverlay.show();
     context.loaderOverlay.show();
     Api.term(

@@ -4,7 +4,6 @@ import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
-
 import '../utils/card_constants.dart';
 
 class ChoicesSelector extends StatefulWidget {
@@ -56,17 +55,12 @@ class _ChoicesSelectorState extends State<ChoicesSelector> {
                     listType: MultiSelectListType.CHIP,
                     searchable: true,
                     confirmText: const Text('CONFIRM'),
-                    selectedColor:
-                        Theme.of(context).primaryColor.withOpacity(.2),
+                    selectedColor: Theme.of(context).primaryColor.withOpacity(.2),
                     buttonIcon: Icon(widget.icon, color: Colors.grey),
-                    buttonText: Text(widget.title,
-                        style: const TextStyle(fontSize: 16)),
-                    title: Text(widget.modalTitle,
-                        style: const TextStyle(fontSize: 16)),
+                    buttonText: Text(widget.title, style: const TextStyle(fontSize: 16)),
+                    title: Text(widget.modalTitle, style: const TextStyle(fontSize: 16)),
                     initialValue: _selected,
-                    items: widget.choices
-                        .map((String tag) => MultiSelectItem<String>(tag, tag))
-                        .toList(),
+                    items: widget.choices.map((String tag) => MultiSelectItem<String>(tag, tag)).toList(),
                     onConfirm: (List<String> values) {
                       setState(() {
                         _selected = values;

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+
 import '../models/app_state.dart';
-import '../models/la_server.dart';
 import '../models/la_project.dart';
+import '../models/la_server.dart';
 import '../models/ssh_key.dart';
 import '../redux/actions.dart';
 import 'server_details_card.dart';
@@ -15,8 +16,7 @@ class ServersDetailsCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ServersCardListViewModel>(
-        converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _ServersCardListViewModel>(converter: (Store<AppState> store) {
       return _ServersCardListViewModel(
           currentProject: store.state.currentProject,
           sshKeys: store.state.sshKeys,
@@ -44,8 +44,7 @@ class ServersDetailsCardList extends StatelessWidget {
                 advancedEdit: project.advancedEdit,
                 isFirst: _isFirstServer(index, project.servers.length),
                 sshKeys: vm.sshKeys,
-                ansibleUser:
-                    project.getVariableValue('ansible_user').toString());
+                ansibleUser: project.getVariableValue('ansible_user').toString());
           });
     });
   }
@@ -56,10 +55,7 @@ class ServersDetailsCardList extends StatelessWidget {
 }
 
 class _ServersCardListViewModel {
-  _ServersCardListViewModel(
-      {required this.currentProject,
-      required this.sshKeys,
-      required this.onSaveCurrentProject});
+  _ServersCardListViewModel({required this.currentProject, required this.sshKeys, required this.onSaveCurrentProject});
 
   final List<SshKey> sshKeys;
   final LAProject currentProject;

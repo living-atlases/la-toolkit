@@ -118,16 +118,14 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String?,
-      logsPrefix:
-          logsPrefix == const $CopyWithPlaceholder() || logsPrefix == null
-              ? _value.logsPrefix
-              // ignore: cast_nullable_to_non_nullable
-              : logsPrefix as String,
-      logsSuffix:
-          logsSuffix == const $CopyWithPlaceholder() || logsSuffix == null
-              ? _value.logsSuffix
-              // ignore: cast_nullable_to_non_nullable
-              : logsSuffix as String,
+      logsPrefix: logsPrefix == const $CopyWithPlaceholder() || logsPrefix == null
+          ? _value.logsPrefix
+          // ignore: cast_nullable_to_non_nullable
+          : logsPrefix as String,
+      logsSuffix: logsSuffix == const $CopyWithPlaceholder() || logsSuffix == null
+          ? _value.logsSuffix
+          // ignore: cast_nullable_to_non_nullable
+          : logsSuffix as String,
       desc: desc == const $CopyWithPlaceholder()
           ? _value.desc
           // ignore: cast_nullable_to_non_nullable
@@ -175,8 +173,7 @@ extension $CmdHistoryEntryCopyWith on CmdHistoryEntry {
 // JsonSerializableGenerator
 // **************************************************************************
 
-CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) =>
-    CmdHistoryEntry(
+CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) => CmdHistoryEntry(
       id: json['id'] as String?,
       logsPrefix: json['logsPrefix'] as String,
       logsSuffix: json['logsSuffix'] as String,
@@ -187,12 +184,10 @@ CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) =>
       cmd: Cmd.fromJson(json['cmd'] as Map<String, dynamic>),
       createdAt: (json['createdAt'] as num?)?.toInt(),
       duration: (json['duration'] as num?)?.toDouble(),
-      result: $enumDecodeNullable(_$CmdResultEnumMap, json['result']) ??
-          CmdResult.unknown,
+      result: $enumDecodeNullable(_$CmdResultEnumMap, json['result']) ?? CmdResult.unknown,
     );
 
-Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$CmdHistoryEntryToJson(CmdHistoryEntry instance) => <String, dynamic>{
       'id': instance.id,
       'desc': instance.desc,
       'logsPrefix': instance.logsPrefix,

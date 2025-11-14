@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-
 import 'package:collection/collection.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:redux/redux.dart';
 import 'package:tuple/tuple.dart';
 
-
+import './models/app_state.dart';
 import 'components/app_snack_bar.dart';
 import 'components/check_result_card.dart';
 import 'components/la_app_bar.dart';
@@ -19,7 +18,6 @@ import 'components/service_check_progress_indicator.dart';
 import 'components/services_status_panel.dart';
 import 'components/text_title.dart';
 import 'la_theme.dart';
-import './models/app_state.dart';
 import 'models/host_services_checks.dart';
 import 'models/la_project.dart';
 import 'models/la_server.dart';
@@ -48,17 +46,12 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
         return _PortalStatusViewModel(
             project: store.state.currentProject,
             checkResults: store.state.currentProject.checkResults,
-            serverServicesToMonitor:
-                store.state.currentProject.serverServicesToMonitor(),
+            serverServicesToMonitor: store.state.currentProject.serverServicesToMonitor(),
             loading: store.state.loading,
             serviceCheckProgress: store.state.serviceCheckProgress,
             checkServices: (HostsServicesChecks hostsServicesChecks) {
-              store.dispatch(TestServicesProject(
-                  store.state.currentProject,
-                  hostsServicesChecks,
-                  () => store.dispatch(TestConnectivityProject(
-                      store.state.currentProject, () {}, () {})),
-                  () {}));
+              store.dispatch(TestServicesProject(store.state.currentProject, hostsServicesChecks,
+                  () => store.dispatch(TestConnectivityProject(store.state.currentProject, () {}, () {})), () {}));
             });
       },
       builder: (BuildContext context, _PortalStatusViewModel vm) {
@@ -69,13 +62,11 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
             continue;
           }
 
-          final LAServer s =
-              vm.project.servers.firstWhere((LAServer s) => s.id == serverId);
+          final LAServer s = vm.project.servers.firstWhere((LAServer s) => s.id == serverId);
           resultWidgets.add(TextTitle(text: s.name));
           vm.checkResults[serverId]!.forEach((dynamic check) {
-            final ServiceStatus st = int.parse(check['code'] as String) == 0
-                ? ServiceStatus.success
-                : ServiceStatus.failed;
+            final ServiceStatus st =
+                int.parse(check['code'] as String) == 0 ? ServiceStatus.success : ServiceStatus.failed;
             final String args = check['service'] as String == 'check_url'
                 ? utf8.decode(base64.decode(check['args'] as String))
                 : check['args'] as String;
@@ -100,8 +91,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                     actions: <Widget>[
                       IconButton(
                         icon: const Tooltip(
-                            message: 'Pause to check services',
-                            child: Icon(Icons.pause, color: Colors.white)),
+                            message: 'Pause to check services', child: Icon(Icons.pause, color: Colors.white)),
                         onPressed: () {
                           //
                         },
@@ -111,16 +101,13 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                           child: IconButton(
                             icon: Tooltip(
                                 message: 'Recheck the status of the portal',
-                                child:
-                                    Icon(MdiIcons.reload, color: Colors.white)),
+                                child: Icon(MdiIcons.reload, color: Colors.white)),
                             onPressed: () {
-                              vm.checkServices(
-                                  vm.serverServicesToMonitor.item2);
+                              vm.checkServices(vm.serverServicesToMonitor.item2);
                             },
                           ))
                     ]),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerDocked,
+                floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
                 // TODO: use here badges
                 // https://github.com/hacktons/convex_bottom_bar/
                 // {0: '99+', 1: Icons.assistant_photo, 2: Colors.redAccent},
@@ -131,10 +118,8 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                   style: TabStyle.react,
                   items: <TabItem<dynamic>>[
                     TabItem(icon: MdiIcons.server, title: 'Servers'),
-                    const TabItem<dynamic>(
-                        icon: Icons.fact_check, title: 'Services'),
-                    const TabItem<dynamic>(
-                        icon: Icons.receipt_long, title: 'Details'),
+                    const TabItem<dynamic>(icon: Icons.fact_check, title: 'Services'),
+                    const TabItem<dynamic>(icon: Icons.receipt_long, title: 'Details'),
                   ],
                   initialActiveIndex: 0,
                   //optional, default as 0
@@ -154,23 +139,17 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                               flex: 10, // 80%,
                               child: Column(children: <Widget>[
                                 // Show progress indicators if checks are running
-                                if (vm.loading &&
-                                    vm.serviceCheckProgress.isNotEmpty)
+                                if (vm.loading && vm.serviceCheckProgress.isNotEmpty)
                                   Column(
                                     children: <Widget>[
-                                      const TextTitle(
-                                          text: 'Checking Services...'),
+                                      const TextTitle(text: 'Checking Services...'),
                                       const SizedBox(height: 16),
-                                      for (final MapEntry<String,
-                                              Map<String, dynamic>> entry
+                                      for (final MapEntry<String, Map<String, dynamic>> entry
                                           in vm.serviceCheckProgress.entries)
                                         ServiceCheckProgressIndicator(
-                                          serverName: entry.value['serverName']
-                                              as String,
-                                          status:
-                                              entry.value['status'] as String,
-                                          resultsCount: entry
-                                              .value['resultsCount'] as int,
+                                          serverName: entry.value['serverName'] as String,
+                                          status: entry.value['status'] as String,
+                                          resultsCount: entry.value['resultsCount'] as int,
                                         ),
                                       const SizedBox(height: 24),
                                       const Divider(),
@@ -180,16 +159,9 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                                 // https://pub.dev/packages/circular_countdown_timer
                                 // or similar and a sliderdesc
                                 if (_tab == 0) const TextTitle(text: 'Servers'),
-                                if (_tab == 0)
-                                  ServersStatusPanel(
-                                      extendedStatus: true,
-                                      results: vm.checkResults),
-                                if (_tab == 1)
-                                  const TextTitle(text: 'Services'),
-                                if (_tab == 1)
-                                  ServicesStatusPanel(
-                                      services:
-                                          vm.serverServicesToMonitor.item1),
+                                if (_tab == 0) ServersStatusPanel(extendedStatus: true, results: vm.checkResults),
+                                if (_tab == 1) const TextTitle(text: 'Services'),
+                                if (_tab == 1) ServicesStatusPanel(services: vm.serverServicesToMonitor.item1),
                                 if (_tab == 2) const TextTitle(text: 'Details'),
                                 if (_tab == 2)
                                   for (final Widget w in resultWidgets) w
@@ -222,8 +194,7 @@ class _PortalStatusViewModel {
 
   final LAProject project;
   final Map<String, dynamic> checkResults;
-  final Tuple2<List<ProdServiceDesc>, HostsServicesChecks>
-      serverServicesToMonitor;
+  final Tuple2<List<ProdServiceDesc>, HostsServicesChecks> serverServicesToMonitor;
   final void Function(HostsServicesChecks) checkServices;
   final bool loading;
   final Map<String, Map<String, dynamic>> serviceCheckProgress;
@@ -234,10 +205,8 @@ class _PortalStatusViewModel {
       other is _PortalStatusViewModel &&
           runtimeType == other.runtimeType &&
           loading == other.loading &&
-          const DeepCollectionEquality.unordered()
-              .equals(serviceCheckProgress, other.serviceCheckProgress) &&
-          const DeepCollectionEquality.unordered()
-              .equals(checkResults, other.checkResults) &&
+          const DeepCollectionEquality.unordered().equals(serviceCheckProgress, other.serviceCheckProgress) &&
+          const DeepCollectionEquality.unordered().equals(checkResults, other.checkResults) &&
           serverServicesToMonitor == other.serverServicesToMonitor &&
           project == other.project;
 

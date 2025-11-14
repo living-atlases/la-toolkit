@@ -38,9 +38,7 @@ class ServiceCheckProgressIndicator extends StatelessWidget {
       case 'failed':
         icon = MdiIcons.alertCircle;
         color = Colors.red;
-        statusText = resultsCount > 0
-            ? 'Partial failure ($resultsCount checks)'
-            : 'All checks failed';
+        statusText = resultsCount > 0 ? 'Partial failure ($resultsCount checks)' : 'All checks failed';
         break;
       default:
         icon = MdiIcons.helpCircle;

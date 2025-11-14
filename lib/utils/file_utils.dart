@@ -69,10 +69,7 @@ class FileUtils {
   }
 
   static Future<dynamic> onChange(
-      html.Event e,
-      html.FileUploadInputElement uploadInput,
-      Completer<String> completer,
-      String errorMessage) async {
+      html.Event e, html.FileUploadInputElement uploadInput, Completer<String> completer, String errorMessage) async {
     debugPrint(e.type);
 
     final List<html.File>? files = uploadInput.files;
@@ -102,8 +99,7 @@ class FileUtils {
     Uint8List? file;
     final html.FileReader reader = FileReader();
     reader.readAsDataUrl(blob.slice(0, blob.size, blob.type));
-    reader.onError
-        .listen((html.ProgressEvent error) => completer.completeError(error));
+    reader.onError.listen((html.ProgressEvent error) => completer.completeError(error));
     reader.onLoadEnd.listen((html.ProgressEvent event) {
       final String r = reader.result.toString().split(',').last;
       final Uint8List data = const Base64Decoder().convert(r);

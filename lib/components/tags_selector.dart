@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'choices_selector.dart';
 
 class TagsSelector extends StatelessWidget {
-
   const TagsSelector(
       {super.key,
       required this.selectorKey,

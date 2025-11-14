@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ChoiceEmptyPanel extends StatelessWidget {
-  const ChoiceEmptyPanel(
-      {super.key, required this.title, required this.body, required this.footer});
+  const ChoiceEmptyPanel({super.key, required this.title, required this.body, required this.footer});
   final String title;
   final String body;
   final String footer;

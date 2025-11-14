@@ -1,19 +1,17 @@
 import 'dart:developer';
 
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
-
-import 'components/help_icon.dart';
-import 'components/software_selector.dart';
-import 'la_theme.dart';
 import './models/app_state.dart';
 import './models/la_releases.dart';
 import './models/la_service_desc.dart';
 import './models/la_service_name.dart';
+import 'components/help_icon.dart';
+import 'components/software_selector.dart';
+import 'la_theme.dart';
 import 'models/la_project.dart';
 import 'models/la_service.dart';
 import 'redux/app_actions.dart';
@@ -38,16 +36,14 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
         converter: (Store<AppState> store) {
       return _LAReleasesSelectorsViewModel(
           project: store.state.currentProject,
-          runningVersionsRetrieved:
-              store.state.currentProject.runningVersions.isNotEmpty,
+          runningVersionsRetrieved: store.state.currentProject.runningVersions.isNotEmpty,
           laReleases: store.state.laReleases,
           onSaveProject: (LAProject project) {
             debouncer.run(() => store.dispatch(SaveCurrentProject(project)));
           });
     }, builder: (BuildContext context, _LAReleasesSelectorsViewModel vm) {
       final LAProject project = vm.project;
-      final List<LAServiceDesc> services =
-          LAServiceDesc.listSorted(project.isHub);
+      final List<LAServiceDesc> services = LAServiceDesc.listSorted(project.isHub);
       final List<Widget> selectors = <Widget>[];
       for (final LAServiceDesc serviceDesc in services) {
         final String serviceNameInt = serviceDesc.nameInt;
@@ -59,16 +55,10 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
         final LAService serviceOrParent = !serviceDesc.isSubService
             ? project.getService(serviceNameInt)
             : project.getService(serviceDesc.parentService!.toS());
-        if (serviceOrParent.use &&
-            serviceDesc.artifacts != null &&
-            releases != null &&
-            releases.versions.isNotEmpty) {
+        if (serviceOrParent.use && serviceDesc.artifacts != null && releases != null && releases.versions.isNotEmpty) {
           final Map<String, TextStyle> highlight = <String, TextStyle>{};
-          final String? runningVersion = vm.runningVersionsRetrieved
-              ? project.runningVersions[serviceNameInt]
-              : null;
-          final String initialValue = _getInitialValue(
-              project, serviceNameInt, releases, runningVersion);
+          final String? runningVersion = vm.runningVersionsRetrieved ? project.runningVersions[serviceNameInt] : null;
+          final String initialValue = _getInitialValue(project, serviceNameInt, releases, runningVersion);
           if (vm.runningVersionsRetrieved) {
             for (final String version in releases.versions) {
               if (version == initialValue) {
@@ -78,9 +68,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                 );
               }
               if (version == runningVersion) {
-                highlight[version] = const TextStyle(
-                    color: LAColorTheme.deployedColor,
-                    fontWeight: FontWeight.w400);
+                highlight[version] = const TextStyle(color: LAColorTheme.deployedColor, fontWeight: FontWeight.w400);
               } else if (version == releases.latest) {
                 // Current latest marked versions are quite outdated and unuseful
                 //  highlight[version] = Colors.orange;
@@ -90,8 +78,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
           selectors.add(SizedBox(
               width: 230,
               child: SoftwareSelector(
-                label:
-                    LAServiceDesc.swNameWithAliasForHumans(serviceDesc.nameInt),
+                label: LAServiceDesc.swNameWithAliasForHumans(serviceDesc.nameInt),
                 highlight: highlight,
                 versions: releases.versions,
                 initialValue: initialValue,
@@ -122,16 +109,12 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
     });
   }
 
-  String _getInitialValue(LAProject project, String swName, LAReleases releases,
-      String? currentVersion) {
+  String _getInitialValue(LAProject project, String swName, LAReleases releases, String? currentVersion) {
     final String? storedVersion = project.getServiceDeployRelease(swName);
     if (storedVersion == null) {
-      assert(releases.versions.isNotEmpty,
-          'There is not releases for $swName for some reason');
-      final bool setCurrentVersion =
-          currentVersion != null && releases.versions.contains(currentVersion);
-      final String defVersion =
-          setCurrentVersion ? currentVersion : releases.versions[0];
+      assert(releases.versions.isNotEmpty, 'There is not releases for $swName for some reason');
+      final bool setCurrentVersion = currentVersion != null && releases.versions.contains(currentVersion);
+      final String defVersion = setCurrentVersion ? currentVersion : releases.versions[0];
       return defVersion;
     } else {
       return storedVersion;
@@ -157,8 +140,7 @@ class _LAReleasesSelectorsViewModel {
       identical(this, other) ||
       other is _LAReleasesSelectorsViewModel &&
           runtimeType == other.runtimeType &&
-          const DeepCollectionEquality.unordered()
-              .equals(laReleases, other.laReleases) &&
+          const DeepCollectionEquality.unordered().equals(laReleases, other.laReleases) &&
           project == other.project &&
           runningVersionsRetrieved == other.runningVersionsRetrieved;
 

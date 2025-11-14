@@ -1,6 +1,6 @@
 import '../utils/regexp.dart';
-import './la_service_constants.dart';
 import './la_server.dart';
+import './la_service_constants.dart';
 import './la_service_deploy.dart';
 import './la_service_name.dart';
 import 'la_project.dart';
@@ -11,17 +11,7 @@ import 'la_project.dart';
 // ignore: constant_identifier_names
 enum LAVariableType { String, int, double, bool, select }
 
-enum LAVariableSubcategory {
-  org,
-  dataQuality,
-  downloads,
-  cache,
-  apikeys,
-  otherKeys,
-  ssl,
-  pipelines,
-  events
-}
+enum LAVariableSubcategory { org, dataQuality, downloads, cache, apikeys, otherKeys, ssl, pipelines, events }
 
 extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
   String get title {
@@ -146,8 +136,7 @@ class LAVariableDesc {
         nameInt: 'biocache_query_context',
         defValue: (project) => 'data_hub_uid:dh1',
         regExp: LARegExp.something,
-        help:
-            'Data-Hub#configure-the-web-app-to-show-the-records-of-the-new-hub',
+        help: 'Data-Hub#configure-the-web-app-to-show-the-records-of-the-new-hub',
         error: 'Invalid Hub Biocache Query Context',
         onlyHub: true,
         allowEmpty: false,
@@ -173,8 +162,7 @@ class LAVariableDesc {
         regExp: LARegExp.email,
         error: 'Invalid email',
         defValue: (project) => 'noreply@${project.domain}',
-        hint:
-            'Used by some notifications. Should be something like noreply@l-a.site'),
+        hint: 'Used by some notifications. Should be something like noreply@l-a.site'),
     'email_sender_password': LAVariableDesc(
         name: 'Email password',
         nameInt: 'email_sender_password',
@@ -182,8 +170,7 @@ class LAVariableDesc {
         error: 'Invalid password',
         inTunePage: false,
         protected: true,
-        hint:
-            'The email password of the previous email sender. This user/password should exist in that email server'),
+        hint: 'The email password of the previous email sender. This user/password should exist in that email server'),
     'email_sender_server': LAVariableDesc(
         name: 'Email server',
         nameInt: 'email_sender_server',
@@ -191,8 +178,7 @@ class LAVariableDesc {
         error: 'Invalid email server',
         inTunePage: false,
         // defValue: (project) => 'mailserver.${project.domain}',
-        hint:
-            'Used to send LA portal notifications. The previous account should exists in this server.'),
+        hint: 'Used to send LA portal notifications. The previous account should exists in this server.'),
     'email_sender_server_port': LAVariableDesc(
         name: 'Email server port',
         nameInt: 'email_sender_server_port',
@@ -240,8 +226,7 @@ class LAVariableDesc {
       nameInt: 'favicon_url',
       regExp: LARegExp.url,
       error: 'Invalid url',
-      defValue: (_) =>
-          'https://raw.githubusercontent.com/living-atlases/artwork/master/favicon.ico',
+      defValue: (_) => 'https://raw.githubusercontent.com/living-atlases/artwork/master/favicon.ico',
       hint: 'Like: https://www.gbif.org/favicon.ico',
     ),
     'orgAddress': LAVariableDesc(
@@ -263,16 +248,12 @@ class LAVariableDesc {
         regExp: LARegExp.anything,
         subcategory: LAVariableSubcategory.org),
     'orgPostcode': LAVariableDesc(
-        name: 'Postcode',
-        nameInt: 'orgPostcode',
-        regExp: LARegExp.anything,
-        subcategory: LAVariableSubcategory.org),
+        name: 'Postcode', nameInt: 'orgPostcode', regExp: LARegExp.anything, subcategory: LAVariableSubcategory.org),
     'orgCountry': LAVariableDesc(
         name: 'Country',
         nameInt: 'orgCountry',
         regExp: LARegExp.anything,
-        defValue: (LAProject project) =>
-            project.getVariableValue('map_zone_name'),
+        defValue: (LAProject project) => project.getVariableValue('map_zone_name'),
         subcategory: LAVariableSubcategory.org),
     'google_api_key': LAVariableDesc(
         name: 'Google Maps API Key',
@@ -329,8 +310,7 @@ class LAVariableDesc {
         depends: LAServiceName.events,
         service: LAServiceName.ala_hub,
         defValue: (_) => false,
-        help:
-            'https://ala.org.au/current-projects/extended-data-model-project/',
+        help: 'https://ala.org.au/current-projects/extended-data-model-project/',
         type: LAVariableType.bool),
     'maxmind_account_id': LAVariableDesc(
         name: 'MaxMind Account ID',
@@ -366,8 +346,7 @@ class LAVariableDesc {
         depends: LAServiceName.cas,
         service: LAServiceName.cas,
         defValue: (_) => true,
-        help:
-            'https://github.com/AtlasOfLivingAustralia/ala-security-project/tree/develop/ala-ws-security-plugin',
+        help: 'https://github.com/AtlasOfLivingAustralia/ala-security-project/tree/develop/ala-ws-security-plugin',
         type: LAVariableType.bool),
     'jwt_out_use': LAVariableDesc(
         name: 'Use JWT for outgoing requests? (experimental)',
@@ -441,8 +420,7 @@ class LAVariableDesc {
       subcategory: LAVariableSubcategory.otherKeys,
       depends: LAServiceName.sds,
       service: LAServiceName.sds,
-      hint:
-          'Typically a link to a web page describing the SDS service and how it works',
+      hint: 'Typically a link to a web page describing the SDS service and how it works',
       defValue: (_) => 'https://www.ala.org.au/faq/data-sensitivity/',
     ),
     'sds_spatial_layers': LAVariableDesc(
@@ -470,10 +448,8 @@ class LAVariableDesc {
         service: LAServiceName.pipelines,
         defValue: (LAProject p) {
           final List<String> options = <String>[];
-          for (final LAServiceDeploy sd
-              in p.getServiceDeploysForSomeService(pipelines)) {
-            options.add(
-                p.servers.firstWhere((LAServer s) => s.id == sd.serverId).name);
+          for (final LAServiceDeploy sd in p.getServiceDeploysForSomeService(pipelines)) {
+            options.add(p.servers.firstWhere((LAServer s) => s.id == sd.serverId).name);
           }
           return options;
         },

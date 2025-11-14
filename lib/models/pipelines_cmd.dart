@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-
 import '../utils/string_utils.dart';
 import './common_cmd.dart';
 import './pipelines_step_name.dart';
@@ -11,7 +10,8 @@ part 'pipelines_cmd.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
-class PipelinesCmd extends CommonCmd { // 0,1,2 for local/embedded/cluster
+class PipelinesCmd extends CommonCmd {
+  // 0,1,2 for local/embedded/cluster
 
   PipelinesCmd(
       {this.drs,
@@ -24,8 +24,7 @@ class PipelinesCmd extends CommonCmd { // 0,1,2 for local/embedded/cluster
       this.mode = 1})
       : steps = steps ?? <String>{};
 
-  factory PipelinesCmd.fromJson(Map<String, dynamic> json) =>
-      _$PipelinesCmdFromJson(json);
+  factory PipelinesCmd.fromJson(Map<String, dynamic> json) => _$PipelinesCmdFromJson(json);
   String? drs;
   Set<String> steps;
   String master;

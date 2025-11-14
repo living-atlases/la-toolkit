@@ -6,12 +6,11 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
+import './models/app_state.dart';
 import 'components/formatted_title.dart';
 import 'components/la_project_timeline.dart';
 import 'components/scroll_panel.dart';
 import 'la_theme.dart';
-import './models/app_state.dart';
 import 'models/la_project.dart';
 import 'redux/app_actions.dart';
 import 'routes.dart';
@@ -68,46 +67,35 @@ class _LAProjectsListState extends State<LAProjectsList> {
           );
         },
         builder: (BuildContext context, _ProjectsPageViewModel vm) {
-          final List<LAProject> pjs =
-              vm.state.projects.where((LAProject p) => !p.isHub).toList();
+          final List<LAProject> pjs = vm.state.projects.where((LAProject p) => !p.isHub).toList();
           final int num = pjs.length;
           return num > 0
               ? LayoutBuilder(
-                  builder:
-                      (BuildContext context, BoxConstraints constraints) =>
-                          ScrollPanel(
-                              child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 80, vertical: 20),
-                                  child: Column(children: <Widget>[
-                                    AnimationLimiter(
-                                        child: ListView.builder(
-                                            // scrollDirection: Axis.vertical,
-                                            controller: _scrollController,
-                                            shrinkWrap: true,
-                                            itemCount: num,
-                                            // itemCount: appStateProv.appState.projects.length,
-                                            itemBuilder: (BuildContext context,
-                                                    int index) =>
-                                                AnimationConfiguration.staggeredList(
-                                                    position: index,
-                                                    delay: Duration.zero,
-                                                    duration: const Duration(
-                                                        milliseconds: 1000),
-                                                    child: SlideAnimation(
-                                                        verticalOffset: 50.0,
-                                                        child: ScaleAnimation(
-                                                            duration:
-                                                                const Duration(
-                                                                    milliseconds:
-                                                                        750),
-                                                            child: ProjectCard(
-                                                                pjs[index],
-                                                                () => vm.onOpenProjectTools(
-                                                                    pjs[index]),
-                                                                () => vm.onDeleteProject(
-                                                                    pjs[index])))))))
-                                  ]))))
+                  builder: (BuildContext context, BoxConstraints constraints) => ScrollPanel(
+                      child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                          child: Column(children: <Widget>[
+                            AnimationLimiter(
+                                child: ListView.builder(
+                                    // scrollDirection: Axis.vertical,
+                                    controller: _scrollController,
+                                    shrinkWrap: true,
+                                    itemCount: num,
+                                    // itemCount: appStateProv.appState.projects.length,
+                                    itemBuilder: (BuildContext context, int index) =>
+                                        AnimationConfiguration.staggeredList(
+                                            position: index,
+                                            delay: Duration.zero,
+                                            duration: const Duration(milliseconds: 1000),
+                                            child: SlideAnimation(
+                                                verticalOffset: 50.0,
+                                                child: ScaleAnimation(
+                                                    duration: const Duration(milliseconds: 750),
+                                                    child: ProjectCard(
+                                                        pjs[index],
+                                                        () => vm.onOpenProjectTools(pjs[index]),
+                                                        () => vm.onDeleteProject(pjs[index])))))))
+                          ]))))
               : vm.loading
                   ? Container()
                   : Center(
@@ -123,14 +111,11 @@ class _LAProjectsListState extends State<LAProjectsList> {
                                       minimumSize: const Size(100, 50),
                                       // padding: const EdgeInsets.all(8.0),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30.0),
+                                        borderRadius: BorderRadius.circular(30.0),
                                         // side: BorderSide(color: Colors.red)),
                                       )),
-                                  icon: const Icon(Icons.add_circle_outline,
-                                      size: 30),
-                                  label: const Text('Create a New LA Project',
-                                      style: TextStyle(fontSize: 18))))
+                                  icon: const Icon(Icons.add_circle_outline, size: 30),
+                                  label: const Text('Create a New LA Project', style: TextStyle(fontSize: 18))))
                         ]));
         });
   }
@@ -166,73 +151,60 @@ class ProjectCard extends StatelessWidget {
                             ListTile(
                                 contentPadding: EdgeInsets.zero,
                                 // LONG NAME
-                                title: FormattedTitle(
-                                    title: project.longName,
-                                    fontSize: 22,
-                                    color: LAColorTheme.inactive),
-                                trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Tooltip(
-                                          message: 'Delete this project',
-                                          child: IconButton(
-                                              padding: EdgeInsets.zero,
-                                              constraints:
-                                                  const BoxConstraints(),
-                                              icon: const Icon(
-                                                Icons.delete,
-                                                color: Colors.grey,
-                                              ),
-                                              onPressed: () {
-                                                if (AppUtils.isDev()) {
-                                                  context.loaderOverlay.show();
-                                                  onDelete();
-                                                } else {
-                                                  UiUtils.showAlertDialog(
-                                                      context,
-                                                      () => onDelete(),
-                                                      () {});
-                                                }
-                                              })),
-                                      const SizedBox(width: 20),
-                                      Tooltip(
-                                          message: 'Configure this project',
-                                          child: IconButton(
-                                            padding: EdgeInsets.zero,
-                                            constraints: const BoxConstraints(),
-                                            icon: const Icon(
-                                              Icons.settings,
-                                              color: Colors.grey,
-                                            ),
-                                            onPressed: () => onOpen(),
-                                          ))
-                                    ])),
+                                title:
+                                    FormattedTitle(title: project.longName, fontSize: 22, color: LAColorTheme.inactive),
+                                trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                                  Tooltip(
+                                      message: 'Delete this project',
+                                      child: IconButton(
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.grey,
+                                          ),
+                                          onPressed: () {
+                                            if (AppUtils.isDev()) {
+                                              context.loaderOverlay.show();
+                                              onDelete();
+                                            } else {
+                                              UiUtils.showAlertDialog(context, () => onDelete(), () {});
+                                            }
+                                          })),
+                                  const SizedBox(width: 20),
+                                  Tooltip(
+                                      message: 'Configure this project',
+                                      child: IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        icon: const Icon(
+                                          Icons.settings,
+                                          color: Colors.grey,
+                                        ),
+                                        onPressed: () => onOpen(),
+                                      ))
+                                ])),
                             Text(
                               // SHORT NAME
                               project.shortName,
                               style: const TextStyle(fontSize: 16),
                             ),
                             SelectableLinkify(
-                                linkStyle:
-                                    TextStyle(color: LAColorTheme.laPalette),
+                                linkStyle: TextStyle(color: LAColorTheme.laPalette),
                                 options: const LinkifyOptions(humanize: false),
-                                text:
-                                    "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
-                                onOpen: (LinkableElement link) async =>
-                                    launchUrl(Uri.parse(link.url))),
+                                text: "${project.useSSL ? 'https://' : 'http://'}${project.domain}",
+                                onOpen: (LinkableElement link) async => launchUrl(Uri.parse(link.url))),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                              child: OverflowBar(
-                                  alignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Wrap(
-                                        //  direction: Axis.horizontal,
-                                        // crossAxisAlignment:
-                                        //    WrapCrossAlignment.start,
-                                        children: <Widget>[
-                                          LAProjectTimeline(project: project),
-                                          // Text('Configured: '),
-                                          /* LinearPercentIndicator(
+                              child: OverflowBar(alignment: MainAxisAlignment.center, children: <Widget>[
+                                Wrap(
+                                    //  direction: Axis.horizontal,
+                                    // crossAxisAlignment:
+                                    //    WrapCrossAlignment.start,
+                                    children: <Widget>[
+                                      LAProjectTimeline(project: project),
+                                      // Text('Configured: '),
+                                      /* LinearPercentIndicator(
                                           width: 300,
                                           // MediaQuery.of(context).size.width - 50,
                                           animation: true,
@@ -245,8 +217,8 @@ class ProjectCard extends StatelessWidget {
                                               LinearStrokeCap.roundAll,
                                           progressColor: LAColorTheme
                                               .laThemeData.primaryColorLight), */
-                                        ]),
-                                  ]),
+                                    ]),
+                              ]),
                             )
                           ]),
                     ),
@@ -257,16 +229,10 @@ class ProjectCard extends StatelessWidget {
               alignment: FractionalOffset.topCenter,
               child: CircleAvatar(
                 radius: 25.0,
-                child: project.getVariableValue('favicon_url') != null &&
-                        !AppUtils.isDemo()
-                    ? ImageIcon(
-                        NetworkImage(AppUtils.proxyImg(project
-                            .getVariableValue('favicon_url')! as String)),
-                        color: Theme.of(context).primaryColor,
-                        size: 35)
-                    : Text(project.shortName.length > 3
-                        ? project.shortName.substring(0, 1)
-                        : project.shortName),
+                child: project.getVariableValue('favicon_url') != null && !AppUtils.isDemo()
+                    ? ImageIcon(NetworkImage(AppUtils.proxyImg(project.getVariableValue('favicon_url')! as String)),
+                        color: Theme.of(context).primaryColor, size: 35)
+                    : Text(project.shortName.length > 3 ? project.shortName.substring(0, 1) : project.shortName),
               ),
             ),
           ),

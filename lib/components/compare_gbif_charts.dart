@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-
 import '../utils/query_utils.dart';
 
 class CompareGbifCharts extends StatefulWidget {
@@ -39,8 +38,7 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                             fontWeight: FontWeight.bold,
                             fontSize: 10,
                           );
-                          final ComparisonField field =
-                              ComparisonField.values[value.toInt()];
+                          final ComparisonField field = ComparisonField.values[value.toInt()];
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             child: RotatedBox(
@@ -91,10 +89,8 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                   ),
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
-                      getTooltipColor: (BarChartGroupData group) =>
-                          Colors.transparent,
-                      getTooltipItem: (BarChartGroupData group, int groupIndex,
-                          BarChartRodData rod, int rodIndex) {
+                      getTooltipColor: (BarChartGroupData group) => Colors.transparent,
+                      getTooltipItem: (BarChartGroupData group, int groupIndex, BarChartRodData rod, int rodIndex) {
                         return BarTooltipItem(
                           rod.toY.toString(),
                           TextStyle(
@@ -171,8 +167,7 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
     final Map<String, int> mismatches = widget.statistics['mismatches']!;
     final Map<String, int> nulls = widget.statistics['nulls']!;
 
-    return List<BarChartGroupData>.generate(ComparisonField.values.length,
-        (int i) {
+    return List<BarChartGroupData>.generate(ComparisonField.values.length, (int i) {
       final String key = ComparisonField.values[i].getName;
       return BarChartGroupData(
         x: i,

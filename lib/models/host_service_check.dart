@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
@@ -28,8 +27,7 @@ class HostServiceCheck {
         serviceDeploys = serviceDeploys ?? HashSet<String>(),
         services = services ?? HashSet<String>();
 
-  factory HostServiceCheck.fromJson(Map<String, dynamic> json) =>
-      _$HostServiceCheckFromJson(json);
+  factory HostServiceCheck.fromJson(Map<String, dynamic> json) => _$HostServiceCheckFromJson(json);
   String id;
   String name;
   ServiceCheckType type;
@@ -43,9 +41,7 @@ class HostServiceCheck {
   HashSet<String> services;
 
   static HashSet<String> _fromJson(List<dynamic>? json) {
-    return json == null
-        ? HashSet<String>()
-        : HashSet<String>.from(json.map((dynamic e) => e as String));
+    return json == null ? HashSet<String>() : HashSet<String>.from(json.map((dynamic e) => e as String));
   }
 
   static List<String> _toJson(HashSet<String> set) {

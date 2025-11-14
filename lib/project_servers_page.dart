@@ -5,7 +5,10 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:redux/redux.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
 
-
+import './models/app_state.dart';
+import './models/la_project_status.dart';
+import './models/la_server.dart';
+import './models/la_variable_desc.dart';
 import 'components/app_snack_bar.dart';
 import 'components/help_icon.dart';
 import 'components/la_app_bar.dart';
@@ -15,10 +18,6 @@ import 'components/server_details_card_list.dart';
 import 'components/servers_card_list.dart';
 import 'components/tips_card.dart';
 import 'la_theme.dart';
-import './models/app_state.dart';
-import './models/la_project_status.dart';
-import './models/la_server.dart';
-import './models/la_variable_desc.dart';
 import 'models/la_project.dart';
 import 'project_tune_page.dart';
 import 'redux/app_actions.dart';
@@ -47,10 +46,8 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
     FocusNode(),
   ];
 
-  final TextEditingController _serverTextFieldController =
-      TextEditingController();
-  final TextEditingController _serverAdditionalTextFieldController =
-      TextEditingController();
+  final TextEditingController _serverTextFieldController = TextEditingController();
+  final TextEditingController _serverAdditionalTextFieldController = TextEditingController();
   static const int _serversToServiceStep = 0;
   static const int _serversAdditional = 1;
 
@@ -105,29 +102,25 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
       debugPrint('build project servers page');
       final LAProject project = vm.project;
 
-      debugPrint(
-          'Building project servers currentStep: $_step key: $_scaffoldKey');
+      debugPrint('Building project servers currentStep: $_step key: $_scaffoldKey');
       final List<Step> steps = <Step>[];
       steps.add(Step(
           isActive: _setIsActive(_step, _serversToServiceStep),
           state: _setSetStatus(_step, _serversToServiceStep),
-          title: const Text(
-              'Servers & define which services will run in which servers'),
+          title: const Text('Servers & define which services will run in which servers'),
           subtitle: const Text(
               'Some service can be deployed in several servers for web redundancy or to conform a cluster. Note: the la-toolkit does not configure load balancing in redundant web services.'),
-          content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const ServersCardList(),
-                // const ServersServicesEditPanel(),
-                const SizedBox(height: 10),
-                const Text('Add servers:', style: TextStyle(fontSize: 18)),
-                ServerTextField(
-                    controller: _serverAdditionalTextFieldController,
-                    focusNode: _focusNodes[_serversToServiceStep]!,
-                    formKey: _formKeys[_serversToServiceStep],
-                    onAddServer: (String name) => _addServer(name.trim(), vm)),
-              ])));
+          content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+            const ServersCardList(),
+            // const ServersServicesEditPanel(),
+            const SizedBox(height: 10),
+            const Text('Add servers:', style: TextStyle(fontSize: 18)),
+            ServerTextField(
+                controller: _serverAdditionalTextFieldController,
+                focusNode: _focusNodes[_serversToServiceStep]!,
+                formKey: _formKeys[_serversToServiceStep],
+                onAddServer: (String name) => _addServer(name.trim(), vm)),
+          ])));
       steps.add(Step(
           isActive: _setIsActive(_step, _serversAdditional),
           state: _setSetStatus(_step, _serversAdditional),
@@ -146,10 +139,8 @@ We'll use SSH to access to your server. For read more about SSH, read our wiki p
 
 If you have doubts or need to ask for some information, save this project and continue later filling this. Don't hesitate to ask us in our #slack channel.
                          ''', margin: EdgeInsets.fromLTRB(0, 0, 0, 10)),
-                MessageItem(project, LAVariableDesc.get('ansible_user'),
-                    (Object value) {
-                  project.setVariable(
-                      LAVariableDesc.get('ansible_user'), value);
+                MessageItem(project, LAVariableDesc.get('ansible_user'), (Object value) {
+                  project.setVariable(LAVariableDesc.get('ansible_user'), value);
                   vm.onSaveCurrentProject(project);
                 }).buildTitle(context),
                 const SizedBox(height: 20),
@@ -171,8 +162,7 @@ If you have doubts or need to ask for some information, save this project and co
         context.loaderOverlay.hide();
       }
       return Title(
-          title:
-              '${project.shortName}: ${vm.state.status.getTitle(project.isHub)}',
+          title: '${project.shortName}: ${vm.state.status.getTitle(project.isHub)}',
           color: LAColorTheme.laPalette,
           child: Scaffold(
             key: _scaffoldKey,
@@ -188,21 +178,18 @@ If you have doubts or need to ask for some information, save this project and co
                         lineWidth: 6.0,
                         percent: project.status.percent / 100,
                         center: Text('${project.status.percent}%',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12)),
+                            style: const TextStyle(color: Colors.white, fontSize: 12)),
                         progressColor: Colors.white,
                       )),
                   const SizedBox(width: 20),
                   if (_step != 0)
                     TextButton(
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.white),
+                        style: TextButton.styleFrom(foregroundColor: Colors.white),
                         onPressed: () => onStepCancel(vm, project),
                         child: const Text('PREVIOUS')),
                   if (_step != steps.length - 1)
                     TextButton(
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.white),
+                        style: TextButton.styleFrom(foregroundColor: Colors.white),
                         onPressed: () => onStepContinue(vm, project),
                         child: const Text('NEXT')),
                   Tooltip(
@@ -218,8 +205,7 @@ If you have doubts or need to ask for some information, save this project and co
                       builder: (BuildContext context, onTap) {
                         return IconButton(
                           icon: const Tooltip(
-                              message: 'Save the current LA project',
-                              child: Icon(Icons.save, color: Colors.white)),
+                              message: 'Save the current LA project', child: Icon(Icons.save, color: Colors.white)),
                           onPressed: onTap,
                         );
                       })
@@ -242,8 +228,7 @@ If you have doubts or need to ask for some information, save this project and co
                     onStepCancel(vm, project);
                   },
                   // https://github.com/flutter/flutter/issues/11133
-                  controlsBuilder:
-                      (BuildContext context, ControlsDetails details) {
+                  controlsBuilder: (BuildContext context, ControlsDetails details) {
                     return const Row();
                   }),
               const LintProjectPanel(showToolkitDeps: false)
@@ -319,10 +304,7 @@ class _ProjectPageViewModel {
 
   @override
   int get hashCode {
-    return state.currentProject.hashCode ^
-        state.currentStep.hashCode ^
-        project.hashCode ^
-        advancedEdit.hashCode;
+    return state.currentProject.hashCode ^ state.currentStep.hashCode ^ project.hashCode ^ advancedEdit.hashCode;
   }
 }
 
@@ -335,10 +317,7 @@ class HostHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: <Widget>[
-        Text(title),
-        if (help != null) HelpIcon(wikipage: help!)
-      ],
+      children: <Widget>[Text(title), if (help != null) HelpIcon(wikipage: help!)],
     );
   }
 }

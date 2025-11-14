@@ -2,10 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-
 import '../utils/string_utils.dart';
-import './la_service_constants.dart';
 import './common_cmd.dart';
+import './la_service_constants.dart';
 import './la_service_desc.dart';
 
 part 'deploy_cmd.g.dart';
@@ -28,11 +27,9 @@ class DeployCmd extends CommonCmd {
   })  : deployServices = deployServices ?? <String>[],
         limitToServers = limitToServers ?? <String>[],
         skipTags = skipTags ?? <String>[],
-        tags = tags ??
-            <String>[] /* super(type: CmdType.deploy, properties: {} )*/;
+        tags = tags ?? <String>[] /* super(type: CmdType.deploy, properties: {} )*/;
 
-  factory DeployCmd.fromJson(Map<String, dynamic> json) =>
-      _$DeployCmdFromJson(json);
+  factory DeployCmd.fromJson(Map<String, dynamic> json) => _$DeployCmdFromJson(json);
   List<String> deployServices;
   List<String> limitToServers;
   List<String> skipTags;
@@ -76,8 +73,7 @@ class DeployCmd extends CommonCmd {
   }
 
   String get desc {
-    final bool isAll =
-        const ListEquality().equals(deployServices, <String>['all']);
+    final bool isAll = const ListEquality().equals(deployServices, <String>['all']);
     String services = 'deploy of';
 
     final int serviceLength = deployServices.length;
@@ -85,17 +81,14 @@ class DeployCmd extends CommonCmd {
       services = 'full deploy';
     } else if (serviceLength <= 5) {
       final List<String> servicesForHuman = deployServices
-          .map((String serviceName) => serviceName == 'lists'
-              ? LAServiceDesc.get(speciesLists).name
-              : LAServiceDesc.get(serviceName).name)
+          .map((String serviceName) =>
+              serviceName == 'lists' ? LAServiceDesc.get(speciesLists).name : LAServiceDesc.get(serviceName).name)
           .toList();
-      servicesForHuman
-          .asMap()
-          .forEach((int i, String value) => services += i == 0
-              ? ' $value'
-              : i < serviceLength - 1
-                  ? ', $value'
-                  : ' and $value');
+      servicesForHuman.asMap().forEach((int i, String value) => services += i == 0
+          ? ' $value'
+          : i < serviceLength - 1
+              ? ', $value'
+              : ' and $value');
       services += ' service${serviceLength > 1 ? 's' : ''}';
     } else {
       services += ' some services';

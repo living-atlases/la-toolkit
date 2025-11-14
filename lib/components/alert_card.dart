@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AlertCard extends StatelessWidget {
-  const AlertCard(
-      {super.key,
-      required this.message,
-      this.actionText,
-      this.action,
-      this.icon,
-      this.color});
+  const AlertCard({super.key, required this.message, this.actionText, this.action, this.icon, this.color});
 
   final String message;
   final String? actionText;
@@ -26,8 +20,7 @@ class AlertCard extends StatelessWidget {
                 margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: ListTile(
                   contentPadding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  leading: Icon(icon ?? Icons.warning_amber_outlined,
-                      color: Colors.orangeAccent),
+                  leading: Icon(icon ?? Icons.warning_amber_outlined, color: Colors.orangeAccent),
                   trailing: actionText != null
                       ? TextButton(
                           child: Text(actionText!),

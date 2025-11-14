@@ -16,7 +16,7 @@ import '../models/la_variable_desc.dart';
 import '../project_edit_page.dart';
 import '../utils/utils.dart';
 import 'actions.dart';
-import 'entityReducer.dart';
+import 'entity_reducer.dart';
 
 List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, OnIntroEnd>(_onIntroEnd),
@@ -25,11 +25,9 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, OnFetchAlaInstallReleases>(_onFetchAlaInstallReleases),
   TypedReducer<AppState, OnLAVersionsSwCheckEnd>(_onLAVersionsSwCheckEnd),
   TypedReducer<AppState, OnFetchBackendVersion>(_onFetchBackendVersion),
-  TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(
-      _onFetchAlaInstallReleasesFailed),
+  TypedReducer<AppState, OnFetchAlaInstallReleasesFailed>(_onFetchAlaInstallReleasesFailed),
   TypedReducer<AppState, OnFetchGeneratorReleases>(_onFetchGeneratorReleases),
-  TypedReducer<AppState, OnFetchGeneratorReleasesFailed>(
-      _onFetchGeneratorReleasesFailed),
+  TypedReducer<AppState, OnFetchGeneratorReleasesFailed>(_onFetchGeneratorReleasesFailed),
   TypedReducer<AppState, Loading>(_loading),
   TypedReducer<AppState, CreateProject>(_createProject),
   TypedReducer<AppState, ImportProject>(_importProject),
@@ -68,22 +66,19 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, SaveCurrentCmd>(_saveCurrentCmd),
   TypedReducer<AppState, OnDeletedLog>(_onDeletedLog),
   TypedReducer<AppState, OnAppPackageInfo>(_onAppPackageInfo),
-  TypedReducer<AppState, OnPortalRunningVersionsRetrieved>(
-      _onPortalRunningVersionsRetrieved),
+  TypedReducer<AppState, OnPortalRunningVersionsRetrieved>(_onPortalRunningVersionsRetrieved),
   TypedReducer<AppState, OnInitCasKeysResults>(_onInitCasKeysResults),
   TypedReducer<AppState, OnInitCasOAuthKeysResults>(_onInitCasOAuthKeysResults),
   TypedReducer<AppState, OnSelectTuneTab>(_onSelectTuneTab)
 ];
 
-final Reducer<AppState> appReducer =
-    combineReducers<AppState>(basic + EntityReducer<LAProject>().appReducer);
+final Reducer<AppState> appReducer = combineReducers<AppState>(basic + EntityReducer<LAProject>().appReducer);
 
 AppState _onIntroEnd(AppState state, OnIntroEnd action) {
   return state.copyWith(firstUsage: false);
 }
 
-AppState _onFetchSoftwareDepsState(
-    AppState state, OnFetchSoftwareDepsState action) {
+AppState _onFetchSoftwareDepsState(AppState state, OnFetchSoftwareDepsState action) {
   return state.copyWith(depsLoading: true);
 }
 
@@ -91,27 +86,20 @@ AppState _onFetchStateFailed(AppState state, OnFetchStateFailed action) {
   return state;
 }
 
-AppState _onFetchAlaInstallReleases(
-    AppState state, OnFetchAlaInstallReleases action) {
+AppState _onFetchAlaInstallReleases(AppState state, OnFetchAlaInstallReleases action) {
   return state.copyWith(alaInstallReleases: action.releases);
 }
 
-AppState _onLAVersionsSwCheckEnd(
-    AppState state, OnLAVersionsSwCheckEnd action) {
+AppState _onLAVersionsSwCheckEnd(AppState state, OnLAVersionsSwCheckEnd action) {
   debugPrint(action.releases.toString());
-  return state.copyWith(
-      laReleases: action.releases,
-      lastSwCheck: action.time,
-      depsLoading: false);
+  return state.copyWith(laReleases: action.releases, lastSwCheck: action.time, depsLoading: false);
 }
 
-AppState _onFetchAlaInstallReleasesFailed(
-    AppState state, OnFetchAlaInstallReleasesFailed action) {
+AppState _onFetchAlaInstallReleasesFailed(AppState state, OnFetchAlaInstallReleasesFailed action) {
   return state;
 }
 
-AppState _onFetchGeneratorReleases(
-    AppState state, OnFetchGeneratorReleases action) {
+AppState _onFetchGeneratorReleases(AppState state, OnFetchGeneratorReleases action) {
   return state.copyWith(generatorReleases: action.releases);
 }
 
@@ -119,8 +107,7 @@ AppState _onFetchBackendVersion(AppState state, OnFetchBackendVersion action) {
   return state.copyWith(backendVersion: action.version);
 }
 
-AppState _onFetchGeneratorReleasesFailed(
-    AppState state, OnFetchGeneratorReleasesFailed action) {
+AppState _onFetchGeneratorReleasesFailed(AppState state, OnFetchGeneratorReleasesFailed action) {
   return state;
 }
 
@@ -139,8 +126,7 @@ AppState _createProject(AppState state, CreateProject action) {
 }
 
 AppState _importProject(AppState state, ImportProject action) {
-  final List<LAProject> newProjectAndHubs =
-      LAProject.import(yoRcJson: action.yoRcJson);
+  final List<LAProject> newProjectAndHubs = LAProject.import(yoRcJson: action.yoRcJson);
   final List<LAProject> projects = List<LAProject>.from(state.projects);
   return state.copyWith(
       currentProject: newProjectAndHubs[0],
@@ -154,18 +140,12 @@ AppState _addTemplateProjects(AppState state, AddTemplateProjects action) {
 }
 
 AppState _openProject(AppState state, OpenProject action) {
-  return state.copyWith(
-      currentProject: action.project,
-      status: LAProjectViewStatus.edit,
-      currentStep: 0);
+  return state.copyWith(currentProject: action.project, status: LAProjectViewStatus.edit, currentStep: 0);
 }
 
 AppState _openServersProject(AppState state, OpenServersProject action) {
   return state.copyWith(
-      currentProject: action.project,
-      status: LAProjectViewStatus.servers,
-      loading: true,
-      currentStep: 0);
+      currentProject: action.project, status: LAProjectViewStatus.servers, loading: true, currentStep: 0);
 }
 
 AppState _gotoStepEditProject(AppState state, GotoStepEditProject action) {
@@ -174,30 +154,19 @@ AppState _gotoStepEditProject(AppState state, GotoStepEditProject action) {
 
 AppState _nextStepEditProject(AppState state, NextStepEditProject action) {
   return state.copyWith(
-      currentStep: (state.currentStep + 1 != LAProjectEditPage.totalSteps)
-          ? state.currentStep + 1
-          : state.currentStep);
+      currentStep: (state.currentStep + 1 != LAProjectEditPage.totalSteps) ? state.currentStep + 1 : state.currentStep);
 }
 
-AppState _previousStepEditProject(
-    AppState state, PreviousStepEditProject action) {
-  return state.copyWith(
-      currentStep:
-          (state.currentStep > 0) ? state.currentStep - 1 : state.currentStep);
+AppState _previousStepEditProject(AppState state, PreviousStepEditProject action) {
+  return state.copyWith(currentStep: (state.currentStep > 0) ? state.currentStep - 1 : state.currentStep);
 }
 
 AppState _tuneProject(AppState state, TuneProject action) {
-  return state.copyWith(
-      currentProject: action.project,
-      status: LAProjectViewStatus.tune,
-      currentStep: 0);
+  return state.copyWith(currentProject: action.project, status: LAProjectViewStatus.tune, currentStep: 0);
 }
 
 AppState _openProjectTools(AppState state, OpenProjectTools action) {
-  return state.copyWith(
-      currentProject: action.project,
-      status: LAProjectViewStatus.view,
-      currentStep: 0);
+  return state.copyWith(currentProject: action.project, status: LAProjectViewStatus.view, currentStep: 0);
 }
 
 AppState _generateInvProject(AppState state, GenerateInvProject action) {
@@ -205,8 +174,7 @@ AppState _generateInvProject(AppState state, GenerateInvProject action) {
     return state;
   }
   final String id = action.project.id;
-  final String url =
-      "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/gen/$id/true";
+  final String url = "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/gen/$id/true";
   final html.AnchorElement anchorElement = html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();
@@ -218,17 +186,13 @@ AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
 }
 
 AppState _onDemoAddProjects(AppState state, OnDemoAddProjects action) {
-  return state.copyWith(
-      projects: List<LAProject>.from(state.projects)
-        ..insertAll(0, action.projects),
-      loading: false);
+  return state.copyWith(projects: List<LAProject>.from(state.projects)..insertAll(0, action.projects), loading: false);
 }
 
 AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
   List<LAProject> ps = <LAProject>[];
   if (AppUtils.isDemo()) {
-    final LAProject newP =
-        LAProject.fromJson(action.projectsJson[0] as Map<String, dynamic>);
+    final LAProject newP = LAProject.fromJson(action.projectsJson[0] as Map<String, dynamic>);
     ps = List<LAProject>.from(state.projects)..insert(0, newP);
   } else {
     for (final dynamic pJson in action.projectsJson) {
@@ -237,25 +201,19 @@ AppState _onProjectsAdded(AppState state, OnProjectsAdded action) {
       ps.add(p);
     }
   }
-  return state.copyWith(
-      currentProject: ps[0],
-      status: LAProjectViewStatus.view,
-      projects: ps,
-      loading: false);
+  return state.copyWith(currentProject: ps[0], status: LAProjectViewStatus.view, projects: ps, loading: false);
 }
 
 AppState _onProjectDeleted(AppState state, OnProjectDeleted action) {
   List<LAProject> ps = <LAProject>[];
   if (AppUtils.isDemo()) {
-    ps = List<LAProject>.from(state.projects)
-      ..removeWhere((LAProject item) => item.id == action.project.id);
+    ps = List<LAProject>.from(state.projects)..removeWhere((LAProject item) => item.id == action.project.id);
   } else {
     for (final dynamic pJson in action.projectsJson) {
       ps.add(LAProject.fromJson(pJson as Map<String, dynamic>));
     }
   }
-  return state.copyWith(
-      currentProject: LAProject(), projects: ps, loading: false);
+  return state.copyWith(currentProject: LAProject(), projects: ps, loading: false);
 }
 
 AppState _projectsLoad(AppState state, ProjectsLoad action) {
@@ -279,8 +237,7 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
           orElse: () => ps.isNotEmpty ? ps[0] : LAProject())
       : state.currentProject;
   // debugPrint("Next project ${currentProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-  return state.copyWith(
-      currentProject: currentProject, projects: ps, loading: false);
+  return state.copyWith(currentProject: currentProject, projects: ps, loading: false);
 }
 
 AppState _onDemoProjectsLoad(AppState state, OnDemoProjectsLoad action) {
@@ -291,12 +248,8 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
   List<LAProject> ps = <LAProject>[];
   LAProject nextProject;
   if (AppUtils.isDemo()) {
-    final LAProject updatedP =
-        LAProject.fromJson(action.projectsJson[0] as Map<String, dynamic>);
-    ps = state.projects
-        .map((LAProject project) =>
-            project.id == updatedP.id ? updatedP : project)
-        .toList();
+    final LAProject updatedP = LAProject.fromJson(action.projectsJson[0] as Map<String, dynamic>);
+    ps = state.projects.map((LAProject project) => project.id == updatedP.id ? updatedP : project).toList();
   } else {
     for (final dynamic pJson in action.projectsJson) {
       ps.add(LAProject.fromJson(pJson as Map<String, dynamic>));
@@ -311,8 +264,7 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
     nextProject = state.currentProject;
   }
   // debugPrint("Next project ${nextProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-  return state.copyWith(
-      currentProject: nextProject, projects: ps, loading: false);
+  return state.copyWith(currentProject: nextProject, projects: ps, loading: false);
 }
 
 AppState _editService(AppState state, EditService action) {
@@ -322,19 +274,16 @@ AppState _editService(AppState state, EditService action) {
   return state.copyWith(currentProject: cProj);
 }
 
-AppState _testConnectivityProject(
-    AppState state, TestConnectivityProject action) {
+AppState _testConnectivityProject(AppState state, TestConnectivityProject action) {
   return state.copyWith(loading: true);
 }
 
 AppState _testServicesProject(AppState state, TestServicesProject action) {
   // Clear previous progress when starting new checks
-  return state.copyWith(
-      loading: true, serviceCheckProgress: <String, Map<String, dynamic>>{});
+  return state.copyWith(loading: true, serviceCheckProgress: <String, Map<String, dynamic>>{});
 }
 
-AppState _onTestConnectivityResults(
-    AppState state, OnTestConnectivityResults action) {
+AppState _onTestConnectivityResults(AppState state, OnTestConnectivityResults action) {
   final LAProject currentProject = state.currentProject;
 
   for (final LAServer server in currentProject.servers) {
@@ -350,8 +299,7 @@ AppState _onTestConnectivityResults(
   final servers = action.results['servers'];
   if (servers != null) {
     servers.forEach((dynamic server) {
-      currentProject
-          .upsertServer(LAServer.fromJson(server as Map<String, dynamic>));
+      currentProject.upsertServer(LAServer.fromJson(server as Map<String, dynamic>));
     });
   }
 
@@ -368,8 +316,7 @@ AppState _onTestConnectivityResults(
       currentProject: currentProject,
       loading: false,
       projects: state.projects
-          .map((LAProject project) =>
-              project.id == currentProject.id ? currentProject : project)
+          .map((LAProject project) => project.id == currentProject.id ? currentProject : project)
           .toList());
 }
 
@@ -403,15 +350,12 @@ AppState _showDeployProjectResults(AppState state, ShowCmdResults action) {
     currentProject.cmdHistoryEntries.insert(0, action.cmdHistoryEntry);
   } else {
     currentProject.cmdHistoryEntries = currentProject.cmdHistoryEntries
-        .map((CmdHistoryEntry che) =>
-            che.id == action.cmdHistoryEntry.id ? action.cmdHistoryEntry : che)
+        .map((CmdHistoryEntry che) => che.id == action.cmdHistoryEntry.id ? action.cmdHistoryEntry : che)
         .toList();
   }
   final List<LAProject> projects = replaceProject(state, currentProject);
   return state.copyWith(
-      loading: false,
-      currentProject: currentProject,
-      projects: projects); //, repeatCmd: DeployCmd());
+      loading: false, currentProject: currentProject, projects: projects); //, repeatCmd: DeployCmd());
 }
 
 List<LAProject> replaceProject(AppState state, LAProject currentProject) {
@@ -419,12 +363,9 @@ List<LAProject> replaceProject(AppState state, LAProject currentProject) {
   int index;
   LAProject updatedProject;
   if (currentProject.isHub) {
-    index = projects
-        .indexWhere((LAProject cur) => cur.id == currentProject.parent!.id);
-    final int hubIndex = currentProject.parent!.hubs
-        .indexWhere((LAProject cur) => cur.id == currentProject.id);
-    currentProject.parent!.hubs
-        .replaceRange(hubIndex, hubIndex + 1, <LAProject>[currentProject]);
+    index = projects.indexWhere((LAProject cur) => cur.id == currentProject.parent!.id);
+    final int hubIndex = currentProject.parent!.hubs.indexWhere((LAProject cur) => cur.id == currentProject.id);
+    currentProject.parent!.hubs.replaceRange(hubIndex, hubIndex + 1, <LAProject>[currentProject]);
     updatedProject = currentProject.parent!;
   } else {
     index = projects.indexWhere((LAProject cur) => cur.id == currentProject.id);
@@ -435,8 +376,7 @@ List<LAProject> replaceProject(AppState state, LAProject currentProject) {
 }
 
 AppState _showSnackBar(AppState state, ShowSnackBar action) {
-  final List<AppSnackBarMessage> currentMessages =
-      List<AppSnackBarMessage>.from(state.appSnackBarMessages);
+  final List<AppSnackBarMessage> currentMessages = List<AppSnackBarMessage>.from(state.appSnackBarMessages);
   if (!currentMessages.contains(action.snackMessage)) {
     currentMessages.add(action.snackMessage);
   }
@@ -444,10 +384,8 @@ AppState _showSnackBar(AppState state, ShowSnackBar action) {
 }
 
 AppState _onShowedSnackBar(AppState state, OnShowedSnackBar action) {
-  final List<AppSnackBarMessage> currentMessages =
-      List<AppSnackBarMessage>.from(state.appSnackBarMessages);
-  currentMessages.removeWhere(
-      (AppSnackBarMessage m) => m.message == action.snackMessage.message);
+  final List<AppSnackBarMessage> currentMessages = List<AppSnackBarMessage>.from(state.appSnackBarMessages);
+  currentMessages.removeWhere((AppSnackBarMessage m) => m.message == action.snackMessage.message);
   return state.copyWith(appSnackBarMessages: currentMessages);
 }
 
@@ -470,9 +408,7 @@ AppState _onDeletedLog(AppState state, OnDeletedLog action) {
 
 AppState _onAppPackageInfo(AppState state, OnAppPackageInfo action) {
   return AppUtils.isDemo()
-      ? state.copyWith(
-          pkgInfo: action.packageInfo,
-          backendVersion: action.packageInfo.version)
+      ? state.copyWith(pkgInfo: action.packageInfo, backendVersion: action.packageInfo.version)
       : state.copyWith(pkgInfo: action.packageInfo);
 }
 
@@ -484,18 +420,15 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
   final List<dynamic> sdsJ = response['serviceDeploys'] as List<dynamic>;
   final List<LAServiceDeploy> sds = <LAServiceDeploy>[];
   for (final dynamic sdJ in sdsJ) {
-    final LAServiceDeploy sd =
-        LAServiceDeploy.fromJson(sdJ as Map<String, dynamic>);
+    final LAServiceDeploy sd = LAServiceDeploy.fromJson(sdJ as Map<String, dynamic>);
     sds.add(sd);
     // debugPrint(sdJ);
   }
   if (currentProject.id == pId) {
     currentProject.serviceDeploys = sds;
     // Merge new results with existing ones instead of replacing
-    final Map<String, dynamic> newResults =
-        response['results'] as Map<String, dynamic>;
-    final Map<String, dynamic> mergedResults =
-        Map<String, dynamic>.from(currentProject.checkResults);
+    final Map<String, dynamic> newResults = response['results'] as Map<String, dynamic>;
+    final Map<String, dynamic> mergedResults = Map<String, dynamic>.from(currentProject.checkResults);
 
     // Remove old _monitoring_ keys for servers that are in newResults
     // This ensures warnings disappear when monitoring tools are installed
@@ -510,16 +443,13 @@ AppState _onTestServicesResults(AppState state, OnTestServicesResults action) {
     mergedResults.addAll(newResults);
     currentProject.checkResults = mergedResults;
     return state.copyWith(
-        loading: false,
-        currentProject: currentProject,
-        projects: replaceProject(state, currentProject));
+        loading: false, currentProject: currentProject, projects: replaceProject(state, currentProject));
   }
   // for (String serverName in response.keys) {}
   return state;
 }
 
-AppState _onTestServicesProgress(
-    AppState state, OnTestServicesProgress action) {
+AppState _onTestServicesProgress(AppState state, OnTestServicesProgress action) {
   final LAProject currentProject = state.currentProject;
   final Map<String, Map<String, dynamic>> progressMap =
       Map<String, Map<String, dynamic>>.from(state.serviceCheckProgress);
@@ -533,18 +463,13 @@ AppState _onTestServicesProgress(
 
   // Update check results progressively
   if (action.results != null && action.results!.isNotEmpty) {
-    final Map<String, dynamic> currentResults =
-        Map<String, dynamic>.from(currentProject.checkResults);
+    final Map<String, dynamic> currentResults = Map<String, dynamic>.from(currentProject.checkResults);
 
     // Update or add results for this server
     if (currentResults.containsKey(action.serverId)) {
       // Append new results
-      final List<dynamic> existingResults =
-          currentResults[action.serverId] as List<dynamic>;
-      currentResults[action.serverId] = <dynamic>[
-        ...existingResults,
-        ...action.results!
-      ];
+      final List<dynamic> existingResults = currentResults[action.serverId] as List<dynamic>;
+      currentResults[action.serverId] = <dynamic>[...existingResults, ...action.results!];
     } else {
       currentResults[action.serverId] = action.results;
     }
@@ -560,31 +485,26 @@ AppState _onTestServicesProgress(
   return state.copyWith(serviceCheckProgress: progressMap);
 }
 
-AppState _onTestServicesComplete(
-    AppState state, OnTestServicesComplete action) {
+AppState _onTestServicesComplete(AppState state, OnTestServicesComplete action) {
   final LAProject currentProject = state.currentProject;
   final Map<String, dynamic> response = action.results;
   final String pId = response['projectId'] as String;
   final List<dynamic> sdsJ = response['serviceDeploys'] as List<dynamic>;
   final List<LAServiceDeploy> sds = <LAServiceDeploy>[];
   for (final dynamic sdJ in sdsJ) {
-    final LAServiceDeploy sd =
-        LAServiceDeploy.fromJson(sdJ as Map<String, dynamic>);
+    final LAServiceDeploy sd = LAServiceDeploy.fromJson(sdJ as Map<String, dynamic>);
     sds.add(sd);
   }
   if (currentProject.id == pId) {
     currentProject.serviceDeploys = sds;
     currentProject.checkResults = response['results'] as Map<String, dynamic>;
     return state.copyWith(
-        loading: false,
-        currentProject: currentProject,
-        projects: replaceProject(state, currentProject));
+        loading: false, currentProject: currentProject, projects: replaceProject(state, currentProject));
   }
   return state;
 }
 
-AppState _onPortalRunningVersionsRetrieved(
-    AppState state, OnPortalRunningVersionsRetrieved action) {
+AppState _onPortalRunningVersionsRetrieved(AppState state, OnPortalRunningVersionsRetrieved action) {
   final LAProject cp = state.currentProject;
   cp.runningVersions = action.versions;
   cp.lastSwCheck = DateTime.now();
@@ -593,28 +513,19 @@ AppState _onPortalRunningVersionsRetrieved(
 
 AppState _onInitCasKeysResults(AppState state, OnInitCasKeysResults action) {
   final LAProject cp = state.currentProject;
-  cp.setVariable(LAVariableDesc.get('pac4j_cookie_signing_key'),
-      action.pac4jCookieSigningKey);
-  cp.setVariable(LAVariableDesc.get('pac4j_cookie_encryption_key'),
-      action.pac4jCookieEncryptionKey);
-  cp.setVariable(LAVariableDesc.get('cas_webflow_signing_key'),
-      action.casWebflowSigningKey);
-  cp.setVariable(LAVariableDesc.get('cas_webflow_encryption_key'),
-      action.casWebflowEncryptionKey);
+  cp.setVariable(LAVariableDesc.get('pac4j_cookie_signing_key'), action.pac4jCookieSigningKey);
+  cp.setVariable(LAVariableDesc.get('pac4j_cookie_encryption_key'), action.pac4jCookieEncryptionKey);
+  cp.setVariable(LAVariableDesc.get('cas_webflow_signing_key'), action.casWebflowSigningKey);
+  cp.setVariable(LAVariableDesc.get('cas_webflow_encryption_key'), action.casWebflowEncryptionKey);
   return state.copyWith(currentProject: cp);
 }
 
-AppState _onInitCasOAuthKeysResults(
-    AppState state, OnInitCasOAuthKeysResults action) {
+AppState _onInitCasOAuthKeysResults(AppState state, OnInitCasOAuthKeysResults action) {
   final LAProject cp = state.currentProject;
-  cp.setVariable(
-      LAVariableDesc.get('cas_oauth_signing_key'), action.casOauthSigningKey);
-  cp.setVariable(LAVariableDesc.get('cas_oauth_encryption_key'),
-      action.casOauthAccessTokenEncryptionKey);
-  cp.setVariable(LAVariableDesc.get('cas_oauth_access_token_signing_key'),
-      action.casOauthAccessTokenSigningKey);
-  cp.setVariable(LAVariableDesc.get('cas_oauth_access_token_encryption_key'),
-      action.casOauthAccessTokenEncryptionKey);
+  cp.setVariable(LAVariableDesc.get('cas_oauth_signing_key'), action.casOauthSigningKey);
+  cp.setVariable(LAVariableDesc.get('cas_oauth_encryption_key'), action.casOauthAccessTokenEncryptionKey);
+  cp.setVariable(LAVariableDesc.get('cas_oauth_access_token_signing_key'), action.casOauthAccessTokenSigningKey);
+  cp.setVariable(LAVariableDesc.get('cas_oauth_access_token_encryption_key'), action.casOauthAccessTokenEncryptionKey);
   return state.copyWith(currentProject: cp);
 }
 

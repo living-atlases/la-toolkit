@@ -115,8 +115,7 @@ LAVariable _$LAVariableFromJson(Map<String, dynamic> json) => LAVariable(
       projectId: json['projectId'] as String,
     )..status = $enumDecode(_$LAVariableStatusEnumMap, json['status']);
 
-Map<String, dynamic> _$LAVariableToJson(LAVariable instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$LAVariableToJson(LAVariable instance) => <String, dynamic>{
       'id': instance.id,
       'nameInt': instance.nameInt,
       'service': _$LAServiceNameEnumMap[instance.service]!,

@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 
-
 import '../models/la_service.dart';
 
 class CheckResultCard extends StatelessWidget {
   const CheckResultCard(
-      {super.key,
-      required this.status,
-      required this.title,
-      required this.subtitle,
-      this.actionText,
-      this.action});
+      {super.key, required this.status, required this.title, required this.subtitle, this.actionText, this.action});
 
   final ServiceStatus status;
   final String title;

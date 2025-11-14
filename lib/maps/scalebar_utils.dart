@@ -1,6 +1,5 @@
 import 'dart:math';
 
-
 import 'package:latlong2/latlong.dart';
 
 const double piOver180 = pi / 180.0;
@@ -13,8 +12,7 @@ double toRadians(double degrees) {
   return degrees * piOver180;
 }
 
-LatLng calculateEndingGlobalCoordinates(
-    LatLng start, double startBearing, double distance) {
+LatLng calculateEndingGlobalCoordinates(LatLng start, double startBearing, double distance) {
   const double mSemiMajorAxis = 6378137.0; //WGS84 major axis
   const double mSemiMinorAxis = (1.0 - 1.0 / 298.257223563) * 6378137.0;
   const double mFlattening = 1.0 / 298.257223563;
@@ -45,13 +43,10 @@ LatLng calculateEndingGlobalCoordinates(
   final double uSquared = cos2Alpha * (aSquared - bSquared) / bSquared;
 
   // eq. 3
-  final double A = 1 +
-      (uSquared / 16384) *
-          (4096 + uSquared * (-768 + uSquared * (320 - 175 * uSquared)));
+  final double A = 1 + (uSquared / 16384) * (4096 + uSquared * (-768 + uSquared * (320 - 175 * uSquared)));
 
   // eq. 4
-  final double B = (uSquared / 1024) *
-      (256 + uSquared * (-128 + uSquared * (74 - 47 * uSquared)));
+  final double B = (uSquared / 1024) * (256 + uSquared * (-128 + uSquared * (74 - 47 * uSquared)));
 
   // iterate until there is a negligible change in sigma
   double deltaSigma;
@@ -77,10 +72,7 @@ LatLng calculateEndingGlobalCoordinates(
         (cosSigmaM2 +
             (B / 4.0) *
                 (cosSignma * (-1 + 2 * cos2SigmaM2) -
-                    (B / 6.0) *
-                        cosSigmaM2 *
-                        (-3 + 4 * sinSigma * sinSigma) *
-                        (-3 + 4 * cos2SigmaM2)));
+                    (B / 6.0) * cosSigmaM2 * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM2)));
 
     // eq. 7
     sigma = sOverbA + deltaSigma;
@@ -101,11 +93,8 @@ LatLng calculateEndingGlobalCoordinates(
   sinSigma = sin(sigma);
 
   // eq. 8
-  final double phi2 = atan2(
-      sinU1 * cosSigma + cosU1 * sinSigma * cosAlpha1,
-      (1.0 - f) *
-          sqrt(sin2Alpha +
-              pow(sinU1 * sinSigma - cosU1 * cosSigma * cosAlpha1, 2.0)));
+  final double phi2 = atan2(sinU1 * cosSigma + cosU1 * sinSigma * cosAlpha1,
+      (1.0 - f) * sqrt(sin2Alpha + pow(sinU1 * sinSigma - cosU1 * cosSigma * cosAlpha1, 2.0)));
 
   // eq. 9
   // This fixes the pole crossing defect spotted by Matt Feemster. When a
@@ -117,21 +106,14 @@ LatLng calculateEndingGlobalCoordinates(
   // double tanLambda = sinSigma * sinAlpha1 / (cosU1 * cosSigma - sinU1 *
   // sinSigma * cosAlpha1);
   // double lambda = Math.atan(tanLambda);
-  final double lambda = atan2(
-      sinSigma * sinAlpha1, cosU1 * cosSigma - sinU1 * sinSigma * cosAlpha1);
+  final double lambda = atan2(sinSigma * sinAlpha1, cosU1 * cosSigma - sinU1 * sinSigma * cosAlpha1);
 
   // eq. 10
   final double C = (f / 16) * cos2Alpha * (4 + f * (4 - 3 * cos2Alpha));
 
   // eq. 11
-  final double L = lambda -
-      (1 - C) *
-          f *
-          sinAlpha *
-          (sigma +
-              C *
-                  sinSigma *
-                  (cosSigmaM2 + C * cosSigma * (-1 + 2 * cos2SigmaM2)));
+  final double L =
+      lambda - (1 - C) * f * sinAlpha * (sigma + C * sinSigma * (cosSigmaM2 + C * cosSigma * (-1 + 2 * cos2SigmaM2)));
 
   // eq. 12
   // double alpha2 = Math.atan2(sinAlpha, -sinU1 * sinSigma + cosU1 *

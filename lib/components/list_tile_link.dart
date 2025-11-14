@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 import 'def_divider.dart';
 import 'la_icon.dart';
 
 class ListTileLink extends StatelessWidget {
-
   const ListTileLink(
       {super.key,
       this.icon,
@@ -27,9 +25,7 @@ class ListTileLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: icon,
-      title: tooltip != null
-          ? Tooltip(message: tooltip, child: Text(title))
-          : Text(title),
+      title: tooltip != null ? Tooltip(message: tooltip, child: Text(title)) : Text(title),
       onTap: () async {
         // debugPrint(url);
         await launchUrl(Uri.parse(url));
@@ -43,8 +39,7 @@ class ListTileLink extends StatelessWidget {
     );
   }
 
-  static List<Widget> drawerBottomLinks(
-      BuildContext context, bool enableFeedback) {
+  static List<Widget> drawerBottomLinks(BuildContext context, bool enableFeedback) {
     return <Widget>[
       const ListTileLink(
           icon: Icon(Icons.bug_report),
@@ -87,9 +82,7 @@ class ListTileLink extends StatelessWidget {
 
       const DefDivider(),
       const ListTileLink(
-          icon: Icon(LAIcon.la),
-          title: 'Living Atlases Community',
-          url: 'https://living-atlases.gbif.org'),
+          icon: Icon(LAIcon.la), title: 'Living Atlases Community', url: 'https://living-atlases.gbif.org'),
       const ListTileLink(
           icon: ImageIcon(AssetImage('assets/images/ala-icon.png')),
           /* NetworkImage(

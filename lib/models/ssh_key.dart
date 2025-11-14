@@ -6,7 +6,6 @@ part 'ssh_key.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class SshKey {
-
   SshKey(
       {required this.name,
       this.privateKey = '',

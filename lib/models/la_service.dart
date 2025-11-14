@@ -4,10 +4,9 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
 import '../utils/result_types.dart';
-
 import '../utils/string_utils.dart';
-import './la_service_constants.dart';
 import './is_json_serializable.dart';
+import './la_service_constants.dart';
 import './la_service_desc.dart';
 
 part 'la_service.g.dart';
@@ -89,8 +88,7 @@ class LAService implements IsJsonSerializable<LAService> {
         status = ServiceStatus.unknown,
         suburl = desc.name;
 
-  factory LAService.fromJson(Map<String, dynamic> json) =>
-      _$LAServiceFromJson(json);
+  factory LAService.fromJson(Map<String, dynamic> json) => _$LAServiceFromJson(json);
 
   // Basic -----
   String id;
@@ -116,11 +114,9 @@ class LAService implements IsJsonSerializable<LAService> {
           ? suburl
           : '/$suburl';
 
-  String url(String domain) =>
-      usesSubdomain ? (suburl.isNotEmpty ? '$suburl.' : '') + domain : domain;
+  String url(String domain) => usesSubdomain ? (suburl.isNotEmpty ? '$suburl.' : '') + domain : domain;
 
-  String fullUrl(bool ssl, String domain) =>
-      'http${ssl ? "s" : ""}://${url(domain)}$path';
+  String fullUrl(bool ssl, String domain) => 'http${ssl ? "s" : ""}://${url(domain)}$path';
 
   @override
   Map<String, dynamic> toJson() => _$LAServiceToJson(this);
@@ -193,8 +189,7 @@ class LAService implements IsJsonSerializable<LAService> {
 
   static String servicesForHumans(List<LAService> services) {
     return services
-        .map((LAService service) =>
-            StringUtils.capitalize(LAServiceDesc.get(service.nameInt).name))
+        .map((LAService service) => StringUtils.capitalize(LAServiceDesc.get(service.nameInt).name))
         .toList()
         .join(', ');
   }

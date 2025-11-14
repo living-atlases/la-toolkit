@@ -74,12 +74,10 @@ class _$CmdHistoryDetailsCWProxyImpl implements _$CmdHistoryDetailsCWProxy {
   CmdHistoryDetails logs(String logs) => call(logs: logs);
 
   @override
-  CmdHistoryDetails logsColorized(String logsColorized) =>
-      call(logsColorized: logsColorized);
+  CmdHistoryDetails logsColorized(String logsColorized) => call(logsColorized: logsColorized);
 
   @override
-  CmdHistoryDetails fstRetrieved(bool? fstRetrieved) =>
-      call(fstRetrieved: fstRetrieved);
+  CmdHistoryDetails fstRetrieved(bool? fstRetrieved) => call(fstRetrieved: fstRetrieved);
 
   @override
 
@@ -130,11 +128,10 @@ class _$CmdHistoryDetailsCWProxyImpl implements _$CmdHistoryDetailsCWProxy {
           ? _value.logs
           // ignore: cast_nullable_to_non_nullable
           : logs as String,
-      logsColorized:
-          logsColorized == const $CopyWithPlaceholder() || logsColorized == null
-              ? _value.logsColorized
-              // ignore: cast_nullable_to_non_nullable
-              : logsColorized as String,
+      logsColorized: logsColorized == const $CopyWithPlaceholder() || logsColorized == null
+          ? _value.logsColorized
+          // ignore: cast_nullable_to_non_nullable
+          : logsColorized as String,
       fstRetrieved: fstRetrieved == const $CopyWithPlaceholder()
           ? _value.fstRetrieved
           // ignore: cast_nullable_to_non_nullable
@@ -147,16 +144,14 @@ extension $CmdHistoryDetailsCopyWith on CmdHistoryDetails {
   /// Returns a callable class used to build a new instance with modified fields.
   /// Example: `instanceOfCmdHistoryDetails.copyWith(...)` or `instanceOfCmdHistoryDetails.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
-  _$CmdHistoryDetailsCWProxy get copyWith =>
-      _$CmdHistoryDetailsCWProxyImpl(this);
+  _$CmdHistoryDetailsCWProxy get copyWith => _$CmdHistoryDetailsCWProxyImpl(this);
 }
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-CmdHistoryDetails _$CmdHistoryDetailsFromJson(Map<String, dynamic> json) =>
-    CmdHistoryDetails(
+CmdHistoryDetails _$CmdHistoryDetailsFromJson(Map<String, dynamic> json) => CmdHistoryDetails(
       port: (json['port'] as num?)?.toInt(),
       pid: (json['pid'] as num?)?.toInt(),
       duration: (json['duration'] as num?)?.toDouble(),
@@ -167,8 +162,7 @@ CmdHistoryDetails _$CmdHistoryDetailsFromJson(Map<String, dynamic> json) =>
       fstRetrieved: json['fstRetrieved'] as bool?,
     );
 
-Map<String, dynamic> _$CmdHistoryDetailsToJson(CmdHistoryDetails instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$CmdHistoryDetailsToJson(CmdHistoryDetails instance) => <String, dynamic>{
       'port': instance.port,
       'pid': instance.pid,
       'duration': instance.duration,

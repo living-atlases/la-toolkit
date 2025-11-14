@@ -4,11 +4,10 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 
-
 import '../la_theme.dart';
 import '../models/app_state.dart';
-import '../models/la_server.dart';
 import '../models/la_project.dart';
+import '../models/la_server.dart';
 import '../models/prod_service_desc.dart';
 import '../utils/utils.dart';
 import 'admin_icon_button.dart';
@@ -30,12 +29,10 @@ class TermsDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _TermsDrawerViewModel>(
-        converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _TermsDrawerViewModel>(converter: (Store<AppState> store) {
       return _TermsDrawerViewModel(
         state: store.state,
-        openTerm: (LAProject project, LAServer server) =>
-            TermDialog.openTerm(context, false, project.id, server.name),
+        openTerm: (LAProject project, LAServer server) => TermDialog.openTerm(context, false, project.id, server.name),
       );
     }, builder: (BuildContext context, _TermsDrawerViewModel vm) {
       return Drawer(
@@ -53,13 +50,10 @@ class TermsDrawer extends StatelessWidget {
                 ),
                 child: Column(
                   children: <Widget>[
-                    if (vm.state.currentProject
-                                .getVariableValue('favicon_url') !=
-                            null &&
-                        !AppUtils.isDemo())
+                    if (vm.state.currentProject.getVariableValue('favicon_url') != null && !AppUtils.isDemo())
                       ImageIcon(
-                          NetworkImage(AppUtils.proxyImg(vm.state.currentProject
-                              .getVariableValue('favicon_url')! as String)),
+                          NetworkImage(
+                              AppUtils.proxyImg(vm.state.currentProject.getVariableValue('favicon_url')! as String)),
                           color: LAColorTheme.laPalette,
                           size: 80)
                     else
@@ -87,8 +81,7 @@ class TermsDrawer extends StatelessWidget {
                   child: ListTile(
                       leading: Icon(MdiIcons.console),
                       title: Text(server.name),
-                      onTap: () =>
-                          vm.openTerm(vm.state.currentProject, server))),
+                      onTap: () => vm.openTerm(vm.state.currentProject, server))),
           ]));
     });
   }
@@ -118,8 +111,7 @@ class ServiceListTileLink extends StatelessWidget {
       title: name,
       tooltip: tooltip,
       url: url,
-      additionalTrailingIcon:
-          alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
+      additionalTrailingIcon: alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
       trailingIcon: help != null
           ? HelpIcon(
               wikipage: help!,

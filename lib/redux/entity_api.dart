@@ -30,13 +30,11 @@ class EntityApi<T extends IsJsonSerializable<T>> {
     }
   }
 
-  Future<Map<String, dynamic>> update(
-      String id, Map<String, dynamic> toUpdate) async {
+  Future<Map<String, dynamic>> update(String id, Map<String, dynamic> toUpdate) async {
     final Uri url = baseUri(id);
     try {
       final Response response = await http.patch(url,
-          headers: <String, String>{'Content-type': 'application/json'},
-          body: utf8.encode(json.encode(toUpdate)));
+          headers: <String, String>{'Content-type': 'application/json'}, body: utf8.encode(json.encode(toUpdate)));
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
@@ -96,10 +94,7 @@ class EntityApi<T extends IsJsonSerializable<T>> {
     }
   }
 
-  Future<Map<String, dynamic>> addTo(
-      {required String id,
-      required String association,
-      required String fk}) async {
+  Future<Map<String, dynamic>> addTo({required String id, required String association, required String fk}) async {
     // employee/7/involvedInPurchases/47
     final String path = '$id/$association/$fk';
     final Uri url = baseUri(path);
@@ -108,8 +103,7 @@ class EntityApi<T extends IsJsonSerializable<T>> {
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
-        throw Exception(
-            'Failed to associate entity (${response.reasonPhrase})');
+        throw Exception('Failed to associate entity (${response.reasonPhrase})');
       }
     } catch (e) {
       throw Exception('Failed to associate entity ($e)');
@@ -133,8 +127,7 @@ class EntityApi<T extends IsJsonSerializable<T>> {
   }
 
   Uri baseUri([String path = '', Map<String, String>? queryParameters]) =>
-      AppUtils.uri(dotenv.env['BACKEND']!,
-          "/$model${path != "" ? '/$path' : ''}", queryParameters);
+      AppUtils.uri(dotenv.env['BACKEND']!, "/$model${path != "" ? '/$path' : ''}", queryParameters);
 
 /*
 -- create

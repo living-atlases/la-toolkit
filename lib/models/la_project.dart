@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
 
-
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
@@ -14,13 +13,9 @@ import 'package:tuple/tuple.dart';
 
 import '../utils/map_utils.dart';
 import '../utils/regexp.dart';
-
 import '../utils/string_utils.dart';
 import '../utils/utils.dart';
-import './la_service_constants.dart';
-import 'basic_service.dart';
 import './cmd_history_entry.dart';
-import 'cmd_history_details.dart';
 import './default_versions.dart';
 import './deployment_type.dart';
 import './host_services_checks.dart';
@@ -30,15 +25,18 @@ import './la_lat_lng.dart';
 import './la_project_status.dart';
 import './la_releases.dart';
 import './la_server.dart';
+import './la_service_constants.dart';
 import './la_service_deploy.dart';
 import './la_service_deps_desc.dart';
 import './la_service_desc.dart';
 import './la_service_name.dart';
 import './la_variable.dart';
 import './la_variable_desc.dart';
-import 'la_service.dart';
 import './prod_service_desc.dart';
 import './version_utils.dart';
+import 'basic_service.dart';
+import 'cmd_history_details.dart';
+import 'la_service.dart';
 
 part 'la_project.g.dart';
 
@@ -112,11 +110,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
     validateCreation();
   }
 
-  factory LAProject.fromJson(Map<String, dynamic> json) =>
-      _$LAProjectFromJson(json);
+  factory LAProject.fromJson(Map<String, dynamic> json) => _$LAProjectFromJson(json);
 
-  factory LAProject.fromObject(Map<String, dynamic> yoRc,
-      {bool debug = false}) {
+  factory LAProject.fromObject(Map<String, dynamic> yoRc, {bool debug = false}) {
     dynamic a(String tag) => yoRc['LA_$tag'];
     final LAProject p = LAProject(
         longName: yoRc['LA_project_name'] as String,
@@ -125,8 +121,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         useSSL: yoRc['LA_enable_ssl'] as bool,
         services: <LAService>[]);
     final String domain = p.domain;
-    final Map<String, List<String>> tempServerServices =
-        <String, List<String>>{};
+    final Map<String, List<String>> tempServerServices = <String, List<String>>{};
 
     for (final LAServiceDesc serviceDesc in LAServiceDesc.list(false)) {
       String n = serviceDesc.nameInt == 'cas' ? 'CAS' : serviceDesc.nameInt;
@@ -136,22 +131,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
           ? true
           // ignore: avoid_bool_literals_in_conditional_expressions
           : a('use_$n') as bool? ??
-                  n == 'ala_bie' ||
-                      n == 'images' ||
-                      n == biocacheCli ||
-                      n == biocacheBackend ||
-                      n == nameindexer
+                  n == 'ala_bie' || n == 'images' || n == biocacheCli || n == biocacheBackend || n == nameindexer
               ? true
               : false;
       final LAService service = p.getService(serviceDesc.nameInt);
       p.serviceInUse(serviceDesc.nameInt, useIt);
-      n = serviceDesc.nameInt == 'species_lists'
-          ? 'lists'
-          : serviceDesc.nameInt;
+      n = serviceDesc.nameInt == 'species_lists' ? 'lists' : serviceDesc.nameInt;
       // ignore: avoid_bool_literals_in_conditional_expressions
-      final bool useSub = serviceDesc.forceSubdomain
-          ? true
-          : a('${n}_uses_subdomain') as bool? ?? true;
+      final bool useSub = serviceDesc.forceSubdomain ? true : a('${n}_uses_subdomain') as bool? ?? true;
       service.usesSubdomain = useSub;
       if (debug) {
         if (kDebugMode) {
@@ -160,16 +147,13 @@ class LAProject implements IsJsonSerializable<LAProject> {
       }
       if (debug) {
         if (kDebugMode) {
-          debugPrint(
-              '$n (LA_use_$n): $useIt subdomain (LA_${n}_uses_subdomain): $useSub');
+          debugPrint('$n (LA_use_$n): $useIt subdomain (LA_${n}_uses_subdomain): $useSub');
         }
       }
       final String invPath = a('${n}_path') as String? ?? '';
 
-      final String iniPath =
-          invPath.startsWith('/') ? invPath.substring(1) : invPath;
-      final String url =
-          a('${n}_url') as String? ?? a('${n}_hostname') as String? ?? '';
+      final String iniPath = invPath.startsWith('/') ? invPath.substring(1) : invPath;
+      final String url = a('${n}_url') as String? ?? a('${n}_hostname') as String? ?? '';
 
       if (useSub) {
         service.suburl = url.replaceFirst('.$domain', '');
@@ -192,8 +176,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         for (final String hostname in hostnames.split(RegExp(r'[, ]+'))) {
           if (!p.getServersNameList().contains(hostname)) {
             // id is empty when is new
-            s = LAServer(
-                id: ObjectId().toString(), name: hostname, projectId: p.id);
+            s = LAServer(id: ObjectId().toString(), name: hostname, projectId: p.id);
             p.upsertServer(s);
           } else {
             s = p.servers.where((LAServer c) => c.name == hostname).toList()[0];
@@ -212,8 +195,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       final Map<String, String> swVersions = <String, String>{};
       final dynamic impVersions = a('software_versions');
       if (impVersions != null) {
-        final List<dynamic> swVersionsList =
-            a('software_versions') as List<dynamic>;
+        final List<dynamic> swVersionsList = a('software_versions') as List<dynamic>;
         for (final dynamic swVersion in swVersionsList) {
           swVersions[swVersion[0] as String] = swVersion[1] as String;
         }
@@ -232,12 +214,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
     final String? regionsMap = a('regions_map_bounds') as String?;
     if (regionsMap != null) {
       final List<dynamic> bboxD = json.decode(regionsMap) as List<dynamic>;
-      final List<String> bbox =
-          bboxD.map((dynamic item) => item.toString()).toList();
-      p.mapBoundsFstPoint = LALatLng(
-          latitude: double.parse(bbox[0]), longitude: double.parse(bbox[1]));
-      p.mapBoundsSndPoint = LALatLng(
-          latitude: double.parse(bbox[2]), longitude: double.parse(bbox[3]));
+      final List<String> bbox = bboxD.map((dynamic item) => item.toString()).toList();
+      p.mapBoundsFstPoint = LALatLng(latitude: double.parse(bbox[0]), longitude: double.parse(bbox[1]));
+      p.mapBoundsSndPoint = LALatLng(latitude: double.parse(bbox[2]), longitude: double.parse(bbox[3]));
     }
     if (p.dirName == null || p.dirName!.isEmpty) {
       p.dirName = p.suggestDirName();
@@ -345,8 +324,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   bool validateCreation({bool debug = true}) {
     bool valid = true;
     LAProjectStatus tempStatus = LAProjectStatus.created;
-    if (servers.length != serverServices.length ||
-        clusters.length != clusterServices.length) {
+    if (servers.length != serverServices.length || clusters.length != clusterServices.length) {
       String msgErr =
           'Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length})';
       msgErr +=
@@ -354,19 +332,16 @@ class LAProject implements IsJsonSerializable<LAProject> {
       if (kDebugMode) {
         debugPrint(msgErr);
         debugPrint('servers (${servers.length}): $servers');
-        debugPrint(
-            'serverServices (${serverServices.length}): $serverServices');
+        debugPrint('serverServices (${serverServices.length}): $serverServices');
         debugPrint('clusters (${clusters.length}): $clusters');
-        debugPrint(
-            'clusterServices (${clusterServices.length}): $clusterServices');
+        debugPrint('clusterServices (${clusterServices.length}): $clusterServices');
       }
       debugPrint(msgErr);
       debugPrint('Remove orphans');
       // FIXME: In the backend, there are still inconsistencies
-      serverServices.removeWhere((String serverId, _) =>
-          !servers.any((LAServer server) => server.id == serverId));
-      clusterServices.removeWhere((String clusterId, _) =>
-          !clusters.any((LACluster cluster) => cluster.id == clusterId));
+      serverServices.removeWhere((String serverId, _) => !servers.any((LAServer server) => server.id == serverId));
+      clusterServices
+          .removeWhere((String clusterId, _) => !clusters.any((LACluster cluster) => cluster.id == clusterId));
       // final Exception error = Exception(msgErr);
       // throw error;
     }
@@ -434,8 +409,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     if (debug) {
       if (kDebugMode) {
-        debugPrint(
-            "Valid at end: ${valid ? 'yes' : 'no'}, tempStatus: ${status.title}");
+        debugPrint("Valid at end: ${valid ? 'yes' : 'no'}, tempStatus: ${status.title}");
       }
     }
     return valid;
@@ -460,18 +434,13 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   List<String> servicesNotAssigned() {
-    final List<String> difference = getServicesNameListInUse()
-        .toSet()
-        .difference(getServicesAssigned().toSet())
-        .toList();
+    final List<String> difference =
+        getServicesNameListInUse().toSet().difference(getServicesAssigned().toSet()).toList();
     return difference;
   }
 
   List<LAServer> serversWithServices() {
-    return servers
-        .where((LAServer s) =>
-            serverServices[s.id] != null && serverServices[s.id]!.isNotEmpty)
-        .toList();
+    return servers.where((LAServer s) => serverServices[s.id] != null && serverServices[s.id]!.isNotEmpty).toList();
   }
 
   bool allServersWithIPs() {
@@ -520,27 +489,19 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   List<String> getServicesNameListInUse() {
-    return services
-        .where((LAService service) => service.use)
-        .map((LAService service) => service.nameInt)
-        .toList();
+    return services.where((LAService service) => service.use).map((LAService service) => service.nameInt).toList();
   }
 
   List<String> getServicesNameListNotInUse() {
-    return services
-        .where((LAService service) => !service.use)
-        .map((LAService service) => service.nameInt)
-        .toList();
+    return services.where((LAService service) => !service.use).map((LAService service) => service.nameInt).toList();
   }
 
   List<String> getServicesAssigned([bool onlyDocker = false]) {
     final Set<String> selected = <String>{};
     if (!onlyDocker) {
-      serverServices.forEach(
-          (String id, List<String> service) => selected.addAll(service));
+      serverServices.forEach((String id, List<String> service) => selected.addAll(service));
     }
-    clusterServices
-        .forEach((String id, List<String> service) => selected.addAll(service));
+    clusterServices.forEach((String id, List<String> service) => selected.addAll(service));
     return selected.toList();
   }
 
@@ -613,17 +574,14 @@ check results length: ${checkResults.length}''';
       assert(LAServiceDesc.listS(isHub).contains(nameInt) == true,
           'Trying to get $nameInt service while not present in service lists and hub=$isHub');
     }
-    final LAService curService =
-        services.firstWhere((LAService s) => s.nameInt == nameInt, orElse: () {
+    final LAService curService = services.firstWhere((LAService s) => s.nameInt == nameInt, orElse: () {
       // debugPrint("Creating service $nameInt as is not present");
-      final LAService newService =
-          LAService.fromDesc(LAServiceDesc.get(nameInt), id);
+      final LAService newService = LAService.fromDesc(LAServiceDesc.get(nameInt), id);
       services.add(newService);
       return newService;
     });
     if (AppUtils.isDev()) {
-      assert(services.where((LAService s) => s.nameInt == nameInt).length == 1,
-          'Warn, duplicate service $nameInt');
+      assert(services.where((LAService s) => s.nameInt == nameInt).length == 1, 'Warn, duplicate service $nameInt');
     }
     return curService;
   }
@@ -636,15 +594,13 @@ check results length: ${checkResults.length}''';
   String get PortalName => isHub ? 'Hub' : 'Portal';
 
   LAVariable getVariable(String nameInt) {
-    final LAVariable laVar = variables.firstWhere(
-        (LAVariable v) => v.nameInt == nameInt,
+    final LAVariable laVar = variables.firstWhere((LAVariable v) => v.nameInt == nameInt,
         orElse: () => LAVariable.fromDesc(LAVariableDesc.get(nameInt), id));
     return laVar;
   }
 
   LAVariable? getVariableOrNull(String nameInt) {
-    final LAVariable? laVar =
-        variables.firstWhereOrNull((LAVariable v) => v.nameInt == nameInt);
+    final LAVariable? laVar = variables.firstWhereOrNull((LAVariable v) => v.nameInt == nameInt);
     return laVar;
   }
 
@@ -652,8 +608,7 @@ check results length: ${checkResults.length}''';
     final LAVariable variable = getVariable(nameInt);
     final bool isEmpty = variable.value == null;
     final LAVariableDesc desc = LAVariableDesc.get(nameInt);
-    final Object? value =
-        variable.value ??= desc.defValue != null ? desc.defValue!(this) : null;
+    final Object? value = variable.value ??= desc.defValue != null ? desc.defValue!(this) : null;
     if (isEmpty && value != null) {
       setVariable(desc, value);
     }
@@ -661,10 +616,8 @@ check results length: ${checkResults.length}''';
   }
 
   String? getSwVersionOfService(String nameInt) {
-    final List<LAServiceDeploy> deploys =
-        getServiceDeploysForSomeService(nameInt);
-    final String? swVersion =
-        deploys.isEmpty ? null : deploys.first.softwareVersions[nameInt];
+    final List<LAServiceDeploy> deploys = getServiceDeploysForSomeService(nameInt);
+    final String? swVersion = deploys.isEmpty ? null : deploys.first.softwareVersions[nameInt];
     return swVersion;
   }
 
@@ -690,8 +643,7 @@ check results length: ${checkResults.length}''';
 
   void upsertServer(LAServer laServer) {
     servers = LAServer.upsertByName(servers, laServer);
-    final LAServer upsertServer =
-        servers.firstWhereOrNull((LAServer s) => s.name == laServer.name)!;
+    final LAServer upsertServer = servers.firstWhereOrNull((LAServer s) => s.name == laServer.name)!;
     _cleanServerServices(upsertServer);
   }
 
@@ -707,16 +659,12 @@ check results length: ${checkResults.length}''';
   }
 
   void assign(LAServer server, List<String> assignedServices,
-      [Map<String, String>? softwareVersions,
-      Map<String, LAReleases>? laReleases]) {
-    assignByType(server.id, DeploymentType.vm, assignedServices,
-        softwareVersions, laReleases);
+      [Map<String, String>? softwareVersions, Map<String, LAReleases>? laReleases]) {
+    assignByType(server.id, DeploymentType.vm, assignedServices, softwareVersions, laReleases);
   }
 
-  void assignByType(
-      String sOrCId, DeploymentType type, List<String> assignedServices,
-      [Map<String, String>? softwareVersions,
-      Map<String, LAReleases>? laReleases]) {
+  void assignByType(String sOrCId, DeploymentType type, List<String> assignedServices,
+      [Map<String, String>? softwareVersions, Map<String, LAReleases>? laReleases]) {
     final bool isServer = type == DeploymentType.vm;
     final String? serverId = isServer ? sOrCId : null;
     final String? clusterId = !isServer ? sOrCId : null;
@@ -743,8 +691,7 @@ check results length: ${checkResults.length}''';
               sD.clusterId == clusterId &&
               sD.type == type &&
               sD.serviceId == service.id, orElse: () {
-        final Map<String, String> versions =
-            getServiceDefaultVersions(service, laReleases);
+        final Map<String, String> versions = getServiceDefaultVersions(service, laReleases);
 
         // First, try to get version from existing deploys of the same service (already persisted in BD)
         final String? existingVersion = getServiceDeployRelease(sN);
@@ -790,8 +737,7 @@ check results length: ${checkResults.length}''';
     unAssignByType(server.id, DeploymentType.vm, serviceName);
   }
 
-  void unAssignByType(
-      String sIdOrCid, DeploymentType type, String serviceName) {
+  void unAssignByType(String sIdOrCid, DeploymentType type, String serviceName) {
     final bool isServer = type == DeploymentType.vm;
     final String? serverId = isServer ? sIdOrCid : null;
     final String? clusterId = !isServer ? sIdOrCid : null;
@@ -799,12 +745,10 @@ check results length: ${checkResults.length}''';
     servicesToDel.add(serviceName);
     servicesToDel = _addSubServices(servicesToDel);
     if (isServer && serverServices[sIdOrCid] != null) {
-      serverServices[sIdOrCid]
-          ?.removeWhere((String c) => servicesToDel.contains(c));
+      serverServices[sIdOrCid]?.removeWhere((String c) => servicesToDel.contains(c));
     }
     if (!isServer && clusterServices[sIdOrCid] != null) {
-      clusterServices[sIdOrCid]
-          ?.removeWhere((String c) => servicesToDel.contains(c));
+      clusterServices[sIdOrCid]?.removeWhere((String c) => servicesToDel.contains(c));
     }
     for (final String sN in servicesToDel) {
       final LAService service = getService(sN);
@@ -825,8 +769,7 @@ check results length: ${checkResults.length}''';
   }
 
   bool isDockerClusterConfigured() {
-    return isDockerEnabled &&
-        getServiceDeploysForSomeService(dockerSwarm).isNotEmpty;
+    return isDockerEnabled && getServiceDeploysForSomeService(dockerSwarm).isNotEmpty;
   }
 
   static HashSet<String> _addSubServices(HashSet<String> newServices) {
@@ -854,20 +797,15 @@ check results length: ${checkResults.length}''';
 
   List<LAServiceDeploy> getServiceDeploysForSomeService(String serviceNameInt) {
     final List<LAServiceDeploy> sds = <LAServiceDeploy>[];
-    final List<LAService> serviceSubset =
-        services.where((LAService s) => s.nameInt == serviceNameInt).toList();
+    final List<LAService> serviceSubset = services.where((LAService s) => s.nameInt == serviceNameInt).toList();
     for (final LAService s in serviceSubset) {
-      sds.addAll(serviceDeploys
-          .where((LAServiceDeploy sD) =>
-              sD.projectId == id && sD.serviceId == s.id)
-          .toList());
+      sds.addAll(serviceDeploys.where((LAServiceDeploy sD) => sD.projectId == id && sD.serviceId == s.id).toList());
     }
     return sds;
   }
 
   void setServiceDeployRelease(String serviceName, String release) {
-    final List<LAServiceDeploy> serviceDeploysForName =
-        getServiceDeploysForSomeService(serviceName);
+    final List<LAServiceDeploy> serviceDeploysForName = getServiceDeploysForSomeService(serviceName);
     if (AppUtils.isDev()) {
       if (kDebugMode) {
         debugPrint(
@@ -902,10 +840,8 @@ check results length: ${checkResults.length}''';
   // 3) after a deploy/update a service
   Map<String, String> getServiceDeployReleases([bool onlyDocker = false]) {
     final Map<String, String> versions = <String, String>{};
-    for (final LAServiceDeploy sd in serviceDeploys.where(
-        (LAServiceDeploy sd) =>
-            (onlyDocker && sd.type == DeploymentType.dockerSwarm) ||
-            !onlyDocker)) {
+    for (final LAServiceDeploy sd in serviceDeploys
+        .where((LAServiceDeploy sd) => (onlyDocker && sd.type == DeploymentType.dockerSwarm) || !onlyDocker)) {
       versions.addAll(sd.softwareVersions);
     }
     return versions;
@@ -913,13 +849,11 @@ check results length: ${checkResults.length}''';
 
   void delete(LAServer serverToDelete) {
     serverServices.remove(serverToDelete.id);
-    serviceDeploys = serviceDeploys
-        .where((LAServiceDeploy sd) => sd.serverId != serverToDelete.id)
-        .toList();
+    serviceDeploys = serviceDeploys.where((LAServiceDeploy sd) => sd.serverId != serverToDelete.id).toList();
     servers = servers.where((LAServer s) => s.id != serverToDelete.id).toList();
     // Remove serviceDeploy inconsistencies
-    serviceDeploys.removeWhere((LAServiceDeploy sd) =>
-        servers.firstWhereOrNull((LAServer s) => s.id == sd.serverId) == null);
+    serviceDeploys
+        .removeWhere((LAServiceDeploy sd) => servers.firstWhereOrNull((LAServer s) => s.id == sd.serverId) == null);
     // Remove server from others gateways
     final String deletedId = serverToDelete.id;
     for (final LAServer s in servers) {
@@ -935,9 +869,7 @@ check results length: ${checkResults.length}''';
   }
 
   String additionalVariablesDecoded() {
-    return additionalVariables.isNotEmpty
-        ? utf8.decode(base64.decode(additionalVariables))
-        : '';
+    return additionalVariables.isNotEmpty ? utf8.decode(base64.decode(additionalVariables)) : '';
   }
 
   List<String> getHostnames(String serviceName) {
@@ -946,8 +878,7 @@ check results length: ${checkResults.length}''';
     serverServices.forEach((String id, List<String> serviceNames) {
       for (final String currentService in serviceNames) {
         if (serviceName == currentService) {
-          final LAServer server =
-              servers.firstWhere((LAServer s) => s.id == id);
+          final LAServer server = servers.firstWhere((LAServer s) => s.id == id);
           hostnames.add(server.name);
         }
       }
@@ -955,12 +886,9 @@ check results length: ${checkResults.length}''';
 
     clusterServices.forEach((String id, List<String> serviceNames) {
       for (final String currentService in serviceNames) {
-        final List<String> serverCluster =
-            getServiceDeploysForSomeService(dockerSwarm)
-                .map((LAServiceDeploy sd) => servers
-                    .firstWhere((LAServer s) => s.id == sd.serverId)
-                    .name)
-                .toList();
+        final List<String> serverCluster = getServiceDeploysForSomeService(dockerSwarm)
+            .map((LAServiceDeploy sd) => servers.firstWhere((LAServer s) => s.id == sd.serverId).name)
+            .toList();
         serverCluster.sort();
         if (serviceName == currentService) {
           hostnames.addAll(serverCluster);
@@ -995,8 +923,7 @@ check results length: ${checkResults.length}''';
 
   String get hostnames {
     final List<String> hostList = <String>[];
-    serversWithServices()
-        .forEach((LAServer server) => hostList.add(server.name));
+    serversWithServices().forEach((LAServer server) => hostList.add(server.name));
     return hostList.join(', ');
   }
 
@@ -1020,8 +947,7 @@ check results length: ${checkResults.length}''';
   }
 
   void setMap(LatLng firstPoint, LatLng sndPoint, double zoom) {
-    mapBoundsFstPoint =
-        LALatLng.from(firstPoint.latitude, firstPoint.longitude);
+    mapBoundsFstPoint = LALatLng.from(firstPoint.latitude, firstPoint.longitude);
     mapBoundsSndPoint = LALatLng.from(sndPoint.latitude, sndPoint.longitude);
     mapZoom = zoom;
   }
@@ -1031,12 +957,10 @@ check results length: ${checkResults.length}''';
     service.use = use;
     updateService(service);
 
-    final List<LAServiceDesc> childServices =
-        LAServiceDesc.childServices(serviceNameInt);
+    final List<LAServiceDesc> childServices = LAServiceDesc.childServices(serviceNameInt);
 
-    final Iterable<LAServiceDesc> depends = LAServiceDesc.list(isHub).where(
-        (LAServiceDesc curSer) =>
-            curSer.depends != null && curSer.depends!.toS() == serviceNameInt);
+    final Iterable<LAServiceDesc> depends = LAServiceDesc.list(isHub)
+        .where((LAServiceDesc curSer) => curSer.depends != null && curSer.depends!.toS() == serviceNameInt);
     if (!use) {
       // Remove
       serverServices.forEach((String id, List<String> services) {
@@ -1045,8 +969,7 @@ check results length: ${checkResults.length}''';
       clusterServices.forEach((String id, List<String> services) {
         services.remove(serviceNameInt);
       });
-      serviceDeploys.removeWhere((LAServiceDeploy sd) =>
-          sd.projectId == id && sd.serviceId == service.id);
+      serviceDeploys.removeWhere((LAServiceDeploy sd) => sd.projectId == id && sd.serviceId == service.id);
       // Disable dependents
       for (final LAServiceDesc serviceDesc in depends) {
         serviceInUse(serviceDesc.nameInt, use);
@@ -1088,8 +1011,7 @@ check results length: ${checkResults.length}''';
       final LAServer? masterServer = getPipelinesMaster();
       if (masterServer != null && masterServer.sshKey != null) {
         masterPipelinesServer = masterServer;
-        conf['${LAVariable.varInvPrefix}pipelines_ssh_key'] =
-            masterServer.sshKey!.name;
+        conf['${LAVariable.varInvPrefix}pipelines_ssh_key'] = masterServer.sshKey!.name;
       }
     }
 
@@ -1104,9 +1026,7 @@ check results length: ${checkResults.length}''';
       conf['LA_use_${service.nameInt}'] = service.use;
       conf['LA_${service.nameInt}_uses_subdomain'] = service.usesSubdomain;
       conf['LA_${service.nameInt}_hostname'] =
-          getHostnames(service.nameInt).isNotEmpty
-              ? getHostnames(service.nameInt).join(', ')
-              : '';
+          getHostnames(service.nameInt).isNotEmpty ? getHostnames(service.nameInt).join(', ') : '';
       conf['LA_${service.nameInt}_url'] = service.url(domain);
       conf['LA_${service.nameInt}_path'] = service.path;
     }
@@ -1119,8 +1039,7 @@ check results length: ${checkResults.length}''';
           nginxDockerInternalAliases.add(s.url(domain));
         }
       });
-      conf['LA_nginx_docker_internal_aliases'] =
-          nginxDockerInternalAliases.toList();
+      conf['LA_nginx_docker_internal_aliases'] = nginxDockerInternalAliases.toList();
       final List<String> dockerSolrHosts = dockerServers();
       conf['LA_docker_solr_hosts'] = dockerSolrHosts;
     }
@@ -1134,15 +1053,13 @@ check results length: ${checkResults.length}''';
           swVersions[sw] = <dynamic>[LAServiceDesc.swToAnsibleVars[sw], value];
 
           if (sw == 'collectory') {
-            conf['LA_collectory_version_ge_3'] =
-                vc('>= 3.0.0').allows(v(value));
+            conf['LA_collectory_version_ge_3'] = vc('>= 3.0.0').allows(v(value));
           }
         }
       });
     }
     final List<List<dynamic>> swVersionsList = swVersions.values.toList();
-    swVersionsList.sort((List<dynamic> a, List<dynamic> b) =>
-        compareAsciiUpperCase(a[0] as String, b[0] as String));
+    swVersionsList.sort((List<dynamic> a, List<dynamic> b) => compareAsciiUpperCase(a[0] as String, b[0] as String));
 
     conf['LA_software_versions'] = swVersionsList;
 
@@ -1154,8 +1071,7 @@ check results length: ${checkResults.length}''';
     if (hubs.isNotEmpty) {
       final List<Map<String, dynamic>> hubsConf = <Map<String, dynamic>>[];
       for (final LAProject hub in hubs) {
-        hubsConf.add(
-            hub.toGeneratorJson(etcHosts: conf['LA_etc_hosts'] as String?));
+        hubsConf.add(hub.toGeneratorJson(etcHosts: conf['LA_etc_hosts'] as String?));
       }
       conf['LA_hubs'] = hubsConf;
     }
@@ -1164,8 +1080,7 @@ check results length: ${checkResults.length}''';
 
   List<String> dockerServers() {
     final List<String> dList = getServiceDeploysForSomeService(dockerSwarm)
-        .map((LAServiceDeploy sd) =>
-            servers.firstWhere((LAServer s) => s.id == sd.serverId).name)
+        .map((LAServiceDeploy sd) => servers.firstWhere((LAServer s) => s.id == sd.serverId).name)
         .toSet()
         .toList();
     dList.sort();
@@ -1186,50 +1101,35 @@ check results length: ${checkResults.length}''';
     return clusterServices[clusterId]!;
   }
 
-  List<LAService> getServerServicesFull(
-      {required String id, required DeploymentType type}) {
-    final List<String> listS = type == DeploymentType.vm
-        ? getServerServices(serverId: id)
-        : getClusterServices(clusterId: id);
+  List<LAService> getServerServicesFull({required String id, required DeploymentType type}) {
+    final List<String> listS =
+        type == DeploymentType.vm ? getServerServices(serverId: id) : getClusterServices(clusterId: id);
     return services.where((LAService s) => listS.contains(s.nameInt)).toList();
   }
 
-  Map<String, List<LAService>> getServerServicesAssignable(
-      DeploymentType type) {
+  Map<String, List<LAService>> getServerServicesAssignable(DeploymentType type) {
     final List<String> canBeRedeployed = getServicesAssigned()
-        .where((String s) =>
-            LAServiceDesc.get(s).allowMultipleDeploys &&
-            LAServiceDesc.get(s).parentService == null)
+        .where((String s) => LAServiceDesc.get(s).allowMultipleDeploys && LAServiceDesc.get(s).parentService == null)
         .toList();
     final List<String> notAssigned = servicesNotAssigned();
     final List<LAService> eligible = services
         .where((LAService s) =>
-            (canBeRedeployed.contains(s.nameInt) ||
-                notAssigned.contains(s.nameInt)) &&
+            (canBeRedeployed.contains(s.nameInt) || notAssigned.contains(s.nameInt)) &&
             (type == DeploymentType.vm ||
-                (type == DeploymentType.dockerSwarm &&
-                    LAServiceDesc.listDockerCapableS.contains(s.nameInt))))
+                (type == DeploymentType.dockerSwarm && LAServiceDesc.listDockerCapableS.contains(s.nameInt))))
         .toList();
     final Map<String, List<LAService>> results = <String, List<LAService>>{};
     if (type == DeploymentType.vm) {
       for (final LAServer server in servers) {
         final List<String> currentServerServicesIds =
-            getServerServicesFull(id: server.id, type: type)
-                .map((LAService service) => service.id)
-                .toList();
-        results[server.id] = eligible
-            .where((LAService sv) => !currentServerServicesIds.contains(sv.id))
-            .toList();
+            getServerServicesFull(id: server.id, type: type).map((LAService service) => service.id).toList();
+        results[server.id] = eligible.where((LAService sv) => !currentServerServicesIds.contains(sv.id)).toList();
       }
     } else {
       for (final LACluster cluster in clusters) {
         final List<String> currentClusterServicesIds =
-            getServerServicesFull(id: cluster.id, type: type)
-                .map((LAService service) => service.id)
-                .toList();
-        results[cluster.id] = eligible
-            .where((LAService sv) => !currentClusterServicesIds.contains(sv.id))
-            .toList();
+            getServerServicesFull(id: cluster.id, type: type).map((LAService service) => service.id).toList();
+        results[cluster.id] = eligible.where((LAService sv) => !currentClusterServicesIds.contains(sv.id)).toList();
       }
     }
 
@@ -1257,12 +1157,10 @@ check results length: ${checkResults.length}''';
           : nameInt == pipelines || nameInt == zookeeper
               ? 'Accessing-your-internal-web-interfaces'
               : null;
-      final String tooltip = name != 'Index'
-          ? serviceTooltip(name)
-          : 'This is protected by default, see our wiki for more info';
+      final String tooltip =
+          name != 'Index' ? serviceTooltip(name) : 'This is protected by default, see our wiki for more info';
       if (nameInt == solr) {
-        url =
-            "${StringUtils.removeLastSlash(url.replaceFirst("https", "http"))}:8983";
+        url = "${StringUtils.removeLastSlash(url.replaceFirst("https", "http"))}:8983";
       }
       if (nameInt == cas) {
         url += 'cas';
@@ -1273,11 +1171,9 @@ check results length: ${checkResults.length}''';
         deps = getDeps()[nameInt]!.serviceDepends;
       }
       final List<String> hostnames = getHostnames(nameInt);
-      final List<LAServiceDeploy> sd = serviceDeploys
-          .where((LAServiceDeploy sd) => sd.serviceId == service.id)
-          .toList();
-      final ServiceStatus st =
-          sd.isNotEmpty ? sd[0].status : ServiceStatus.unknown;
+      final List<LAServiceDeploy> sd =
+          serviceDeploys.where((LAServiceDeploy sd) => sd.serviceId == service.id).toList();
+      final ServiceStatus st = sd.isNotEmpty ? sd[0].status : ServiceStatus.unknown;
       // if (nameInt != cas) {
       allServices.add(ProdServiceDesc(
           name: name,
@@ -1299,28 +1195,22 @@ check results length: ${checkResults.length}''';
 
   String serviceFullUrl(LAServiceDesc desc, LAService service) {
     final String url = desc.isSubService
-        ? getServiceE(desc.parentService!).fullUrl(useSSL, domain) +
-            desc.path.replaceFirst(RegExp(r'^/'), '')
+        ? getServiceE(desc.parentService!).fullUrl(useSSL, domain) + desc.path.replaceFirst(RegExp(r'^/'), '')
         : service.fullUrl(useSSL, domain);
     return url;
   }
 
   String serviceTooltip(String name) => 'Open the $name service';
 
-  HostsServicesChecks _getHostServicesChecks(List<ProdServiceDesc> prodServices,
-      [bool full = true]) {
+  HostsServicesChecks _getHostServicesChecks(List<ProdServiceDesc> prodServices, [bool full = true]) {
     final HostsServicesChecks hostsChecks = HostsServicesChecks();
-    final List<String> serversIds =
-        serversWithServices().map((LAServer s) => s.id).toList();
+    final List<String> serversIds = serversWithServices().map((LAServer s) => s.id).toList();
     for (final ProdServiceDesc service in prodServices) {
       for (final LAServiceDeploy sd in service.serviceDeploys) {
-        hostsChecks.setUrls(
-            sd, service.urls, service.nameInt, serversIds, full);
+        hostsChecks.setUrls(sd, service.urls, service.nameInt, serversIds, full);
         try {
-          final LAServer server =
-              servers.firstWhere((LAServer s) => s.id == sd.serverId);
-          hostsChecks.add(
-              sd, server, service.deps, service.nameInt, serversIds, full);
+          final LAServer server = servers.firstWhere((LAServer s) => s.id == sd.serverId);
+          hostsChecks.add(sd, server, service.deps, service.nameInt, serversIds, full);
         } catch (e) {
           if (kDebugMode) {
             debugPrint('Error in _getHostServicesChecks: $e with SD: $sd');
@@ -1334,18 +1224,14 @@ check results length: ${checkResults.length}''';
   Tuple2<List<ProdServiceDesc>, HostsServicesChecks> serverServicesToMonitor() {
     final List<ProdServiceDesc> services = prodServices;
     if (servicesToMonitor == null ||
-        !const ListEquality<ProdServiceDesc>()
-            .equals(servicesToMonitor!.item1, prodServices)) {
-      final HostsServicesChecks checks =
-          _getHostServicesChecks(services, false);
-      servicesToMonitor =
-          Tuple2<List<ProdServiceDesc>, HostsServicesChecks>(services, checks);
+        !const ListEquality<ProdServiceDesc>().equals(servicesToMonitor!.item1, prodServices)) {
+      final HostsServicesChecks checks = _getHostServicesChecks(services, false);
+      servicesToMonitor = Tuple2<List<ProdServiceDesc>, HostsServicesChecks>(services, checks);
     }
     return servicesToMonitor!;
   }
 
-  Map<String, LAServiceDepsDesc> getDeps() =>
-      LAServiceDepsDesc.getDeps(alaInstallRelease);
+  Map<String, LAServiceDepsDesc> getDeps() => LAServiceDepsDesc.getDeps(alaInstallRelease);
 
   @override
   LAProject fromJson(Map<String, dynamic> json) => LAProject.fromJson(json);
@@ -1353,17 +1239,14 @@ check results length: ${checkResults.length}''';
   void updateService(LAService service) {
     final String serviceNameInt = service.nameInt;
     final int serviceInUse = getServicesNameListInUse().length;
-    services = services
-        .map((LAService s) => s.nameInt == serviceNameInt ? service : s)
-        .toList();
+    services = services.map((LAService s) => s.nameInt == serviceNameInt ? service : s).toList();
     assert(serviceInUse == getServicesNameListInUse().length);
   }
 
   static List<LAProject> import({required String yoRcJson}) {
     final List<LAProject> list = <LAProject>[];
     final Map<String, dynamic> yoRc =
-        json.decode(yoRcJson)['generator-living-atlas']['promptValues']
-            as Map<String, dynamic>;
+        json.decode(yoRcJson)['generator-living-atlas']['promptValues'] as Map<String, dynamic>;
     final LAProject p = LAProject.fromObject(yoRc);
     final List<LAProject> hubs = _importHubs(yoRc, p);
     p.hubs = hubs;
@@ -1380,8 +1263,7 @@ check results length: ${checkResults.length}''';
     final List<dynamic> projectsJ = jsonDecode(templatesS) as List<dynamic>;
 
     for (final dynamic genJson in projectsJ) {
-      final Map<String, dynamic> pJson = genJson['generator-living-atlas']
-          ['promptValues'] as Map<String, dynamic>;
+      final Map<String, dynamic> pJson = genJson['generator-living-atlas']['promptValues'] as Map<String, dynamic>;
       pJson['LA_id'] = null;
       final LAProject p = LAProject.fromObject(pJson);
       final List<LAProject> hubs = _importHubs(pJson, p);
@@ -1392,13 +1274,11 @@ check results length: ${checkResults.length}''';
     return list;
   }
 
-  static List<LAProject> _importHubs(
-      Map<String, dynamic> pJson, LAProject parent) {
+  static List<LAProject> _importHubs(Map<String, dynamic> pJson, LAProject parent) {
     final List<LAProject> hubs = <LAProject>[];
     if (pJson['LA_hubs'] != null) {
       for (final dynamic hubJson in pJson['LA_hubs'] as List<dynamic>) {
-        final LAProject hub =
-            LAProject.fromObject(hubJson as Map<String, dynamic>);
+        final LAProject hub = LAProject.fromObject(hubJson as Map<String, dynamic>);
         hub.isHub = true;
         hub.parent = parent;
         hubs.add(hub);
@@ -1420,8 +1300,7 @@ check results length: ${checkResults.length}''';
           dirName == other.dirName &&
           domain == other.domain &&
           useSSL == other.useSSL &&
-          const DeepCollectionEquality.unordered()
-              .equals(serverServices, other.serverServices) &&
+          const DeepCollectionEquality.unordered().equals(serverServices, other.serverServices) &&
           additionalVariables == other.additionalVariables &&
           isCreated == other.isCreated &&
           isHub == other.isHub &&
@@ -1437,20 +1316,15 @@ check results length: ${checkResults.length}''';
           lastCmdDetails == other.lastCmdDetails &&
           parent == other.parent &&
           createdAt == other.createdAt &&
-          const ListEquality<CmdHistoryEntry>()
-              .equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
+          const ListEquality<CmdHistoryEntry>().equals(cmdHistoryEntries, other.cmdHistoryEntries) &&
           const ListEquality<LAServer>().equals(servers, other.servers) &&
           const ListEquality<LAService>().equals(services, other.services) &&
           const ListEquality<LAVariable>().equals(variables, other.variables) &&
-          const ListEquality<LAServiceDeploy>()
-              .equals(serviceDeploys, other.serviceDeploys) &&
+          const ListEquality<LAServiceDeploy>().equals(serviceDeploys, other.serviceDeploys) &&
           const ListEquality<LAProject>().equals(hubs, other.hubs) &&
-          const DeepCollectionEquality.unordered()
-              .equals(checkResults, other.checkResults) &&
-          const DeepCollectionEquality.unordered()
-              .equals(runningVersions, other.runningVersions) &&
-          const DeepCollectionEquality.unordered()
-              .equals(selectedVersions, other.selectedVersions) &&
+          const DeepCollectionEquality.unordered().equals(checkResults, other.checkResults) &&
+          const DeepCollectionEquality.unordered().equals(runningVersions, other.runningVersions) &&
+          const DeepCollectionEquality.unordered().equals(selectedVersions, other.selectedVersions) &&
           mapZoom == other.mapZoom;
 
   @override
@@ -1486,8 +1360,7 @@ check results length: ${checkResults.length}''';
       createdAt.hashCode ^
       mapZoom.hashCode;
 
-  Map<String, String> getServiceDefaultVersions(LAService service,
-      [Map<String, LAReleases>? laReleases]) {
+  Map<String, String> getServiceDefaultVersions(LAService service, [Map<String, LAReleases>? laReleases]) {
     final Map<String, String> defVersions = <String, String>{};
     final String nameInt = service.nameInt;
 
@@ -1512,14 +1385,12 @@ check results length: ${checkResults.length}''';
   }
 
   /// Get the user-selected version for a service, or the default version if none selected
-  String? getSelectedOrDefaultVersion(String serviceName,
-      [Map<String, LAReleases>? laReleases]) {
+  String? getSelectedOrDefaultVersion(String serviceName, [Map<String, LAReleases>? laReleases]) {
     if (selectedVersions.containsKey(serviceName)) {
       return selectedVersions[serviceName];
     }
     final LAService service = getService(serviceName);
-    final Map<String, String> defaults =
-        getServiceDefaultVersions(service, laReleases);
+    final Map<String, String> defaults = getServiceDefaultVersions(service, laReleases);
     return defaults[serviceName];
   }
 
@@ -1527,8 +1398,7 @@ check results length: ${checkResults.length}''';
     final String? version = (alaInstallIsNotTagged(alaInstallRelease!)
             ? DefaultVersions.map.entries.first
             : DefaultVersions.map.entries.firstWhere(
-                (MapEntry<VersionConstraint, Map<String, String>> e) =>
-                    e.key.allows(v(alaInstallRelease!))))
+                (MapEntry<VersionConstraint, Map<String, String>> e) => e.key.allows(v(alaInstallRelease!))))
         .value[nameInt];
     return version ?? '';
   }
@@ -1536,8 +1406,7 @@ check results length: ${checkResults.length}''';
   Map<String, dynamic> getServiceDetailsForVersionCheck() {
     final Map<String, dynamic> versions = <String, dynamic>{};
     for (final LAServiceDeploy sd in serviceDeploys) {
-      final LAService service = services
-          .firstWhere((LAService s) => s.id == sd.serviceId, orElse: () {
+      final LAService service = services.firstWhere((LAService s) => s.id == sd.serviceId, orElse: () {
         final String msg = 'Missing serviceId ${sd.serviceId}';
         if (kDebugMode) {
           debugPrint(msg);
@@ -1549,9 +1418,7 @@ check results length: ${checkResults.length}''';
       if (!desc.withoutUrl) {
         versions[serviceName] = <String, String>{
           'server': sd.serviceId,
-          'url': serviceName == cas
-              ? '${serviceFullUrl(desc, service)}/cas/'
-              : serviceFullUrl(desc, service)
+          'url': serviceName == cas ? '${serviceFullUrl(desc, service)}/cas/' : serviceFullUrl(desc, service)
         };
       }
     }
@@ -1574,8 +1441,7 @@ check results length: ${checkResults.length}''';
     if (isPipelinesInUse && getVariableOrNull('pipelines_master') != null) {
       // && getServiceDeploysForSomeService(pipelines).length > 0) {
       if (getVariableOrNull('pipelines_master')!.value is String?) {
-        final String? masterName =
-            getVariableOrNull('pipelines_master')!.value as String?;
+        final String? masterName = getVariableOrNull('pipelines_master')!.value as String?;
         if (masterName != null) {
           masterPipelinesServer = getServerByName(masterName);
           return masterPipelinesServer;
@@ -1594,8 +1460,7 @@ check results length: ${checkResults.length}''';
           for (final String second in serverServices) {
             // debugPrint("$first compatible with $second");
             if (first != second &&
-                !LAServiceDesc.get(first).isCompatibleWith(
-                    alaInstallRelease, LAServiceDesc.get(second))) {
+                !LAServiceDesc.get(first).isCompatibleWith(alaInstallRelease, LAServiceDesc.get(second))) {
               incompatible.addAll(<String>{first, second});
             }
           }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import '../la_theme.dart';
 import '../utils/debounce.dart';
 import 'help_icon.dart';
@@ -62,8 +61,7 @@ class GenericTextFormField extends StatefulWidget {
   State<GenericTextFormField> createState() => _GenericTextFormFieldState();
 }
 
-class _GenericTextFormFieldState extends State<GenericTextFormField>
-    with AutomaticKeepAliveClientMixin {
+class _GenericTextFormFieldState extends State<GenericTextFormField> with AutomaticKeepAliveClientMixin {
   final Debouncer debouncer = Debouncer(milliseconds: 1000);
   late GlobalKey<FormState> formKey;
   String? delayedValue;
@@ -115,19 +113,15 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
                 ? MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
-                        child: Icon(obscureTextState
-                            ? Icons.visibility
-                            : Icons.visibility_off),
+                        child: Icon(obscureTextState ? Icons.visibility : Icons.visibility_off),
                         onTapUp: (TapUpDetails tap) => showPass(true),
                         onTapDown: (TapDownDetails tap) => showPass(false)))
                 : null
             : Padding(
-                padding:
-                    const EdgeInsets.only(top: 5), // add padding to adjust icon
+                padding: const EdgeInsets.only(top: 5), // add padding to adjust icon
                 child: HelpIcon(wikipage: widget.wikipage!)),
         enabledBorder: widget.enabledBorder
-            ? OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey[500]!))
+            ? OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[500]!))
             : null // , width: 1.0),
         );
 
@@ -150,8 +144,7 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
                   enabled: widget.enabled,
                   controller: _controller,
                   onTap: () => widget.selected
-                      ? _controller.selection = TextSelection(
-                          baseOffset: 0, extentOffset: _controller.text.length)
+                      ? _controller.selection = TextSelection(baseOffset: 0, extentOffset: _controller.text.length)
                       : null,
                   onChanged: (String value) => onChange(value),
                   style: style,

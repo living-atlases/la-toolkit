@@ -1,28 +1,26 @@
 import 'dart:developer';
 
-
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_extension/yaml_extension.dart';
-import './models/la_service_constants.dart';
-import './models/migration_notes_desc.dart';
-import 'models/dependencies.dart';
+
 import './models/la_server.dart';
+import './models/la_service_constants.dart';
 import './models/la_service_desc.dart';
 import './models/la_service_name.dart';
 import './models/migration_notes.dart';
+import './models/migration_notes_desc.dart';
 import './models/version_utils.dart';
+import 'models/dependencies.dart';
 
 class DependenciesManager {
   static List<String> verify(Map<String, String> combo) {
     final String alaInstallS = combo[alaInstall]!;
     final bool skipAlaInstall = alaInstallIsNotTagged(alaInstallS);
-    return verifyLAReleases(
-        skipAlaInstall ? laToolsNoAlaInstall : laTools, combo);
+    return verifyLAReleases(skipAlaInstall ? laToolsNoAlaInstall : laTools, combo);
   }
 
-  static List<String> check(
-      {String? toolkitV, String? alaInstallV, String? generatorV}) {
+  static List<String> check({String? toolkitV, String? alaInstallV, String? generatorV}) {
     if (toolkitV != null && alaInstallV != null && generatorV != null) {
       return verify(<String, String>{
         toolkit: toolkitV.replaceFirst(RegExp(r'^v'), ''),
@@ -34,8 +32,7 @@ class DependenciesManager {
     }
   }
 
-  static List<String> verifyLAReleases(
-      List<String> serviceInUse, Map<String, String> selectedVersions,
+  static List<String> verifyLAReleases(List<String> serviceInUse, Map<String, String> selectedVersions,
       [bool debug = false]) {
     final Set<String> lintErrors = <String>{};
     try {
@@ -44,30 +41,25 @@ class DependenciesManager {
           log('Checking dependencies for $sw');
         }
         final String swForHumans = LAServiceDesc.swNameWithAliasForHumans(sw);
-        if (version != 'custom' &&
-            version != 'upstream' &&
-            version != 'la-develop' &&
-            version.isNotEmpty) {
+        if (version != 'custom' && version != 'upstream' && version != 'la-develop' && version.isNotEmpty) {
           if (Dependencies.map[sw] != null) {
             final Version versionP = v(version);
-            Dependencies.map[sw]!.forEach((VersionConstraint mainConstraint,
-                Map<String, VersionConstraint> constraints) {
+            Dependencies.map[sw]!
+                .forEach((VersionConstraint mainConstraint, Map<String, VersionConstraint> constraints) {
               if (mainConstraint.allows(versionP)) {
                 // Now we verify the rest of constraints dependencies
                 if (debug) {
                   log('$mainConstraint applies to $sw');
                 }
-                constraints
-                    .forEach((String dependency, VersionConstraint constraint) {
+                constraints.forEach((String dependency, VersionConstraint constraint) {
                   final String? versionOfDep = selectedVersions[dependency];
                   if (debug) {
                     log("testing $swForHumans $versionP with $mainConstraint that depends on $dependency $constraint and uses ${versionOfDep ?? 'none'}");
                   }
                   // Not use internal name for LA services
-                  final String depForHumans =
-                      LAServiceDesc.isLAService(dependency)
-                          ? LAServiceDesc.swNameWithAliasForHumans(dependency)
-                          : dependency;
+                  final String depForHumans = LAServiceDesc.isLAService(dependency)
+                      ? LAServiceDesc.swNameWithAliasForHumans(dependency)
+                      : dependency;
                   if (versionOfDep == null) {
                     if (serviceInUse.contains(dependency)) {
                       lintErrors.add('$swForHumans depends on $depForHumans');
@@ -101,8 +93,7 @@ class DependenciesManager {
     }
   }
 
-  static List<MigrationNotesDesc> getMigrationNotes(
-      List<String> servicesToDeploy, Map<String, String> selectedVersions,
+  static List<MigrationNotesDesc> getMigrationNotes(List<String> servicesToDeploy, Map<String, String> selectedVersions,
       [bool debug = false]) {
     final Set<MigrationNotesDesc> migrationNotesList = <MigrationNotesDesc>{};
     try {
@@ -111,14 +102,10 @@ class DependenciesManager {
           if (debug) {
             log('Checking dependencies for $sw');
           }
-          if (version != 'custom' &&
-              version != 'upstream' &&
-              version != 'la-develop' &&
-              version.isNotEmpty) {
+          if (version != 'custom' && version != 'upstream' && version != 'la-develop' && version.isNotEmpty) {
             if (MigrationNotes.map[sw] != null) {
               final Version versionP = v(version);
-              MigrationNotes.map[sw]!.forEach((VersionConstraint mainConstraint,
-                  MigrationNotesDesc migrationNotes) {
+              MigrationNotes.map[sw]!.forEach((VersionConstraint mainConstraint, MigrationNotesDesc migrationNotes) {
                 if (mainConstraint.allows(versionP)) {
                   // Now we verify the rest of constraints dependencies
                   if (debug) {
@@ -146,8 +133,7 @@ class DependenciesManager {
   static void setDeps(String deps, [bool debug = false]) {
     final YamlMap depsYamlY = loadYaml(deps) as YamlMap;
     final Map<String, dynamic> depsYaml = depsYamlY.toMap();
-    final Map<String, Map<VersionConstraint, Map<String, VersionConstraint>>>
-        map =
+    final Map<String, Map<VersionConstraint, Map<String, VersionConstraint>>> map =
         <String, Map<VersionConstraint, Map<String, VersionConstraint>>>{};
     for (final String module in depsYaml.keys) {
       if (debug) {
@@ -155,15 +141,12 @@ class DependenciesManager {
       }
       final Map<VersionConstraint, Map<String, VersionConstraint>> constraints =
           <VersionConstraint, Map<String, VersionConstraint>>{};
-      for (final String constraintMatch
-          in (depsYaml[module] as Map<String, dynamic>).keys) {
-        final Map<String, VersionConstraint> depsMap =
-            <String, VersionConstraint>{};
+      for (final String constraintMatch in (depsYaml[module] as Map<String, dynamic>).keys) {
+        final Map<String, VersionConstraint> depsMap = <String, VersionConstraint>{};
         if (debug) {
           log('  $constraintMatch');
         }
-        for (final dynamic depDyn in (depsYaml[module]
-            as Map<String, dynamic>)[constraintMatch] as List<dynamic>) {
+        for (final dynamic depDyn in (depsYaml[module] as Map<String, dynamic>)[constraintMatch] as List<dynamic>) {
           // if (debug) log("    - $dep");
           final Map<String, dynamic> dep = depDyn as Map<String, dynamic>;
           for (final String sw in dep.keys) {
@@ -199,8 +182,8 @@ class DependenciesManager {
     }
   }
 
-  static List<String> verifySw(LAServer server, String swToCheck,
-      List<String> serverServices, Map<String, String> selectedVersions,
+  static List<String> verifySw(
+      LAServer server, String swToCheck, List<String> serverServices, Map<String, String> selectedVersions,
       [bool debug = false]) {
     final Set<String> lintErrors = <String>{};
     final Map<String, List<String>> swGroups = <String, List<String>>{};
@@ -212,29 +195,22 @@ class DependenciesManager {
         }
         final String? version = selectedVersions[sw];
         if (version != null) {
-          final Map<VersionConstraint, Map<String, VersionConstraint>>? deps =
-              Dependencies.map[sw];
-          if (version != 'custom' &&
-              version != 'upstream' &&
-              version != 'la-develop' &&
-              version.isNotEmpty) {
+          final Map<VersionConstraint, Map<String, VersionConstraint>>? deps = Dependencies.map[sw];
+          if (version != 'custom' && version != 'upstream' && version != 'la-develop' && version.isNotEmpty) {
             if (deps != null) {
               final Version versionP = v(version);
-              deps.forEach((VersionConstraint mainConstraint,
-                  Map<String, VersionConstraint> constraints) {
+              deps.forEach((VersionConstraint mainConstraint, Map<String, VersionConstraint> constraints) {
                 if (mainConstraint.allows(versionP)) {
                   // Now we verify the rest of constraints dependencies
                   if (debug) {
                     log('$mainConstraint applies to $sw');
                   }
-                  constraints.forEach(
-                      (String dependency, VersionConstraint constraint) {
+                  constraints.forEach((String dependency, VersionConstraint constraint) {
                     if (dependency == swToCheck) {
                       if (swGroups.containsKey(constraint.toString())) {
                         swGroups[constraint.toString()]!.add(sw);
                       } else {
-                        swGroups.putIfAbsent(
-                            constraint.toString(), () => <String>[sw]);
+                        swGroups.putIfAbsent(constraint.toString(), () => <String>[sw]);
                       }
                     }
                   });
@@ -247,8 +223,7 @@ class DependenciesManager {
       if (swGroups.length > 1) {
         // lintErrors.add(
         //   'Warning: Different versions of $swToCheck in server ${server.name}: ${_versionGroupsForHumans(swGroups, swToCheck)}');
-        lintErrors.add(
-            'Warning: In server ${server.name}, ${_versionGroupsForHumans(swGroups, swToCheck)}');
+        lintErrors.add('Warning: In server ${server.name}, ${_versionGroupsForHumans(swGroups, swToCheck)}');
       }
       return lintErrors.toList();
     } catch (e, stacktrace) {
@@ -258,8 +233,7 @@ class DependenciesManager {
     }
   }
 
-  static String _versionGroupsForHumans(
-      Map<String, List<String>> swGroups, String swToCheck) {
+  static String _versionGroupsForHumans(Map<String, List<String>> swGroups, String swToCheck) {
     final List<String> result = <String>[];
     for (final String version in swGroups.keys) {
       if (swGroups[version]!.length > 1) {

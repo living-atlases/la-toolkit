@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
-
 import '../utils/result_types.dart';
 import './branding_deploy_cmd.dart';
-import 'cmd.dart';
 import './deploy_cmd.dart';
 import './is_json_serializable.dart';
 import './pipelines_cmd.dart';
 import './post_deploy_cmd.dart';
 import './pre_deploy_cmd.dart';
+import 'cmd.dart';
 
 part 'cmd_history_entry.g.dart';
 
@@ -72,9 +71,7 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
         invDir = invDir ?? '',
         cwd = cwd ?? '',
         createdAt = createdAt ?? DateTime.now().millisecondsSinceEpoch,
-        date = createdAt != null
-            ? DateTime.fromMillisecondsSinceEpoch(createdAt)
-            : DateTime.now() {
+        date = createdAt != null ? DateTime.fromMillisecondsSinceEpoch(createdAt) : DateTime.now() {
     if (isAnsibleDeploy()) {
       if (cmd.type == CmdType.preDeploy) {
         parsedDeployCmd = PreDeployCmd.fromJson(cmd.properties);
@@ -91,8 +88,7 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
     }
   }
 
-  factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
-      _$CmdHistoryEntryFromJson(json);
+  factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) => _$CmdHistoryEntryFromJson(json);
   String id;
   String? desc;
   String logsPrefix;

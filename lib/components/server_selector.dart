@@ -77,14 +77,10 @@ class _ServerSelectorState extends State<ServerSelector> {
                     // border: Border.all(),
                     ),
                 buttonIcon: Icon(widget.icon, color: Colors.grey),
-                buttonText:
-                    Text(widget.title, style: const TextStyle(fontSize: 16)),
-                title: Text(widget.modalTitle,
-                    style: const TextStyle(fontSize: 16)),
+                buttonText: Text(widget.title, style: const TextStyle(fontSize: 16)),
+                title: Text(widget.modalTitle, style: const TextStyle(fontSize: 16)),
                 initialValue: _selected,
-                items: serverList
-                    .map((String host) => MultiSelectItem<String>(host, host))
-                    .toList(),
+                items: serverList.map((String host) => MultiSelectItem<String>(host, host)).toList(),
                 onConfirm: (List<String> values) {
                   widget.onChange(values);
                   if (mounted) {
@@ -98,8 +94,7 @@ class _ServerSelectorState extends State<ServerSelector> {
                   chipColor: Colors.grey.withValues(alpha: 0.9),
                   textStyle: const TextStyle(color: Colors.white),
 
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(2))),
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(2))),
                   /* onTap: (value) {
                     setState(() {
                       _selected.remove(value);

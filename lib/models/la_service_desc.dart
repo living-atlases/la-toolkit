@@ -1,10 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import './la_service_constants.dart';
-import 'basic_service.dart';
 import './la_service_deps_desc.dart';
 import './la_service_name.dart';
+import 'basic_service.dart';
 
 class LAServiceDesc {
   LAServiceDesc(
@@ -177,8 +178,7 @@ class LAServiceDesc {
         sample: 'https://biocache.ala.org.au/ws',
         artifacts: 'biocache-service',
         allowMultipleDeploys: true,
-        repository:
-            'https://github.com/AtlasOfLivingAustralia/biocache-service',
+        repository: 'https://github.com/AtlasOfLivingAustralia/biocache-service',
         dockerSupport: true,
         path: ''),
     bie: LAServiceDesc(
@@ -242,8 +242,7 @@ class LAServiceDesc {
         sample: 'https://lists.ala.org.au',
         admin: true,
         artifacts: 'specieslist-webapp',
-        repository:
-            'https://github.com/AtlasOfLivingAustralia/specieslist-webapp',
+        repository: 'https://github.com/AtlasOfLivingAustralia/specieslist-webapp',
         dockerSupport: true,
         path: ''),
     regions: LAServiceDesc(
@@ -345,8 +344,7 @@ class LAServiceDesc {
         desc: '',
         parentService: LAServiceName.cas,
         icon: MdiIcons.accountNetwork,
-        repository:
-            'https://github.com/AtlasOfLivingAustralia/ala-cas-5-services',
+        repository: 'https://github.com/AtlasOfLivingAustralia/ala-cas-5-services',
         dockerSupport: true,
         isSubService: true),
     spatial: LAServiceDesc(
@@ -428,8 +426,7 @@ class LAServiceDesc {
         name: 'alerts',
         nameInt: 'alerts',
         group: 'alerts-service',
-        desc:
-            'users can subscribe to notifications about new species occurrences they are interested, regions, etc',
+        desc: 'users can subscribe to notifications about new species occurrences they are interested, regions, etc',
         optional: true,
         alaAdmin: true,
         sample: 'https://alerts.ala.org.au',
@@ -468,8 +465,7 @@ class LAServiceDesc {
         alias: 'biocache-store',
         nameInt: 'biocache_cli',
         group: 'biocache-cli',
-        desc:
-            'manages the loading, sampling, processing and indexing of occurrence records',
+        desc: 'manages the loading, sampling, processing and indexing of occurrence records',
         optional: true,
         withoutUrl: true,
         initUse: true,
@@ -543,8 +539,7 @@ class LAServiceDesc {
         name: pipelines,
         nameInt: pipelines,
         group: 'pipelines',
-        desc:
-            'Pipelines for data processing and indexing of biodiversity data (replacement to biocache-store)',
+        desc: 'Pipelines for data processing and indexing of biodiversity data (replacement to biocache-store)',
         optional: true,
         withoutUrl: true,
         // We use apt for check versions, but we set this to get the version
@@ -689,8 +684,7 @@ class LAServiceDesc {
       dockerSupport: true,
       withoutUrl: true,
       allowMultipleDeploys: true,
-      desc:
-          'docker common services like nginx and postfix used by the rest of the services',
+      desc: 'docker common services like nginx and postfix used by the rest of the services',
       optional: true,
       path: '',
     ),
@@ -745,41 +739,37 @@ class LAServiceDesc {
 
   static final List<LAServiceDesc> _list = _map.values.toList();
 
-  static List<LAServiceDesc> get listDockerCapable => _listDockerCapable ??=
-      _list.where((LAServiceDesc s) => s.dockerSupport == true).toList();
+  static List<LAServiceDesc> get listDockerCapable =>
+      _listDockerCapable ??= _list.where((LAServiceDesc s) => s.dockerSupport == true).toList();
   static List<LAServiceDesc>? _listDockerCapable;
 
-  static List<String> get listDockerCapableS => _listDockerCapableS ??=
-      listDockerCapable.map((LAServiceDesc s) => s.nameInt).toList();
+  static List<String> get listDockerCapableS =>
+      _listDockerCapableS ??= listDockerCapable.map((LAServiceDesc s) => s.nameInt).toList();
   static List<String>? _listDockerCapableS;
 
-  static List<LAServiceDesc> get listWithArtifact => _listWithArtifact ??=
-      _list.where((LAServiceDesc sd) => sd.artifacts != null).toList();
+  static List<LAServiceDesc> get listWithArtifact =>
+      _listWithArtifact ??= _list.where((LAServiceDesc sd) => sd.artifacts != null).toList();
   static List<LAServiceDesc>? _listWithArtifact;
 
-  static List<LAServiceDesc> get listHubCapable => _listHubCapable ??=
-      _list.where((LAServiceDesc s) => s.hubCapable).toList();
+  static List<LAServiceDesc> get listHubCapable =>
+      _listHubCapable ??= _list.where((LAServiceDesc s) => s.hubCapable).toList();
   static List<LAServiceDesc>? _listHubCapable;
 
   static List<LAServiceDesc> list(bool isHub) => isHub ? listHubCapable : _list;
 
-  static List<LAServiceDesc> get listRedundant => _listRedundant ??=
-      _list.where((LAServiceDesc s) => s.allowMultipleDeploys == true).toList();
+  static List<LAServiceDesc> get listRedundant =>
+      _listRedundant ??= _list.where((LAServiceDesc s) => s.allowMultipleDeploys == true).toList();
   static List<LAServiceDesc>? _listRedundant;
 
   static List<LAServiceDesc> listNoSub(bool isHub) {
-    return isHub
-        ? listHubCapable
-        : (_listNoSub ??=
-            _list.where((LAServiceDesc s) => s.isSubService != true).toList());
+    return isHub ? listHubCapable : (_listNoSub ??= _list.where((LAServiceDesc s) => s.isSubService != true).toList());
   }
 
   static List<LAServiceDesc>? _listNoSub;
 
   static List<String> listS(bool isHub) {
     if (isHub) {
-      return _listSHub ??=
-          listHubCapable.map((LAServiceDesc s) => s.nameInt).toList();
+      return _listSHub ??= listHubCapable.map((LAServiceDesc s) => s.nameInt).toList();
     } else {
       return _listS ??= _list.map((LAServiceDesc s) => s.nameInt).toList();
     }
@@ -801,19 +791,16 @@ class LAServiceDesc {
 
   static List<LAServiceDesc> _sortedListFrom(List<LAServiceDesc> list) {
     return List<LAServiceDesc>.from(list)
-      ..sort((LAServiceDesc a, LAServiceDesc b) =>
-          compareAsciiUpperCase(a.name, b.name));
+      ..sort((LAServiceDesc a, LAServiceDesc b) => compareAsciiUpperCase(a.name, b.name));
   }
 
   static List<LAServiceDesc> childServices(String parentNameInt) {
     return _childServices[parentNameInt] ??= _map.values
-        .where((LAServiceDesc s) =>
-            s.parentService != null && s.parentService!.toS() == parentNameInt)
+        .where((LAServiceDesc s) => s.parentService != null && s.parentService!.toS() == parentNameInt)
         .toList();
   }
 
-  static final Map<String, List<LAServiceDesc>> _childServices =
-      <String, List<LAServiceDesc>>{};
+  static final Map<String, List<LAServiceDesc>> _childServices = <String, List<LAServiceDesc>>{};
 
   static final List<String> internalServices = <String>[
     nameindexer,
@@ -846,8 +833,7 @@ class LAServiceDesc {
     bool compatible = true;
     if (otherService == this) return true;
 
-    final Map<String, LAServiceDepsDesc> deps =
-        LAServiceDepsDesc.getDeps(alaInstallVersion);
+    final Map<String, LAServiceDepsDesc> deps = LAServiceDepsDesc.getDeps(alaInstallVersion);
 
     if (name == cas && otherService == LAServiceDesc.get(pipelines) ||
         name == pipelines && otherService == LAServiceDesc.get(cas)) {
@@ -856,8 +842,7 @@ class LAServiceDesc {
     }
 
     for (final BasicService service in deps[nameInt]!.serviceDepends) {
-      for (final BasicService otherService
-          in deps[otherService.nameInt]!.serviceDepends) {
+      for (final BasicService otherService in deps[otherService.nameInt]!.serviceDepends) {
         compatible = compatible && service.isCompatible(otherService);
         /* This fails for http port etc
         for (var port in service.tcp) {

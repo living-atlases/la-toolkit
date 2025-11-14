@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class Indicator extends StatelessWidget {
-
   const Indicator({
     super.key,
     required this.color,
@@ -33,8 +32,7 @@ class Indicator extends StatelessWidget {
         ),
         Text(
           text,
-          style: TextStyle(
-              fontSize: 13, fontWeight: FontWeight.normal, color: textColor),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal, color: textColor),
         )
       ],
     );

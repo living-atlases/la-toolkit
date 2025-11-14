@@ -41,8 +41,7 @@ class _$CmdCWProxyImpl implements _$CmdCWProxy {
   Cmd type(CmdType type) => call(type: type);
 
   @override
-  Cmd properties(Map<String, dynamic> properties) =>
-      call(properties: properties);
+  Cmd properties(Map<String, dynamic> properties) => call(properties: properties);
 
   @override
 
@@ -67,11 +66,10 @@ class _$CmdCWProxyImpl implements _$CmdCWProxy {
           ? _value.type
           // ignore: cast_nullable_to_non_nullable
           : type as CmdType,
-      properties:
-          properties == const $CopyWithPlaceholder() || properties == null
-              ? _value.properties
-              // ignore: cast_nullable_to_non_nullable
-              : properties as Map<String, dynamic>,
+      properties: properties == const $CopyWithPlaceholder() || properties == null
+          ? _value.properties
+          // ignore: cast_nullable_to_non_nullable
+          : properties as Map<String, dynamic>,
     );
   }
 }

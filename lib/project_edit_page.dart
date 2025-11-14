@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -8,7 +7,10 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:redux/redux.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
 
-
+import './models/app_state.dart';
+import './models/la_project_status.dart';
+import './models/la_service_desc.dart';
+import './models/la_variable_desc.dart';
 import 'components/app_snack_bar.dart';
 import 'components/branding_selector.dart';
 import 'components/generic_text_form_field.dart';
@@ -19,10 +21,6 @@ import 'components/scroll_panel.dart';
 import 'components/service_widget.dart';
 import 'la_theme.dart';
 import 'maps/map_area_selector.dart';
-import './models/app_state.dart';
-import './models/la_project_status.dart';
-import './models/la_service_desc.dart';
-import './models/la_variable_desc.dart';
 import 'models/la_project.dart';
 import 'project_tune_page.dart';
 import 'redux/app_actions.dart';
@@ -33,13 +31,11 @@ class LAProjectEditPage extends StatelessWidget {
   LAProjectEditPage({super.key});
 
   static const String routeName = 'project';
-  final int permissiveDirNamesDate =
-      DateTime(2021, 8, 25).microsecondsSinceEpoch;
+  final int permissiveDirNamesDate = DateTime(2021, 8, 25).microsecondsSinceEpoch;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  static List<String> serversNameSplit(String value) =>
-      value.split(RegExp(r'[, ]+'));
+  static List<String> serversNameSplit(String value) => value.split(RegExp(r'[, ]+'));
   static const int totalSteps = 4;
 
   final List<GlobalKey<FormState>> _formKeys = <GlobalKey<FormState>>[
@@ -112,17 +108,11 @@ class LAProjectEditPage extends StatelessWidget {
       log('build project edit page');
       final LAProject project = vm.project;
       // Set default version of the project
-      if (project.alaInstallRelease == null &&
-          vm.state.alaInstallReleases.isNotEmpty) {
-        project.alaInstallRelease = project.isHub
-            ? project.parent!.alaInstallRelease
-            : vm.state.alaInstallReleases[0];
+      if (project.alaInstallRelease == null && vm.state.alaInstallReleases.isNotEmpty) {
+        project.alaInstallRelease = project.isHub ? project.parent!.alaInstallRelease : vm.state.alaInstallReleases[0];
       }
-      if (project.generatorRelease == null &&
-          vm.state.generatorReleases.isNotEmpty) {
-        project.generatorRelease = project.isHub
-            ? project.parent!.generatorRelease
-            : vm.state.generatorReleases[0];
+      if (project.generatorRelease == null && vm.state.generatorReleases.isNotEmpty) {
+        project.generatorRelease = project.isHub ? project.parent!.generatorRelease : vm.state.generatorReleases[0];
       }
       final int step = vm.state.currentStep;
       log('Building project edit currentStep: $step key: $_scaffoldKey');
@@ -137,8 +127,7 @@ class LAProjectEditPage extends StatelessWidget {
 
       steps.add(Step(
           title: const Text('Basic information'),
-          subtitle: Text(
-              'Define the main information of your $portal, like name, ...'),
+          subtitle: Text('Define the main information of your $portal, like name, ...'),
           isActive: _setIsActive(step, _basicStep),
           state: _setSetStatus(step, _basicStep),
           content: Form(
@@ -180,8 +169,7 @@ class LAProjectEditPage extends StatelessWidget {
                 if (project.isHub)
                   GenericTextFormField(
                       // DIR NAME
-                      label:
-                          'Directory Name to store the generated directories and files',
+                      label: 'Directory Name to store the generated directories and files',
                       hint: project.isHub
                           ? "Similar to for e.g.: 'avh', 'nbn_scotland', ..."
                           : "Similar to for e.g.: 'ala', 'gbif_es', 'nbn',...",
@@ -216,10 +204,8 @@ class LAProjectEditPage extends StatelessWidget {
                 if (!project.isHub)
                   GenericTextFormField(
                       // DOMAIN
-                      label:
-                          'The ${project.isHub ? 'sub' : ''}domain of your LA $Portal',
-                      hint:
-                          "Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
+                      label: 'The ${project.isHub ? 'sub' : ''}domain of your LA $Portal',
+                      hint: "Similar to for e.g. 'ala.org.au', 'bioatlas.se', 'gbif.es', ...",
                       prefixText: _protocolToS(project.useSSL),
                       wikipage: 'Glossary#Domain',
                       error: 'Domain invalid',
@@ -250,8 +236,7 @@ class LAProjectEditPage extends StatelessWidget {
             const SizedBox(height: 20),
             const MapAreaSelector(),
             // MAP AREA NAME
-            MessageItem(project, LAVariableDesc.get('map_zone_name'),
-                (Object value) {
+            MessageItem(project, LAVariableDesc.get('map_zone_name'), (Object value) {
               project.setVariable(LAVariableDesc.get('map_zone_name'), value);
               vm.onSaveCurrentProject(project);
             }).buildTitle(context),
@@ -283,14 +268,12 @@ If you are unsure type something like "server1, server2, server3".
                 ),
               ))); */
       final Iterable<LAServiceDesc> availableServices =
-          LAServiceDesc.listNoSub(project.isHub)
-              .where((LAServiceDesc s) => s.isSubService == false);
+          LAServiceDesc.listNoSub(project.isHub).where((LAServiceDesc s) => s.isSubService == false);
       steps.add(Step(
           isActive: _setIsActive(step, _servicesStep),
           state: _setSetStatus(step, _servicesStep),
           title: const Text('Services'),
-          subtitle: Text(
-              'Choose the services of your $Portal and how your services URLs will look like'),
+          subtitle: Text('Choose the services of your $Portal and how your services URLs will look like'),
           // subtitle: const Text("Error!"),
           content: Form(
               key: _formKeys[_servicesStep],
@@ -299,26 +282,22 @@ If you are unsure type something like "server1, server2, server3".
                   _stepIntro(
                       text:
                           'Please select the services of your LA $Portal. Some services are mandatory, and some services are optional and you can use them later.',
-                      helpPage:
-                          'Infrastructure-Requirements#core-components-for-a-living-atlas'),
+                      helpPage: 'Infrastructure-Requirements#core-components-for-a-living-atlas'),
                   ListView.builder(
                       // scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       itemCount: availableServices.length,
                       // itemCount: appStateProv.appState.projects.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          ServiceWidget(
-                              serviceName:
-                                  availableServices.elementAt(index).nameInt,
-                              collectoryFocusNode: _focusNodes[_servicesStep]))
+                      itemBuilder: (BuildContext context, int index) => ServiceWidget(
+                          serviceName: availableServices.elementAt(index).nameInt,
+                          collectoryFocusNode: _focusNodes[_servicesStep]))
                 ],
               ))));
       if (context.mounted) {
         context.loaderOverlay.hide();
       }
       return Title(
-          title:
-              '${project.shortName}: ${vm.state.status.getTitle(project.isHub)}',
+          title: '${project.shortName}: ${vm.state.status.getTitle(project.isHub)}',
           color: LAColorTheme.laPalette,
           child: Scaffold(
             key: _scaffoldKey,
@@ -335,21 +314,18 @@ If you are unsure type something like "server1, server2, server3".
                         lineWidth: 6.0,
                         percent: project.status.percent / 100,
                         center: Text('${project.status.percent}%',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12)),
+                            style: const TextStyle(color: Colors.white, fontSize: 12)),
                         progressColor: Colors.white,
                       )),
                   const SizedBox(width: 20),
                   if (step != 0)
                     TextButton(
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.white),
+                        style: TextButton.styleFrom(foregroundColor: Colors.white),
                         onPressed: () => onStepCancel(vm, project),
                         child: const Text('PREVIOUS')),
                   if (step != steps.length - 1)
                     TextButton(
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.white),
+                        style: TextButton.styleFrom(foregroundColor: Colors.white),
                         onPressed: () => onStepContinue(vm, project),
                         child: const Text('NEXT')),
                   Tooltip(
@@ -365,8 +341,7 @@ If you are unsure type something like "server1, server2, server3".
                       builder: (BuildContext context, VoidCallback? onTap) {
                         return IconButton(
                           icon: const Tooltip(
-                              message: 'Save the current LA project',
-                              child: Icon(Icons.save, color: Colors.white)),
+                              message: 'Save the current LA project', child: Icon(Icons.save, color: Colors.white)),
                           onPressed: onTap,
                         );
                       })
@@ -389,8 +364,7 @@ If you are unsure type something like "server1, server2, server3".
                     onStepCancel(vm, project);
                   },
                   // https://github.com/flutter/flutter/issues/11133
-                  controlsBuilder:
-                      (BuildContext context, ControlsDetails details) {
+                  controlsBuilder: (BuildContext context, ControlsDetails details) {
                     return const Row(
                         /*  children: <Widget>[
                             // empty and custom in the AppBar
@@ -405,8 +379,7 @@ If you are unsure type something like "server1, server2, server3".
                           ], */
                         );
                   }),
-              const LintProjectPanel(
-                  showOthers: false, showToolkitDeps: false, showLADeps: false)
+              const LintProjectPanel(showOthers: false, showToolkitDeps: false, showLADeps: false)
             ]))),
             //     ])
           ));
@@ -494,10 +467,7 @@ class HostHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: <Widget>[
-        Text(title),
-        if (help != null) HelpIcon(wikipage: help!)
-      ],
+      children: <Widget>[Text(title), if (help != null) HelpIcon(wikipage: help!)],
     );
   }
 }

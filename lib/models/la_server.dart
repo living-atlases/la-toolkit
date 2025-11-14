@@ -4,11 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
-
 import '../utils/regexp.dart';
 import './is_json_serializable.dart';
-import 'la_service.dart';
 import './ssh_key.dart';
+import 'la_service.dart';
 
 part 'la_server.g.dart';
 
@@ -31,14 +30,12 @@ class LAServer implements IsJsonSerializable<LAServer> {
       this.osVersion = '',
       required this.projectId})
       : id = id ?? ObjectId().toString(),
-        assert(LARegExp.hostnameRegexp.hasMatch(name),
-            "'$name' is a invalid server name"),
+        assert(LARegExp.hostnameRegexp.hasMatch(name), "'$name' is a invalid server name"),
         aliases = aliases ?? <String>[],
         gateways = gateways ?? <String>[],
         ip = ip ?? '';
 
-  factory LAServer.fromJson(Map<String, dynamic> json) =>
-      _$LAServerFromJson(json);
+  factory LAServer.fromJson(Map<String, dynamic> json) => _$LAServerFromJson(json);
 
   // Basic
   String id;
@@ -108,8 +105,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   bool isReady() {
     return // this.reachable == ServiceStatus.success &&
-        sshReachable == ServiceStatus.success &&
-            sudoEnabled == ServiceStatus.success;
+        sshReachable == ServiceStatus.success && sudoEnabled == ServiceStatus.success;
   }
 
   bool isSshReady() {
@@ -123,18 +119,14 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {
     if (servers.map((LAServer s) => s.id).toList().contains(laServer.id)) {
-      servers = servers
-          .map((LAServer current) =>
-              current.id == laServer.id ? laServer : current)
-          .toList();
+      servers = servers.map((LAServer current) => current.id == laServer.id ? laServer : current).toList();
     } else {
       servers.add(laServer);
     }
     return servers;
   }
 
-  static List<LAServer> upsertByName(
-      List<LAServer> servers, LAServer laServer) {
+  static List<LAServer> upsertByName(List<LAServer> servers, LAServer laServer) {
     if (servers.map((LAServer s) => s.name).toList().contains(laServer.name)) {
       servers = servers.map((LAServer current) {
         if (current.name == laServer.name) {

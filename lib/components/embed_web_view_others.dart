@@ -1,12 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class EmbedWebView extends StatelessWidget {
-  const EmbedWebView(
-      {super.key,
-      required this.src,
-      this.height,
-      this.width,
-      required this.notify});
+  const EmbedWebView({super.key, required this.src, this.height, this.width, required this.notify});
 
   final String src;
   final double? height, width;

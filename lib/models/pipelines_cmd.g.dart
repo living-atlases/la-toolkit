@@ -151,8 +151,7 @@ PipelinesCmd _$PipelinesCmdFromJson(Map<String, dynamic> json) => PipelinesCmd(
       mode: (json['mode'] as num?)?.toInt() ?? 1,
     );
 
-Map<String, dynamic> _$PipelinesCmdToJson(PipelinesCmd instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$PipelinesCmdToJson(PipelinesCmd instance) => <String, dynamic>{
       'drs': instance.drs,
       'steps': instance.steps.toList(),
       'master': instance.master,

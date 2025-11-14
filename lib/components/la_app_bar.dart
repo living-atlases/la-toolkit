@@ -2,7 +2,6 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 import '../la_theme.dart';
 import '../routes.dart';
 import '../utils/utils.dart';
@@ -50,18 +49,14 @@ class LAAppBar extends AppBar {
             toolbarHeight: kToolbarHeight * 1.2,
             actions: actions == null
                 ? List<Widget>.empty(growable: true)
-                : actions +
-                    <Widget>[
-                      Container(margin: const EdgeInsets.only(right: 20.0))
-                    ],
+                : actions + <Widget>[Container(margin: const EdgeInsets.only(right: 20.0))],
             bottom: PreferredSize(
                 preferredSize: const Size(double.infinity, 1.0),
                 child: loading
                     ? LinearProgressIndicator(
                         minHeight: 6,
                         backgroundColor: LAColorTheme.laPalette.shade200,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            LAColorTheme.laPalette.shade900),
+                        valueColor: AlwaysStoppedAnimation<Color>(LAColorTheme.laPalette.shade900),
                       )
                     : Container()),
             title: SizedBox(
@@ -70,8 +65,7 @@ class LAAppBar extends AppBar {
                 if (showBack)
                   IconButton(
                       tooltip: 'Back',
-                      icon: Icon(Icons.arrow_back,
-                          size: 28, color: Colors.grey.shade300),
+                      icon: Icon(Icons.arrow_back, size: 28, color: Colors.grey.shade300),
                       onPressed: () {
                         if (beforeBack != null) {
                           beforeBack();
@@ -92,27 +86,21 @@ class LAAppBar extends AppBar {
                 if (showLaIcon)
                   IconButton(
                       tooltip: 'Homepage',
-                      icon:
-                          const Icon(LAIcon.la, size: 34, color: Colors.white),
+                      icon: const Icon(LAIcon.la, size: 34, color: Colors.white),
                       onPressed: () {
                         BeamerCond.of(context, HomeLocation());
                       }),
                 Container(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(children: <Widget>[
+                      if (projectIcon != null && !AppUtils.isDemo()) const SizedBox(width: 8),
                       if (projectIcon != null && !AppUtils.isDemo())
-                        const SizedBox(width: 8),
-                      if (projectIcon != null && !AppUtils.isDemo())
-                        ImageIcon(NetworkImage(AppUtils.proxyImg(projectIcon)),
-                            color: Colors.white, size: 26),
-                      if (projectIcon != null && !AppUtils.isDemo())
-                        const SizedBox(width: 8),
-                      if (titleIcon != null)
-                        Icon(titleIcon, size: 26, color: Colors.white),
+                        ImageIcon(NetworkImage(AppUtils.proxyImg(projectIcon)), color: Colors.white, size: 26),
+                      if (projectIcon != null && !AppUtils.isDemo()) const SizedBox(width: 8),
+                      if (titleIcon != null) Icon(titleIcon, size: 26, color: Colors.white),
                       if (titleIcon != null) const SizedBox(width: 8),
                       if (tooltip != null)
-                        Tooltip(
-                            message: 'Version: $tooltip', child: _title(title))
+                        Tooltip(message: 'Version: $tooltip', child: _title(title))
                       else
                         _title(title)
                     ]))

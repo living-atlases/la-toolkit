@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import 'string_utils.dart';
 
 /*
@@ -27,15 +26,7 @@ class ResultsColors {
   static final Color rescued = Colors.blueGrey;
 } */
 
-enum ResultType {
-  changed,
-  failures,
-  ignored,
-  ok,
-  rescued,
-  skipped,
-  unreachable
-}
+enum ResultType { changed, failures, ignored, ok, rescued, skipped, unreachable }
 
 extension ParseToString on ResultType {
   String toS() {

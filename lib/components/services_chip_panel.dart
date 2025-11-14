@@ -5,11 +5,7 @@ import '../utils/string_utils.dart';
 
 class ServicesChipPanel extends StatefulWidget {
   const ServicesChipPanel(
-      {super.key,
-      required this.onChange,
-      required this.services,
-      required this.initialValue,
-      required this.isHub});
+      {super.key, required this.onChange, required this.services, required this.initialValue, required this.isHub});
 
   final Function(List<String>) onChange;
   final List<String> services;
@@ -91,16 +87,13 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                         runSpacing: -10,
                         choiceItems: C2Choice.listFrom<String, LAServiceDesc>(
                             source: LAServiceDesc.list(widget.isHub)
-                                .where((LAServiceDesc s) =>
-                                    widget.services.contains(s.nameInt))
+                                .where((LAServiceDesc s) => widget.services.contains(s.nameInt))
                                 .toList(),
                             value: (int i, LAServiceDesc v) => v.nameInt,
                             label: (int i, LAServiceDesc v) => v.name,
-                            tooltip: (int i, LAServiceDesc v) =>
-                                StringUtils.capitalize(v.desc),
+                            tooltip: (int i, LAServiceDesc v) => StringUtils.capitalize(v.desc),
                             disabled: (int i, LAServiceDesc v) => false)
-                          ..add(C2Choice<String>(
-                              value: 'all', label: 'all', style: allStyle)),
+                          ..add(C2Choice<String>(value: 'all', label: 'all', style: allStyle)),
                         choiceBuilder: (C2Choice<String> item, int i) {
                           if (item.value == 'all') {
                             return CustomChip(
@@ -117,8 +110,7 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                         },
                         choiceStyle: C2ChipStyle.outlined(
                           // borderWidth: 1,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(25)),
+                          borderRadius: const BorderRadius.all(Radius.circular(25)),
                           margin: margin,
                           height: 40,
                           padding: padding,
@@ -178,14 +170,10 @@ class CustomChip extends StatelessWidget {
           ),
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        color: selected
-            ? (color ?? Theme.of(context).primaryColor)
-            : Colors.transparent,
+        color: selected ? (color ?? Theme.of(context).primaryColor) : Colors.transparent,
         borderRadius: BorderRadius.all(Radius.circular(selected ? 20 : 20)),
         border: Border.all(
-          color: selected
-              ? (color ?? Theme.of(context).primaryColor)
-              : Colors.grey,
+          color: selected ? (color ?? Theme.of(context).primaryColor) : Colors.grey,
         ),
       ),
       child: InkWell(

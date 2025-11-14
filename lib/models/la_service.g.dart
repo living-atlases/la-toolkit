@@ -62,8 +62,7 @@ class _$LAServiceCWProxyImpl implements _$LAServiceCWProxy {
   LAService use(bool use) => call(use: use);
 
   @override
-  LAService usesSubdomain(bool usesSubdomain) =>
-      call(usesSubdomain: usesSubdomain);
+  LAService usesSubdomain(bool usesSubdomain) => call(usesSubdomain: usesSubdomain);
 
   @override
   LAService status(ServiceStatus? status) => call(status: status);
@@ -110,11 +109,10 @@ class _$LAServiceCWProxyImpl implements _$LAServiceCWProxy {
           ? _value.use
           // ignore: cast_nullable_to_non_nullable
           : use as bool,
-      usesSubdomain:
-          usesSubdomain == const $CopyWithPlaceholder() || usesSubdomain == null
-              ? _value.usesSubdomain
-              // ignore: cast_nullable_to_non_nullable
-              : usesSubdomain as bool,
+      usesSubdomain: usesSubdomain == const $CopyWithPlaceholder() || usesSubdomain == null
+          ? _value.usesSubdomain
+          // ignore: cast_nullable_to_non_nullable
+          : usesSubdomain as bool,
       status: status == const $CopyWithPlaceholder()
           ? _value.status
           // ignore: cast_nullable_to_non_nullable

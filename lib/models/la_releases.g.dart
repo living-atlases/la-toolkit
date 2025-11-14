@@ -100,12 +100,10 @@ LAReleases _$LAReleasesFromJson(Map<String, dynamic> json) => LAReleases(
       name: json['name'] as String,
       artifacts: json['artifacts'] as String,
       latest: json['latest'] as String?,
-      versions:
-          (json['versions'] as List<dynamic>).map((e) => e as String).toList(),
+      versions: (json['versions'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
-Map<String, dynamic> _$LAReleasesToJson(LAReleases instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$LAReleasesToJson(LAReleases instance) => <String, dynamic>{
       'name': instance.name,
       'artifacts': instance.artifacts,
       'latest': instance.latest,

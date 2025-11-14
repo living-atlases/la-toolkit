@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-
 import '../la_theme.dart';
 import 'help_icon.dart';
 import 'text_with_help.dart';
@@ -18,11 +17,7 @@ class Branding {
 }
 
 class BrandingTile extends StatefulWidget {
-  const BrandingTile(
-      {super.key,
-      required this.initialValue,
-      required this.portalName,
-      required this.onChange});
+  const BrandingTile({super.key, required this.initialValue, required this.portalName, required this.onChange});
 
   final String initialValue;
   final Function(String) onChange;
@@ -61,11 +56,9 @@ class _BrandingTileState extends State<BrandingTile> {
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
-        image: const Icon(
-            Icons.format_paint /* , size: 60, color: LAColorTheme.laPalette*/),
+        image: const Icon(Icons.format_paint /* , size: 60, color: LAColorTheme.laPalette*/),
         title: 'Select your branding theme',
-        style: const AlertStyle(
-            constraints: BoxConstraints.expand(height: 700, width: 600)),
+        style: const AlertStyle(constraints: BoxConstraints.expand(height: 700, width: 600)),
         content: Column(
           children: <Widget>[
             const TextWithHelp(
@@ -102,8 +95,7 @@ class _BrandingTileState extends State<BrandingTile> {
 }
 
 class BrandingSelector extends StatefulWidget {
-  const BrandingSelector(
-      {super.key, required this.initialValue, required this.onChange});
+  const BrandingSelector({super.key, required this.initialValue, required this.onChange});
 
   final String initialValue;
   final Function(String) onChange;
@@ -128,19 +120,16 @@ class _BrandingSelectorState extends State<BrandingSelector> {
     Branding(name: 'custom', desc: "None of them. We'll use a self made theme"),
   ];
 
-  final List<MultiSelectItem<Branding>> _items = _brandings
-      .map((Branding theme) => MultiSelectItem<Branding>(theme, theme.name))
-      .toList();
+  final List<MultiSelectItem<Branding>> _items =
+      _brandings.map((Branding theme) => MultiSelectItem<Branding>(theme, theme.name)).toList();
 
   List<Branding> _selected = <Branding>[];
 
-  final GlobalKey<FormFieldState<dynamic>> _multiSelectKey =
-      GlobalKey<FormFieldState<dynamic>>();
+  final GlobalKey<FormFieldState<dynamic>> _multiSelectKey = GlobalKey<FormFieldState<dynamic>>();
 
   @override
   void initState() {
-    final Branding currentBranding =
-        _brandings.firstWhere((Branding b) => b.name == widget.initialValue);
+    final Branding currentBranding = _brandings.firstWhere((Branding b) => b.name == widget.initialValue);
     _selected = <Branding>[currentBranding];
 
     super.initState();
@@ -179,8 +168,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
             key: _multiSelectKey,
             height: 330,
             headerColor: Colors.white,
-            itemBuilder: (MultiSelectItem<Branding?> item,
-                FormFieldState<List<Branding?>> state) {
+            itemBuilder: (MultiSelectItem<Branding?> item, FormFieldState<List<Branding?>> state) {
               // return your custom widget here
               final Branding value = item.value ?? _brandings[0];
               return /* Tooltip(
@@ -193,36 +181,27 @@ class _BrandingSelectorState extends State<BrandingSelector> {
                         child: Container(
                             height: 80,
                             width: 200,
-                            color: _selected.contains(value)
-                                ? LAColorTheme.laPalette
-                                : Colors.black54,
+                            color: _selected.contains(value) ? LAColorTheme.laPalette : Colors.black54,
                             margin: const EdgeInsets.fromLTRB(5, 0, 5, 10),
-                            child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  const SizedBox(height: 10),
-                                  if (value.name != 'custom')
-                                    Image.asset(
-                                        'assets/images/themes/${value.name}.png',
-                                        width: 210)
-                                  else
-                                    Container(),
-                                  const SizedBox(height: 5),
-                                  Column(
-                                      // mainAxisSize: MainAxisSize.max,
-                                      /*  crossAxisAlignment: CrossAxisAlignment.center,
+                            child: Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
+                              const SizedBox(height: 10),
+                              if (value.name != 'custom')
+                                Image.asset('assets/images/themes/${value.name}.png', width: 210)
+                              else
+                                Container(),
+                              const SizedBox(height: 5),
+                              Column(
+                                  // mainAxisSize: MainAxisSize.max,
+                                  /*  crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween, */
-                                      children: <Widget>[
-                                        Text(value.name,
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.normal)),
-                                        const SizedBox(height: 5),
-                                      ])
-                                ])),
+                                  children: <Widget>[
+                                    Text(value.name,
+                                        style: const TextStyle(
+                                            color: Colors.white, fontSize: 14, fontWeight: FontWeight.normal)),
+                                    const SizedBox(height: 5),
+                                  ])
+                            ])),
                         onTap: () {
                           setState(() {
                             _selected = <Branding>[value];

@@ -7,7 +7,6 @@ import 'package:redux/redux.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:simple_moment/simple_moment.dart';
 
-
 import '../components/loading_text_overlay.dart';
 import '../components/term_dialog.dart';
 import '../la_theme.dart';
@@ -37,8 +36,7 @@ class AppUtils {
 
   static Uri uri(String a, String p, [Map<String, String>? query]) =>
       https ? Uri.https(a, p, query) : Uri.http(a, p, query);
-  static String scheme =
-      (dotenv.env['HTTPS'] ?? 'false').parseBool() ? 'https' : 'http';
+  static String scheme = (dotenv.env['HTTPS'] ?? 'false').parseBool() ? 'https' : 'http';
 
   static String proxyImg(String imgUrl) {
     return "$scheme://${dotenv.env['BACKEND']}/api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
@@ -61,16 +59,11 @@ class UiUtils {
     fontSize: 24,
     fontWeight: FontWeight.bold,
   );
-  static const TextStyle subtitleStyle =
-      TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
-  static const TextStyle dateStyle = TextStyle(
-      color: LAColorTheme.inactive,
-      fontWeight: FontWeight.w400,
-      fontSize: 18,
-      fontStyle: FontStyle.italic);
+  static const TextStyle subtitleStyle = TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
+  static const TextStyle dateStyle =
+      TextStyle(color: LAColorTheme.inactive, fontWeight: FontWeight.w400, fontSize: 18, fontStyle: FontStyle.italic);
 
-  static void showAlertDialog(
-      BuildContext context, VoidCallback onConfirm, VoidCallback onCancel,
+  static void showAlertDialog(BuildContext context, VoidCallback onConfirm, VoidCallback onCancel,
       {String title = 'Please Confirm',
       String subtitle = 'Are you sure?',
       String confirmBtn = 'CONFIRM',
@@ -128,11 +121,9 @@ class UiUtils {
       Alert(
           context: context,
           closeIcon: const Icon(Icons.close),
-          image: const Icon(Icons.error_outline,
-              size: 60, color: LAColorTheme.inactive),
+          image: const Icon(Icons.error_outline, size: 60, color: LAColorTheme.inactive),
           title: 'ERROR',
-          style: const AlertStyle(
-              constraints: BoxConstraints.expand(height: 600, width: 600)),
+          style: const AlertStyle(constraints: BoxConstraints.expand(height: 600, width: 600)),
           content: Column(children: <Widget>[
             Text(
               'We had some problem ($error)',
@@ -160,8 +151,7 @@ class UiUtils {
     }
   }
 
-  static bool isSmallScreen(BuildContext context) =>
-      MediaQuery.of(context).size.width < 750;
+  static bool isSmallScreen(BuildContext context) => MediaQuery.of(context).size.width < 750;
 }
 
 class DeployUtils {
@@ -170,8 +160,7 @@ class DeployUtils {
       required Store<AppState> store,
       required LAProject project,
       required CommonCmd commonCmd}) {
-    context.loaderOverlay
-        .show(widgetBuilder: (dynamic progress) => const LoadingTextOverlay());
+    context.loaderOverlay.show(widgetBuilder: (dynamic progress) => const LoadingTextOverlay());
     store.dispatch(PrepareDeployProject(
         project: project,
         onReady: () {
@@ -227,15 +216,10 @@ class DeployUtils {
           }
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
-          TermDialog.show(context,
-              port: port,
-              pid: ttydPid,
-              notify: true,
-              title: 'Ansible console', onClose: () async {
+          TermDialog.show(context, port: port, pid: ttydPid, notify: true, title: 'Ansible console', onClose: () async {
             if (!deployCmd.dryRun) {
               // Show the results
-              store
-                  .dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
+              store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
             }
             //  if (context.mounted) {
             // context.loaderOverlay.hide();
@@ -253,8 +237,7 @@ class DeployUtils {
                   // Some code to undo the change.
                 },
               ),
-              content: Text(
-                  'Oooopss, some problem have arisen trying to start the deploy: $error')));
+              content: Text('Oooopss, some problem have arisen trying to start the deploy: $error')));
         }));
   }
 
@@ -293,8 +276,7 @@ class DeployUtils {
                   // Some code to undo the change.
                 },
               ),
-              content: Text(
-                  'Oooopss, some problem have arisen trying to deploy the branding: $error')));
+              content: Text('Oooopss, some problem have arisen trying to deploy the branding: $error')));
         }));
   }
 
@@ -333,13 +315,11 @@ class DeployUtils {
                   // Some code to undo the change.
                 },
               ),
-              content: Text(
-                  'Oooopss, some problem have arisen trying to run pipelines: $error')));
+              content: Text('Oooopss, some problem have arisen trying to run pipelines: $error')));
         }));
   }
 
-  static AppActions getCmdResults(
-      BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
+  static AppActions getCmdResults(BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
     context.loaderOverlay.show();
     return GetCmdResults(
         cmdHistoryEntry: cmdHistory,
@@ -355,8 +335,7 @@ class DeployUtils {
             context.loaderOverlay.hide();
           }
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:
-                const Text('There was some problem retrieving the results'),
+            content: const Text('There was some problem retrieving the results'),
             duration: const Duration(days: 365),
             action: SnackBarAction(
               label: 'OK',

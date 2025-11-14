@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-
 import '../utils/result_types.dart';
 import 'indicator.dart';
 
@@ -28,9 +27,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
               aspectRatio: 1,
               child: PieChart(
                 PieChartData(
-                    pieTouchData: PieTouchData(touchCallback:
-                        (FlTouchEvent event,
-                            PieTouchResponse? pieTouchResponse) {
+                    pieTouchData: PieTouchData(touchCallback: (FlTouchEvent event, PieTouchResponse? pieTouchResponse) {
                       setState(() {
                         if (!event.isInterestedForInteractions ||
                             pieTouchResponse == null ||
@@ -38,8 +35,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
                           touchedIndex = -1;
                           return;
                         }
-                        touchedIndex = pieTouchResponse
-                            .touchedSection!.touchedSectionIndex;
+                        touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
                       });
                     }),
                     borderData: FlBorderData(
@@ -74,8 +70,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
   List<PieChartSectionData> showingSections() {
     int i = 0;
     return ResultType.values
-        .where((ResultType t) =>
-            widget.results[t.toS()] != null && widget.results[t.toS()] != 0)
+        .where((ResultType t) => widget.results[t.toS()] != null && widget.results[t.toS()] != 0)
         .map((ResultType type) {
       final bool isTouched = i == touchedIndex;
       i += 1;
@@ -86,10 +81,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
           value: 0.0 + (widget.results[type.toS()] ?? 0.0),
           title: type.title(),
           radius: radius,
-          titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.normal,
-              color: type.textColor));
+          titleStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.normal, color: type.textColor));
     }).toList();
   }
 
@@ -105,10 +97,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
             value: 4,
             title: '40%',
             radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
+            titleStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold, color: const Color(0xffffffff)),
           );
         case 1:
           return PieChartSectionData(
@@ -116,10 +105,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
             value: 3,
             title: '30%',
             radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
+            titleStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold, color: const Color(0xffffffff)),
           );
         case 2:
           return PieChartSectionData(
@@ -127,10 +113,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
             value: 15,
             title: '15%',
             radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
+            titleStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold, color: const Color(0xffffffff)),
           );
         case 3:
         default:
@@ -139,10 +122,7 @@ class ResultsPieChartState extends State<ResultsPieChart> {
             value: 1,
             title: '15%',
             radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
+            titleStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold, color: const Color(0xffffffff)),
           );
       }
     });

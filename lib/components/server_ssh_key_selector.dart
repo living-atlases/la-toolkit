@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-
 import '../la_theme.dart';
 import '../models/la_server.dart';
 import '../models/ssh_key.dart';
 import '../utils/utils.dart';
 
 class ServerSshKeySelector extends StatefulWidget {
-
   const ServerSshKeySelector(
       {super.key,
       required this.server,
@@ -46,8 +44,7 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
       disabledHint: const Text('No ssh keys available'),
       hint: Row(
         children: <Widget>[
-          if (_sshKey != null)
-            Icon(MdiIcons.key, color: LAColorTheme.laPalette),
+          if (_sshKey != null) Icon(MdiIcons.key, color: LAColorTheme.laPalette),
           if (_sshKey != null) const SizedBox(width: 5),
           Text(_sshKey != null ? _sshKey!.name : 'No SSH key selected'),
         ],
@@ -89,8 +86,7 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
               widget.server.sshKey = value;
             },
                 title: 'Use this ssh key always',
-                subtitle:
-                    'Do you want to use this ssh key in all your servers?',
+                subtitle: 'Do you want to use this ssh key in all your servers?',
                 confirmBtn: 'YES',
                 cancelBtn: 'NO');
           } else {

@@ -11,7 +11,6 @@ part 'la_service_deploy.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
-
   LAServiceDeploy(
       {String? id,
       required this.serviceId,
@@ -28,8 +27,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
         type = type ?? DeploymentType.vm,
         status = status ?? ServiceStatus.unknown;
 
-  factory LAServiceDeploy.fromJson(Map<String, dynamic> json) =>
-      _$LAServiceDeployFromJson(json);
+  factory LAServiceDeploy.fromJson(Map<String, dynamic> json) => _$LAServiceDeployFromJson(json);
   String id;
   String serviceId;
   String? serverId;
@@ -45,8 +43,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
   Map<String, dynamic> toJson() => _$LAServiceDeployToJson(this);
 
   @override
-  LAServiceDeploy fromJson(Map<String, dynamic> json) =>
-      LAServiceDeploy.fromJson(json);
+  LAServiceDeploy fromJson(Map<String, dynamic> json) => LAServiceDeploy.fromJson(json);
 
   @override
   bool operator ==(Object other) =>
@@ -61,8 +58,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
           type == other.type &&
           additionalVariables == other.additionalVariables &&
           checkedAt == other.checkedAt &&
-          const DeepCollectionEquality.unordered()
-              .equals(softwareVersions, other.softwareVersions) &&
+          const DeepCollectionEquality.unordered().equals(softwareVersions, other.softwareVersions) &&
           status == other.status;
 
   @override

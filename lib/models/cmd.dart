@@ -2,39 +2,26 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
-
 import '../utils/string_utils.dart';
 
 part 'cmd.g.dart';
 
 // Base cmd
 
-enum CmdType {
-  brandingDeploy,
-  deploy,
-  preDeploy,
-  postDeploy,
-  laPipelines,
-  bash
-}
+enum CmdType { brandingDeploy, deploy, preDeploy, postDeploy, laPipelines, bash }
 
 extension ParseToString on CmdType {
   String toS() {
     return toString().split('.').last;
   }
 
-  bool get isAnsibleDeploy =>
-      this == CmdType.deploy ||
-      this == CmdType.preDeploy ||
-      this == CmdType.postDeploy;
+  bool get isAnsibleDeploy => this == CmdType.deploy || this == CmdType.preDeploy || this == CmdType.postDeploy;
 }
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class Cmd {
-
-  Cmd({String? id, required this.type, required this.properties})
-      : id = id ?? ObjectId().toString();
+  Cmd({String? id, required this.type, required this.properties}) : id = id ?? ObjectId().toString();
 
   factory Cmd.fromJson(Map<String, dynamic> json) => _$CmdFromJson(json);
   final String id;

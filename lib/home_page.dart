@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -9,14 +8,13 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:redux/redux.dart';
 
-
+import './models/app_state.dart';
 import 'components/app_snack_bar.dart';
 import 'components/la_app_bar.dart';
 import 'components/main_drawer.dart';
 import 'intro.dart';
 import 'la_theme.dart';
 import 'main.dart';
-import './models/app_state.dart';
 import 'projects_list_page.dart';
 import 'redux/app_actions.dart';
 import 'routes.dart';
@@ -79,8 +77,7 @@ class _HomePageState extends State<HomePage> {
                 store.dispatch(CreateProject());
                 BeamerCond.of(context, LAProjectEditLocation());
               },
-              onAppPackageInfo: (PackageInfo pkgInfo) =>
-                  store.dispatch(OnAppPackageInfo(pkgInfo)),
+              onAppPackageInfo: (PackageInfo pkgInfo) => store.dispatch(OnAppPackageInfo(pkgInfo)),
               projectsReload: () => store.dispatch(ProjectsLoad()),
               onAddTemplates: () {
                 context.loaderOverlay.show();
@@ -95,8 +92,7 @@ class _HomePageState extends State<HomePage> {
               });
         },
         builder: (BuildContext context, _HomePageViewModel vm) {
-          if (_packageInfo != vm.state.pkgInfo &&
-              _packageInfo.version != unknown) {
+          if (_packageInfo != vm.state.pkgInfo && _packageInfo.version != unknown) {
             log('------------------------------------------------------------${_packageInfo.version} ------------------------------');
             vm.onAppPackageInfo(_packageInfo);
           }
@@ -112,9 +108,7 @@ class _HomePageState extends State<HomePage> {
               ? Scaffold(
                   key: _scaffoldKey,
                   drawer: MainDrawer(
-                      currentRoute: HomePage.routeName,
-                      appName: LaToolkitApp.appName,
-                      packageInfo: _packageInfo),
+                      currentRoute: HomePage.routeName, appName: LaToolkitApp.appName, packageInfo: _packageInfo),
                   // Maybe:
                   // https://api.flutter.dev/flutter/material/SliverAppBar-class.html
                   // App bar with floating: true, pinned: true, snap: false:
@@ -128,9 +122,7 @@ class _HomePageState extends State<HomePage> {
                         if (AppUtils.isDev())
                           IconButton(
                             icon: const Tooltip(
-                                message: 'Refresh projects',
-                                child:
-                                    Icon(Icons.refresh, color: Colors.white)),
+                                message: 'Refresh projects', child: Icon(Icons.refresh, color: Colors.white)),
                             onPressed: () {
                               vm.projectsReload();
                             },
@@ -231,10 +223,8 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 20),
             Text('You will have later to:'),
             SizedBox(height: 10),
-            Text(
-                '  - tune your imported project with your local ansible variables,'),
-            Text(
-                '  - substitute the generated local-passwords.ini file with yours.'),
+            Text('  - tune your imported project with your local ansible variables,'),
+            Text('  - substitute the generated local-passwords.ini file with yours.'),
           ],
         ),
       ),
@@ -290,8 +280,7 @@ class _HomePageState extends State<HomePage> {
     }
     if (withError) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-            'Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),
+        content: Text('Something goes wrong during the import. Be sure you are importing a ".yo-rc.json" file'),
       ));
     }
   }

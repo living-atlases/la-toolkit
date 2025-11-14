@@ -43,8 +43,7 @@ abstract class _$AppStateCWProxy {
 
   AppState sshKeys(List<SshKey>? sshKeys);
 
-  AppState serviceCheckProgress(
-      Map<String, Map<String, dynamic>>? serviceCheckProgress);
+  AppState serviceCheckProgress(Map<String, Map<String, dynamic>>? serviceCheckProgress);
 
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `AppState(...).copyWith.fieldName(value)`.
@@ -93,34 +92,29 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
   AppState firstUsage(bool firstUsage) => call(firstUsage: firstUsage);
 
   @override
-  AppState currentProject(LAProject? currentProject) =>
-      call(currentProject: currentProject);
+  AppState currentProject(LAProject? currentProject) => call(currentProject: currentProject);
 
   @override
   AppState currentStep(int currentStep) => call(currentStep: currentStep);
 
   @override
-  AppState currentTuneTab(int currentTuneTab) =>
-      call(currentTuneTab: currentTuneTab);
+  AppState currentTuneTab(int currentTuneTab) => call(currentTuneTab: currentTuneTab);
 
   @override
   AppState status(LAProjectViewStatus? status) => call(status: status);
 
   @override
-  AppState alaInstallReleases(List<String>? alaInstallReleases) =>
-      call(alaInstallReleases: alaInstallReleases);
+  AppState alaInstallReleases(List<String>? alaInstallReleases) => call(alaInstallReleases: alaInstallReleases);
 
   @override
-  AppState generatorReleases(List<String>? generatorReleases) =>
-      call(generatorReleases: generatorReleases);
+  AppState generatorReleases(List<String>? generatorReleases) => call(generatorReleases: generatorReleases);
 
   @override
   AppState appSnackBarMessages(List<AppSnackBarMessage>? appSnackBarMessages) =>
       call(appSnackBarMessages: appSnackBarMessages);
 
   @override
-  AppState laReleases(Map<String, LAReleases>? laReleases) =>
-      call(laReleases: laReleases);
+  AppState laReleases(Map<String, LAReleases>? laReleases) => call(laReleases: laReleases);
 
   @override
   AppState repeatCmd(CommonCmd? repeatCmd) => call(repeatCmd: repeatCmd);
@@ -129,8 +123,7 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
   AppState pkgInfo(PackageInfo? pkgInfo) => call(pkgInfo: pkgInfo);
 
   @override
-  AppState backendVersion(String? backendVersion) =>
-      call(backendVersion: backendVersion);
+  AppState backendVersion(String? backendVersion) => call(backendVersion: backendVersion);
 
   @override
   AppState lastSwCheck(DateTime? lastSwCheck) => call(lastSwCheck: lastSwCheck);
@@ -145,8 +138,7 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
   AppState sshKeys(List<SshKey>? sshKeys) => call(sshKeys: sshKeys);
 
   @override
-  AppState serviceCheckProgress(
-          Map<String, Map<String, dynamic>>? serviceCheckProgress) =>
+  AppState serviceCheckProgress(Map<String, Map<String, dynamic>>? serviceCheckProgress) =>
       call(serviceCheckProgress: serviceCheckProgress);
 
   @override
@@ -184,27 +176,23 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
           ? _value.projects
           // ignore: cast_nullable_to_non_nullable
           : projects as List<LAProject>?,
-      failedLoad:
-          failedLoad == const $CopyWithPlaceholder() || failedLoad == null
-              ? _value.failedLoad
-              // ignore: cast_nullable_to_non_nullable
-              : failedLoad as bool,
-      firstUsage:
-          firstUsage == const $CopyWithPlaceholder() || firstUsage == null
-              ? _value.firstUsage
-              // ignore: cast_nullable_to_non_nullable
-              : firstUsage as bool,
+      failedLoad: failedLoad == const $CopyWithPlaceholder() || failedLoad == null
+          ? _value.failedLoad
+          // ignore: cast_nullable_to_non_nullable
+          : failedLoad as bool,
+      firstUsage: firstUsage == const $CopyWithPlaceholder() || firstUsage == null
+          ? _value.firstUsage
+          // ignore: cast_nullable_to_non_nullable
+          : firstUsage as bool,
       currentProject: currentProject == const $CopyWithPlaceholder()
           ? _value.currentProject
           // ignore: cast_nullable_to_non_nullable
           : currentProject as LAProject?,
-      currentStep:
-          currentStep == const $CopyWithPlaceholder() || currentStep == null
-              ? _value.currentStep
-              // ignore: cast_nullable_to_non_nullable
-              : currentStep as int,
-      currentTuneTab: currentTuneTab == const $CopyWithPlaceholder() ||
-              currentTuneTab == null
+      currentStep: currentStep == const $CopyWithPlaceholder() || currentStep == null
+          ? _value.currentStep
+          // ignore: cast_nullable_to_non_nullable
+          : currentStep as int,
+      currentTuneTab: currentTuneTab == const $CopyWithPlaceholder() || currentTuneTab == null
           ? _value.currentTuneTab
           // ignore: cast_nullable_to_non_nullable
           : currentTuneTab as int,
@@ -276,31 +264,21 @@ extension $AppStateCopyWith on AppState {
 // **************************************************************************
 
 AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
-      projects: (json['projects'] as List<dynamic>?)
-          ?.map((e) => LAProject.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      projects:
+          (json['projects'] as List<dynamic>?)?.map((e) => LAProject.fromJson(e as Map<String, dynamic>)).toList(),
       firstUsage: json['firstUsage'] as bool? ?? true,
-      currentProject: json['currentProject'] == null
-          ? null
-          : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
+      currentProject:
+          json['currentProject'] == null ? null : LAProject.fromJson(json['currentProject'] as Map<String, dynamic>),
       currentStep: (json['currentStep'] as num?)?.toInt() ?? 0,
       currentTuneTab: (json['currentTuneTab'] as num?)?.toInt() ?? 0,
       status: $enumDecodeNullable(_$LAProjectViewStatusEnumMap, json['status']),
-      alaInstallReleases: (json['alaInstallReleases'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      generatorReleases: (json['generatorReleases'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+      alaInstallReleases: (json['alaInstallReleases'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      generatorReleases: (json['generatorReleases'] as List<dynamic>?)?.map((e) => e as String).toList(),
       laReleases: (json['laReleases'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, LAReleases.fromJson(e as Map<String, dynamic>)),
       ),
-      lastSwCheck: json['lastSwCheck'] == null
-          ? null
-          : DateTime.parse(json['lastSwCheck'] as String),
-      sshKeys: (json['sshKeys'] as List<dynamic>?)
-          ?.map((e) => SshKey.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      lastSwCheck: json['lastSwCheck'] == null ? null : DateTime.parse(json['lastSwCheck'] as String),
+      sshKeys: (json['sshKeys'] as List<dynamic>?)?.map((e) => SshKey.fromJson(e as Map<String, dynamic>)).toList(),
     );
 
 Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
