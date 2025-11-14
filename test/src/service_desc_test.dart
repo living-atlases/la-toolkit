@@ -1,7 +1,7 @@
-import 'package:la_toolkit/models/LAServiceConstants.dart';
-import 'package:la_toolkit/models/laServiceDepsDesc.dart';
-import 'package:la_toolkit/models/laServiceDesc.dart';
-import 'package:la_toolkit/models/laServiceName.dart';
+import 'package:la_toolkit/models/la_service_constants.dart';
+import 'package:la_toolkit/models/la_service_deps_desc.dart';
+import 'package:la_toolkit/models/la_service_desc.dart';
+import 'package:la_toolkit/models/la_service_name.dart';
 import 'package:test/test.dart';
 
 void main() {

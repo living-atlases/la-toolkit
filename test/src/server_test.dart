@@ -1,4 +1,4 @@
-import 'package:la_toolkit/models/laServer.dart';
+import 'package:la_toolkit/models/la_server.dart';
 import 'package:test/test.dart';
 
 void main() {
