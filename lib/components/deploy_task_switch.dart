@@ -21,7 +21,8 @@ class DeployTaskSwitch extends StatelessWidget {
     return SwitchListTile(
         // contentPadding: EdgeInsets.zero,
         value: initialValue,
-        title: Text(title, style: TextStyle(color: Theme.of(context).hintColor)),
+        title:
+            Text(title, style: TextStyle(color: Theme.of(context).hintColor)),
         secondary: help != null ? HelpIcon(wikipage: help!) : null,
         onChanged: (bool newValue) {
           onChanged(newValue);

@@ -3,7 +3,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class HelpIcon extends StatelessWidget {
   HelpIcon({super.key, required String wikipage, String? tooltip})
-      : url = "https://github.com/AtlasOfLivingAustralia/documentation/wiki/${wikipage.replaceAll(' ', '-')}",
+      : url =
+            "https://github.com/AtlasOfLivingAustralia/documentation/wiki/${wikipage.replaceAll(' ', '-')}",
         tooltip = tooltip == null ? 'Read more in our Wiki' : null;
 
   HelpIcon.from(String wikipageOrUrl, [Key? key, String? tooltip])

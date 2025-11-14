@@ -53,7 +53,10 @@ class _CountDownWidgetState extends State<CountDownWidget> {
               // Begin and end contours with a flat edge and no extension.
               strokeCap: StrokeCap.round,
               // Text Style for Countdown Text.
-              textStyle: TextStyle(fontSize: 14.0, color: LAColorTheme.laPalette, fontWeight: FontWeight.bold),
+              textStyle: TextStyle(
+                  fontSize: 14.0,
+                  color: LAColorTheme.laPalette,
+                  fontWeight: FontWeight.bold),
               // Format for the Countdown Text.
               textFormat: CountdownTextFormat.MM_SS,
               // Handles Countdown Timer (true for Reverse Countdown (max to 0), false for Forward Countdown (0 to max)).
@@ -87,7 +90,10 @@ class _CountDownWidgetState extends State<CountDownWidget> {
             const SizedBox(
               width: 10,
             ),
-            _button(title: 'Pause', icon: Icons.pause, onPressed: () => _controller.pause()),
+            _button(
+                title: 'Pause',
+                icon: Icons.pause,
+                onPressed: () => _controller.pause()),
             /* SizedBox(
             width: 10,
           ),
@@ -108,7 +114,10 @@ class _CountDownWidgetState extends State<CountDownWidget> {
     ]);
   }
 
-  Widget _button({required String title, required IconData icon, VoidCallback? onPressed}) {
+  Widget _button(
+      {required String title,
+      required IconData icon,
+      VoidCallback? onPressed}) {
     return IconButton(
       icon: Icon(icon),
       tooltip: title,

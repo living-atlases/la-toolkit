@@ -11,7 +11,8 @@ import 'server_status_card.dart';
 import 'term_dialog.dart';
 
 class ServersStatusPanel extends StatefulWidget {
-  const ServersStatusPanel({super.key, required this.extendedStatus, required this.results});
+  const ServersStatusPanel(
+      {super.key, required this.extendedStatus, required this.results});
 
   final bool extendedStatus;
   final Map<String, dynamic> results;
@@ -31,7 +32,8 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
             openTerm: (LAProject project, LAServer server) =>
                 TermDialog.openTerm(context, false, project.id, server.name),
             refreshServer: (LAProject project, String serverId) {
-              store.dispatch(TestServicesSingleServer(project, serverId, () {}, () {}));
+              store.dispatch(
+                  TestServicesSingleServer(project, serverId, () {}, () {}));
             },
           );
         },
@@ -50,7 +52,8 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
 
                 return ServerStatusCard(
                   server: server,
-                  services: vm.project.getServerServicesFull(id: server.id, type: DeploymentType.vm),
+                  services: vm.project.getServerServicesFull(
+                      id: server.id, type: DeploymentType.vm),
                   alaInstallVersion: vm.project.alaInstallRelease!,
                   extendedStatus: widget.extendedStatus,
                   status: results.isNotEmpty && results[server.id] != null
@@ -68,7 +71,10 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
 }
 
 class _ServersStatusPanelViewModel {
-  _ServersStatusPanelViewModel({required this.project, required this.openTerm, required this.refreshServer});
+  _ServersStatusPanelViewModel(
+      {required this.project,
+      required this.openTerm,
+      required this.refreshServer});
 
   final LAProject project;
   final void Function(LAProject, LAServer) openTerm;

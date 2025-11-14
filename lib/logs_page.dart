@@ -35,7 +35,8 @@ class LogsHistoryPage extends StatelessWidget {
         return _ViewModel(
             project: store.state.currentProject,
             logsNum: store.state.currentProject.cmdHistoryEntries.length,
-            onDeleteCmd: (CmdHistoryEntry log) => store.dispatch(DeleteLog(log)),
+            onDeleteCmd: (CmdHistoryEntry log) =>
+                store.dispatch(DeleteLog(log)),
             onRepeatCmd: (LAProject project, CmdHistoryEntry cmdHistory) {
               store.dispatch(DeployUtils.doDeploy(
                   context: context,
@@ -48,10 +49,12 @@ class LogsHistoryPage extends StatelessWidget {
                           : cmdHistory.parsedBrandingDeployCmd!));
             },
             onOpenDeployResults: (CmdHistoryEntry cmdHistory) {
-              store.dispatch(DeployUtils.getCmdResults(context, cmdHistory, false));
+              store.dispatch(
+                  DeployUtils.getCmdResults(context, cmdHistory, false));
             },
             onUpdateDesc: (CmdHistoryEntry cmdHistory, String desc) {
-              store.dispatch(RequestUpdateOneProps<CmdHistoryEntry>(cmdHistory.id, <String, dynamic>{'desc': desc}));
+              store.dispatch(RequestUpdateOneProps<CmdHistoryEntry>(
+                  cmdHistory.id, <String, dynamic>{'desc': desc}));
             });
       },
       builder: (BuildContext context, _ViewModel vm) {
@@ -71,9 +74,11 @@ class LogsHistoryPage extends StatelessWidget {
               body: LogList(
                   projectId: vm.project.id,
                   onTap: (CmdHistoryEntry cmd) => vm.onOpenDeployResults(cmd),
-                  onRepeat: (CmdHistoryEntry cmd) => vm.onRepeatCmd(vm.project, cmd),
+                  onRepeat: (CmdHistoryEntry cmd) =>
+                      vm.onRepeatCmd(vm.project, cmd),
                   onDelete: (CmdHistoryEntry cmd) => vm.onDeleteCmd(cmd),
-                  onUpdateDesc: (CmdHistoryEntry cmd, String desc) => vm.onUpdateDesc(cmd, desc)),
+                  onUpdateDesc: (CmdHistoryEntry cmd, String desc) =>
+                      vm.onUpdateDesc(cmd, desc)),
             ));
       },
     );
@@ -81,7 +86,9 @@ class LogsHistoryPage extends StatelessWidget {
 }
 
 class LogItem extends StatelessWidget {
-  const LogItem(this.log, this.onTap, this.onRepeat, this.onDelete, this.onUpdateDesc, {super.key});
+  const LogItem(
+      this.log, this.onTap, this.onRepeat, this.onDelete, this.onUpdateDesc,
+      {super.key});
 
   final CmdHistoryEntry log;
   final VoidCallback onTap;
@@ -95,10 +102,13 @@ class LogItem extends StatelessWidget {
     if (log.desc != log.getDesc()) {
       onUpdateDesc(desc); // Update the backend (not done in db migration)
     }
-    final String duration = log.duration != null ? 'duration: ${LADateUtils.formatDuration(log.duration!)}, ' : '';
+    final String duration = log.duration != null
+        ? 'duration: ${LADateUtils.formatDuration(log.duration!)}, '
+        : '';
     return ListTile(
         title: Text(desc),
-        subtitle: Text('${LADateUtils.formatDate(log.date)}, ${duration}finished status: ${log.result.toS()}'),
+        subtitle: Text(
+            '${LADateUtils.formatDate(log.date)}, ${duration}finished status: ${log.result.toS()}'),
         onTap: () => onTap(),
         trailing: Wrap(
           spacing: 12, // space between two icons
@@ -117,7 +127,9 @@ class LogItem extends StatelessWidget {
                 )), // icon-2
           ],
         ),
-        leading: Padding(padding: const EdgeInsets.fromLTRB(0, 10, 0, 0), child: StatusIcon(log.result)));
+        leading: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: StatusIcon(log.result)));
   }
 }
 
@@ -140,7 +152,10 @@ class _ViewModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _ViewModel && runtimeType == other.runtimeType && project == other.project && logsNum == other.logsNum;
+      other is _ViewModel &&
+          runtimeType == other.runtimeType &&
+          project == other.project &&
+          logsNum == other.logsNum;
 
   @override
   int get hashCode => project.hashCode ^ logsNum.hashCode;

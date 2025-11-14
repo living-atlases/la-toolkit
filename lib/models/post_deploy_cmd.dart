@@ -20,7 +20,8 @@ class PostDeployCmd extends DeployCmd {
       super.dryRun})
       : super(deployServices: <String>['all'], onlyProperties: false);
 
-  factory PostDeployCmd.fromJson(Map<String, dynamic> json) => _$PostDeployCmdFromJson(json);
+  factory PostDeployCmd.fromJson(Map<String, dynamic> json) =>
+      _$PostDeployCmdFromJson(json);
   bool configurePostfix;
 
   static const List<String> postDeployVariables = <String>[
@@ -38,7 +39,8 @@ class PostDeployCmd extends DeployCmd {
   String get desc {
     final List<String> tasks = <String>[];
     if (configurePostfix) tasks.add('configure postfix');
-    final String result = 'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
+    final String result =
+        'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
     return dryRun ? 'Dry run $result' : StringUtils.capitalize(result);
   }
 

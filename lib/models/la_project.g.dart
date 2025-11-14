@@ -158,22 +158,27 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
   LAProject fstDeployed(bool? fstDeployed) => call(fstDeployed: fstDeployed);
 
   @override
-  LAProject additionalVariables(String additionalVariables) => call(additionalVariables: additionalVariables);
+  LAProject additionalVariables(String additionalVariables) =>
+      call(additionalVariables: additionalVariables);
 
   @override
   LAProject status(LAProjectStatus status) => call(status: status);
 
   @override
-  LAProject alaInstallRelease(String? alaInstallRelease) => call(alaInstallRelease: alaInstallRelease);
+  LAProject alaInstallRelease(String? alaInstallRelease) =>
+      call(alaInstallRelease: alaInstallRelease);
 
   @override
-  LAProject generatorRelease(String? generatorRelease) => call(generatorRelease: generatorRelease);
+  LAProject generatorRelease(String? generatorRelease) =>
+      call(generatorRelease: generatorRelease);
 
   @override
-  LAProject mapBoundsFstPoint(LALatLng? mapBoundsFstPoint) => call(mapBoundsFstPoint: mapBoundsFstPoint);
+  LAProject mapBoundsFstPoint(LALatLng? mapBoundsFstPoint) =>
+      call(mapBoundsFstPoint: mapBoundsFstPoint);
 
   @override
-  LAProject mapBoundsSndPoint(LALatLng? mapBoundsSndPoint) => call(mapBoundsSndPoint: mapBoundsSndPoint);
+  LAProject mapBoundsSndPoint(LALatLng? mapBoundsSndPoint) =>
+      call(mapBoundsSndPoint: mapBoundsSndPoint);
 
   @override
   LAProject theme(String theme) => call(theme: theme);
@@ -182,22 +187,28 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
   LAProject mapZoom(double? mapZoom) => call(mapZoom: mapZoom);
 
   @override
-  LAProject lastCmdEntry(CmdHistoryEntry? lastCmdEntry) => call(lastCmdEntry: lastCmdEntry);
+  LAProject lastCmdEntry(CmdHistoryEntry? lastCmdEntry) =>
+      call(lastCmdEntry: lastCmdEntry);
 
   @override
-  LAProject lastCmdDetails(CmdHistoryDetails? lastCmdDetails) => call(lastCmdDetails: lastCmdDetails);
+  LAProject lastCmdDetails(CmdHistoryDetails? lastCmdDetails) =>
+      call(lastCmdDetails: lastCmdDetails);
 
   @override
-  LAProject advancedEdit(bool? advancedEdit) => call(advancedEdit: advancedEdit);
+  LAProject advancedEdit(bool? advancedEdit) =>
+      call(advancedEdit: advancedEdit);
 
   @override
-  LAProject advancedTune(bool? advancedTune) => call(advancedTune: advancedTune);
+  LAProject advancedTune(bool? advancedTune) =>
+      call(advancedTune: advancedTune);
 
   @override
-  LAProject variables(List<LAVariable>? variables) => call(variables: variables);
+  LAProject variables(List<LAVariable>? variables) =>
+      call(variables: variables);
 
   @override
-  LAProject cmdHistoryEntries(List<CmdHistoryEntry>? cmdHistoryEntries) => call(cmdHistoryEntries: cmdHistoryEntries);
+  LAProject cmdHistoryEntries(List<CmdHistoryEntry>? cmdHistoryEntries) =>
+      call(cmdHistoryEntries: cmdHistoryEntries);
 
   @override
   LAProject servers(List<LAServer>? servers) => call(servers: servers);
@@ -209,7 +220,8 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
   LAProject services(List<LAService>? services) => call(services: services);
 
   @override
-  LAProject serviceDeploys(List<LAServiceDeploy>? serviceDeploys) => call(serviceDeploys: serviceDeploys);
+  LAProject serviceDeploys(List<LAServiceDeploy>? serviceDeploys) =>
+      call(serviceDeploys: serviceDeploys);
 
   @override
   LAProject parent(LAProject? parent) => call(parent: parent);
@@ -221,19 +233,24 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
   LAProject createdAt(int? createdAt) => call(createdAt: createdAt);
 
   @override
-  LAProject serverServices(Map<String, List<String>>? serverServices) => call(serverServices: serverServices);
+  LAProject serverServices(Map<String, List<String>>? serverServices) =>
+      call(serverServices: serverServices);
 
   @override
-  LAProject clusterServices(Map<String, List<String>>? clusterServices) => call(clusterServices: clusterServices);
+  LAProject clusterServices(Map<String, List<String>>? clusterServices) =>
+      call(clusterServices: clusterServices);
 
   @override
-  LAProject checkResults(Map<String, dynamic>? checkResults) => call(checkResults: checkResults);
+  LAProject checkResults(Map<String, dynamic>? checkResults) =>
+      call(checkResults: checkResults);
 
   @override
-  LAProject runningVersions(Map<String, String>? runningVersions) => call(runningVersions: runningVersions);
+  LAProject runningVersions(Map<String, String>? runningVersions) =>
+      call(runningVersions: runningVersions);
 
   @override
-  LAProject selectedVersions(Map<String, String>? selectedVersions) => call(selectedVersions: selectedVersions);
+  LAProject selectedVersions(Map<String, String>? selectedVersions) =>
+      call(selectedVersions: selectedVersions);
 
   @override
 
@@ -318,10 +335,12 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.fstDeployed
           // ignore: cast_nullable_to_non_nullable
           : fstDeployed as bool?,
-      additionalVariables: additionalVariables == const $CopyWithPlaceholder() || additionalVariables == null
-          ? _value.additionalVariables
-          // ignore: cast_nullable_to_non_nullable
-          : additionalVariables as String,
+      additionalVariables:
+          additionalVariables == const $CopyWithPlaceholder() ||
+                  additionalVariables == null
+              ? _value.additionalVariables
+              // ignore: cast_nullable_to_non_nullable
+              : additionalVariables as String,
       status: status == const $CopyWithPlaceholder() || status == null
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
@@ -448,45 +467,61 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) => LAProject(
       isHub: json['isHub'] as bool? ?? false,
       fstDeployed: json['fstDeployed'] as bool?,
       additionalVariables: json['additionalVariables'] as String? ?? '',
-      status: $enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']) ?? LAProjectStatus.created,
+      status: $enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']) ??
+          LAProjectStatus.created,
       alaInstallRelease: json['alaInstallRelease'] as String?,
       generatorRelease: json['generatorRelease'] as String?,
       mapBoundsFstPoint: json['mapBoundsFstPoint'] == null
           ? null
-          : LALatLng.fromJson(json['mapBoundsFstPoint'] as Map<String, dynamic>),
+          : LALatLng.fromJson(
+              json['mapBoundsFstPoint'] as Map<String, dynamic>),
       mapBoundsSndPoint: json['mapBoundsSndPoint'] == null
           ? null
-          : LALatLng.fromJson(json['mapBoundsSndPoint'] as Map<String, dynamic>),
+          : LALatLng.fromJson(
+              json['mapBoundsSndPoint'] as Map<String, dynamic>),
       theme: json['theme'] as String? ?? 'clean',
       mapZoom: (json['mapZoom'] as num?)?.toDouble(),
-      lastCmdEntry:
-          json['lastCmdEntry'] == null ? null : CmdHistoryEntry.fromJson(json['lastCmdEntry'] as Map<String, dynamic>),
+      lastCmdEntry: json['lastCmdEntry'] == null
+          ? null
+          : CmdHistoryEntry.fromJson(
+              json['lastCmdEntry'] as Map<String, dynamic>),
       advancedEdit: json['advancedEdit'] as bool?,
       advancedTune: json['advancedTune'] as bool?,
-      variables:
-          (json['variables'] as List<dynamic>?)?.map((e) => LAVariable.fromJson(e as Map<String, dynamic>)).toList(),
+      variables: (json['variables'] as List<dynamic>?)
+          ?.map((e) => LAVariable.fromJson(e as Map<String, dynamic>))
+          .toList(),
       cmdHistoryEntries: (json['cmdHistoryEntries'] as List<dynamic>?)
           ?.map((e) => CmdHistoryEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
-      servers: (json['servers'] as List<dynamic>?)?.map((e) => LAServer.fromJson(e as Map<String, dynamic>)).toList(),
-      clusters:
-          (json['clusters'] as List<dynamic>?)?.map((e) => LACluster.fromJson(e as Map<String, dynamic>)).toList(),
-      services:
-          (json['services'] as List<dynamic>?)?.map((e) => LAService.fromJson(e as Map<String, dynamic>)).toList(),
+      servers: (json['servers'] as List<dynamic>?)
+          ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      clusters: (json['clusters'] as List<dynamic>?)
+          ?.map((e) => LACluster.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      services: (json['services'] as List<dynamic>?)
+          ?.map((e) => LAService.fromJson(e as Map<String, dynamic>))
+          .toList(),
       serviceDeploys: (json['serviceDeploys'] as List<dynamic>?)
           ?.map((e) => LAServiceDeploy.fromJson(e as Map<String, dynamic>))
           .toList(),
-      hubs: (json['hubs'] as List<dynamic>?)?.map((e) => LAProject.fromJson(e as Map<String, dynamic>)).toList(),
+      hubs: (json['hubs'] as List<dynamic>?)
+          ?.map((e) => LAProject.fromJson(e as Map<String, dynamic>))
+          .toList(),
       createdAt: (json['createdAt'] as num?)?.toInt(),
       serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
+        (k, e) =>
+            MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
       ),
       clusterServices: (json['clusterServices'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
+        (k, e) =>
+            MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
       ),
     )
       ..clientMigration = (json['clientMigration'] as num?)?.toInt()
-      ..lastSwCheck = json['lastSwCheck'] == null ? null : DateTime.parse(json['lastSwCheck'] as String);
+      ..lastSwCheck = json['lastSwCheck'] == null
+          ? null
+          : DateTime.parse(json['lastSwCheck'] as String);
 
 Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'id': instance.id,
@@ -514,7 +549,8 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
       'services': instance.services.map((e) => e.toJson()).toList(),
       'serverServices': instance.serverServices,
       'clusterServices': instance.clusterServices,
-      'cmdHistoryEntries': instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),
+      'cmdHistoryEntries':
+          instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),
       'serviceDeploys': instance.serviceDeploys.map((e) => e.toJson()).toList(),
       'variables': instance.variables.map((e) => e.toJson()).toList(),
       'hubs': instance.hubs.map((e) => e.toJson()).toList(),

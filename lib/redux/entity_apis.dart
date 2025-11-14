@@ -12,7 +12,9 @@ class EntityApis {
   static EntityApi<LAProject> projectApi = EntityApi<LAProject>('project');
   static EntityApi<LAService> serviceApi = EntityApi<LAService>('service');
   static EntityApi<LAServer> serverApi = EntityApi<LAServer>('server');
-  static EntityApi<LAServiceDeploy> serviceDeployApi = EntityApi<LAServiceDeploy>('serviceDeploy');
+  static EntityApi<LAServiceDeploy> serviceDeployApi =
+      EntityApi<LAServiceDeploy>('serviceDeploy');
   static EntityApi<LAVariable> variableApi = EntityApi<LAVariable>('variable');
-  static EntityApi<CmdHistoryEntry> cmdHistoryEntryApi = EntityApi<CmdHistoryEntry>('cmdHistoryEntry');
+  static EntityApi<CmdHistoryEntry> cmdHistoryEntryApi =
+      EntityApi<CmdHistoryEntry>('cmdHistoryEntry');
 }

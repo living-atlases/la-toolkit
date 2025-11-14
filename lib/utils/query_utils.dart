@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 abstract class SolrQueryExecutor {
-  void query(String solrHost, String query, Function(Map<String, dynamic>) onResult, Function(String) onError);
+  void query(String solrHost, String query,
+      Function(Map<String, dynamic>) onResult, Function(String) onError);
 
-  void rawQuery(String solrHost, String query, Function(dynamic) onResult, Function(String) onError);
+  void rawQuery(String solrHost, String query, Function(dynamic) onResult,
+      Function(String) onError);
 }
 
 enum ComparisonField {
@@ -65,12 +67,14 @@ String buildFacetDataQuery(
       debug);
 }
 
-String urlFormat(String base, String path, Map<String, String> params, [bool debug = false]) {
+String urlFormat(String base, String path, Map<String, String> params,
+    [bool debug = false]) {
   final Uri uri = asUri(base, path, params, debug);
   return uri.toString();
 }
 
-Uri asUri(String base, String path, Map<String, String> params, [bool debug = false]) {
+Uri asUri(String base, String path, Map<String, String> params,
+    [bool debug = false]) {
   Uri uri = Uri.parse(base + path);
   if (params.isNotEmpty) {
     uri = uri.replace(queryParameters: params);
@@ -90,7 +94,8 @@ Future<Map<String, dynamic>?> getFacetData(
     required String facetField,
     required int facetLimit,
     required String sort}) {
-  final Completer<Map<String, dynamic>?> completer = Completer<Map<String, dynamic>?>();
+  final Completer<Map<String, dynamic>?> completer =
+      Completer<Map<String, dynamic>?>();
   try {
     solrExec.query(
         solrHost,

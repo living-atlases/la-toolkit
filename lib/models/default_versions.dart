@@ -89,7 +89,8 @@ class DefaultVersions {
     ecodata: '3.3.1',
   };
 
-  static Map<VersionConstraint, Map<String, String>> map = <VersionConstraint, Map<String, String>>{
+  static Map<VersionConstraint, Map<String, String>> map =
+      <VersionConstraint, Map<String, String>>{
     // ala-install vs rest of components
     vc('<= 2.0.11'): defVersions2_0_11,
     vc('> 2.0.11 < 2.1.0'): defVersions2_0_11,

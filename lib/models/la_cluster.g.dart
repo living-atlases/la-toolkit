@@ -99,7 +99,8 @@ extension $LAClusterCopyWith on LACluster {
 LACluster _$LAClusterFromJson(Map<String, dynamic> json) => LACluster(
       id: json['id'] as String?,
       name: json['name'] as String? ?? 'Docker Swarm Cluster',
-      type: $enumDecodeNullable(_$DeploymentTypeEnumMap, json['type']) ?? DeploymentType.dockerSwarm,
+      type: $enumDecodeNullable(_$DeploymentTypeEnumMap, json['type']) ??
+          DeploymentType.dockerSwarm,
       projectId: json['projectId'] as String,
     );
 

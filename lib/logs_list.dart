@@ -35,7 +35,8 @@ class LogList extends StatefulWidget {
 class _LogListState extends State<LogList> {
   static const int _pageSize = 20;
 
-  static EntityApi<CmdHistoryEntry> cmdApi = EntityApi<CmdHistoryEntry>('cmdHistoryEntry');
+  static EntityApi<CmdHistoryEntry> cmdApi =
+      EntityApi<CmdHistoryEntry>('cmdHistoryEntry');
 
   final PagingController<int, CmdHistoryEntry> _pagingController =
       PagingController<int, CmdHistoryEntry>(firstPageKey: 0);
@@ -110,16 +111,19 @@ class _LogListState extends State<LogList> {
             ),
             PagedSliverList<int, CmdHistoryEntry>.separated(
                 pagingController: _pagingController,
-                separatorBuilder: (BuildContext context, int index) => const Divider(),
+                separatorBuilder: (BuildContext context, int index) =>
+                    const Divider(),
                 builderDelegate: PagedChildBuilderDelegate<CmdHistoryEntry>(
                   animateTransitions: true,
                   transitionDuration: const Duration(milliseconds: 500),
-                  itemBuilder: (BuildContext context, CmdHistoryEntry item, int index) => LogItem(
-                      log: item,
-                      onTap: widget.onTap,
-                      onRepeat: widget.onRepeat,
-                      onUpdateDesc: widget.onUpdateDesc,
-                      onDelete: widget.onDelete),
+                  itemBuilder:
+                      (BuildContext context, CmdHistoryEntry item, int index) =>
+                          LogItem(
+                              log: item,
+                              onTap: widget.onTap,
+                              onRepeat: widget.onRepeat,
+                              onUpdateDesc: widget.onUpdateDesc,
+                              onDelete: widget.onDelete),
                 ))
           ]));
 
@@ -156,10 +160,13 @@ class LogItem extends StatelessWidget {
     if (log.desc != log.getDesc()) {
       onUpdateDesc(log, desc); // Update the backend (not done in db migration)
     }
-    final String duration = log.duration != null ? 'duration: ${LADateUtils.formatDuration(log.duration!)}, ' : '';
+    final String duration = log.duration != null
+        ? 'duration: ${LADateUtils.formatDuration(log.duration!)}, '
+        : '';
     return ListTile(
         title: Text(desc),
-        subtitle: Text('${LADateUtils.formatDate(log.date)}, ${duration}finished status: ${log.result.toS()}'),
+        subtitle: Text(
+            '${LADateUtils.formatDate(log.date)}, ${duration}finished status: ${log.result.toS()}'),
         onTap: () => onTap(log),
         trailing: Wrap(
           spacing: 12, // space between two icons
@@ -178,6 +185,8 @@ class LogItem extends StatelessWidget {
                 )), // icon-2
           ],
         ),
-        leading: Padding(padding: const EdgeInsets.fromLTRB(0, 10, 0, 0), child: StatusIcon(log.result)));
+        leading: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: StatusIcon(log.result)));
   }
 }

@@ -11,7 +11,11 @@ import 'list_tile_link.dart';
 import 'term_dialog.dart';
 
 class MainDrawer extends StatefulWidget {
-  const MainDrawer({super.key, required this.appName, required this.currentRoute, required this.packageInfo});
+  const MainDrawer(
+      {super.key,
+      required this.appName,
+      required this.currentRoute,
+      required this.packageInfo});
   final String appName;
   final String currentRoute;
   final PackageInfo packageInfo;
@@ -79,7 +83,8 @@ class _MainDrawerState extends State<MainDrawer> {
               applicationName: widget.appName,
               applicationVersion: 'Version: ${widget.packageInfo.version}',
               applicationIcon: const Icon(LAIcon.la),
-              applicationLegalese: '© 2020-${DateTime.now().year} Living Atlases, under Apache 2.0',
+              applicationLegalese:
+                  '© 2020-${DateTime.now().year} Living Atlases, under Apache 2.0',
               aboutBoxChildren: const <Widget>[
                 SizedBox(height: 10.0),
                 /* Text(S.of(context).appMoto),

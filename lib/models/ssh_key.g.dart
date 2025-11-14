@@ -71,7 +71,8 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
   SshKey desc(String desc) => call(desc: desc);
 
   @override
-  SshKey fingerdebugPrint(String? fingerdebugPrint) => call(fingerdebugPrint: fingerdebugPrint);
+  SshKey fingerdebugPrint(String? fingerdebugPrint) =>
+      call(fingerdebugPrint: fingerdebugPrint);
 
   @override
   SshKey encrypted(bool encrypted) => call(encrypted: encrypted);
@@ -104,10 +105,11 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      privateKey: privateKey == const $CopyWithPlaceholder() || privateKey == null
-          ? _value.privateKey
-          // ignore: cast_nullable_to_non_nullable
-          : privateKey as String,
+      privateKey:
+          privateKey == const $CopyWithPlaceholder() || privateKey == null
+              ? _value.privateKey
+              // ignore: cast_nullable_to_non_nullable
+              : privateKey as String,
       publicKey: publicKey == const $CopyWithPlaceholder() || publicKey == null
           ? _value.publicKey
           // ignore: cast_nullable_to_non_nullable

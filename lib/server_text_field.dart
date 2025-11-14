@@ -6,7 +6,11 @@ import 'utils/regexp.dart';
 
 class ServerTextField extends StatelessWidget {
   const ServerTextField(
-      {super.key, required this.controller, required this.focusNode, required this.formKey, required this.onAddServer});
+      {super.key,
+      required this.controller,
+      required this.focusNode,
+      required this.formKey,
+      required this.onAddServer});
 
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -45,14 +49,16 @@ class ServerTextField extends StatelessWidget {
                     icon: const Icon(Icons.add_circle),
                     onPressed: () {
                       debugPrint('Trying to add server/s ${controller.text}');
-                      if (formKey.currentState != null && formKey.currentState!.validate()) {
+                      if (formKey.currentState != null &&
+                          formKey.currentState!.validate()) {
                         controller.text = controller.text.toLowerCase();
                         addServer(controller.text);
                       }
                     },
                     color: LAColorTheme.inactive),
                 hintText: serverHint,
-                labelText: "Type the name of your servers, comma or space separated (Press 'enter' to add it)"),
+                labelText:
+                    "Type the name of your servers, comma or space separated (Press 'enter' to add it)"),
           )
         ]));
   }

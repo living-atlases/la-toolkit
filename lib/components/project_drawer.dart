@@ -31,7 +31,8 @@ class ProjectDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ProjectDrawerViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _ProjectDrawerViewModel>(
+        converter: (Store<AppState> store) {
       return _ProjectDrawerViewModel(
         state: store.state,
       );
@@ -51,10 +52,13 @@ class ProjectDrawer extends StatelessWidget {
                 ),
                 child: Column(
                   children: <Widget>[
-                    if (vm.state.currentProject.getVariableValue('favicon_url') != null && !AppUtils.isDemo())
+                    if (vm.state.currentProject
+                                .getVariableValue('favicon_url') !=
+                            null &&
+                        !AppUtils.isDemo())
                       ImageIcon(
-                          NetworkImage(
-                              AppUtils.proxyImg(vm.state.currentProject.getVariableValue('favicon_url')! as String)),
+                          NetworkImage(AppUtils.proxyImg(vm.state.currentProject
+                              .getVariableValue('favicon_url')! as String)),
                           color: LAColorTheme.laPalette,
                           size: 80)
                     else
@@ -106,7 +110,8 @@ class ProjectDrawer extends StatelessWidget {
   List<Widget> _createProjectLinks(LAProject currentProject) {
     return <Widget>[
       for (final ProdServiceDesc serviceDesc in currentProject.prodServices)
-        if (!LAServiceDesc.internalServices.contains(serviceDesc.nameInt)) ServiceListTileLink(desc: serviceDesc)
+        if (!LAServiceDesc.internalServices.contains(serviceDesc.nameInt))
+          ServiceListTileLink(desc: serviceDesc)
     ];
   }
 }
@@ -135,7 +140,8 @@ class ServiceListTileLink extends StatelessWidget {
       title: name,
       tooltip: tooltip,
       url: url,
-      additionalTrailingIcon: alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
+      additionalTrailingIcon:
+          alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
       trailingIcon: help != null
           ? HelpIcon(
               wikipage: help!,

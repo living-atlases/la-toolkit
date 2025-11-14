@@ -21,7 +21,8 @@ class TermCommandDesc extends StatelessWidget {
     const MaterialColor subColor = Colors.grey;
     final String cwd = cmdHistoryDetails.cmd!.invDir.isNotEmpty
         ? cmdHistoryDetails.cmd!.invDir
-        : cmdHistoryDetails.cmd!.cwd != null && cmdHistoryDetails.cmd!.cwd!.isNotEmpty
+        : cmdHistoryDetails.cmd!.cwd != null &&
+                cmdHistoryDetails.cmd!.cwd!.isNotEmpty
             ? cmdHistoryDetails.cmd!.cwd!
             : '';
     if (cwd.isNotEmpty) {
@@ -29,18 +30,23 @@ class TermCommandDesc extends StatelessWidget {
           overflow: TextOverflow.visible,
           textAlign: TextAlign.left,
           text: TextSpan(children: <TextSpan>[
-            const TextSpan(text: 'Executed in directory: ', style: TextStyle(color: subColor)),
+            const TextSpan(
+                text: 'Executed in directory: ',
+                style: TextStyle(color: subColor)),
             TextSpan(text: cwd, style: GoogleFonts.robotoMono(color: subColor)),
             // TextSpan(text: ""),
           ]));
     }
     return ListTile(
-        leading: Icon(MdiIcons.console, size: 36, color: LAColorTheme.laPalette),
+        leading:
+            Icon(MdiIcons.console, size: 36, color: LAColorTheme.laPalette),
         title: MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
                 onTap: () => onTap(cmd, context),
-                child: Text(cmd, style: GoogleFonts.robotoMono(color: LAColorTheme.inactive, fontSize: 18)))),
+                child: Text(cmd,
+                    style: GoogleFonts.robotoMono(
+                        color: LAColorTheme.inactive, fontSize: 18)))),
         subtitle: subtitle,
         trailing: Tooltip(
             message: 'Press to copy the command',
@@ -50,8 +56,10 @@ class TermCommandDesc extends StatelessWidget {
             )));
   }
 
-  Future<ScaffoldFeatureController<SnackBar, SnackBarClosedReason>> onTap(String cmd, BuildContext context) {
+  Future<ScaffoldFeatureController<SnackBar, SnackBarClosedReason>> onTap(
+      String cmd, BuildContext context) {
     return FlutterClipboard.copy(cmd).then((value) =>
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Command copied to clipboard'))));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Command copied to clipboard'))));
   }
 }

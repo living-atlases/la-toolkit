@@ -28,7 +28,8 @@ class CmdHistoryDetails {
       bool? fstRetrieved})
       : fstRetrieved = fstRetrieved ?? false;
 
-  factory CmdHistoryDetails.fromJson(Map<String, dynamic> json) => _$CmdHistoryDetailsFromJson(json);
+  factory CmdHistoryDetails.fromJson(Map<String, dynamic> json) =>
+      _$CmdHistoryDetailsFromJson(json);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   CmdHistoryEntry? cmd;
@@ -67,10 +68,12 @@ class CmdHistoryDetails {
         _resultsTotals![type] = 0;
       }
       for (final dynamic result in results) {
-        final Map<String, dynamic> rsStats = result['stats'] as Map<String, dynamic>;
+        final Map<String, dynamic> rsStats =
+            result['stats'] as Map<String, dynamic>;
         for (final String key in rsStats.keys) {
           for (final String type in ResultTypes.list) {
-            _resultsTotals![type] = _resultsTotals![type]! + (rsStats[key][type] as num);
+            _resultsTotals![type] =
+                _resultsTotals![type]! + (rsStats[key][type] as num);
           }
         }
       }
@@ -92,22 +95,30 @@ class CmdHistoryDetails {
     if (_details == null) {
       _details = <Widget>[];
       for (final dynamic result in results) {
-        final Map<String, List<AnsibleError>> errors = <String, List<AnsibleError>>{};
+        final Map<String, List<AnsibleError>> errors =
+            <String, List<AnsibleError>>{};
         final HashSet<String> plays = HashSet<String>();
         result['plays'].forEach((dynamic play) {
           final String playName =
-              play['play'] != null && play['play']['name'] != null ? play['play']['name'] as String : '';
+              play['play'] != null && play['play']['name'] != null
+                  ? play['play']['name'] as String
+                  : '';
           plays.add(playName);
           play['tasks'].forEach((dynamic task) {
             task['hosts'].keys.forEach((String host) {
               if (errors[host] == null) {
                 errors[host] = <AnsibleError>[];
               }
-              if ((task['hosts'][host]['failed'] != null && task['hosts'][host]['failed'] == true) ||
-                  (task['hosts'][host]['unreachable'] != null && task['hosts'][host]['unreachable'] == true)) {
+              if ((task['hosts'][host]['failed'] != null &&
+                      task['hosts'][host]['failed'] == true) ||
+                  (task['hosts'][host]['unreachable'] != null &&
+                      task['hosts'][host]['unreachable'] == true)) {
                 final String taskName =
-                    task['task'] != null && task['task']['name'] != null ? task['task']['name'] as String : '';
-                String msg = task['hosts'][host] != null && task['hosts'][host]['msg'] != null
+                    task['task'] != null && task['task']['name'] != null
+                        ? task['task']['name'] as String
+                        : '';
+                String msg = task['hosts'][host] != null &&
+                        task['hosts'][host]['msg'] != null
                     ? task['hosts'][host]['msg'] as String
                     : '';
                 if (task['hosts'][host]['results'] != null) {
@@ -117,7 +128,11 @@ class CmdHistoryDetails {
                     }
                   });
                 }
-                errors[host]!.add(AnsibleError(host: host, playName: playName, taskName: taskName, msg: msg));
+                errors[host]!.add(AnsibleError(
+                    host: host,
+                    playName: playName,
+                    taskName: taskName,
+                    msg: msg));
               }
             });
           });

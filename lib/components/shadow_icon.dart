@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ShadowIcon extends StatelessWidget {
-  const ShadowIcon({super.key, required this.icon, required this.size, required this.color});
+  const ShadowIcon(
+      {super.key, required this.icon, required this.size, required this.color});
 
   final IconData icon;
   final double size;
@@ -14,6 +15,9 @@ class ShadowIcon extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(size),
         ),
-        child: SizedBox(width: size, height: size, child: Icon(icon, size: size, color: color)));
+        child: SizedBox(
+            width: size,
+            height: size,
+            child: Icon(icon, size: size, color: color)));
   }
 }

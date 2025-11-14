@@ -24,7 +24,8 @@ class PipelinesCmd extends CommonCmd {
       this.mode = 1})
       : steps = steps ?? <String>{};
 
-  factory PipelinesCmd.fromJson(Map<String, dynamic> json) => _$PipelinesCmdFromJson(json);
+  factory PipelinesCmd.fromJson(Map<String, dynamic> json) =>
+      _$PipelinesCmdFromJson(json);
   String? drs;
   Set<String> steps;
   String master;
@@ -77,11 +78,14 @@ class PipelinesCmd extends CommonCmd {
       // nothing more
       stepsDesc += '';
     } else if (stepsLength <= 7) {
-      steps.toList().asMap().forEach((int i, String value) => stepsDesc += i == 0
-          ? ' ($value'
-          : i < stepsLength - 1
-              ? ', $value'
-              : ' and $value');
+      steps
+          .toList()
+          .asMap()
+          .forEach((int i, String value) => stepsDesc += i == 0
+              ? ' ($value'
+              : i < stepsLength - 1
+                  ? ', $value'
+                  : ' and $value');
       final String plural = stepsLength > 1 ? 's' : '';
       stepsDesc += stepsLength >= 1 && !allSteps ? ' step$plural)' : '';
     } else {

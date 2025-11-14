@@ -41,7 +41,8 @@ class ServerStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, LAServiceDepsDesc> depsForV = LAServiceDepsDesc.getDeps(alaInstallVersion);
+    final Map<String, LAServiceDepsDesc> depsForV =
+        LAServiceDepsDesc.getDeps(alaInstallVersion);
     final LinkedHashSet<BasicService> deps = LinkedHashSet<BasicService>();
     for (final LAService service in services) {
       final LAServiceDepsDesc? serDepDesc = depsForV[service.nameInt];
@@ -98,12 +99,14 @@ class ServerStatusCard extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
                                   ),
                                   elevation: 10,
                                   shadowColor: Colors.green,
                                   minimumSize: Size.zero,
-                                  padding: const EdgeInsets.fromLTRB(1, 1, 1, 0),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(1, 1, 1, 0),
                                   enableFeedback: true),
                               onPressed: () => onTerm(),
                               child: Icon(
@@ -118,13 +121,18 @@ class ServerStatusCard extends StatelessWidget {
                           child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(server.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(server.name,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
                           const SizedBox(height: 5),
-                          Text('IP: ${server.ip}', style: GoogleFonts.robotoMono()),
+                          Text('IP: ${server.ip}',
+                              style: GoogleFonts.robotoMono()),
                           if (extendedStatus) const SizedBox(height: 10),
                           if (extendedStatus)
                             // ignore: sized_box_for_whitespace
-                            Container(width: 140, child: ConnectivityStatus(server: server)),
+                            Container(
+                                width: 140,
+                                child: ConnectivityStatus(server: server)),
                           if (extendedStatus) const SizedBox(height: 10),
                           if (extendedStatus)
                             // ignore: sized_box_for_whitespace
@@ -134,7 +142,9 @@ class ServerStatusCard extends StatelessWidget {
                                   overflow: TextOverflow.visible,
                                   // softWrap: true,
                                   text: TextSpan(
-                                      text: LAService.servicesForHumans(services), style: ServiceStatusCard.subtitle),
+                                      text:
+                                          LAService.servicesForHumans(services),
+                                      style: ServiceStatusCard.subtitle),
                                 )),
                         ],
                       )),
@@ -169,21 +179,30 @@ class ConnectivityStatus extends StatelessWidget {
         children: <Widget>[
           SimpleServerStatusItem(
               'REACHABLE',
-              server.reachable == ServiceStatus.success || server.sshReachable == ServiceStatus.success,
+              server.reachable == ServiceStatus.success ||
+                  server.sshReachable == ServiceStatus.success,
               server.sshReachable == ServiceStatus.success
                   ? 'I cannot ping this server, although I can reach it by ssh. Is the ping filtered in your firewall?'
                   : 'Ping to this server works great',
               'I cannot reach this server, review your IP and ssh configuration for this server'),
-          SimpleServerStatusItem('SSH', server.sshReachable == ServiceStatus.success, 'SSH access to this server is ok',
+          SimpleServerStatusItem(
+              'SSH',
+              server.sshReachable == ServiceStatus.success,
+              'SSH access to this server is ok',
               'I cannot SSH to this server, review your SSH config and keys for this server'),
-          SimpleServerStatusItem('SUDO', server.sudoEnabled == ServiceStatus.success, 'SUDO is enabled for this server',
+          SimpleServerStatusItem(
+              'SUDO',
+              server.sudoEnabled == ServiceStatus.success,
+              'SUDO is enabled for this server',
               'SUDO is not enabled in the server for this user')
         ]);
   }
 }
 
 class SimpleServerStatusItem extends StatelessWidget {
-  const SimpleServerStatusItem(this.text, this.ready, this.successHint, this.errorHint, {super.key});
+  const SimpleServerStatusItem(
+      this.text, this.ready, this.successHint, this.errorHint,
+      {super.key});
 
   final String text;
   final bool ready;
@@ -196,8 +215,15 @@ class SimpleServerStatusItem extends StatelessWidget {
     return Tooltip(
         message: ready ? successHint : errorHint,
         child: Row(children: <Widget>[
-          Text(text, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: readyColor)),
-          Icon(ready ? Icons.check : Icons.error_outline, // Icons.cancel_outlined,
+          Text(text,
+              style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: readyColor)),
+          Icon(
+              ready
+                  ? Icons.check
+                  : Icons.error_outline, // Icons.cancel_outlined,
               size: 14,
               color: readyColor)
         ]));
@@ -231,7 +257,9 @@ class DepsPanel extends StatelessWidget {
       final Tuple2<int, int> r = checkResultForType(dep.name, '');
       depCodeStatus += r.item2;
       checks += r.item1;
-      depStatus[dep] = checks == 0 ? CmdResult.unknown : (depCodeStatus == 0 ? CmdResult.success : CmdResult.failed);
+      depStatus[dep] = checks == 0
+          ? CmdResult.unknown
+          : (depCodeStatus == 0 ? CmdResult.success : CmdResult.failed);
     }
 
     return Padding(
@@ -242,7 +270,8 @@ class DepsPanel extends StatelessWidget {
             children: <Widget>[
               for (final BasicService dep in deps)
                 Tooltip(
-                    message: 'Status: ${StringUtils.capitalize(depStatus[dep]!.toServiceForHumans())}',
+                    message:
+                        'Status: ${StringUtils.capitalize(depStatus[dep]!.toServiceForHumans())}',
                     child: Row(children: <Widget>[
                       StatusIcon(depStatus[dep]!), // , size: 12),
                       const SizedBox(width: 3),
@@ -253,8 +282,10 @@ class DepsPanel extends StatelessWidget {
 
   Tuple2<int, int> checkResultForType(String type, String value) {
     int depCodeStatus = 0;
-    final List<dynamic> matchs =
-        status.where((dynamic s) => s['service'] == 'check_$type' && s['args'] == value).toList();
+    final List<dynamic> matchs = status
+        .where(
+            (dynamic s) => s['service'] == 'check_$type' && s['args'] == value)
+        .toList();
     for (final dynamic match in matchs) {
       final String? mS = match['code'] as String?;
       depCodeStatus += int.parse(mS ?? '0');

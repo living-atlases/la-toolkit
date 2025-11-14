@@ -27,7 +27,8 @@ class PreDeployCmd extends DeployCmd {
       : rootBecome = rootBecome ?? false,
         super(deployServices: <String>['all'], onlyProperties: false);
 
-  factory PreDeployCmd.fromJson(Map<String, dynamic> json) => _$PreDeployCmdFromJson(json);
+  factory PreDeployCmd.fromJson(Map<String, dynamic> json) =>
+      _$PreDeployCmdFromJson(json);
   bool addAnsibleUser;
   bool addSshKeys;
   bool giveSudo;
@@ -75,7 +76,8 @@ class PreDeployCmd extends DeployCmd {
     if (rootBecome) {
       tasks.add('as root');
     }
-    final String result = 'pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
+    final String result =
+        'pre-deploy tasks (${tasks.join(', ')}${toStringServers()})';
     return dryRun ? 'Dry run $result' : StringUtils.capitalize(result);
   }
 

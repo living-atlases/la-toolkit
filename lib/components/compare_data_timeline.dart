@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:timelines_plus/timelines_plus.dart';
 
-class CompareDataTimeline<T extends CompareDataTimelinePhase> extends StatefulWidget {
-  const CompareDataTimeline({super.key, required this.currentPhase, required this.phaseValues, required this.failed});
+class CompareDataTimeline<T extends CompareDataTimelinePhase>
+    extends StatefulWidget {
+  const CompareDataTimeline(
+      {super.key,
+      required this.currentPhase,
+      required this.phaseValues,
+      required this.failed});
 
   final T currentPhase;
 
@@ -120,7 +125,8 @@ enum CompareCollectionsWithGbifDataPhase implements CompareDataTimelinePhase {
   }
 }
 
-class CompareDataTimelineState<T extends CompareDataTimelinePhase> extends State<CompareDataTimeline<T>> {
+class CompareDataTimelineState<T extends CompareDataTimelinePhase>
+    extends State<CompareDataTimeline<T>> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -130,7 +136,9 @@ class CompareDataTimelineState<T extends CompareDataTimelinePhase> extends State
         child: Row(
           children: widget.phaseValues.map((phase) {
             final bool isActive = widget.currentPhase == phase;
-            final bool isComplete = widget.phaseValues.indexOf(widget.currentPhase) > widget.phaseValues.indexOf(phase);
+            final bool isComplete =
+                widget.phaseValues.indexOf(widget.currentPhase) >
+                    widget.phaseValues.indexOf(phase);
             final bool isFailed = widget.failed && isActive;
             return TimelineTile(
               direction: Axis.horizontal,
@@ -191,10 +199,12 @@ class IconPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+    final TextPainter textPainter =
+        TextPainter(textDirection: TextDirection.ltr);
     textPainter.text = TextSpan(
         text: String.fromCharCode(icon.codePoint),
-        style: TextStyle(fontSize: size.width, fontFamily: icon.fontFamily, color: color));
+        style: TextStyle(
+            fontSize: size.width, fontFamily: icon.fontFamily, color: color));
     textPainter.layout();
     textPainter.paint(canvas, Offset.zero);
   }

@@ -7,6 +7,7 @@ class LintErrorPanel extends StatelessWidget {
   final List<String> errors;
   @override
   Widget build(BuildContext context) {
-    return Column(children: errors.map((String e) => AlertCard(message: e)).toList());
+    return Column(
+        children: errors.map((String e) => AlertCard(message: e)).toList());
   }
 }

@@ -7,7 +7,8 @@ import '../utils/regexp.dart';
 import 'generic_text_form_field.dart';
 
 class RenameServerIcon extends StatelessWidget {
-  const RenameServerIcon(this.server, this.onEditing, this.onRename, {super.key});
+  const RenameServerIcon(this.server, this.onEditing, this.onRename,
+      {super.key});
 
   final Function(String) onRename;
   final Function() onEditing;
@@ -22,19 +23,25 @@ class RenameServerIcon extends StatelessWidget {
             color: LAColorTheme.inactive,
             onPressed: () {
               onEditing();
-              _generateRenameDialog(context: context, onRename: (String newName) => onRename(newName), server: server);
+              _generateRenameDialog(
+                  context: context,
+                  onRename: (String newName) => onRename(newName),
+                  server: server);
             }));
   }
 
   void _generateRenameDialog(
-      {required BuildContext context, required Function(String) onRename, required LAServer server}) {
+      {required BuildContext context,
+      required Function(String) onRename,
+      required LAServer server}) {
     String? name;
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
         image: const Icon(Icons.dns, size: 60, color: LAColorTheme.inactive),
         title: 'Server rename',
-        style: const AlertStyle(constraints: BoxConstraints.expand(height: 600, width: 600)),
+        style: const AlertStyle(
+            constraints: BoxConstraints.expand(height: 600, width: 600)),
         content: Column(
           children: <Widget>[
             // TODO: Add a subsection for this help

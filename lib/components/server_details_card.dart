@@ -43,46 +43,54 @@ class ServerDetailsCard extends StatelessWidget {
               ListTile(
                 leading: Icon(MdiIcons.server),
                 // tileColor: Colors.black12,
-                title: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                  Text(server.name, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
-                  RenameServerIcon(server, () {}, (String newName) {
-                    server.name = newName;
-                    onSave(server);
-                  }),
-                  const SizedBox(width: 40),
-                  ServerSshKeySelector(
-                      key: ValueKey('${server.id}-ssh-${server.sshKey?.name ?? "none"}'),
-                      server: server,
-                      currentSshKey: server.sshKey,
-                      isFirst: isFirst,
-                      sshKeys: sshKeys,
-                      onSave: onSave,
-                      onAllSameSshKey: onAllSameSshKey),
-                  const SizedBox(width: 10),
-                  HelpIcon(wikipage: 'SSH-for-Beginners#ssh-keys'),
-                  const SizedBox(width: 10),
-                  Flexible(
-                    child: GenericTextFormField(
-                        // IP
-                        label: 'IP Address',
-                        hint: "ex: '10.0.0.1' or '84.120.10.4'",
-                        error: 'Wrong IP address.',
-                        initialValue: server.ip,
-                        isDense: true,
-                        /* isCollapsed: true, */
-                        regexp: LARegExp.ip,
-                        allowEmpty: true,
-                        onChanged: (String value) {
-                          server.ip = value;
-                          onSave(server);
-                        }),
-                  )
-                ]),
-                trailing: HelpIcon(wikipage: 'SSH-for-Beginners#public-and-private-ip-addresses'),
+                title: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(server.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 16)),
+                      RenameServerIcon(server, () {}, (String newName) {
+                        server.name = newName;
+                        onSave(server);
+                      }),
+                      const SizedBox(width: 40),
+                      ServerSshKeySelector(
+                          key: ValueKey(
+                              '${server.id}-ssh-${server.sshKey?.name ?? "none"}'),
+                          server: server,
+                          currentSshKey: server.sshKey,
+                          isFirst: isFirst,
+                          sshKeys: sshKeys,
+                          onSave: onSave,
+                          onAllSameSshKey: onAllSameSshKey),
+                      const SizedBox(width: 10),
+                      HelpIcon(wikipage: 'SSH-for-Beginners#ssh-keys'),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: GenericTextFormField(
+                            // IP
+                            label: 'IP Address',
+                            hint: "ex: '10.0.0.1' or '84.120.10.4'",
+                            error: 'Wrong IP address.',
+                            initialValue: server.ip,
+                            isDense: true,
+                            /* isCollapsed: true, */
+                            regexp: LARegExp.ip,
+                            allowEmpty: true,
+                            onChanged: (String value) {
+                              server.ip = value;
+                              onSave(server);
+                            }),
+                      )
+                    ]),
+                trailing: HelpIcon(
+                    wikipage:
+                        'SSH-for-Beginners#public-and-private-ip-addresses'),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-                child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                   /* SizedBox(height: 10),
                                     Text("Advanced optional settings:",
                                         style: TextStyle(fontSize: 16)),*/
@@ -95,7 +103,8 @@ class ServerDetailsCard extends StatelessWidget {
                           children: <Widget>[
                             Flexible(
                               child: GatewaySelector(
-                                  key: ValueKey('${server.id}-gw-${server.gateways.join(",")}'),
+                                  key: ValueKey(
+                                      '${server.id}-gw-${server.gateways.join(",")}'),
                                   firstServer: isFirst,
                                   exclude: server),
                             ),
@@ -107,12 +116,16 @@ class ServerDetailsCard extends StatelessWidget {
                                   label: 'SSH alternative Port',
                                   hint: 'Only if this is different than 22',
                                   error: 'Invalid port',
-                                  initialValue: server.sshPort != 22 ? server.sshPort.toString() : null,
+                                  initialValue: server.sshPort != 22
+                                      ? server.sshPort.toString()
+                                      : null,
                                   allowEmpty: true,
                                   isDense: true,
                                   regexp: LARegExp.portNumber,
                                   onChanged: (String value) {
-                                    server.sshPort = value.isNotEmpty ? int.parse(value) : 22;
+                                    server.sshPort = value.isNotEmpty
+                                        ? int.parse(value)
+                                        : 22;
                                     onSave(server);
                                   }),
                             ),
@@ -122,7 +135,8 @@ class ServerDetailsCard extends StatelessWidget {
                               child: GenericTextFormField(
                                   // SSH User
                                   label: 'SSH alternative username',
-                                  hint: "Only if it's different than '$ansibleUser' in this server",
+                                  hint:
+                                      "Only if it's different than '$ansibleUser' in this server",
                                   error: 'Invalid username',
                                   initialValue: server.sshUser ?? '',
                                   isDense: true,
@@ -143,7 +157,8 @@ class ServerDetailsCard extends StatelessWidget {
                           Flexible(
                             child: GenericTextFormField(
                                 // ALIASES
-                                label: 'Aliases (other names you give to this server separated by spaces)',
+                                label:
+                                    'Aliases (other names you give to this server separated by spaces)',
                                 /* hint:
                                                     'e.g. \'${_project.getService('collectory')?.url(_project.domain)} ${_project.getService('ala_hub')?.url(_project.domain)} ${_project.getService('ala_bie')?.suburl}\' ', */
                                 error: 'Wrong aliases.',

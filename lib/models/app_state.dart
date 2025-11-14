@@ -73,10 +73,12 @@ class AppState {
         laReleases = laReleases ?? <String, LAReleases>{},
         loading = loading ?? false,
         depsLoading = depsLoading ?? false,
-        serviceCheckProgress = serviceCheckProgress ?? <String, Map<String, dynamic>>{},
+        serviceCheckProgress =
+            serviceCheckProgress ?? <String, Map<String, dynamic>>{},
         appSnackBarMessages = appSnackBarMessages ?? <AppSnackBarMessage>[];
 
-  factory AppState.fromJson(Map<String, dynamic> json) => _$AppStateFromJson(json);
+  factory AppState.fromJson(Map<String, dynamic> json) =>
+      _$AppStateFromJson(json);
   @JsonKey(includeToJson: false, includeFromJson: false)
   final bool failedLoad;
   final bool firstUsage;
@@ -128,8 +130,10 @@ class AppState {
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
           listEquals(generatorReleases, other.generatorReleases) &&
           listEquals(appSnackBarMessages, other.appSnackBarMessages) &&
-          const DeepCollectionEquality.unordered().equals(laReleases, other.laReleases) &&
-          const DeepCollectionEquality.unordered().equals(serviceCheckProgress, other.serviceCheckProgress) &&
+          const DeepCollectionEquality.unordered()
+              .equals(laReleases, other.laReleases) &&
+          const DeepCollectionEquality.unordered()
+              .equals(serviceCheckProgress, other.serviceCheckProgress) &&
           listEquals(sshKeys, other.sshKeys);
 
   @override

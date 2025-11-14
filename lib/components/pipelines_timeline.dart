@@ -15,7 +15,11 @@ import '../utils/utils.dart';
 import 'generic_text_form_field.dart';
 
 class PipelinesTimeline extends StatefulWidget {
-  const PipelinesTimeline({required this.project, required this.cmd, required this.onChange, super.key});
+  const PipelinesTimeline(
+      {required this.project,
+      required this.cmd,
+      required this.onChange,
+      super.key});
 
   static const double stepSize = 50;
   static const double stepHeightNotVisible = 0;
@@ -48,7 +52,8 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
     super.initState();
     cmd = widget.cmd;
     focus = FocusNode(debugLabel: 'Button');
-    _nodeAttachment = focus.attach(context, onKey: (FocusNode node, RawKeyEvent event) {
+    _nodeAttachment =
+        focus.attach(context, onKey: (FocusNode node, RawKeyEvent event) {
       log('Was shift: $isShiftPressed');
       isShiftPressed = event.isShiftPressed;
       return KeyEventResult.handled;
@@ -89,10 +94,12 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
       });
     }));
     commonSteps.add(const Padding(
-        padding: PipelinesTimeline.titlePadding, child: Text('Pipelines steps:', style: UiUtils.titleStyle)));
+        padding: PipelinesTimeline.titlePadding,
+        child: Text('Pipelines steps:', style: UiUtils.titleStyle)));
     commonSteps.add(const SizedBox(height: 10));
-    otherSteps.add(
-        const Padding(padding: PipelinesTimeline.titlePadding, child: Text('Other tasks:', style: UiUtils.titleStyle)));
+    otherSteps.add(const Padding(
+        padding: PipelinesTimeline.titlePadding,
+        child: Text('Other tasks:', style: UiUtils.titleStyle)));
     otherSteps.add(const SizedBox(height: 10));
 
     PipelinesStepDesc.list.asMap().forEach((int index, PipelinesStepDesc step) {
@@ -111,15 +118,18 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
                     final bool loopForward = lastClicked < index;
                     if (loopForward) {
                       for (int x = lastClicked; x < index; x++) {
-                        cmd.steps.add(PipelinesStepDesc.allStringList.elementAt(x));
+                        cmd.steps
+                            .add(PipelinesStepDesc.allStringList.elementAt(x));
                       }
                     } else {
                       for (int x = lastClicked; x > index; x--) {
-                        cmd.steps.add(PipelinesStepDesc.allStringList.elementAt(x));
+                        cmd.steps
+                            .add(PipelinesStepDesc.allStringList.elementAt(x));
                       }
                     }
                   }
-                  final String el = PipelinesStepDesc.allStringList.elementAt(index);
+                  final String el =
+                      PipelinesStepDesc.allStringList.elementAt(index);
                   cmd.steps.add(el);
                 } else {
                   if (cmd.steps.contains(step.name)) {
@@ -160,7 +170,8 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
                       cmd.steps.addAll(PipelinesStepDesc.allStringList);
                     } else {
                       // ignore: prefer_foreach
-                      for (final String step in PipelinesStepDesc.allStringList) {
+                      for (final String step
+                          in PipelinesStepDesc.allStringList) {
                         cmd.steps.remove(step);
                       }
                     }
@@ -168,17 +179,27 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
                   })
                 })));
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-      ResponsiveGridRow(children: <ResponsiveGridCol>[
-        ResponsiveGridCol(lg: 9, child: Column(children: leftActions)),
-        ResponsiveGridCol(lg: 3, child: Column(children: rightActions))
-      ]),
-      const SizedBox(height: 40),
-      ResponsiveGridRow(children: <ResponsiveGridCol>[
-        ResponsiveGridCol(lg: 6, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: commonSteps)),
-        ResponsiveGridCol(lg: 6, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: otherSteps))
-      ])
-    ]);
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          ResponsiveGridRow(children: <ResponsiveGridCol>[
+            ResponsiveGridCol(lg: 9, child: Column(children: leftActions)),
+            ResponsiveGridCol(lg: 3, child: Column(children: rightActions))
+          ]),
+          const SizedBox(height: 40),
+          ResponsiveGridRow(children: <ResponsiveGridCol>[
+            ResponsiveGridCol(
+                lg: 6,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: commonSteps)),
+            ResponsiveGridCol(
+                lg: 6,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: otherSteps))
+          ])
+        ]);
   }
 
   bool shouldWeUse(LAProject project, PipelinesStepDesc step) {
@@ -203,9 +224,13 @@ class _StepTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      padding: visible ? PipelinesTimeline.stepPadding : PipelinesTimeline.stepPaddingNotVisible,
+      padding: visible
+          ? PipelinesTimeline.stepPadding
+          : PipelinesTimeline.stepPaddingNotVisible,
       constraints: BoxConstraints(
-          minHeight: visible ? PipelinesTimeline.stepSize : PipelinesTimeline.stepHeightNotVisible,
+          minHeight: visible
+              ? PipelinesTimeline.stepSize
+              : PipelinesTimeline.stepHeightNotVisible,
           maxWidth: 100,
           minWidth: 100),
       duration: PipelinesTimeline.animationDuration,
@@ -219,7 +244,11 @@ class _StepTitle extends StatelessWidget {
 
 class _StepWidget extends StatelessWidget {
   const _StepWidget(
-      {required this.cmd, required this.index, required this.step, required this.lastBuilt, required this.onPressed});
+      {required this.cmd,
+      required this.index,
+      required this.step,
+      required this.lastBuilt,
+      required this.onPressed});
 
   final PipelinesCmd cmd;
   final PipelinesStepDesc step;
@@ -254,20 +283,27 @@ class _StepWidget extends StatelessWidget {
   );
 
   List<T> intersection<T>(Iterable<Iterable<T>> iterables) {
-    return iterables.map((Iterable<T> e) => e.toSet()).reduce((Set<T> a, Set<T> b) => a.intersection(b)).toList();
+    return iterables
+        .map((Iterable<T> e) => e.toSet())
+        .reduce((Set<T> a, Set<T> b) => a.intersection(b))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final bool stepsToMinimize = index > 1 && index <= 10;
-    final bool somethingOfStepsSelected =
-        intersection(<List<String>>[cmd.steps.toList(), PipelinesStepDesc.allStringList]).isNotEmpty || cmd.allSteps;
+    final bool somethingOfStepsSelected = intersection(<List<String>>[
+          cmd.steps.toList(),
+          PipelinesStepDesc.allStringList
+        ]).isNotEmpty ||
+        cmd.allSteps;
     // bool somethingOfRestTasksSelected =
     //  intersection([cmd.steps, PipelinesStepDesc.restStringList]).isNotEmpty;
     final bool allVisible = somethingOfStepsSelected || !stepsToMinimize;
 
-    final IndicatorStyle onOffStStyle =
-        !cmd.steps.contains(step.name) ? notSelectedIndicatorStyle : selectedIndicatorStyle;
+    final IndicatorStyle onOffStStyle = !cmd.steps.contains(step.name)
+        ? notSelectedIndicatorStyle
+        : selectedIndicatorStyle;
     return InkWell(
         onTap: onPressed,
         child: TimelineTile(
@@ -303,9 +339,13 @@ class _StepDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      padding: visible ? PipelinesTimeline.stepPadding : PipelinesTimeline.stepPaddingNotVisible,
-      constraints:
-          BoxConstraints(minHeight: visible ? PipelinesTimeline.stepSize : PipelinesTimeline.stepHeightNotVisible),
+      padding: visible
+          ? PipelinesTimeline.stepPadding
+          : PipelinesTimeline.stepPaddingNotVisible,
+      constraints: BoxConstraints(
+          minHeight: visible
+              ? PipelinesTimeline.stepSize
+              : PipelinesTimeline.stepHeightNotVisible),
       duration: PipelinesTimeline.animationDuration,
       child: Text(visible ? StringUtils.capitalize(desc) : ''),
     );
@@ -323,8 +363,10 @@ class _DrInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return GenericTextFormField(
       label: 'Data resource/s',
-      hint: 'A data resource or a list of data resources, like: dr893 dr915 (space separated)',
-      error: "Wrong data resource/s. It should start with 'dr', like 'dr893' or a list like 'dr893 dr915 dr200'",
+      hint:
+          'A data resource or a list of data resources, like: dr893 dr915 (space separated)',
+      error:
+          "Wrong data resource/s. It should start with 'dr', like 'dr893' or a list like 'dr893 dr915 dr200'",
       regexp: LARegExp.drs,
       onChanged: onChanged,
       enabled: !allDrs,
@@ -350,13 +392,20 @@ class _DoAllDrsBtn extends StatelessWidget {
               const SizedBox(width: 20),
               const Text('or '),
               const SizedBox(width: 20),
-              GenericActionChip(text: 'do all drs', onPressed: onPressed, isPressed: isPressed)
+              GenericActionChip(
+                  text: 'do all drs',
+                  onPressed: onPressed,
+                  isPressed: isPressed)
             ])));
   }
 }
 
 class GenericActionChip extends StatelessWidget {
-  const GenericActionChip({super.key, required this.onPressed, required this.isPressed, required this.text});
+  const GenericActionChip(
+      {super.key,
+      required this.onPressed,
+      required this.isPressed,
+      required this.text});
 
   final VoidCallback onPressed;
   final bool isPressed;
@@ -369,6 +418,8 @@ class GenericActionChip extends StatelessWidget {
         backgroundColor: isPressed ? LAColorTheme.laPalette : null,
         avatar: isPressed ? const Icon(Icons.check, color: Colors.white) : null,
         labelPadding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-        label: Text(text, style: TextStyle(fontSize: 16, color: isPressed ? Colors.white : null)));
+        label: Text(text,
+            style: TextStyle(
+                fontSize: 16, color: isPressed ? Colors.white : null)));
   }
 }

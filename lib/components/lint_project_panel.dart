@@ -19,7 +19,11 @@ import 'alert_card.dart';
 import 'lint_error_panel.dart';
 
 class LintProjectPanel extends StatefulWidget {
-  const LintProjectPanel({super.key, this.showLADeps = true, this.showToolkitDeps = true, this.showOthers = true});
+  const LintProjectPanel(
+      {super.key,
+      this.showLADeps = true,
+      this.showToolkitDeps = true,
+      this.showOthers = true});
 
   final bool showLADeps;
   final bool showToolkitDeps;
@@ -44,33 +48,44 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           status: store.state.currentProject.status);
     }, builder: (BuildContext context, _LintProjectPanelViewModel vm) {
       final LAProject project = vm.project;
-      final bool basicDefined = vm.status.value >= LAProjectStatus.basicDefined.value;
+      final bool basicDefined =
+          vm.status.value >= LAProjectStatus.basicDefined.value;
       final Map<String, String> selectedVersions = <String, String>{};
       if (widget.showLADeps) {
         selectedVersions.addAll(project.getServiceDeployReleases());
       }
       // we need also the toolkit deps
-      if ((widget.showToolkitDeps || widget.showLADeps) && vm.backendVersion != null) {
+      if ((widget.showToolkitDeps || widget.showLADeps) &&
+          vm.backendVersion != null) {
         selectedVersions.addAll(<String, String>{
           toolkit: vm.backendVersion!,
-          alaInstall:
-              project.alaInstallRelease ?? (vm.alaInstallReleases.isNotEmpty ? vm.alaInstallReleases[0] : '2.1.14'),
-          generator: project.generatorRelease ?? (vm.generatorReleases.isNotEmpty ? vm.generatorReleases[0] : '1.4.3')
+          alaInstall: project.alaInstallRelease ??
+              (vm.alaInstallReleases.isNotEmpty
+                  ? vm.alaInstallReleases[0]
+                  : '2.1.14'),
+          generator: project.generatorRelease ??
+              (vm.generatorReleases.isNotEmpty
+                  ? vm.generatorReleases[0]
+                  : '1.4.3')
         });
       }
       final List<Widget> lints = <Widget>[
         LintErrorPanel(vm.backendVersion == null // AppUtils.isDemo()
             ? <String>[]
-            : DependenciesManager.verifyLAReleases(project.getServicesNameListInUse() + laTools, selectedVersions))
+            : DependenciesManager.verifyLAReleases(
+                project.getServicesNameListInUse() + laTools, selectedVersions))
       ];
 
       if (basicDefined && widget.showLADeps) {
         // Check java
         for (final LAServer s in project.servers) {
-          final List<String> services = project.getServerServices(serverId: s.id);
-          lints.add(LintErrorPanel(vm.backendVersion == null // AppUtils.isDemo()
-              ? <String>[]
-              : DependenciesManager.verifySw(s, java, services, selectedVersions)));
+          final List<String> services =
+              project.getServerServices(serverId: s.id);
+          lints.add(LintErrorPanel(
+              vm.backendVersion == null // AppUtils.isDemo()
+                  ? <String>[]
+                  : DependenciesManager.verifySw(
+                      s, java, services, selectedVersions)));
         }
       }
       final List<String> notAssigned = project.servicesNotAssigned();
@@ -78,11 +93,14 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           ? ' (${notAssigned.map((String s) => LAServiceDesc.get(s).name).toList().join(', ')})'
           : '';
       if (widget.showOthers) {
-        final bool useOidc = project.getVariableValue('oidc_use') as bool? ?? false;
-        final String? userDetailsVersion = project.getSwVersionOfService(userdetails);
+        final bool useOidc =
+            project.getVariableValue('oidc_use') as bool? ?? false;
+        final String? userDetailsVersion =
+            project.getSwVersionOfService(userdetails);
         final String? generatorVersion = project.generatorRelease;
         final String? alaInstallVersion = project.alaInstallRelease;
-        debugPrint('ala-install $alaInstallVersion, generator: $generatorVersion');
+        debugPrint(
+            'ala-install $alaInstallVersion, generator: $generatorVersion');
         // debugPrint('useOidc: $useOidc userDetails version: $userDetailsVersion');
         lints.insertAll(0, <Widget>[
           if (vm.sshKeys.isEmpty)
@@ -90,48 +108,82 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 message: "You don't have any SSH key",
                 actionText: 'SOLVE',
                 action: () => BeamerCond.of(context, SshKeysLocation())),
-          if (project.allServersWithServicesReady() && !project.allServersWithSupportedOs('Ubuntu', '22.04'))
-            const AlertCard(message: 'The current supported OS version are Ubuntu 22.04 and 24.04 (under testing)'),
-          if (basicDefined && project.servers.isNotEmpty && !project.allServicesAssigned())
-            AlertCard(message: 'Some service is not assigned to a server$notAssignedMessage'),
-          if (basicDefined && project.servers.isNotEmpty && project.getIncompatibilities().isNotEmpty)
-            for (final String i in project.getIncompatibilities()) AlertCard(message: i),
+          if (project.allServersWithServicesReady() &&
+              !project.allServersWithSupportedOs('Ubuntu', '22.04'))
+            const AlertCard(
+                message:
+                    'The current supported OS version are Ubuntu 22.04 and 24.04 (under testing)'),
+          if (basicDefined &&
+              project.servers.isNotEmpty &&
+              !project.allServicesAssigned())
+            AlertCard(
+                message:
+                    'Some service is not assigned to a server$notAssignedMessage'),
+          if (basicDefined &&
+              project.servers.isNotEmpty &&
+              project.getIncompatibilities().isNotEmpty)
+            for (final String i in project.getIncompatibilities())
+              AlertCard(message: i),
           if (basicDefined && !project.allServersWithIPs())
-            const AlertCard(message: 'All servers should have configured their IP address'),
+            const AlertCard(
+                message: 'All servers should have configured their IP address'),
           if (basicDefined && !project.allServersWithSshKeys())
-            const AlertCard(message: 'All servers should have configured their SSH keys'),
+            const AlertCard(
+                message: 'All servers should have configured their SSH keys'),
           if (!project.servicesInDifferentServers(collectory, alaHub))
             const AlertCard(
                 message:
                     'The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled'),
           if (!project.servicesInDifferentServers(ecodata, spatial))
             const AlertCard(
-                message: 'The ecodata and spatial services are in the same server. This can cause deploy problems'),
+                message:
+                    'The ecodata and spatial services are in the same server. This can cause deploy problems'),
           if (!project.servicesInDifferentServers(ecodataReporting, spatial))
             const AlertCard(
                 message:
                     'The ecodata reporting and spatial services are in the same server. This can cause deploy problems'),
-          if (!project.isHub && !project.isPipelinesInUse && !project.getServiceE(LAServiceName.biocache_backend).use)
-            const AlertCard(message: 'You should use biocache-store or the new pipelines as backend'),
-          if (!project.isHub && project.getService(biocacheBackend).use && !project.getService(solr).use)
-            const AlertCard(message: 'You should use solr standalone for indexing biocache-store'),
-          if (!project.isHub && project.getService(bie).use && !project.getService(solr).use)
-            const AlertCard(message: 'You should use solr standalone for indexing species'),
-          if (!project.isHub && project.getService(pipelines).use && !project.getService(solrcloud).use)
-            const AlertCard(message: 'You should use solrcloud for indexing pipelines'),
-          if (!project.isHub && project.getService(events).use && !project.getService(eventsElasticSearch).use)
+          if (!project.isHub &&
+              !project.isPipelinesInUse &&
+              !project.getServiceE(LAServiceName.biocache_backend).use)
+            const AlertCard(
+                message:
+                    'You should use biocache-store or the new pipelines as backend'),
+          if (!project.isHub &&
+              project.getService(biocacheBackend).use &&
+              !project.getService(solr).use)
+            const AlertCard(
+                message:
+                    'You should use solr standalone for indexing biocache-store'),
+          if (!project.isHub &&
+              project.getService(bie).use &&
+              !project.getService(solr).use)
+            const AlertCard(
+                message: 'You should use solr standalone for indexing species'),
+          if (!project.isHub &&
+              project.getService(pipelines).use &&
+              !project.getService(solrcloud).use)
+            const AlertCard(
+                message: 'You should use solrcloud for indexing pipelines'),
+          if (!project.isHub &&
+              project.getService(events).use &&
+              !project.getService(eventsElasticSearch).use)
             const AlertCard(message: 'You should use elasticsearch for events'),
           if (!project.isHub &&
               project.getService(pipelines).use &&
               project.getService(solrcloud).use &&
               !project.getService(zookeeper).use)
-            const AlertCard(message: 'You should use zookeeper for solrcloud coordination'),
-          if (basicDefined && project.isPipelinesInUse && project.getPipelinesMaster() == null)
+            const AlertCard(
+                message: 'You should use zookeeper for solrcloud coordination'),
+          if (basicDefined &&
+              project.isPipelinesInUse &&
+              project.getPipelinesMaster() == null)
             AlertCard(
                 message: 'You should select a master server for pipelines',
                 actionText: 'SOLVE',
                 action: () => BeamerCond.of(context, LAProjectTuneLocation())),
-          if (basicDefined && project.isPipelinesInUse && project.getHostnames(pipelines).length < 3)
+          if (basicDefined &&
+              project.isPipelinesInUse &&
+              project.getHostnames(pipelines).length < 3)
             AlertCard(
                 message:
                     'A pipelines cluster should have at least 3 servers (it have ${project.getHostnames(pipelines).length})',
@@ -161,16 +213,21 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               project.getHostnames(pipelines).isNotEmpty &&
               project.getHostnames(pipelines).join(' ').contains('_'))
             AlertCard(
-                message: 'Pipelines server names should not contain underscores',
+                message:
+                    'Pipelines server names should not contain underscores',
                 actionText: 'SOLVE',
-                action: project.isCreated ? () => BeamerCond.of(context, LAProjectEditLocation()) : null),
+                action: project.isCreated
+                    ? () => BeamerCond.of(context, LAProjectEditLocation())
+                    : null),
           if (!project.isHub &&
               project.getService(cas).use &&
               userDetailsVersion != null &&
-              VersionConstraint.parse('< 3.0.1').allows(v(userDetailsVersion)) &&
+              VersionConstraint.parse('< 3.0.1')
+                  .allows(v(userDetailsVersion)) &&
               // useOidc != null &&
               useOidc)
-            const AlertCard(message: 'OIDC can be used with userdetails >= 3.0.1'),
+            const AlertCard(
+                message: 'OIDC can be used with userdetails >= 3.0.1'),
         ]);
       }
       return Column(children: lints);
@@ -203,8 +260,10 @@ class _LintProjectPanelViewModel {
           project == other.project &&
           backendVersion == other.backendVersion &&
           sshKeys == other.sshKeys &&
-          const ListEquality<String>().equals(generatorReleases, other.generatorReleases) &&
-          const ListEquality<String>().equals(alaInstallReleases, other.alaInstallReleases) &&
+          const ListEquality<String>()
+              .equals(generatorReleases, other.generatorReleases) &&
+          const ListEquality<String>()
+              .equals(alaInstallReleases, other.alaInstallReleases) &&
           status == other.status;
 
   @override

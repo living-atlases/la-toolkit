@@ -12,7 +12,12 @@ import '../not_in_demo.dart';
 import '../utils/utils.dart'; // https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
 
 class EmbedWebView extends StatefulWidget {
-  const EmbedWebView({super.key, required this.src, this.height, this.width, required this.notify});
+  const EmbedWebView(
+      {super.key,
+      required this.src,
+      this.height,
+      this.width,
+      required this.notify});
 
   final String src;
   final double? height, width;
@@ -24,7 +29,8 @@ class EmbedWebView extends StatefulWidget {
   }
 }
 
-class EmbedWebViewState extends State<EmbedWebView> with AutomaticKeepAliveClientMixin {
+class EmbedWebViewState extends State<EmbedWebView>
+    with AutomaticKeepAliveClientMixin {
   late WebSocketChannel _channel;
 
   @override
@@ -102,7 +108,8 @@ class EmbedWebViewState extends State<EmbedWebView> with AutomaticKeepAliveClien
     final String? perm = html.Notification.permission;
     if (perm == 'granted') {
       html.Notification('LA Toolkit: Command finished',
-          icon: 'https://raw.githubusercontent.com/living-atlases/artwork/master/icon-white.png');
+          icon:
+              'https://raw.githubusercontent.com/living-atlases/artwork/master/icon-white.png');
     }
   }
 }

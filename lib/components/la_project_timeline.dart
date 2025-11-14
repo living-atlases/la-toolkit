@@ -26,7 +26,8 @@ class LAProjectTimeline extends StatelessWidget {
     return StoreConnector<AppState, _LAProjectTimelineViewModel>(
         distinct: true,
         converter: (Store<AppState> store) {
-          return _LAProjectTimelineViewModel(status: project.status, isHub: project.isHub);
+          return _LAProjectTimelineViewModel(
+              status: project.status, isHub: project.isHub);
         },
         builder: (BuildContext context, _LAProjectTimelineViewModel vm) {
           final bool small = MediaQuery.of(context).size.width < 750;
@@ -46,9 +47,11 @@ class LAProjectTimeline extends StatelessWidget {
                     builder: TimelineTileBuilder.connected(
                       connectionDirection: ConnectionDirection.before,
                       itemExtentBuilder: (_, __) => 100,
-                      oppositeContentsBuilder: (BuildContext context, int index) {
+                      oppositeContentsBuilder:
+                          (BuildContext context, int index) {
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: _iconsVerticalPadding),
+                          padding: const EdgeInsets.only(
+                              bottom: _iconsVerticalPadding),
                           // steps icons size
                           child: Icon(
                             LAProjectStatus.values[index].icon,
@@ -63,9 +66,13 @@ class LAProjectTimeline extends StatelessWidget {
                       contentsBuilder: (BuildContext context, int index) {
                         return Padding(
                           // Top of step titles
-                          padding: EdgeInsets.only(top: small ? 0 : _iconsVerticalPadding, left: small ? 20 : 0),
+                          padding: EdgeInsets.only(
+                              top: small ? 0 : _iconsVerticalPadding,
+                              left: small ? 20 : 0),
                           child: Text(
-                            LAProjectStatus.values[index].title(vm.isHub).replaceAll(' ', '\n'),
+                            LAProjectStatus.values[index]
+                                .title(vm.isHub)
+                                .replaceAll(' ', '\n'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 // fontWeight: FontWeight.bold,
@@ -137,13 +144,20 @@ class LAProjectTimeline extends StatelessWidget {
                       connectorBuilder: (_, int index, ConnectorType type) {
                         if (index > 0) {
                           if (index == vm.status.value) {
-                            final Color prevColor = getColor(vm.status, index - 1);
+                            final Color prevColor =
+                                getColor(vm.status, index - 1);
                             final Color color = getColor(vm.status, index);
                             List<Color> gradientColors;
                             if (type == ConnectorType.start) {
-                              gradientColors = <Color>[Color.lerp(prevColor, color, 0.5)!, color];
+                              gradientColors = <Color>[
+                                Color.lerp(prevColor, color, 0.5)!,
+                                color
+                              ];
                             } else {
-                              gradientColors = <Color>[prevColor, Color.lerp(prevColor, color, 0.5)!];
+                              gradientColors = <Color>[
+                                prevColor,
+                                Color.lerp(prevColor, color, 0.5)!
+                              ];
                             }
                             return DecoratedLineConnector(
                               decoration: BoxDecoration(
@@ -187,7 +201,9 @@ class _LAProjectTimelineViewModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _LAProjectTimelineViewModel && runtimeType == other.runtimeType && status.value == other.status.value;
+      other is _LAProjectTimelineViewModel &&
+          runtimeType == other.runtimeType &&
+          status.value == other.status.value;
 
   @override
   int get hashCode => status.value.hashCode;
@@ -232,7 +248,8 @@ class _BezierPainter extends CustomPainter {
       offset2 = _offset(radius, -angle);
       path = Path()
         ..moveTo(offset1.dx, offset1.dy)
-        ..quadraticBezierTo(0.0, size.height / 2, -radius, radius) // TODOconnector start & gradient
+        ..quadraticBezierTo(0.0, size.height / 2, -radius,
+            radius) // TODOconnector start & gradient
         ..quadraticBezierTo(0.0, size.height / 2, offset2.dx, offset2.dy)
         ..close();
 
@@ -245,7 +262,8 @@ class _BezierPainter extends CustomPainter {
 
       path = Path()
         ..moveTo(offset1.dx, offset1.dy)
-        ..quadraticBezierTo(size.width, size.height / 2, size.width + radius, radius) // TODOconnector end & gradient
+        ..quadraticBezierTo(size.width, size.height / 2, size.width + radius,
+            radius) // TODOconnector end & gradient
         ..quadraticBezierTo(size.width, size.height / 2, offset2.dx, offset2.dy)
         ..close();
 
@@ -255,6 +273,8 @@ class _BezierPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_BezierPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.drawStart != drawStart || oldDelegate.drawEnd != drawEnd;
+    return oldDelegate.color != color ||
+        oldDelegate.drawStart != drawStart ||
+        oldDelegate.drawEnd != drawEnd;
   }
 }

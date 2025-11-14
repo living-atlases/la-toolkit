@@ -48,23 +48,30 @@ class _PipelinesPageState extends State<PipelinesPage> {
             onRunPipelines: (LAProject project, PipelinesCmd cmd) {
               // We order the steps in the same order expected by pipelines
               final Set<String> sortedSteps = PipelinesStepDesc.list
-                  .where((PipelinesStepDesc step) => cmd.steps.contains(step.name))
+                  .where(
+                      (PipelinesStepDesc step) => cmd.steps.contains(step.name))
                   .map((PipelinesStepDesc step) => step.name)
                   .toList()
                   .toSet();
               cmd.steps = sortedSteps;
               // if do-all, we don't add these steps
               if (cmd.allSteps) {
-                cmd.steps.removeWhere((String s) => PipelinesStepDesc.allStringList.contains(s));
+                cmd.steps.removeWhere(
+                    (String s) => PipelinesStepDesc.allStringList.contains(s));
                 cmd.steps.add('do-all');
               }
               log(cmd.toString());
-              DeployUtils.pipelinesRun(context: context, store: store, project: project, cmd: cmd);
+              DeployUtils.pipelinesRun(
+                  context: context, store: store, project: project, cmd: cmd);
             },
             cmd: store.state.repeatCmd.runtimeType != PipelinesCmd
                 ? PipelinesCmd(
-                    master: store.state.currentProject.getPipelinesMaster()!.name,
-                    mode: store.state.currentProject.inProduction && !AppUtils.isDev() ? 2 : 1)
+                    master:
+                        store.state.currentProject.getPipelinesMaster()!.name,
+                    mode: store.state.currentProject.inProduction &&
+                            !AppUtils.isDev()
+                        ? 2
+                        : 1)
                 : store.state.repeatCmd as PipelinesCmd);
       },
       builder: (BuildContext context, _ViewModel vm) {
@@ -76,7 +83,8 @@ class _PipelinesPageState extends State<PipelinesPage> {
           cmd.master = vm.project.masterPipelinesServer!.name;
         }
         final VoidCallback? onTap = cmd.isACmdForAll ||
-                ((cmd.allDrs || (cmd.drs != null && cmd.drs!.isNotEmpty)) && (cmd.steps.isNotEmpty || cmd.allSteps))
+                ((cmd.allDrs || (cmd.drs != null && cmd.drs!.isNotEmpty)) &&
+                    (cmd.steps.isNotEmpty || cmd.allSteps))
             ? () => vm.onRunPipelines(vm.project, cmd)
             : null;
         final String pageTitle = '${vm.project.shortName} Pipelines';
@@ -113,21 +121,32 @@ class _PipelinesPageState extends State<PipelinesPage> {
                                     }),
                                 const SizedBox(height: 20),
                                 Tooltip(
-                                    message: 'Run locally, in spark embedded or in the spark cluster',
+                                    message:
+                                        'Run locally, in spark embedded or in the spark cluster',
                                     child: ToggleSwitch(
                                       minWidth: 90.0,
                                       cornerRadius: 20.0,
                                       activeBgColors: <List<Color>?>[
-                                        <Color>[LAColorTheme.laPalette.shade200],
-                                        <Color>[LAColorTheme.laPalette.shade400],
-                                        <Color>[LAColorTheme.laPalette.shade800],
+                                        <Color>[
+                                          LAColorTheme.laPalette.shade200
+                                        ],
+                                        <Color>[
+                                          LAColorTheme.laPalette.shade400
+                                        ],
+                                        <Color>[
+                                          LAColorTheme.laPalette.shade800
+                                        ],
                                       ],
                                       activeFgColor: Colors.white,
                                       inactiveBgColor: Colors.grey,
                                       inactiveFgColor: Colors.white,
                                       initialLabelIndex: cmd.mode,
                                       totalSwitches: 3,
-                                      labels: const <String>['Local', 'Embedded', 'Cluster'],
+                                      labels: const <String>[
+                                        'Local',
+                                        'Embedded',
+                                        'Cluster'
+                                      ],
                                       radiusStyle: true,
                                       onToggle: (int? index) {
                                         if (index != null) {
@@ -137,15 +156,20 @@ class _PipelinesPageState extends State<PipelinesPage> {
                                         }
                                       },
                                     )),
-                                if (((cmd.steps.contains(clustering) || cmd.steps.contains(jackknife)) ||
+                                if (((cmd.steps.contains(clustering) ||
+                                            cmd.steps.contains(jackknife)) ||
                                         cmd.allSteps) &&
                                     !cmd.allDrs &&
                                     cmd.drs != null &&
                                     cmd.drs!.isNotEmpty)
                                   const AlertCard(
-                                    message: "Run 'clustering' and/or 'jackkife' steps only with all drs",
+                                    message:
+                                        "Run 'clustering' and/or 'jackkife' steps only with all drs",
                                   ),
-                                LaunchBtn(onTap: onTap, execBtn: execBtn, icon: MdiIcons.pipe),
+                                LaunchBtn(
+                                    onTap: onTap,
+                                    execBtn: execBtn,
+                                    icon: MdiIcons.pipe),
                               ],
                             )),
                         Expanded(
@@ -176,7 +200,10 @@ class _ViewModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _ViewModel && runtimeType == other.runtimeType && cmd == other.cmd && project == other.project;
+      other is _ViewModel &&
+          runtimeType == other.runtimeType &&
+          cmd == other.cmd &&
+          project == other.project;
 
   @override
   int get hashCode => project.hashCode ^ project.hashCode ^ cmd.hashCode;

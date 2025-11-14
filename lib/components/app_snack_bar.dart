@@ -18,9 +18,11 @@ class AppSnackBar extends StatelessWidget {
           messageToShow: store.state.appSnackBarMessages.isNotEmpty
               ? store.state.appSnackBarMessages.first
               : AppSnackBarMessage.empty,
-          onSnackBarShowed: (AppSnackBarMessage message) => store.dispatch(OnShowedSnackBar(message))),
+          onSnackBarShowed: (AppSnackBarMessage message) =>
+              store.dispatch(OnShowedSnackBar(message))),
       builder: (BuildContext context, _AppSnackBarViewModel view) => child,
-      onWillChange: (_AppSnackBarViewModel? oldVm, _AppSnackBarViewModel newVm) {
+      onWillChange:
+          (_AppSnackBarViewModel? oldVm, _AppSnackBarViewModel newVm) {
         // onDidChange: (newVm) {
         final AppSnackBarMessage appSnackMessage = newVm.messageToShow;
         if (appSnackMessage != AppSnackBarMessage.empty) {
@@ -28,8 +30,9 @@ class AppSnackBar extends StatelessWidget {
           //    ">>>>>>>>>>>>>>>> Snackbar message '${appSnackMessage?.message}'");
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(appSnackMessage.message),
-            duration:
-                appSnackMessage.duration ?? const Duration(milliseconds: 4000), // 4000 is the default one in Flutter
+            duration: appSnackMessage.duration ??
+                const Duration(
+                    milliseconds: 4000), // 4000 is the default one in Flutter
             action: appSnackMessage.action,
           ));
           newVm.onSnackBarShowed(appSnackMessage);
@@ -43,7 +46,8 @@ class AppSnackBar extends StatelessWidget {
 
 @immutable
 class _AppSnackBarViewModel {
-  const _AppSnackBarViewModel({required this.onSnackBarShowed, required this.messageToShow});
+  const _AppSnackBarViewModel(
+      {required this.onSnackBarShowed, required this.messageToShow});
 
   final Function onSnackBarShowed;
   final AppSnackBarMessage messageToShow;
@@ -53,5 +57,6 @@ class _AppSnackBarViewModel {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is _AppSnackBarViewModel && other.messageToShow == messageToShow;
+      identical(this, other) ||
+      other is _AppSnackBarViewModel && other.messageToShow == messageToShow;
 }

@@ -11,12 +11,16 @@ class BrandingDeployCmd extends CommonCmd {
     this.debug = false,
   });
 
-  factory BrandingDeployCmd.fromJson(Map<String, dynamic> json) => _$BrandingDeployCmdFromJson(json);
+  factory BrandingDeployCmd.fromJson(Map<String, dynamic> json) =>
+      _$BrandingDeployCmdFromJson(json);
   bool debug;
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is BrandingDeployCmd && runtimeType == other.runtimeType && debug == other.debug;
+      identical(this, other) ||
+      other is BrandingDeployCmd &&
+          runtimeType == other.runtimeType &&
+          debug == other.debug;
 
   @override
   int get hashCode => debug.hashCode;

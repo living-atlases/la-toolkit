@@ -54,7 +54,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       appState = initialEmptyAppState();
     } else {
       try {
-        final Map<String, dynamic> asJ = json.decode(asS) as Map<String, dynamic>;
+        final Map<String, dynamic> asJ =
+            json.decode(asS) as Map<String, dynamic>;
         appState = AppState.fromJson(asJ);
       } catch (e) {
         log('Failed to decode conf: $e');
@@ -78,41 +79,50 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   Future<void> call(Store<AppState> store, action, next) async {
     if (action is OnFetchSoftwareDepsState) {
       // ALA-INSTALL RELEASES
-      final Uri alaInstallReleasesApiUrl =
-          Uri.https('api.github.com', '/repos/AtlasOfLivingAustralia/ala-install/releases');
+      final Uri alaInstallReleasesApiUrl = Uri.https('api.github.com',
+          '/repos/AtlasOfLivingAustralia/ala-install/releases');
 
-      final Response alaInstallReleasesResponse = await http.get(alaInstallReleasesApiUrl);
+      final Response alaInstallReleasesResponse =
+          await http.get(alaInstallReleasesApiUrl);
       if (alaInstallReleasesResponse.statusCode == 200) {
-        final List<dynamic> l = jsonDecode(alaInstallReleasesResponse.body) as List;
+        final List<dynamic> l =
+            jsonDecode(alaInstallReleasesResponse.body) as List;
         final List<String> alaInstallReleases = <String>[];
         for (final element in l) {
           alaInstallReleases.add(element['tag_name'] as String);
         }
         // Remove the old ones
         const int limitResults = 6;
-        alaInstallReleases.removeRange(alaInstallReleases.length - limitResults, alaInstallReleases.length);
+        alaInstallReleases.removeRange(alaInstallReleases.length - limitResults,
+            alaInstallReleases.length);
         alaInstallReleases.add('la-develop');
         alaInstallReleases.add('upstream');
         alaInstallReleases.add('custom');
-        if (!const ListEquality().equals(alaInstallReleases, store.state.alaInstallReleases)) {
+        if (!const ListEquality()
+            .equals(alaInstallReleases, store.state.alaInstallReleases)) {
           store.dispatch(OnFetchAlaInstallReleases(alaInstallReleases));
         }
         scanSshKeys(store, () {});
       } else {
         store.dispatch(OnFetchAlaInstallReleasesFailed());
-        store.dispatch(ShowSnackBar(
-            AppSnackBarMessage.ok('Failed to fetch github ala-install releases. Are you connected to Internet?')));
+        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+            'Failed to fetch github ala-install releases. Are you connected to Internet?')));
       }
 
       // LA-TOOLKIT RELEASES
-      final Uri laToolkitReleasesApiUrl = Uri.https('api.github.com', '/repos/living-atlases/la-toolkit/releases');
-      final Response laToolkitReleasesResponse = await http.get(laToolkitReleasesApiUrl);
+      final Uri laToolkitReleasesApiUrl = Uri.https(
+          'api.github.com', '/repos/living-atlases/la-toolkit/releases');
+      final Response laToolkitReleasesResponse =
+          await http.get(laToolkitReleasesApiUrl);
       if (laToolkitReleasesResponse.statusCode == 200) {
-        final List<dynamic> l = jsonDecode(laToolkitReleasesResponse.body) as List;
+        final List<dynamic> l =
+            jsonDecode(laToolkitReleasesResponse.body) as List;
         if (l.isNotEmpty) {
-          final Version lastLAToolkitVersion = Version.parse(l.first['tag_name'].toString().replaceFirst('v', ''));
+          final Version lastLAToolkitVersion = Version.parse(
+              l.first['tag_name'].toString().replaceFirst('v', ''));
           if (!AppUtils.isDemo()) {
-            final Version backendVersion = Version.parse(await Api.getBackendVersion() ?? '');
+            final Version backendVersion =
+                Version.parse(await Api.getBackendVersion() ?? '');
             store.dispatch(OnFetchBackendVersion(backendVersion.toString()));
             if (backendVersion < lastLAToolkitVersion) {
               log('$backendVersion < $lastLAToolkitVersion');
@@ -122,35 +132,42 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
                   SnackBarAction(
                       label: 'MORE INFO',
                       onPressed: () async {
-                        await launchUrl(Uri.parse('https://github.com/living-atlases/la-toolkit/#upgrade-the-toolkit'));
+                        await launchUrl(Uri.parse(
+                            'https://github.com/living-atlases/la-toolkit/#upgrade-the-toolkit'));
                       }))));
             }
           }
         }
       } else {
-        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok('Failed to fetch github la-toolkit releases')));
+        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+            'Failed to fetch github la-toolkit releases')));
       }
 
       // GENERATOR RELEASES
       if (AppUtils.isDemo()) {
-        store.dispatch(OnFetchGeneratorReleases(<String>['1.2.29', '1.2.28', '1.2.27', '1.2.26']));
+        store.dispatch(OnFetchGeneratorReleases(
+            <String>['1.2.29', '1.2.28', '1.2.27', '1.2.26']));
       } else {
         // generatorReleasesApiUrl =
         //  "https://registry.npmjs.org/generator-living-atlas";
         // As this does not have CORS enabled we use a proxy
-        final Uri generatorReleasesApiUrl = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/get-generator-versions');
+        final Uri generatorReleasesApiUrl = AppUtils.uri(
+            dotenv.env['BACKEND']!, '/api/v1/get-generator-versions');
         final Response generatorReleasesResponse = await http.get(
           generatorReleasesApiUrl,
           //  headers: {'Accept': 'application/vnd.npm.install-v1+json'},
         );
         if (generatorReleasesResponse.statusCode == 200) {
-          final Map<String, dynamic> l = json.decode(generatorReleasesResponse.body) as Map<String, dynamic>;
-          final Map<String, dynamic> versions = l['versions'] as Map<String, dynamic>;
+          final Map<String, dynamic> l = json
+              .decode(generatorReleasesResponse.body) as Map<String, dynamic>;
+          final Map<String, dynamic> versions =
+              l['versions'] as Map<String, dynamic>;
           final List<String> generatorReleases = <String>[];
           for (final String key in versions.keys) {
             generatorReleases.insert(0, key);
           }
-          if (!const ListEquality().equals(generatorReleases, store.state.generatorReleases)) {
+          if (!const ListEquality()
+              .equals(generatorReleases, store.state.generatorReleases)) {
             store.dispatch(OnFetchGeneratorReleases(generatorReleases));
           }
         } else {
@@ -166,7 +183,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         // ALA other Releases
         if (!action.force &&
             store.state.lastSwCheck != null &&
-            (store.state.lastSwCheck!.isAfter(DateTime.now().subtract(const Duration(hours: 12))))) {
+            (store.state.lastSwCheck!
+                .isAfter(DateTime.now().subtract(const Duration(hours: 12))))) {
           log('Not checking LA versions because we retrieved them already today');
           log(store.state.laReleases.toString());
         } else {
@@ -188,7 +206,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         action.project.dirName = action.project.suggestDirName();
         if (!AppUtils.isDemo()) {
           store.dispatch(Loading());
-          final List<LAProject> projects = <LAProject>[action.project, ...action.project.hubs];
+          final List<LAProject> projects = <LAProject>[
+            action.project,
+            ...action.project.hubs
+          ];
           final List<dynamic> addedProjects = await Api.addProjects(projects);
           store.dispatch(OnProjectsAdded(addedProjects));
           await genSshConf(action.project);
@@ -197,16 +218,18 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           store.dispatch(OnDemoAddProjects(<LAProject>[action.project]));
         }
       } catch (e) {
-        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok('Failed to save project ($e)')));
+        store.dispatch(
+            ShowSnackBar(AppSnackBarMessage.ok('Failed to save project ($e)')));
       }
     }
     if (action is AddTemplateProjects) {
-      final List<LAProject> projects =
-          await LAProject.importTemplates(AssetsUtils.pathWorkaround('la-toolkit-templates.json'));
+      final List<LAProject> projects = await LAProject.importTemplates(
+          AssetsUtils.pathWorkaround('la-toolkit-templates.json'));
       try {
         if (!AppUtils.isDemo()) {
           store.dispatch(Loading());
-          final List<dynamic> projectsAdded = await Api.addProjects(projects.reversed.toList());
+          final List<dynamic> projectsAdded =
+              await Api.addProjects(projects.reversed.toList());
           store.dispatch(OnProjectsAdded(projectsAdded));
           action.onAdded(projectsAdded.length);
         } else {
@@ -216,28 +239,36 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         }
         // store.dispatch(OnProjectAdded(projects));
       } catch (e) {
-        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok('Failed to add projects ($e)')));
+        store.dispatch(
+            ShowSnackBar(AppSnackBarMessage.ok('Failed to add projects ($e)')));
       }
     }
     if (action is DelProject) {
       try {
         store.dispatch(Loading());
         final List<dynamic> projects = AppUtils.isDemo()
-            ? store.state.projects.where((LAProject p) => p.id != action.project.id).toList()
+            ? store.state.projects
+                .where((LAProject p) => p.id != action.project.id)
+                .toList()
             : await Api.deleteProject(project: action.project);
         store.dispatch(OnProjectDeleted(action.project, projects));
       } catch (e) {
         log('Failed to delete project $e');
-        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok('Failed to delete project ($e)')));
+        store.dispatch(ShowSnackBar(
+            AppSnackBarMessage.ok('Failed to delete project ($e)')));
       }
     }
 
     if (action is OpenProjectTools || action is TuneProject) {
       final LAProject project = action.project as LAProject;
-      if (!project.isHub && (project.allServicesAssigned() || project.inProduction)) {
+      if (!project.isHub &&
+          (project.allServicesAssigned() || project.inProduction)) {
         if (project.lastSwCheck == null ||
-            project.lastSwCheck!.add(const Duration(hours: 1)).isBefore(DateTime.now())) {
-          Api.getServiceDetailsForVersionCheck(project).then((Map<String, String> serviceVersions) {
+            project.lastSwCheck!
+                .add(const Duration(hours: 1))
+                .isBefore(DateTime.now())) {
+          Api.getServiceDetailsForVersionCheck(project)
+              .then((Map<String, String> serviceVersions) {
             store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
             if (AppUtils.isDev()) {
               log(serviceVersions.toString());
@@ -250,7 +281,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is UpdateProject) {
       store.dispatch(Loading());
       final LAProject project = action.project;
-      await _updateProject(project, store, action.updateCurrentProject, action.openProjectView);
+      await _updateProject(
+          project, store, action.updateCurrentProject, action.openProjectView);
     }
     if (action is ProjectsLoad) {
       store.dispatch(Loading());
@@ -266,13 +298,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       final LAProject project = action.project;
       try {
         await genSshConf(project);
-        Api.testConnectivity(project.serversWithServices()).then((Map<String, dynamic> results) {
+        Api.testConnectivity(project.serversWithServices())
+            .then((Map<String, dynamic> results) {
           store.dispatch(OnTestConnectivityResults(results));
           action.onServersStatusReady();
         });
       } catch (e) {
         action.onFailed();
-        store.dispatch(ShowSnackBar(AppSnackBarMessage('Failed to test the connectivity with your servers.')));
+        store.dispatch(ShowSnackBar(AppSnackBarMessage(
+            'Failed to test the connectivity with your servers.')));
       }
     }
     if (action is TestServicesProject) {
@@ -285,7 +319,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         });
       } catch (e) {
         action.onFailed();
-        store.dispatch(ShowSnackBar(AppSnackBarMessage('Failed to test the connectivity with your servers.')));
+        store.dispatch(ShowSnackBar(AppSnackBarMessage(
+            'Failed to test the connectivity with your servers.')));
       }
     }
     if (action is TestServicesSingleServer) {
@@ -294,24 +329,29 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         store.dispatch(Loading());
 
         // Get full checks for all servers
-        final Tuple2<List<ProdServiceDesc>, HostsServicesChecks> allChecks = action.project.serverServicesToMonitor();
+        final Tuple2<List<ProdServiceDesc>, HostsServicesChecks> allChecks =
+            action.project.serverServicesToMonitor();
 
         // Filter to only the requested server
         final HostsServicesChecks singleServerChecks = HostsServicesChecks();
         if (allChecks.item2.checks.containsKey(action.serverId)) {
-          singleServerChecks.checks[action.serverId] = allChecks.item2.checks[action.serverId]!;
+          singleServerChecks.checks[action.serverId] =
+              allChecks.item2.checks[action.serverId]!;
         }
 
-        Api.checkHostServices(action.project.id, singleServerChecks).then((Map<String, dynamic> results) {
+        Api.checkHostServices(action.project.id, singleServerChecks)
+            .then((Map<String, dynamic> results) {
           action.onResults();
           store.dispatch(OnTestServicesResults(results));
         }).catchError((dynamic e) {
           action.onFailed();
-          store.dispatch(ShowSnackBar(AppSnackBarMessage('Failed to test services for this server.')));
+          store.dispatch(ShowSnackBar(
+              AppSnackBarMessage('Failed to test services for this server.')));
         });
       } catch (e) {
         action.onFailed();
-        store.dispatch(ShowSnackBar(AppSnackBarMessage('Failed to test services for this server.')));
+        store.dispatch(ShowSnackBar(
+            AppSnackBarMessage('Failed to test services for this server.')));
       }
     }
     if (action is OnSshKeysScan) {
@@ -321,7 +361,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       Api.genSshKey(action.name).then((_) => scanSshKeys(store, () {}));
     }
     if (action is OnImportSshKey) {
-      Api.importSshKey(action.name, action.publicKey, action.privateKey).then((_) => scanSshKeys(store, () {}));
+      Api.importSshKey(action.name, action.publicKey, action.privateKey)
+          .then((_) => scanSshKeys(store, () {}));
     }
     if (action is PrepareDeployProject) {
       try {
@@ -332,10 +373,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         // configuration
         final String? checkedDirName = action.project.isHub
             ? action.project.dirName
-            : await Api.checkDirName(dirName: currentDirName, id: action.project.id);
+            : await Api.checkDirName(
+                dirName: currentDirName, id: action.project.id);
         if (checkedDirName == null) {
-          store.dispatch(ShowSnackBar(
-              AppSnackBarMessage.ok('Failed to prepare your configuration (in details, the dirName to store it)')));
+          store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(
+              'Failed to prepare your configuration (in details, the dirName to store it)')));
         } else {
           final LAProject project = action.project;
           if (action.project.dirName != checkedDirName) {
@@ -347,28 +389,38 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             await _updateProject(project.parent!, store, false, false);
           }
 
-          if (action.deployCmd.runtimeType != PreDeployCmd && action.deployCmd.runtimeType != PostDeployCmd) {
-            await Api.alaInstallSelect(action.project.alaInstallRelease!, action.onError)
+          if (action.deployCmd.runtimeType != PreDeployCmd &&
+              action.deployCmd.runtimeType != PostDeployCmd) {
+            await Api.alaInstallSelect(
+                    action.project.alaInstallRelease!, action.onError)
                 .then((_) => scanSshKeys(store, () {}));
-            await Api.generatorSelect(action.project.generatorRelease!, action.onError).then((_) => action.onReady());
-            await Api.regenerateInv(project: action.project, onError: action.onError);
+            await Api.generatorSelect(
+                    action.project.generatorRelease!, action.onError)
+                .then((_) => action.onReady());
+            await Api.regenerateInv(
+                project: action.project, onError: action.onError);
             // Regenerate SSH config after inventory regeneration to ensure latest data
             await genSshConf(project);
           } else {
-            await Api.generatorSelect(action.project.generatorRelease!, action.onError).then((_) => action.onReady());
-            await Api.regenerateInv(project: action.project, onError: action.onError);
+            await Api.generatorSelect(
+                    action.project.generatorRelease!, action.onError)
+                .then((_) => action.onReady());
+            await Api.regenerateInv(
+                project: action.project, onError: action.onError);
             // Regenerate SSH config after inventory regeneration to ensure latest data
             await genSshConf(project);
           }
           action.onReady();
         }
       } catch (e) {
-        action.onError('Something was wrong trying to prepare the deploy, check the server logs');
+        action.onError(
+            'Something was wrong trying to prepare the deploy, check the server logs');
       }
     }
     if (action is DeployProject) {
       if (action.cmd.runtimeType == PreDeployCmd) {
-        await genSshConf(action.project, (action.cmd as PreDeployCmd).rootBecome);
+        await genSshConf(
+            action.project, (action.cmd as PreDeployCmd).rootBecome);
         Api.preDeploy(action);
       } else if (action.cmd.runtimeType == PostDeployCmd) {
         await genSshConf(action.project);
@@ -388,7 +440,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
     if (action is GetCmdResults) {
       CmdHistoryDetails? lastCmdDet = store.state.currentProject.lastCmdDetails;
-      if (lastCmdDet != null && lastCmdDet.cmd != null && lastCmdDet.cmd!.id == action.cmdHistoryEntry.id) {
+      if (lastCmdDet != null &&
+          lastCmdDet.cmd != null &&
+          lastCmdDet.cmd!.id == action.cmdHistoryEntry.id) {
         // Don't load results again we have this already
       } else {
         lastCmdDet = await Api.getCmdResults(
@@ -399,21 +453,23 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (lastCmdDet != null) {
         lastCmdDet.fstRetrieved = action.fstRetrieved;
         lastCmdDet.cmd = action.cmdHistoryEntry;
-        if (action.fstRetrieved || action.cmdHistoryEntry.result == CmdResult.unknown) {
+        if (action.fstRetrieved ||
+            action.cmdHistoryEntry.result == CmdResult.unknown) {
           // Compute result with ansible + code
           final CmdResult result = lastCmdDet.result;
           action.cmdHistoryEntry.result = result;
           action.cmdHistoryEntry.duration = lastCmdDet.duration;
           // Update backend
-          await EntityApis.cmdHistoryEntryApi
-              .update(action.cmdHistoryEntry.id, <String, String>{'result': result.toS()});
+          await EntityApis.cmdHistoryEntryApi.update(action.cmdHistoryEntry.id,
+              <String, String>{'result': result.toS()});
         }
         Api.termLogs(
             cmd: action.cmdHistoryEntry,
             onStart: (String cmd, int port, int ttydPid) {
               lastCmdDet!.port = port;
               lastCmdDet.pid = ttydPid;
-              store.dispatch(ShowCmdResults(action.cmdHistoryEntry, action.fstRetrieved, lastCmdDet));
+              store.dispatch(ShowCmdResults(
+                  action.cmdHistoryEntry, action.fstRetrieved, lastCmdDet));
               action.onReady();
             },
             onError: (int error) {
@@ -433,8 +489,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         await EntityApis.cmdHistoryEntryApi.delete(id: action.cmd.id);
         store.dispatch(OnDeletedLog(action.cmd));
       } catch (e) {
-        store.dispatch(
-            ShowSnackBar(AppSnackBarMessage('Something was wrong trying to delete that log, check the server logs')));
+        store.dispatch(ShowSnackBar(AppSnackBarMessage(
+            'Something was wrong trying to delete that log, check the server logs')));
       }
     }
     if (action is OnInitCasKeys) {
@@ -451,8 +507,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is OnInitCasOAuthKeys) {
       final String casOauthSigningKey = await CASUtils.gen512CasKey();
       final String casOauthEncryptionKey = await CASUtils.gen256CasKey();
-      final String casOauthAccessTokenSigningKey = await CASUtils.gen512CasKey();
-      final String casOauthAccessTokenEncryptionKey = await CASUtils.gen256CasKey();
+      final String casOauthAccessTokenSigningKey =
+          await CASUtils.gen512CasKey();
+      final String casOauthAccessTokenEncryptionKey =
+          await CASUtils.gen256CasKey();
       store.dispatch(OnInitCasOAuthKeysResults(
           casOauthSigningKey: casOauthSigningKey,
           casOauthEncryptionKey: casOauthEncryptionKey,
@@ -461,7 +519,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is SolrQuery) {
       try {
-        final Map<String, dynamic> result = await Api.solrQuery(action.project, action.solrHost, action.query);
+        final Map<String, dynamic> result =
+            await Api.solrQuery(action.project, action.solrHost, action.query);
         action.onResult(result);
       } catch (e) {
         action.onError(e.toString());
@@ -469,7 +528,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is SolrRawQuery) {
       try {
-        final dynamic result = await Api.solrRawQuery(action.project, action.solrHost, action.query);
+        final dynamic result = await Api.solrRawQuery(
+            action.project, action.solrHost, action.query);
         action.onResult(result);
       } catch (e) {
         action.onError(e.toString());
@@ -477,7 +537,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is MySqlQuery) {
       try {
-        final dynamic result = await Api.mySqlQuery(action.project, action.mySqlHost, action.db, action.query);
+        final dynamic result = await Api.mySqlQuery(
+            action.project, action.mySqlHost, action.db, action.query);
         action.onResult(result);
       } catch (e) {
         action.onError(e.toString());
@@ -486,14 +547,19 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     next(action);
   }
 
-  Future<Map<String, LAReleases>> getDepsVersions(Map<String, String> deps) async {
-    final Uri depsBackUrl = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/get-deps-versions');
+  Future<Map<String, LAReleases>> getDepsVersions(
+      Map<String, String> deps) async {
+    final Uri depsBackUrl =
+        AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/get-deps-versions');
     final Response response = await http.post(depsBackUrl,
         headers: <String, String>{'Content-type': 'application/json'},
-        body: utf8.encode(json.encode(<String, Map<String, String>>{'deps': deps})));
-    final Map<String, dynamic> jsonBody = json.decode(response.body) as Map<String, dynamic>;
+        body: utf8
+            .encode(json.encode(<String, Map<String, String>>{'deps': deps})));
+    final Map<String, dynamic> jsonBody =
+        json.decode(response.body) as Map<String, dynamic>;
     final Map<String, LAReleases> releases = <String, LAReleases>{};
-    final Map<String, dynamic> excludeList = jsonBody['excludeList'] as Map<String, dynamic>;
+    final Map<String, dynamic> excludeList =
+        jsonBody['excludeList'] as Map<String, dynamic>;
 
     for (final String service in jsonBody.keys) {
       try {
@@ -502,21 +568,31 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         }
         if (service == events) {
           // TODO(vjrj): Process docker tags as versions too
-          releases[events] = LAReleases(name: events, latest: 'latest', versions: const <String>[], artifacts: events);
+          releases[events] = LAReleases(
+              name: events,
+              latest: 'latest',
+              versions: const <String>[],
+              artifacts: events);
           continue;
         }
         log('Processing $service deps');
         final List<String> versions = <String>[];
-        final List<String> releasesVersions = getResponseVersions(jsonBody, 'releases', service);
-        final List<String> snapshotVersions = getResponseVersions(jsonBody, 'snapshots', service);
-        final String latest = jsonBody[service]['releases']['metadata']['versioning']['latest'].toString();
-        versions.addAll(
-            releasesVersions.reversed.toList().sublist(0, 30 > releasesVersions.length ? releasesVersions.length : 30));
-        versions.addAll(
-            snapshotVersions.reversed.toList().sublist(0, 2 > snapshotVersions.length ? snapshotVersions.length : 2));
+        final List<String> releasesVersions =
+            getResponseVersions(jsonBody, 'releases', service);
+        final List<String> snapshotVersions =
+            getResponseVersions(jsonBody, 'snapshots', service);
+        final String latest = jsonBody[service]['releases']['metadata']
+                ['versioning']['latest']
+            .toString();
+        versions.addAll(releasesVersions.reversed.toList().sublist(
+            0, 30 > releasesVersions.length ? releasesVersions.length : 30));
+        versions.addAll(snapshotVersions.reversed.toList().sublist(
+            0, 2 > snapshotVersions.length ? snapshotVersions.length : 2));
         // exclude
-        final List<dynamic> serviceExcludeList = excludeList[service] as List<dynamic>? ?? <dynamic>[];
-        versions.removeWhere((String v) => excludeList[service] != null && serviceExcludeList.contains(v));
+        final List<dynamic> serviceExcludeList =
+            excludeList[service] as List<dynamic>? ?? <dynamic>[];
+        versions.removeWhere((String v) =>
+            excludeList[service] != null && serviceExcludeList.contains(v));
         final LAReleases servReleases = LAReleases(
             name: service,
             artifacts: deps[service]!,
@@ -535,20 +611,23 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     return releases;
   }
 
-  List<String> getResponseVersions(Map<String, dynamic> jsonBody, String repo, String service) {
-    final thisVersions = jsonBody[service][repo]['metadata']['versioning']['versions']['version'];
+  List<String> getResponseVersions(
+      Map<String, dynamic> jsonBody, String repo, String service) {
+    final thisVersions = jsonBody[service][repo]['metadata']['versioning']
+        ['versions']['version'];
     final List<String> groupVersions = thisVersions.runtimeType == String
         ? <String>[thisVersions as String]
         : thisVersions.cast<String>() as List<String>;
     return groupVersions;
   }
 
-  Future<void> _updateProject(
-      LAProject project, Store<AppState> store, bool updateCurrentProject, bool openProjectView) async {
+  Future<void> _updateProject(LAProject project, Store<AppState> store,
+      bool updateCurrentProject, bool openProjectView) async {
     try {
       final List<dynamic> projects = await Api.updateProject(project: project);
       await genSshConf(project);
-      store.dispatch(OnProjectUpdated(project.id, projects, updateCurrentProject));
+      store.dispatch(
+          OnProjectUpdated(project.id, projects, updateCurrentProject));
       if (openProjectView) {
         store.dispatch(OpenProjectTools(project));
       }
@@ -556,9 +635,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       log('Failed to update project $e');
       log(stacktrace.toString());
       if (AppUtils.isDev()) {
-        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok('Failed to update project ($e)')));
+        store.dispatch(ShowSnackBar(
+            AppSnackBarMessage.ok('Failed to update project ($e)')));
       } else {
-        store.dispatch(ShowSnackBar(AppSnackBarMessage.ok('Failed to update project')));
+        store.dispatch(
+            ShowSnackBar(AppSnackBarMessage.ok('Failed to update project')));
       }
     }
   }

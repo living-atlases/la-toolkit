@@ -116,7 +116,8 @@ class OnProjectDeleted extends AppActions {
 }
 
 class OnProjectUpdated extends AppActions {
-  OnProjectUpdated(this.projectId, this.projectsJson, this.updateCurrentProject);
+  OnProjectUpdated(
+      this.projectId, this.projectsJson, this.updateCurrentProject);
 
   String projectId;
   List<dynamic> projectsJson;
@@ -191,7 +192,11 @@ class OnViewLogs extends AppActions {
 }
 
 class PrepareDeployProject extends AppActions {
-  PrepareDeployProject({required this.project, required this.onReady, required this.deployCmd, required this.onError});
+  PrepareDeployProject(
+      {required this.project,
+      required this.onReady,
+      required this.deployCmd,
+      required this.onError});
 
   LAProject project;
   VoidCallback onReady;
@@ -206,7 +211,8 @@ class SaveCurrentCmd extends AppActions {
 }
 
 abstract class DeployAction extends AppActions {
-  DeployAction({required this.project, required this.onStart, required this.onError});
+  DeployAction(
+      {required this.project, required this.onStart, required this.onError});
 
   LAProject project;
   Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart;
@@ -214,26 +220,41 @@ abstract class DeployAction extends AppActions {
 }
 
 class DeployProject extends DeployAction {
-  DeployProject({required this.cmd, required super.project, required super.onStart, required super.onError});
+  DeployProject(
+      {required this.cmd,
+      required super.project,
+      required super.onStart,
+      required super.onError});
 
   DeployCmd cmd;
 }
 
 class BrandingDeploy extends DeployAction {
-  BrandingDeploy({required this.cmd, required super.project, required super.onStart, required super.onError});
+  BrandingDeploy(
+      {required this.cmd,
+      required super.project,
+      required super.onStart,
+      required super.onError});
 
   BrandingDeployCmd cmd;
 }
 
 class PipelinesRun extends DeployAction {
-  PipelinesRun({required this.cmd, required super.project, required super.onStart, required super.onError});
+  PipelinesRun(
+      {required this.cmd,
+      required super.project,
+      required super.onStart,
+      required super.onError});
 
   PipelinesCmd cmd;
 }
 
 class GetCmdResults extends AppActions {
   GetCmdResults(
-      {required this.cmdHistoryEntry, required this.fstRetrieved, required this.onReady, required this.onFailed});
+      {required this.cmdHistoryEntry,
+      required this.fstRetrieved,
+      required this.onReady,
+      required this.onFailed});
 
   CmdHistoryEntry cmdHistoryEntry;
   VoidCallback onReady;
@@ -258,7 +279,8 @@ class OpenProjectTools extends AppActions {
 }
 
 class UpdateProject extends AppActions {
-  UpdateProject(this.project, [this.updateCurrentProject = true, this.openProjectView = true]);
+  UpdateProject(this.project,
+      [this.updateCurrentProject = true, this.openProjectView = true]);
 
   LAProject project;
   bool updateCurrentProject;
@@ -287,7 +309,8 @@ typedef VoidCallback = void Function();
 typedef ErrorCallback = void Function(int error);
 
 class TestConnectivityProject extends AppActions {
-  TestConnectivityProject(this.project, this.onServersStatusReady, this.onFailed);
+  TestConnectivityProject(
+      this.project, this.onServersStatusReady, this.onFailed);
 
   LAProject project;
   VoidCallback onServersStatusReady;
@@ -295,7 +318,8 @@ class TestConnectivityProject extends AppActions {
 }
 
 class TestServicesProject extends AppActions {
-  TestServicesProject(this.project, this.hostsServicesChecks, this.onResults, this.onFailed);
+  TestServicesProject(
+      this.project, this.hostsServicesChecks, this.onResults, this.onFailed);
 
   LAProject project;
   HostsServicesChecks hostsServicesChecks;
@@ -304,7 +328,8 @@ class TestServicesProject extends AppActions {
 }
 
 class TestServicesSingleServer extends AppActions {
-  TestServicesSingleServer(this.project, this.serverId, this.onResults, this.onFailed);
+  TestServicesSingleServer(
+      this.project, this.serverId, this.onResults, this.onFailed);
 
   LAProject project;
   String serverId;
@@ -387,7 +412,8 @@ class OnTestServicesResults extends AppActions {
 }
 
 class OnTestServicesProgress extends AppActions {
-  OnTestServicesProgress(this.serverId, this.serverName, this.status, this.results);
+  OnTestServicesProgress(
+      this.serverId, this.serverName, this.status, this.results);
 
   String serverId;
   String serverName;

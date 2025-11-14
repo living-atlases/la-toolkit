@@ -33,7 +33,10 @@ class SolrCompareResult {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is SolrCompareResult && runtimeType == other.runtimeType && key == other.key;
+      identical(this, other) ||
+      other is SolrCompareResult &&
+          runtimeType == other.runtimeType &&
+          key == other.key;
 
   @override
   int get hashCode => key.hashCode ^ a.hashCode ^ b.hashCode;

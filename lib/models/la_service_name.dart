@@ -73,6 +73,7 @@ extension ParseToString on LAServiceName {
 extension EnumParser on String {
   LAServiceName toServiceDescName() {
     return LAServiceName.values.firstWhere((LAServiceName e) =>
-        e.toString().toLowerCase() == '$LAServiceName.$this'.toLowerCase()); //return null if not found
+        e.toString().toLowerCase() ==
+        '$LAServiceName.$this'.toLowerCase()); //return null if not found
   }
 }

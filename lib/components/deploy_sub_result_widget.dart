@@ -6,7 +6,11 @@ import '../utils/result_types.dart';
 
 class DeploySubResultWidget extends StatelessWidget {
   const DeploySubResultWidget(
-      {super.key, required this.host, required this.title, required this.results, required this.errors});
+      {super.key,
+      required this.host,
+      required this.title,
+      required this.results,
+      required this.errors});
 
   final String host;
   final String title;
@@ -20,30 +24,40 @@ class DeploySubResultWidget extends StatelessWidget {
       errorsWidgets.addAll(<Widget>[
         Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-              SelectableText.rich(
-                //overflow: TextOverflow.visible,
-                //softWrap: true,
-                TextSpan(children: <TextSpan>[
-                  const TextSpan(text: '  Task:  '),
-                  TextSpan(text: error.taskName, style: GoogleFonts.robotoMono()),
-                  const TextSpan(text: ' failed with message: \n'),
-                  TextSpan(text: error.msg, style: GoogleFonts.robotoMono(color: ResultType.failures.color)),
-                ]),
-                textAlign: TextAlign.left,
-                showCursor: true,
-                // autofocus: false,
-                onTap: () => FlutterClipboard.copy(error.msg).then((dynamic value) => ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('Error copied to clipboard')))),
-              ),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SelectableText.rich(
+                    //overflow: TextOverflow.visible,
+                    //softWrap: true,
+                    TextSpan(children: <TextSpan>[
+                      const TextSpan(text: '  Task:  '),
+                      TextSpan(
+                          text: error.taskName,
+                          style: GoogleFonts.robotoMono()),
+                      const TextSpan(text: ' failed with message: \n'),
+                      TextSpan(
+                          text: error.msg,
+                          style: GoogleFonts.robotoMono(
+                              color: ResultType.failures.color)),
+                    ]),
+                    textAlign: TextAlign.left,
+                    showCursor: true,
+                    // autofocus: false,
+                    onTap: () => FlutterClipboard.copy(error.msg).then(
+                        (dynamic value) => ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                content: Text('Error copied to clipboard')))),
+                  ),
 
-              // TextSpan(text: ""),
-            ]))
+                  // TextSpan(text: ""),
+                ]))
       ]);
     }
     final List<Widget> columnChildren = <Widget>[];
     if (results.isNotEmpty) {
-      final DeployTextSummary summary = DeployTextSummary(host: host, title: title, results: results);
+      final DeployTextSummary summary =
+          DeployTextSummary(host: host, title: title, results: results);
       columnChildren.addAll(<Widget>[summary]);
     }
     if (errorsWidgets.isNotEmpty) {
@@ -64,7 +78,11 @@ class DeploySubResultWidget extends StatelessWidget {
 
 class DeployTextSummary extends StatelessWidget {
   const DeployTextSummary(
-      {super.key, required this.host, required this.title, required this.results, this.defFontSize = 16});
+      {super.key,
+      required this.host,
+      required this.title,
+      required this.results,
+      this.defFontSize = 16});
 
   final String host;
   final String title;
@@ -74,7 +92,8 @@ class DeployTextSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<TextSpan> resultTexts = ResultType.values
-        .where((ResultType t) => results[t.toS()] != null && results[t.toS()] != 0)
+        .where(
+            (ResultType t) => results[t.toS()] != null && results[t.toS()] != 0)
         .map((ResultType type) => TextSpan(
             text: '${type.toS()} (${results[type.toS()]}) ',
             style: TextStyle(fontSize: defFontSize, color: type.color)))
@@ -88,9 +107,11 @@ class DeployTextSummary extends StatelessWidget {
           TextSpan(
               text: host,
               style: TextStyle(
-                fontSize: defFontSize, /* decoration: TextDecoration.underline */
+                fontSize:
+                    defFontSize, /* decoration: TextDecoration.underline */
               )),
-          TextSpan(text: ' ($title): ', style: TextStyle(fontSize: defFontSize)),
+          TextSpan(
+              text: ' ($title): ', style: TextStyle(fontSize: defFontSize)),
           for (final TextSpan text in resultTexts) text
         ]));
   }

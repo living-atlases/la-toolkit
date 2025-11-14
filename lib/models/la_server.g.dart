@@ -95,10 +95,12 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
   LAServer reachable(ServiceStatus reachable) => call(reachable: reachable);
 
   @override
-  LAServer sshReachable(ServiceStatus sshReachable) => call(sshReachable: sshReachable);
+  LAServer sshReachable(ServiceStatus sshReachable) =>
+      call(sshReachable: sshReachable);
 
   @override
-  LAServer sudoEnabled(ServiceStatus sudoEnabled) => call(sudoEnabled: sudoEnabled);
+  LAServer sudoEnabled(ServiceStatus sudoEnabled) =>
+      call(sudoEnabled: sudoEnabled);
 
   @override
   LAServer osName(String osName) => call(osName: osName);
@@ -171,14 +173,16 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
           ? _value.reachable
           // ignore: cast_nullable_to_non_nullable
           : reachable as ServiceStatus,
-      sshReachable: sshReachable == const $CopyWithPlaceholder() || sshReachable == null
-          ? _value.sshReachable
-          // ignore: cast_nullable_to_non_nullable
-          : sshReachable as ServiceStatus,
-      sudoEnabled: sudoEnabled == const $CopyWithPlaceholder() || sudoEnabled == null
-          ? _value.sudoEnabled
-          // ignore: cast_nullable_to_non_nullable
-          : sudoEnabled as ServiceStatus,
+      sshReachable:
+          sshReachable == const $CopyWithPlaceholder() || sshReachable == null
+              ? _value.sshReachable
+              // ignore: cast_nullable_to_non_nullable
+              : sshReachable as ServiceStatus,
+      sudoEnabled:
+          sudoEnabled == const $CopyWithPlaceholder() || sudoEnabled == null
+              ? _value.sudoEnabled
+              // ignore: cast_nullable_to_non_nullable
+              : sudoEnabled as ServiceStatus,
       osName: osName == const $CopyWithPlaceholder() || osName == null
           ? _value.osName
           // ignore: cast_nullable_to_non_nullable
@@ -212,12 +216,23 @@ LAServer _$LAServerFromJson(Map<String, dynamic> json) => LAServer(
       ip: json['ip'] as String?,
       sshPort: (json['sshPort'] as num?)?.toInt() ?? 22,
       sshUser: json['sshUser'] as String?,
-      aliases: (json['aliases'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      gateways: (json['gateways'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      sshKey: json['sshKey'] == null ? null : SshKey.fromJson(json['sshKey'] as Map<String, dynamic>),
-      reachable: $enumDecodeNullable(_$ServiceStatusEnumMap, json['reachable']) ?? ServiceStatus.unknown,
-      sshReachable: $enumDecodeNullable(_$ServiceStatusEnumMap, json['sshReachable']) ?? ServiceStatus.unknown,
-      sudoEnabled: $enumDecodeNullable(_$ServiceStatusEnumMap, json['sudoEnabled']) ?? ServiceStatus.unknown,
+      aliases:
+          (json['aliases'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      gateways: (json['gateways'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      sshKey: json['sshKey'] == null
+          ? null
+          : SshKey.fromJson(json['sshKey'] as Map<String, dynamic>),
+      reachable:
+          $enumDecodeNullable(_$ServiceStatusEnumMap, json['reachable']) ??
+              ServiceStatus.unknown,
+      sshReachable:
+          $enumDecodeNullable(_$ServiceStatusEnumMap, json['sshReachable']) ??
+              ServiceStatus.unknown,
+      sudoEnabled:
+          $enumDecodeNullable(_$ServiceStatusEnumMap, json['sudoEnabled']) ??
+              ServiceStatus.unknown,
       osName: json['osName'] as String? ?? '',
       osVersion: json['osVersion'] as String? ?? '',
       projectId: json['projectId'] as String,

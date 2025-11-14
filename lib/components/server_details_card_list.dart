@@ -16,7 +16,8 @@ class ServersDetailsCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ServersCardListViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _ServersCardListViewModel>(
+        converter: (Store<AppState> store) {
       return _ServersCardListViewModel(
           currentProject: store.state.currentProject,
           sshKeys: store.state.sshKeys,
@@ -44,7 +45,8 @@ class ServersDetailsCardList extends StatelessWidget {
                 advancedEdit: project.advancedEdit,
                 isFirst: _isFirstServer(index, project.servers.length),
                 sshKeys: vm.sshKeys,
-                ansibleUser: project.getVariableValue('ansible_user').toString());
+                ansibleUser:
+                    project.getVariableValue('ansible_user').toString());
           });
     });
   }
@@ -55,7 +57,10 @@ class ServersDetailsCardList extends StatelessWidget {
 }
 
 class _ServersCardListViewModel {
-  _ServersCardListViewModel({required this.currentProject, required this.sshKeys, required this.onSaveCurrentProject});
+  _ServersCardListViewModel(
+      {required this.currentProject,
+      required this.sshKeys,
+      required this.onSaveCurrentProject});
 
   final List<SshKey> sshKeys;
   final LAProject currentProject;

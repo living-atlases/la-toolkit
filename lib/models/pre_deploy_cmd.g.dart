@@ -68,7 +68,8 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
   final PreDeployCmd _value;
 
   @override
-  PreDeployCmd addAnsibleUser(bool addAnsibleUser) => call(addAnsibleUser: addAnsibleUser);
+  PreDeployCmd addAnsibleUser(bool addAnsibleUser) =>
+      call(addAnsibleUser: addAnsibleUser);
 
   @override
   PreDeployCmd addSshKeys(bool addSshKeys) => call(addSshKeys: addSshKeys);
@@ -83,13 +84,15 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
   PreDeployCmd solrLimits(bool solrLimits) => call(solrLimits: solrLimits);
 
   @override
-  PreDeployCmd addAdditionalDeps(bool addAdditionalDeps) => call(addAdditionalDeps: addAdditionalDeps);
+  PreDeployCmd addAdditionalDeps(bool addAdditionalDeps) =>
+      call(addAdditionalDeps: addAdditionalDeps);
 
   @override
   PreDeployCmd rootBecome(bool? rootBecome) => call(rootBecome: rootBecome);
 
   @override
-  PreDeployCmd limitToServers(List<String>? limitToServers) => call(limitToServers: limitToServers);
+  PreDeployCmd limitToServers(List<String>? limitToServers) =>
+      call(limitToServers: limitToServers);
 
   @override
   PreDeployCmd skipTags(List<String>? skipTags) => call(skipTags: skipTags);
@@ -101,7 +104,8 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
   PreDeployCmd advanced(bool advanced) => call(advanced: advanced);
 
   @override
-  PreDeployCmd continueEvenIfFails(bool continueEvenIfFails) => call(continueEvenIfFails: continueEvenIfFails);
+  PreDeployCmd continueEvenIfFails(bool continueEvenIfFails) =>
+      call(continueEvenIfFails: continueEvenIfFails);
 
   @override
   PreDeployCmd debug(bool debug) => call(debug: debug);
@@ -135,14 +139,16 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
     Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PreDeployCmd(
-      addAnsibleUser: addAnsibleUser == const $CopyWithPlaceholder() || addAnsibleUser == null
+      addAnsibleUser: addAnsibleUser == const $CopyWithPlaceholder() ||
+              addAnsibleUser == null
           ? _value.addAnsibleUser
           // ignore: cast_nullable_to_non_nullable
           : addAnsibleUser as bool,
-      addSshKeys: addSshKeys == const $CopyWithPlaceholder() || addSshKeys == null
-          ? _value.addSshKeys
-          // ignore: cast_nullable_to_non_nullable
-          : addSshKeys as bool,
+      addSshKeys:
+          addSshKeys == const $CopyWithPlaceholder() || addSshKeys == null
+              ? _value.addSshKeys
+              // ignore: cast_nullable_to_non_nullable
+              : addSshKeys as bool,
       giveSudo: giveSudo == const $CopyWithPlaceholder() || giveSudo == null
           ? _value.giveSudo
           // ignore: cast_nullable_to_non_nullable
@@ -151,11 +157,13 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
           ? _value.etcHosts
           // ignore: cast_nullable_to_non_nullable
           : etcHosts as bool,
-      solrLimits: solrLimits == const $CopyWithPlaceholder() || solrLimits == null
-          ? _value.solrLimits
-          // ignore: cast_nullable_to_non_nullable
-          : solrLimits as bool,
-      addAdditionalDeps: addAdditionalDeps == const $CopyWithPlaceholder() || addAdditionalDeps == null
+      solrLimits:
+          solrLimits == const $CopyWithPlaceholder() || solrLimits == null
+              ? _value.solrLimits
+              // ignore: cast_nullable_to_non_nullable
+              : solrLimits as bool,
+      addAdditionalDeps: addAdditionalDeps == const $CopyWithPlaceholder() ||
+              addAdditionalDeps == null
           ? _value.addAdditionalDeps
           // ignore: cast_nullable_to_non_nullable
           : addAdditionalDeps as bool,
@@ -179,10 +187,12 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
           : advanced as bool,
-      continueEvenIfFails: continueEvenIfFails == const $CopyWithPlaceholder() || continueEvenIfFails == null
-          ? _value.continueEvenIfFails
-          // ignore: cast_nullable_to_non_nullable
-          : continueEvenIfFails as bool,
+      continueEvenIfFails:
+          continueEvenIfFails == const $CopyWithPlaceholder() ||
+                  continueEvenIfFails == null
+              ? _value.continueEvenIfFails
+              // ignore: cast_nullable_to_non_nullable
+              : continueEvenIfFails as bool,
       debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
@@ -214,18 +224,25 @@ PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) => PreDeployCmd(
       solrLimits: json['solrLimits'] as bool? ?? true,
       addAdditionalDeps: json['addAdditionalDeps'] as bool? ?? true,
       rootBecome: json['rootBecome'] as bool?,
-      limitToServers: (json['limitToServers'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      skipTags: (json['skipTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      limitToServers: (json['limitToServers'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      skipTags: (json['skipTags'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       advanced: json['advanced'] as bool? ?? false,
       continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
       debug: json['debug'] as bool? ?? false,
       dryRun: json['dryRun'] as bool? ?? false,
     )
-      ..deployServices = (json['deployServices'] as List<dynamic>).map((e) => e as String).toList()
+      ..deployServices = (json['deployServices'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList()
       ..onlyProperties = json['onlyProperties'] as bool;
 
-Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) => <String, dynamic>{
+Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) =>
+    <String, dynamic>{
       'deployServices': instance.deployServices,
       'limitToServers': instance.limitToServers,
       'skipTags': instance.skipTags,

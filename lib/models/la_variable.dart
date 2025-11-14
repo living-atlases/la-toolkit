@@ -12,7 +12,12 @@ enum LAVariableStatus { deployed, undeployed }
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAVariable implements IsJsonSerializable<LAVariable> {
-  LAVariable({String? id, required this.nameInt, required this.service, this.value, required this.projectId})
+  LAVariable(
+      {String? id,
+      required this.nameInt,
+      required this.service,
+      this.value,
+      required this.projectId})
       : id = id ?? ObjectId().toString();
 
   LAVariable.fromDesc(LAVariableDesc desc, this.projectId)
@@ -21,7 +26,8 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
         service = desc.service,
         status = LAVariableStatus.undeployed;
 
-  factory LAVariable.fromJson(Map<String, dynamic> json) => _$LAVariableFromJson(json);
+  factory LAVariable.fromJson(Map<String, dynamic> json) =>
+      _$LAVariableFromJson(json);
   // Basic
   String id;
   String nameInt;
@@ -49,10 +55,16 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
 
   @override
   int get hashCode =>
-      id.hashCode ^ nameInt.hashCode ^ service.hashCode ^ value.hashCode ^ projectId.hashCode ^ status.hashCode;
+      id.hashCode ^
+      nameInt.hashCode ^
+      service.hashCode ^
+      value.hashCode ^
+      projectId.hashCode ^
+      status.hashCode;
 
   @override
-  String toString() => 'LAVariable {name: $nameInt, service: $service, value: $value, status: $status';
+  String toString() =>
+      'LAVariable {name: $nameInt, service: $service, value: $value, status: $status';
 
   @override
   LAVariable fromJson(Map<String, dynamic> json) => LAVariable.fromJson(json);

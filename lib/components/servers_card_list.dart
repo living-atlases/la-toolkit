@@ -43,7 +43,12 @@ class ServersCardList extends StatelessWidget {
 }
 
 class ServerServicesHoverCard extends StatefulWidget {
-  const ServerServicesHoverCard({super.key, this.server, this.cluster, required this.project, required this.vm});
+  const ServerServicesHoverCard(
+      {super.key,
+      this.server,
+      this.cluster,
+      required this.project,
+      required this.vm});
 
   final LAServer? server;
   final LACluster? cluster;
@@ -51,7 +56,8 @@ class ServerServicesHoverCard extends StatefulWidget {
   final ServersCardListViewModel vm;
 
   @override
-  State<ServerServicesHoverCard> createState() => _ServerServicesHoverCardState();
+  State<ServerServicesHoverCard> createState() =>
+      _ServerServicesHoverCardState();
 }
 
 class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
@@ -62,10 +68,12 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
   @override
   Widget build(BuildContext context) {
     final bool isAServer = widget.server != null;
-    final DeploymentType type = isAServer ? DeploymentType.vm : DeploymentType.dockerSwarm;
+    final DeploymentType type =
+        isAServer ? DeploymentType.vm : DeploymentType.dockerSwarm;
     final String sId = isAServer ? widget.server!.id : widget.cluster!.id;
     final String name = isAServer ? widget.server!.name : widget.cluster!.name;
-    final Map<String, List<LAService>> servicesAssignable = widget.project.getServerServicesAssignable(type);
+    final Map<String, List<LAService>> servicesAssignable =
+        widget.project.getServerServicesAssignable(type);
     return MouseRegion(
         cursor: SystemMouseCursors.click,
         onHover: (PointerHoverEvent s) {
@@ -103,12 +111,16 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                   type: type,
                   isHub: widget.project.isHub,
                   currentServerServices: isAServer
-                      ? widget.project.getServerServices(serverId: widget.server!.id)
-                      : widget.project.getClusterServices(clusterId: widget.cluster!.id),
-                  availableServicesForServer: servicesAssignable[sId] ?? <LAService>[],
+                      ? widget.project
+                          .getServerServices(serverId: widget.server!.id)
+                      : widget.project
+                          .getClusterServices(clusterId: widget.cluster!.id),
+                  availableServicesForServer:
+                      servicesAssignable[sId] ?? <LAService>[],
                   allServices: widget.project.services,
                   onAssigned: (List<String> list) {
-                    widget.project.assignByType(sId, type, list, null, widget.vm.laReleases);
+                    widget.project.assignByType(
+                        sId, type, list, null, widget.vm.laReleases);
                     widget.vm.onSaveCurrentProject(widget.project);
                   },
                   onUnassigned: (String service) {
@@ -135,14 +147,24 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                   onEditing: () => setState(() {
                         _editing = true;
                       }))
-              : ServerServicesViewCard(id: sId, name: name, type: type, project: widget.project, vm: widget.vm),
+              : ServerServicesViewCard(
+                  id: sId,
+                  name: name,
+                  type: type,
+                  project: widget.project,
+                  vm: widget.vm),
         ));
   }
 }
 
 class ServerServicesViewCard extends StatelessWidget {
   const ServerServicesViewCard(
-      {super.key, required this.name, required this.id, required this.type, required this.project, required this.vm});
+      {super.key,
+      required this.name,
+      required this.id,
+      required this.type,
+      required this.project,
+      required this.vm});
 
   final String id;
   final String name;
@@ -156,7 +178,9 @@ class ServerServicesViewCard extends StatelessWidget {
         child: Card(
             margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
             elevation: CardConstants.defaultElevation,
-            shape: type == DeploymentType.vm ? CardConstants.defaultShape : CardConstants.defaultClusterShape,
+            shape: type == DeploymentType.vm
+                ? CardConstants.defaultShape
+                : CardConstants.defaultClusterShape,
             child: Container(
                 width: 300,
                 margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
@@ -164,7 +188,8 @@ class ServerServicesViewCard extends StatelessWidget {
                   key: ValueKey<String>('${name}basic-tile'),
                   contentPadding: EdgeInsets.zero,
                   title: Text(name),
-                  subtitle: Text(LAService.servicesForHumans(project.getServerServicesFull(id: id, type: type))),
+                  subtitle: Text(LAService.servicesForHumans(
+                      project.getServerServicesFull(id: id, type: type))),
                 ))));
   }
 }
@@ -172,7 +197,9 @@ class ServerServicesViewCard extends StatelessWidget {
 @immutable
 class ServersCardListViewModel {
   const ServersCardListViewModel(
-      {required this.currentProject, required this.onSaveCurrentProject, required this.laReleases});
+      {required this.currentProject,
+      required this.onSaveCurrentProject,
+      required this.laReleases});
 
   final LAProject currentProject;
   final void Function(LAProject project) onSaveCurrentProject;
@@ -181,7 +208,9 @@ class ServersCardListViewModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ServersCardListViewModel && runtimeType == other.runtimeType && currentProject == other.currentProject;
+      other is ServersCardListViewModel &&
+          runtimeType == other.runtimeType &&
+          currentProject == other.currentProject;
 
   @override
   int get hashCode => currentProject.hashCode;

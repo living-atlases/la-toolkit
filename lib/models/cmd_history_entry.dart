@@ -71,7 +71,9 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
         invDir = invDir ?? '',
         cwd = cwd ?? '',
         createdAt = createdAt ?? DateTime.now().millisecondsSinceEpoch,
-        date = createdAt != null ? DateTime.fromMillisecondsSinceEpoch(createdAt) : DateTime.now() {
+        date = createdAt != null
+            ? DateTime.fromMillisecondsSinceEpoch(createdAt)
+            : DateTime.now() {
     if (isAnsibleDeploy()) {
       if (cmd.type == CmdType.preDeploy) {
         parsedDeployCmd = PreDeployCmd.fromJson(cmd.properties);
@@ -88,7 +90,8 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
     }
   }
 
-  factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) => _$CmdHistoryEntryFromJson(json);
+  factory CmdHistoryEntry.fromJson(Map<String, dynamic> json) =>
+      _$CmdHistoryEntryFromJson(json);
   String id;
   String? desc;
   String logsPrefix;

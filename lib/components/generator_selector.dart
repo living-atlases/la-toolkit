@@ -17,7 +17,8 @@ class GeneratorSelector extends StatefulWidget {
 class _GeneratorSelectorState extends State<GeneratorSelector> {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _GeneratorSelectorViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _GeneratorSelectorViewModel>(
+        converter: (Store<AppState> store) {
       return _GeneratorSelectorViewModel(state: store.state);
     }, builder: (BuildContext context, _GeneratorSelectorViewModel vm) {
       final LAProject currentProject = vm.state.currentProject;

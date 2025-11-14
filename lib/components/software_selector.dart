@@ -52,17 +52,21 @@ Choose the latest release to update your portal.
           // remove starting 'v' from git tags
           child: Text(version.replaceFirst(RegExp(r'^v'), ''), style: style)));
     }
-    final bool initialValueStillNotEmpty = initialValue != null && initialValue!.isNotEmpty;
+    final bool initialValueStillNotEmpty =
+        initialValue != null && initialValue!.isNotEmpty;
     final bool outDated = initialValueStillNotEmpty &&
         versions.isNotEmpty &&
         (versions.first != initialValue &&
-            (initialValue != 'custom' && initialValue != 'upstream' && initialValue != 'la-develop'));
+            (initialValue != 'custom' &&
+                initialValue != 'upstream' &&
+                initialValue != 'la-develop'));
 
-    final String currentValueOrFirst = initialValueStillNotEmpty && versions.contains(initialValue)
-        ? initialValue!
-        : items.isNotEmpty
-            ? items[0].value!
-            : '';
+    final String currentValueOrFirst =
+        initialValueStillNotEmpty && versions.contains(initialValue)
+            ? initialValue!
+            : items.isNotEmpty
+                ? items[0].value!
+                : '';
 
     final Container menu = Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -73,7 +77,9 @@ Choose the latest release to update your portal.
               filled: true,
               fillColor: Colors.grey[100],
               labelText: label,
-              border: roundStyle ? OutlineInputBorder(borderRadius: BorderRadius.circular(10)) : null,
+              border: roundStyle
+                  ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
+                  : null,
               contentPadding: const EdgeInsets.all(10),
             ),
             child: ButtonTheme(
@@ -111,7 +117,8 @@ Choose the latest release to update your portal.
               badgeColor: outdatedColor,
               borderRadius: BorderRadius.circular(8),
             ),
-            badgeContent: const Text('NEW', style: TextStyle(color: Colors.white)),
+            badgeContent:
+                const Text('NEW', style: TextStyle(color: Colors.white)),
             child: menu,
           )
         : menu;

@@ -25,7 +25,9 @@ class ListTileLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: icon,
-      title: tooltip != null ? Tooltip(message: tooltip, child: Text(title)) : Text(title),
+      title: tooltip != null
+          ? Tooltip(message: tooltip, child: Text(title))
+          : Text(title),
       onTap: () async {
         // debugPrint(url);
         await launchUrl(Uri.parse(url));
@@ -39,7 +41,8 @@ class ListTileLink extends StatelessWidget {
     );
   }
 
-  static List<Widget> drawerBottomLinks(BuildContext context, bool enableFeedback) {
+  static List<Widget> drawerBottomLinks(
+      BuildContext context, bool enableFeedback) {
     return <Widget>[
       const ListTileLink(
           icon: Icon(Icons.bug_report),
@@ -82,7 +85,9 @@ class ListTileLink extends StatelessWidget {
 
       const DefDivider(),
       const ListTileLink(
-          icon: Icon(LAIcon.la), title: 'Living Atlases Community', url: 'https://living-atlases.gbif.org'),
+          icon: Icon(LAIcon.la),
+          title: 'Living Atlases Community',
+          url: 'https://living-atlases.gbif.org'),
       const ListTileLink(
           icon: ImageIcon(AssetImage('assets/images/ala-icon.png')),
           /* NetworkImage(

@@ -29,13 +29,17 @@ class ServiceStatusCard extends StatelessWidget {
                 padding: const EdgeInsets.all(5),
                 child: Row(children: <Widget>[
                   Tooltip(
-                      message: 'Status: ${StringUtils.capitalize(service.status.toSforHumans())}',
-                      child: Icon(service.icon, size: 30, color: service.status.color)),
+                      message:
+                          'Status: ${StringUtils.capitalize(service.status.toSforHumans())}',
+                      child: Icon(service.icon,
+                          size: 30, color: service.status.color)),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text(service.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16)),
                       const SizedBox(height: 5),
                       Text(service.subtitle, style: subtitle),
                     ],
@@ -67,7 +71,8 @@ class ServiceSmallLinks extends StatelessWidget {
                 icon: Tooltip(
                     message: service.tooltip,
                     child: InkWell(
-                      child: Icon(Icons.link, size: iconDefSize, color: LAColorTheme.link),
+                      child: Icon(Icons.link,
+                          size: iconDefSize, color: LAColorTheme.link),
                       onTap: () async => launchUrl(Uri.parse(service.url)),
                     ))),
           if (service.admin)

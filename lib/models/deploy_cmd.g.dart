@@ -53,10 +53,12 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
   final DeployCmd _value;
 
   @override
-  DeployCmd deployServices(List<String>? deployServices) => call(deployServices: deployServices);
+  DeployCmd deployServices(List<String>? deployServices) =>
+      call(deployServices: deployServices);
 
   @override
-  DeployCmd limitToServers(List<String>? limitToServers) => call(limitToServers: limitToServers);
+  DeployCmd limitToServers(List<String>? limitToServers) =>
+      call(limitToServers: limitToServers);
 
   @override
   DeployCmd skipTags(List<String>? skipTags) => call(skipTags: skipTags);
@@ -68,10 +70,12 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
   DeployCmd advanced(bool advanced) => call(advanced: advanced);
 
   @override
-  DeployCmd onlyProperties(bool onlyProperties) => call(onlyProperties: onlyProperties);
+  DeployCmd onlyProperties(bool onlyProperties) =>
+      call(onlyProperties: onlyProperties);
 
   @override
-  DeployCmd continueEvenIfFails(bool continueEvenIfFails) => call(continueEvenIfFails: continueEvenIfFails);
+  DeployCmd continueEvenIfFails(bool continueEvenIfFails) =>
+      call(continueEvenIfFails: continueEvenIfFails);
 
   @override
   DeployCmd debug(bool debug) => call(debug: debug);
@@ -120,14 +124,17 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
           : advanced as bool,
-      onlyProperties: onlyProperties == const $CopyWithPlaceholder() || onlyProperties == null
+      onlyProperties: onlyProperties == const $CopyWithPlaceholder() ||
+              onlyProperties == null
           ? _value.onlyProperties
           // ignore: cast_nullable_to_non_nullable
           : onlyProperties as bool,
-      continueEvenIfFails: continueEvenIfFails == const $CopyWithPlaceholder() || continueEvenIfFails == null
-          ? _value.continueEvenIfFails
-          // ignore: cast_nullable_to_non_nullable
-          : continueEvenIfFails as bool,
+      continueEvenIfFails:
+          continueEvenIfFails == const $CopyWithPlaceholder() ||
+                  continueEvenIfFails == null
+              ? _value.continueEvenIfFails
+              // ignore: cast_nullable_to_non_nullable
+              : continueEvenIfFails as bool,
       debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
@@ -152,9 +159,15 @@ extension $DeployCmdCopyWith on DeployCmd {
 // **************************************************************************
 
 DeployCmd _$DeployCmdFromJson(Map<String, dynamic> json) => DeployCmd(
-      deployServices: (json['deployServices'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      limitToServers: (json['limitToServers'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      skipTags: (json['skipTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      deployServices: (json['deployServices'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      limitToServers: (json['limitToServers'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      skipTags: (json['skipTags'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       advanced: json['advanced'] as bool? ?? false,
       onlyProperties: json['onlyProperties'] as bool? ?? false,

@@ -58,10 +58,12 @@ class ScaleLayerWidget extends StatelessWidget {
     final double distance = scale[max(0, min(20, zoom.round() + 2))].toDouble();
     final LatLng center = map.center;
     final CustomPoint<double> start = map.project(center);
-    final LatLng targetPoint = util.calculateEndingGlobalCoordinates(center, 90, distance);
+    final LatLng targetPoint =
+        util.calculateEndingGlobalCoordinates(center, 90, distance);
     final CustomPoint<double> end = map.project(targetPoint);
-    final String displayDistance =
-        distance > 999 ? '${(distance / 1000).toStringAsFixed(0)} km' : '${distance.toStringAsFixed(0)} m';
+    final String displayDistance = distance > 999
+        ? '${(distance / 1000).toStringAsFixed(0)} km'
+        : '${distance.toStringAsFixed(0)} m';
     final double width = end.x - (start.x);
 
     return LayoutBuilder(
@@ -82,7 +84,8 @@ class ScaleLayerWidget extends StatelessWidget {
 }
 
 class ScalePainter extends CustomPainter {
-  ScalePainter(this.width, this.text, {this.padding, this.textStyle, this.lineWidth, this.lineColor});
+  ScalePainter(this.width, this.text,
+      {this.padding, this.textStyle, this.lineWidth, this.lineColor});
 
   final double width;
   final EdgeInsets? padding;
@@ -99,24 +102,29 @@ class ScalePainter extends CustomPainter {
       ..strokeWidth = lineWidth!;
 
     const int sizeForStartEnd = 4;
-    final double paddingLeft = padding == null ? 0.0 : padding!.left + sizeForStartEnd / 2;
+    final double paddingLeft =
+        padding == null ? 0.0 : padding!.left + sizeForStartEnd / 2;
     double paddingTop = padding == null ? 0.0 : padding!.top;
 
     final TextSpan textSpan = TextSpan(style: textStyle, text: text);
-    final TextPainter textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr)..layout();
-    textPainter.paint(canvas, Offset(width / 2 - textPainter.width / 2 + paddingLeft, paddingTop));
+    final TextPainter textPainter =
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr)..layout();
+    textPainter.paint(canvas,
+        Offset(width / 2 - textPainter.width / 2 + paddingLeft, paddingTop));
     paddingTop += textPainter.height;
     final ui.Offset p1 = Offset(paddingLeft, sizeForStartEnd + paddingTop);
-    final ui.Offset p2 = Offset(paddingLeft + width, sizeForStartEnd + paddingTop);
+    final ui.Offset p2 =
+        Offset(paddingLeft + width, sizeForStartEnd + paddingTop);
     // draw start line
-    canvas.drawLine(Offset(paddingLeft, paddingTop), Offset(paddingLeft, sizeForStartEnd + paddingTop), paint);
+    canvas.drawLine(Offset(paddingLeft, paddingTop),
+        Offset(paddingLeft, sizeForStartEnd + paddingTop), paint);
     // draw middle line
     final double middleX = width / 2 + paddingLeft - lineWidth! / 2;
-    canvas.drawLine(
-        Offset(middleX, paddingTop + sizeForStartEnd / 2), Offset(middleX, sizeForStartEnd + paddingTop), paint);
+    canvas.drawLine(Offset(middleX, paddingTop + sizeForStartEnd / 2),
+        Offset(middleX, sizeForStartEnd + paddingTop), paint);
     // draw end line
-    canvas.drawLine(
-        Offset(width + paddingLeft, paddingTop), Offset(width + paddingLeft, sizeForStartEnd + paddingTop), paint);
+    canvas.drawLine(Offset(width + paddingLeft, paddingTop),
+        Offset(width + paddingLeft, sizeForStartEnd + paddingTop), paint);
     // draw bottom line
     canvas.drawLine(p1, p2, paint);
   }

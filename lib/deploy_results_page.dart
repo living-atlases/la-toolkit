@@ -40,7 +40,8 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
         return _DeployResultsViewModel(
             project: store.state.currentProject,
             onOpenDeployResults: (CmdHistoryEntry cmdHistory) {
-              store.dispatch(DeployUtils.getCmdResults(context, cmdHistory, false));
+              store.dispatch(
+                  DeployUtils.getCmdResults(context, cmdHistory, false));
             },
             onClose: (LAProject project, CmdHistoryDetails cmdHistory) {
               closeTerm(cmdHistory);
@@ -51,13 +52,15 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
         final CmdHistoryDetails? cmdHistoryDetails = vm.project.lastCmdDetails;
 
         if (cmdHistoryDetails != null) {
-          final List<Widget> resultsDetails = cmdHistoryDetails.detailsWidgetList;
+          final List<Widget> resultsDetails =
+              cmdHistoryDetails.detailsWidgetList;
           final bool failed = cmdHistoryDetails.failed;
           final CmdResult result = cmdHistoryDetails.result;
           final CmdHistoryEntry cmdEntry = cmdHistoryDetails.cmd!;
           // debugPrint(result);
           final bool nothingDone = !failed && cmdHistoryDetails.nothingDone;
-          final bool noFailedButDone = !failed && !cmdHistoryDetails.nothingDone;
+          final bool noFailedButDone =
+              !failed && !cmdHistoryDetails.nothingDone;
           debugPrint(
               'failed $failed, nothingDone: $nothingDone, noFailedButDone: $noFailedButDone, numFails ${cmdHistoryDetails.numFailures()}');
           final String title = cmdEntry.getTitle();
@@ -77,12 +80,16 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                       title: pageTitle,
                       showBack: true,
                       onBack: () => closeTerm(cmdHistoryDetails),
-                      leading: ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),
+                      leading:
+                          ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),
                       actions: <Widget>[
                         TermsDrawer.appBarIcon(vm.project, _scaffoldKey),
                         IconButton(
-                            icon: const Tooltip(message: 'Close', child: Icon(Icons.close, color: Colors.white)),
-                            onPressed: () => vm.onClose(vm.project, cmdHistoryDetails)),
+                            icon: const Tooltip(
+                                message: 'Close',
+                                child: Icon(Icons.close, color: Colors.white)),
+                            onPressed: () =>
+                                vm.onClose(vm.project, cmdHistoryDetails)),
                       ]),
                   body: ScrollPanel(
                       withPadding: true,
@@ -103,70 +110,99 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                       "${LADateUtils.formatDate(cmdEntry.date)}${cmdEntry.duration != null ? ', duration: ${LADateUtils.formatDuration(cmdEntry.duration!)}' : ''}",
                                       style: UiUtils.dateStyle),
                                   const SizedBox(height: 20),
-                                  Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                                    if (isAnsibleDeploy)
-                                      Icon(
-                                          noFailedButDone
-                                              ? MdiIcons.checkboxMarkedCircleOutline
-                                              : result == CmdResult.aborted
-                                                  ? MdiIcons.heartBroken
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        if (isAnsibleDeploy)
+                                          Icon(
+                                              noFailedButDone
+                                                  ? MdiIcons
+                                                      .checkboxMarkedCircleOutline
+                                                  : result == CmdResult.aborted
+                                                      ? MdiIcons.heartBroken
+                                                      : Icons.remove_done,
+                                              size: 60,
+                                              color: noFailedButDone
+                                                  ? LAColorTheme.up
+                                                  : nothingDone ||
+                                                          result ==
+                                                              CmdResult.aborted
+                                                      ? LAColorTheme.inactive
+                                                      : LAColorTheme.down),
+                                        if (!isAnsibleDeploy)
+                                          Icon(
+                                              !failed
+                                                  ? MdiIcons
+                                                      .checkboxMarkedCircleOutline
                                                   : Icons.remove_done,
-                                          size: 60,
-                                          color: noFailedButDone
-                                              ? LAColorTheme.up
-                                              : nothingDone || result == CmdResult.aborted
-                                                  ? LAColorTheme.inactive
+                                              size: 60,
+                                              color: !failed
+                                                  ? LAColorTheme.up
                                                   : LAColorTheme.down),
-                                    if (!isAnsibleDeploy)
-                                      Icon(!failed ? MdiIcons.checkboxMarkedCircleOutline : Icons.remove_done,
-                                          size: 60, color: !failed ? LAColorTheme.up : LAColorTheme.down),
-                                    const SizedBox(width: 20),
-                                    Text(
-                                        isAnsibleDeploy
-                                            ? noFailedButDone
-                                                ? 'All steps ok'
-                                                : nothingDone
-                                                    ? 'No steps were executed'
-                                                    : result == CmdResult.failed
-                                                        ? 'Uuppps! some step failed'
-                                                        : result == CmdResult.aborted
-                                                            ? "The command didn't finished correctly"
-                                                            : 'The command failed for some reason'
-                                            :
-                                            // no Ansible Logs
-                                            failed
-                                                ? 'Something were wrong'
-                                                : 'The command ended correctly',
-                                        style: UiUtils.titleStyle)
-                                  ]),
+                                        const SizedBox(width: 20),
+                                        Text(
+                                            isAnsibleDeploy
+                                                ? noFailedButDone
+                                                    ? 'All steps ok'
+                                                    : nothingDone
+                                                        ? 'No steps were executed'
+                                                        : result ==
+                                                                CmdResult.failed
+                                                            ? 'Uuppps! some step failed'
+                                                            : result ==
+                                                                    CmdResult
+                                                                        .aborted
+                                                                ? "The command didn't finished correctly"
+                                                                : 'The command failed for some reason'
+                                                :
+                                                // no Ansible Logs
+                                                failed
+                                                    ? 'Something were wrong'
+                                                    : 'The command ended correctly',
+                                            style: UiUtils.titleStyle)
+                                      ]),
                                   const SizedBox(height: 20),
-                                  if (isAnsibleDeploy) const Text('Tasks summary:', style: UiUtils.subtitleStyle),
+                                  if (isAnsibleDeploy)
+                                    const Text('Tasks summary:',
+                                        style: UiUtils.subtitleStyle),
                                   // ignore: sized_box_for_whitespace
                                   if (isAnsibleDeploy)
                                     SizedBox(
                                         width: 400,
                                         height: 300,
-                                        child: ResultsPieChart(cmdHistoryDetails.resultsTotals)),
+                                        child: ResultsPieChart(
+                                            cmdHistoryDetails.resultsTotals)),
                                   const SizedBox(height: 20),
-                                  if (isAnsibleDeploy) const Text('Tasks details:', style: UiUtils.subtitleStyle),
+                                  if (isAnsibleDeploy)
+                                    const Text('Tasks details:',
+                                        style: UiUtils.subtitleStyle),
                                   const SizedBox(height: 20),
                                   Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: resultsDetails),
                                   const SizedBox(height: 20),
-                                  const Text('Command executed:', style: UiUtils.subtitleStyle),
+                                  const Text('Command executed:',
+                                      style: UiUtils.subtitleStyle),
                                   const SizedBox(height: 20),
-                                  TermCommandDesc(cmdHistoryDetails: cmdHistoryDetails),
+                                  TermCommandDesc(
+                                      cmdHistoryDetails: cmdHistoryDetails),
                                   const SizedBox(height: 20),
-                                  Text(isAnsibleDeploy ? 'Ansible Logs:' : 'Logs', style: UiUtils.subtitleStyle),
+                                  Text(
+                                      isAnsibleDeploy
+                                          ? 'Ansible Logs:'
+                                          : 'Logs',
+                                      style: UiUtils.subtitleStyle),
                                   const SizedBox(height: 20),
                                   // ignore: sized_box_for_whitespace
                                   if (cmdHistoryDetails.port != null)
                                     SizedBox(
                                         height: 600,
                                         width: 1000,
-                                        child: TermDialog.termArea(cmdHistoryDetails.port!, false)),
+                                        child: TermDialog.termArea(
+                                            cmdHistoryDetails.port!, false)),
                                   if (cmdHistoryDetails.port == null)
                                     const Text(
                                         "For some reason, we couldn't open a terminal with these logs. Possible fix: restart your la-toolkit container"),
@@ -214,7 +250,10 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
 }
 
 class _DeployResultsViewModel {
-  _DeployResultsViewModel({required this.project, required this.onClose, required this.onOpenDeployResults});
+  _DeployResultsViewModel(
+      {required this.project,
+      required this.onClose,
+      required this.onOpenDeployResults});
 
   final LAProject project;
   final Function(LAProject, CmdHistoryDetails cmdDetails) onClose;
@@ -223,7 +262,9 @@ class _DeployResultsViewModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _DeployResultsViewModel && runtimeType == other.runtimeType && project == other.project;
+      other is _DeployResultsViewModel &&
+          runtimeType == other.runtimeType &&
+          project == other.project;
 
   @override
   int get hashCode => project.hashCode;

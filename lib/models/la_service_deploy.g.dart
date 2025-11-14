@@ -68,13 +68,15 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
   LAServiceDeploy clusterId(String? clusterId) => call(clusterId: clusterId);
 
   @override
-  LAServiceDeploy additionalVariables(String additionalVariables) => call(additionalVariables: additionalVariables);
+  LAServiceDeploy additionalVariables(String additionalVariables) =>
+      call(additionalVariables: additionalVariables);
 
   @override
   LAServiceDeploy projectId(String projectId) => call(projectId: projectId);
 
   @override
-  LAServiceDeploy softwareVersions(Map<String, String>? softwareVersions) => call(softwareVersions: softwareVersions);
+  LAServiceDeploy softwareVersions(Map<String, String>? softwareVersions) =>
+      call(softwareVersions: softwareVersions);
 
   @override
   LAServiceDeploy checkedAt(int? checkedAt) => call(checkedAt: checkedAt);
@@ -123,10 +125,12 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
           ? _value.clusterId
           // ignore: cast_nullable_to_non_nullable
           : clusterId as String?,
-      additionalVariables: additionalVariables == const $CopyWithPlaceholder() || additionalVariables == null
-          ? _value.additionalVariables
-          // ignore: cast_nullable_to_non_nullable
-          : additionalVariables as String,
+      additionalVariables:
+          additionalVariables == const $CopyWithPlaceholder() ||
+                  additionalVariables == null
+              ? _value.additionalVariables
+              // ignore: cast_nullable_to_non_nullable
+              : additionalVariables as String,
       projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
@@ -162,14 +166,16 @@ extension $LAServiceDeployCopyWith on LAServiceDeploy {
 // JsonSerializableGenerator
 // **************************************************************************
 
-LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) => LAServiceDeploy(
+LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) =>
+    LAServiceDeploy(
       id: json['id'] as String?,
       serviceId: json['serviceId'] as String,
       serverId: json['serverId'] as String?,
       clusterId: json['clusterId'] as String?,
       additionalVariables: json['additionalVariables'] as String? ?? '',
       projectId: json['projectId'] as String,
-      softwareVersions: (json['softwareVersions'] as Map<String, dynamic>?)?.map(
+      softwareVersions:
+          (json['softwareVersions'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
       checkedAt: (json['checkedAt'] as num?)?.toInt(),
@@ -177,7 +183,8 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) => LAServic
       status: $enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
     );
 
-Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) => <String, dynamic>{
+Map<String, dynamic> _$LAServiceDeployToJson(LAServiceDeploy instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'serviceId': instance.serviceId,
       'serverId': instance.serverId,

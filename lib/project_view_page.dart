@@ -88,17 +88,29 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 BeamerCond.of(context, LAProjectTuneLocation());
               },
               onPreDeployTasks: (LAProject project) {
-                DeployUtils.doDeploy(context: context, store: store, project: project, commonCmd: PreDeployCmd());
+                DeployUtils.doDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    commonCmd: PreDeployCmd());
               },
               onPostDeployTasks: (LAProject project) {
-                DeployUtils.doDeploy(context: context, store: store, project: project, commonCmd: PostDeployCmd());
+                DeployUtils.doDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    commonCmd: PostDeployCmd());
               },
               onViewLogs: (LAProject project) {
                 store.dispatch(OnViewLogs(project));
                 BeamerCond.of(context, LogsHistoryLocation());
               },
               onDeployProject: (LAProject project) {
-                DeployUtils.doDeploy(context: context, store: store, project: project, commonCmd: DeployCmd());
+                DeployUtils.doDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    commonCmd: DeployCmd());
               },
               onDataCompare: (LAProject project) {
                 BeamerCond.of(context, CompareDataLocation());
@@ -107,12 +119,17 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 store.dispatch(DelProject(project));
                 BeamerCond.of(context, HomeLocation());
               },
-              onGenInvProject: (LAProject project) => store.dispatch(GenerateInvProject(project)),
+              onGenInvProject: (LAProject project) =>
+                  store.dispatch(GenerateInvProject(project)),
               onPortalStatus: (LAProject project) {
                 /* store.dispatch(
                     ShowSnackBar(AppSnackBarMessage("Under development"))); */
-                store.dispatch(TestServicesProject(project, project.serverServicesToMonitor().item2,
-                    () => store.dispatch(TestConnectivityProject(store.state.currentProject, () {}, () {})), () {}));
+                store.dispatch(TestServicesProject(
+                    project,
+                    project.serverServicesToMonitor().item2,
+                    () => store.dispatch(TestConnectivityProject(
+                        store.state.currentProject, () {}, () {})),
+                    () {}));
                 BeamerCond.of(context, PortalStatusLocation());
               },
               onPipelinesTasks: (LAProject project) {
@@ -135,7 +152,11 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 }));
               },
               onDeployBranding: (LAProject project) {
-                DeployUtils.doDeploy(context: context, store: store, project: project, commonCmd: BrandingDeployCmd());
+                DeployUtils.doDeploy(
+                    context: context,
+                    store: store,
+                    project: project,
+                    commonCmd: BrandingDeployCmd());
               },
               onCreateHub: (LAProject project) {
                 store.dispatch(CreateProject(isHub: true, parent: project));
@@ -163,7 +184,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           // ignore: non_constant_identifier_names
           final String Portal = project.PortalName;
           final bool isCreatedAndAccessibleOrInProduction =
-              (project.isCreated && project.allServersWithServicesReady() || project.allServersWithSshReady()) ||
+              (project.isCreated && project.allServersWithServicesReady() ||
+                      project.allServersWithSshReady()) ||
                   project.inProduction;
           final List<Tool> tools = <Tool>[
             Tool(
@@ -187,7 +209,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             Tool(
                 icon: const Icon(Icons.tune),
                 title: 'Tune your\nConfiguration',
-                tooltip: 'Fine tune the $portal configuration with other options different than the basic ones.',
+                tooltip:
+                    'Fine tune the $portal configuration with other options different than the basic ones.',
                 enabled: vm.status.value >= LAProjectStatus.basicDefined.value,
                 action: () => vm.onTuneProject(project)),
             Tool(
@@ -223,7 +246,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 icon: const Icon(Icons.receipt_long),
                 title: 'Logs History',
                 tooltip: 'Show deploy logs history',
-                enabled: isCreatedAndAccessibleOrInProduction && project.cmdHistoryEntries.isNotEmpty,
+                enabled: isCreatedAndAccessibleOrInProduction &&
+                    project.cmdHistoryEntries.isNotEmpty,
                 action: () => vm.onViewLogs(project)),
             if (!project.isHub)
               Tool(
@@ -276,9 +300,11 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                   grid: 12,
                   action: () => vm.onPipelinesTasks(project)),
           ];
-          final String projectIconUrl = project.getVariableValue('favicon_url').toString();
+          final String projectIconUrl =
+              project.getVariableValue('favicon_url').toString();
           final String pageTitle = '${project.shortName} Toolkit';
-          final bool showSoftwareVersions = project.showSoftwareVersions && vm.softwareReleasesReady;
+          final bool showSoftwareVersions =
+              project.showSoftwareVersions && vm.softwareReleasesReady;
           final bool showToolkitDeps = project.showToolkitDeps;
           return Title(
               title: pageTitle,
@@ -294,7 +320,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                       // showLaIcon: false,
                       loading: vm.loading,
                       // this does not work as with back after editing
-                      backLocation: !project.isHub ? HomeLocation() : LAProjectViewLocation(),
+                      backLocation: !project.isHub
+                          ? HomeLocation()
+                          : LAProjectViewLocation(),
                       beforeBack: () {
                         if (vm.project.isHub) {
                           vm.onOpenParent(project);
@@ -303,14 +331,18 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                       showBack: true,
                       // backRoute: HomePage.routeName,
                       projectIcon: projectIconUrl,
-                      actions: <Widget>[TermsDrawer.appBarIcon(vm.project, _scaffoldKey)],
+                      actions: <Widget>[
+                        TermsDrawer.appBarIcon(vm.project, _scaffoldKey)
+                      ],
                       title: pageTitle),
                   body: ScrollPanel(
                       child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 80, vertical: 20),
                           child: Column(children: <Widget>[
                             Container(
-                                padding: const EdgeInsets.only(top: 80, bottom: 50),
+                                padding:
+                                    const EdgeInsets.only(top: 80, bottom: 50),
                                 child: LAProjectTimeline(project: project)),
                             // Disabled for now
                             // ServicesChipPanel(),
@@ -330,20 +362,25 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                                   ));
                             }).toList()),
                             const SizedBox(height: 10),
-                            if (!project.isHub) createHubWidget(context, vm, project),
-                            LintProjectPanel(showLADeps: showSoftwareVersions, showToolkitDeps: showToolkitDeps)
+                            if (!project.isHub)
+                              createHubWidget(context, vm, project),
+                            LintProjectPanel(
+                                showLADeps: showSoftwareVersions,
+                                showToolkitDeps: showToolkitDeps)
                           ])))));
         });
   }
 
-  Stack createHubWidget(BuildContext context, _ProjectPageViewModel vm, LAProject project) {
+  Stack createHubWidget(
+      BuildContext context, _ProjectPageViewModel vm, LAProject project) {
     return Stack(children: <Widget>[
       Container(
           margin: const EdgeInsets.all(10),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
-            borderRadius: const BorderRadius.all(Radius.circular(10.0) //                 <--- border radius here
+            borderRadius: const BorderRadius.all(
+                Radius.circular(10.0) //                 <--- border radius here
                 ),
           ),
           child: ResponsiveGridRow(
@@ -386,7 +423,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 ),
                 child: const Text(
                   'Hubs',
-                  style: TextStyle(color: Colors.black45, fontSize: 12.0, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      color: Colors.black45,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -404,18 +444,25 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
     Alert(
         context: context,
         closeIcon: const Icon(Icons.close),
-        image: Icon(allReady ? MdiIcons.checkboxMarkedCircleOutline : Icons.remove_done,
-            size: 60, color: allReady ? LAColorTheme.up : LAColorTheme.down),
+        image: Icon(
+            allReady ? MdiIcons.checkboxMarkedCircleOutline : Icons.remove_done,
+            size: 60,
+            color: allReady ? LAColorTheme.up : LAColorTheme.down),
         title: 'Servers Status',
-        style: const AlertStyle(constraints: BoxConstraints.expand(height: 600, width: 800)),
+        style: const AlertStyle(
+            constraints: BoxConstraints.expand(height: 600, width: 800)),
         content: Column(
             children: List<Widget>.from(<Widget>[
           const SizedBox(height: 20),
           Text(
-              allReady ? 'Congrats! All the servers are ready' : 'Uuppps! It seems that some servers are not yet ready',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+              allReady
+                  ? 'Congrats! All the servers are ready'
+                  : 'Uuppps! It seems that some servers are not yet ready',
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
           const SizedBox(height: 20),
-          const ServersStatusPanel(extendedStatus: false, results: <String, List<dynamic>>{})
+          const ServersStatusPanel(
+              extendedStatus: false, results: <String, List<dynamic>>{})
         ])),
         buttons: <DialogButton>[
           DialogButton(
@@ -449,7 +496,8 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            const Text('A Data Hub is a front end of a LA portal showing a subset of the whole data.'),
+            const Text(
+                'A Data Hub is a front end of a LA portal showing a subset of the whole data.'),
             const Text(
                 'This subset can be split by region, taxonomy, basisofrecord (specimen only), temporal lapse or by any other query.'),
             const SizedBox(height: 20),
@@ -458,8 +506,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             SelectableLinkify(
                 linkStyle: TextStyle(color: LAColorTheme.laPalette),
                 options: const LinkifyOptions(humanize: false),
-                text: 'https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub',
-                onOpen: (LinkableElement link) async => launchUrl(Uri.parse(link.url))),
+                text:
+                    'https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub',
+                onOpen: (LinkableElement link) async =>
+                    launchUrl(Uri.parse(link.url))),
           ],
         ),
       ),
@@ -545,5 +595,9 @@ class _ProjectPageViewModel {
           loading == other.loading;
 
   @override
-  int get hashCode => project.hashCode ^ status.value.hashCode ^ loading.hashCode ^ softwareReleasesReady.hashCode;
+  int get hashCode =>
+      project.hashCode ^
+      status.value.hashCode ^
+      loading.hashCode ^
+      softwareReleasesReady.hashCode;
 }

@@ -25,12 +25,14 @@ class _SandboxPageState extends State<SandboxPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _SandboxViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _SandboxViewModel>(
+        converter: (Store<AppState> store) {
       return _SandboxViewModel(
         state: store.state,
       );
     }, builder: (BuildContext context, _SandboxViewModel vm) {
-      final List<DropdownMenuItem<String>> releases = <DropdownMenuItem<String>>[];
+      final List<DropdownMenuItem<String>> releases =
+          <DropdownMenuItem<String>>[];
       for (final String element in vm.state.alaInstallReleases) {
         releases.add(DropdownMenuItem(value: element, child: Text(element)));
       }

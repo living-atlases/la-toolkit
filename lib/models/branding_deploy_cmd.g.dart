@@ -56,17 +56,20 @@ extension $BrandingDeployCmdCopyWith on BrandingDeployCmd {
   /// Returns a callable class used to build a new instance with modified fields.
   /// Example: `instanceOfBrandingDeployCmd.copyWith(...)` or `instanceOfBrandingDeployCmd.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
-  _$BrandingDeployCmdCWProxy get copyWith => _$BrandingDeployCmdCWProxyImpl(this);
+  _$BrandingDeployCmdCWProxy get copyWith =>
+      _$BrandingDeployCmdCWProxyImpl(this);
 }
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-BrandingDeployCmd _$BrandingDeployCmdFromJson(Map<String, dynamic> json) => BrandingDeployCmd(
+BrandingDeployCmd _$BrandingDeployCmdFromJson(Map<String, dynamic> json) =>
+    BrandingDeployCmd(
       debug: json['debug'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$BrandingDeployCmdToJson(BrandingDeployCmd instance) => <String, dynamic>{
+Map<String, dynamic> _$BrandingDeployCmdToJson(BrandingDeployCmd instance) =>
+    <String, dynamic>{
       'debug': instance.debug,
     };

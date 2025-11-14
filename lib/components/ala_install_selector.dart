@@ -17,7 +17,8 @@ class ALAInstallSelector extends StatefulWidget {
 class _ALAInstallSelectorState extends State<ALAInstallSelector> {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ALAInstallSelectorViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _ALAInstallSelectorViewModel>(
+        converter: (Store<AppState> store) {
       return _ALAInstallSelectorViewModel(state: store.state);
     }, builder: (BuildContext context, _ALAInstallSelectorViewModel vm) {
       final LAProject currentProject = vm.state.currentProject;

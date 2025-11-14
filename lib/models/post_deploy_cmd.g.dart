@@ -50,10 +50,12 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
   final PostDeployCmd _value;
 
   @override
-  PostDeployCmd configurePostfix(bool configurePostfix) => call(configurePostfix: configurePostfix);
+  PostDeployCmd configurePostfix(bool configurePostfix) =>
+      call(configurePostfix: configurePostfix);
 
   @override
-  PostDeployCmd limitToServers(List<String>? limitToServers) => call(limitToServers: limitToServers);
+  PostDeployCmd limitToServers(List<String>? limitToServers) =>
+      call(limitToServers: limitToServers);
 
   @override
   PostDeployCmd skipTags(List<String>? skipTags) => call(skipTags: skipTags);
@@ -65,7 +67,8 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
   PostDeployCmd advanced(bool advanced) => call(advanced: advanced);
 
   @override
-  PostDeployCmd continueEvenIfFails(bool continueEvenIfFails) => call(continueEvenIfFails: continueEvenIfFails);
+  PostDeployCmd continueEvenIfFails(bool continueEvenIfFails) =>
+      call(continueEvenIfFails: continueEvenIfFails);
 
   @override
   PostDeployCmd debug(bool debug) => call(debug: debug);
@@ -93,7 +96,8 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
     Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PostDeployCmd(
-      configurePostfix: configurePostfix == const $CopyWithPlaceholder() || configurePostfix == null
+      configurePostfix: configurePostfix == const $CopyWithPlaceholder() ||
+              configurePostfix == null
           ? _value.configurePostfix
           // ignore: cast_nullable_to_non_nullable
           : configurePostfix as bool,
@@ -113,10 +117,12 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
           : advanced as bool,
-      continueEvenIfFails: continueEvenIfFails == const $CopyWithPlaceholder() || continueEvenIfFails == null
-          ? _value.continueEvenIfFails
-          // ignore: cast_nullable_to_non_nullable
-          : continueEvenIfFails as bool,
+      continueEvenIfFails:
+          continueEvenIfFails == const $CopyWithPlaceholder() ||
+                  continueEvenIfFails == null
+              ? _value.continueEvenIfFails
+              // ignore: cast_nullable_to_non_nullable
+              : continueEvenIfFails as bool,
       debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
@@ -140,20 +146,28 @@ extension $PostDeployCmdCopyWith on PostDeployCmd {
 // JsonSerializableGenerator
 // **************************************************************************
 
-PostDeployCmd _$PostDeployCmdFromJson(Map<String, dynamic> json) => PostDeployCmd(
+PostDeployCmd _$PostDeployCmdFromJson(Map<String, dynamic> json) =>
+    PostDeployCmd(
       configurePostfix: json['configurePostfix'] as bool? ?? true,
-      limitToServers: (json['limitToServers'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      skipTags: (json['skipTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      limitToServers: (json['limitToServers'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      skipTags: (json['skipTags'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       advanced: json['advanced'] as bool? ?? false,
       continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
       debug: json['debug'] as bool? ?? false,
       dryRun: json['dryRun'] as bool? ?? false,
     )
-      ..deployServices = (json['deployServices'] as List<dynamic>).map((e) => e as String).toList()
+      ..deployServices = (json['deployServices'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList()
       ..onlyProperties = json['onlyProperties'] as bool;
 
-Map<String, dynamic> _$PostDeployCmdToJson(PostDeployCmd instance) => <String, dynamic>{
+Map<String, dynamic> _$PostDeployCmdToJson(PostDeployCmd instance) =>
+    <String, dynamic>{
       'deployServices': instance.deployServices,
       'limitToServers': instance.limitToServers,
       'skipTags': instance.skipTags,

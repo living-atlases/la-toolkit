@@ -20,14 +20,18 @@ class Intro extends StatefulWidget {
 }
 
 class _IntroState extends State<Intro> {
-  final GlobalKey<IntroductionScreenState> introKey = GlobalKey<IntroductionScreenState>();
+  final GlobalKey<IntroductionScreenState> introKey =
+      GlobalKey<IntroductionScreenState>();
   static const MaterialColor _markdownColor = LAColorTheme.inactive;
   static const TextStyle _markdownStyle = TextStyle(fontSize: 18);
 
   Widget _buildTitle(String title) {
     return Text(title,
         style: GoogleFonts.signika(
-            textStyle: const TextStyle(color: Colors.black, fontSize: 38, fontWeight: FontWeight.w400)));
+            textStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 38,
+                fontWeight: FontWeight.w400)));
   }
 
   @override
@@ -40,7 +44,8 @@ class _IntroState extends State<Intro> {
       pageColor: Colors.white,
       imagePadding: EdgeInsets.zero,
     );
-    return StoreConnector<AppState, _IntroViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _IntroViewModel>(
+        converter: (Store<AppState> store) {
       return _IntroViewModel(
         state: store.state,
         onAddProject: () {
@@ -64,16 +69,19 @@ Living Atlases portals''',
           ),
           PageViewModel(
             titleWidget: _buildTitle('How?'),
-            bodyWidget: _introText(text: '''
+            bodyWidget: _introText(
+                text: '''
 A Living Atlas (LA) can be deployed and maintained using:
 1) the [Atlas of Living Australia](https://ala.org.au/) (ALA) Free and Open Source Software, with
 2) the [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/), the official [ansible](https://www.ansible.com/) code that automatically deploy and maintain a Living Atlas (LA) portal
-3) some configuration that describes your LA portal that is used by ala-install''', markdown: true),
+3) some configuration that describes your LA portal that is used by ala-install''',
+                markdown: true),
             image: _buildImage('la-toolkit-intro-images-2.png'),
             decoration: pageDecoration,
           ),
           PageViewModel(
-            titleWidget: _buildTitle('This LA Toolkit\nputs all these parts together...'),
+            titleWidget: _buildTitle(
+                'This LA Toolkit\nputs all these parts together...'),
             body:
                 '...with an user friendly interface , and an up-to-date environment\nto perform the common maintenance tasks of a LA portal',
             image: _buildImage('la-toolkit-intro-images-3.png', 150),
@@ -82,7 +90,8 @@ A Living Atlas (LA) can be deployed and maintained using:
           if (AppUtils.isDemo())
             PageViewModel(
               titleWidget: _buildTitle('Just a demo'),
-              body: 'Right now this website is only a demo\nof our toolkit for demonstration purposes',
+              body:
+                  'Right now this website is only a demo\nof our toolkit for demonstration purposes',
               image: _buildImage('la-toolkit-intro-images-4.png', 150),
               decoration: pageDecoration,
             ),
@@ -93,7 +102,8 @@ A Living Atlas (LA) can be deployed and maintained using:
               children: <Widget>[
                 Text('Click on ', style: bodyStyle),
                 Icon(Icons.add_circle),
-                Text(' to create your first Living Atlas project', style: bodyStyle),
+                Text(' to create your first Living Atlas project',
+                    style: bodyStyle),
               ],
             ),
             image: _buildImage('la-toolkit-intro-images-5.png', 150),
@@ -136,12 +146,17 @@ A Living Atlas (LA) can be deployed and maintained using:
                 styleSheet: MarkdownStyleSheet(
                   h2: _markdownStyle,
                   p: _markdownStyle,
-                  a: const TextStyle(color: _markdownColor, decoration: TextDecoration.underline),
+                  a: const TextStyle(
+                      color: _markdownColor,
+                      decoration: TextDecoration.underline),
                 ),
-                onTapLink: (String text, String? href, String title) async => launchUrl(Uri.parse(href!)),
+                onTapLink: (String text, String? href, String title) async =>
+                    launchUrl(Uri.parse(href!)),
                 data: text)
             : Text(text,
-                textAlign: TextAlign.left, style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal)));
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                    fontSize: 18.0, fontWeight: FontWeight.normal)));
   }
 
   Widget _buildImage([String? assetName, double? width]) {
@@ -149,13 +164,17 @@ A Living Atlas (LA) can be deployed and maintained using:
       alignment: Alignment.bottomCenter,
       child: assetName == null
           ? Image.asset('assets/images/la-icon.png', width: 150.0)
-          : Image.asset('assets/images/$assetName', width: width ?? MediaQuery.of(context).size.width * 0.5),
+          : Image.asset('assets/images/$assetName',
+              width: width ?? MediaQuery.of(context).size.width * 0.5),
     );
   }
 }
 
 class _IntroViewModel {
-  _IntroViewModel({required this.state, required this.onIntroEnd, required this.onAddProject});
+  _IntroViewModel(
+      {required this.state,
+      required this.onIntroEnd,
+      required this.onAddProject});
 
   final AppState state;
   final void Function() onIntroEnd;

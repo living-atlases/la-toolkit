@@ -37,7 +37,8 @@ Future<void> main() async {
     useMaterial3: true,
   );
 
-  const String dotFile = kReleaseMode ? 'env.production.txt' : 'env.development.txt';
+  const String dotFile =
+      kReleaseMode ? 'env.production.txt' : 'env.development.txt';
   await dotenv.load(fileName: dotFile);
 
   /*
@@ -48,12 +49,18 @@ Future<void> main() async {
   log('Uri base: ${Uri.base}');
   if (kReleaseMode && !AppUtils.isDemo()) {
     // Get the env from the server in production also
-    final Uri url = Uri(scheme: Uri.base.scheme, host: Uri.base.host, port: Uri.base.port, path: '/api/v1/get-env');
+    final Uri url = Uri(
+        scheme: Uri.base.scheme,
+        host: Uri.base.host,
+        port: Uri.base.port,
+        path: '/api/v1/get-env');
     log('Uri env: $url');
     final http.Response response = await http.get(url);
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      final Map<String, String> serverEnvStringMap = jsonResponse.map((String key, dynamic value) {
+      final Map<String, dynamic> jsonResponse =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      final Map<String, String> serverEnvStringMap =
+          jsonResponse.map((String key, dynamic value) {
         return MapEntry<String, String>(key, value.toString());
       });
       await dotenv.load(fileName: dotFile, mergeWith: serverEnvStringMap);
@@ -87,7 +94,8 @@ Future<void> main() async {
       appStateMiddleware.saveAppState(state);
     } catch (e) {
       store.dispatch(ShowSnackBar(
-        AppSnackBarMessage.ok('Something failed when trying to save your configuration'),
+        AppSnackBarMessage.ok(
+            'Something failed when trying to save your configuration'),
       ));
     }
   });
@@ -97,7 +105,8 @@ Future<void> main() async {
   if (!AppUtils.isDemo()) {
     final SailsIOClient io = SailsIOClient(socket_io_client.io(
         "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",
-        socket_io_client.OptionBuilder().setTransports(<String>['websocket']).build()));
+        socket_io_client.OptionBuilder()
+            .setTransports(<String>['websocket']).build()));
 
     io.socket.onConnect((_) {
       // log('sails websocket: Connected to backend');
@@ -109,7 +118,8 @@ Future<void> main() async {
     });
 
     io.get(
-        url: "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
+        url:
+            "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
         cb: (dynamic body, JWR jwrResponse) {
           // log(body);
           // log(jwrResponse.toJson());
@@ -139,7 +149,8 @@ Future<void> main() async {
 
   if (initialState.failedLoad) {
     store.dispatch(OnFetchStateFailed());
-    store.dispatch(ShowSnackBar(AppSnackBarMessage.ok('Failed to retrieve your configuration')));
+    store.dispatch(ShowSnackBar(
+        AppSnackBarMessage.ok('Failed to retrieve your configuration')));
   }
 
   runApp(LaToolkitApp(store: store, theme: theme));
@@ -166,17 +177,20 @@ class LaToolkitApp extends StatelessWidget {
             child: MaterialApp.router(
               routerDelegate: _routerDelegate,
               routeInformationParser: BeamerParser(),
-              backButtonDispatcher: BeamerBackButtonDispatcher(delegate: Routes().routerDelegate),
+              backButtonDispatcher:
+                  BeamerBackButtonDispatcher(delegate: Routes().routerDelegate),
               // navigatorKey: MainKeys.navKey,
               builder: (BuildContext context, Widget? widget) =>
-                  ResponsiveWrapper.builder(BouncingScrollWrapper.builder(context, widget!),
+                  ResponsiveWrapper.builder(
+                      BouncingScrollWrapper.builder(context, widget!),
                       maxWidth: 1200,
                       // minWidth: 450,
                       defaultScale: true,
                       breakpoints: <ResponsiveBreakpoint>[
                         const ResponsiveBreakpoint.resize(450, name: MOBILE),
                         const ResponsiveBreakpoint.autoScale(800, name: TABLET),
-                        const ResponsiveBreakpoint.autoScale(1000, name: TABLET),
+                        const ResponsiveBreakpoint.autoScale(1000,
+                            name: TABLET),
                         const ResponsiveBreakpoint.resize(1200, name: DESKTOP),
                         const ResponsiveBreakpoint.resize(2460, name: '4K'),
                       ],

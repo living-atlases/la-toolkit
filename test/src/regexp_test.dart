@@ -90,7 +90,11 @@ void main() {
   });
 
   test('ipv4', () {
-    final List<String> ipAddresses = <String>['127.0.0.1', '10.0.0.1', '1.1.1.1'];
+    final List<String> ipAddresses = <String>[
+      '127.0.0.1',
+      '10.0.0.1',
+      '1.1.1.1'
+    ];
     for (final String ipv4 in ipAddresses) {
       expect(LARegExp.ipv4.hasMatch(ipv4), equals(true));
     }
@@ -334,7 +338,12 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       'dr3 dr4 dr5 dr6 ',
       'dr1    '
     ];
-    final List<String> inValidValues = <String>['dr', '123', 'dr234 dr', 'dr2 dra3'];
+    final List<String> inValidValues = <String>[
+      'dr',
+      '123',
+      'dr234 dr',
+      'dr2 dra3'
+    ];
     for (final String value in validValues) {
       expect(LARegExp.drs.hasMatch(value), equals(true),
           reason: '$value should match');

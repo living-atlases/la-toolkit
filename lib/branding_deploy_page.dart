@@ -38,8 +38,12 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
             onSaveDeployCmd: (DeployCmd cmd) {
               store.dispatch(SaveCurrentCmd(cmd: cmd));
             },
-            onDoDeployTaskSwitchs: (LAProject project, BrandingDeployCmd cmd) => DeployUtils.brandingDeployActionLaunch(
-                context: context, store: store, project: project, deployCmd: cmd),
+            onDoDeployTaskSwitchs: (LAProject project, BrandingDeployCmd cmd) =>
+                DeployUtils.brandingDeployActionLaunch(
+                    context: context,
+                    store: store,
+                    project: project,
+                    deployCmd: cmd),
             cmd: store.state.repeatCmd.runtimeType != BrandingDeployCmd
                 ? BrandingDeployCmd()
                 : store.state.repeatCmd as BrandingDeployCmd);
@@ -48,7 +52,8 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
         const String execBtn = 'Deploy branding';
         final BrandingDeployCmd cmd = vm.cmd;
         dynamic onTap() => vm.onDoDeployTaskSwitchs(vm.project, cmd);
-        final String pageTitle = 'Branding Build and Deploy of ${vm.project.shortName} ';
+        final String pageTitle =
+            'Branding Build and Deploy of ${vm.project.shortName} ';
         return Title(
             title: pageTitle,
             color: LAColorTheme.laPalette,
@@ -72,7 +77,8 @@ class _BrandingDeployPageState extends State<BrandingDeployPage> {
                             child: Column(
                               children: <Widget>[
                                 const SizedBox(height: 20),
-                                const Text('This task will build and deploy your branding.'),
+                                const Text(
+                                    'This task will build and deploy your branding.'),
                                 const SizedBox(height: 10),
                                 LaunchBtn(onTap: onTap, execBtn: execBtn),
                                 const SizedBox(height: 10),

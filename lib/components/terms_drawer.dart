@@ -29,10 +29,12 @@ class TermsDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _TermsDrawerViewModel>(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, _TermsDrawerViewModel>(
+        converter: (Store<AppState> store) {
       return _TermsDrawerViewModel(
         state: store.state,
-        openTerm: (LAProject project, LAServer server) => TermDialog.openTerm(context, false, project.id, server.name),
+        openTerm: (LAProject project, LAServer server) =>
+            TermDialog.openTerm(context, false, project.id, server.name),
       );
     }, builder: (BuildContext context, _TermsDrawerViewModel vm) {
       return Drawer(
@@ -50,10 +52,13 @@ class TermsDrawer extends StatelessWidget {
                 ),
                 child: Column(
                   children: <Widget>[
-                    if (vm.state.currentProject.getVariableValue('favicon_url') != null && !AppUtils.isDemo())
+                    if (vm.state.currentProject
+                                .getVariableValue('favicon_url') !=
+                            null &&
+                        !AppUtils.isDemo())
                       ImageIcon(
-                          NetworkImage(
-                              AppUtils.proxyImg(vm.state.currentProject.getVariableValue('favicon_url')! as String)),
+                          NetworkImage(AppUtils.proxyImg(vm.state.currentProject
+                              .getVariableValue('favicon_url')! as String)),
                           color: LAColorTheme.laPalette,
                           size: 80)
                     else
@@ -81,7 +86,8 @@ class TermsDrawer extends StatelessWidget {
                   child: ListTile(
                       leading: Icon(MdiIcons.console),
                       title: Text(server.name),
-                      onTap: () => vm.openTerm(vm.state.currentProject, server))),
+                      onTap: () =>
+                          vm.openTerm(vm.state.currentProject, server))),
           ]));
     });
   }
@@ -111,7 +117,8 @@ class ServiceListTileLink extends StatelessWidget {
       title: name,
       tooltip: tooltip,
       url: url,
-      additionalTrailingIcon: alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
+      additionalTrailingIcon:
+          alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
       trailingIcon: help != null
           ? HelpIcon(
               wikipage: help!,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class GenericSelector<T> extends StatefulWidget {
-  const GenericSelector({super.key, this.currentValue, required this.values, required this.onChange});
+  const GenericSelector(
+      {super.key,
+      this.currentValue,
+      required this.values,
+      required this.onChange});
 
   final T? currentValue;
   final List<T> values;
@@ -31,7 +35,9 @@ class _GenericSelectorState<T> extends State<GenericSelector<T>> {
           // if (_currentValue != null)
           // const Icon(MdiIcons.key, color: LAColorTheme.laPalette),
           if (_currentValue != null) const SizedBox(width: 5),
-          Text(widget.values.contains(_currentValue) ? '$_currentValue' : 'Nothing selected'),
+          Text(widget.values.contains(_currentValue)
+              ? '$_currentValue'
+              : 'Nothing selected'),
         ],
       ),
       items: widget.values.map((T entry) {

@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-enum LAProjectStatus { created, basicDefined, advancedDefined, reachable, firstDeploy, inProduction }
+enum LAProjectStatus {
+  created,
+  basicDefined,
+  advancedDefined,
+  reachable,
+  firstDeploy,
+  inProduction
+}
 
 extension LAProjectStatusExtension on LAProjectStatus {
   String title(bool isHub) {

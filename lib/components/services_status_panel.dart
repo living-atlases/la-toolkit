@@ -12,8 +12,14 @@ class ServicesStatusPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<ProdServiceDesc> filteredServices = services
         .where((ProdServiceDesc s) =>
-            s.nameInt != branding && s.nameInt != nameindexer && s.nameInt != dockerCommon && s.nameInt != biocacheCli)
+            s.nameInt != branding &&
+            s.nameInt != nameindexer &&
+            s.nameInt != dockerCommon &&
+            s.nameInt != biocacheCli)
         .toList();
-    return Wrap(children: <Widget>[for (final ProdServiceDesc service in filteredServices) ServiceStatusCard(service)]);
+    return Wrap(children: <Widget>[
+      for (final ProdServiceDesc service in filteredServices)
+        ServiceStatusCard(service)
+    ]);
   }
 }
