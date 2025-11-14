@@ -18,9 +18,11 @@ import 'components/services_status_panel.dart';
 import 'components/text_title.dart';
 import 'la_theme.dart';
 import 'models/appState.dart';
-import 'models/hostServicesChecks.dart';
-import 'models/laServer.dart';
-import 'models/prodServiceDesc.dart';
+import 'models/host_services_checks.dart';
+import 'models/la_project.dart';
+import 'models/la_server.dart';
+import 'models/la_service.dart';
+import 'models/prod_service_desc.dart';
 import 'redux/app_actions.dart';
 
 class PortalStatusPage extends StatefulWidget {
@@ -180,7 +182,8 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                                   ServersStatusPanel(
                                       extendedStatus: true,
                                       results: vm.checkResults),
-                                if (_tab == 1) const TextTitle(text: 'Services'),
+                                if (_tab == 1)
+                                  const TextTitle(text: 'Services'),
                                 if (_tab == 1)
                                   ServicesStatusPanel(
                                       services:

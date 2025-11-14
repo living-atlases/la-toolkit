@@ -20,7 +20,6 @@ import 'components/terms_drawer.dart';
 import 'components/tips_card.dart';
 import 'dependencies_manager.dart';
 import 'la_theme.dart';
-import 'la_theme.dart';
 import 'models/MigrationNotesDesc.dart';
 import 'models/appState.dart';
 import 'models/commonCmd.dart';

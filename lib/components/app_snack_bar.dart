@@ -5,7 +5,6 @@ import 'package:redux/redux.dart';
 import '../models/appState.dart';
 import '../redux/actions.dart';
 import 'app_snack_bar_message.dart';
-import 'app_snack_bar_message.dart';
 
 // Adapted from: https://github.com/brianegan/flutter_redux/issues/44
 class AppSnackBar extends StatelessWidget {
