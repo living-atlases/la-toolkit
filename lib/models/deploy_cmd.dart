@@ -4,9 +4,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 
 import '../utils/string_utils.dart';
-import 'LAServiceConstants.dart';
-import 'commonCmd.dart';
-import 'laServiceDesc.dart';
+import './la_service_constants.dart';
+import './common_cmd.dart';
+import './la_service_desc.dart';
 
 part 'deploy_cmd.g.dart';
 

@@ -8,10 +8,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 
 import '../components/app_snack_bar_message.dart';
-import 'commonCmd.dart';
-import 'laReleases.dart';
+import './common_cmd.dart';
+import './la_releases.dart';
 import 'la_project.dart';
-import 'sshKey.dart';
+import './ssh_key.dart';
 
 part 'app_state.g.dart';
 

@@ -1,9 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
-
-
-import '../models/appState.dart';
+import '../models/app_state.dart';
 import '../models/la_project.dart';
 import 'software_selector.dart';
 

@@ -2,10 +2,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
-
-import 'deploymentType.dart';
 import 'deployment_type.dart';
-import 'isJsonSerializable.dart';
 import 'is_json_serializable.dart';
 
 part 'la_cluster.g.dart';
@@ -52,7 +49,7 @@ class LACluster implements IsJsonSerializable<LACluster> {
 
   @override
   String toString() {
-    return '''$name ($id) $type}''';
+    return '$name ($id) $type';
   }
 
   static List<LACluster> upsertById(

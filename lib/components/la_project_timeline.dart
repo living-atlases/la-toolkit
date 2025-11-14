@@ -8,8 +8,8 @@ import 'package:timelines_plus/timelines_plus.dart';
 
 
 import '../la_theme.dart';
-import '../models/appState.dart';
-import '../models/laProjectStatus.dart';
+import '../models/app_state.dart';
+import '../models/la_project_status.dart';
 import '../models/la_project.dart';
 
 Color completeColor = LAColorTheme.laPalette.shade400;

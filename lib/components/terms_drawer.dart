@@ -6,10 +6,10 @@ import 'package:redux/redux.dart';
 
 
 import '../la_theme.dart';
-import '../models/appState.dart';
-import '../models/laServer.dart';
+import '../models/app_state.dart';
+import '../models/la_server.dart';
 import '../models/la_project.dart';
-import '../models/prodServiceDesc.dart';
+import '../models/prod_service_desc.dart';
 import '../utils/utils.dart';
 import 'admin_icon_button.dart';
 import 'help_icon.dart';

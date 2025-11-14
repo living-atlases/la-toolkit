@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 
 import '../utils/string_utils.dart';
-import 'deployCmd.dart';
+import './deploy_cmd.dart';
 
 part 'pre_deploy_cmd.g.dart';
 

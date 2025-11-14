@@ -19,7 +19,7 @@ import 'components/service_check_progress_indicator.dart';
 import 'components/services_status_panel.dart';
 import 'components/text_title.dart';
 import 'la_theme.dart';
-import 'models/appState.dart';
+import './models/app_state.dart';
 import 'models/host_services_checks.dart';
 import 'models/la_project.dart';
 import 'models/la_server.dart';

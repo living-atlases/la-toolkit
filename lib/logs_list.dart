@@ -10,7 +10,7 @@ import 'package:tuple/tuple.dart';
 import 'components/status_icon.dart';
 import 'la_theme.dart';
 import 'log_search_input.dart';
-import 'models/cmdHistoryEntry.dart';
+import './models/cmd_history_entry.dart';
 import 'redux/entity_api.dart';
 import 'utils/result_types.dart';
 import 'utils/utils.dart';

@@ -1,22 +1,20 @@
 import 'dart:math';
-import 'dart:ui'
-
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
 
-
-import './scalebar_utils.dart' as util;
+import 'scalebar_utils.dart' as util;
 
 class ScaleLayerPluginOption {
-
   ScaleLayerPluginOption({
     this.textStyle,
     this.lineColor = Colors.white,
     this.lineWidth = 2,
     this.padding,
   });
+
   TextStyle? textStyle;
   Color lineColor;
   double lineWidth;
@@ -24,8 +22,8 @@ class ScaleLayerPluginOption {
 }
 
 class ScaleLayerWidget extends StatelessWidget {
-
   ScaleLayerWidget({super.key, required this.options});
+
   final ScaleLayerPluginOption options;
   final List<int> scale = <int>[
     25000000,
@@ -115,7 +113,8 @@ class ScalePainter extends CustomPainter {
         Offset(width / 2 - textPainter.width / 2 + paddingLeft, paddingTop));
     paddingTop += textPainter.height;
     final ui.Offset p1 = Offset(paddingLeft, sizeForStartEnd + paddingTop);
-    final ui.Offset p2 = Offset(paddingLeft + width, sizeForStartEnd + paddingTop);
+    final ui.Offset p2 =
+        Offset(paddingLeft + width, sizeForStartEnd + paddingTop);
     // draw start line
     canvas.drawLine(Offset(paddingLeft, paddingTop),
         Offset(paddingLeft, sizeForStartEnd + paddingTop), paint);

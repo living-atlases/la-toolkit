@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
-
-import '../models/appState.dart';
-import '../models/laServer.dart';
+import '../models/app_state.dart';
+import '../models/la_server.dart';
 import '../models/la_project.dart';
 import '../redux/actions.dart';
 import '../utils/utils.dart';

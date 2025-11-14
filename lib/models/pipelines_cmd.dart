@@ -4,8 +4,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 
 import '../utils/string_utils.dart';
-import 'commonCmd.dart';
-import 'pipelinesStepName.dart';
+import './common_cmd.dart';
+import './pipelines_step_name.dart';
 
 part 'pipelines_cmd.g.dart';
 

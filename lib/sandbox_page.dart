@@ -8,7 +8,7 @@ import 'components/generic_selector.dart';
 import 'components/la_app_bar.dart';
 import 'components/scroll_panel.dart';
 import 'components/software_selector.dart';
-import 'models/appState.dart';
+import './models/app_state.dart';
 
 class SandboxPage extends StatefulWidget {
   const SandboxPage({super.key});

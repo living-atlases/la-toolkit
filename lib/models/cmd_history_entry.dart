@@ -5,13 +5,13 @@ import 'package:objectid/objectid.dart';
 
 
 import '../utils/result_types.dart';
-import 'brandingDeployCmd.dart';
+import './branding_deploy_cmd.dart';
 import 'cmd.dart';
-import 'deployCmd.dart';
-import 'isJsonSerializable.dart';
-import 'pipelinesCmd.dart';
-import 'postDeployCmd.dart';
-import 'preDeployCmd.dart';
+import './deploy_cmd.dart';
+import './is_json_serializable.dart';
+import './pipelines_cmd.dart';
+import './post_deploy_cmd.dart';
+import './pre_deploy_cmd.dart';
 
 part 'cmd_history_entry.g.dart';
 

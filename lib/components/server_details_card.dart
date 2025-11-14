@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-
-import '../models/laServer.dart';
-import '../models/sshKey.dart';
+import '../models/la_server.dart';
+import '../models/ssh_key.dart';
 import '../utils/card_constants.dart';
 import '../utils/regexp.dart';
 import 'gateway_selector.dart';

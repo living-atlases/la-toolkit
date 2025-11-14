@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
-
-import '../models/LAServiceConstants.dart';
-import '../models/prodServiceDesc.dart';
+import '../models/la_service_constants.dart';
+import '../models/prod_service_desc.dart';
 import 'service_status_card.dart';
 
 class ServicesStatusPanel extends StatelessWidget {

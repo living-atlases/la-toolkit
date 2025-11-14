@@ -2,13 +2,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
-
-
-import '../models/appState.dart';
-import '../models/deploymentType.dart';
-import '../models/laCluster.dart';
-import '../models/laReleases.dart';
-import '../models/laServer.dart';
+import '../models/app_state.dart';
+import '../models/deployment_type.dart';
+import '../models/la_cluster.dart';
+import '../models/la_releases.dart';
+import '../models/la_server.dart';
 import '../models/la_project.dart';
 import '../models/la_service.dart';
 import '../redux/actions.dart';

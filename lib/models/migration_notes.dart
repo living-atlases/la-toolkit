@@ -1,9 +1,7 @@
 import 'package:pub_semver/pub_semver.dart';
-
-
-import 'LAServiceConstants.dart';
-import 'MigrationNotesDesc.dart';
-import 'versionUtils.dart';
+import './la_service_constants.dart';
+import './migration_notes_desc.dart';
+import './version_utils.dart';
 
 class MigrationNotes {
   static Map<String, Map<VersionConstraint, MigrationNotesDesc>> map = <String, Map<VersionConstraint, MigrationNotesDesc>>{

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'post_deploy_cmd..dart';
+part of 'post_deploy_cmd.dart';
 
 // **************************************************************************
 // CopyWithGenerator

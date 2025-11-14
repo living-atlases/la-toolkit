@@ -1,14 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart';
-import 'package:http/http.dart'
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart' show Response;
 import 'package:tuple/tuple.dart';
 
-
-import '../models/isJsonSerializable.dart';
+import '../models/is_json_serializable.dart';
 import '../utils/utils.dart';
 
 class EntityApi<T extends IsJsonSerializable<T>> {

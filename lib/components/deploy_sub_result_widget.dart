@@ -1,9 +1,7 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-
-import '../models/ansibleError.dart';
+import '../models/ansible_error.dart';
 import '../utils/result_types.dart';
 
 class DeploySubResultWidget extends StatelessWidget {

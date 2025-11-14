@@ -7,8 +7,8 @@ import 'package:redux/redux.dart';
 
 
 import '../la_theme.dart';
-import '../models/appState.dart';
-import '../models/laLatLng.dart';
+import '../models/app_state.dart';
+import '../models/la_lat_lng.dart';
 import '../models/la_project.dart';
 import '../redux/actions.dart';
 import 'scale_layer_plugin_option.dart';

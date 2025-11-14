@@ -4,16 +4,14 @@ import 'dart:developer';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_extension/yaml_extension.dart';
-
-
-import 'models/LAServiceConstants.dart';
-import 'models/MigrationNotesDesc.dart';
+import './models/la_service_constants.dart';
+import './models/migration_notes_desc.dart';
 import 'models/dependencies.dart';
-import 'models/laServer.dart';
-import 'models/laServiceDesc.dart';
-import 'models/laServiceName.dart';
-import 'models/migrationNotes.dart';
-import 'models/versionUtils.dart';
+import './models/la_server.dart';
+import './models/la_service_desc.dart';
+import './models/la_service_name.dart';
+import './models/migration_notes.dart';
+import './models/version_utils.dart';
 
 class DependenciesManager {
   static List<String> verify(Map<String, String> combo) {

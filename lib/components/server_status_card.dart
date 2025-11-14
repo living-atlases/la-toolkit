@@ -9,9 +9,9 @@ import 'package:tuple/tuple.dart';
 
 import '../la_theme.dart';
 import '../models/basic_service.dart';
-import '../models/cmdHistoryEntry.dart';
-import '../models/laServer.dart';
-import '../models/laServiceDepsDesc.dart';
+import '../models/cmd_history_entry.dart';
+import '../models/la_server.dart';
+import '../models/la_service_deps_desc.dart';
 import '../models/la_service.dart';
 import '../utils/card_constants.dart';
 import '../utils/string_utils.dart';

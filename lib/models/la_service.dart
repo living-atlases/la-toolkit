@@ -6,9 +6,9 @@ import 'package:objectid/objectid.dart';
 import '../utils/result_types.dart';
 
 import '../utils/string_utils.dart';
-import 'LAServiceConstants.dart';
-import 'isJsonSerializable.dart';
-import 'laServiceDesc.dart';
+import './la_service_constants.dart';
+import './is_json_serializable.dart';
+import './la_service_desc.dart';
 
 part 'la_service.g.dart';
 

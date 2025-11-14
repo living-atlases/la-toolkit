@@ -14,12 +14,12 @@ import 'components/la_app_bar.dart';
 import 'components/pipelines_timeline.dart';
 import 'components/scroll_panel.dart';
 import 'la_theme.dart';
-import 'models/appState.dart';
-import 'models/commonCmd.dart';
+import './models/app_state.dart';
+import './models/common_cmd.dart';
 import 'models/la_project.dart';
-import 'models/pipelinesCmd.dart';
-import 'models/pipelinesStepDesc.dart';
-import 'models/pipelinesStepName.dart';
+import './models/pipelines_cmd.dart';
+import './models/pipelines_step_desc.dart';
+import './models/pipelines_step_name.dart';
 import 'redux/app_actions.dart';
 import 'utils/utils.dart';
 

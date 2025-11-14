@@ -1,13 +1,14 @@
-import './src/basic_service_test.dart'
-import './src/cmd_test.dart'
-import './src/passwd_test.dart'
-import './src/project_test.dart'
-import './src/regexp_test.dart'
-import './src/server_test.dart'
-import './src/service_desc_test.dart'
-import './src/utils_test.dart'
-import './src/versions_test.dart' as versions_test;
 // import './src/widget_test.dart' as widget_test;
+
+import './src/versions_test.dart' as versions_test;
+import 'src/basic_service_test.dart' as basic_service_test;
+import 'src/basic_service_test.dart' as cmd_test;
+import 'src/basic_service_test.dart' as passwd_test;
+import 'src/basic_service_test.dart' as project_test;
+import 'src/basic_service_test.dart' as regexp_test;
+import 'src/basic_service_test.dart' as server_test;
+import 'src/basic_service_test.dart' as service_desc_test;
+import 'src/basic_service_test.dart' as utils_test;
 
 void main() {
   basic_service_test.main();

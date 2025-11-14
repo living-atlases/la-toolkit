@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'branding_deploy_cmd..dart';
+part of 'branding_deploy_cmd.dart';
 
 // **************************************************************************
 // CopyWithGenerator

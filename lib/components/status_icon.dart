@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../models/cmdHistoryEntry.dart';
+import '../models/cmd_history_entry.dart';
 
 import 'shadow_icon.dart';
 

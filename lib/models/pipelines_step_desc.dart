@@ -1,5 +1,5 @@
-import 'laServiceName.dart';
-import 'pipelinesStepName.dart';
+import './la_service_name.dart';
+import './pipelines_step_name.dart';
 
 class PipelinesStepDesc {
 

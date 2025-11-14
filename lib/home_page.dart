@@ -16,7 +16,7 @@ import 'components/main_drawer.dart';
 import 'intro.dart';
 import 'la_theme.dart';
 import 'main.dart';
-import 'models/appState.dart';
+import './models/app_state.dart';
 import 'projects_list_page.dart';
 import 'redux/app_actions.dart';
 import 'routes.dart';

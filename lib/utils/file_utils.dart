@@ -2,9 +2,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-
 import 'package:flutter/foundation.dart';
-import 'package:universal_html/html.dart'
+import 'package:universal_html/html.dart' as html;
 import 'package:universal_html/html.dart';
 
 class FileUtils {

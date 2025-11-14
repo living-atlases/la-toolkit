@@ -1,11 +1,9 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
-
-
-import 'isJsonSerializable.dart';
-import 'laServiceName.dart';
-import 'laVariableDesc.dart';
+import './is_json_serializable.dart';
+import './la_service_name.dart';
+import './la_variable_desc.dart';
 
 part 'la_variable.g.dart';
 

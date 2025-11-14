@@ -1,8 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
-
-
-import 'LAServiceConstants.dart';
-import 'versionUtils.dart';
+import './la_service_constants.dart';
+import './version_utils.dart';
 
 class DefaultVersions {
   static final Map<String, String> defVersions2_1_10 = <String, String>{

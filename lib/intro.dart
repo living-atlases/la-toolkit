@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 
 import 'la_theme.dart';
-import 'models/appState.dart';
+import './models/app_state.dart';
 import 'redux/actions.dart';
 import 'routes.dart';
 import 'utils/utils.dart';

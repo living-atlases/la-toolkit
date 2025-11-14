@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 
 import '../la_theme.dart';
-import '../models/deploymentType.dart';
-import '../models/laCluster.dart';
-import '../models/laServer.dart';
-import '../models/laServiceDesc.dart';
+import '../models/deployment_type.dart';
+import '../models/la_cluster.dart';
+import '../models/la_server.dart';
+import '../models/la_service_desc.dart';
 import '../models/la_service.dart';
 import '../utils/card_constants.dart';
 import '../utils/utils.dart';

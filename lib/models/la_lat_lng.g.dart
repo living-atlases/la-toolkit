@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'la_lat_lng..dart';
+part of 'la_lat_lng.dart';
 
 // **************************************************************************
 // CopyWithGenerator

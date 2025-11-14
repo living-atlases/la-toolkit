@@ -1,7 +1,5 @@
 import 'package:redux/redux.dart';
-
-
-import '../models/appState.dart';
+import '../models/app_state.dart';
 import 'entityActions.dart';
 
 class EntityReducer<T> {

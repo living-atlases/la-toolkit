@@ -7,10 +7,10 @@ import 'package:timeline_tile/timeline_tile.dart';
 
 
 import '../la_theme.dart';
-import '../models/laServiceName.dart';
+import '../models/la_service_name.dart';
 import '../models/la_project.dart';
-import '../models/pipelinesCmd.dart';
-import '../models/pipelinesStepDesc.dart';
+import '../models/pipelines_cmd.dart';
+import '../models/pipelines_step_desc.dart';
 import '../utils/regexp.dart';
 import '../utils/string_utils.dart';
 import '../utils/utils.dart';

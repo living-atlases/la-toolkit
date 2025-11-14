@@ -1,4 +1,4 @@
-import 'laServiceName.dart';
+import './la_service_name.dart';
 
 final String alaHub = LAServiceName.ala_hub.toS();
 final String alerts = LAServiceName.alerts.toS();

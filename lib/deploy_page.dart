@@ -1,13 +1,11 @@
 import 'dart:developer';
 
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 import 'components/alert_card.dart';
 import 'components/def_divider.dart';
@@ -22,14 +20,14 @@ import 'components/terms_drawer.dart';
 import 'components/tips_card.dart';
 import 'dependencies_manager.dart';
 import 'la_theme.dart';
-import 'models/MigrationNotesDesc.dart';
-import 'models/appState.dart';
-import 'models/commonCmd.dart';
-import 'models/deployCmd.dart';
-import 'models/laServer.dart';
+import 'models/app_state.dart';
+import 'models/common_cmd.dart';
+import 'models/deploy_cmd.dart';
 import 'models/la_project.dart';
+import 'models/la_server.dart';
 import 'models/la_service.dart';
-import 'models/tagsConstants.dart';
+import 'models/migration_notes_desc.dart';
+import 'models/tags_constants.dart';
 import 'redux/app_actions.dart';
 import 'routes.dart';
 import 'utils/debounce.dart';

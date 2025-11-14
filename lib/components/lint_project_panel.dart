@@ -6,15 +6,15 @@ import 'package:redux/redux.dart';
 
 
 import '../dependencies_manager.dart';
-import '../models/LAServiceConstants.dart';
-import '../models/appState.dart';
-import '../models/laProjectStatus.dart';
-import '../models/laServer.dart';
-import '../models/laServiceDesc.dart';
-import '../models/laServiceName.dart';
+import '../models/la_service_constants.dart';
+import '../models/app_state.dart';
+import '../models/la_project_status.dart';
+import '../models/la_server.dart';
+import '../models/la_service_desc.dart';
+import '../models/la_service_name.dart';
 import '../models/la_project.dart';
-import '../models/sshKey.dart';
-import '../models/versionUtils.dart';
+import '../models/ssh_key.dart';
+import '../models/version_utils.dart';
 import '../routes.dart';
 import 'alert_card.dart';
 import 'lint_error_panel.dart';

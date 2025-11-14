@@ -1,7 +1,7 @@
-import '../models/cmdHistoryEntry.dart';
-import '../models/laServer.dart';
-import '../models/laServiceDeploy.dart';
-import '../models/laVariable.dart';
+import '../models/cmd_history_entry.dart';
+import '../models/la_server.dart';
+import '../models/la_service_deploy.dart';
+import '../models/la_variable.dart';
 import '../models/la_project.dart';
 import '../models/la_service.dart';
 import 'entity_api.dart';

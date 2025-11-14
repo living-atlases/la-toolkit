@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
-
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart'
+import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,22 +14,22 @@ import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
-
 import '../components/app_snack_bar_message.dart';
 import '../dependencies_manager.dart';
-import '../models/LAServiceConstants.dart';
-import '../models/appState.dart';
-import '../models/cmdHistoryEntry.dart';
+import '../models/app_state.dart';
 import '../models/cmd_history_details.dart';
-import '../models/hostServicesChecks.dart';
-import '../models/laReleases.dart';
-import '../models/laServiceDesc.dart';
+import '../models/cmd_history_entry.dart';
+import '../models/host_services_checks.dart';
 import '../models/la_project.dart';
-import '../models/postDeployCmd.dart';
-import '../models/preDeployCmd.dart';
-import '../models/prodServiceDesc.dart';
-import '../models/sshKey.dart';
+import '../models/la_releases.dart';
+import '../models/la_service_constants.dart';
+import '../models/la_service_desc.dart';
+import '../models/post_deploy_cmd.dart';
+import '../models/pre_deploy_cmd.dart';
+import '../models/prod_service_desc.dart';
+import '../models/ssh_key.dart';
 import '../utils/api.dart';
+import '../utils/cas_utils.dart';
 import '../utils/utils.dart';
 import 'app_actions.dart';
 import 'entityActions.dart';

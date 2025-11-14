@@ -10,8 +10,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../components/deploy_sub_result_widget.dart';
 import '../utils/result_types.dart';
-import 'ansibleError.dart';
-import 'cmdHistoryEntry.dart';
+import './ansible_error.dart';
+import './cmd_history_entry.dart';
 
 part 'cmd_history_details.g.dart';
 

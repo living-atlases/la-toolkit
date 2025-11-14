@@ -6,9 +6,9 @@ import 'package:objectid/objectid.dart';
 
 
 import '../utils/regexp.dart';
-import 'isJsonSerializable.dart';
+import './is_json_serializable.dart';
 import 'la_service.dart';
-import 'sshKey.dart';
+import './ssh_key.dart';
 
 part 'la_server.g.dart';
 

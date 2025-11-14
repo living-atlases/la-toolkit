@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'la_variable..dart';
+part of 'la_variable.dart';
 
 // **************************************************************************
 // CopyWithGenerator
@@ -87,9 +87,10 @@ class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
       value: value == const $CopyWithPlaceholder()
           ? _value.value
           // ignore: cast_nullable_to_non_nullable
-          : value,
+          : value as Object?,
       projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
+          // ignore: cast_nullable_to_non_nullable
           : projectId as String,
     );
   }

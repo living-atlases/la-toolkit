@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:convert'
-import 'dart:convert';
+import 'dart:convert' as convert;
 import 'dart:io';
 import 'dart:math';
-
 
 import 'package:clipboard/clipboard.dart';
 import 'package:collection/collection.dart';
@@ -12,16 +10,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:http/http.dart'
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:markdown/markdown.dart'
+import 'package:markdown/markdown.dart' as md;
 import 'package:path_provider/path_provider.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:redux/redux.dart';
-import 'package:universal_html/html.dart'
+import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
-
 
 import 'components/app_snack_bar.dart';
 import 'components/compare_data_timeline.dart';
@@ -30,11 +26,11 @@ import 'components/deploy_btn.dart';
 import 'components/la_app_bar.dart';
 import 'components/scroll_panel.dart';
 import 'la_theme.dart';
-import 'models/LAServiceConstants.dart';
-import 'models/appState.dart';
-import 'models/laServer.dart';
-import 'models/laServiceDeploy.dart';
+import 'models/app_state.dart';
 import 'models/la_project.dart';
+import 'models/la_server.dart';
+import 'models/la_service_constants.dart';
+import 'models/la_service_deploy.dart';
 import 'redux/actions.dart';
 import 'solr_compare_result.dart';
 import 'utils/query_utils.dart';
@@ -824,14 +820,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
         debugPrint(gbifRecordUri.toString());
       }
       await Future<void>.delayed(const Duration(milliseconds: 200));
-      final Response response = await http.get(gbifRecordUri);
+      final http.Response response = await http.get(gbifRecordUri);
       if (response.statusCode == 200) {
         if (debug) {
           debugPrint(response.body);
         }
         final String body = convert.utf8.decode(response.bodyBytes);
         final Map<String, dynamic> result =
-            jsonDecode(body) as Map<String, dynamic>;
+            convert.jsonDecode(body) as Map<String, dynamic>;
         if (result['count'] == 1) {
           recordsGBIFIds[id] = (result['results'] as List<dynamic>)[0];
           // debugPrint('ALA record via its API: ');
@@ -1138,7 +1134,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       }
     }
 
-    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    const convert.JsonEncoder encoder = convert.JsonEncoder.withIndent('  ');
     final String prettyprint = encoder.convert(stats);
     errorMessages['SUMMARY'] = prettyprint;
 
@@ -1473,8 +1469,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
       [bool debug = false]) async {
     final Uri uri = asUri(base, path, params, debug);
     try {
-      final Response response = await http.get(uri);
-      return jsonDecode(response.body);
+      final http.Response response = await http.get(uri);
+      return convert.jsonDecode(response.body);
     } catch (all) {
       _handleError('Error reading url: $uri$all');
       rethrow;
@@ -1808,7 +1804,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
     }
     final String body = convert.utf8.decode(response.bodyBytes);
     final Map<String, dynamic> gbifData =
-        json.decode(body) as Map<String, dynamic>;
+        convert.json.decode(body) as Map<String, dynamic>;
 
     final Set<String> uniqueGbifContacts = <String>{};
     final List<dynamic> gbifContacts =

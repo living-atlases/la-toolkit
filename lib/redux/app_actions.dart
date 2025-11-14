@@ -2,19 +2,19 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 
 import '../components/app_snack_bar_message.dart';
-import '../models/brandingDeployCmd.dart';
-import '../models/cmdHistoryEntry.dart';
+import '../models/branding_deploy_cmd.dart';
+import '../models/cmd_history_entry.dart';
 import '../models/cmd_history_details.dart';
-import '../models/commonCmd.dart';
-import '../models/deployCmd.dart';
-import '../models/hostServicesChecks.dart';
-import '../models/laReleases.dart';
+import '../models/common_cmd.dart';
+import '../models/deploy_cmd.dart';
+import '../models/host_services_checks.dart';
+import '../models/la_releases.dart';
 import '../models/la_project.dart';
 import '../models/la_service.dart';
-import '../models/pipelinesCmd.dart';
-import '../models/postDeployCmd.dart';
-import '../models/preDeployCmd.dart';
-import '../models/sshKey.dart';
+import '../models/pipelines_cmd.dart';
+import '../models/post_deploy_cmd.dart';
+import '../models/pre_deploy_cmd.dart';
+import '../models/ssh_key.dart';
 
 abstract class AppActions {}
 

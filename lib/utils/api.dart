@@ -1,22 +1,20 @@
 import 'dart:convert';
 import 'dart:developer';
 
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart'
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart' show Response;
 
-
-import '../models/LAServiceConstants.dart';
-import '../models/appState.dart';
-import '../models/cmdHistoryEntry.dart';
+import '../models/app_state.dart';
 import '../models/cmd_history_details.dart';
-import '../models/deployCmd.dart';
-import '../models/hostServicesChecks.dart';
-import '../models/laServer.dart';
+import '../models/cmd_history_entry.dart';
+import '../models/deploy_cmd.dart';
+import '../models/host_services_checks.dart';
 import '../models/la_project.dart';
-import '../models/sshKey.dart';
+import '../models/la_server.dart';
+import '../models/la_service_constants.dart';
+import '../models/ssh_key.dart';
 import '../redux/actions.dart';
 import 'utils.dart';
 

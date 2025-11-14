@@ -3,9 +3,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 
 import '../la_theme.dart';
-import '../models/LAServiceConstants.dart';
+import '../models/la_service_constants.dart';
 import '../models/la_service.dart';
-import '../models/prodServiceDesc.dart';
+import '../models/prod_service_desc.dart';
 import '../utils/card_constants.dart';
 import '../utils/string_utils.dart';
 import 'admin_icon_button.dart';

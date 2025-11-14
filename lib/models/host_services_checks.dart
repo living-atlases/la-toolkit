@@ -8,8 +8,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'basic_service.dart';
 import 'host_service_check.dart';
-import 'laServer.dart';
-import 'laServiceDeploy.dart';
+import './la_server.dart';
+import './la_service_deploy.dart';
 
 part 'host_services_checks.g.dart';
 

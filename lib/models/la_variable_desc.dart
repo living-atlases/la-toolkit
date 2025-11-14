@@ -1,8 +1,8 @@
 import '../utils/regexp.dart';
-import 'LAServiceConstants.dart';
-import 'laServer.dart';
-import 'laServiceDeploy.dart';
-import 'laServiceName.dart';
+import './la_service_constants.dart';
+import './la_server.dart';
+import './la_service_deploy.dart';
+import './la_service_name.dart';
 import 'la_project.dart';
 
 // Other option is to get variables from ala-install parsing the templates with

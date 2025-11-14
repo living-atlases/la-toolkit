@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
-
-
-import '../models/appState.dart';
-import '../models/deploymentType.dart';
-import '../models/laServer.dart';
+import '../models/app_state.dart';
+import '../models/deployment_type.dart';
+import '../models/la_server.dart';
 import '../models/la_project.dart';
 import '../redux/app_actions.dart';
 import 'server_status_card.dart';

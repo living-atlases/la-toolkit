@@ -1,12 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-
-import 'LAServiceConstants.dart';
+import './la_service_constants.dart';
 import 'basic_service.dart';
-import 'laServiceDepsDesc.dart';
-import 'laServiceName.dart';
+import './la_service_deps_desc.dart';
+import './la_service_name.dart';
 
 class LAServiceDesc {
   LAServiceDesc(

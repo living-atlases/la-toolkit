@@ -1,4 +1,4 @@
-import 'LAServiceConstants.dart';
+import './la_service_constants.dart';
 import 'basic_service.dart';
 
 class LAServiceDepsDesc {

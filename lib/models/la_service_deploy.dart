@@ -2,10 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
-
-
-import 'deploymentType.dart';
-import 'isJsonSerializable.dart';
+import './deployment_type.dart';
+import './is_json_serializable.dart';
 import 'la_service.dart';
 
 part 'la_service_deploy.g.dart';

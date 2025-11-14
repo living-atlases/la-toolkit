@@ -3,7 +3,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 
 import '../la_theme.dart';
-import '../models/laServer.dart';
+import '../models/la_server.dart';
 import '../utils/regexp.dart';
 import 'generic_text_form_field.dart';
 

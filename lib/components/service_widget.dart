@@ -4,13 +4,12 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 import '../la_theme.dart';
-import '../models/LAServiceConstants.dart';
-import '../models/appState.dart';
-import '../models/laServiceDesc.dart';
+import '../models/app_state.dart';
 import '../models/la_project.dart';
 import '../models/la_service.dart';
+import '../models/la_service_constants.dart';
+import '../models/la_service_desc.dart';
 import '../redux/actions.dart';
 import '../utils/regexp.dart';
 import '../utils/string_utils.dart';

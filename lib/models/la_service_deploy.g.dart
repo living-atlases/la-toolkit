@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'la_service_deploy..dart';
+part of 'la_service_deploy.dart';
 
 // **************************************************************************
 // CopyWithGenerator
