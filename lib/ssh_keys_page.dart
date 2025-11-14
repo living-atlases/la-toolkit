@@ -17,7 +17,6 @@ import 'models/sshKey.dart';
 import 'not_in_demo.dart';
 import 'redux/actions.dart';
 import 'utils/regexp.dart';
-import 'utils/string_utils.dart';
 import 'utils/utils.dart';
 
 class SshKeyPage extends StatelessWidget {
