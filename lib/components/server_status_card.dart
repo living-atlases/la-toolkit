@@ -1,9 +1,11 @@
 import 'dart:collection';
 
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
+
 
 import '../la_theme.dart';
 import '../models/basic_service.dart';
@@ -11,8 +13,8 @@ import '../models/cmdHistoryEntry.dart';
 import '../models/laServer.dart';
 import '../models/laServiceDepsDesc.dart';
 import '../models/la_service.dart';
-import '../utils/string_utils.dart';
 import '../utils/card_constants.dart';
+import '../utils/string_utils.dart';
 import 'service_status_card.dart';
 import 'status_icon.dart';
 

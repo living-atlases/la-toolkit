@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 import '../models/la_service.dart';
 
 class CheckResultCard extends StatelessWidget {

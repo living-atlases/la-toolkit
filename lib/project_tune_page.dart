@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+
 import 'package:collection/collection.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
+
 
 import 'components/ala_install_selector.dart';
 import 'components/app_snack_bar.dart';
@@ -17,8 +19,8 @@ import 'components/help_icon.dart';
 import 'components/la_app_bar.dart';
 import 'components/lint_project_panel.dart';
 import 'components/scroll_panel.dart';
-import 'la_theme.dart';
 import 'la_releases_selectors.dart';
+import 'la_theme.dart';
 import 'models/appState.dart';
 import 'models/laProjectStatus.dart';
 import 'models/laReleases.dart';
@@ -31,8 +33,8 @@ import 'models/la_service.dart';
 import 'models/sshKey.dart';
 import 'redux/app_actions.dart';
 import 'routes.dart';
-import 'utils/string_utils.dart';
 import 'utils/regexp.dart';
+import 'utils/string_utils.dart';
 import 'utils/utils.dart';
 
 class LAProjectTunePage extends StatefulWidget {

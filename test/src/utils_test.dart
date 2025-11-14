@@ -1,6 +1,7 @@
 import 'package:la_toolkit/models/la_lat_lng.dart';
-import 'package:la_toolkit/utils/string_utils.dart';
 import 'package:la_toolkit/utils/map_utils.dart';
+import 'package:la_toolkit/utils/string_utils.dart';
+
 import 'package:latlong2/latlong.dart';
 import 'package:objectid/objectid.dart';
 import 'package:test/test.dart';

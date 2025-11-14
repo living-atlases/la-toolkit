@@ -1,9 +1,11 @@
 import 'dart:math';
-import 'dart:ui' as ui;
+import 'dart:ui'
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
+
 
 import './scalebar_utils.dart' as util;
 

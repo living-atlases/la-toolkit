@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+
 import 'components/la_app_bar.dart';
 import 'components/status_icon.dart';
 import 'la_theme.dart';

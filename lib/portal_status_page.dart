@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+
 import 'package:collection/collection.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:tuple/tuple.dart';
+
 
 import 'components/app_snack_bar.dart';
 import 'components/check_result_card.dart';

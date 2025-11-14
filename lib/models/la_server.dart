@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
+
 import '../utils/regexp.dart';
 import 'isJsonSerializable.dart';
 import 'la_service.dart';

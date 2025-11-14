@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart' as badges;
+import 'package:badges/badges.dart'
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 

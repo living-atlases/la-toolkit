@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 
 import 'components/alert_card.dart';
 import 'components/def_divider.dart';

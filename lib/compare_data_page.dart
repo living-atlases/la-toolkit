@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:convert' as convert;
+import 'dart:convert'
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+
 
 import 'package:clipboard/clipboard.dart';
 import 'package:collection/collection.dart';
@@ -11,15 +12,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart'
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:markdown/markdown.dart'
 import 'package:path_provider/path_provider.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:redux/redux.dart';
-import 'package:universal_html/html.dart' as html;
+import 'package:universal_html/html.dart'
 import 'package:url_launcher/url_launcher.dart';
+
 
 import 'components/app_snack_bar.dart';
 import 'components/compare_data_timeline.dart';

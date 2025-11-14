@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
-import '../utils/string_utils.dart';
 import '../utils/result_types.dart';
+
+import '../utils/string_utils.dart';
 import 'LAServiceConstants.dart';
 import 'isJsonSerializable.dart';
 import 'laServiceDesc.dart';

@@ -3,6 +3,7 @@ import 'package:la_toolkit/models/la_service_constants.dart';
 import 'package:la_toolkit/models/version_utils.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/string_utils.dart';
+
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 

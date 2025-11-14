@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+
 
 import 'components/help_icon.dart';
 import 'components/software_selector.dart';

@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+
 import '../utils/query_utils.dart';
 
 class CompareGbifCharts extends StatefulWidget {

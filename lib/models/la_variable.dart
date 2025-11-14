@@ -2,6 +2,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
+
 import 'isJsonSerializable.dart';
 import 'laServiceName.dart';
 import 'laVariableDesc.dart';

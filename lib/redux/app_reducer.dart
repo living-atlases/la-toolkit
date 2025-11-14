@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:redux/redux.dart';
 import 'package:stack_trace/stack_trace.dart';
-import 'package:universal_html/html.dart' as html;
+import 'package:universal_html/html.dart'
+
 
 import '../components/app_snack_bar_message.dart';
 import '../models/appState.dart';

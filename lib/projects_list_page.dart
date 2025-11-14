@@ -6,6 +6,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+
 import 'components/formatted_title.dart';
 import 'components/la_project_timeline.dart';
 import 'components/scroll_panel.dart';
