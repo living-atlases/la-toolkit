@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'laReleases.dart';
+part of 'la_releases..dart';
 
 // **************************************************************************
 // CopyWithGenerator

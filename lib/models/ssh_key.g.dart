@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'sshKey.dart';
+part of 'ssh_key..dart';
 
 // **************************************************************************
 // CopyWithGenerator

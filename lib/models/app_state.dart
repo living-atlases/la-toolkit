@@ -12,7 +12,7 @@ import 'laReleases.dart';
 import 'la_project.dart';
 import 'sshKey.dart';
 
-part 'appState.g.dart';
+part 'app_state.g.dart';
 
 enum LAProjectViewStatus { view, edit, servers, tune, create }
 

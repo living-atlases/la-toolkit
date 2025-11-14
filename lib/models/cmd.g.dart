@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'cmd.dart';
+part of 'cmd..dart';
 
 // **************************************************************************
 // CopyWithGenerator

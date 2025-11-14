@@ -3,7 +3,7 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'laReleases.g.dart';
+part 'la_releases.g.dart';
 
 @immutable
 @JsonSerializable(explicitToJson: true)

@@ -9,7 +9,7 @@ import 'host_service_check.dart';
 import 'laServer.dart';
 import 'laServiceDeploy.dart';
 
-part 'hostServicesChecks.g.dart';
+part 'host_services_checks.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class HostsServicesChecks {

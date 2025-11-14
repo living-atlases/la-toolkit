@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'cmdHistoryEntry.dart';
+part of 'cmd_history_entry..dart';
 
 // **************************************************************************
 // CopyWithGenerator

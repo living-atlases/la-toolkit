@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'laServer.dart';
+part of 'la_server..dart';
 
 // **************************************************************************
 // CopyWithGenerator

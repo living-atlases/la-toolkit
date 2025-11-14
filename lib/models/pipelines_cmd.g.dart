@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'pipelinesCmd.dart';
+part of 'pipelines_cmd..dart';
 
 // **************************************************************************
 // CopyWithGenerator

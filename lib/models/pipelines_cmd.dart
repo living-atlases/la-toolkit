@@ -6,7 +6,7 @@ import '../utils/string_utils.dart';
 import 'commonCmd.dart';
 import 'pipelinesStepName.dart';
 
-part 'pipelinesCmd.g.dart';
+part 'pipelines_cmd.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()

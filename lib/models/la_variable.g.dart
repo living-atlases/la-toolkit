@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'laVariable.dart';
+part of 'la_variable..dart';
 
 // **************************************************************************
 // CopyWithGenerator

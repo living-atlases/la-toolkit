@@ -6,7 +6,7 @@ import 'isJsonSerializable.dart';
 import 'laServiceName.dart';
 import 'laVariableDesc.dart';
 
-part 'laVariable.g.dart';
+part 'la_variable.g.dart';
 
 enum LAVariableStatus { deployed, undeployed }
 

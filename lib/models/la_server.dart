@@ -9,7 +9,7 @@ import 'isJsonSerializable.dart';
 import 'la_service.dart';
 import 'sshKey.dart';
 
-part 'laServer.g.dart';
+part 'la_server.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()

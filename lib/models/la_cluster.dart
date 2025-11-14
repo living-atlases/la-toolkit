@@ -5,7 +5,7 @@ import 'package:objectid/objectid.dart';
 import 'deploymentType.dart';
 import 'isJsonSerializable.dart';
 
-part 'laCluster.g.dart';
+part 'la_cluster.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()

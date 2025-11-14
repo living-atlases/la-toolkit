@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'laCluster.dart';
+part of 'la_cluster..dart';
 
 // **************************************************************************
 // CopyWithGenerator

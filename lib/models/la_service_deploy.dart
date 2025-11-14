@@ -7,7 +7,7 @@ import 'deploymentType.dart';
 import 'isJsonSerializable.dart';
 import 'la_service.dart';
 
-part 'laServiceDeploy.g.dart';
+part 'la_service_deploy.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()

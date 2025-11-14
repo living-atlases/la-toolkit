@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'la_project.dart';
+part of 'la_project..dart';
 
 // **************************************************************************
 // CopyWithGenerator

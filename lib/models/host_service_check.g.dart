@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'host_service_check.dart';
+part of 'host_service_check..dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

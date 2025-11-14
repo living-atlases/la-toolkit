@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 import '../utils/string_utils.dart';
 import 'deployCmd.dart';
 
-part 'preDeployCmd.g.dart';
+part 'pre_deploy_cmd.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 @CopyWith()

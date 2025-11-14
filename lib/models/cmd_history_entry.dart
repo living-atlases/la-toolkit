@@ -12,7 +12,7 @@ import 'pipelinesCmd.dart';
 import 'postDeployCmd.dart';
 import 'preDeployCmd.dart';
 
-part 'cmdHistoryEntry.g.dart';
+part 'cmd_history_entry.g.dart';
 
 enum CmdResult { unknown, aborted, success, failed }
 

@@ -7,7 +7,7 @@ import 'LAServiceConstants.dart';
 import 'commonCmd.dart';
 import 'laServiceDesc.dart';
 
-part 'deployCmd.g.dart';
+part 'deploy_cmd.g.dart';
 
 // Typical ansible cmd
 
