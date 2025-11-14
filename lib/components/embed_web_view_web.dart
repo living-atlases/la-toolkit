@@ -7,8 +7,8 @@ import 'package:universal_html/html.dart' as html;
 import 'package:universal_html/html.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../laTheme.dart';
-import '../notInDemo.dart';
+import '../la_theme.dart';
+import '../not_in_demo.dart';
 import '../utils/utils.dart'; // https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
 
 class EmbedWebView extends StatefulWidget {

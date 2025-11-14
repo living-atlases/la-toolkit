@@ -4,7 +4,7 @@ import 'package:redux/redux.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:universal_html/html.dart' as html;
 
-import '../components/appSnackBarMessage.dart';
+import '../components/app_snack_bar_message.dart';
 import '../models/appState.dart';
 import '../models/cmdHistoryEntry.dart';
 import '../models/laProjectStatus.dart';

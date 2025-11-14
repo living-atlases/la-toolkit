@@ -4,15 +4,15 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 
-import '../laTheme.dart';
+import '../la_theme.dart';
 import '../models/appState.dart';
 import '../models/laServer.dart';
 import '../models/la_project.dart';
 import '../models/prodServiceDesc.dart';
 import '../utils/utils.dart';
-import 'adminIconButton.dart';
+import 'admin_icon_button.dart';
 import 'help_icon.dart';
-import 'listTileLink.dart';
+import 'list_tile_link.dart';
 import 'term_dialog.dart';
 
 class TermsDrawer extends StatelessWidget {

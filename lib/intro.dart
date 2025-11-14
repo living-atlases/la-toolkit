@@ -6,7 +6,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'laTheme.dart';
+import 'la_theme.dart';
 import 'models/appState.dart';
 import 'redux/actions.dart';
 import 'routes.dart';

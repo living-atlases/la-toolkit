@@ -1,0 +1,493 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 85.0.0 (92.0.0 available)
+  analyzer 7.7.1 (9.0.0 available)
+  animated_checkmark 1.0.1 (3.1.0 available)
+  build 3.1.0 (4.0.2 available)
+  build_daemon 4.1.0 (4.1.1 available)
+  build_resolvers 3.0.3 (3.0.4 available)
+  build_runner 2.7.1 (2.10.2 available)
+  build_runner_core 9.3.1 (9.3.2 available)
+  characters 1.4.0 (1.4.1 available)
+  clipboard 0.1.3 (2.0.2 available)
+  copy_with_extension 9.1.1 (10.0.1 available)
+  copy_with_extension_gen 9.1.1 (10.0.1 available)
+  crypto 3.0.6 (3.0.7 available)
+  dart_style 3.1.1 (3.1.2 available)
+  fl_chart 0.69.2 (1.1.1 available)
+  flutter_dotenv 5.2.1 (6.0.0 available)
+  flutter_lints 4.0.0 (6.0.0 available)
+  flutter_map 5.0.0 (8.2.2 available)
+  flutter_map_dragmarker 5.0.0 (8.0.3 available)
+  flutter_markdown 0.7.7+1 (discontinued replaced by flutter_markdown_plus)
+  http 1.5.0 (1.6.0 available)
+  infinite_scroll_pagination 4.1.0 (5.1.1 available)
+! intl 0.18.1 (overridden) (0.20.2 available)
+  introduction_screen 3.1.17 (4.0.0 available)
+  js 0.6.7 (0.7.2 available)
+  lints 4.0.0 (6.0.0 available)
+  loader_overlay 4.0.4+1 (5.0.0 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.16.0 (1.17.0 available)
+  mgrs_dart 2.0.0 (3.0.0 available)
+  objectid 3.1.0 (4.0.1 available)
+  package_info_plus 8.3.1 (9.0.0 available)
+  phone_numbers_parser 9.0.15 (9.0.16 available)
+  proj4dart 2.1.0 (3.0.0 available)
+  responsive_framework 0.2.0 (1.5.1 available)
+  sentry 8.14.2 (9.8.0 available)
+  sentry_flutter 8.14.2 (9.8.0 available)
+  socket_io_client 1.0.2 (3.1.2 available)
+  socket_io_common 1.0.1 (3.1.1 available)
+  source_gen 3.1.0 (4.0.2 available)
+  test 1.26.2 (1.26.3 available)
+  test_api 0.7.6 (0.7.8 available)
+  test_core 0.6.11 (0.6.13 available)
+  unicode 0.3.1 (1.1.8 available)
+  uuid 4.5.1 (4.5.2 available)
+  widget_event 1.11.0 (2.0.1 available)
+Got dependencies!
+1 package is discontinued.
+45 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing la_toolkit...                                         
+
+   info • The file name 'cmdTermPage.dart' isn't a lower_case_with_underscores identifier • lib/cmdTermPage.dart:1:1 • file_names
+   info • The file name 'GenericSelector.dart' isn't a lower_case_with_underscores identifier • lib/components/GenericSelector.dart:1:1 • file_names
+   info • The file name 'LoadingTextOverlay.dart' isn't a lower_case_with_underscores identifier • lib/components/LoadingTextOverlay.dart:1:1 • file_names
+   info • The file name 'NetworkImageWPlaceHolder.dart' isn't a lower_case_with_underscores identifier • lib/components/NetworkImageWPlaceHolder.dart:1:1 • file_names
+   info • The file name 'ShadowIcon.dart' isn't a lower_case_with_underscores identifier • lib/components/ShadowIcon.dart:1:1 • file_names
+   info • The file name 'adminIconButton.dart' isn't a lower_case_with_underscores identifier • lib/components/adminIconButton.dart:1:1 • file_names
+   info • The file name 'alaInstallSelector.dart' isn't a lower_case_with_underscores identifier • lib/components/alaInstallSelector.dart:1:1 • file_names
+   info • The file name 'alertCard.dart' isn't a lower_case_with_underscores identifier • lib/components/alertCard.dart:1:1 • file_names
+   info • The file name 'appSnackBarMessage.dart' isn't a lower_case_with_underscores identifier • lib/components/appSnackBarMessage.dart:1:1 • file_names
+   info • Method invocation or property access on a 'dynamic' target • lib/components/app_snack_bar.dart:38:11 • avoid_dynamic_calls
+   info • The file name 'brandingSelector.dart' isn't a lower_case_with_underscores identifier • lib/components/brandingSelector.dart:1:1 • file_names
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/components/brandingSelector.dart:164:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/components/brandingSelector.dart:170:38 • deprecated_member_use
+   info • The file name 'checkResultCard.dart' isn't a lower_case_with_underscores identifier • lib/components/checkResultCard.dart:1:1 • file_names
+   info • The file name 'choiceEmptyPanel.dart' isn't a lower_case_with_underscores identifier • lib/components/choiceEmptyPanel.dart:1:1 • file_names
+   info • The file name 'choicesSelector.dart' isn't a lower_case_with_underscores identifier • lib/components/choicesSelector.dart:1:1 • file_names
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/components/choicesSelector.dart:59:56 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/components/choicesSelector.dart:77:65 • deprecated_member_use
+   info • Missing type annotation • lib/components/compare_data_timeline.dart:137:45 • always_specify_types
+   info • The file name 'defDivider.dart' isn't a lower_case_with_underscores identifier • lib/components/defDivider.dart:1:1 • file_names
+   info • The file name 'deployBtn.dart' isn't a lower_case_with_underscores identifier • lib/components/deployBtn.dart:1:1 • file_names
+   info • The file name 'deployTaskSwitch.dart' isn't a lower_case_with_underscores identifier • lib/components/deployTaskSwitch.dart:1:1 • file_names
+   info • Don't use 'BuildContext's across async gaps • lib/components/deploy_sub_result_widget.dart:49:65 • use_build_context_synchronously
+   info • The file name 'formattedTitle.dart' isn't a lower_case_with_underscores identifier • lib/components/formattedTitle.dart:1:1 • file_names
+   info • The file name 'gatewaySelector.dart' isn't a lower_case_with_underscores identifier • lib/components/gatewaySelector.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/components/gatewaySelector.dart:101:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/components/gatewaySelector.dart:110:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'generatorSelector.dart' isn't a lower_case_with_underscores identifier • lib/components/generatorSelector.dart:1:1 • file_names
+   info • The file name 'genericTextFormField.dart' isn't a lower_case_with_underscores identifier • lib/components/genericTextFormField.dart:1:1 • file_names
+   info • The file name 'hubButton.dart' isn't a lower_case_with_underscores identifier • lib/components/hubButton.dart:1:1 • file_names
+   info • The file name 'laAppBar.dart' isn't a lower_case_with_underscores identifier • lib/components/laAppBar.dart:1:1 • file_names
+   info • Statement should be on a separate line • lib/components/laAppBar.dart:89:45 • always_put_control_body_on_new_line
+   info • The file name 'laProjectTimeline.dart' isn't a lower_case_with_underscores identifier • lib/components/laProjectTimeline.dart:1:1 • file_names
+   info • Missing type annotation • lib/components/laProjectTimeline.dart:93:43 • always_specify_types
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/components/laProjectTimeline.dart:202:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/components/laProjectTimeline.dart:209:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • To-do comment doesn't follow the Flutter style • lib/components/laProjectTimeline.dart:213:1 • flutter_style_todos
+   info • The file name 'lintErrorPanel.dart' isn't a lower_case_with_underscores identifier • lib/components/lintErrorPanel.dart:1:1 • file_names
+   info • The file name 'lintProjectPanel.dart' isn't a lower_case_with_underscores identifier • lib/components/lintProjectPanel.dart:1:1 • file_names
+   info • The file name 'listTileLink.dart' isn't a lower_case_with_underscores identifier • lib/components/listTileLink.dart:1:1 • file_names
+   info • To-do comment doesn't follow the Flutter style • lib/components/listTileLink.dart:70:7 • flutter_style_todos
+   info • The file name 'mainDrawer.dart' isn't a lower_case_with_underscores identifier • lib/components/mainDrawer.dart:1:1 • file_names
+   info • 'onKey' is deprecated and shouldn't be used. Use onKeyEvent instead. This feature was deprecated after v3.18.0-2.0.pre • lib/components/pipelines_timeline.dart:56:31 • deprecated_member_use
+   info • 'RawKeyEvent' is deprecated and shouldn't be used. Use KeyEvent instead. This feature was deprecated after v3.18.0-2.0.pre • lib/components/pipelines_timeline.dart:56:55 • deprecated_member_use
+   info • 'isShiftPressed' is deprecated and shouldn't be used. Use HardwareKeyboard.instance.isShiftPressed instead. This feature was deprecated after v3.18.0-2.0.pre • lib/components/pipelines_timeline.dart:58:30 • deprecated_member_use
+   info • The file name 'renameServerIcon.dart' isn't a lower_case_with_underscores identifier • lib/components/renameServerIcon.dart:1:1 • file_names
+   info • To-do comment doesn't follow the Flutter style • lib/components/renameServerIcon.dart:47:13 • flutter_style_todos
+   info • The file name 'resultsPieChart.dart' isn't a lower_case_with_underscores identifier • lib/components/resultsPieChart.dart:1:1 • file_names
+   info • Missing type annotation • lib/components/resultsPieChart.dart:95:12 • always_specify_types
+   info • The file name 'scrollPanel.dart' isn't a lower_case_with_underscores identifier • lib/components/scrollPanel.dart:1:1 • file_names
+   info • The file name 'selectUtils.dart' isn't a lower_case_with_underscores identifier • lib/components/selectUtils.dart:1:1 • file_names
+   info • The file name 'selectorPlayground.dart' isn't a lower_case_with_underscores identifier • lib/components/selectorPlayground.dart:1:1 • file_names
+   info • The file name 'serverDetailsCard.dart' isn't a lower_case_with_underscores identifier • lib/components/serverDetailsCard.dart:1:1 • file_names
+   info • Missing type annotation • lib/components/serverDetailsCard.dart:59:32 • always_specify_types
+   info • Missing type annotation • lib/components/serverDetailsCard.dart:107:40 • always_specify_types
+   info • The file name 'serverDetailsCardList.dart' isn't a lower_case_with_underscores identifier • lib/components/serverDetailsCardList.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/components/serverDetailsCardList.dart:69:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/components/serverDetailsCardList.dart:77:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'serverSelector.dart' isn't a lower_case_with_underscores identifier • lib/components/serverSelector.dart:1:1 • file_names
+   info • The file name 'serverServicesEditCard.dart' isn't a lower_case_with_underscores identifier • lib/components/serverServicesEditCard.dart:1:1 • file_names
+   info • The file name 'serverSshKeySelector.dart' isn't a lower_case_with_underscores identifier • lib/components/serverSshKeySelector.dart:1:1 • file_names
+   info • Missing type annotation • lib/components/serverSshKeySelector.dart:41:12 • always_specify_types
+   info • Missing type annotation • lib/components/serverSshKeySelector.dart:59:16 • always_specify_types
+   info • Use 'const' with the constructor to improve performance • lib/components/server_status_card.dart:68:30 • prefer_const_constructors
+   info • Method invocation or property access on a 'dynamic' target • lib/components/server_status_card.dart:287:28 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/components/server_status_card.dart:287:61 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/components/server_status_card.dart:290:26 • avoid_dynamic_calls
+   info • Missing type annotation • lib/components/servers_status_panel.dart:46:17 • always_specify_types
+   info • Missing type annotation • lib/components/servers_status_panel.dart:47:17 • always_specify_types
+   info • Missing type annotation • lib/components/servers_status_panel.dart:48:17 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/components/servers_status_panel.dart:50:24 • avoid_dynamic_calls
+   info • The file name 'serviceStatusCard.dart' isn't a lower_case_with_underscores identifier • lib/components/serviceStatusCard.dart:1:1 • file_names
+   info • The file name 'serviceWidget.dart' isn't a lower_case_with_underscores identifier • lib/components/serviceWidget.dart:1:1 • file_names
+   info • The file name 'servicesStatusPanel.dart' isn't a lower_case_with_underscores identifier • lib/components/servicesStatusPanel.dart:1:1 • file_names
+   info • The file name 'statusIcon.dart' isn't a lower_case_with_underscores identifier • lib/components/statusIcon.dart:1:1 • file_names
+   info • The file name 'tagsSelector.dart' isn't a lower_case_with_underscores identifier • lib/components/tagsSelector.dart:1:1 • file_names
+   info • The file name 'termCommandDesc.dart' isn't a lower_case_with_underscores identifier • lib/components/termCommandDesc.dart:1:1 • file_names
+   info • Missing type annotation • lib/components/termCommandDesc.dart:61:45 • always_specify_types
+   info • Don't use 'BuildContext's across async gaps • lib/components/termCommandDesc.dart:62:30 • use_build_context_synchronously
+   info • The file name 'textTitle.dart' isn't a lower_case_with_underscores identifier • lib/components/textTitle.dart:1:1 • file_names
+   info • The file name 'textWithHelp.dart' isn't a lower_case_with_underscores identifier • lib/components/textWithHelp.dart:1:1 • file_names
+   info • The file name 'tipsCard.dart' isn't a lower_case_with_underscores identifier • lib/components/tipsCard.dart:1:1 • file_names
+   info • The file name 'toolShortcut.dart' isn't a lower_case_with_underscores identifier • lib/components/toolShortcut.dart:1:1 • file_names
+   info • The file name 'deployResultsPage.dart' isn't a lower_case_with_underscores identifier • lib/deployResultsPage.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/deployResultsPage.dart:263:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/deployResultsPage.dart:270:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'laTheme.dart' isn't a lower_case_with_underscores identifier • lib/laTheme.dart:1:1 • file_names
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/laTheme.dart:6:35 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/laTheme.dart:21:43 • deprecated_member_use
+   info • The file name 'logSearchInput.dart' isn't a lower_case_with_underscores identifier • lib/logSearchInput.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/logs_page.dart:152:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/logs_page.dart:160:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/maps/map_area_selector.dart:231:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/maps/map_area_selector.dart:238:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'LAServiceConstants.dart' isn't a lower_case_with_underscores identifier • lib/models/LAServiceConstants.dart:1:1 • file_names
+   info • The file name 'MigrationNotesDesc.dart' isn't a lower_case_with_underscores identifier • lib/models/MigrationNotesDesc.dart:1:1 • file_names
+   info • The file name 'ansibleError.dart' isn't a lower_case_with_underscores identifier • lib/models/ansibleError.dart:1:1 • file_names
+   info • The file name 'appState.dart' isn't a lower_case_with_underscores identifier • lib/models/appState.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/appState.dart:153:13 • always_specify_types
+   info • Missing type annotation • lib/models/appState.dart:154:13 • always_specify_types
+   info • Missing type annotation • lib/models/appState.dart:155:13 • always_specify_types
+   info • Missing type annotation • lib/models/appState.dart:156:13 • always_specify_types
+   info • Missing type annotation • lib/models/appState.dart:159:13 • always_specify_types
+   info • The file name 'appState.dart' isn't a lower_case_with_underscores identifier • lib/models/appState.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/appState.g.dart:280:18 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:290:18 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:293:18 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:296:10 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:296:13 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:296:19 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:302:18 • always_specify_types
+   info • Unnecessary use of a null check ('!') • lib/models/appState.g.dart:309:62 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/appState.g.dart:312:42 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:315:46 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:315:49 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:315:55 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:316:40 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:320:1 • always_specify_types
+   info • Missing type annotation • lib/models/appState.g.dart:320:38 • always_specify_types
+   info • The file name 'brandingDeployCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/brandingDeployCmd.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/brandingDeployCmd.dart:20:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/brandingDeployCmd.dart:27:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'brandingDeployCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/brandingDeployCmd.g.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/cmd.dart:44:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/cmd.dart:53:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Unnecessary use of a null check ('!') • lib/models/cmd.g.dart:98:46 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/cmd.g.dart:102:1 • always_specify_types
+   info • Missing type annotation • lib/models/cmd.g.dart:102:26 • always_specify_types
+   info • The file name 'cmdHistoryEntry.dart' isn't a lower_case_with_underscores identifier • lib/models/cmdHistoryEntry.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/cmdHistoryEntry.dart:127:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/cmdHistoryEntry.dart:144:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'cmdHistoryEntry.dart' isn't a lower_case_with_underscores identifier • lib/models/cmdHistoryEntry.g.dart:1:1 • file_names
+   info • Unnecessary use of a null check ('!') • lib/models/cmdHistoryEntry.g.dart:204:52 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/cmdHistoryEntry.g.dart:209:1 • always_specify_types
+   info • Missing type annotation • lib/models/cmdHistoryEntry.g.dart:209:28 • always_specify_types
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/cmd_history_details.dart:50:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/cmd_history_details.dart:199:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'commonCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/commonCmd.dart:1:1 • file_names
+   info • The file name 'defaultVersions.dart' isn't a lower_case_with_underscores identifier • lib/models/defaultVersions.dart:1:1 • file_names
+   info • The file name 'deployCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/deployCmd.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/deployCmd.dart:46:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/deployCmd.dart:50:17 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.dart:51:17 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.dart:52:17 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.dart:53:17 • always_specify_types
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/deployCmd.dart:61:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/deployCmd.dart:62:13 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.dart:63:13 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.dart:64:13 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.dart:65:13 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.dart:79:15 • always_specify_types
+   info • The file name 'deployCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/deployCmd.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/deployCmd.g.dart:163:18 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.g.dart:166:18 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.g.dart:169:18 • always_specify_types
+   info • Missing type annotation • lib/models/deployCmd.g.dart:171:52 • always_specify_types
+   info • The file name 'deploymentType.dart' isn't a lower_case_with_underscores identifier • lib/models/deploymentType.dart:1:1 • file_names
+   info • The file name 'hostServicesChecks.dart' isn't a lower_case_with_underscores identifier • lib/models/hostServicesChecks.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/hostServicesChecks.dart:128:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/hostServicesChecks.dart:135:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/hostServicesChecks.dart:165:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/hostServicesChecks.dart:178:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/hostServicesChecks.dart:182:13 • always_specify_types
+   info • The file name 'hostServicesChecks.dart' isn't a lower_case_with_underscores identifier • lib/models/hostServicesChecks.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:12:10 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:12:13 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:12:19 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:15:16 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:15:19 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:15:25 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:24:17 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:24:20 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:24:26 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:24:45 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:24:48 • always_specify_types
+   info • Missing type annotation • lib/models/hostServicesChecks.g.dart:24:54 • always_specify_types
+   info • Missing type annotation • lib/models/host_service_check.g.dart:16:64 • always_specify_types
+   info • Missing type annotation • lib/models/host_service_check.g.dart:17:64 • always_specify_types
+   info • Unnecessary use of a null check ('!') • lib/models/host_service_check.g.dart:25:55 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/host_service_check.g.dart:32:1 • always_specify_types
+   info • Missing type annotation • lib/models/host_service_check.g.dart:32:35 • always_specify_types
+   info • The file name 'isJsonSerializable.dart' isn't a lower_case_with_underscores identifier • lib/models/isJsonSerializable.dart:1:1 • file_names
+   info • The file name 'laCluster.dart' isn't a lower_case_with_underscores identifier • lib/models/laCluster.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/laCluster.dart:37:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/laCluster.dart:47:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'laCluster.dart' isn't a lower_case_with_underscores identifier • lib/models/laCluster.g.dart:1:1 • file_names
+   info • Unnecessary use of a null check ('!') • lib/models/laCluster.g.dart:110:53 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/laCluster.g.dart:114:1 • always_specify_types
+   info • Missing type annotation • lib/models/laCluster.g.dart:114:33 • always_specify_types
+   info • The file name 'laLatLng.dart' isn't a lower_case_with_underscores identifier • lib/models/laLatLng.dart:1:1 • file_names
+   info • The file name 'laLatLng.dart' isn't a lower_case_with_underscores identifier • lib/models/laLatLng.g.dart:1:1 • file_names
+   info • The file name 'laProjectStatus.dart' isn't a lower_case_with_underscores identifier • lib/models/laProjectStatus.dart:1:1 • file_names
+   info • The file name 'laReleases.dart' isn't a lower_case_with_underscores identifier • lib/models/laReleases.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/laReleases.dart:36:17 • always_specify_types
+   info • Missing type annotation • lib/models/laReleases.dart:43:13 • always_specify_types
+   info • The file name 'laReleases.dart' isn't a lower_case_with_underscores identifier • lib/models/laReleases.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/laReleases.g.dart:104:52 • always_specify_types
+   info • The file name 'laServer.dart' isn't a lower_case_with_underscores identifier • lib/models/laServer.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/laServer.dart:72:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/laServer.dart:92:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'laServer.dart' isn't a lower_case_with_underscores identifier • lib/models/laServer.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/laServer.g.dart:220:53 • always_specify_types
+   info • Missing type annotation • lib/models/laServer.g.dart:222:18 • always_specify_types
+   info • Unnecessary use of a null check ('!') • lib/models/laServer.g.dart:250:62 • unnecessary_null_checks
+   info • Unnecessary use of a null check ('!') • lib/models/laServer.g.dart:251:68 • unnecessary_null_checks
+   info • Unnecessary use of a null check ('!') • lib/models/laServer.g.dart:252:66 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/laServer.g.dart:258:1 • always_specify_types
+   info • Missing type annotation • lib/models/laServer.g.dart:258:32 • always_specify_types
+   info • The file name 'laServiceDeploy.dart' isn't a lower_case_with_underscores identifier • lib/models/laServiceDeploy.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/laServiceDeploy.dart:53:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/laServiceDeploy.dart:70:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'laServiceDeploy.dart' isn't a lower_case_with_underscores identifier • lib/models/laServiceDeploy.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/laServiceDeploy.g.dart:179:10 • always_specify_types
+   info • Missing type annotation • lib/models/laServiceDeploy.g.dart:179:13 • always_specify_types
+   info • Missing type annotation • lib/models/laServiceDeploy.g.dart:179:19 • always_specify_types
+   info • Unnecessary use of a null check ('!') • lib/models/laServiceDeploy.g.dart:195:56 • unnecessary_null_checks
+   info • Unnecessary use of a null check ('!') • lib/models/laServiceDeploy.g.dart:197:53 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/laServiceDeploy.g.dart:200:1 • always_specify_types
+   info • Missing type annotation • lib/models/laServiceDeploy.g.dart:200:33 • always_specify_types
+   info • Missing type annotation • lib/models/laServiceDeploy.g.dart:206:1 • always_specify_types
+   info • Missing type annotation • lib/models/laServiceDeploy.g.dart:206:32 • always_specify_types
+   info • The file name 'laServiceDepsDesc.dart' isn't a lower_case_with_underscores identifier • lib/models/laServiceDepsDesc.dart:1:1 • file_names
+   info • The file name 'laServiceDesc.dart' isn't a lower_case_with_underscores identifier • lib/models/laServiceDesc.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/laServiceDesc.dart:71:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/laServiceDesc.dart:100:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Statement should be on a separate line • lib/models/laServiceDesc.dart:848:31 • always_put_control_body_on_new_line
+   info • The file name 'laServiceName.dart' isn't a lower_case_with_underscores identifier • lib/models/laServiceName.dart:1:1 • file_names
+   info • The file name 'laVariable.dart' isn't a lower_case_with_underscores identifier • lib/models/laVariable.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/laVariable.dart:47:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/laVariable.dart:59:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'laVariable.dart' isn't a lower_case_with_underscores identifier • lib/models/laVariable.g.dart:1:1 • file_names
+   info • Unnecessary use of a null check ('!') • lib/models/laVariable.g.dart:121:58 • unnecessary_null_checks
+   info • Unnecessary use of a null check ('!') • lib/models/laVariable.g.dart:124:59 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/laVariable.g.dart:127:1 • always_specify_types
+   info • Missing type annotation • lib/models/laVariable.g.dart:127:32 • always_specify_types
+   info • Missing type annotation • lib/models/laVariable.g.dart:177:1 • always_specify_types
+   info • Missing type annotation • lib/models/laVariable.g.dart:177:35 • always_specify_types
+   info • The file name 'laVariableDesc.dart' isn't a lower_case_with_underscores identifier • lib/models/laVariableDesc.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/laVariableDesc.dart:90:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/laVariableDesc.dart:109:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/laVariableDesc.dart:132:20 • always_specify_types
+   info • Missing type annotation • lib/models/laVariableDesc.dart:147:20 • always_specify_types
+   info • Missing type annotation • lib/models/laVariableDesc.dart:161:20 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/models/laVariableDesc.dart:161:43 • avoid_dynamic_calls
+   info • Missing type annotation • lib/models/laVariableDesc.dart:175:20 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/models/laVariableDesc.dart:175:43 • avoid_dynamic_calls
+   info • Missing type annotation • lib/models/laVariableDesc.dart:202:20 • always_specify_types
+   info • Missing type annotation • lib/models/laVariableDesc.dart:210:20 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/models/la_project.dart:216:22 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/models/la_project.dart:216:48 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/models/la_project.dart:654:52 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/models/la_project.dart:1363:9 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/models/la_project.dart:1363:9 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/models/la_project.dart:1381:42 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/models/la_project.dart:1381:42 • avoid_dynamic_calls
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/la_project.dart:1411:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/la_project.dart:1455:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/la_project.g.dart:491:18 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:494:18 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:497:18 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:500:18 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:503:18 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:506:18 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:509:18 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:513:10 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:513:13 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:514:13 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:514:51 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:517:10 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:517:13 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:518:13 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:518:51 • always_specify_types
+   info • Unnecessary use of a null check ('!') • lib/models/la_project.g.dart:542:58 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/la_project.g.dart:547:40 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:548:42 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:549:42 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:553:43 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:554:54 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:555:44 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:556:34 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:562:1 • always_specify_types
+   info • Missing type annotation • lib/models/la_project.g.dart:562:34 • always_specify_types
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/la_service.dart:137:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/la_service.dart:151:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Unnecessary use of a null check ('!') • lib/models/la_service.g.dart:163:56 • unnecessary_null_checks
+   info • Missing type annotation • lib/models/la_service.g.dart:167:1 • always_specify_types
+   info • Missing type annotation • lib/models/la_service.g.dart:167:32 • always_specify_types
+   info • The file name 'migrationNotes.dart' isn't a lower_case_with_underscores identifier • lib/models/migrationNotes.dart:1:1 • file_names
+   info • The file name 'pipelinesCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/pipelinesCmd.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/pipelinesCmd.dart:38:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/pipelinesCmd.dart:42:17 • always_specify_types
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/pipelinesCmd.dart:52:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/pipelinesCmd.dart:53:13 • always_specify_types
+   info • The file name 'pipelinesCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/pipelinesCmd.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/pipelinesCmd.g.dart:145:54 • always_specify_types
+   info • The file name 'pipelinesStepDesc.dart' isn't a lower_case_with_underscores identifier • lib/models/pipelinesStepDesc.dart:1:1 • file_names
+   info • The file name 'pipelinesStepName.dart' isn't a lower_case_with_underscores identifier • lib/models/pipelinesStepName.dart:1:1 • file_names
+   info • The file name 'postDeployCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/postDeployCmd.dart:1:1 • file_names
+   info • Statement should be on a separate line • lib/models/postDeployCmd.dart:41:27 • always_put_control_body_on_new_line
+   info • The file name 'postDeployCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/postDeployCmd.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/postDeployCmd.g.dart:153:18 • always_specify_types
+   info • Missing type annotation • lib/models/postDeployCmd.g.dart:156:18 • always_specify_types
+   info • Missing type annotation • lib/models/postDeployCmd.g.dart:158:52 • always_specify_types
+   info • Missing type annotation • lib/models/postDeployCmd.g.dart:165:17 • always_specify_types
+   info • The file name 'preDeployCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/preDeployCmd.dart:1:1 • file_names
+   info • Statement should be on a separate line • lib/models/preDeployCmd.dart:46:25 • always_put_control_body_on_new_line
+   info • Statement should be on a separate line • lib/models/preDeployCmd.dart:47:21 • always_put_control_body_on_new_line
+   info • Statement should be on a separate line • lib/models/preDeployCmd.dart:48:19 • always_put_control_body_on_new_line
+   info • Statement should be on a separate line • lib/models/preDeployCmd.dart:49:19 • always_put_control_body_on_new_line
+   info • Statement should be on a separate line • lib/models/preDeployCmd.dart:50:21 • always_put_control_body_on_new_line
+   info • Statement should be on a separate line • lib/models/preDeployCmd.dart:51:28 • always_put_control_body_on_new_line
+   info • The file name 'preDeployCmd.dart' isn't a lower_case_with_underscores identifier • lib/models/preDeployCmd.g.dart:1:1 • file_names
+   info • Missing type annotation • lib/models/preDeployCmd.g.dart:228:18 • always_specify_types
+   info • Missing type annotation • lib/models/preDeployCmd.g.dart:231:18 • always_specify_types
+   info • Missing type annotation • lib/models/preDeployCmd.g.dart:233:52 • always_specify_types
+   info • Missing type annotation • lib/models/preDeployCmd.g.dart:240:17 • always_specify_types
+   info • The file name 'prodServiceDesc.dart' isn't a lower_case_with_underscores identifier • lib/models/prodServiceDesc.dart:1:1 • file_names
+   info • Statement should be on a separate line • lib/models/prodServiceDesc.dart:26:21 • always_put_control_body_on_new_line
+   info • Statement should be on a separate line • lib/models/prodServiceDesc.dart:27:18 • always_put_control_body_on_new_line
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/prodServiceDesc.dart:47:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/prodServiceDesc.dart:61:17 • always_specify_types
+   info • Missing type annotation • lib/models/prodServiceDesc.dart:62:17 • always_specify_types
+   info • Missing type annotation • lib/models/prodServiceDesc.dart:63:17 • always_specify_types
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/prodServiceDesc.dart:67:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/models/prodServiceDesc.dart:77:13 • always_specify_types
+   info • Missing type annotation • lib/models/prodServiceDesc.dart:78:13 • always_specify_types
+   info • Missing type annotation • lib/models/prodServiceDesc.dart:79:13 • always_specify_types
+   info • The file name 'sshKey.dart' isn't a lower_case_with_underscores identifier • lib/models/sshKey.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/models/sshKey.dart:41:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/models/sshKey.dart:54:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'sshKey.dart' isn't a lower_case_with_underscores identifier • lib/models/sshKey.g.dart:1:1 • file_names
+   info • The file name 'tagsConstants.dart' isn't a lower_case_with_underscores identifier • lib/models/tagsConstants.dart:1:1 • file_names
+   info • The file name 'versionUtils.dart' isn't a lower_case_with_underscores identifier • lib/models/versionUtils.dart:1:1 • file_names
+   info • The file name 'notInDemo.dart' isn't a lower_case_with_underscores identifier • lib/notInDemo.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/pipelines_page.dart:201:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/pipelines_page.dart:209:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'portalStatusPage.dart' isn't a lower_case_with_underscores identifier • lib/portalStatusPage.dart:1:1 • file_names
+   info • Method invocation or property access on a 'dynamic' target • lib/portalStatusPage.dart:73:11 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/portalStatusPage.dart:74:48 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/portalStatusPage.dart:77:33 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/portalStatusPage.dart:78:45 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/portalStatusPage.dart:79:19 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/portalStatusPage.dart:81:27 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/portalStatusPage.dart:83:53 • avoid_dynamic_calls
+   info • To-do comment doesn't follow the Flutter style • lib/portalStatusPage.dart:122:17 • flutter_style_todos
+   info • Missing type annotation • lib/portalStatusPage.dart:131:21 • always_specify_types
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/portalStatusPage.dart:230:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/portalStatusPage.dart:243:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'postDeployPage.dart' isn't a lower_case_with_underscores identifier • lib/postDeployPage.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/postDeployPage.dart:183:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/postDeployPage.dart:191:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'preDeployPage.dart' isn't a lower_case_with_underscores identifier • lib/preDeployPage.dart:1:1 • file_names
+   info • The file name 'projectServersPage.dart' isn't a lower_case_with_underscores identifier • lib/projectServersPage.dart:1:1 • file_names
+   info • Missing type annotation • lib/projectServersPage.dart:217:55 • always_specify_types
+   info • Missing type annotation • lib/projectServersPage.dart:280:21 • always_specify_types
+   info • Missing type annotation • lib/projectServersPage.dart:280:34 • always_specify_types
+   info • Missing type annotation • lib/projectServersPage.dart:284:27 • always_specify_types
+   info • Missing type annotation • lib/projectServersPage.dart:284:40 • always_specify_types
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/projectServersPage.dart:309:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/projectServersPage.dart:320:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/project_edit_page.dart:462:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/project_edit_page.dart:477:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Method invocation or property access on a 'dynamic' target • lib/project_tune_page.dart:532:18 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/project_tune_page.dart:549:33 • avoid_dynamic_calls
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/project_tune_page.dart:618:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/project_tune_page.dart:636:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/project_view_page.dart:59:48 • always_specify_types
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/project_view_page.dart:587:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/project_view_page.dart:598:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • Missing type annotation • lib/redux/app_reducer.dart:350:3 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_reducer.dart:352:5 • avoid_dynamic_calls
+   info • Missing type annotation • lib/redux/app_state_middleware.dart:79:44 • always_specify_types
+   info • Missing type annotation • lib/redux/app_state_middleware.dart:79:52 • always_specify_types
+   info • Missing type annotation • lib/redux/app_state_middleware.dart:89:60 • always_specify_types
+   info • Missing type annotation • lib/redux/app_state_middleware.dart:91:14 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:92:34 • avoid_dynamic_calls
+   info • Missing type annotation • lib/redux/app_state_middleware.dart:101:20 • always_specify_types
+   info • Missing type annotation • lib/redux/app_state_middleware.dart:119:59 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:122:15 • avoid_dynamic_calls
+   info • Missing type annotation • lib/redux/app_state_middleware.dart:169:22 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:263:33 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:584:31 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:584:31 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:584:31 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:584:31 • avoid_dynamic_calls
+   info • Missing type annotation • lib/redux/app_state_middleware.dart:616:5 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:616:26 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:616:26 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:616:26 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:616:26 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:616:26 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/redux/app_state_middleware.dart:620:11 • avoid_dynamic_calls
+   info • The file name 'entityActions.dart' isn't a lower_case_with_underscores identifier • lib/redux/entityActions.dart:1:1 • file_names
+   info • The file name 'entityApis.dart' isn't a lower_case_with_underscores identifier • lib/redux/entityApis.dart:1:1 • file_names
+   info • The file name 'entityReducer.dart' isn't a lower_case_with_underscores identifier • lib/redux/entityReducer.dart:1:1 • file_names
+   info • The file name 'laProjectActions.dart' isn't a lower_case_with_underscores identifier • lib/redux/laProjectActions.dart:1:1 • file_names
+   info • The file name 'loggingMiddleware.dart' isn't a lower_case_with_underscores identifier • lib/redux/loggingMiddleware.dart:1:1 • file_names
+   info • The type parameter name 'State' matches a visible type name • lib/redux/loggingMiddleware.dart:7:45 • avoid_types_as_parameter_names
+   info • Missing type annotation • lib/routes.dart:87:24 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:101:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:115:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:129:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:146:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:160:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:174:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:186:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:199:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:211:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:225:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:237:32 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:249:18 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:266:32 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:276:23 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:286:32 • always_specify_types
+   info • Missing type annotation • lib/routes.dart:297:18 • always_specify_types
+   info • The file name 'sandboxPage.dart' isn't a lower_case_with_underscores identifier • lib/sandboxPage.dart:1:1 • file_names
+   info • Missing type annotation • lib/sandboxPage.dart:37:22 • always_specify_types
+   info • Missing type annotation • lib/sandboxPage.dart:86:28 • always_specify_types
+   info • The file name 'serverTextField.dart' isn't a lower_case_with_underscores identifier • lib/serverTextField.dart:1:1 • file_names
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/solr_compare_result.dart:35:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/solr_compare_result.dart:42:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'sshKeysPage.dart' isn't a lower_case_with_underscores identifier • lib/sshKeysPage.dart:1:1 • file_names
+   info • To-do comment doesn't follow the Flutter style • lib/sshKeysPage.dart:158:13 • flutter_style_todos
+   info • Missing type annotation • lib/sshKeysPage.dart:290:40 • always_specify_types
+   info • Don't use 'BuildContext's across async gaps • lib/sshKeysPage.dart:290:71 • use_build_context_synchronously
+   info • The method '==' should not be overridden in classes not annotated with '@immutable' • lib/sshKeysPage.dart:313:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The method 'hashCode' should not be overridden in classes not annotated with '@immutable' • lib/sshKeysPage.dart:320:3 • avoid_equals_and_hash_code_on_mutable_classes
+   info • The file name 'StringUtils.dart' isn't a lower_case_with_underscores identifier • lib/utils/StringUtils.dart:1:1 • file_names
+   info • Statement should be on a separate line • lib/utils/StringUtils.dart:3:20 • always_put_control_body_on_new_line
+   info • The file name 'cardConstants.dart' isn't a lower_case_with_underscores identifier • lib/utils/cardConstants.dart:1:1 • file_names
+   info • The file name 'casUtils.dart' isn't a lower_case_with_underscores identifier • lib/utils/casUtils.dart:1:1 • file_names
+   info • The file name 'fileUtils.dart' isn't a lower_case_with_underscores identifier • lib/utils/fileUtils.dart:1:1 • file_names
+   info • Missing type annotation • lib/utils/fileUtils.dart:101:60 • always_specify_types
+   info • Method invocation or property access on a 'dynamic' target • lib/utils/fileUtils.dart:106:47 • avoid_dynamic_calls
+   info • Missing type annotation • lib/utils/fileUtils.dart:117:13 • always_specify_types
+   info • The file name 'mapUtils.dart' isn't a lower_case_with_underscores identifier • lib/utils/mapUtils.dart:1:1 • file_names
+   info • The file name 'resultTypes.dart' isn't a lower_case_with_underscores identifier • lib/utils/resultTypes.dart:1:1 • file_names
+   info • To-do comment doesn't follow the Flutter style • test/src/versions_test.dart:77:5 • flutter_style_todos
+

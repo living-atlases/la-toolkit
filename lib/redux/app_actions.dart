@@ -1,6 +1,6 @@
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../components/appSnackBarMessage.dart';
+import '../components/app_snack_bar_message.dart';
 import '../models/brandingDeployCmd.dart';
 import '../models/cmdHistoryEntry.dart';
 import '../models/cmd_history_details.dart';

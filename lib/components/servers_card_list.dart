@@ -11,8 +11,8 @@ import '../models/laServer.dart';
 import '../models/la_project.dart';
 import '../models/la_service.dart';
 import '../redux/actions.dart';
-import '../utils/cardConstants.dart';
-import 'serverServicesEditCard.dart';
+import '../utils/card_constants.dart';
+import 'server_services_edit_card.dart';
 
 class ServersCardList extends StatelessWidget {
   const ServersCardList({super.key});

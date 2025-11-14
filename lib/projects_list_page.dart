@@ -6,10 +6,10 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'components/formattedTitle.dart';
-import 'components/laProjectTimeline.dart';
-import 'components/scrollPanel.dart';
-import 'laTheme.dart';
+import 'components/formatted_title.dart';
+import 'components/la_project_timeline.dart';
+import 'components/scroll_panel.dart';
+import 'la_theme.dart';
 import 'models/appState.dart';
 import 'models/la_project.dart';
 import 'redux/app_actions.dart';

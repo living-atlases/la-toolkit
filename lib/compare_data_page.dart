@@ -24,10 +24,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'components/app_snack_bar.dart';
 import 'components/compare_data_timeline.dart';
 import 'components/compare_gbif_charts.dart';
-import 'components/deployBtn.dart';
-import 'components/laAppBar.dart';
-import 'components/scrollPanel.dart';
-import 'laTheme.dart';
+import 'components/deploy_btn.dart';
+import 'components/la_app_bar.dart';
+import 'components/scroll_panel.dart';
+import 'la_theme.dart';
 import 'models/LAServiceConstants.dart';
 import 'models/appState.dart';
 import 'models/laServer.dart';
@@ -35,8 +35,8 @@ import 'models/laServiceDeploy.dart';
 import 'models/la_project.dart';
 import 'redux/actions.dart';
 import 'solr_compare_result.dart';
-import 'utils/StringUtils.dart';
 import 'utils/query_utils.dart';
+import 'utils/string_utils.dart';
 
 class CompareDataPage extends StatefulWidget {
   const CompareDataPage({super.key});
@@ -1546,7 +1546,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
             if (!compareResults.containsKey(e.key)) {
               // debugPrint('${e.key} not found in collectory');
               key = '~~${e.key}~~';
-              compareResults.putIfAbsent(key, () => SolrCompareResult(key, 0));
+              compareResults.putIfAbsent(
+                  key, () => SolrCompareResult.empty(key));
             } else {
               key = e.key;
             }

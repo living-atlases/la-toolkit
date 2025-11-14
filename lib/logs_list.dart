@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:tuple/tuple.dart';
 
-import 'components/statusIcon.dart';
-import 'laTheme.dart';
-import 'logSearchInput.dart';
+import 'components/status_icon.dart';
+import 'la_theme.dart';
+import 'log_search_input.dart';
 import 'models/cmdHistoryEntry.dart';
 import 'redux/entity_api.dart';
-import 'utils/resultTypes.dart';
+import 'utils/result_types.dart';
 import 'utils/utils.dart';
 
 class LogList extends StatefulWidget {

@@ -5,16 +5,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 
-import '../laTheme.dart';
+import '../la_theme.dart';
 import '../models/basic_service.dart';
 import '../models/cmdHistoryEntry.dart';
 import '../models/laServer.dart';
 import '../models/laServiceDepsDesc.dart';
 import '../models/la_service.dart';
-import '../utils/StringUtils.dart';
-import '../utils/cardConstants.dart';
-import 'serviceStatusCard.dart';
-import 'statusIcon.dart';
+import '../utils/string_utils.dart';
+import '../utils/card_constants.dart';
+import 'service_status_card.dart';
+import 'status_icon.dart';
 
 class ServerStatusCard extends StatelessWidget {
   const ServerStatusCard(

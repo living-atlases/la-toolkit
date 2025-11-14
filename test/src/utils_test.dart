@@ -1,6 +1,7 @@
 import 'package:la_toolkit/models/laLatLng.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
-import 'package:la_toolkit/utils/mapUtils.dart';
+import 'package:la_toolkit/utils/string_utils.dart';
+import 'package:la_toolkit/utils/map_utils.dart';
+import 'package:la_toolkit/utils/string_utils.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:objectid/objectid.dart';
 import 'package:test/test.dart';
@@ -103,7 +104,8 @@ void main() {
     ];
     for (final List<String> pair in pairs) {
       final String uuid = ObjectId().toString();
-      final String dirName = StringUtils.suggestDirName(shortName: pair[0], id: uuid);
+      final String dirName =
+          StringUtils.suggestDirName(shortName: pair[0], id: uuid);
       // Uncomment to get a list of vars
       // print("${pair[0]}: $dirName");
       expect(dirName.length >= 2, equals(true));
@@ -112,7 +114,8 @@ void main() {
   });
 
   test('LatLng to from json', () {
-    final LALatLng mapBounds1stPoint = LALatLng(latitude: 40.0, longitude: 20.0);
+    final LALatLng mapBounds1stPoint =
+        LALatLng(latitude: 40.0, longitude: 20.0);
     // print(mapBounds1stPoint.toJson());
     expect(mapBounds1stPoint.toJson().toString().contains('latitude'),
         equals(true));

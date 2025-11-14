@@ -5,7 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:redux/redux.dart';
 
-import '../laTheme.dart';
+import '../la_theme.dart';
 import '../models/appState.dart';
 import '../models/laLatLng.dart';
 import '../models/la_project.dart';

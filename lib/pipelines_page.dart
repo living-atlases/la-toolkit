@@ -6,12 +6,12 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:redux/redux.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
-import 'components/alertCard.dart';
-import 'components/deployBtn.dart';
-import 'components/laAppBar.dart';
+import 'components/alert_card.dart';
+import 'components/deploy_btn.dart';
+import 'components/la_app_bar.dart';
 import 'components/pipelines_timeline.dart';
-import 'components/scrollPanel.dart';
-import 'laTheme.dart';
+import 'components/scroll_panel.dart';
+import 'la_theme.dart';
 import 'models/appState.dart';
 import 'models/commonCmd.dart';
 import 'models/la_project.dart';

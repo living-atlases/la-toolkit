@@ -16,7 +16,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:sails_io/sails_io.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
 
-import 'components/appSnackBarMessage.dart';
+import 'components/app_snack_bar_message.dart';
 import 'models/appState.dart';
 import 'redux/app_actions.dart';
 import 'redux/app_reducer.dart';

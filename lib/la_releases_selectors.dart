@@ -7,7 +7,7 @@ import 'package:redux/redux.dart';
 
 import 'components/help_icon.dart';
 import 'components/software_selector.dart';
-import 'laTheme.dart';
+import 'la_theme.dart';
 import 'models/appState.dart';
 import 'models/laReleases.dart';
 import 'models/laServiceDesc.dart';

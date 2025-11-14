@@ -2,7 +2,8 @@ import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 
 import '../models/laServiceDesc.dart';
-import '../utils/StringUtils.dart';
+import '../utils/string_utils.dart';
+import '../utils/string_utils.dart';
 
 class ServicesChipPanel extends StatefulWidget {
   const ServicesChipPanel(

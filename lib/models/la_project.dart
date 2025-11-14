@@ -11,8 +11,8 @@ import 'package:objectid/objectid.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:tuple/tuple.dart';
 
-import '../utils/StringUtils.dart';
-import '../utils/mapUtils.dart';
+import '../utils/string_utils.dart';
+import '../utils/map_utils.dart';
 import '../utils/regexp.dart';
 import '../utils/utils.dart';
 import 'LAServiceConstants.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/ansibleError.dart';
-import '../utils/resultTypes.dart';
+import '../utils/result_types.dart';
 
 class DeploySubResultWidget extends StatelessWidget {
   const DeploySubResultWidget(

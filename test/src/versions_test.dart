@@ -1,8 +1,8 @@
 import 'package:la_toolkit/dependencies_manager.dart';
 import 'package:la_toolkit/models/LAServiceConstants.dart';
 import 'package:la_toolkit/models/versionUtils.dart';
-import 'package:la_toolkit/utils/StringUtils.dart';
 import 'package:la_toolkit/utils/api.dart';
+import 'package:la_toolkit/utils/string_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -55,12 +55,20 @@ void main() async {
     List<String>? lintErrors = DependenciesManager.verify(combo);
     expect(lintErrors.length, equals(0));
 
-    combo = <String, String>{toolkit: '1.0.21', alaInstall: '2.0.6', generator: '1.1.36'};
+    combo = <String, String>{
+      toolkit: '1.0.21',
+      alaInstall: '2.0.6',
+      generator: '1.1.36'
+    };
 
     lintErrors = DependenciesManager.verify(combo);
     expect(lintErrors.isEmpty, equals(true));
 
-    combo = <String, String>{toolkit: '1.0.22', alaInstall: '2.0.5', generator: '1.1.34'};
+    combo = <String, String>{
+      toolkit: '1.0.22',
+      alaInstall: '2.0.5',
+      generator: '1.1.34'
+    };
     lintErrors = DependenciesManager.verify(combo);
     expect(lintErrors.length, equals(2));
     expect(lintErrors[0],
@@ -68,7 +76,11 @@ void main() async {
     expect(lintErrors[1],
         equals('la-generator recommended version should be >=1.1.36'));
 
-    combo = <String, String>{toolkit: '1.0.23', alaInstall: '2.0.6', generator: '1.1.34'};
+    combo = <String, String>{
+      toolkit: '1.0.23',
+      alaInstall: '2.0.6',
+      generator: '1.1.34'
+    };
     lintErrors = DependenciesManager.verify(combo);
     expect(lintErrors.length, equals(1));
     expect(lintErrors[0],
@@ -85,7 +97,12 @@ void main() async {
       biocacheService: '2.7.0',
     };
 
-    final List<String> servicesInUse = <String>[alaHub, bie, biocacheService, biocacheCli];
+    final List<String> servicesInUse = <String>[
+      alaHub,
+      bie,
+      biocacheService,
+      biocacheCli
+    ];
 
     List<String> lintErrors =
         DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);

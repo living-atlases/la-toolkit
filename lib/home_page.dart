@@ -9,16 +9,16 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:redux/redux.dart';
 
 import 'components/app_snack_bar.dart';
-import 'components/laAppBar.dart';
-import 'components/mainDrawer.dart';
+import 'components/la_app_bar.dart';
+import 'components/main_drawer.dart';
 import 'intro.dart';
-import 'laTheme.dart';
+import 'la_theme.dart';
 import 'main.dart';
 import 'models/appState.dart';
 import 'projects_list_page.dart';
 import 'redux/app_actions.dart';
 import 'routes.dart';
-import 'utils/fileUtils.dart';
+import 'utils/file_utils.dart';
 import 'utils/utils.dart';
 
 class HomePage extends StatefulWidget {

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../components/deploy_sub_result_widget.dart';
-import '../utils/resultTypes.dart';
+import '../utils/result_types.dart';
 import 'ansibleError.dart';
 import 'cmdHistoryEntry.dart';
 

@@ -7,9 +7,9 @@ import 'package:redux/redux.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:simple_moment/simple_moment.dart';
 
-import '../components/LoadingTextOverlay.dart';
+import '../components/loading_text_overlay.dart';
 import '../components/term_dialog.dart';
-import '../laTheme.dart';
+import '../la_theme.dart';
 import '../models/appState.dart';
 import '../models/brandingDeployCmd.dart';
 import '../models/cmdHistoryEntry.dart';
@@ -21,7 +21,7 @@ import '../models/postDeployCmd.dart';
 import '../models/preDeployCmd.dart';
 import '../redux/app_actions.dart';
 import '../routes.dart';
-import 'StringUtils.dart';
+import 'string_utils.dart';
 
 class AppUtils {
   static bool isDev() {

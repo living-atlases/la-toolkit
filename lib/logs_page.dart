@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
-import 'components/laAppBar.dart';
-import 'components/statusIcon.dart';
-import 'laTheme.dart';
+import 'components/la_app_bar.dart';
+import 'components/status_icon.dart';
+import 'la_theme.dart';
 import 'logs_list.dart';
 import 'models/appState.dart';
 import 'models/cmd.dart';
@@ -11,7 +11,7 @@ import 'models/cmdHistoryEntry.dart';
 import 'models/la_project.dart';
 import 'redux/app_actions.dart';
 import 'redux/entityActions.dart';
-import 'utils/resultTypes.dart';
+import 'utils/result_types.dart';
 import 'utils/utils.dart';
 
 class LogsHistoryPage extends StatelessWidget {

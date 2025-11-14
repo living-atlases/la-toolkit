@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
-import '../utils/resultTypes.dart';
+import '../utils/result_types.dart';
 import 'brandingDeployCmd.dart';
 import 'cmd.dart';
 import 'deployCmd.dart';

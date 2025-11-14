@@ -14,7 +14,7 @@ import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
-import '../components/appSnackBarMessage.dart';
+import '../components/app_snack_bar_message.dart';
 import '../dependencies_manager.dart';
 import '../models/LAServiceConstants.dart';
 import '../models/appState.dart';
@@ -29,7 +29,6 @@ import '../models/preDeployCmd.dart';
 import '../models/prodServiceDesc.dart';
 import '../models/sshKey.dart';
 import '../utils/api.dart';
-import '../utils/casUtils.dart';
 import '../utils/utils.dart';
 import 'app_actions.dart';
 import 'entityActions.dart';

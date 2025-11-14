@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
-import 'components/deployBtn.dart';
-import 'components/laAppBar.dart';
-import 'components/scrollPanel.dart';
-import 'components/tipsCard.dart';
-import 'laTheme.dart';
+import 'components/deploy_btn.dart';
+import 'components/la_app_bar.dart';
+import 'components/scroll_panel.dart';
+import 'components/tips_card.dart';
+import 'la_theme.dart';
 import 'models/appState.dart';
 import 'models/brandingDeployCmd.dart';
 import 'models/deployCmd.dart';

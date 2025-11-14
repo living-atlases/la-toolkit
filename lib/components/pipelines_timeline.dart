@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
-import '../laTheme.dart';
+import '../la_theme.dart';
 import '../models/laServiceName.dart';
 import '../models/la_project.dart';
 import '../models/pipelinesCmd.dart';
 import '../models/pipelinesStepDesc.dart';
-import '../utils/StringUtils.dart';
+import '../utils/string_utils.dart';
 import '../utils/regexp.dart';
 import '../utils/utils.dart';
-import 'genericTextFormField.dart';
+import 'generic_text_form_field.dart';
 
 class PipelinesTimeline extends StatefulWidget {
   const PipelinesTimeline(

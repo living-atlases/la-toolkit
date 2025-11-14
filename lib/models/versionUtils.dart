@@ -1,6 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../utils/StringUtils.dart';
+import '../utils/string_utils.dart';
 
 VersionConstraint vc(String c) =>
     VersionConstraint.parse(StringUtils.semantize(c));

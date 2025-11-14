@@ -1,0 +1,16 @@
+curl 'http://localhost:1337/api/v1/get-deps-versions' \
+  -H 'Accept: */*' \
+  -H 'Accept-Language: es-ES,es;q=0.9' \
+  -H 'Connection: keep-alive' \
+  -H 'Content-type: application/json' \
+  -H 'Origin: http://localhost:39137' \
+  -H 'Referer: http://localhost:39137/' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Site: same-site' \
+  -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36' \
+  -H 'sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="101"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Linux"' \
+  --data-raw '{"deps":{"collectory":"ala-collectory collectory","ala_hub":"ala-hub","biocache_service":"biocache-service","ala_bie":"ala-bie ala-bie-hub","bie_index":"bie-index","images":"image-service","species_lists":"specieslist-webapp","regions":"regions","logger":"logger-service","solr":"solr","cas":"cas","userdetails":"userdetails","apikey":"apikey","cas_management":"cas-management","spatial":"spatial-hub","spatial_service":"spatial-service","webapi":"webapi","dashboard":"dashboard","sds":"sds-webapp2","alerts":"alerts","doi":"doi-service","biocache_cli":"biocache-store","nameindexer":"ala-name-matching","namematching_service":"ala-namematching-server","data_quality":"data-quality-filter-service","pipelines":"pipelines","solrcloud":"solrcloud","biocollect":"biocollect","pdfgen":"pdfgen","ecodata":"ecodata","ecodata_reporting":"ecodata"}}' \
+  --compressed
