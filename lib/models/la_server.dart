@@ -11,6 +11,7 @@ import 'la_service.dart';
 
 part 'la_server.g.dart';
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServer implements IsJsonSerializable<LAServer> {

@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../utils/string_utils.dart';
@@ -8,6 +9,7 @@ import './pipelines_step_name.dart';
 
 part 'pipelines_cmd.g.dart';
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class PipelinesCmd extends CommonCmd {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
@@ -7,6 +8,7 @@ import 'is_json_serializable.dart';
 
 part 'la_cluster.g.dart';
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LACluster implements IsJsonSerializable<LACluster> {

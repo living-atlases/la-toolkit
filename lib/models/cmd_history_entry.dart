@@ -52,28 +52,29 @@ extension CmdResultToServiceStatus on CmdResult {
   }
 }
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
-  CmdHistoryEntry(
-      {String? id,
-      required this.logsPrefix,
-      required this.logsSuffix,
-      required this.desc,
-      String? invDir,
-      String? cwd,
-      required this.rawCmd,
-      required this.cmd,
-      int? createdAt,
-      this.duration,
-      this.result = CmdResult.unknown})
-      : id = id ?? ObjectId().toString(),
-        invDir = invDir ?? '',
-        cwd = cwd ?? '',
-        createdAt = createdAt ?? DateTime.now().millisecondsSinceEpoch,
-        date = createdAt != null
-            ? DateTime.fromMillisecondsSinceEpoch(createdAt)
-            : DateTime.now() {
+  CmdHistoryEntry({
+    String? id,
+    required this.logsPrefix,
+    required this.logsSuffix,
+    required this.desc,
+    String? invDir,
+    String? cwd,
+    required this.rawCmd,
+    required this.cmd,
+    int? createdAt,
+    this.duration,
+    this.result = CmdResult.unknown,
+  }) : id = id ?? ObjectId().toString(),
+       invDir = invDir ?? '',
+       cwd = cwd ?? '',
+       createdAt = createdAt ?? DateTime.now().millisecondsSinceEpoch,
+       date = createdAt != null
+           ? DateTime.fromMillisecondsSinceEpoch(createdAt)
+           : DateTime.now() {
     if (isAnsibleDeploy()) {
       if (cmd.type == CmdType.preDeploy) {
         parsedDeployCmd = PreDeployCmd.fromJson(cmd.properties);
@@ -163,19 +164,19 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
     return isAnsibleDeploy()
         ? deployCmd!.getTitle()
         : cmd.type == CmdType.brandingDeploy
-            ? parsedBrandingDeployCmd!.getTitle()
-            : cmd.type == CmdType.laPipelines
-                ? pipelinesCmd!.getTitle()
-                : 'TODO FIXME';
+        ? parsedBrandingDeployCmd!.getTitle()
+        : cmd.type == CmdType.laPipelines
+        ? pipelinesCmd!.getTitle()
+        : 'TODO FIXME';
   }
 
   String getDesc() {
     return isAnsibleDeploy()
         ? deployCmd!.desc
         : cmd.type == CmdType.brandingDeploy
-            ? parsedBrandingDeployCmd!.desc
-            : cmd.type == CmdType.laPipelines
-                ? pipelinesCmd!.desc
-                : 'TODO FIXME';
+        ? parsedBrandingDeployCmd!.desc
+        : cmd.type == CmdType.laPipelines
+        ? pipelinesCmd!.desc
+        : 'TODO FIXME';
   }
 }

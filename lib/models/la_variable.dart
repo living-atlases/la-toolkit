@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
@@ -10,6 +11,7 @@ part 'la_variable.g.dart';
 
 enum LAVariableStatus { deployed, undeployed }
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAVariable implements IsJsonSerializable<LAVariable> {

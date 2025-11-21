@@ -13,20 +13,21 @@ import './cmd_history_entry.dart';
 
 part 'cmd_history_details.g.dart';
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class CmdHistoryDetails {
-  CmdHistoryDetails(
-      {this.cmd,
-      this.port,
-      this.pid,
-      this.duration,
-      required this.code,
-      required this.results,
-      required this.logs,
-      required this.logsColorized,
-      bool? fstRetrieved})
-      : fstRetrieved = fstRetrieved ?? false;
+  CmdHistoryDetails({
+    this.cmd,
+    this.port,
+    this.pid,
+    this.duration,
+    required this.code,
+    required this.results,
+    required this.logs,
+    required this.logsColorized,
+    bool? fstRetrieved,
+  }) : fstRetrieved = fstRetrieved ?? false;
 
   factory CmdHistoryDetails.fromJson(Map<String, dynamic> json) =>
       _$CmdHistoryDetailsFromJson(json);
@@ -101,8 +102,8 @@ class CmdHistoryDetails {
         result['plays'].forEach((dynamic play) {
           final String playName =
               play['play'] != null && play['play']['name'] != null
-                  ? play['play']['name'] as String
-                  : '';
+              ? play['play']['name'] as String
+              : '';
           plays.add(playName);
           play['tasks'].forEach((dynamic task) {
             task['hosts'].keys.forEach((String host) {
@@ -115,9 +116,10 @@ class CmdHistoryDetails {
                       task['hosts'][host]['unreachable'] == true)) {
                 final String taskName =
                     task['task'] != null && task['task']['name'] != null
-                        ? task['task']['name'] as String
-                        : '';
-                String msg = task['hosts'][host] != null &&
+                    ? task['task']['name'] as String
+                    : '';
+                String msg =
+                    task['hosts'][host] != null &&
                         task['hosts'][host]['msg'] != null
                     ? task['hosts'][host]['msg'] as String
                     : '';
@@ -128,21 +130,25 @@ class CmdHistoryDetails {
                     }
                   });
                 }
-                errors[host]!.add(AnsibleError(
+                errors[host]!.add(
+                  AnsibleError(
                     host: host,
                     playName: playName,
                     taskName: taskName,
-                    msg: msg));
+                    msg: msg,
+                  ),
+                );
               }
             });
           });
         });
         result['stats'].keys.forEach((String host) {
           final DeploySubResultWidget subResult = DeploySubResultWidget(
-              host: host,
-              title: plays.join(', '),
-              results: result['stats'][host] as Map<String, dynamic>,
-              errors: errors[host]!);
+            host: host,
+            title: plays.join(', '),
+            results: result['stats'][host] as Map<String, dynamic>,
+            errors: errors[host]!,
+          );
           _details!.add(subResult);
         });
         /* "tasks": [ { "hosts": {
@@ -185,10 +191,10 @@ class CmdHistoryDetails {
   CmdResult get result => !failed
       ? CmdResult.success
       : code == 100
-          ? CmdResult.aborted
-          : numFailures() != null && numFailures()! > 0
-              ? CmdResult.failed
-              : CmdResult.unknown;
+      ? CmdResult.aborted
+      : numFailures() != null && numFailures()! > 0
+      ? CmdResult.failed
+      : CmdResult.unknown;
 
   @override
   String toString() {

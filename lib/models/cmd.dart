@@ -1,4 +1,5 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
@@ -14,7 +15,7 @@ enum CmdType {
   preDeploy,
   postDeploy,
   laPipelines,
-  bash
+  bash,
 }
 
 extension ParseToString on CmdType {
@@ -28,11 +29,12 @@ extension ParseToString on CmdType {
       this == CmdType.postDeploy;
 }
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class Cmd {
   Cmd({String? id, required this.type, required this.properties})
-      : id = id ?? ObjectId().toString();
+    : id = id ?? ObjectId().toString();
 
   factory Cmd.fromJson(Map<String, dynamic> json) => _$CmdFromJson(json);
   final String id;
@@ -52,5 +54,6 @@ class Cmd {
   int get hashCode => id.hashCode ^ type.hashCode ^ properties.hashCode;
 
   String getTitle() => '${StringUtils.capitalize(type.toS())} Results';
+
   Map<String, dynamic> toJson() => _$CmdToJson(this);
 }

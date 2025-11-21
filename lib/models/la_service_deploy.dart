@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -8,6 +9,7 @@ import 'la_service.dart';
 
 part 'la_service_deploy.g.dart';
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {

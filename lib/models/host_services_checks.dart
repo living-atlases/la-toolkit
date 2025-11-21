@@ -11,6 +11,7 @@ import 'host_service_check.dart';
 
 part 'host_services_checks.g.dart';
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 class HostsServicesChecks {
   HostsServicesChecks();
@@ -165,6 +166,7 @@ class HostsServicesChecks {
   int get hashCode => const DeepCollectionEquality.unordered().hash(checks);
 }
 
+@immutable
 @JsonSerializable(createToJson: false)
 class HostServicesChecks {
   HostServicesChecks();

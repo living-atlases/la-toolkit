@@ -140,8 +140,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         final List<dynamic> l =
             jsonDecode(laToolkitReleasesResponse.body) as List<dynamic>;
         if (l.isNotEmpty) {
+          final Map<String, dynamic> firstRelease =
+              l.first as Map<String, dynamic>;
           final Version lastLAToolkitVersion = Version.parse(
-            l.first['tag_name'].toString().replaceFirst('v', ''),
+            (firstRelease['tag_name'] as String).replaceFirst('v', ''),
           );
           if (!AppUtils.isDemo()) {
             final Version backendVersion = Version.parse(

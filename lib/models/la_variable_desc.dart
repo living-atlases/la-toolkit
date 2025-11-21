@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../utils/regexp.dart';
 import './la_server.dart';
 import './la_service_constants.dart';

@@ -40,6 +40,7 @@ import 'la_service.dart';
 
 part 'la_project.g.dart';
 
+@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAProject implements IsJsonSerializable<LAProject> {
