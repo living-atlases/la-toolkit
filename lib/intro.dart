@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -150,8 +150,11 @@ A Living Atlas (LA) can be deployed and maintained using:
                       color: _markdownColor,
                       decoration: TextDecoration.underline),
                 ),
-                onTapLink: (String text, String? href, String title) async =>
-                    launchUrl(Uri.parse(href!)),
+                onTapLink: (String text, String? href, String? title) async {
+                  if (href != null) {
+                    await launchUrl(Uri.parse(href));
+                  }
+                },
                 data: text)
             : Text(text,
                 textAlign: TextAlign.left,

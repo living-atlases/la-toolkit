@@ -8,7 +8,7 @@ import 'package:collection/collection.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -667,8 +667,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                             child: MarkdownBody(
                                           data: entry.value,
                                           onTapLink: (String text, String? url,
-                                              String title) {
-                                            launchUrl(Uri.parse(url!));
+                                              String? title) {
+                                            if (url != null) {
+                                              launchUrl(Uri.parse(url));
+                                            }
                                           },
                                         ))
                                       ]));
