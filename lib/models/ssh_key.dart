@@ -38,6 +38,7 @@ class SshKey {
   }
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SshKey &&
@@ -51,6 +52,7 @@ class SshKey {
           encrypted == other.encrypted;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       name.hashCode ^
       publicKey.hashCode ^

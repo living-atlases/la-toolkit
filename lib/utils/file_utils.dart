@@ -121,7 +121,7 @@ class FileUtils {
           // return file;
         });
     while (file == null) {
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future<void>.delayed(const Duration(milliseconds: 1000));
       if (file != null) {
         break;
       }

@@ -88,6 +88,7 @@ class LAVariableDesc {
   bool allowEmpty;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LAVariableDesc &&
@@ -107,6 +108,7 @@ class LAVariableDesc {
           allowEmpty == other.allowEmpty;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       name.hashCode ^
       service.hashCode ^

@@ -30,6 +30,7 @@ class SolrCompareResult {
   String _f(int n) => intl.NumberFormat.decimalPattern('en').format(n);
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SolrCompareResult &&
@@ -37,5 +38,6 @@ class SolrCompareResult {
           key == other.key;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => key.hashCode ^ a.hashCode ^ b.hashCode;
 }

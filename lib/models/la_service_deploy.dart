@@ -49,6 +49,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
       LAServiceDeploy.fromJson(json);
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LAServiceDeploy &&
@@ -68,6 +69,7 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
           status == other.status;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       id.hashCode ^
       serviceId.hashCode ^

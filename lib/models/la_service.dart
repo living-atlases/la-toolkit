@@ -134,6 +134,7 @@ class LAService implements IsJsonSerializable<LAService> {
   }
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LAService &&
@@ -148,6 +149,7 @@ class LAService implements IsJsonSerializable<LAService> {
           suburl == other.suburl;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       nameInt.hashCode ^
       iniPath.hashCode ^
