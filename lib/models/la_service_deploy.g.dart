@@ -88,7 +88,6 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
   LAServiceDeploy status(ServiceStatus? status) => call(status: status);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAServiceDeploy(...).copyWith.fieldName(value)`.
   ///
@@ -127,10 +126,10 @@ class _$LAServiceDeployCWProxyImpl implements _$LAServiceDeployCWProxy {
           : clusterId as String?,
       additionalVariables:
           additionalVariables == const $CopyWithPlaceholder() ||
-                  additionalVariables == null
-              ? _value.additionalVariables
-              // ignore: cast_nullable_to_non_nullable
-              : additionalVariables as String,
+              additionalVariables == null
+          ? _value.additionalVariables
+          // ignore: cast_nullable_to_non_nullable
+          : additionalVariables as String,
       projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
@@ -174,10 +173,8 @@ LAServiceDeploy _$LAServiceDeployFromJson(Map<String, dynamic> json) =>
       clusterId: json['clusterId'] as String?,
       additionalVariables: json['additionalVariables'] as String? ?? '',
       projectId: json['projectId'] as String,
-      softwareVersions:
-          (json['softwareVersions'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
-      ),
+      softwareVersions: (json['softwareVersions'] as Map<String, dynamic>?)
+          ?.map((k, e) => MapEntry(k, e as String)),
       checkedAt: (json['checkedAt'] as num?)?.toInt(),
       type: $enumDecodeNullable(_$DeploymentTypeEnumMap, json['type']),
       status: $enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),

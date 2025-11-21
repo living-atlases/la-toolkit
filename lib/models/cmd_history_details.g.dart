@@ -82,7 +82,6 @@ class _$CmdHistoryDetailsCWProxyImpl implements _$CmdHistoryDetailsCWProxy {
       call(fstRetrieved: fstRetrieved);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `CmdHistoryDetails(...).copyWith.fieldName(value)`.
   ///
@@ -132,9 +131,9 @@ class _$CmdHistoryDetailsCWProxyImpl implements _$CmdHistoryDetailsCWProxy {
           : logs as String,
       logsColorized:
           logsColorized == const $CopyWithPlaceholder() || logsColorized == null
-              ? _value.logsColorized
-              // ignore: cast_nullable_to_non_nullable
-              : logsColorized as String,
+          ? _value.logsColorized
+          // ignore: cast_nullable_to_non_nullable
+          : logsColorized as String,
       fstRetrieved: fstRetrieved == const $CopyWithPlaceholder()
           ? _value.fstRetrieved
           // ignore: cast_nullable_to_non_nullable

@@ -75,7 +75,6 @@ class _$LAServiceCWProxyImpl implements _$LAServiceCWProxy {
   LAService projectId(String projectId) => call(projectId: projectId);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAService(...).copyWith.fieldName(value)`.
   ///
@@ -112,9 +111,9 @@ class _$LAServiceCWProxyImpl implements _$LAServiceCWProxy {
           : use as bool,
       usesSubdomain:
           usesSubdomain == const $CopyWithPlaceholder() || usesSubdomain == null
-              ? _value.usesSubdomain
-              // ignore: cast_nullable_to_non_nullable
-              : usesSubdomain as bool,
+          ? _value.usesSubdomain
+          // ignore: cast_nullable_to_non_nullable
+          : usesSubdomain as bool,
       status: status == const $CopyWithPlaceholder()
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
@@ -143,26 +142,26 @@ extension $LAServiceCopyWith on LAService {
 // **************************************************************************
 
 LAService _$LAServiceFromJson(Map<String, dynamic> json) => LAService(
-      id: json['id'] as String?,
-      nameInt: json['nameInt'] as String,
-      iniPath: json['iniPath'] as String,
-      use: json['use'] as bool,
-      usesSubdomain: json['usesSubdomain'] as bool,
-      status: $enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
-      suburl: json['suburl'] as String,
-      projectId: json['projectId'] as String,
-    );
+  id: json['id'] as String?,
+  nameInt: json['nameInt'] as String,
+  iniPath: json['iniPath'] as String,
+  use: json['use'] as bool,
+  usesSubdomain: json['usesSubdomain'] as bool,
+  status: $enumDecodeNullable(_$ServiceStatusEnumMap, json['status']),
+  suburl: json['suburl'] as String,
+  projectId: json['projectId'] as String,
+);
 
 Map<String, dynamic> _$LAServiceToJson(LAService instance) => <String, dynamic>{
-      'id': instance.id,
-      'nameInt': instance.nameInt,
-      'use': instance.use,
-      'usesSubdomain': instance.usesSubdomain,
-      'iniPath': instance.iniPath,
-      'suburl': instance.suburl,
-      'status': _$ServiceStatusEnumMap[instance.status]!,
-      'projectId': instance.projectId,
-    };
+  'id': instance.id,
+  'nameInt': instance.nameInt,
+  'use': instance.use,
+  'usesSubdomain': instance.usesSubdomain,
+  'iniPath': instance.iniPath,
+  'suburl': instance.suburl,
+  'status': _$ServiceStatusEnumMap[instance.status]!,
+  'projectId': instance.projectId,
+};
 
 const _$ServiceStatusEnumMap = {
   ServiceStatus.unknown: 'unknown',

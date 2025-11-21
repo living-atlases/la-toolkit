@@ -18,10 +18,7 @@ abstract class _$LALatLngCWProxy {
   /// ```dart
   /// LALatLng(...).copyWith(id: 12, name: "My name")
   /// ```
-  LALatLng call({
-    double latitude,
-    double longitude,
-  });
+  LALatLng call({double latitude, double longitude});
 }
 
 /// Callable proxy for `copyWith` functionality.
@@ -38,7 +35,6 @@ class _$LALatLngCWProxyImpl implements _$LALatLngCWProxy {
   LALatLng longitude(double longitude) => call(longitude: longitude);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LALatLng(...).copyWith.fieldName(value)`.
   ///
@@ -75,11 +71,11 @@ extension $LALatLngCopyWith on LALatLng {
 // **************************************************************************
 
 LALatLng _$LALatLngFromJson(Map<String, dynamic> json) => LALatLng(
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-    );
+  latitude: (json['latitude'] as num).toDouble(),
+  longitude: (json['longitude'] as num).toDouble(),
+);
 
 Map<String, dynamic> _$LALatLngToJson(LALatLng instance) => <String, dynamic>{
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-    };
+  'latitude': instance.latitude,
+  'longitude': instance.longitude,
+};

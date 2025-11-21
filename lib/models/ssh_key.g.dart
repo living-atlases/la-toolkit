@@ -81,7 +81,6 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
   SshKey missing(bool missing) => call(missing: missing);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `SshKey(...).copyWith.fieldName(value)`.
   ///
@@ -107,9 +106,9 @@ class _$SshKeyCWProxyImpl implements _$SshKeyCWProxy {
           : name as String,
       privateKey:
           privateKey == const $CopyWithPlaceholder() || privateKey == null
-              ? _value.privateKey
-              // ignore: cast_nullable_to_non_nullable
-              : privateKey as String,
+          ? _value.privateKey
+          // ignore: cast_nullable_to_non_nullable
+          : privateKey as String,
       publicKey: publicKey == const $CopyWithPlaceholder() || publicKey == null
           ? _value.publicKey
           // ignore: cast_nullable_to_non_nullable
@@ -154,23 +153,23 @@ extension $SshKeyCopyWith on SshKey {
 // **************************************************************************
 
 SshKey _$SshKeyFromJson(Map<String, dynamic> json) => SshKey(
-      name: json['name'] as String,
-      publicKey: json['publicKey'] as String? ?? '',
-      type: json['type'] as String?,
-      size: (json['size'] as num?)?.toInt(),
-      desc: json['desc'] as String,
-      fingerdebugPrint: json['fingerdebugPrint'] as String?,
-      encrypted: json['encrypted'] as bool,
-      missing: json['missing'] as bool? ?? false,
-    );
+  name: json['name'] as String,
+  publicKey: json['publicKey'] as String? ?? '',
+  type: json['type'] as String?,
+  size: (json['size'] as num?)?.toInt(),
+  desc: json['desc'] as String,
+  fingerdebugPrint: json['fingerdebugPrint'] as String?,
+  encrypted: json['encrypted'] as bool,
+  missing: json['missing'] as bool? ?? false,
+);
 
 Map<String, dynamic> _$SshKeyToJson(SshKey instance) => <String, dynamic>{
-      'name': instance.name,
-      'publicKey': instance.publicKey,
-      'type': instance.type,
-      'size': instance.size,
-      'desc': instance.desc,
-      'fingerdebugPrint': instance.fingerdebugPrint,
-      'encrypted': instance.encrypted,
-      'missing': instance.missing,
-    };
+  'name': instance.name,
+  'publicKey': instance.publicKey,
+  'type': instance.type,
+  'size': instance.size,
+  'desc': instance.desc,
+  'fingerdebugPrint': instance.fingerdebugPrint,
+  'encrypted': instance.encrypted,
+  'missing': instance.missing,
+};

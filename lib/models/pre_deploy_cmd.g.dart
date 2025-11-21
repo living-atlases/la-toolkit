@@ -114,7 +114,6 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
   PreDeployCmd dryRun(bool dryRun) => call(dryRun: dryRun);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `PreDeployCmd(...).copyWith.fieldName(value)`.
   ///
@@ -139,16 +138,17 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
     Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PreDeployCmd(
-      addAnsibleUser: addAnsibleUser == const $CopyWithPlaceholder() ||
+      addAnsibleUser:
+          addAnsibleUser == const $CopyWithPlaceholder() ||
               addAnsibleUser == null
           ? _value.addAnsibleUser
           // ignore: cast_nullable_to_non_nullable
           : addAnsibleUser as bool,
       addSshKeys:
           addSshKeys == const $CopyWithPlaceholder() || addSshKeys == null
-              ? _value.addSshKeys
-              // ignore: cast_nullable_to_non_nullable
-              : addSshKeys as bool,
+          ? _value.addSshKeys
+          // ignore: cast_nullable_to_non_nullable
+          : addSshKeys as bool,
       giveSudo: giveSudo == const $CopyWithPlaceholder() || giveSudo == null
           ? _value.giveSudo
           // ignore: cast_nullable_to_non_nullable
@@ -159,10 +159,11 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
           : etcHosts as bool,
       solrLimits:
           solrLimits == const $CopyWithPlaceholder() || solrLimits == null
-              ? _value.solrLimits
-              // ignore: cast_nullable_to_non_nullable
-              : solrLimits as bool,
-      addAdditionalDeps: addAdditionalDeps == const $CopyWithPlaceholder() ||
+          ? _value.solrLimits
+          // ignore: cast_nullable_to_non_nullable
+          : solrLimits as bool,
+      addAdditionalDeps:
+          addAdditionalDeps == const $CopyWithPlaceholder() ||
               addAdditionalDeps == null
           ? _value.addAdditionalDeps
           // ignore: cast_nullable_to_non_nullable
@@ -189,10 +190,10 @@ class _$PreDeployCmdCWProxyImpl implements _$PreDeployCmdCWProxy {
           : advanced as bool,
       continueEvenIfFails:
           continueEvenIfFails == const $CopyWithPlaceholder() ||
-                  continueEvenIfFails == null
-              ? _value.continueEvenIfFails
-              // ignore: cast_nullable_to_non_nullable
-              : continueEvenIfFails as bool,
+              continueEvenIfFails == null
+          ? _value.continueEvenIfFails
+          // ignore: cast_nullable_to_non_nullable
+          : continueEvenIfFails as bool,
       debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
@@ -216,26 +217,29 @@ extension $PreDeployCmdCopyWith on PreDeployCmd {
 // JsonSerializableGenerator
 // **************************************************************************
 
-PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) => PreDeployCmd(
-      addAnsibleUser: json['addAnsibleUser'] as bool? ?? false,
-      addSshKeys: json['addSshKeys'] as bool? ?? false,
-      giveSudo: json['giveSudo'] as bool? ?? false,
-      etcHosts: json['etcHosts'] as bool? ?? true,
-      solrLimits: json['solrLimits'] as bool? ?? true,
-      addAdditionalDeps: json['addAdditionalDeps'] as bool? ?? true,
-      rootBecome: json['rootBecome'] as bool?,
-      limitToServers: (json['limitToServers'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      skipTags: (json['skipTags'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      advanced: json['advanced'] as bool? ?? false,
-      continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
-      debug: json['debug'] as bool? ?? false,
-      dryRun: json['dryRun'] as bool? ?? false,
-    )
+PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) =>
+    PreDeployCmd(
+        addAnsibleUser: json['addAnsibleUser'] as bool? ?? false,
+        addSshKeys: json['addSshKeys'] as bool? ?? false,
+        giveSudo: json['giveSudo'] as bool? ?? false,
+        etcHosts: json['etcHosts'] as bool? ?? true,
+        solrLimits: json['solrLimits'] as bool? ?? true,
+        addAdditionalDeps: json['addAdditionalDeps'] as bool? ?? true,
+        rootBecome: json['rootBecome'] as bool?,
+        limitToServers: (json['limitToServers'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
+        skipTags: (json['skipTags'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
+        tags: (json['tags'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
+        advanced: json['advanced'] as bool? ?? false,
+        continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
+        debug: json['debug'] as bool? ?? false,
+        dryRun: json['dryRun'] as bool? ?? false,
+      )
       ..deployServices = (json['deployServices'] as List<dynamic>)
           .map((e) => e as String)
           .toList()

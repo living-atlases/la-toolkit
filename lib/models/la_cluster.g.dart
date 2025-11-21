@@ -50,7 +50,6 @@ class _$LAClusterCWProxyImpl implements _$LAClusterCWProxy {
   LACluster projectId(String projectId) => call(projectId: projectId);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LACluster(...).copyWith.fieldName(value)`.
   ///
@@ -97,19 +96,20 @@ extension $LAClusterCopyWith on LACluster {
 // **************************************************************************
 
 LACluster _$LAClusterFromJson(Map<String, dynamic> json) => LACluster(
-      id: json['id'] as String?,
-      name: json['name'] as String? ?? 'Docker Swarm Cluster',
-      type: $enumDecodeNullable(_$DeploymentTypeEnumMap, json['type']) ??
-          DeploymentType.dockerSwarm,
-      projectId: json['projectId'] as String,
-    );
+  id: json['id'] as String?,
+  name: json['name'] as String? ?? 'Docker Swarm Cluster',
+  type:
+      $enumDecodeNullable(_$DeploymentTypeEnumMap, json['type']) ??
+      DeploymentType.dockerSwarm,
+  projectId: json['projectId'] as String,
+);
 
 Map<String, dynamic> _$LAClusterToJson(LACluster instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'type': _$DeploymentTypeEnumMap[instance.type]!,
-      'projectId': instance.projectId,
-    };
+  'id': instance.id,
+  'name': instance.name,
+  'type': _$DeploymentTypeEnumMap[instance.type]!,
+  'projectId': instance.projectId,
+};
 
 const _$DeploymentTypeEnumMap = {
   DeploymentType.vm: 'vm',

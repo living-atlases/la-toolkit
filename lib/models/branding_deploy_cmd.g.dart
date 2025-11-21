@@ -16,9 +16,7 @@ abstract class _$BrandingDeployCmdCWProxy {
   /// ```dart
   /// BrandingDeployCmd(...).copyWith(id: 12, name: "My name")
   /// ```
-  BrandingDeployCmd call({
-    bool debug,
-  });
+  BrandingDeployCmd call({bool debug});
 }
 
 /// Callable proxy for `copyWith` functionality.
@@ -32,7 +30,6 @@ class _$BrandingDeployCmdCWProxyImpl implements _$BrandingDeployCmdCWProxy {
   BrandingDeployCmd debug(bool debug) => call(debug: debug);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `BrandingDeployCmd(...).copyWith.fieldName(value)`.
   ///
@@ -40,9 +37,7 @@ class _$BrandingDeployCmdCWProxyImpl implements _$BrandingDeployCmdCWProxy {
   /// ```dart
   /// BrandingDeployCmd(...).copyWith(id: 12, name: "My name")
   /// ```
-  BrandingDeployCmd call({
-    Object? debug = const $CopyWithPlaceholder(),
-  }) {
+  BrandingDeployCmd call({Object? debug = const $CopyWithPlaceholder()}) {
     return BrandingDeployCmd(
       debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
@@ -65,11 +60,7 @@ extension $BrandingDeployCmdCopyWith on BrandingDeployCmd {
 // **************************************************************************
 
 BrandingDeployCmd _$BrandingDeployCmdFromJson(Map<String, dynamic> json) =>
-    BrandingDeployCmd(
-      debug: json['debug'] as bool? ?? false,
-    );
+    BrandingDeployCmd(debug: json['debug'] as bool? ?? false);
 
 Map<String, dynamic> _$BrandingDeployCmdToJson(BrandingDeployCmd instance) =>
-    <String, dynamic>{
-      'debug': instance.debug,
-    };
+    <String, dynamic>{'debug': instance.debug};

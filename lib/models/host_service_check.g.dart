@@ -12,8 +12,9 @@ HostServiceCheck _$HostServiceCheckFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       type: $enumDecode(_$ServiceCheckTypeEnumMap, json['type']),
       host: json['host'] as String? ?? 'localhost',
-      serviceDeploys:
-          HostServiceCheck._fromJson(json['serviceDeploys'] as List?),
+      serviceDeploys: HostServiceCheck._fromJson(
+        json['serviceDeploys'] as List?,
+      ),
       services: HostServiceCheck._fromJson(json['services'] as List?),
       args: json['args'] as String? ?? '',
     );

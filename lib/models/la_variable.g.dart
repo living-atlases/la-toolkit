@@ -56,7 +56,6 @@ class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
   LAVariable projectId(String projectId) => call(projectId: projectId);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAVariable(...).copyWith.fieldName(value)`.
   ///
@@ -108,12 +107,12 @@ extension $LAVariableCopyWith on LAVariable {
 // **************************************************************************
 
 LAVariable _$LAVariableFromJson(Map<String, dynamic> json) => LAVariable(
-      id: json['id'] as String?,
-      nameInt: json['nameInt'] as String,
-      service: $enumDecode(_$LAServiceNameEnumMap, json['service']),
-      value: json['value'],
-      projectId: json['projectId'] as String,
-    )..status = $enumDecode(_$LAVariableStatusEnumMap, json['status']);
+  id: json['id'] as String?,
+  nameInt: json['nameInt'] as String,
+  service: $enumDecode(_$LAServiceNameEnumMap, json['service']),
+  value: json['value'],
+  projectId: json['projectId'] as String,
+)..status = $enumDecode(_$LAVariableStatusEnumMap, json['status']);
 
 Map<String, dynamic> _$LAVariableToJson(LAVariable instance) =>
     <String, dynamic>{

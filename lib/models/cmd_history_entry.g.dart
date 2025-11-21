@@ -92,7 +92,6 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
   CmdHistoryEntry result(CmdResult result) => call(result: result);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `CmdHistoryEntry(...).copyWith.fieldName(value)`.
   ///
@@ -120,14 +119,14 @@ class _$CmdHistoryEntryCWProxyImpl implements _$CmdHistoryEntryCWProxy {
           : id as String?,
       logsPrefix:
           logsPrefix == const $CopyWithPlaceholder() || logsPrefix == null
-              ? _value.logsPrefix
-              // ignore: cast_nullable_to_non_nullable
-              : logsPrefix as String,
+          ? _value.logsPrefix
+          // ignore: cast_nullable_to_non_nullable
+          : logsPrefix as String,
       logsSuffix:
           logsSuffix == const $CopyWithPlaceholder() || logsSuffix == null
-              ? _value.logsSuffix
-              // ignore: cast_nullable_to_non_nullable
-              : logsSuffix as String,
+          ? _value.logsSuffix
+          // ignore: cast_nullable_to_non_nullable
+          : logsSuffix as String,
       desc: desc == const $CopyWithPlaceholder()
           ? _value.desc
           // ignore: cast_nullable_to_non_nullable
@@ -187,7 +186,8 @@ CmdHistoryEntry _$CmdHistoryEntryFromJson(Map<String, dynamic> json) =>
       cmd: Cmd.fromJson(json['cmd'] as Map<String, dynamic>),
       createdAt: (json['createdAt'] as num?)?.toInt(),
       duration: (json['duration'] as num?)?.toDouble(),
-      result: $enumDecodeNullable(_$CmdResultEnumMap, json['result']) ??
+      result:
+          $enumDecodeNullable(_$CmdResultEnumMap, json['result']) ??
           CmdResult.unknown,
     );
 

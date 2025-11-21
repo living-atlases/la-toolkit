@@ -20,11 +20,7 @@ abstract class _$CmdCWProxy {
   /// ```dart
   /// Cmd(...).copyWith(id: 12, name: "My name")
   /// ```
-  Cmd call({
-    String? id,
-    CmdType type,
-    Map<String, dynamic> properties,
-  });
+  Cmd call({String? id, CmdType type, Map<String, dynamic> properties});
 }
 
 /// Callable proxy for `copyWith` functionality.
@@ -45,7 +41,6 @@ class _$CmdCWProxyImpl implements _$CmdCWProxy {
       call(properties: properties);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `Cmd(...).copyWith.fieldName(value)`.
   ///
@@ -69,9 +64,9 @@ class _$CmdCWProxyImpl implements _$CmdCWProxy {
           : type as CmdType,
       properties:
           properties == const $CopyWithPlaceholder() || properties == null
-              ? _value.properties
-              // ignore: cast_nullable_to_non_nullable
-              : properties as Map<String, dynamic>,
+          ? _value.properties
+          // ignore: cast_nullable_to_non_nullable
+          : properties as Map<String, dynamic>,
     );
   }
 }
@@ -88,16 +83,16 @@ extension $CmdCopyWith on Cmd {
 // **************************************************************************
 
 Cmd _$CmdFromJson(Map<String, dynamic> json) => Cmd(
-      id: json['id'] as String?,
-      type: $enumDecode(_$CmdTypeEnumMap, json['type']),
-      properties: json['properties'] as Map<String, dynamic>,
-    );
+  id: json['id'] as String?,
+  type: $enumDecode(_$CmdTypeEnumMap, json['type']),
+  properties: json['properties'] as Map<String, dynamic>,
+);
 
 Map<String, dynamic> _$CmdToJson(Cmd instance) => <String, dynamic>{
-      'id': instance.id,
-      'type': _$CmdTypeEnumMap[instance.type]!,
-      'properties': instance.properties,
-    };
+  'id': instance.id,
+  'type': _$CmdTypeEnumMap[instance.type]!,
+  'properties': instance.properties,
+};
 
 const _$CmdTypeEnumMap = {
   CmdType.brandingDeploy: 'brandingDeploy',

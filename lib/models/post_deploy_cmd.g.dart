@@ -77,7 +77,6 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
   PostDeployCmd dryRun(bool dryRun) => call(dryRun: dryRun);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `PostDeployCmd(...).copyWith.fieldName(value)`.
   ///
@@ -96,7 +95,8 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
     Object? dryRun = const $CopyWithPlaceholder(),
   }) {
     return PostDeployCmd(
-      configurePostfix: configurePostfix == const $CopyWithPlaceholder() ||
+      configurePostfix:
+          configurePostfix == const $CopyWithPlaceholder() ||
               configurePostfix == null
           ? _value.configurePostfix
           // ignore: cast_nullable_to_non_nullable
@@ -119,10 +119,10 @@ class _$PostDeployCmdCWProxyImpl implements _$PostDeployCmdCWProxy {
           : advanced as bool,
       continueEvenIfFails:
           continueEvenIfFails == const $CopyWithPlaceholder() ||
-                  continueEvenIfFails == null
-              ? _value.continueEvenIfFails
-              // ignore: cast_nullable_to_non_nullable
-              : continueEvenIfFails as bool,
+              continueEvenIfFails == null
+          ? _value.continueEvenIfFails
+          // ignore: cast_nullable_to_non_nullable
+          : continueEvenIfFails as bool,
       debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
@@ -148,19 +148,21 @@ extension $PostDeployCmdCopyWith on PostDeployCmd {
 
 PostDeployCmd _$PostDeployCmdFromJson(Map<String, dynamic> json) =>
     PostDeployCmd(
-      configurePostfix: json['configurePostfix'] as bool? ?? true,
-      limitToServers: (json['limitToServers'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      skipTags: (json['skipTags'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      advanced: json['advanced'] as bool? ?? false,
-      continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
-      debug: json['debug'] as bool? ?? false,
-      dryRun: json['dryRun'] as bool? ?? false,
-    )
+        configurePostfix: json['configurePostfix'] as bool? ?? true,
+        limitToServers: (json['limitToServers'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
+        skipTags: (json['skipTags'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
+        tags: (json['tags'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
+        advanced: json['advanced'] as bool? ?? false,
+        continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
+        debug: json['debug'] as bool? ?? false,
+        dryRun: json['dryRun'] as bool? ?? false,
+      )
       ..deployServices = (json['deployServices'] as List<dynamic>)
           .map((e) => e as String)
           .toList()

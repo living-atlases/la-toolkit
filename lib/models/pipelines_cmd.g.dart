@@ -74,7 +74,6 @@ class _$PipelinesCmdCWProxyImpl implements _$PipelinesCmdCWProxy {
   PipelinesCmd mode(int mode) => call(mode: mode);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `PipelinesCmd(...).copyWith.fieldName(value)`.
   ///
@@ -141,15 +140,15 @@ extension $PipelinesCmdCopyWith on PipelinesCmd {
 // **************************************************************************
 
 PipelinesCmd _$PipelinesCmdFromJson(Map<String, dynamic> json) => PipelinesCmd(
-      drs: json['drs'] as String?,
-      steps: (json['steps'] as List<dynamic>?)?.map((e) => e as String).toSet(),
-      master: json['master'] as String,
-      debug: json['debug'] as bool? ?? false,
-      allDrs: json['allDrs'] as bool? ?? false,
-      allSteps: json['allSteps'] as bool? ?? false,
-      dryRun: json['dryRun'] as bool? ?? false,
-      mode: (json['mode'] as num?)?.toInt() ?? 1,
-    );
+  drs: json['drs'] as String?,
+  steps: (json['steps'] as List<dynamic>?)?.map((e) => e as String).toSet(),
+  master: json['master'] as String,
+  debug: json['debug'] as bool? ?? false,
+  allDrs: json['allDrs'] as bool? ?? false,
+  allSteps: json['allSteps'] as bool? ?? false,
+  dryRun: json['dryRun'] as bool? ?? false,
+  mode: (json['mode'] as num?)?.toInt() ?? 1,
+);
 
 Map<String, dynamic> _$PipelinesCmdToJson(PipelinesCmd instance) =>
     <String, dynamic>{

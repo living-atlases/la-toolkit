@@ -84,7 +84,6 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
   DeployCmd dryRun(bool dryRun) => call(dryRun: dryRun);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `DeployCmd(...).copyWith.fieldName(value)`.
   ///
@@ -124,17 +123,18 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
           : advanced as bool,
-      onlyProperties: onlyProperties == const $CopyWithPlaceholder() ||
+      onlyProperties:
+          onlyProperties == const $CopyWithPlaceholder() ||
               onlyProperties == null
           ? _value.onlyProperties
           // ignore: cast_nullable_to_non_nullable
           : onlyProperties as bool,
       continueEvenIfFails:
           continueEvenIfFails == const $CopyWithPlaceholder() ||
-                  continueEvenIfFails == null
-              ? _value.continueEvenIfFails
-              // ignore: cast_nullable_to_non_nullable
-              : continueEvenIfFails as bool,
+              continueEvenIfFails == null
+          ? _value.continueEvenIfFails
+          // ignore: cast_nullable_to_non_nullable
+          : continueEvenIfFails as bool,
       debug: debug == const $CopyWithPlaceholder() || debug == null
           ? _value.debug
           // ignore: cast_nullable_to_non_nullable
@@ -159,31 +159,31 @@ extension $DeployCmdCopyWith on DeployCmd {
 // **************************************************************************
 
 DeployCmd _$DeployCmdFromJson(Map<String, dynamic> json) => DeployCmd(
-      deployServices: (json['deployServices'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      limitToServers: (json['limitToServers'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      skipTags: (json['skipTags'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      advanced: json['advanced'] as bool? ?? false,
-      onlyProperties: json['onlyProperties'] as bool? ?? false,
-      continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
-      debug: json['debug'] as bool? ?? false,
-      dryRun: json['dryRun'] as bool? ?? false,
-    );
+  deployServices: (json['deployServices'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  limitToServers: (json['limitToServers'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  skipTags: (json['skipTags'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+  advanced: json['advanced'] as bool? ?? false,
+  onlyProperties: json['onlyProperties'] as bool? ?? false,
+  continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
+  debug: json['debug'] as bool? ?? false,
+  dryRun: json['dryRun'] as bool? ?? false,
+);
 
 Map<String, dynamic> _$DeployCmdToJson(DeployCmd instance) => <String, dynamic>{
-      'deployServices': instance.deployServices,
-      'limitToServers': instance.limitToServers,
-      'skipTags': instance.skipTags,
-      'tags': instance.tags,
-      'advanced': instance.advanced,
-      'onlyProperties': instance.onlyProperties,
-      'continueEvenIfFails': instance.continueEvenIfFails,
-      'debug': instance.debug,
-      'dryRun': instance.dryRun,
-    };
+  'deployServices': instance.deployServices,
+  'limitToServers': instance.limitToServers,
+  'skipTags': instance.skipTags,
+  'tags': instance.tags,
+  'advanced': instance.advanced,
+  'onlyProperties': instance.onlyProperties,
+  'continueEvenIfFails': instance.continueEvenIfFails,
+  'debug': instance.debug,
+  'dryRun': instance.dryRun,
+};

@@ -112,7 +112,6 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
   LAServer projectId(String projectId) => call(projectId: projectId);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAServer(...).copyWith.fieldName(value)`.
   ///
@@ -175,14 +174,14 @@ class _$LAServerCWProxyImpl implements _$LAServerCWProxy {
           : reachable as ServiceStatus,
       sshReachable:
           sshReachable == const $CopyWithPlaceholder() || sshReachable == null
-              ? _value.sshReachable
-              // ignore: cast_nullable_to_non_nullable
-              : sshReachable as ServiceStatus,
+          ? _value.sshReachable
+          // ignore: cast_nullable_to_non_nullable
+          : sshReachable as ServiceStatus,
       sudoEnabled:
           sudoEnabled == const $CopyWithPlaceholder() || sudoEnabled == null
-              ? _value.sudoEnabled
-              // ignore: cast_nullable_to_non_nullable
-              : sudoEnabled as ServiceStatus,
+          ? _value.sudoEnabled
+          // ignore: cast_nullable_to_non_nullable
+          : sudoEnabled as ServiceStatus,
       osName: osName == const $CopyWithPlaceholder() || osName == null
           ? _value.osName
           // ignore: cast_nullable_to_non_nullable
@@ -211,49 +210,50 @@ extension $LAServerCopyWith on LAServer {
 // **************************************************************************
 
 LAServer _$LAServerFromJson(Map<String, dynamic> json) => LAServer(
-      id: json['id'] as String?,
-      name: json['name'] as String,
-      ip: json['ip'] as String?,
-      sshPort: (json['sshPort'] as num?)?.toInt() ?? 22,
-      sshUser: json['sshUser'] as String?,
-      aliases:
-          (json['aliases'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      gateways: (json['gateways'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      sshKey: json['sshKey'] == null
-          ? null
-          : SshKey.fromJson(json['sshKey'] as Map<String, dynamic>),
-      reachable:
-          $enumDecodeNullable(_$ServiceStatusEnumMap, json['reachable']) ??
-              ServiceStatus.unknown,
-      sshReachable:
-          $enumDecodeNullable(_$ServiceStatusEnumMap, json['sshReachable']) ??
-              ServiceStatus.unknown,
-      sudoEnabled:
-          $enumDecodeNullable(_$ServiceStatusEnumMap, json['sudoEnabled']) ??
-              ServiceStatus.unknown,
-      osName: json['osName'] as String? ?? '',
-      osVersion: json['osVersion'] as String? ?? '',
-      projectId: json['projectId'] as String,
-    );
+  id: json['id'] as String?,
+  name: json['name'] as String,
+  ip: json['ip'] as String?,
+  sshPort: (json['sshPort'] as num?)?.toInt() ?? 22,
+  sshUser: json['sshUser'] as String?,
+  aliases: (json['aliases'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  gateways: (json['gateways'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  sshKey: json['sshKey'] == null
+      ? null
+      : SshKey.fromJson(json['sshKey'] as Map<String, dynamic>),
+  reachable:
+      $enumDecodeNullable(_$ServiceStatusEnumMap, json['reachable']) ??
+      ServiceStatus.unknown,
+  sshReachable:
+      $enumDecodeNullable(_$ServiceStatusEnumMap, json['sshReachable']) ??
+      ServiceStatus.unknown,
+  sudoEnabled:
+      $enumDecodeNullable(_$ServiceStatusEnumMap, json['sudoEnabled']) ??
+      ServiceStatus.unknown,
+  osName: json['osName'] as String? ?? '',
+  osVersion: json['osVersion'] as String? ?? '',
+  projectId: json['projectId'] as String,
+);
 
 Map<String, dynamic> _$LAServerToJson(LAServer instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'aliases': instance.aliases,
-      'ip': instance.ip,
-      'sshPort': instance.sshPort,
-      'sshUser': instance.sshUser,
-      'sshKey': instance.sshKey?.toJson(),
-      'gateways': instance.gateways,
-      'reachable': _$ServiceStatusEnumMap[instance.reachable]!,
-      'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable]!,
-      'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled]!,
-      'osName': instance.osName,
-      'osVersion': instance.osVersion,
-      'projectId': instance.projectId,
-    };
+  'id': instance.id,
+  'name': instance.name,
+  'aliases': instance.aliases,
+  'ip': instance.ip,
+  'sshPort': instance.sshPort,
+  'sshUser': instance.sshUser,
+  'sshKey': instance.sshKey?.toJson(),
+  'gateways': instance.gateways,
+  'reachable': _$ServiceStatusEnumMap[instance.reachable]!,
+  'sshReachable': _$ServiceStatusEnumMap[instance.sshReachable]!,
+  'sudoEnabled': _$ServiceStatusEnumMap[instance.sudoEnabled]!,
+  'osName': instance.osName,
+  'osVersion': instance.osVersion,
+  'projectId': instance.projectId,
+};
 
 const _$ServiceStatusEnumMap = {
   ServiceStatus.unknown: 'unknown',

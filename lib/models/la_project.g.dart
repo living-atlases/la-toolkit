@@ -253,7 +253,6 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
       call(selectedVersions: selectedVersions);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAProject(...).copyWith.fieldName(value)`.
   ///
@@ -337,10 +336,10 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           : fstDeployed as bool?,
       additionalVariables:
           additionalVariables == const $CopyWithPlaceholder() ||
-                  additionalVariables == null
-              ? _value.additionalVariables
-              // ignore: cast_nullable_to_non_nullable
-              : additionalVariables as String,
+              additionalVariables == null
+          ? _value.additionalVariables
+          // ignore: cast_nullable_to_non_nullable
+          : additionalVariables as String,
       status: status == const $CopyWithPlaceholder() || status == null
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
@@ -456,108 +455,119 @@ extension $LAProjectCopyWith on LAProject {
 // JsonSerializableGenerator
 // **************************************************************************
 
-LAProject _$LAProjectFromJson(Map<String, dynamic> json) => LAProject(
-      id: json['id'] as String?,
-      longName: json['longName'] as String? ?? '',
-      shortName: json['shortName'] as String? ?? '',
-      domain: json['domain'] as String?,
-      dirName: json['dirName'] as String? ?? '',
-      useSSL: json['useSSL'] as bool? ?? true,
-      isCreated: json['isCreated'] as bool? ?? false,
-      isHub: json['isHub'] as bool? ?? false,
-      fstDeployed: json['fstDeployed'] as bool?,
-      additionalVariables: json['additionalVariables'] as String? ?? '',
-      status: $enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']) ??
-          LAProjectStatus.created,
-      alaInstallRelease: json['alaInstallRelease'] as String?,
-      generatorRelease: json['generatorRelease'] as String?,
-      mapBoundsFstPoint: json['mapBoundsFstPoint'] == null
-          ? null
-          : LALatLng.fromJson(
-              json['mapBoundsFstPoint'] as Map<String, dynamic>),
-      mapBoundsSndPoint: json['mapBoundsSndPoint'] == null
-          ? null
-          : LALatLng.fromJson(
-              json['mapBoundsSndPoint'] as Map<String, dynamic>),
-      theme: json['theme'] as String? ?? 'clean',
-      mapZoom: (json['mapZoom'] as num?)?.toDouble(),
-      lastCmdEntry: json['lastCmdEntry'] == null
-          ? null
-          : CmdHistoryEntry.fromJson(
-              json['lastCmdEntry'] as Map<String, dynamic>),
-      advancedEdit: json['advancedEdit'] as bool?,
-      advancedTune: json['advancedTune'] as bool?,
-      variables: (json['variables'] as List<dynamic>?)
-          ?.map((e) => LAVariable.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      cmdHistoryEntries: (json['cmdHistoryEntries'] as List<dynamic>?)
-          ?.map((e) => CmdHistoryEntry.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      servers: (json['servers'] as List<dynamic>?)
-          ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      clusters: (json['clusters'] as List<dynamic>?)
-          ?.map((e) => LACluster.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      services: (json['services'] as List<dynamic>?)
-          ?.map((e) => LAService.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      serviceDeploys: (json['serviceDeploys'] as List<dynamic>?)
-          ?.map((e) => LAServiceDeploy.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      hubs: (json['hubs'] as List<dynamic>?)
-          ?.map((e) => LAProject.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      createdAt: (json['createdAt'] as num?)?.toInt(),
-      serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
-        (k, e) =>
-            MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
-      ),
-      clusterServices: (json['clusterServices'] as Map<String, dynamic>?)?.map(
-        (k, e) =>
-            MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
-      ),
-    )
+LAProject _$LAProjectFromJson(Map<String, dynamic> json) =>
+    LAProject(
+        id: json['id'] as String?,
+        longName: json['longName'] as String? ?? '',
+        shortName: json['shortName'] as String? ?? '',
+        domain: json['domain'] as String?,
+        dirName: json['dirName'] as String? ?? '',
+        useSSL: json['useSSL'] as bool? ?? true,
+        isCreated: json['isCreated'] as bool? ?? false,
+        isHub: json['isHub'] as bool? ?? false,
+        fstDeployed: json['fstDeployed'] as bool?,
+        additionalVariables: json['additionalVariables'] as String? ?? '',
+        status:
+            $enumDecodeNullable(_$LAProjectStatusEnumMap, json['status']) ??
+            LAProjectStatus.created,
+        alaInstallRelease: json['alaInstallRelease'] as String?,
+        generatorRelease: json['generatorRelease'] as String?,
+        mapBoundsFstPoint: json['mapBoundsFstPoint'] == null
+            ? null
+            : LALatLng.fromJson(
+                json['mapBoundsFstPoint'] as Map<String, dynamic>,
+              ),
+        mapBoundsSndPoint: json['mapBoundsSndPoint'] == null
+            ? null
+            : LALatLng.fromJson(
+                json['mapBoundsSndPoint'] as Map<String, dynamic>,
+              ),
+        theme: json['theme'] as String? ?? 'clean',
+        mapZoom: (json['mapZoom'] as num?)?.toDouble(),
+        lastCmdEntry: json['lastCmdEntry'] == null
+            ? null
+            : CmdHistoryEntry.fromJson(
+                json['lastCmdEntry'] as Map<String, dynamic>,
+              ),
+        advancedEdit: json['advancedEdit'] as bool?,
+        advancedTune: json['advancedTune'] as bool?,
+        variables: (json['variables'] as List<dynamic>?)
+            ?.map((e) => LAVariable.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        cmdHistoryEntries: (json['cmdHistoryEntries'] as List<dynamic>?)
+            ?.map((e) => CmdHistoryEntry.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        servers: (json['servers'] as List<dynamic>?)
+            ?.map((e) => LAServer.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        clusters: (json['clusters'] as List<dynamic>?)
+            ?.map((e) => LACluster.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        services: (json['services'] as List<dynamic>?)
+            ?.map((e) => LAService.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        serviceDeploys: (json['serviceDeploys'] as List<dynamic>?)
+            ?.map((e) => LAServiceDeploy.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        hubs: (json['hubs'] as List<dynamic>?)
+            ?.map((e) => LAProject.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        createdAt: (json['createdAt'] as num?)?.toInt(),
+        serverServices: (json['serverServices'] as Map<String, dynamic>?)?.map(
+          (k, e) => MapEntry(
+            k,
+            (e as List<dynamic>).map((e) => e as String).toList(),
+          ),
+        ),
+        clusterServices: (json['clusterServices'] as Map<String, dynamic>?)
+            ?.map(
+              (k, e) => MapEntry(
+                k,
+                (e as List<dynamic>).map((e) => e as String).toList(),
+              ),
+            ),
+      )
       ..clientMigration = (json['clientMigration'] as num?)?.toInt()
       ..lastSwCheck = json['lastSwCheck'] == null
           ? null
           : DateTime.parse(json['lastSwCheck'] as String);
 
 Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
-      'id': instance.id,
-      'longName': instance.longName,
-      'shortName': instance.shortName,
-      'dirName': instance.dirName,
-      'domain': instance.domain,
-      'useSSL': instance.useSSL,
-      'isHub': instance.isHub,
-      'theme': instance.theme,
-      'mapBoundsFstPoint': instance.mapBoundsFstPoint.toJson(),
-      'mapBoundsSndPoint': instance.mapBoundsSndPoint.toJson(),
-      'mapZoom': instance.mapZoom,
-      'additionalVariables': instance.additionalVariables,
-      'createdAt': instance.createdAt,
-      'alaInstallRelease': instance.alaInstallRelease,
-      'generatorRelease': instance.generatorRelease,
-      'status': _$LAProjectStatusEnumMap[instance.status]!,
-      'isCreated': instance.isCreated,
-      'fstDeployed': instance.fstDeployed,
-      'advancedEdit': instance.advancedEdit,
-      'advancedTune': instance.advancedTune,
-      'servers': instance.servers.map((e) => e.toJson()).toList(),
-      'clusters': instance.clusters.map((e) => e.toJson()).toList(),
-      'services': instance.services.map((e) => e.toJson()).toList(),
-      'serverServices': instance.serverServices,
-      'clusterServices': instance.clusterServices,
-      'cmdHistoryEntries':
-          instance.cmdHistoryEntries.map((e) => e.toJson()).toList(),
-      'serviceDeploys': instance.serviceDeploys.map((e) => e.toJson()).toList(),
-      'variables': instance.variables.map((e) => e.toJson()).toList(),
-      'hubs': instance.hubs.map((e) => e.toJson()).toList(),
-      'lastCmdEntry': instance.lastCmdEntry?.toJson(),
-      'clientMigration': instance.clientMigration,
-      'lastSwCheck': instance.lastSwCheck?.toIso8601String(),
-    };
+  'id': instance.id,
+  'longName': instance.longName,
+  'shortName': instance.shortName,
+  'dirName': instance.dirName,
+  'domain': instance.domain,
+  'useSSL': instance.useSSL,
+  'isHub': instance.isHub,
+  'theme': instance.theme,
+  'mapBoundsFstPoint': instance.mapBoundsFstPoint.toJson(),
+  'mapBoundsSndPoint': instance.mapBoundsSndPoint.toJson(),
+  'mapZoom': instance.mapZoom,
+  'additionalVariables': instance.additionalVariables,
+  'createdAt': instance.createdAt,
+  'alaInstallRelease': instance.alaInstallRelease,
+  'generatorRelease': instance.generatorRelease,
+  'status': _$LAProjectStatusEnumMap[instance.status]!,
+  'isCreated': instance.isCreated,
+  'fstDeployed': instance.fstDeployed,
+  'advancedEdit': instance.advancedEdit,
+  'advancedTune': instance.advancedTune,
+  'servers': instance.servers.map((e) => e.toJson()).toList(),
+  'clusters': instance.clusters.map((e) => e.toJson()).toList(),
+  'services': instance.services.map((e) => e.toJson()).toList(),
+  'serverServices': instance.serverServices,
+  'clusterServices': instance.clusterServices,
+  'cmdHistoryEntries': instance.cmdHistoryEntries
+      .map((e) => e.toJson())
+      .toList(),
+  'serviceDeploys': instance.serviceDeploys.map((e) => e.toJson()).toList(),
+  'variables': instance.variables.map((e) => e.toJson()).toList(),
+  'hubs': instance.hubs.map((e) => e.toJson()).toList(),
+  'lastCmdEntry': instance.lastCmdEntry?.toJson(),
+  'clientMigration': instance.clientMigration,
+  'lastSwCheck': instance.lastSwCheck?.toIso8601String(),
+};
 
 const _$LAProjectStatusEnumMap = {
   LAProjectStatus.created: 'created',

@@ -50,7 +50,6 @@ class _$LAReleasesCWProxyImpl implements _$LAReleasesCWProxy {
   LAReleases versions(List<String> versions) => call(versions: versions);
 
   @override
-
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LAReleases(...).copyWith.fieldName(value)`.
   ///
@@ -97,12 +96,13 @@ extension $LAReleasesCopyWith on LAReleases {
 // **************************************************************************
 
 LAReleases _$LAReleasesFromJson(Map<String, dynamic> json) => LAReleases(
-      name: json['name'] as String,
-      artifacts: json['artifacts'] as String,
-      latest: json['latest'] as String?,
-      versions:
-          (json['versions'] as List<dynamic>).map((e) => e as String).toList(),
-    );
+  name: json['name'] as String,
+  artifacts: json['artifacts'] as String,
+  latest: json['latest'] as String?,
+  versions: (json['versions'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+);
 
 Map<String, dynamic> _$LAReleasesToJson(LAReleases instance) =>
     <String, dynamic>{
