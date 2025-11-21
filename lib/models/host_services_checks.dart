@@ -155,6 +155,7 @@ class HostsServicesChecks {
   }
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is HostsServicesChecks &&
@@ -162,6 +163,7 @@ class HostsServicesChecks {
           const DeepCollectionEquality.unordered().equals(checks, other.checks);
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => const DeepCollectionEquality.unordered().hash(checks);
 }
 

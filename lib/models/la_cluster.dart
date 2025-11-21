@@ -34,6 +34,7 @@ class LACluster implements IsJsonSerializable<LACluster> {
   Map<String, dynamic> toJson() => _$LAClusterToJson(this);
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LACluster &&
@@ -44,6 +45,7 @@ class LACluster implements IsJsonSerializable<LACluster> {
           projectId == other.projectId;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       name.hashCode ^ id.hashCode ^ type.hashCode ^ projectId.hashCode;
 

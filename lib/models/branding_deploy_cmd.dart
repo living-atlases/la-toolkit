@@ -15,6 +15,7 @@ class BrandingDeployCmd extends CommonCmd {
   bool debug;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is BrandingDeployCmd &&
@@ -22,6 +23,7 @@ class BrandingDeployCmd extends CommonCmd {
           debug == other.debug;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => debug.hashCode;
 
   @override

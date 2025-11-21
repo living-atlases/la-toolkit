@@ -40,6 +40,7 @@ class DeployCmd extends CommonCmd {
   bool dryRun;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is DeployCmd &&
@@ -61,6 +62,7 @@ class DeployCmd extends CommonCmd {
           dryRun == other.dryRun;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       const ListEquality<String>().hash(deployServices) ^
       const ListEquality<String>().hash(limitToServers) ^

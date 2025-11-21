@@ -124,6 +124,7 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
   }
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is CmdHistoryEntry &&
@@ -141,6 +142,7 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
           result == other.result;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       id.hashCode ^
       invDir.hashCode ^

@@ -71,6 +71,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
   Map<String, dynamic> toJson() => _$LAServerToJson(this);
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LAServer &&
@@ -91,6 +92,7 @@ class LAServer implements IsJsonSerializable<LAServer> {
           sudoEnabled == other.sudoEnabled;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       name.hashCode ^
       id.hashCode ^

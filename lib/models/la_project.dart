@@ -1541,6 +1541,7 @@ check results length: ${checkResults.length}''';
   bool get inProduction => status == LAProjectStatus.inProduction;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LAProject &&
@@ -1597,6 +1598,7 @@ check results length: ${checkResults.length}''';
           mapZoom == other.mapZoom;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       id.hashCode ^
       longName.hashCode ^

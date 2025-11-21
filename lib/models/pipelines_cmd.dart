@@ -36,6 +36,7 @@ class PipelinesCmd extends CommonCmd {
   int mode;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PipelinesCmd &&
@@ -50,6 +51,7 @@ class PipelinesCmd extends CommonCmd {
           dryRun == other.dryRun;
 
   @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
       const SetEquality<String>().hash(steps) ^
       debug.hashCode ^
