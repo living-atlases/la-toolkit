@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -323,8 +322,9 @@ If you have doubts or need to ask for some information, save this project and co
   }
 }
 
+@immutable
 class _ProjectPageViewModel {
-  _ProjectPageViewModel({
+  const _ProjectPageViewModel({
     required this.state,
     required this.project,
     required this.onSaveCurrentProject,

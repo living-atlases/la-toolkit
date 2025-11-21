@@ -3,7 +3,6 @@ import 'package:la_toolkit/models/la_service_constants.dart';
 import 'package:la_toolkit/models/version_utils.dart';
 import 'package:la_toolkit/utils/api.dart';
 import 'package:la_toolkit/utils/string_utils.dart';
-
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -17,7 +16,7 @@ void main() async {
     final List<VersionConstraint> failConstraints = <VersionConstraint>[
       VersionConstraint.parse('^2.0.0'),
       VersionConstraint.parse('>1.2.4'),
-      VersionConstraint.parse('>1.2.3')
+      VersionConstraint.parse('>1.2.3'),
     ];
     final List<VersionConstraint> validConstraints = <VersionConstraint>[
       VersionConstraint.parse('^1.0.0'),
@@ -36,11 +35,14 @@ void main() async {
       expect(cont.allows(v123SNAP), equals(false));
     }
     for (final VersionConstraint cont in validConstraints) {
-      expect(cont.allows(v123SNAP), equals(true),
-          // 1.2.3-SNAPSHOT < 1.2.3, so skip for now
-          // https://semver.org/#spec-item-11
-          reason: '$cont fails with $v123SNAP',
-          skip: true);
+      expect(
+        cont.allows(v123SNAP),
+        equals(true),
+        // 1.2.3-SNAPSHOT < 1.2.3, so skip for now
+        // https://semver.org/#spec-item-11
+        reason: '$cont fails with $v123SNAP',
+        skip: true,
+      );
     }
   });
 
@@ -51,7 +53,7 @@ void main() async {
     Map<String, String> combo = <String, String>{
       toolkit: '1.0.22',
       alaInstall: '2.0.6',
-      generator: '1.1.36'
+      generator: '1.1.36',
     };
     List<String>? lintErrors = DependenciesManager.verify(combo);
     expect(lintErrors.length, equals(0));
@@ -59,7 +61,7 @@ void main() async {
     combo = <String, String>{
       toolkit: '1.0.21',
       alaInstall: '2.0.6',
-      generator: '1.1.36'
+      generator: '1.1.36',
     };
 
     lintErrors = DependenciesManager.verify(combo);
@@ -68,26 +70,32 @@ void main() async {
     combo = <String, String>{
       toolkit: '1.0.22',
       alaInstall: '2.0.5',
-      generator: '1.1.34'
+      generator: '1.1.34',
     };
     lintErrors = DependenciesManager.verify(combo);
     expect(lintErrors.length, equals(2));
-    expect(lintErrors[0],
-        equals('ala-install recommended version should be >=2.0.6'));
-    expect(lintErrors[1],
-        equals('la-generator recommended version should be >=1.1.36'));
+    expect(
+      lintErrors[0],
+      equals('ala-install recommended version should be >=2.0.6'),
+    );
+    expect(
+      lintErrors[1],
+      equals('la-generator recommended version should be >=1.1.36'),
+    );
 
     combo = <String, String>{
       toolkit: '1.0.23',
       alaInstall: '2.0.6',
-      generator: '1.1.34'
+      generator: '1.1.34',
     };
     lintErrors = DependenciesManager.verify(combo);
     expect(lintErrors.length, equals(1));
-    expect(lintErrors[0],
-        equals('la-generator recommended version should be >=1.1.37'));
+    expect(
+      lintErrors[0],
+      equals('la-generator recommended version should be >=1.1.37'),
+    );
 
-    // TODO: Check that deps are ok!
+    // TODO(vjrj): Check that deps are ok!
     // print(lintErrors);
   });
 
@@ -102,15 +110,19 @@ void main() async {
       alaHub,
       bie,
       biocacheService,
-      biocacheCli
+      biocacheCli,
     ];
 
-    List<String> lintErrors =
-        DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);
+    List<String> lintErrors = DependenciesManager.verifyLAReleases(
+      servicesInUse,
+      softwareVersions,
+    );
     expect(
-        lintErrors[0],
-        equals(
-            'records-ws (biocache-service) depends on biocache-cli (biocache-store)'));
+      lintErrors[0],
+      equals(
+        'records-ws (biocache-service) depends on biocache-cli (biocache-store)',
+      ),
+    );
     expect(lintErrors.length, equals(1));
 
     servicesInUse.add(alerts);
@@ -120,54 +132,74 @@ void main() async {
     softwareVersions[biocacheService] = '3.1.0';
     softwareVersions[biocacheCli] = '2.5.0';
 
-    lintErrors =
-        DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);
+    lintErrors = DependenciesManager.verifyLAReleases(
+      servicesInUse,
+      softwareVersions,
+    );
     expect(
-        lintErrors[0],
-        equals(
-            'records-ws (biocache-service) depends on biocache-cli (biocache-store) >=2.6.1'));
-    expect(lintErrors[1],
-        equals('alerts depends on records (biocache-hub) >=3.2.9'));
+      lintErrors[0],
+      equals(
+        'records-ws (biocache-service) depends on biocache-cli (biocache-store) >=2.6.1',
+      ),
+    );
+    expect(
+      lintErrors[1],
+      equals('alerts depends on records (biocache-hub) >=3.2.9'),
+    );
     expect(lintErrors[2], equals('alerts depends on species (bie) >=1.5.0'));
     expect(
-        lintErrors[3],
-        equals(
-            'biocache-cli (biocache-store) depends on records-ws (biocache-service) <3.0.0'));
+      lintErrors[3],
+      equals(
+        'biocache-cli (biocache-store) depends on records-ws (biocache-service) <3.0.0',
+      ),
+    );
     expect(lintErrors.length, equals(4));
 
     softwareVersions[bie] = '1.6.0';
     softwareVersions[biocacheService] = '2.5.0';
     softwareVersions[alaHub] = '3.3.0';
-    lintErrors =
-        DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);
+    lintErrors = DependenciesManager.verifyLAReleases(
+      servicesInUse,
+      softwareVersions,
+    );
     expect(lintErrors.length, equals(0));
 
     servicesInUse.add(regions);
-    lintErrors =
-        DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);
+    lintErrors = DependenciesManager.verifyLAReleases(
+      servicesInUse,
+      softwareVersions,
+    );
     expect(lintErrors[0], equals('alerts depends on regions'));
     expect(lintErrors.length, equals(1));
 
     softwareVersions[regions] = '1.0.0';
-    lintErrors =
-        DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);
+    lintErrors = DependenciesManager.verifyLAReleases(
+      servicesInUse,
+      softwareVersions,
+    );
     expect(lintErrors[0], equals('alerts depends on regions >=3.3.5'));
     expect(lintErrors.length, equals(1));
 
     softwareVersions[regions] = '3.3.5';
-    lintErrors =
-        DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);
+    lintErrors = DependenciesManager.verifyLAReleases(
+      servicesInUse,
+      softwareVersions,
+    );
     expect(lintErrors.length, equals(0));
 
     softwareVersions[regions] = '3.3.5';
-    lintErrors =
-        DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);
+    lintErrors = DependenciesManager.verifyLAReleases(
+      servicesInUse,
+      softwareVersions,
+    );
     expect(lintErrors.length, equals(0));
 
     // check subservices and other non ALA software
     softwareVersions[spatialService] = '3.0.0';
-    lintErrors =
-        DependenciesManager.verifyLAReleases(servicesInUse, softwareVersions);
+    lintErrors = DependenciesManager.verifyLAReleases(
+      servicesInUse,
+      softwareVersions,
+    );
     expect(lintErrors.length, equals(0));
   });
 

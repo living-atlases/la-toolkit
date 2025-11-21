@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -41,39 +40,47 @@ class _PipelinesPageState extends State<PipelinesPage> {
       // distinct: true,
       converter: (Store<AppState> store) {
         return _ViewModel(
-            project: store.state.currentProject,
-            onCancel: (LAProject project) {},
-            onSaveCmd: (CommonCmd cmd) {
-              store.dispatch(SaveCurrentCmd(cmd: cmd));
-            },
-            onRunPipelines: (LAProject project, PipelinesCmd cmd) {
-              // We order the steps in the same order expected by pipelines
-              final Set<String> sortedSteps = PipelinesStepDesc.list
-                  .where(
-                      (PipelinesStepDesc step) => cmd.steps.contains(step.name))
-                  .map((PipelinesStepDesc step) => step.name)
-                  .toList()
-                  .toSet();
-              cmd.steps = sortedSteps;
-              // if do-all, we don't add these steps
-              if (cmd.allSteps) {
-                cmd.steps.removeWhere(
-                    (String s) => PipelinesStepDesc.allStringList.contains(s));
-                cmd.steps.add('do-all');
-              }
-              log(cmd.toString());
-              DeployUtils.pipelinesRun(
-                  context: context, store: store, project: project, cmd: cmd);
-            },
-            cmd: store.state.repeatCmd.runtimeType != PipelinesCmd
-                ? PipelinesCmd(
-                    master:
-                        store.state.currentProject.getPipelinesMaster()!.name,
-                    mode: store.state.currentProject.inProduction &&
-                            !AppUtils.isDev()
-                        ? 2
-                        : 1)
-                : store.state.repeatCmd as PipelinesCmd);
+          project: store.state.currentProject,
+          onCancel: (LAProject project) {},
+          onSaveCmd: (CommonCmd cmd) {
+            store.dispatch(SaveCurrentCmd(cmd: cmd));
+          },
+          onRunPipelines: (LAProject project, PipelinesCmd cmd) {
+            // We order the steps in the same order expected by pipelines
+            final Set<String> sortedSteps = PipelinesStepDesc.list
+                .where(
+                  (PipelinesStepDesc step) => cmd.steps.contains(step.name),
+                )
+                .map((PipelinesStepDesc step) => step.name)
+                .toList()
+                .toSet();
+            cmd.steps = sortedSteps;
+            // if do-all, we don't add these steps
+            if (cmd.allSteps) {
+              cmd.steps.removeWhere(
+                (String s) => PipelinesStepDesc.allStringList.contains(s),
+              );
+              cmd.steps.add('do-all');
+            }
+            log(cmd.toString());
+            DeployUtils.pipelinesRun(
+              context: context,
+              store: store,
+              project: project,
+              cmd: cmd,
+            );
+          },
+          cmd: store.state.repeatCmd.runtimeType != PipelinesCmd
+              ? PipelinesCmd(
+                  master: store.state.currentProject.getPipelinesMaster()!.name,
+                  mode:
+                      store.state.currentProject.inProduction &&
+                          !AppUtils.isDev()
+                      ? 2
+                      : 1,
+                )
+              : store.state.repeatCmd as PipelinesCmd,
+        );
       },
       builder: (BuildContext context, _ViewModel vm) {
         const String execBtn = 'Run';
@@ -83,114 +90,119 @@ class _PipelinesPageState extends State<PipelinesPage> {
         if (vm.project.getPipelinesMaster() != null) {
           cmd.master = vm.project.masterPipelinesServer!.name;
         }
-        final VoidCallback? onTap = cmd.isACmdForAll ||
+        final VoidCallback? onTap =
+            cmd.isACmdForAll ||
                 ((cmd.allDrs || (cmd.drs != null && cmd.drs!.isNotEmpty)) &&
                     (cmd.steps.isNotEmpty || cmd.allSteps))
             ? () => vm.onRunPipelines(vm.project, cmd)
             : null;
         final String pageTitle = '${vm.project.shortName} Pipelines';
         return Title(
-            title: pageTitle,
-            color: LAColorTheme.laPalette,
-            child: Scaffold(
-                key: _scaffoldKey,
-                appBar: LAAppBar(
-                    context: context,
-                    titleIcon: MdiIcons.pipe,
-                    showBack: true,
-                    title: pageTitle,
-                    // showLaIcon: false,
-                    actions: const <Widget>[]),
-                body: ScrollPanel(
-                    withPadding: true,
-                    child: Row(
+          title: pageTitle,
+          color: LAColorTheme.laPalette,
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: LAAppBar(
+              context: context,
+              titleIcon: MdiIcons.pipe,
+              showBack: true,
+              title: pageTitle,
+              // showLaIcon: false,
+              actions: const <Widget>[],
+            ),
+            body: ScrollPanel(
+              withPadding: true,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    // flex: 1, // 10%
+                    child: Container(),
+                  ),
+                  Expanded(
+                    flex: 8, // 80%,
+                    child: Column(
                       children: <Widget>[
-                        Expanded(
-                          // flex: 1, // 10%
-                          child: Container(),
+                        PipelinesTimeline(
+                          project: vm.project,
+                          cmd: vm.cmd,
+                          onChange: (PipelinesCmd changedCmd) {
+                            cmd = changedCmd;
+                            vm.onSaveCmd(cmd);
+                          },
                         ),
-                        Expanded(
-                            flex: 8, // 80%,
-                            child: Column(
-                              children: <Widget>[
-                                PipelinesTimeline(
-                                    project: vm.project,
-                                    cmd: vm.cmd,
-                                    onChange: (PipelinesCmd changedCmd) {
-                                      cmd = changedCmd;
-                                      vm.onSaveCmd(cmd);
-                                    }),
-                                const SizedBox(height: 20),
-                                Tooltip(
-                                    message:
-                                        'Run locally, in spark embedded or in the spark cluster',
-                                    child: ToggleSwitch(
-                                      minWidth: 90.0,
-                                      cornerRadius: 20.0,
-                                      activeBgColors: <List<Color>?>[
-                                        <Color>[
-                                          LAColorTheme.laPalette.shade200
-                                        ],
-                                        <Color>[
-                                          LAColorTheme.laPalette.shade400
-                                        ],
-                                        <Color>[
-                                          LAColorTheme.laPalette.shade800
-                                        ],
-                                      ],
-                                      activeFgColor: Colors.white,
-                                      inactiveBgColor: Colors.grey,
-                                      inactiveFgColor: Colors.white,
-                                      initialLabelIndex: cmd.mode,
-                                      totalSwitches: 3,
-                                      labels: const <String>[
-                                        'Local',
-                                        'Embedded',
-                                        'Cluster'
-                                      ],
-                                      radiusStyle: true,
-                                      onToggle: (int? index) {
-                                        if (index != null) {
-                                          log('Current mode $index');
-                                          cmd = cmd.copyWith(mode: index);
-                                          vm.onSaveCmd(cmd);
-                                        }
-                                      },
-                                    )),
-                                if (((cmd.steps.contains(clustering) ||
-                                            cmd.steps.contains(jackknife)) ||
-                                        cmd.allSteps) &&
-                                    !cmd.allDrs &&
-                                    cmd.drs != null &&
-                                    cmd.drs!.isNotEmpty)
-                                  const AlertCard(
-                                    message:
-                                        "Run 'clustering' and/or 'jackkife' steps only with all drs",
-                                  ),
-                                LaunchBtn(
-                                    onTap: onTap,
-                                    execBtn: execBtn,
-                                    icon: MdiIcons.pipe),
-                              ],
-                            )),
-                        Expanded(
-                          // flex: 1, // 10%
-                          child: Container(),
-                        )
+                        const SizedBox(height: 20),
+                        Tooltip(
+                          message:
+                              'Run locally, in spark embedded or in the spark cluster',
+                          child: ToggleSwitch(
+                            minWidth: 90.0,
+                            cornerRadius: 20.0,
+                            activeBgColors: <List<Color>?>[
+                              <Color>[LAColorTheme.laPalette.shade200],
+                              <Color>[LAColorTheme.laPalette.shade400],
+                              <Color>[LAColorTheme.laPalette.shade800],
+                            ],
+                            activeFgColor: Colors.white,
+                            inactiveBgColor: Colors.grey,
+                            inactiveFgColor: Colors.white,
+                            initialLabelIndex: cmd.mode,
+                            totalSwitches: 3,
+                            labels: const <String>[
+                              'Local',
+                              'Embedded',
+                              'Cluster',
+                            ],
+                            radiusStyle: true,
+                            onToggle: (int? index) {
+                              if (index != null) {
+                                log('Current mode $index');
+                                cmd = cmd.copyWith(mode: index);
+                                vm.onSaveCmd(cmd);
+                              }
+                            },
+                          ),
+                        ),
+                        if (((cmd.steps.contains(clustering) ||
+                                    cmd.steps.contains(jackknife)) ||
+                                cmd.allSteps) &&
+                            !cmd.allDrs &&
+                            cmd.drs != null &&
+                            cmd.drs!.isNotEmpty)
+                          const AlertCard(
+                            message:
+                                "Run 'clustering' and/or 'jackkife' steps only with all drs",
+                          ),
+                        LaunchBtn(
+                          onTap: onTap,
+                          execBtn: execBtn,
+                          icon: MdiIcons.pipe,
+                        ),
                       ],
-                    ))));
+                    ),
+                  ),
+                  Expanded(
+                    // flex: 1, // 10%
+                    child: Container(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       },
     );
   }
 }
 
+@immutable
 class _ViewModel {
-  _ViewModel(
-      {required this.project,
-      required this.onRunPipelines,
-      required this.cmd,
-      required this.onSaveCmd,
-      required this.onCancel});
+  const _ViewModel({
+    required this.project,
+    required this.onRunPipelines,
+    required this.cmd,
+    required this.onSaveCmd,
+    required this.onCancel,
+  });
 
   final LAProject project;
   final Function(LAProject, PipelinesCmd) onRunPipelines;

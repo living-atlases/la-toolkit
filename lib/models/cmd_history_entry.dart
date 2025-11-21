@@ -52,7 +52,6 @@ extension CmdResultToServiceStatus on CmdResult {
   }
 }
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {

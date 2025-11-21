@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
@@ -33,120 +32,131 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _MapAreaSelectorViewModel>(
-        distinct: true,
-        converter: (Store<AppState> store) {
-          return _MapAreaSelectorViewModel(
-              currentProject: store.state.currentProject,
-              onUpdateProject: (LAProject? project) =>
-                  store.dispatch(SaveCurrentProject(project!)));
-        },
-        builder: (BuildContext context, _MapAreaSelectorViewModel vm) {
-          _project = vm.currentProject;
+      distinct: true,
+      converter: (Store<AppState> store) {
+        return _MapAreaSelectorViewModel(
+          currentProject: store.state.currentProject,
+          onUpdateProject: (LAProject? project) =>
+              store.dispatch(SaveCurrentProject(project!)),
+        );
+      },
+      builder: (BuildContext context, _MapAreaSelectorViewModel vm) {
+        _project = vm.currentProject;
 
-          final LALatLng fstPoint = _project!.mapBoundsFstPoint;
-          final LALatLng sndPoint = _project!.mapBoundsSndPoint;
-          projectArea = <LatLng?>[fstPoint, null, sndPoint, null, fstPoint];
-          _calSquare(projectArea);
+        final LALatLng fstPoint = _project!.mapBoundsFstPoint;
+        final LALatLng sndPoint = _project!.mapBoundsSndPoint;
+        projectArea = <LatLng?>[fstPoint, null, sndPoint, null, fstPoint];
+        _calSquare(projectArea);
 
-          final List<Marker> markers = area
-              .where((LatLng? latLng) => latLng != null)
-              .map((LatLng? latLng) {
-            return Marker(
-              width: 80.0,
-              height: 80.0,
-              point: latLng!,
-              builder: (BuildContext ctx) =>
-                  const Icon(Icons.circle, size: 16, color: Colors.blueGrey),
-            );
-          }).toList();
-          List<LatLng> areaNN = <LatLng>[];
-          List<LatLng> projectAreaNN = <LatLng>[];
-          if (projectArea[0] != null && projectArea[2] != null) {
-            projectAreaNN = projectArea.whereType<LatLng>().toList();
-          }
-          if (area[0] != null && area[2] != null) {
-            areaNN = area.whereType<LatLng>().toList();
-          }
-          // ignore: sized_box_for_whitespace
-          return Container(
-              height: 470, // size of collectory
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: FlutterMap(
-                mapController: mapController,
-                options: MapOptions(
-                    center: vm.currentProject!.getCenter(),
-                    zoom: vm.currentProject!.mapZoom ?? 1.0,
-                    /* center: LatLng(-28.2, 134),
+        final List<Marker> markers = area
+            .where((LatLng? latLng) => latLng != null)
+            .map((LatLng? latLng) {
+              return Marker(
+                width: 80.0,
+                height: 80.0,
+                point: latLng!,
+                builder: (BuildContext ctx) =>
+                    const Icon(Icons.circle, size: 16, color: Colors.blueGrey),
+              );
+            })
+            .toList();
+        List<LatLng> areaNN = <LatLng>[];
+        List<LatLng> projectAreaNN = <LatLng>[];
+        if (projectArea[0] != null && projectArea[2] != null) {
+          projectAreaNN = projectArea.whereType<LatLng>().toList();
+        }
+        if (area[0] != null && area[2] != null) {
+          areaNN = area.whereType<LatLng>().toList();
+        }
+        // ignore: sized_box_for_whitespace
+        return Container(
+          height: 470, // size of collectory
+          width: MediaQuery.of(context).size.width * 0.8,
+          child: FlutterMap(
+            mapController: mapController,
+            options: MapOptions(
+              center: vm.currentProject!.getCenter(),
+              zoom: vm.currentProject!.mapZoom ?? 1.0,
+              /* center: LatLng(-28.2, 134),
                     zoom: 3.0, */
-                    /* boundsOptions:
+              /* boundsOptions:
                         FitBoundsOptions(padding: EdgeInsets.all(20)), */
-                    /*  plugins: [
+              /*  plugins: [
                       ZoomButtonsPlugin(),
                       ScaleLayerPlugin(),
                       DragMarkerPlugin(),
                     ],*/
-                    onTap: (TapPosition tapPosition, LatLng latLng) {
-                      if (firstPoint) {
-                        area = <LatLng?>[latLng, null, null, null, latLng];
-                      } else {
-                        area[2] = latLng;
-                      }
-                      firstPoint = !firstPoint;
-                      debugPrint('area: $firstPoint $area');
-                      _updateArea(vm);
-                    },
-                    maxZoom: _maxZoom,
-                    minZoom: _minZoom),
-                children: <Widget>[
-                  TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName:
-                          'org.gbif.living-atlases.la-toolkit',
-                      subdomains: const <String>['a', 'b', 'c']),
-                  if (area.where((LatLng? point) => point != null).length != 5)
-                    MarkerLayer(markers: markers),
-                  PolylineLayer(
-                    polylines: <Polyline>[
-                      if (projectArea[0] != null && projectArea[2] != null)
-                        Polyline(
-                            points: projectAreaNN,
-                            strokeWidth: 4.0,
-                            color: LAColorTheme.laPalette),
-                    ],
-                  ),
-                  PolylineLayer(polylines: <Polyline>[
-                    if (area[0] != null && area[2] != null)
-                      Polyline(
-                          points: areaNN,
-                          strokeWidth: 4.0,
-                          isDotted: true,
-                          color: LAColorTheme.laPalette)
-                  ]),
-                  FlutterMapZoomButtons(
-                      key: GlobalKey(),
-                      maxZoom: _maxZoom,
-                      padding: 10,
-                      // rebuild: null,
-                      //   rebuild: () {}, // new in nullsafety ??
-                      alignment: Alignment.bottomRight),
-                  ScaleLayerWidget(
-                      key: GlobalKey(),
-                      options: ScaleLayerPluginOption(
-                        lineColor: Colors.blue,
-                        textStyle:
-                            const TextStyle(color: Colors.blue, fontSize: 12),
-                        padding: const EdgeInsets.all(10),
-                      )),
-                  DragMarkers(markers: <DragMarker>[
-                    if (projectArea[0] != null && projectArea[2] != null)
-                      _createDragMarker(projectArea[0]!, vm),
-                    if (projectArea[0] != null && projectArea[2] != null)
-                      _createDragMarker(projectArea[2]!, vm)
-                  ])
+              onTap: (TapPosition tapPosition, LatLng latLng) {
+                if (firstPoint) {
+                  area = <LatLng?>[latLng, null, null, null, latLng];
+                } else {
+                  area[2] = latLng;
+                }
+                firstPoint = !firstPoint;
+                debugPrint('area: $firstPoint $area');
+                _updateArea(vm);
+              },
+              maxZoom: _maxZoom,
+              minZoom: _minZoom,
+            ),
+            children: <Widget>[
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'org.gbif.living-atlases.la-toolkit',
+                subdomains: const <String>['a', 'b', 'c'],
+              ),
+              if (area.where((LatLng? point) => point != null).length != 5)
+                MarkerLayer(markers: markers),
+              PolylineLayer(
+                polylines: <Polyline>[
+                  if (projectArea[0] != null && projectArea[2] != null)
+                    Polyline(
+                      points: projectAreaNN,
+                      strokeWidth: 4.0,
+                      color: LAColorTheme.laPalette,
+                    ),
                 ],
-              ));
-        });
+              ),
+              PolylineLayer(
+                polylines: <Polyline>[
+                  if (area[0] != null && area[2] != null)
+                    Polyline(
+                      points: areaNN,
+                      strokeWidth: 4.0,
+                      isDotted: true,
+                      color: LAColorTheme.laPalette,
+                    ),
+                ],
+              ),
+              FlutterMapZoomButtons(
+                key: GlobalKey(),
+                maxZoom: _maxZoom,
+                padding: 10,
+                // rebuild: null,
+                //   rebuild: () {}, // new in nullsafety ??
+                alignment: Alignment.bottomRight,
+              ),
+              ScaleLayerWidget(
+                key: GlobalKey(),
+                options: ScaleLayerPluginOption(
+                  lineColor: Colors.blue,
+                  textStyle: const TextStyle(color: Colors.blue, fontSize: 12),
+                  padding: const EdgeInsets.all(10),
+                ),
+              ),
+              DragMarkers(
+                markers: <DragMarker>[
+                  if (projectArea[0] != null && projectArea[2] != null)
+                    _createDragMarker(projectArea[0]!, vm),
+                  if (projectArea[0] != null && projectArea[2] != null)
+                    _createDragMarker(projectArea[2]!, vm),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _updateArea(_MapAreaSelectorViewModel vm) {
@@ -162,7 +172,9 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
   }
 
   DragMarker _createDragMarker(
-      LatLng initialPoint, _MapAreaSelectorViewModel vm) {
+    LatLng initialPoint,
+    _MapAreaSelectorViewModel vm,
+  ) {
     return DragMarker(
       key: GlobalKey<DragMarkerWidgetState>(),
       point: LatLng(initialPoint.latitude, initialPoint.longitude),
@@ -215,15 +227,15 @@ class _MapAreaSelectorState extends State<MapAreaSelector> {
     bounds.extend(area[3]!);
     mapController.fitBounds(
       bounds,
-      options: const FitBoundsOptions(
-        padding: EdgeInsets.all(40),
-      ),
+      options: const FitBoundsOptions(padding: EdgeInsets.all(40)),
     );
   }
 }
 
+@immutable
+@immutable
 class _MapAreaSelectorViewModel {
-  _MapAreaSelectorViewModel({this.currentProject, this.onUpdateProject});
+  const _MapAreaSelectorViewModel({this.currentProject, this.onUpdateProject});
 
   final LAProject? currentProject;
   final void Function(LAProject? project)? onUpdateProject;

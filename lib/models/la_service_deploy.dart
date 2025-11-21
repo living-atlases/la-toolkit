@@ -1,33 +1,32 @@
-import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
+
 import './deployment_type.dart';
 import './is_json_serializable.dart';
 import 'la_service.dart';
 
 part 'la_service_deploy.g.dart';
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
-  LAServiceDeploy(
-      {String? id,
-      required this.serviceId,
-      required this.serverId,
-      required this.clusterId,
-      this.additionalVariables = '',
-      required this.projectId,
-      Map<String, String>? softwareVersions,
-      this.checkedAt,
-      DeploymentType? type,
-      ServiceStatus? status})
-      : id = id ?? ObjectId().toString(),
-        softwareVersions = softwareVersions ?? <String, String>{},
-        type = type ?? DeploymentType.vm,
-        status = status ?? ServiceStatus.unknown;
+  LAServiceDeploy({
+    String? id,
+    required this.serviceId,
+    required this.serverId,
+    required this.clusterId,
+    this.additionalVariables = '',
+    required this.projectId,
+    Map<String, String>? softwareVersions,
+    this.checkedAt,
+    DeploymentType? type,
+    ServiceStatus? status,
+  }) : id = id ?? ObjectId().toString(),
+       softwareVersions = softwareVersions ?? <String, String>{},
+       type = type ?? DeploymentType.vm,
+       status = status ?? ServiceStatus.unknown;
 
   factory LAServiceDeploy.fromJson(Map<String, dynamic> json) =>
       _$LAServiceDeployFromJson(json);
@@ -62,8 +61,10 @@ class LAServiceDeploy implements IsJsonSerializable<LAServiceDeploy> {
           type == other.type &&
           additionalVariables == other.additionalVariables &&
           checkedAt == other.checkedAt &&
-          const DeepCollectionEquality.unordered()
-              .equals(softwareVersions, other.softwareVersions) &&
+          const DeepCollectionEquality.unordered().equals(
+            softwareVersions,
+            other.softwareVersions,
+          ) &&
           status == other.status;
 
   @override

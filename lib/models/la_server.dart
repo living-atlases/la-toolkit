@@ -11,31 +11,32 @@ import 'la_service.dart';
 
 part 'la_server.g.dart';
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAServer implements IsJsonSerializable<LAServer> {
-  LAServer(
-      {String? id,
-      required this.name,
-      String? ip,
-      this.sshPort = 22,
-      this.sshUser,
-      List<String>? aliases,
-      List<String>? gateways,
-      this.sshKey,
-      this.reachable = ServiceStatus.unknown,
-      this.sshReachable = ServiceStatus.unknown,
-      this.sudoEnabled = ServiceStatus.unknown,
-      this.osName = '',
-      this.osVersion = '',
-      required this.projectId})
-      : id = id ?? ObjectId().toString(),
-        assert(LARegExp.hostnameRegexp.hasMatch(name),
-            "'$name' is a invalid server name"),
-        aliases = aliases ?? <String>[],
-        gateways = gateways ?? <String>[],
-        ip = ip ?? '';
+  LAServer({
+    String? id,
+    required this.name,
+    String? ip,
+    this.sshPort = 22,
+    this.sshUser,
+    List<String>? aliases,
+    List<String>? gateways,
+    this.sshKey,
+    this.reachable = ServiceStatus.unknown,
+    this.sshReachable = ServiceStatus.unknown,
+    this.sudoEnabled = ServiceStatus.unknown,
+    this.osName = '',
+    this.osVersion = '',
+    required this.projectId,
+  }) : id = id ?? ObjectId().toString(),
+       assert(
+         LARegExp.hostnameRegexp.hasMatch(name),
+         "'$name' is a invalid server name",
+       ),
+       aliases = aliases ?? <String>[],
+       gateways = gateways ?? <String>[],
+       ip = ip ?? '';
 
   factory LAServer.fromJson(Map<String, dynamic> json) =>
       _$LAServerFromJson(json);
@@ -108,8 +109,8 @@ class LAServer implements IsJsonSerializable<LAServer> {
 
   bool isReady() {
     return // this.reachable == ServiceStatus.success &&
-        sshReachable == ServiceStatus.success &&
-            sudoEnabled == ServiceStatus.success;
+    sshReachable == ServiceStatus.success &&
+        sudoEnabled == ServiceStatus.success;
   }
 
   bool isSshReady() {
@@ -124,8 +125,10 @@ class LAServer implements IsJsonSerializable<LAServer> {
   static List<LAServer> upsertById(List<LAServer> servers, LAServer laServer) {
     if (servers.map((LAServer s) => s.id).toList().contains(laServer.id)) {
       servers = servers
-          .map((LAServer current) =>
-              current.id == laServer.id ? laServer : current)
+          .map(
+            (LAServer current) =>
+                current.id == laServer.id ? laServer : current,
+          )
           .toList();
     } else {
       servers.add(laServer);
@@ -134,7 +137,9 @@ class LAServer implements IsJsonSerializable<LAServer> {
   }
 
   static List<LAServer> upsertByName(
-      List<LAServer> servers, LAServer laServer) {
+    List<LAServer> servers,
+    LAServer laServer,
+  ) {
     if (servers.map((LAServer s) => s.name).toList().contains(laServer.name)) {
       servers = servers.map((LAServer current) {
         if (current.name == laServer.name) {

@@ -26,26 +26,31 @@ void main() {
   });
 
   test('Test step 0 of creation, shortname', () {
-    final LAProject testProject =
-        LAProject(longName: 'Living Atlas of Wakanda');
+    final LAProject testProject = LAProject(
+      longName: 'Living Atlas of Wakanda',
+    );
     expect(testProject.isCreated, equals(false));
     expect(testProject.status, equals(LAProjectStatus.created));
   });
 
   test('Test step 0 of creation, invalid domain', () {
     final LAProject testProject = LAProject(
-        longName: 'Living Atlas of Wakanda', shortName: 'kk', domain: 'kk');
+      longName: 'Living Atlas of Wakanda',
+      shortName: 'kk',
+      domain: 'kk',
+    );
     expect(testProject.isCreated, equals(false));
     expect(testProject.status, equals(LAProjectStatus.created));
   });
 
   test('Test step 0 of creation, valid domain, valid step 1', () {
     final LAProject testProject = LAProject(
-        longName: 'Living Atlas of Wakanda',
-        shortName: 'LAW',
-        domain: 'l-a.site',
-        alaInstallRelease: '',
-        generatorRelease: '');
+      longName: 'Living Atlas of Wakanda',
+      shortName: 'LAW',
+      domain: 'l-a.site',
+      alaInstallRelease: '',
+      generatorRelease: '',
+    );
     expect(testProject.validateCreation(), equals(false));
     expect(testProject.isCreated, equals(false));
     expect(testProject.status, equals(LAProjectStatus.basicDefined));
@@ -53,11 +58,12 @@ void main() {
 
   test('Test step 1 of creation, valid server', () {
     final LAProject testProject = LAProject(
-        longName: 'Living Atlas of Wakanda',
-        shortName: 'LAW',
-        domain: 'l-a.site',
-        alaInstallRelease: '',
-        generatorRelease: '');
+      longName: 'Living Atlas of Wakanda',
+      shortName: 'LAW',
+      domain: 'l-a.site',
+      alaInstallRelease: '',
+      generatorRelease: '',
+    );
     testProject.upsertServer(LAServer(name: 'vm1', projectId: testProject.id));
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(1));
@@ -67,25 +73,29 @@ void main() {
 
   test('Test step 1 of creation, valid servers', () {
     final LAProject testProject = LAProject(
-        longName: 'Living Atlas of Wakanda',
-        shortName: 'LAW',
-        domain: 'l-a.site',
-        alaInstallRelease: '',
-        generatorRelease: '');
+      longName: 'Living Atlas of Wakanda',
+      shortName: 'LAW',
+      domain: 'l-a.site',
+      alaInstallRelease: '',
+      generatorRelease: '',
+    );
     testProject.upsertServer(LAServer(name: 'vm1', projectId: testProject.id));
     testProject.upsertServer(
-        LAServer(name: 'vm2', ip: '10.0.0.1', projectId: testProject.id));
+      LAServer(name: 'vm2', ip: '10.0.0.1', projectId: testProject.id),
+    );
     testProject.upsertServer(
-        LAServer(name: 'vm2', ip: '10.0.0.2', projectId: testProject.id));
+      LAServer(name: 'vm2', ip: '10.0.0.2', projectId: testProject.id),
+    );
     expect(testProject.isCreated, equals(false));
     expect(testProject.numServers(), equals(2));
     expect(testProject.validateCreation(), equals(false));
     expect(
-        testProject.servers
-            .where((LAServer element) => element.name == 'vm2')
-            .first
-            .ip,
-        equals('10.0.0.2'));
+      testProject.servers
+          .where((LAServer element) => element.name == 'vm2')
+          .first
+          .ip,
+      equals('10.0.0.2'),
+    );
     expect(testProject.status, equals(LAProjectStatus.basicDefined));
   });
 
@@ -100,178 +110,234 @@ void main() {
     LAServer vm1bis = LAServer(name: 'vm2', projectId: '1');
     expect(vm1 == vm1bis, equals(false));
     vm1 = LAServer(name: 'vm1', projectId: '1');
-    vm1bis =
-        LAServer(name: 'vm1', aliases: <String>['collections'], projectId: '1');
-    final LAServer vm1bisBis =
-        LAServer(name: 'vm1', sshPort: 22001, projectId: '1');
+    vm1bis = LAServer(
+      name: 'vm1',
+      aliases: const <String>['collections'],
+      projectId: '1',
+    );
+    final LAServer vm1bisBis = LAServer(
+      name: 'vm1',
+      sshPort: 22001,
+      projectId: '1',
+    );
     expect(vm1 == vm1bis, equals(false));
     expect(vm1 == vm1bisBis, equals(false));
   });
 
-  test('Test step 1 of creation, valid servers-service assignment and equality',
-      () {
-    final LAProject testProject = LAProject(
+  test(
+    'Test step 1 of creation, valid servers-service assignment and equality',
+    () {
+      final LAProject testProject = LAProject(
         //id: "0",
         longName: 'Living Atlas of Wakanda',
         shortName: 'LAW',
         domain: 'l-a.site',
         alaInstallRelease: '2.0.0',
-        generatorRelease: '2.0.0');
-    final LAProject testProjectOther = testProject.copyWith();
+        generatorRelease: '2.0.0',
+      );
+      final LAProject testProjectOther = testProject.copyWith();
 
-    expect(
-        const ListEquality<LAService>()
-            .equals(testProject.services, testProjectOther.services),
-        equals(true));
-    expect(
+      expect(
+        const ListEquality<LAService>().equals(
+          testProject.services,
+          testProjectOther.services,
+        ),
+        equals(true),
+      );
+      expect(
         const MapEquality<String, List<String>>().equals(
-            testProject.getServerServicesForTest(),
-            testProjectOther.getServerServicesForTest()),
-        equals(true));
-    expect(
+          testProject.getServerServicesForTest(),
+          testProjectOther.getServerServicesForTest(),
+        ),
+        equals(true),
+      );
+      expect(
         testProject.mapBoundsFstPoint == testProjectOther.mapBoundsFstPoint &&
             testProject.mapBoundsSndPoint == testProjectOther.mapBoundsSndPoint,
-        equals(true));
-    expect(
-        const ListEquality<LAServer>()
-            .equals(testProject.servers, testProjectOther.servers),
-        equals(true));
-    expect(
-        const ListEquality<LAVariable>()
-            .equals(testProject.variables, testProjectOther.variables),
-        equals(true));
-    expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
-    expect(testProject == testProjectOther, equals(true));
-    final LAServer vm1 =
-        LAServer(name: 'vm1', ip: '10.0.0.1', projectId: testProject.id);
-    final LAServer vm2 =
-        LAServer(name: 'vm2', ip: '10.0.0.2', projectId: testProject.id);
-    final LAServer vm3 =
-        LAServer(name: 'vm3', ip: '10.0.0.3', projectId: testProject.id);
-    final LAServer vm4 =
-        LAServer(name: 'vm4', ip: '10.0.0.4', projectId: testProject.id);
-    final LAProject testProjectCopy = testProject.copyWith(
-        servers: <LAServer>[], serverServices: <String, List<String>>{});
-    expect(testProject.getService(biocacheCli).use, equals(true));
-    testProject.upsertServer(vm1);
-    testProjectCopy.upsertServer(vm1);
-    expect(testProject.getServerServicesForTest().length, equals(1));
-    expect(testProject.servers.length, equals(1));
-    expect(testProjectCopy.getServerServicesForTest().length, equals(1));
-    expect(testProjectCopy.servers.length, equals(1));
-    expect(
-        const ListEquality<LAService>()
-            .equals(testProject.services, testProjectCopy.services),
-        equals(true));
-    expect(
+        equals(true),
+      );
+      expect(
+        const ListEquality<LAServer>().equals(
+          testProject.servers,
+          testProjectOther.servers,
+        ),
+        equals(true),
+      );
+      expect(
+        const ListEquality<LAVariable>().equals(
+          testProject.variables,
+          testProjectOther.variables,
+        ),
+        equals(true),
+      );
+      expect(testProject.hashCode == testProjectOther.hashCode, equals(true));
+      expect(testProject == testProjectOther, equals(true));
+      final LAServer vm1 = LAServer(
+        name: 'vm1',
+        ip: '10.0.0.1',
+        projectId: testProject.id,
+      );
+      final LAServer vm2 = LAServer(
+        name: 'vm2',
+        ip: '10.0.0.2',
+        projectId: testProject.id,
+      );
+      final LAServer vm3 = LAServer(
+        name: 'vm3',
+        ip: '10.0.0.3',
+        projectId: testProject.id,
+      );
+      final LAServer vm4 = LAServer(
+        name: 'vm4',
+        ip: '10.0.0.4',
+        projectId: testProject.id,
+      );
+      final LAProject testProjectCopy = testProject.copyWith(
+        servers: <LAServer>[],
+        serverServices: <String, List<String>>{},
+      );
+      expect(testProject.getService(biocacheCli).use, equals(true));
+      testProject.upsertServer(vm1);
+      testProjectCopy.upsertServer(vm1);
+      expect(testProject.getServerServicesForTest().length, equals(1));
+      expect(testProject.servers.length, equals(1));
+      expect(testProjectCopy.getServerServicesForTest().length, equals(1));
+      expect(testProjectCopy.servers.length, equals(1));
+      expect(
+        const ListEquality<LAService>().equals(
+          testProject.services,
+          testProjectCopy.services,
+        ),
+        equals(true),
+      );
+      expect(
         const DeepCollectionEquality.unordered().equals(
-            testProject.getServerServicesForTest(),
-            testProjectCopy.getServerServicesForTest()),
-        equals(true));
-    expect(testProject == testProjectCopy, equals(true));
-    expect(testProject.servers, equals(testProjectCopy.servers));
+          testProject.getServerServicesForTest(),
+          testProjectCopy.getServerServicesForTest(),
+        ),
+        equals(true),
+      );
+      expect(testProject == testProjectCopy, equals(true));
+      expect(testProject.servers, equals(testProjectCopy.servers));
 
-    testProject.upsertServer(vm2);
-    expect(testProjectCopy.servers.length, equals(1));
+      testProject.upsertServer(vm2);
+      expect(testProjectCopy.servers.length, equals(1));
 
-    expect(testProject.getServerServicesForTest().length, equals(2));
-    expect(testProject.servers == testProjectCopy.servers, equals(false));
-    expect(testProjectCopy.getServerServicesForTest().length, equals(1));
-    expect(
+      expect(testProject.getServerServicesForTest().length, equals(2));
+      expect(testProject.servers == testProjectCopy.servers, equals(false));
+      expect(testProjectCopy.getServerServicesForTest().length, equals(1));
+      expect(
         const MapEquality<String, List<String>>().equals(
-            testProject.getServerServicesForTest(),
-            testProjectCopy.getServerServicesForTest()),
-        equals(false));
-    expect(
+          testProject.getServerServicesForTest(),
+          testProjectCopy.getServerServicesForTest(),
+        ),
+        equals(false),
+      );
+      expect(
         testProject.mapBoundsFstPoint == testProjectCopy.mapBoundsFstPoint &&
             testProject.mapBoundsSndPoint == testProjectCopy.mapBoundsSndPoint,
-        equals(true));
-    expect(
-        const ListEquality<LAServer>()
-            .equals(testProject.servers, testProjectCopy.servers),
-        equals(false));
-    expect(testProject.hashCode == testProjectCopy.hashCode, equals(false));
-    expect(testProject == testProjectCopy, equals(false));
-    testProjectCopy.upsertServer(vm2);
-    expect(testProject == testProjectCopy, equals(true));
-    expect(testProject.servers, equals(testProjectCopy.servers));
-    testProject.upsertServer(vm3);
-    testProject.upsertServer(vm4);
-    expect(testProject == testProjectCopy, equals(false));
-    testProject.assign(vm1, <String>[collectory]);
-    expect(testProject == testProjectCopy, equals(false));
+        equals(true),
+      );
+      expect(
+        const ListEquality<LAServer>().equals(
+          testProject.servers,
+          testProjectCopy.servers,
+        ),
+        equals(false),
+      );
+      expect(testProject.hashCode == testProjectCopy.hashCode, equals(false));
+      expect(testProject == testProjectCopy, equals(false));
+      testProjectCopy.upsertServer(vm2);
+      expect(testProject == testProjectCopy, equals(true));
+      expect(testProject.servers, equals(testProjectCopy.servers));
+      testProject.upsertServer(vm3);
+      testProject.upsertServer(vm4);
+      expect(testProject == testProjectCopy, equals(false));
+      testProject.assign(vm1, <String>[collectory]);
+      expect(testProject == testProjectCopy, equals(false));
 
-    expect(testProject.getServicesNameListInUse().contains(collectory),
-        equals(true));
-    expect(testProject.getHostnames(collectory)[0] == vm1.name, equals(true));
-    /* print(testProject);
+      expect(
+        testProject.getServicesNameListInUse().contains(collectory),
+        equals(true),
+      );
+      expect(testProject.getHostnames(collectory)[0] == vm1.name, equals(true));
+      /* print(testProject);
     print(testProject.servers);
     print(testProject.services);
     print(testProject.getServiceE(LAServiceName.collectory)); */
 
-    expect(testProject.getHostnames(regions).isEmpty, equals(true));
+      expect(testProject.getHostnames(regions).isEmpty, equals(true));
 
-    testProject.assign(vm1, <String>[alaHub, regions, bie, branding]);
+      testProject.assign(vm1, <String>[alaHub, regions, bie, branding]);
 
-    testProject.assign(vm2, <String>[collectory, bieIndex, biocacheService]);
+      testProject.assign(vm2, <String>[collectory, bieIndex, biocacheService]);
 
-    testProject.assign(vm3, <String>[solr, logger, speciesLists]);
+      testProject.assign(vm3, <String>[solr, logger, speciesLists]);
 
-    testProject.assign(vm4, <String>[
-      spatial,
-      cas,
-      images,
-      biocacheBackend,
-      biocacheCli,
-      nameindexer
-    ]);
+      testProject.assign(vm4, <String>[
+        spatial,
+        cas,
+        images,
+        biocacheBackend,
+        biocacheCli,
+        nameindexer,
+      ]);
 
-    expect(testProject.getServicesNameListInUse().contains(collectory),
-        equals(true));
-    expect(testProject.getHostnames(collectory)[0] == vm2.name, equals(true));
-    expect(testProject.getHostnames(collectory)[0] == vm1.name, equals(false));
-    expect(testProject.isCreated, equals(false));
-    expect(testProject.numServers(), equals(4));
-    // no ssh keys
-    expect(testProject.validateCreation(), equals(false));
-    vm1.sshKey = SshKey(name: 'k1', desc: '', encrypted: false);
-    vm2.sshKey = SshKey(name: 'k2', desc: '', encrypted: false);
-    vm3.sshKey = SshKey(name: 'k3', desc: '', encrypted: false);
-    vm4.sshKey = SshKey(name: 'k4', desc: '', encrypted: false);
-    expect(testProject.getServicesNameListInUse().isNotEmpty, equals(true));
+      expect(
+        testProject.getServicesNameListInUse().contains(collectory),
+        equals(true),
+      );
+      expect(testProject.getHostnames(collectory)[0] == vm2.name, equals(true));
+      expect(
+        testProject.getHostnames(collectory)[0] == vm1.name,
+        equals(false),
+      );
+      expect(testProject.isCreated, equals(false));
+      expect(testProject.numServers(), equals(4));
+      // no ssh keys
+      expect(testProject.validateCreation(), equals(false));
+      vm1.sshKey = SshKey(name: 'k1', desc: '', encrypted: false);
+      vm2.sshKey = SshKey(name: 'k2', desc: '', encrypted: false);
+      vm3.sshKey = SshKey(name: 'k3', desc: '', encrypted: false);
+      vm4.sshKey = SshKey(name: 'k4', desc: '', encrypted: false);
+      expect(testProject.getServicesNameListInUse().isNotEmpty, equals(true));
 
-    /*
+      /*
     print(testProject.getServicesNameListInUse().length);
     print(testProject.getServicesAssignedToServers().length);
     print(testProject.getServicesNameListInUse());
     print(testProject.getServicesAssignedToServers());
     print(testProject);
     print(testProject.servicesNotAssigned()); */
-    expect(
+      expect(
         testProject.getServicesNameListInUse().length ==
             testProject.getServicesAssigned().length,
-        equals(true));
-    testProject.getServicesNameListInUse().forEach((String service) {
-      expect(testProject.getHostnames(service).isNotEmpty, equals(true));
-    });
-    expect(testProject.validateCreation(), equals(true));
-    expect(
+        equals(true),
+      );
+      testProject.getServicesNameListInUse().forEach((String service) {
+        expect(testProject.getHostnames(service).isNotEmpty, equals(true));
+      });
+      expect(testProject.validateCreation(), equals(true));
+      expect(
         testProject.servers
             .where((LAServer element) => element.name == 'vm2')
             .first
             .ip,
-        equals('10.0.0.2'));
-/*    print(testProject); */
-    expect(testProject.getServersNameList().length, equals(4));
-    expect(testProject.status, equals(LAProjectStatus.advancedDefined));
-    expect(testProject.getService(userdetails).use, equals(true));
-    // testProject.delete(vm1);
-  });
+        equals('10.0.0.2'),
+      );
+      /*    print(testProject); */
+      expect(testProject.getServersNameList().length, equals(4));
+      expect(testProject.status, equals(LAProjectStatus.advancedDefined));
+      expect(testProject.getService(userdetails).use, equals(true));
+      // testProject.delete(vm1);
+    },
+  );
 
   test('Test lat/lng center', () {
     final LAProject p = LAProject(
-        mapBoundsFstPoint: LALatLng.from(10.0, 10.0),
-        mapBoundsSndPoint: LALatLng.from(20.0, 20.0));
+      mapBoundsFstPoint: LALatLng.from(10.0, 10.0),
+      mapBoundsSndPoint: LALatLng.from(20.0, 20.0),
+    );
     expect(p.getCenter(), equals(const LatLng(15, 15)));
     p.mapBoundsFstPoint = LALatLng.from(20, 20);
     p.mapBoundsSndPoint = LALatLng.from(40, 40);
@@ -310,35 +376,51 @@ void main() {
     expect(p.getServicesAssigned().length, equals(4));
     expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
     final LAServer vm1Bis = LAServer(
-        name: 'vm1',
-        ip: '10.0.0.1',
-        sshUser: 'john',
-        sshPort: 22001,
-        projectId: p.id);
-    expect(p.getServerServices(serverId: vm1.id).contains(collectory),
-        equals(true));
+      name: 'vm1',
+      ip: '10.0.0.1',
+      sshUser: 'john',
+      sshPort: 22001,
+      projectId: p.id,
+    );
+    expect(
+      p.getServerServices(serverId: vm1.id).contains(collectory),
+      equals(true),
+    );
     p.upsertServer(vm1Bis);
 
-    expect(p.getServerServices(serverId: vm1.id).contains(collectory),
-        equals(true));
+    expect(
+      p.getServerServices(serverId: vm1.id).contains(collectory),
+      equals(true),
+    );
     expect(p.getServerServices(serverId: vm1.id).contains(bie), equals(true));
-    expect(p.getServerServices(serverId: vm1.id).contains(speciesLists),
-        equals(true));
-    final LAServer vm1Updated =
-        p.servers.where((LAServer element) => element.id == vm1.id).toList()[0];
-    expect(vm1Updated.sshUser == 'john' && vm1Updated.sshPort == 22001,
-        equals(true));
+    expect(
+      p.getServerServices(serverId: vm1.id).contains(speciesLists),
+      equals(true),
+    );
+    final LAServer vm1Updated = p.servers
+        .where((LAServer element) => element.id == vm1.id)
+        .toList()[0];
+    expect(
+      vm1Updated.sshUser == 'john' && vm1Updated.sshPort == 22001,
+      equals(true),
+    );
     p.serviceInUse(bie, false);
     expect(p.getService(bie).use, equals(false));
     expect(p.getService(bieIndex).use, equals(false));
     expect(p.getService(speciesLists).use, equals(false));
-    expect(p.getServerServices(serverId: vm1.id).contains(collectory),
-        equals(true));
+    expect(
+      p.getServerServices(serverId: vm1.id).contains(collectory),
+      equals(true),
+    );
     expect(p.getServerServices(serverId: vm1.id).contains(bie), equals(false));
-    expect(p.getServerServices(serverId: vm1.id).contains(bieIndex),
-        equals(false));
-    expect(p.getServerServices(serverId: vm1.id).contains(speciesLists),
-        equals(false));
+    expect(
+      p.getServerServices(serverId: vm1.id).contains(bieIndex),
+      equals(false),
+    );
+    expect(
+      p.getServerServices(serverId: vm1.id).contains(speciesLists),
+      equals(false),
+    );
     final int numServices = p.getServersNameList().length;
     p.serviceInUse(bie, true);
     p.serviceInUse(bie, false);
@@ -366,21 +448,27 @@ void main() {
     expect(p.getHostnames(bie), equals(<String>['vm1']));
     p.getService(bie).iniPath = '/species';
     expect(
-        p.etcHostsVar,
-        equals(
-            '      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site branding.l-a.site'));
+      p.etcHostsVar,
+      equals(
+        '      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site branding.l-a.site',
+      ),
+    );
 
     p.getService(branding).iniPath = '/';
     p.getService(branding).suburl = '';
     expect(
-        p.etcHostsVar,
-        equals(
-            '      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site l-a.site'));
+      p.etcHostsVar,
+      equals(
+        '      10.0.0.1 vm1 species.l-a.site species-ws.l-a.site l-a.site',
+      ),
+    );
     expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length));
 
     // print(p.getServiceDefaultVersion(p.getService(bie)));
-    expect(p.getServiceDefaultVersions(p.getService(bie)).isNotEmpty,
-        equals(true));
+    expect(
+      p.getServiceDefaultVersions(p.getService(bie)).isNotEmpty,
+      equals(true),
+    );
     expect(p.getServiceDeployReleases().isNotEmpty, equals(true));
 
     p.delete(vm1);
@@ -1393,10 +1481,11 @@ void main() {
     expect(p.shortName, equals('GBIF.ES'));
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
-    LAServiceDesc.list(p.isHub)
-        .where((LAServiceDesc s) => s.nameInt != sds)
-        .toList()
-        .forEach((LAServiceDesc service) {
+    LAServiceDesc.list(
+      p.isHub,
+    ).where((LAServiceDesc s) => s.nameInt != sds).toList().forEach((
+      LAServiceDesc service,
+    ) {
       if (!<String>[
         sds,
         pipelines,
@@ -1418,17 +1507,22 @@ void main() {
         dockerCommon,
         gatus,
         portainer,
-        cassandra
+        cassandra,
       ].contains(service.nameInt)) {
-        expect(p.getService(service.nameInt).use, equals(true),
-            reason:
-                '${service.nameInt} should be in Use and is ${p.getService(service.nameInt).use}');
+        expect(
+          p.getService(service.nameInt).use,
+          equals(true),
+          reason:
+              '${service.nameInt} should be in Use and is ${p.getService(service.nameInt).use}',
+        );
       }
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));
         expect(p.getService(service.nameInt).iniPath, equals(''));
-        expect(p.getService(service.nameInt).suburl.contains('gbif.es'),
-            equals(false));
+        expect(
+          p.getService(service.nameInt).suburl.contains('gbif.es'),
+          equals(false),
+        );
       }
     });
     expect(p.getService(collectory).suburl, equals('colecciones'));
@@ -1436,8 +1530,10 @@ void main() {
     expect(p.getService(spatial).suburl, equals('espacial'));
     expect(p.getService(cas).suburl, equals('auth'));
     expect(p.getService(speciesLists).suburl, equals('listas'));
-    expect(p.getService(solr).fullUrl(p.useSSL, p.domain),
-        equals('https://index.gbif.es/'));
+    expect(
+      p.getService(solr).fullUrl(p.useSSL, p.domain),
+      equals('https://index.gbif.es/'),
+    );
 
     p = LAProject.import(yoRcJson: yoRcJsonDemo)[0];
     expect(p.longName, equals('Demo de GBIF.ES'));
@@ -1480,21 +1576,32 @@ void main() {
         dockerCommon,
         gatus,
         portainer,
-        cassandra
+        cassandra,
       ];
       if (notUsedServices.contains(service.nameInt)) {
-        expect(p.getService(service.nameInt).use, equals(false),
-            reason: '${service.nameInt} should not be in Use');
+        expect(
+          p.getService(service.nameInt).use,
+          equals(false),
+          reason: '${service.nameInt} should not be in Use',
+        );
       }
       if (!notUsedServices.contains(service.nameInt)) {
-        expect(p.getService(service.nameInt).use, equals(true),
-            reason: '${service.nameInt} should be in Use');
+        expect(
+          p.getService(service.nameInt).use,
+          equals(true),
+          reason: '${service.nameInt} should be in Use',
+        );
         if (!service.withoutUrl && service.nameInt != branding) {
-          expect(p.getService(service.nameInt).usesSubdomain, equals(false),
-              reason: '${service.nameInt} should not use subdomain');
+          expect(
+            p.getService(service.nameInt).usesSubdomain,
+            equals(false),
+            reason: '${service.nameInt} should not use subdomain',
+          );
         }
-        expect(p.getService(collectory).fullUrl(true, 'demo.gbif.es'),
-            equals('https://demo.gbif.es/colecciones'));
+        expect(
+          p.getService(collectory).fullUrl(true, 'demo.gbif.es'),
+          equals('https://demo.gbif.es/colecciones'),
+        );
         expect(p.getService(collectory).path, equals('/colecciones'));
       }
     }
@@ -1533,15 +1640,23 @@ void main() {
         gatus,
         dockerCommon,
         portainer,
-        cassandra
+        cassandra,
       ].contains(service.nameInt)) {
-        expect(p.getService(service.nameInt).use, equals(true),
-            reason: '${service.nameInt} should be in Use');
+        expect(
+          p.getService(service.nameInt).use,
+          equals(true),
+          reason: '${service.nameInt} should be in Use',
+        );
       }
       if (!service.withoutUrl) {
         expect(p.getService(service.nameInt).usesSubdomain, equals(true));
-        if (!<String>[collectory, alaHub, biocacheService, alerts, images]
-            .contains(service.nameInt)) {
+        if (!<String>[
+          collectory,
+          alaHub,
+          biocacheService,
+          alerts,
+          images,
+        ].contains(service.nameInt)) {
           expect(p.getService(service.nameInt).iniPath, equals(''));
         }
       }
@@ -1573,13 +1688,19 @@ void main() {
     expect(p.getServicesNameListNotInUse().contains(alerts), equals(true));
     expect(p.getServicesNameListInUse().contains(alerts), equals(false));
     for (final LAServer server in p.servers) {
-      expect(p.getServerServicesForTest()[server.id]!.contains(doi),
-          equals(false));
-      expect(p.getServerServicesForTest()[server.id]!.contains(alerts),
-          equals(false));
+      expect(
+        p.getServerServicesForTest()[server.id]!.contains(doi),
+        equals(false),
+      );
+      expect(
+        p.getServerServicesForTest()[server.id]!.contains(alerts),
+        equals(false),
+      );
     }
     expect(
-        p.servers.length == p.getServerServicesForTest().length, equals(true));
+      p.servers.length == p.getServerServicesForTest().length,
+      equals(true),
+    );
     expect(p.getService(collectory).suburl, equals('collectory'));
     expect(p.prodServices.isNotEmpty, equals(true));
     expect(p.serverServices.isNotEmpty, equals(true));
@@ -1587,15 +1708,17 @@ void main() {
 
     p = LAProject.import(yoRcJson: yoRcJsonLaSite)[0];
     expect(
-        p
-            .getServiceDeploysForSomeService(userdetails)[0]
-            .softwareVersions[userdetails],
-        equals('2.4.0'));
+      p
+          .getServiceDeploysForSomeService(userdetails)[0]
+          .softwareVersions[userdetails],
+      equals('2.4.0'),
+    );
     expect(
-        p
-            .getServiceDeploysForSomeService(collectory)[0]
-            .softwareVersions[collectory],
-        equals('1.6.4'));
+      p
+          .getServiceDeploysForSomeService(collectory)[0]
+          .softwareVersions[collectory],
+      equals('1.6.4'),
+    );
   });
 
   test('Test empty project creation toString should not fail', () {
@@ -1615,7 +1738,8 @@ void main() {
 
   test('Template import', () async {
     final List<LAProject> templates = await LAProject.importTemplates(
-        '../../assets/la-toolkit-templates.json');
+      '../../assets/la-toolkit-templates.json',
+    );
     expect(templates.length, equals(10));
     for (final LAProject p in templates) {
       expect(p.servers.isNotEmpty, equals(true));
@@ -1644,41 +1768,54 @@ void main() {
     p.upsertServer(vm3);
     p.assign(vm1, <String>[collectory, alaHub]);
     p.assign(vm2, <String>[alaHub]);
-    Map<String, List<LAService>> assignable =
-        p.getServerServicesAssignable(DeploymentType.vm);
+    Map<String, List<LAService>> assignable = p.getServerServicesAssignable(
+      DeploymentType.vm,
+    );
 
     expect(assignable[vm1.id]!.isNotEmpty, equals(true));
     expect(assignable[vm2.id]!.isNotEmpty, equals(true));
     expect(assignable[vm2.id]!.isNotEmpty, equals(true));
     expect(
-        assignable[vm1.id]!.contains(p.getService(collectory)), equals(false));
+      assignable[vm1.id]!.contains(p.getService(collectory)),
+      equals(false),
+    );
     expect(assignable[vm2.id]!.contains(p.getService(alaHub)), equals(false));
     expect(assignable[vm2.id]!.contains(p.getService(alaHub)), equals(false));
     expect(assignable[vm3.id]!.contains(p.getService(alaHub)), equals(true));
     expect(
-        assignable[vm1.id]!.contains(p.getService(speciesLists)), equals(true));
+      assignable[vm1.id]!.contains(p.getService(speciesLists)),
+      equals(true),
+    );
     expect(
-        assignable[vm2.id]!.contains(p.getService(speciesLists)), equals(true));
+      assignable[vm2.id]!.contains(p.getService(speciesLists)),
+      equals(true),
+    );
     p.assign(vm1, <String>[collectory, alaHub, speciesLists]);
     assignable = p.getServerServicesAssignable(DeploymentType.vm);
-    expect(assignable[vm1.id]!.contains(p.getService(speciesLists)),
-        equals(false));
-    expect(assignable[vm2.id]!.contains(p.getService(speciesLists)),
-        equals(false));
     expect(
-        const ListEquality<String>()
-            .equals(p.getServicesNameListInServer(vm2.id), <String>[alaHub]),
-        equals(true),
-        reason: 'Services in vm2: ${p.getServicesNameListInServer(vm2.id)}');
+      assignable[vm1.id]!.contains(p.getService(speciesLists)),
+      equals(false),
+    );
     expect(
-        const ListEquality<String>()
-            .equals(p.getServicesNameListInServer(vm1.id), <String>[
-          speciesLists,
-          collectory,
-          alaHub,
-        ]),
-        equals(true),
-        reason: 'Services in vm1: ${p.getServicesNameListInServer(vm1.id)}');
+      assignable[vm2.id]!.contains(p.getService(speciesLists)),
+      equals(false),
+    );
+    expect(
+      const ListEquality<String>().equals(
+        p.getServicesNameListInServer(vm2.id),
+        <String>[alaHub],
+      ),
+      equals(true),
+      reason: 'Services in vm2: ${p.getServicesNameListInServer(vm2.id)}',
+    );
+    expect(
+      const ListEquality<String>().equals(
+        p.getServicesNameListInServer(vm1.id),
+        <String>[speciesLists, collectory, alaHub],
+      ),
+      equals(true),
+      reason: 'Services in vm1: ${p.getServicesNameListInServer(vm1.id)}',
+    );
     final LAServer vm4 = LAServer(name: 'vm3', ip: '10.0.0.4', projectId: p.id);
     p.upsertServer(vm4);
     assignable = p.getServerServicesAssignable(DeploymentType.vm);
@@ -1686,23 +1823,32 @@ void main() {
     p.alaInstallRelease = '1.2.1';
     p.getServiceDetailsForVersionCheck();
     p.setServiceDeployRelease(
-        alaHub, p.getServiceDefaultVersions(p.getService(alaHub))[alaHub]!);
+      alaHub,
+      p.getServiceDefaultVersions(p.getService(alaHub))[alaHub]!,
+    );
     final List<dynamic> generatorJson =
         p.toGeneratorJson()['LA_software_versions'] as List<dynamic>;
-    expect(generatorJson.length == 1, equals(true),
-        reason: generatorJson.length.toString());
+    expect(
+      generatorJson.length == 1,
+      equals(true),
+      reason: generatorJson.length.toString(),
+    );
   });
 }
 
 void debugServiceDeployAssigned(LAProject p) {
   for (final LAServiceDeploy sd in p.serviceDeploys) {
-    final LAService s =
-        p.services.firstWhere((LAService s) => s.id == sd.serviceId);
+    final LAService s = p.services.firstWhere(
+      (LAService s) => s.id == sd.serviceId,
+    );
 
     log('Service ${s.nameInt} ($s) is used: ${s.use} on $sd');
   }
   log(p.getServicesAssigned().toString());
-  expect(p.serviceDeploys.length, equals(p.getServicesAssigned().length),
-      reason:
-          'p.serviceDeploys.length: ${p.serviceDeploys.length} != p.getServicesAssigned().length: ${p.getServicesAssigned().length}');
+  expect(
+    p.serviceDeploys.length,
+    equals(p.getServicesAssigned().length),
+    reason:
+        'p.serviceDeploys.length: ${p.serviceDeploys.length} != p.getServicesAssigned().length: ${p.getServicesAssigned().length}',
+  );
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -34,53 +33,64 @@ class LogsHistoryPage extends StatelessWidget {
       distinct: true,
       converter: (Store<AppState> store) {
         return _ViewModel(
-            project: store.state.currentProject,
-            logsNum: store.state.currentProject.cmdHistoryEntries.length,
-            onDeleteCmd: (CmdHistoryEntry log) =>
-                store.dispatch(DeleteLog(log)),
-            onRepeatCmd: (LAProject project, CmdHistoryEntry cmdHistory) {
-              store.dispatch(DeployUtils.doDeploy(
-                  context: context,
-                  store: store,
-                  project: project,
-                  commonCmd: cmdHistory.isAnsibleDeploy()
-                      ? cmdHistory.deployCmd!
-                      : cmdHistory.cmd.type == CmdType.laPipelines
-                          ? cmdHistory.pipelinesCmd!
-                          : cmdHistory.parsedBrandingDeployCmd!));
-            },
-            onOpenDeployResults: (CmdHistoryEntry cmdHistory) {
-              store.dispatch(
-                  DeployUtils.getCmdResults(context, cmdHistory, false));
-            },
-            onUpdateDesc: (CmdHistoryEntry cmdHistory, String desc) {
-              store.dispatch(RequestUpdateOneProps<CmdHistoryEntry>(
-                  cmdHistory.id, <String, dynamic>{'desc': desc}));
-            });
+          project: store.state.currentProject,
+          logsNum: store.state.currentProject.cmdHistoryEntries.length,
+          onDeleteCmd: (CmdHistoryEntry log) => store.dispatch(DeleteLog(log)),
+          onRepeatCmd: (LAProject project, CmdHistoryEntry cmdHistory) {
+            store.dispatch(
+              DeployUtils.doDeploy(
+                context: context,
+                store: store,
+                project: project,
+                commonCmd: cmdHistory.isAnsibleDeploy()
+                    ? cmdHistory.deployCmd!
+                    : cmdHistory.cmd.type == CmdType.laPipelines
+                    ? cmdHistory.pipelinesCmd!
+                    : cmdHistory.parsedBrandingDeployCmd!,
+              ),
+            );
+          },
+          onOpenDeployResults: (CmdHistoryEntry cmdHistory) {
+            store.dispatch(
+              DeployUtils.getCmdResults(context, cmdHistory, false),
+            );
+          },
+          onUpdateDesc: (CmdHistoryEntry cmdHistory, String desc) {
+            store.dispatch(
+              RequestUpdateOneProps<CmdHistoryEntry>(
+                cmdHistory.id,
+                <String, dynamic>{'desc': desc},
+              ),
+            );
+          },
+        );
       },
       builder: (BuildContext context, _ViewModel vm) {
         final String pageTitle = '${vm.project.shortName} Tasks Logs History';
         return Title(
-            title: pageTitle,
-            color: LAColorTheme.laPalette,
-            child: Scaffold(
-              key: _scaffoldKey,
-              appBar: LAAppBar(
-                  context: context,
-                  titleIcon: Icons.receipt_long,
-                  title: pageTitle,
-                  // showLaIcon: false,
-                  showBack: true,
-                  actions: const <Widget>[]),
-              body: LogList(
-                  projectId: vm.project.id,
-                  onTap: (CmdHistoryEntry cmd) => vm.onOpenDeployResults(cmd),
-                  onRepeat: (CmdHistoryEntry cmd) =>
-                      vm.onRepeatCmd(vm.project, cmd),
-                  onDelete: (CmdHistoryEntry cmd) => vm.onDeleteCmd(cmd),
-                  onUpdateDesc: (CmdHistoryEntry cmd, String desc) =>
-                      vm.onUpdateDesc(cmd, desc)),
-            ));
+          title: pageTitle,
+          color: LAColorTheme.laPalette,
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: LAAppBar(
+              context: context,
+              titleIcon: Icons.receipt_long,
+              title: pageTitle,
+              // showLaIcon: false,
+              showBack: true,
+              actions: const <Widget>[],
+            ),
+            body: LogList(
+              projectId: vm.project.id,
+              onTap: (CmdHistoryEntry cmd) => vm.onOpenDeployResults(cmd),
+              onRepeat: (CmdHistoryEntry cmd) =>
+                  vm.onRepeatCmd(vm.project, cmd),
+              onDelete: (CmdHistoryEntry cmd) => vm.onDeleteCmd(cmd),
+              onUpdateDesc: (CmdHistoryEntry cmd, String desc) =>
+                  vm.onUpdateDesc(cmd, desc),
+            ),
+          ),
+        );
       },
     );
   }
@@ -88,8 +98,13 @@ class LogsHistoryPage extends StatelessWidget {
 
 class LogItem extends StatelessWidget {
   const LogItem(
-      this.log, this.onTap, this.onRepeat, this.onDelete, this.onUpdateDesc,
-      {super.key});
+    this.log,
+    this.onTap,
+    this.onRepeat,
+    this.onDelete,
+    this.onUpdateDesc, {
+    super.key,
+  });
 
   final CmdHistoryEntry log;
   final VoidCallback onTap;
@@ -107,41 +122,49 @@ class LogItem extends StatelessWidget {
         ? 'duration: ${LADateUtils.formatDuration(log.duration!)}, '
         : '';
     return ListTile(
-        title: Text(desc),
-        subtitle: Text(
-            '${LADateUtils.formatDate(log.date)}, ${duration}finished status: ${log.result.toS()}'),
-        onTap: () => onTap(),
-        trailing: Wrap(
-          spacing: 12, // space between two icons
-          children: <Widget>[
-            Tooltip(
-                message: 'Repeat this command',
-                child: IconButton(
-                  icon: Icon(Icons.play_arrow, color: ResultType.ok.color),
-                  onPressed: () => onRepeat(),
-                )), // icon-1
-            Tooltip(
-                message: 'Delete this log',
-                child: IconButton(
-                  icon: const Icon(Icons.delete, color: LAColorTheme.inactive),
-                  onPressed: () => onDelete(),
-                )), // icon-2
-          ],
-        ),
-        leading: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-            child: StatusIcon(log.result)));
+      title: Text(desc),
+      subtitle: Text(
+        '${LADateUtils.formatDate(log.date)}, ${duration}finished status: ${log.result.toS()}',
+      ),
+      onTap: () => onTap(),
+      trailing: Wrap(
+        spacing: 12, // space between two icons
+        children: <Widget>[
+          Tooltip(
+            message: 'Repeat this command',
+            child: IconButton(
+              icon: Icon(Icons.play_arrow, color: ResultType.ok.color),
+              onPressed: () => onRepeat(),
+            ),
+          ), // icon-1
+          Tooltip(
+            message: 'Delete this log',
+            child: IconButton(
+              icon: const Icon(Icons.delete, color: LAColorTheme.inactive),
+              onPressed: () => onDelete(),
+            ),
+          ), // icon-2
+        ],
+      ),
+      leading: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+        child: StatusIcon(log.result),
+      ),
+    );
   }
 }
 
+@immutable
+@immutable
 class _ViewModel {
-  _ViewModel(
-      {required this.project,
-      required this.logsNum,
-      required this.onOpenDeployResults,
-      required this.onDeleteCmd,
-      required this.onRepeatCmd,
-      required this.onUpdateDesc});
+  const _ViewModel({
+    required this.project,
+    required this.logsNum,
+    required this.onOpenDeployResults,
+    required this.onDeleteCmd,
+    required this.onRepeatCmd,
+    required this.onUpdateDesc,
+  });
 
   final LAProject project;
   final int logsNum;

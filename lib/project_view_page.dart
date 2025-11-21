@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -609,8 +608,9 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
   }
 }
 
+@immutable
 class _ProjectPageViewModel {
-  _ProjectPageViewModel({
+  const _ProjectPageViewModel({
     required this.project,
     required this.status,
     required this.loading,

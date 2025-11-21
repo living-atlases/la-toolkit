@@ -132,7 +132,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
-            // TODO: Use here badges - https://github.com/hacktons/convex_bottom_bar/
+            // TODO(vjrj): Use here badges - https://github.com/hacktons/convex_bottom_bar/
             bottomNavigationBar: ConvexAppBar(
               backgroundColor: LAColorTheme.laPalette.shade300,
               color: Colors.black,

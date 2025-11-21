@@ -13,7 +13,6 @@ import './cmd_history_entry.dart';
 
 part 'cmd_history_details.g.dart';
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class CmdHistoryDetails {

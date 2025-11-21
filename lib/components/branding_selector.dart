@@ -145,7 +145,7 @@ class _BrandingSelectorState extends State<BrandingSelector> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Add selection to the start
+    // TODO(vjrj): Add selection to the start
     _brandings.removeWhere((Branding b) => b == _selected[0]);
     _brandings.insert(0, _selected[0]);
     return Container(

@@ -1,23 +1,22 @@
-import 'package:flutter/foundation.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'ssh_key.g.dart';
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class SshKey {
-  SshKey(
-      {required this.name,
-      this.privateKey = '',
-      this.publicKey = '',
-      this.type,
-      this.size,
-      required this.desc,
-      this.fingerdebugPrint,
-      required this.encrypted,
-      this.missing = false});
+  SshKey({
+    required this.name,
+    this.privateKey = '',
+    this.publicKey = '',
+    this.type,
+    this.size,
+    required this.desc,
+    this.fingerdebugPrint,
+    required this.encrypted,
+    this.missing = false,
+  });
 
   factory SshKey.fromJson(Map<String, dynamic> json) => _$SshKeyFromJson(json);
   String name;

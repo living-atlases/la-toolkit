@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 
@@ -6,6 +5,7 @@ import './la_service_deploy.dart';
 import 'basic_service.dart';
 import 'la_service.dart';
 
+@immutable
 class ProdServiceDesc {
   ProdServiceDesc({
     required this.icon,

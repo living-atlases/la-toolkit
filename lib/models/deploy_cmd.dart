@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../utils/string_utils.dart';
@@ -10,7 +9,6 @@ import './la_service_desc.dart';
 
 part 'deploy_cmd.g.dart';
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class DeployCmd extends CommonCmd {

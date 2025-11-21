@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
@@ -8,16 +7,15 @@ import 'is_json_serializable.dart';
 
 part 'la_cluster.g.dart';
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LACluster implements IsJsonSerializable<LACluster> {
-  LACluster(
-      {String? id,
-      this.name = 'Docker Swarm Cluster',
-      this.type = DeploymentType.dockerSwarm,
-      required this.projectId})
-      : id = id ?? ObjectId().toString();
+  LACluster({
+    String? id,
+    this.name = 'Docker Swarm Cluster',
+    this.type = DeploymentType.dockerSwarm,
+    required this.projectId,
+  }) : id = id ?? ObjectId().toString();
 
   factory LACluster.fromJson(Map<String, dynamic> json) =>
       _$LAClusterFromJson(json);
@@ -55,11 +53,14 @@ class LACluster implements IsJsonSerializable<LACluster> {
   }
 
   static List<LACluster> upsertById(
-      List<LACluster> clusters, LACluster cluster) {
+    List<LACluster> clusters,
+    LACluster cluster,
+  ) {
     if (clusters.map((LACluster s) => s.id).toList().contains(cluster.id)) {
       clusters = clusters
-          .map((LACluster current) =>
-              current.id == cluster.id ? cluster : current)
+          .map(
+            (LACluster current) => current.id == cluster.id ? cluster : current,
+          )
           .toList();
     } else {
       clusters.add(cluster);
@@ -68,7 +69,9 @@ class LACluster implements IsJsonSerializable<LACluster> {
   }
 
   static List<LACluster> upsertByName(
-      List<LACluster> clusters, LACluster cluster) {
+    List<LACluster> clusters,
+    LACluster cluster,
+  ) {
     if (clusters.map((LACluster s) => s.name).toList().contains(cluster.name)) {
       clusters = clusters.map((LACluster current) {
         if (current.name == cluster.name) {

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -18,38 +17,42 @@ class ServersDetailsCardList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersCardListViewModel>(
-        converter: (Store<AppState> store) {
-      return _ServersCardListViewModel(
+      converter: (Store<AppState> store) {
+        return _ServersCardListViewModel(
           currentProject: store.state.currentProject,
           sshKeys: store.state.sshKeys,
           onSaveCurrentProject: (LAProject project) {
             store.dispatch(SaveCurrentProject(project));
-          });
-    }, builder: (BuildContext context, _ServersCardListViewModel vm) {
-      final LAProject project = vm.currentProject;
-      return ListView.builder(
+          },
+        );
+      },
+      builder: (BuildContext context, _ServersCardListViewModel vm) {
+        final LAProject project = vm.currentProject;
+        return ListView.builder(
           shrinkWrap: true,
           itemCount: project.numServers(),
           // itemCount: appStateProv.appState.projects.length,
           itemBuilder: (BuildContext context, int index) {
             return ServerDetailsCard(
-                server: project.servers[index],
-                onSave: (LAServer server) {
-                  project.upsertServer(server);
-                  vm.onSaveCurrentProject(project);
-                },
-                onAllSameSshKey: (SshKey? sshKey) {
-                  for (int i = 0; i < project.servers.length; i++) {
-                    project.servers[i].sshKey = sshKey;
-                  }
-                },
-                advancedEdit: project.advancedEdit,
-                isFirst: _isFirstServer(index, project.servers.length),
-                sshKeys: vm.sshKeys,
-                ansibleUser:
-                    project.getVariableValue('ansible_user').toString());
-          });
-    });
+              server: project.servers[index],
+              onSave: (LAServer server) {
+                project.upsertServer(server);
+                vm.onSaveCurrentProject(project);
+              },
+              onAllSameSshKey: (SshKey? sshKey) {
+                for (int i = 0; i < project.servers.length; i++) {
+                  project.servers[i].sshKey = sshKey;
+                }
+              },
+              advancedEdit: project.advancedEdit,
+              isFirst: _isFirstServer(index, project.servers.length),
+              sshKeys: vm.sshKeys,
+              ansibleUser: project.getVariableValue('ansible_user').toString(),
+            );
+          },
+        );
+      },
+    );
   }
 
   bool _isFirstServer(int index, int length) {
@@ -57,11 +60,13 @@ class ServersDetailsCardList extends StatelessWidget {
   }
 }
 
+@immutable
 class _ServersCardListViewModel {
-  _ServersCardListViewModel(
-      {required this.currentProject,
-      required this.sshKeys,
-      required this.onSaveCurrentProject});
+  const _ServersCardListViewModel({
+    required this.currentProject,
+    required this.sshKeys,
+    required this.onSaveCurrentProject,
+  });
 
   final List<SshKey> sshKeys;
   final LAProject currentProject;

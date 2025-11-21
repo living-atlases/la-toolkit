@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -32,8 +31,11 @@ class LAProjectEditPage extends StatelessWidget {
   LAProjectEditPage({super.key});
 
   static const String routeName = 'project';
-  final int permissiveDirNamesDate =
-      DateTime(2021, 8, 25).microsecondsSinceEpoch;
+  final int permissiveDirNamesDate = DateTime(
+    2021,
+    8,
+    25,
+  ).microsecondsSinceEpoch;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -65,14 +67,15 @@ class LAProjectEditPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, ProjectPageViewModel>(
-        // with true fails ssl y ssh advanced, and delete
-        // distinct: false,
-        onInitialBuild: (_) {
-      if (context.mounted) {
-        context.loaderOverlay.hide();
-      }
-    }, converter: (Store<AppState> store) {
-      return ProjectPageViewModel(
+      // with true fails ssl y ssh advanced, and delete
+      // distinct: false,
+      onInitialBuild: (_) {
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
+      },
+      converter: (Store<AppState> store) {
+        return ProjectPageViewModel(
           state: store.state,
           project: store.state.currentProject,
           ssl: store.state.currentProject.useSSL,
@@ -106,45 +109,49 @@ class LAProjectEditPage extends StatelessWidget {
           onGoto: (int step) {
             FocusScope.of(context).requestFocus(_focusNodes[step]);
             store.dispatch(GotoStepEditProject(step));
-          });
-    }, builder: (BuildContext context, ProjectPageViewModel vm) {
-      log('build project edit page');
-      final LAProject project = vm.project;
-      // Set default version of the project
-      if (project.alaInstallRelease == null &&
-          vm.state.alaInstallReleases.isNotEmpty) {
-        project.alaInstallRelease = project.isHub
-            ? project.parent!.alaInstallRelease
-            : vm.state.alaInstallReleases[0];
-      }
-      if (project.generatorRelease == null &&
-          vm.state.generatorReleases.isNotEmpty) {
-        project.generatorRelease = project.isHub
-            ? project.parent!.generatorRelease
-            : vm.state.generatorReleases[0];
-      }
-      final int step = vm.state.currentStep;
-      log('Building project edit currentStep: $step key: $_scaffoldKey');
-      final List<Step> steps = <Step>[];
-      final String projectName = project.projectName;
-      final String portal = project.portalName;
-      // ignore: non_constant_identifier_names
-      final String Portal = project.PortalName;
-      if (project.isHub) {
-        project.domain = project.parent!.domain;
-      }
+          },
+        );
+      },
+      builder: (BuildContext context, ProjectPageViewModel vm) {
+        log('build project edit page');
+        final LAProject project = vm.project;
+        // Set default version of the project
+        if (project.alaInstallRelease == null &&
+            vm.state.alaInstallReleases.isNotEmpty) {
+          project.alaInstallRelease = project.isHub
+              ? project.parent!.alaInstallRelease
+              : vm.state.alaInstallReleases[0];
+        }
+        if (project.generatorRelease == null &&
+            vm.state.generatorReleases.isNotEmpty) {
+          project.generatorRelease = project.isHub
+              ? project.parent!.generatorRelease
+              : vm.state.generatorReleases[0];
+        }
+        final int step = vm.state.currentStep;
+        log('Building project edit currentStep: $step key: $_scaffoldKey');
+        final List<Step> steps = <Step>[];
+        final String projectName = project.projectName;
+        final String portal = project.portalName;
+        // ignore: non_constant_identifier_names
+        final String Portal = project.PortalName;
+        if (project.isHub) {
+          project.domain = project.parent!.domain;
+        }
 
-      steps.add(Step(
-          title: const Text('Basic information'),
-          subtitle: Text(
-              'Define the main information of your $portal, like name, ...'),
-          isActive: _setIsActive(step, _basicStep),
-          state: _setSetStatus(step, _basicStep),
-          content: Form(
-            key: _formKeys[_basicStep],
-            child: Column(
-              children: <Widget>[
-                GenericTextFormField(
+        steps.add(
+          Step(
+            title: const Text('Basic information'),
+            subtitle: Text(
+              'Define the main information of your $portal, like name, ...',
+            ),
+            isActive: _setIsActive(step, _basicStep),
+            state: _setSetStatus(step, _basicStep),
+            content: Form(
+              key: _formKeys[_basicStep],
+              child: Column(
+                children: <Widget>[
+                  GenericTextFormField(
                     //_createTextField(
                     // LONG NAME
                     //  key: _formKeys[0],
@@ -160,8 +167,9 @@ class LAProjectEditPage extends StatelessWidget {
                     onChanged: (String value) {
                       project.longName = value;
                       vm.onSaveCurrentProject(project);
-                    }),
-                GenericTextFormField(
+                    },
+                  ),
+                  GenericTextFormField(
                     // SHORT NAME
                     label: 'Short Name',
                     hint: project.isHub
@@ -174,10 +182,11 @@ class LAProjectEditPage extends StatelessWidget {
                     onChanged: (String value) {
                       project.shortName = value;
                       vm.onSaveCurrentProject(project);
-                    }),
-                const SizedBox(height: 10),
-                if (project.isHub)
-                  GenericTextFormField(
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  if (project.isHub)
+                    GenericTextFormField(
                       // DIR NAME
                       label:
                           'Directory Name to store the generated directories and files',
@@ -194,15 +203,14 @@ class LAProjectEditPage extends StatelessWidget {
                       onChanged: (String value) {
                         project.dirName = value;
                         vm.onSaveCurrentProject(project);
-                      }),
-                Tooltip(
+                      },
+                    ),
+                  Tooltip(
                     // SSL
                     message: 'Quite recommended',
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text(
-                        'Use SSL?',
-                      ),
+                      title: const Text('Use SSL?'),
                       trailing: Switch(
                         value: project.useSSL,
                         // activeColor: Color(0xFF6200EE),
@@ -211,9 +219,10 @@ class LAProjectEditPage extends StatelessWidget {
                           vm.onSaveCurrentProject(project);
                         },
                       ),
-                    )),
-                if (!project.isHub)
-                  GenericTextFormField(
+                    ),
+                  ),
+                  if (!project.isHub)
+                    GenericTextFormField(
                       // DOMAIN
                       label:
                           'The ${project.isHub ? 'sub' : ''}domain of your LA $Portal',
@@ -227,35 +236,49 @@ class LAProjectEditPage extends StatelessWidget {
                       onChanged: (String value) {
                         project.domain = value;
                         vm.onSaveCurrentProject(project);
-                      }),
-                if (!project.isHub) const SizedBox(height: 20),
-                BrandingTile(
+                      },
+                    ),
+                  if (!project.isHub) const SizedBox(height: 20),
+                  BrandingTile(
                     initialValue: project.theme,
                     portalName: Portal,
-                    onChange: (String newTheme) => project.theme = newTheme)
+                    onChange: (String newTheme) => project.theme = newTheme,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        steps.add(
+          Step(
+            isActive: _setIsActive(step, _mapStep),
+            state: _setSetStatus(step, _mapStep),
+            title: const Text('Location information'),
+            subtitle: Text('Select the map area of your LA $Portal,...'),
+            content: Column(
+              children: <Widget>[
+                _stepIntro(
+                  text:
+                      'Tap in two points to select the default map area of your LA $portal. Drag them to modify the area. This area is used in services like collections, regions and spatial in their main page.',
+                  helpPage: 'Glossary#Services-map-area',
+                ),
+                const SizedBox(height: 20),
+                const MapAreaSelector(),
+                // MAP AREA NAME
+                MessageItem(project, LAVariableDesc.get('map_zone_name'), (
+                  Object value,
+                ) {
+                  project.setVariable(
+                    LAVariableDesc.get('map_zone_name'),
+                    value,
+                  );
+                  vm.onSaveCurrentProject(project);
+                }).buildTitle(context),
               ],
             ),
-          )));
-      steps.add(Step(
-          isActive: _setIsActive(step, _mapStep),
-          state: _setSetStatus(step, _mapStep),
-          title: const Text('Location information'),
-          subtitle: Text('Select the map area of your LA $Portal,...'),
-          content: Column(children: <Widget>[
-            _stepIntro(
-                text:
-                    'Tap in two points to select the default map area of your LA $portal. Drag them to modify the area. This area is used in services like collections, regions and spatial in their main page.',
-                helpPage: 'Glossary#Services-map-area'),
-            const SizedBox(height: 20),
-            const MapAreaSelector(),
-            // MAP AREA NAME
-            MessageItem(project, LAVariableDesc.get('map_zone_name'),
-                (Object value) {
-              project.setVariable(LAVariableDesc.get('map_zone_name'), value);
-              vm.onSaveCurrentProject(project);
-            }).buildTitle(context),
-          ])));
-      /*  steps.add(Step(
+          ),
+        );
+        /*  steps.add(Step(
               isActive: _setIsActive(step, _serversStep),
               state: _setSetStatus(step, _serversStep),
               title: const Text('Servers'),
@@ -281,117 +304,135 @@ If you are unsure type something like "server1, server2, server3".
                   ],
                 ),
               ))); */
-      final Iterable<LAServiceDesc> availableServices =
-          LAServiceDesc.listNoSub(project.isHub)
-              .where((LAServiceDesc s) => s.isSubService == false);
-      steps.add(Step(
-          isActive: _setIsActive(step, _servicesStep),
-          state: _setSetStatus(step, _servicesStep),
-          title: const Text('Services'),
-          subtitle: Text(
-              'Choose the services of your $Portal and how your services URLs will look like'),
-          // subtitle: const Text("Error!"),
-          content: Form(
+        final Iterable<LAServiceDesc> availableServices =
+            LAServiceDesc.listNoSub(
+              project.isHub,
+            ).where((LAServiceDesc s) => s.isSubService == false);
+        steps.add(
+          Step(
+            isActive: _setIsActive(step, _servicesStep),
+            state: _setSetStatus(step, _servicesStep),
+            title: const Text('Services'),
+            subtitle: Text(
+              'Choose the services of your $Portal and how your services URLs will look like',
+            ),
+            // subtitle: const Text("Error!"),
+            content: Form(
               key: _formKeys[_servicesStep],
               child: Column(
                 children: <Widget>[
                   _stepIntro(
-                      text:
-                          'Please select the services of your LA $Portal. Some services are mandatory, and some services are optional and you can use them later.',
-                      helpPage:
-                          'Infrastructure-Requirements#core-components-for-a-living-atlas'),
+                    text:
+                        'Please select the services of your LA $Portal. Some services are mandatory, and some services are optional and you can use them later.',
+                    helpPage:
+                        'Infrastructure-Requirements#core-components-for-a-living-atlas',
+                  ),
                   ListView.builder(
-                      // scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: availableServices.length,
-                      // itemCount: appStateProv.appState.projects.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          ServiceWidget(
-                              serviceName:
-                                  availableServices.elementAt(index).nameInt,
-                              collectoryFocusNode: _focusNodes[_servicesStep]))
+                    // scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: availableServices.length,
+                    // itemCount: appStateProv.appState.projects.length,
+                    itemBuilder: (BuildContext context, int index) =>
+                        ServiceWidget(
+                          serviceName: availableServices
+                              .elementAt(index)
+                              .nameInt,
+                          collectoryFocusNode: _focusNodes[_servicesStep],
+                        ),
+                  ),
                 ],
-              ))));
-      if (context.mounted) {
-        context.loaderOverlay.hide();
-      }
-      return Title(
+              ),
+            ),
+          ),
+        );
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
+        return Title(
           title:
               '${project.shortName}: ${vm.state.status.getTitle(project.isHub)}',
           color: LAColorTheme.laPalette,
           child: Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
-                context: context,
-                titleIcon: Icons.edit,
-                title: vm.state.status.getTitle(project.isHub),
-                // showLaIcon: false,
-                actions: <Widget>[
-                  Tooltip(
-                      message: 'Project configuration progress',
-                      child: CircularPercentIndicator(
-                        radius: 25.0,
-                        lineWidth: 6.0,
-                        percent: project.status.percent / 100,
-                        center: Text('${project.status.percent}%',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12)),
-                        progressColor: Colors.white,
-                      )),
-                  const SizedBox(width: 20),
-                  if (step != 0)
-                    TextButton(
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.white),
-                        onPressed: () => onStepCancel(vm, project),
-                        child: const Text('PREVIOUS')),
-                  if (step != steps.length - 1)
-                    TextButton(
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.white),
-                        onPressed: () => onStepContinue(vm, project),
-                        child: const Text('NEXT')),
-                  Tooltip(
-                    message: 'Close without saving your changes',
-                    child: TextButton(
-                        child: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () {
-                          vm.onFinish(project);
-                        }),
+              context: context,
+              titleIcon: Icons.edit,
+              title: vm.state.status.getTitle(project.isHub),
+              // showLaIcon: false,
+              actions: <Widget>[
+                Tooltip(
+                  message: 'Project configuration progress',
+                  child: CircularPercentIndicator(
+                    radius: 25.0,
+                    lineWidth: 6.0,
+                    percent: project.status.percent / 100,
+                    center: Text(
+                      '${project.status.percent}%',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                    progressColor: Colors.white,
                   ),
-                  TapDebouncer(
-                      onTap: () async => await vm.onFinish(project),
-                      builder: (BuildContext context, VoidCallback? onTap) {
-                        return IconButton(
-                          icon: const Tooltip(
-                              message: 'Save the current LA project',
-                              child: Icon(Icons.save, color: Colors.white)),
-                          onPressed: onTap,
-                        );
-                      })
-                ]),
-            body: AppSnackBar(ScrollPanel(
-                child: Column(children: <Widget>[
-              Stepper(
-                  steps: steps,
-                  currentStep: step,
-                  // type: stepperType,
-                  onStepContinue: () {
-                    // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                    onStepContinue(vm, project);
+                ),
+                const SizedBox(width: 20),
+                if (step != 0)
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: Colors.white),
+                    onPressed: () => onStepCancel(vm, project),
+                    child: const Text('PREVIOUS'),
+                  ),
+                if (step != steps.length - 1)
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: Colors.white),
+                    onPressed: () => onStepContinue(vm, project),
+                    child: const Text('NEXT'),
+                  ),
+                Tooltip(
+                  message: 'Close without saving your changes',
+                  child: TextButton(
+                    child: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () {
+                      vm.onFinish(project);
+                    },
+                  ),
+                ),
+                TapDebouncer(
+                  onTap: () async => await vm.onFinish(project),
+                  builder: (BuildContext context, VoidCallback? onTap) {
+                    return IconButton(
+                      icon: const Tooltip(
+                        message: 'Save the current LA project',
+                        child: Icon(Icons.save, color: Colors.white),
+                      ),
+                      onPressed: onTap,
+                    );
                   },
-                  onStepTapped: (int step) {
-                    vm.onGoto(step);
-                    vm.onSaveCurrentProject(project);
-                  },
-                  onStepCancel: () {
-                    onStepCancel(vm, project);
-                  },
-                  // https://github.com/flutter/flutter/issues/11133
-                  controlsBuilder:
-                      (BuildContext context, ControlsDetails details) {
-                    return const Row(
-                        /*  children: <Widget>[
+                ),
+              ],
+            ),
+            body: AppSnackBar(
+              ScrollPanel(
+                child: Column(
+                  children: <Widget>[
+                    Stepper(
+                      steps: steps,
+                      currentStep: step,
+                      // type: stepperType,
+                      onStepContinue: () {
+                        // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
+                        onStepContinue(vm, project);
+                      },
+                      onStepTapped: (int step) {
+                        vm.onGoto(step);
+                        vm.onSaveCurrentProject(project);
+                      },
+                      onStepCancel: () {
+                        onStepCancel(vm, project);
+                      },
+                      // https://github.com/flutter/flutter/issues/11133
+                      controlsBuilder:
+                          (BuildContext context, ControlsDetails details) {
+                            return const Row(
+                              /*  children: <Widget>[
                             // empty and custom in the AppBar
                             /* TextButton(
                               onPressed: details.onStepContinue,
@@ -402,14 +443,23 @@ If you are unsure type something like "server1, server2, server3".
                               child: const Text('CANCEL'),
                             ), */
                           ], */
-                        );
-                  }),
-              const LintProjectPanel(
-                  showOthers: false, showToolkitDeps: false, showLADeps: false)
-            ]))),
+                            );
+                          },
+                    ),
+                    const LintProjectPanel(
+                      showOthers: false,
+                      showToolkitDeps: false,
+                      showLADeps: false,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             //     ])
-          ));
-    });
+          ),
+        );
+      },
+    );
   }
 
   void onStepCancel(ProjectPageViewModel vm, LAProject project) {
@@ -431,22 +481,27 @@ If you are unsure type something like "server1, server2, server3".
   }
 
   Widget _stepIntro({required String text, required String helpPage}) {
-    return ListTile(title: Text(text), trailing: HelpIcon(wikipage: helpPage));
+    return ListTile(
+      title: Text(text),
+      trailing: HelpIcon(wikipage: helpPage),
+    );
   }
 }
 
+@immutable
 class ProjectPageViewModel {
-  ProjectPageViewModel(
-      {required this.state,
-      required this.project,
-      required this.onSaveCurrentProject,
-      required this.onFinish,
-      required this.onCancel,
-      required this.ssl,
-      required this.advancedEdit,
-      required this.onNext,
-      required this.onPrevious,
-      required this.onGoto});
+  const ProjectPageViewModel({
+    required this.state,
+    required this.project,
+    required this.onSaveCurrentProject,
+    required this.onFinish,
+    required this.onCancel,
+    required this.ssl,
+    required this.advancedEdit,
+    required this.onNext,
+    required this.onPrevious,
+    required this.onGoto,
+  });
 
   final AppState state;
   final LAProject project;
@@ -461,7 +516,8 @@ class ProjectPageViewModel {
 
   @override
   bool operator ==(Object other) {
-    final bool equals = identical(this, other) ||
+    final bool equals =
+        identical(this, other) ||
         other is ProjectPageViewModel &&
             runtimeType == other.runtimeType &&
             project == other.project &&
@@ -495,7 +551,7 @@ class HostHeader extends StatelessWidget {
     return Row(
       children: <Widget>[
         Text(title),
-        if (help != null) HelpIcon(wikipage: help!)
+        if (help != null) HelpIcon(wikipage: help!),
       ],
     );
   }

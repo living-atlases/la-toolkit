@@ -1,17 +1,14 @@
-import 'package:flutter/foundation.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import './common_cmd.dart';
 
 part 'branding_deploy_cmd.g.dart';
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class BrandingDeployCmd extends CommonCmd {
-  BrandingDeployCmd({
-    this.debug = false,
-  });
+  BrandingDeployCmd({this.debug = false});
 
   factory BrandingDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$BrandingDeployCmdFromJson(json);
@@ -33,6 +30,7 @@ class BrandingDeployCmd extends CommonCmd {
   }
 
   String get desc => 'Branding Deploy';
+
   Map<String, dynamic> toJson() => _$BrandingDeployCmdToJson(this);
 
   String getTitle() => 'Branding Deploy Results';

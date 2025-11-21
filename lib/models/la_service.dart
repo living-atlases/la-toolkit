@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -64,31 +63,30 @@ extension ParseToString on ServiceStatus {
   }
 }
 
-@immutable
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAService implements IsJsonSerializable<LAService> {
-  LAService(
-      {String? id,
-      required this.nameInt,
-      required this.iniPath,
-      required this.use,
-      required this.usesSubdomain,
-      ServiceStatus? status,
-      required this.suburl,
-      required this.projectId})
-      : id = id ?? ObjectId().toString(),
-        status = status ?? ServiceStatus.unknown;
+  LAService({
+    String? id,
+    required this.nameInt,
+    required this.iniPath,
+    required this.use,
+    required this.usesSubdomain,
+    ServiceStatus? status,
+    required this.suburl,
+    required this.projectId,
+  }) : id = id ?? ObjectId().toString(),
+       status = status ?? ServiceStatus.unknown;
 
   LAService.fromDesc(LAServiceDesc desc, this.projectId)
-      : id = ObjectId().toString(),
-        nameInt = desc.nameInt,
-        iniPath = desc.iniPath ?? desc.path,
-        // ignore: avoid_bool_literals_in_conditional_expressions
-        use = !desc.optional ? true : desc.initUse,
-        usesSubdomain = true,
-        status = ServiceStatus.unknown,
-        suburl = desc.name;
+    : id = ObjectId().toString(),
+      nameInt = desc.nameInt,
+      iniPath = desc.iniPath ?? desc.path,
+      // ignore: avoid_bool_literals_in_conditional_expressions
+      use = !desc.optional ? true : desc.initUse,
+      usesSubdomain = true,
+      status = ServiceStatus.unknown,
+      suburl = desc.name;
 
   factory LAService.fromJson(Map<String, dynamic> json) =>
       _$LAServiceFromJson(json);
@@ -111,11 +109,11 @@ class LAService implements IsJsonSerializable<LAService> {
 
   String get path => usesSubdomain
       ? iniPath.startsWith('/')
-          ? iniPath
-          : '/$iniPath'
+            ? iniPath
+            : '/$iniPath'
       : suburl.startsWith('/')
-          ? suburl
-          : '/$suburl';
+      ? suburl
+      : '/$suburl';
 
   String url(String domain) =>
       usesSubdomain ? (suburl.isNotEmpty ? '$suburl.' : '') + domain : domain;
@@ -165,37 +163,43 @@ class LAService implements IsJsonSerializable<LAService> {
 
   static List<String> removeSimpleServices(List<String> services) {
     return services
-        .where((String nameInt) =>
-            nameInt != apikey &&
-            nameInt != userdetails &&
-            nameInt != casManagement &&
-            nameInt != spatialService &&
-            nameInt != geoserver &&
-            nameInt != biocacheCli &&
-            nameInt != spark &&
-            nameInt != hadoop &&
-            nameInt != nameindexer)
+        .where(
+          (String nameInt) =>
+              nameInt != apikey &&
+              nameInt != userdetails &&
+              nameInt != casManagement &&
+              nameInt != spatialService &&
+              nameInt != geoserver &&
+              nameInt != biocacheCli &&
+              nameInt != spark &&
+              nameInt != hadoop &&
+              nameInt != nameindexer,
+        )
         .toList();
   }
 
   static List<String> removeServicesDeployedTogether(List<String> services) {
     return services
-        .where((String nameInt) =>
-            nameInt != apikey &&
-            nameInt != userdetails &&
-            nameInt != casManagement &&
-            nameInt != spatialService &&
-            nameInt != geoserver &&
-            nameInt != spark &&
-            nameInt != hadoop &&
-            nameInt != zookeeper)
+        .where(
+          (String nameInt) =>
+              nameInt != apikey &&
+              nameInt != userdetails &&
+              nameInt != casManagement &&
+              nameInt != spatialService &&
+              nameInt != geoserver &&
+              nameInt != spark &&
+              nameInt != hadoop &&
+              nameInt != zookeeper,
+        )
         .toList();
   }
 
   static String servicesForHumans(List<LAService> services) {
     return services
-        .map((LAService service) =>
-            StringUtils.capitalize(LAServiceDesc.get(service.nameInt).name))
+        .map(
+          (LAService service) =>
+              StringUtils.capitalize(LAServiceDesc.get(service.nameInt).name),
+        )
         .toList()
         .join(', ');
   }

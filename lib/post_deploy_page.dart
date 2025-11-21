@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -175,8 +174,9 @@ class _PostDeployFieldsViewModel {
   final void Function(LAProject project) onUpdateProject;
 }
 
+@immutable
 class _ViewModel {
-  _ViewModel({
+  const _ViewModel({
     required this.project,
     required this.onDoPostDeployTasks,
     required this.cmd,

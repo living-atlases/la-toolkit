@@ -163,7 +163,7 @@ class SshKeyPage extends StatelessWidget {
       ),
       content: Column(
         children: <Widget>[
-          // TODO: Add a subsection for this help
+          // TODO(vjrj): Add a subsection for this help
           const TextWithHelp(
             text: 'Type a name for you ssh key:',
             helpPage: 'SSH-for-Beginners',
