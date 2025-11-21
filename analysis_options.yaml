@@ -35,7 +35,8 @@ analyzer:
     - "bin/cache/**"
     # Ignore protoc generated files
     - "dev/conductor/lib/proto/*"
-    - "lib/data/models/*g.dart"
+    # Exclude generated files from linting - they have their own rules
+    - "**/*.g.dart"
 
 linter:
   rules:

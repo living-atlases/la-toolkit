@@ -41,10 +41,7 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
   ];
-  final List<FocusNode?> _focusNodes = <FocusNode?>[
-    FocusNode(),
-    FocusNode(),
-  ];
+  final List<FocusNode?> _focusNodes = <FocusNode?>[FocusNode(), FocusNode()];
 
   final TextEditingController _serverTextFieldController =
       TextEditingController();
@@ -63,12 +60,14 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ProjectPageViewModel>(onInitialBuild: (_) {
-      if (context.mounted) {
-        context.loaderOverlay.hide();
-      }
-    }, converter: (Store<AppState> store) {
-      return _ProjectPageViewModel(
+    return StoreConnector<AppState, _ProjectPageViewModel>(
+      onInitialBuild: (_) {
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
+      },
+      converter: (Store<AppState> store) {
+        return _ProjectPageViewModel(
           state: store.state,
           project: store.state.currentProject,
           advancedEdit: store.state.currentProject.advancedEdit,
@@ -99,22 +98,28 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
           onGoto: (int step) {
             FocusScope.of(context).requestFocus(_focusNodes[step]);
             store.dispatch(GotoStepEditProject(step));
-          });
-    }, builder: (BuildContext context, _ProjectPageViewModel vm) {
-      debugPrint('build project servers page');
-      final LAProject project = vm.project;
+          },
+        );
+      },
+      builder: (BuildContext context, _ProjectPageViewModel vm) {
+        debugPrint('build project servers page');
+        final LAProject project = vm.project;
 
-      debugPrint(
-          'Building project servers currentStep: $_step key: $_scaffoldKey');
-      final List<Step> steps = <Step>[];
-      steps.add(Step(
-          isActive: _setIsActive(_step, _serversToServiceStep),
-          state: _setSetStatus(_step, _serversToServiceStep),
-          title: const Text(
-              'Servers & define which services will run in which servers'),
-          subtitle: const Text(
-              'Some service can be deployed in several servers for web redundancy or to conform a cluster. Note: the la-toolkit does not configure load balancing in redundant web services.'),
-          content: Column(
+        debugPrint(
+          'Building project servers currentStep: $_step key: $_scaffoldKey',
+        );
+        final List<Step> steps = <Step>[];
+        steps.add(
+          Step(
+            isActive: _setIsActive(_step, _serversToServiceStep),
+            state: _setSetStatus(_step, _serversToServiceStep),
+            title: const Text(
+              'Servers & define which services will run in which servers',
+            ),
+            subtitle: const Text(
+              'Some service can be deployed in several servers for web redundancy or to conform a cluster. Note: the la-toolkit does not configure load balancing in redundant web services.',
+            ),
+            content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const ServersCardList(),
@@ -122,21 +127,29 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
                 const SizedBox(height: 10),
                 const Text('Add servers:', style: TextStyle(fontSize: 18)),
                 ServerTextField(
-                    controller: _serverAdditionalTextFieldController,
-                    focusNode: _focusNodes[_serversToServiceStep]!,
-                    formKey: _formKeys[_serversToServiceStep],
-                    onAddServer: (String name) => _addServer(name.trim(), vm)),
-              ])));
-      steps.add(Step(
-          isActive: _setIsActive(_step, _serversAdditional),
-          state: _setSetStatus(_step, _serversAdditional),
-          title: const Text('Define better your servers'),
-          subtitle: const Text(
-              'Information to know how to reach and access to your servers, like IP Addressing, names aliases, secure access information'),
-          content: Form(
+                  controller: _serverAdditionalTextFieldController,
+                  focusNode: _focusNodes[_serversToServiceStep]!,
+                  formKey: _formKeys[_serversToServiceStep],
+                  onAddServer: (String name) => _addServer(name.trim(), vm),
+                ),
+              ],
+            ),
+          ),
+        );
+        steps.add(
+          Step(
+            isActive: _setIsActive(_step, _serversAdditional),
+            state: _setSetStatus(_step, _serversAdditional),
+            title: const Text('Define better your servers'),
+            subtitle: const Text(
+              'Information to know how to reach and access to your servers, like IP Addressing, names aliases, secure access information',
+            ),
+            content: Form(
               key: _formKeys[_serversAdditional],
-              child: Column(children: <Widget>[
-                const TipsCard(text: '''
+              child: Column(
+                children: <Widget>[
+                  const TipsCard(
+                    text: '''
 Here we'll define how to connect to your server (thanks to the [IP address](https://en.wikipedia.org/wiki/IP_address)) and how to do it securely (thanks to [SSH](https://en.wikipedia.org/wiki/SSH_(Secure_Shell))).
 
 This is the most difficult part of all this project definition. If we configure correctly this, we'll deploy correctly later our portal.
@@ -144,112 +157,135 @@ This is the most difficult part of all this project definition. If we configure 
 We'll use SSH to access to your server. For read more about SSH, read our wiki page [SSH for Beginners](https://github.com/AtlasOfLivingAustralia/documentation/wiki/SSH-for-Beginners).
 
 If you have doubts or need to ask for some information, save this project and continue later filling this. Don't hesitate to ask us in our #slack channel.
-                         ''', margin: EdgeInsets.fromLTRB(0, 0, 0, 10)),
-                MessageItem(project, LAVariableDesc.get('ansible_user'),
-                    (Object value) {
-                  project.setVariable(
-                      LAVariableDesc.get('ansible_user'), value);
-                  vm.onSaveCurrentProject(project);
-                }).buildTitle(context),
-                const SizedBox(height: 20),
-                ListTile(
+                         ''',
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  ),
+                  MessageItem(project, LAVariableDesc.get('ansible_user'), (
+                    Object value,
+                  ) {
+                    project.setVariable(
+                      LAVariableDesc.get('ansible_user'),
+                      value,
+                    );
+                    vm.onSaveCurrentProject(project);
+                  }).buildTitle(context),
+                  const SizedBox(height: 20),
+                  ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Advanced SSH options',
-                    ),
+                    title: const Text('Advanced SSH options'),
                     trailing: Switch(
-                        value: project.advancedEdit,
-                        onChanged: (bool value) {
-                          project.advancedEdit = value;
-                          vm.onSaveCurrentProject(project);
-                        })),
-                const SizedBox(height: 20),
-                ServersDetailsCardList(_focusNodes[_serversAdditional]!),
-              ]))));
-      if (context.mounted) {
-        context.loaderOverlay.hide();
-      }
-      return Title(
+                      value: project.advancedEdit,
+                      onChanged: (bool value) {
+                        project.advancedEdit = value;
+                        vm.onSaveCurrentProject(project);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ServersDetailsCardList(_focusNodes[_serversAdditional]!),
+                ],
+              ),
+            ),
+          ),
+        );
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
+        return Title(
           title:
               '${project.shortName}: ${vm.state.status.getTitle(project.isHub)}',
           color: LAColorTheme.laPalette,
           child: Scaffold(
             key: _scaffoldKey,
             appBar: LAAppBar(
-                context: context,
-                titleIcon: Icons.dns,
-                title: vm.state.status.getTitle(project.isHub),
-                actions: <Widget>[
-                  Tooltip(
-                      message: 'Project configuration progress',
-                      child: CircularPercentIndicator(
-                        radius: 25.0,
-                        lineWidth: 6.0,
-                        percent: project.status.percent / 100,
-                        center: Text('${project.status.percent}%',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12)),
-                        progressColor: Colors.white,
-                      )),
-                  const SizedBox(width: 20),
-                  if (_step != 0)
-                    TextButton(
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.white),
-                        onPressed: () => onStepCancel(vm, project),
-                        child: const Text('PREVIOUS')),
-                  if (_step != steps.length - 1)
-                    TextButton(
-                        style:
-                            TextButton.styleFrom(foregroundColor: Colors.white),
-                        onPressed: () => onStepContinue(vm, project),
-                        child: const Text('NEXT')),
-                  Tooltip(
-                    message: 'Close without saving your changes',
-                    child: TextButton(
-                        child: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () {
-                          vm.onFinish(project);
-                        }),
+              context: context,
+              titleIcon: Icons.dns,
+              title: vm.state.status.getTitle(project.isHub),
+              actions: <Widget>[
+                Tooltip(
+                  message: 'Project configuration progress',
+                  child: CircularPercentIndicator(
+                    radius: 25.0,
+                    lineWidth: 6.0,
+                    percent: project.status.percent / 100,
+                    center: Text(
+                      '${project.status.percent}%',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                    progressColor: Colors.white,
                   ),
-                  TapDebouncer(
-                      onTap: () async => await vm.onFinish(project),
-                      builder: (BuildContext context, onTap) {
-                        return IconButton(
-                          icon: const Tooltip(
-                              message: 'Save the current LA project',
-                              child: Icon(Icons.save, color: Colors.white)),
-                          onPressed: onTap,
-                        );
-                      })
-                ]),
-            body: AppSnackBar(ScrollPanel(
-                child: Column(children: <Widget>[
-              Stepper(
-                  steps: steps,
-                  currentStep: _step,
-                  onStepContinue: () {
-                    // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                    onStepContinue(vm, project);
+                ),
+                const SizedBox(width: 20),
+                if (_step != 0)
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: Colors.white),
+                    onPressed: () => onStepCancel(vm, project),
+                    child: const Text('PREVIOUS'),
+                  ),
+                if (_step != steps.length - 1)
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: Colors.white),
+                    onPressed: () => onStepContinue(vm, project),
+                    child: const Text('NEXT'),
+                  ),
+                Tooltip(
+                  message: 'Close without saving your changes',
+                  child: TextButton(
+                    child: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () {
+                      vm.onFinish(project);
+                    },
+                  ),
+                ),
+                TapDebouncer(
+                  onTap: () async => await vm.onFinish(project),
+                  builder: (BuildContext context, Function()? onTap) {
+                    return IconButton(
+                      icon: const Tooltip(
+                        message: 'Save the current LA project',
+                        child: Icon(Icons.save, color: Colors.white),
+                      ),
+                      onPressed: onTap,
+                    );
                   },
-                  onStepTapped: (int step) {
-                    setState(() {
-                      _step = step;
-                    });
-                  },
-                  onStepCancel: () {
-                    onStepCancel(vm, project);
-                  },
-                  // https://github.com/flutter/flutter/issues/11133
-                  controlsBuilder:
-                      (BuildContext context, ControlsDetails details) {
-                    return const Row();
-                  }),
-              const LintProjectPanel(showToolkitDeps: false)
-            ]))),
+                ),
+              ],
+            ),
+            body: AppSnackBar(
+              ScrollPanel(
+                child: Column(
+                  children: <Widget>[
+                    Stepper(
+                      steps: steps,
+                      currentStep: _step,
+                      onStepContinue: () {
+                        // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
+                        onStepContinue(vm, project);
+                      },
+                      onStepTapped: (int step) {
+                        setState(() {
+                          _step = step;
+                        });
+                      },
+                      onStepCancel: () {
+                        onStepCancel(vm, project);
+                      },
+                      // https://github.com/flutter/flutter/issues/11133
+                      controlsBuilder:
+                          (BuildContext context, ControlsDetails details) {
+                            return const Row();
+                          },
+                    ),
+                    const LintProjectPanel(showToolkitDeps: false),
+                  ],
+                ),
+              ),
+            ),
             //     ])
-          ));
-    });
+          ),
+        );
+      },
+    );
   }
 
   void onStepCancel(_ProjectPageViewModel vm, LAProject project) {
@@ -277,24 +313,25 @@ If you have doubts or need to ask for some information, save this project and co
     vm.onSaveCurrentProject(vm.project);
   }
 
-  bool _setIsActive(currentStep, step) {
+  bool _setIsActive(int currentStep, int step) {
     return currentStep == step;
   }
 
-  StepState _setSetStatus(currentStep, step) {
+  StepState _setSetStatus(int currentStep, int step) {
     return currentStep == step ? StepState.editing : StepState.complete;
   }
 }
 
 class _ProjectPageViewModel {
-  _ProjectPageViewModel(
-      {required this.state,
-      required this.project,
-      required this.onSaveCurrentProject,
-      required this.onFinish,
-      required this.onCancel,
-      required this.advancedEdit,
-      required this.onGoto});
+  _ProjectPageViewModel({
+    required this.state,
+    required this.project,
+    required this.onSaveCurrentProject,
+    required this.onFinish,
+    required this.onCancel,
+    required this.advancedEdit,
+    required this.onGoto,
+  });
 
   final AppState state;
   final LAProject project;
@@ -307,7 +344,8 @@ class _ProjectPageViewModel {
 
   @override
   bool operator ==(Object other) {
-    final bool equals = identical(this, other) ||
+    final bool equals =
+        identical(this, other) ||
         other is _ProjectPageViewModel &&
             runtimeType == other.runtimeType &&
             project == other.project &&
@@ -336,7 +374,7 @@ class HostHeader extends StatelessWidget {
     return Row(
       children: <Widget>[
         Text(title),
-        if (help != null) HelpIcon(wikipage: help!)
+        if (help != null) HelpIcon(wikipage: help!),
       ],
     );
   }

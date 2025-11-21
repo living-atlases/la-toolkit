@@ -7,14 +7,16 @@ import '../models/ssh_key.dart';
 import '../utils/utils.dart';
 
 class ServerSshKeySelector extends StatefulWidget {
-  const ServerSshKeySelector(
-      {super.key,
-      required this.server,
-      this.currentSshKey,
-      required this.sshKeys,
-      required this.isFirst,
-      required this.onSave,
-      required this.onAllSameSshKey});
+  const ServerSshKeySelector({
+    super.key,
+    required this.server,
+    this.currentSshKey,
+    required this.sshKeys,
+    required this.isFirst,
+    required this.onSave,
+    required this.onAllSameSshKey,
+  });
+
   final LAServer server;
   final SshKey? currentSshKey;
   final List<SshKey> sshKeys;
@@ -37,7 +39,7 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton(
+    return DropdownButton<SshKey>(
       // isExpanded: true,
       underline: Container(),
 
@@ -55,42 +57,42 @@ class _ServerSshKeySelectorState extends State<ServerSshKeySelector> {
           .where((SshKey k) => k.encrypted != true)
           .toList()
           .map((SshKey sshKey) {
-        return DropdownMenuItem(
-          value: sshKey,
-          child: Row(
-            children: <Widget>[
-              Icon(MdiIcons.key),
-              const SizedBox(
-                width: 10,
+            return DropdownMenuItem<SshKey>(
+              value: sshKey,
+              child: Row(
+                children: <Widget>[
+                  Icon(MdiIcons.key),
+                  const SizedBox(width: 10),
+                  Text(
+                    sshKey.name,
+                    // style: TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    sshKey.desc,
+                    // style: TextStyle(color: Colors.red),
+                  ),
+                ],
               ),
-              Text(
-                sshKey.name,
-                // style: TextStyle(color: Colors.red),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(
-                sshKey.desc,
-                // style: TextStyle(color: Colors.red),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          })
+          .toList(),
       onChanged: (SshKey? value) {
         if (value != null) {
           if (widget.isFirst) {
-            UiUtils.showAlertDialog(context, () {
-              widget.onAllSameSshKey(value);
-            }, () {
-              widget.server.sshKey = value;
-            },
-                title: 'Use this ssh key always',
-                subtitle:
-                    'Do you want to use this ssh key in all your servers?',
-                confirmBtn: 'YES',
-                cancelBtn: 'NO');
+            UiUtils.showAlertDialog(
+              context,
+              () {
+                widget.onAllSameSshKey(value);
+              },
+              () {
+                widget.server.sshKey = value;
+              },
+              title: 'Use this ssh key always',
+              subtitle: 'Do you want to use this ssh key in all your servers?',
+              confirmBtn: 'YES',
+              cancelBtn: 'NO',
+            );
           } else {
             widget.server.sshKey = value;
           }

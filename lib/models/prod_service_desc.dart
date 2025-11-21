@@ -6,25 +6,30 @@ import 'basic_service.dart';
 import 'la_service.dart';
 
 class ProdServiceDesc {
-  ProdServiceDesc(
-      {required this.icon,
-      required this.name,
-      required this.nameInt,
-      required this.tooltip,
-      required this.url,
-      required this.admin,
-      required this.alaAdmin,
-      required this.subtitle,
-      required this.serviceDeploys,
-      this.help,
-      required this.deps,
-      required this.status,
-      this.withoutUrl = false}) {
+  ProdServiceDesc({
+    required this.icon,
+    required this.name,
+    required this.nameInt,
+    required this.tooltip,
+    required this.url,
+    required this.admin,
+    required this.alaAdmin,
+    required this.subtitle,
+    required this.serviceDeploys,
+    this.help,
+    required this.deps,
+    required this.status,
+    this.withoutUrl = false,
+  }) {
     // Only add URL checks if the service is configured to have them
     if (!withoutUrl) {
       urls.add(url);
-      if (alaAdmin) urls.add('$url/alaAdmin/');
-      if (admin) urls.add('$url/admin/');
+      if (alaAdmin) {
+        urls.add('$url/alaAdmin/');
+      }
+      if (admin) {
+        urls.add('$url/admin/');
+      }
     }
   }
 
@@ -58,9 +63,12 @@ class ProdServiceDesc {
           help == other.help &&
           subtitle == other.subtitle &&
           withoutUrl == other.withoutUrl &&
-          const ListEquality().equals(serviceDeploys, other.serviceDeploys) &&
-          const ListEquality().equals(deps, other.deps) &&
-          const ListEquality().equals(urls, other.urls) &&
+          const ListEquality<LAServiceDeploy>().equals(
+            serviceDeploys,
+            other.serviceDeploys,
+          ) &&
+          const ListEquality<BasicService>().equals(deps, other.deps) &&
+          const ListEquality<String>().equals(urls, other.urls) &&
           status == other.status;
 
   @override
@@ -74,8 +82,8 @@ class ProdServiceDesc {
       help.hashCode ^
       subtitle.hashCode ^
       withoutUrl.hashCode ^
-      const ListEquality().hash(serviceDeploys) ^
-      const ListEquality().hash(deps) ^
-      const ListEquality().hash(urls) ^
+      const ListEquality<LAServiceDeploy>().hash(serviceDeploys) ^
+      const ListEquality<BasicService>().hash(deps) ^
+      const ListEquality<String>().hash(urls) ^
       status.hashCode;
 }

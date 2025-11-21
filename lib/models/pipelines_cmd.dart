@@ -13,16 +13,16 @@ part 'pipelines_cmd.g.dart';
 class PipelinesCmd extends CommonCmd {
   // 0,1,2 for local/embedded/cluster
 
-  PipelinesCmd(
-      {this.drs,
-      Set<String>? steps,
-      required this.master,
-      this.debug = false,
-      this.allDrs = false,
-      this.allSteps = false,
-      this.dryRun = false,
-      this.mode = 1})
-      : steps = steps ?? <String>{};
+  PipelinesCmd({
+    this.drs,
+    Set<String>? steps,
+    required this.master,
+    this.debug = false,
+    this.allDrs = false,
+    this.allSteps = false,
+    this.dryRun = false,
+    this.mode = 1,
+  }) : steps = steps ?? <String>{};
 
   factory PipelinesCmd.fromJson(Map<String, dynamic> json) =>
       _$PipelinesCmdFromJson(json);
@@ -40,7 +40,7 @@ class PipelinesCmd extends CommonCmd {
       identical(this, other) ||
       other is PipelinesCmd &&
           runtimeType == other.runtimeType &&
-          const SetEquality().equals(steps, other.steps) &&
+          const SetEquality<String>().equals(steps, other.steps) &&
           debug == other.debug &&
           drs == other.drs &&
           allDrs == other.allDrs &&
@@ -51,7 +51,7 @@ class PipelinesCmd extends CommonCmd {
 
   @override
   int get hashCode =>
-      const SetEquality().hash(steps) ^
+      const SetEquality<String>().hash(steps) ^
       debug.hashCode ^
       dryRun.hashCode ^
       drs.hashCode ^
@@ -78,14 +78,13 @@ class PipelinesCmd extends CommonCmd {
       // nothing more
       stepsDesc += '';
     } else if (stepsLength <= 7) {
-      steps
-          .toList()
-          .asMap()
-          .forEach((int i, String value) => stepsDesc += i == 0
-              ? ' ($value'
-              : i < stepsLength - 1
-                  ? ', $value'
-                  : ' and $value');
+      steps.toList().asMap().forEach(
+        (int i, String value) => stepsDesc += i == 0
+            ? ' ($value'
+            : i < stepsLength - 1
+            ? ', $value'
+            : ' and $value',
+      );
       final String plural = stepsLength > 1 ? 's' : '';
       stepsDesc += stepsLength >= 1 && !allSteps ? ' step$plural)' : '';
     } else {
@@ -102,15 +101,17 @@ class PipelinesCmd extends CommonCmd {
   String getTitle() => 'Pipelines Data Processing Results';
 
   bool get isACmdForAll => steps
-      .where((String step) => <String>[
-            archiveList,
-            datasetList,
-            pruneDatasets,
-            validationReport,
-            // commenting as we have to use "all"
-            // jackknife,
-            // clustering
-          ].contains(step))
+      .where(
+        (String step) => <String>[
+          archiveList,
+          datasetList,
+          pruneDatasets,
+          validationReport,
+          // commenting as we have to use "all"
+          // jackknife,
+          // clustering
+        ].contains(step),
+      )
       .toList()
       .isNotEmpty;
 

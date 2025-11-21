@@ -37,23 +37,25 @@ class _PostDeployPageState extends State<PostDeployPage> {
       // Fails the switch distinct: true,
       converter: (Store<AppState> store) {
         return _ViewModel(
-            project: store.state.currentProject,
-            onCancel: (LAProject project) {},
-            onSaveDeployCmd: (DeployCmd cmd) {
-              store.dispatch(SaveCurrentCmd(cmd: cmd));
-            },
-            onUpdateProject: (LAProject project) {
-              store.dispatch(UpdateProject(project));
-            },
-            onDoPostDeployTasks: (LAProject project, PostDeployCmd cmd) =>
-                DeployUtils.deployActionLaunch(
-                    context: context,
-                    store: store,
-                    project: project,
-                    deployCmd: cmd),
-            cmd: store.state.repeatCmd.runtimeType != PostDeployCmd
-                ? PostDeployCmd()
-                : store.state.repeatCmd as PostDeployCmd);
+          project: store.state.currentProject,
+          onCancel: (LAProject project) {},
+          onSaveDeployCmd: (DeployCmd cmd) {
+            store.dispatch(SaveCurrentCmd(cmd: cmd));
+          },
+          onUpdateProject: (LAProject project) {
+            store.dispatch(UpdateProject(project));
+          },
+          onDoPostDeployTasks: (LAProject project, PostDeployCmd cmd) =>
+              DeployUtils.deployActionLaunch(
+                context: context,
+                store: store,
+                project: project,
+                deployCmd: cmd,
+              ),
+          cmd: store.state.repeatCmd.runtimeType != PostDeployCmd
+              ? PostDeployCmd()
+              : store.state.repeatCmd as PostDeployCmd,
+        );
       },
       builder: (BuildContext context, _ViewModel vm) {
         const String execBtn = 'Run tasks';
@@ -63,67 +65,68 @@ class _PostDeployPageState extends State<PostDeployPage> {
             : null;
         final String pageTitle = '${vm.project.shortName} Post-Deploy Tasks';
         return Title(
-            title: pageTitle,
-            color: LAColorTheme.laPalette,
-            child: Scaffold(
-                key: _scaffoldKey,
-                appBar: LAAppBar(
-                    context: context,
-                    titleIcon: Icons.foundation,
-                    showBack: true,
-                    title: pageTitle,
-                    actions: const <Widget>[]),
-                body: ScrollPanel(
-                    withPadding: true,
-                    child: Row(
+          title: pageTitle,
+          color: LAColorTheme.laPalette,
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: LAAppBar(
+              context: context,
+              titleIcon: Icons.foundation,
+              showBack: true,
+              title: pageTitle,
+              actions: const <Widget>[],
+            ),
+            body: ScrollPanel(
+              withPadding: true,
+              child: Row(
+                children: <Widget>[
+                  Expanded(child: Container()),
+                  Expanded(
+                    flex: 8, // 80%,
+                    child: Column(
                       children: <Widget>[
-                        Expanded(
-                          child: Container(),
-                        ),
-                        Expanded(
-                            flex: 8, // 80%,
-                            child: Column(
-                              children: <Widget>[
-                                /* const SizedBox(height: 20),
+                        /* const SizedBox(height: 20),
                             const Text('Tasks:', style: DeployUtils.titleStyle), */
-                                const SizedBox(height: 20),
-                                DeployTaskSwitch(
-                                    title: 'Configure postfix email service',
-                                    initialValue: cmd.configurePostfix,
-                                    help: 'Postfix-configuration',
-                                    onChanged: (bool newValue) {
-                                      cmd.configurePostfix = newValue;
-                                      vm.onSaveDeployCmd(cmd);
-                                    }),
-                                if (cmd.configurePostfix)
-                                  const PostDeployFields(),
-                                const SizedBox(height: 20),
-                                ServerSelector(
-                                    selectorKey:
-                                        GlobalKey<FormFieldState<dynamic>>(),
-                                    title: 'Do the Post-deploy in servers:',
-                                    modalTitle:
-                                        'Choose some servers if you want to limit the Post-deploy to them',
-                                    placeHolder: 'All servers',
-                                    initialValue: cmd.limitToServers,
-                                    hosts: vm.project
-                                        .serversWithServices()
-                                        .map((LAServer e) => e.name)
-                                        .toList(),
-                                    icon: MdiIcons.server,
-                                    onChange: (List<String> limitToServers) {
-                                      cmd.limitToServers = limitToServers;
-                                      vm.onSaveDeployCmd(cmd);
-                                    }),
-                                const SizedBox(height: 20),
-                                LaunchBtn(onTap: onTap, execBtn: execBtn),
-                              ],
-                            )),
-                        Expanded(
-                          child: Container(),
-                        )
+                        const SizedBox(height: 20),
+                        DeployTaskSwitch(
+                          title: 'Configure postfix email service',
+                          initialValue: cmd.configurePostfix,
+                          help: 'Postfix-configuration',
+                          onChanged: (bool newValue) {
+                            cmd.configurePostfix = newValue;
+                            vm.onSaveDeployCmd(cmd);
+                          },
+                        ),
+                        if (cmd.configurePostfix) const PostDeployFields(),
+                        const SizedBox(height: 20),
+                        ServerSelector(
+                          selectorKey: GlobalKey<FormFieldState<dynamic>>(),
+                          title: 'Do the Post-deploy in servers:',
+                          modalTitle:
+                              'Choose some servers if you want to limit the Post-deploy to them',
+                          placeHolder: 'All servers',
+                          initialValue: cmd.limitToServers,
+                          hosts: vm.project
+                              .serversWithServices()
+                              .map((LAServer e) => e.name)
+                              .toList(),
+                          icon: MdiIcons.server,
+                          onChange: (List<String> limitToServers) {
+                            cmd.limitToServers = limitToServers;
+                            vm.onSaveDeployCmd(cmd);
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        LaunchBtn(onTap: onTap, execBtn: execBtn),
                       ],
-                    ))));
+                    ),
+                  ),
+                  Expanded(child: Container()),
+                ],
+              ),
+            ),
+          ),
+        );
       },
     );
   }
@@ -135,42 +138,51 @@ class PostDeployFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _PostDeployFieldsViewModel>(
-        converter: (Store<AppState> store) {
-      return _PostDeployFieldsViewModel(
+      converter: (Store<AppState> store) {
+        return _PostDeployFieldsViewModel(
           project: store.state.currentProject,
           onUpdateProject: (LAProject project) =>
-              store.dispatch(UpdateProject(project)));
-    }, builder: (BuildContext context, _PostDeployFieldsViewModel vm) {
-      final List<Widget> items = <Widget>[];
-      for (final String varName in PostDeployCmd.postDeployVariables) {
-        items.add(const SizedBox(height: 20));
-        items.add(MessageItem(vm.project, LAVariableDesc.get(varName),
-            (Object value) {
-          vm.project.setVariable(LAVariableDesc.get(varName), value);
-          vm.onUpdateProject(vm.project);
-        }).buildTitle(context));
-      }
-      return Column(children: items);
-    });
+              store.dispatch(UpdateProject(project)),
+        );
+      },
+      builder: (BuildContext context, _PostDeployFieldsViewModel vm) {
+        final List<Widget> items = <Widget>[];
+        for (final String varName in PostDeployCmd.postDeployVariables) {
+          items.add(const SizedBox(height: 20));
+          items.add(
+            MessageItem(vm.project, LAVariableDesc.get(varName), (
+              Object value,
+            ) {
+              vm.project.setVariable(LAVariableDesc.get(varName), value);
+              vm.onUpdateProject(vm.project);
+            }).buildTitle(context),
+          );
+        }
+        return Column(children: items);
+      },
+    );
   }
 }
 
 class _PostDeployFieldsViewModel {
-  _PostDeployFieldsViewModel(
-      {required this.project, required this.onUpdateProject});
+  _PostDeployFieldsViewModel({
+    required this.project,
+    required this.onUpdateProject,
+  });
 
   final LAProject project;
   final void Function(LAProject project) onUpdateProject;
 }
 
 class _ViewModel {
-  _ViewModel(
-      {required this.project,
-      required this.onDoPostDeployTasks,
-      required this.cmd,
-      required this.onUpdateProject,
-      required this.onSaveDeployCmd,
-      required this.onCancel});
+  _ViewModel({
+    required this.project,
+    required this.onDoPostDeployTasks,
+    required this.cmd,
+    required this.onUpdateProject,
+    required this.onSaveDeployCmd,
+    required this.onCancel,
+  });
 
   final LAProject project;
   final PostDeployCmd cmd;

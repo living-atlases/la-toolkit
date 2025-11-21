@@ -9,8 +9,6 @@ import './la_service_desc.dart';
 
 part 'deploy_cmd.g.dart';
 
-// Typical ansible cmd
-
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class DeployCmd extends CommonCmd {
@@ -24,11 +22,10 @@ class DeployCmd extends CommonCmd {
     this.continueEvenIfFails = false,
     this.debug = false,
     this.dryRun = false,
-  })  : deployServices = deployServices ?? <String>[],
-        limitToServers = limitToServers ?? <String>[],
-        skipTags = skipTags ?? <String>[],
-        tags = tags ??
-            <String>[] /* super(type: CmdType.deploy, properties: {} )*/;
+  }) : deployServices = deployServices ?? <String>[],
+       limitToServers = limitToServers ?? <String>[],
+       skipTags = skipTags ?? <String>[],
+       tags = tags ?? <String>[];
 
   factory DeployCmd.fromJson(Map<String, dynamic> json) =>
       _$DeployCmdFromJson(json);
@@ -47,10 +44,16 @@ class DeployCmd extends CommonCmd {
       identical(this, other) ||
       other is DeployCmd &&
           runtimeType == other.runtimeType &&
-          const ListEquality().equals(deployServices, other.deployServices) &&
-          const ListEquality().equals(limitToServers, other.limitToServers) &&
-          const ListEquality().equals(skipTags, other.skipTags) &&
-          const ListEquality().equals(tags, other.tags) &&
+          const ListEquality<String>().equals(
+            deployServices,
+            other.deployServices,
+          ) &&
+          const ListEquality<String>().equals(
+            limitToServers,
+            other.limitToServers,
+          ) &&
+          const ListEquality<String>().equals(skipTags, other.skipTags) &&
+          const ListEquality<String>().equals(tags, other.tags) &&
           advanced == other.advanced &&
           onlyProperties == other.onlyProperties &&
           continueEvenIfFails == other.continueEvenIfFails &&
@@ -59,10 +62,10 @@ class DeployCmd extends CommonCmd {
 
   @override
   int get hashCode =>
-      const ListEquality().hash(deployServices) ^
-      const ListEquality().hash(limitToServers) ^
-      const ListEquality().hash(skipTags) ^
-      const ListEquality().hash(tags) ^
+      const ListEquality<String>().hash(deployServices) ^
+      const ListEquality<String>().hash(limitToServers) ^
+      const ListEquality<String>().hash(skipTags) ^
+      const ListEquality<String>().hash(tags) ^
       advanced.hashCode ^
       onlyProperties.hashCode ^
       continueEvenIfFails.hashCode ^
@@ -75,8 +78,10 @@ class DeployCmd extends CommonCmd {
   }
 
   String get desc {
-    final bool isAll =
-        const ListEquality().equals(deployServices, <String>['all']);
+    final bool isAll = const ListEquality<String>().equals(
+      deployServices,
+      <String>['all'],
+    );
     String services = 'deploy of';
 
     final int serviceLength = deployServices.length;
@@ -84,17 +89,19 @@ class DeployCmd extends CommonCmd {
       services = 'full deploy';
     } else if (serviceLength <= 5) {
       final List<String> servicesForHuman = deployServices
-          .map((String serviceName) => serviceName == 'lists'
-              ? LAServiceDesc.get(speciesLists).name
-              : LAServiceDesc.get(serviceName).name)
+          .map(
+            (String serviceName) => serviceName == 'lists'
+                ? LAServiceDesc.get(speciesLists).name
+                : LAServiceDesc.get(serviceName).name,
+          )
           .toList();
-      servicesForHuman
-          .asMap()
-          .forEach((int i, String value) => services += i == 0
-              ? ' $value'
-              : i < serviceLength - 1
-                  ? ', $value'
-                  : ' and $value');
+      servicesForHuman.asMap().forEach(
+        (int i, String value) => services += i == 0
+            ? ' $value'
+            : i < serviceLength - 1
+            ? ', $value'
+            : ' and $value',
+      );
       services += ' service${serviceLength > 1 ? 's' : ''}';
     } else {
       services += ' some services';

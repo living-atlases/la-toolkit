@@ -7,10 +7,7 @@ import '../la_theme.dart';
 import '../models/cmd_history_details.dart';
 
 class TermCommandDesc extends StatelessWidget {
-  const TermCommandDesc({
-    super.key,
-    required this.cmdHistoryDetails,
-  });
+  const TermCommandDesc({super.key, required this.cmdHistoryDetails});
 
   final CmdHistoryDetails cmdHistoryDetails;
 
@@ -22,44 +19,59 @@ class TermCommandDesc extends StatelessWidget {
     final String cwd = cmdHistoryDetails.cmd!.invDir.isNotEmpty
         ? cmdHistoryDetails.cmd!.invDir
         : cmdHistoryDetails.cmd!.cwd != null &&
-                cmdHistoryDetails.cmd!.cwd!.isNotEmpty
-            ? cmdHistoryDetails.cmd!.cwd!
-            : '';
+              cmdHistoryDetails.cmd!.cwd!.isNotEmpty
+        ? cmdHistoryDetails.cmd!.cwd!
+        : '';
     if (cwd.isNotEmpty) {
       subtitle = RichText(
-          overflow: TextOverflow.visible,
-          textAlign: TextAlign.left,
-          text: TextSpan(children: <TextSpan>[
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.left,
+        text: TextSpan(
+          children: <TextSpan>[
             const TextSpan(
-                text: 'Executed in directory: ',
-                style: TextStyle(color: subColor)),
-            TextSpan(text: cwd, style: GoogleFonts.robotoMono(color: subColor)),
-            // TextSpan(text: ""),
-          ]));
+              text: 'Executed in directory: ',
+              style: TextStyle(color: subColor),
+            ),
+            TextSpan(
+              text: cwd,
+              style: GoogleFonts.robotoMono(color: subColor),
+            ),
+          ],
+        ),
+      );
     }
     return ListTile(
-        leading:
-            Icon(MdiIcons.console, size: 36, color: LAColorTheme.laPalette),
-        title: MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-                onTap: () => onTap(cmd, context),
-                child: Text(cmd,
-                    style: GoogleFonts.robotoMono(
-                        color: LAColorTheme.inactive, fontSize: 18)))),
-        subtitle: subtitle,
-        trailing: Tooltip(
-            message: 'Press to copy the command',
-            child: IconButton(
-              icon: const Icon(Icons.copy),
-              onPressed: () => onTap(cmd, context),
-            )));
+      leading: Icon(MdiIcons.console, size: 36, color: LAColorTheme.laPalette),
+      title: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () => _onTap(cmd, context),
+          child: Text(
+            cmd,
+            style: GoogleFonts.robotoMono(
+              color: LAColorTheme.inactive,
+              fontSize: 18,
+            ),
+          ),
+        ),
+      ),
+      subtitle: subtitle,
+      trailing: Tooltip(
+        message: 'Press to copy the command',
+        child: IconButton(
+          icon: const Icon(Icons.copy),
+          onPressed: () => _onTap(cmd, context),
+        ),
+      ),
+    );
   }
 
-  Future<ScaffoldFeatureController<SnackBar, SnackBarClosedReason>> onTap(
-      String cmd, BuildContext context) {
-    return FlutterClipboard.copy(cmd).then((value) =>
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Command copied to clipboard'))));
+  Future<void> _onTap(String cmd, BuildContext context) async {
+    await FlutterClipboard.copy(cmd);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Command copied to clipboard')),
+      );
+    }
   }
 }

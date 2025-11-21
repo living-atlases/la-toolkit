@@ -3,9 +3,7 @@ import 'package:intl/intl.dart' as intl;
 class SolrCompareResult {
   SolrCompareResult(this.key, this.a) : b = 0;
 
-  SolrCompareResult.empty(this.key)
-      : a = 0,
-        b = 0;
+  SolrCompareResult.empty(this.key) : a = 0, b = 0;
   static bool csvFormat = false;
 
   final String key;

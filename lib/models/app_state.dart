@@ -43,39 +43,39 @@ extension LAProjectStatusExtension on LAProjectViewStatus {
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class AppState {
-  AppState(
-      {List<LAProject>? projects,
-      this.failedLoad = false,
-      this.firstUsage = true,
-      LAProject? currentProject,
-      this.currentStep = 0,
-      this.currentTuneTab = 0,
-      LAProjectViewStatus? status,
-      List<String>? alaInstallReleases,
-      List<String>? generatorReleases,
-      List<AppSnackBarMessage>? appSnackBarMessages,
-      Map<String, LAReleases>? laReleases,
-      CommonCmd? repeatCmd,
-      this.pkgInfo,
-      this.backendVersion,
-      this.lastSwCheck,
-      bool? loading,
-      bool? depsLoading,
-      List<SshKey>? sshKeys,
-      Map<String, Map<String, dynamic>>? serviceCheckProgress})
-      : projects = projects ?? <LAProject>[],
-        sshKeys = sshKeys ?? <SshKey>[],
-        status = status ?? LAProjectViewStatus.view,
-        currentProject = currentProject ?? LAProject(),
-        alaInstallReleases = alaInstallReleases ?? <String>[],
-        generatorReleases = generatorReleases ?? <String>[],
-        repeatCmd = repeatCmd ?? CommonCmd(),
-        laReleases = laReleases ?? <String, LAReleases>{},
-        loading = loading ?? false,
-        depsLoading = depsLoading ?? false,
-        serviceCheckProgress =
-            serviceCheckProgress ?? <String, Map<String, dynamic>>{},
-        appSnackBarMessages = appSnackBarMessages ?? <AppSnackBarMessage>[];
+  AppState({
+    List<LAProject>? projects,
+    this.failedLoad = false,
+    this.firstUsage = true,
+    LAProject? currentProject,
+    this.currentStep = 0,
+    this.currentTuneTab = 0,
+    LAProjectViewStatus? status,
+    List<String>? alaInstallReleases,
+    List<String>? generatorReleases,
+    List<AppSnackBarMessage>? appSnackBarMessages,
+    Map<String, LAReleases>? laReleases,
+    CommonCmd? repeatCmd,
+    this.pkgInfo,
+    this.backendVersion,
+    this.lastSwCheck,
+    bool? loading,
+    bool? depsLoading,
+    List<SshKey>? sshKeys,
+    Map<String, Map<String, dynamic>>? serviceCheckProgress,
+  }) : projects = projects ?? <LAProject>[],
+       sshKeys = sshKeys ?? <SshKey>[],
+       status = status ?? LAProjectViewStatus.view,
+       currentProject = currentProject ?? LAProject(),
+       alaInstallReleases = alaInstallReleases ?? <String>[],
+       generatorReleases = generatorReleases ?? <String>[],
+       repeatCmd = repeatCmd ?? CommonCmd(),
+       laReleases = laReleases ?? <String, LAReleases>{},
+       loading = loading ?? false,
+       depsLoading = depsLoading ?? false,
+       serviceCheckProgress =
+           serviceCheckProgress ?? <String, Map<String, dynamic>>{},
+       appSnackBarMessages = appSnackBarMessages ?? <AppSnackBarMessage>[];
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
       _$AppStateFromJson(json);
@@ -130,10 +130,14 @@ class AppState {
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
           listEquals(generatorReleases, other.generatorReleases) &&
           listEquals(appSnackBarMessages, other.appSnackBarMessages) &&
-          const DeepCollectionEquality.unordered()
-              .equals(laReleases, other.laReleases) &&
-          const DeepCollectionEquality.unordered()
-              .equals(serviceCheckProgress, other.serviceCheckProgress) &&
+          const DeepCollectionEquality.unordered().equals(
+            laReleases,
+            other.laReleases,
+          ) &&
+          const DeepCollectionEquality.unordered().equals(
+            serviceCheckProgress,
+            other.serviceCheckProgress,
+          ) &&
           listEquals(sshKeys, other.sshKeys);
 
   @override
@@ -150,13 +154,13 @@ class AppState {
       loading.hashCode ^
       depsLoading.hashCode ^
       lastSwCheck.hashCode ^
-      const ListEquality().hash(appSnackBarMessages) ^
-      const ListEquality().hash(projects) ^
-      const ListEquality().hash(alaInstallReleases) ^
-      const ListEquality().hash(generatorReleases) ^
+      const ListEquality<AppSnackBarMessage>().hash(appSnackBarMessages) ^
+      const ListEquality<LAProject>().hash(projects) ^
+      const ListEquality<String>().hash(alaInstallReleases) ^
+      const ListEquality<String>().hash(generatorReleases) ^
       const DeepCollectionEquality.unordered().hash(laReleases) ^
       const DeepCollectionEquality.unordered().hash(serviceCheckProgress) ^
-      const ListEquality().hash(sshKeys);
+      const ListEquality<SshKey>().hash(sshKeys);
 
   static LAProjectViewStatus statusFromString(String s) {
     switch (s) {

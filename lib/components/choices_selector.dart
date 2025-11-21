@@ -7,16 +7,17 @@ import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import '../utils/card_constants.dart';
 
 class ChoicesSelector extends StatefulWidget {
-  const ChoicesSelector(
-      {super.key,
-      required this.selectorKey,
-      required this.choices,
-      required this.icon,
-      required this.initialValue,
-      required this.title,
-      required this.placeHolder,
-      required this.modalTitle,
-      required this.onChange});
+  const ChoicesSelector({
+    super.key,
+    required this.selectorKey,
+    required this.choices,
+    required this.icon,
+    required this.initialValue,
+    required this.title,
+    required this.placeHolder,
+    required this.modalTitle,
+    required this.onChange,
+  });
 
   final GlobalKey<FormFieldState<dynamic>> selectorKey;
   final List<String> choices;
@@ -43,56 +44,68 @@ class _ChoicesSelectorState extends State<ChoicesSelector> {
   @override
   Widget build(BuildContext context) {
     return Card(
-        elevation: CardConstants.defaultElevation,
-        margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-        child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(children: <Widget>[
-              Column(
-                children: <Widget>[
-                  MultiSelectDialogField<String>(
-                    // initialChildSize: 0.5,
-                    listType: MultiSelectListType.CHIP,
-                    searchable: true,
-                    confirmText: const Text('CONFIRM'),
-                    selectedColor:
-                        Theme.of(context).primaryColor.withOpacity(.2),
-                    buttonIcon: Icon(widget.icon, color: Colors.grey),
-                    buttonText: Text(widget.title,
-                        style: const TextStyle(fontSize: 16)),
-                    title: Text(widget.modalTitle,
-                        style: const TextStyle(fontSize: 16)),
-                    initialValue: _selected,
-                    items: widget.choices
-                        .map((String tag) => MultiSelectItem<String>(tag, tag))
-                        .toList(),
-                    onConfirm: (List<String> values) {
-                      setState(() {
-                        _selected = values;
-                      });
-                      widget.onChange(values);
-                    },
-                    chipDisplay: MultiSelectChipDisplay<String>(
-                      // icon: Icon(MdiIcons.tag, size: 6, color: Colors.white),
-                      chipColor: Theme.of(context).primaryColor.withOpacity(.8),
-                      textStyle: const TextStyle(color: Colors.white),
-                      onTap: (String value) {
-                        _selected.remove(value);
-                      },
-                    ),
+      elevation: CardConstants.defaultElevation,
+      margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                MultiSelectDialogField<String>(
+                  // initialChildSize: 0.5,
+                  listType: MultiSelectListType.CHIP,
+                  searchable: true,
+                  confirmText: const Text('CONFIRM'),
+                  selectedColor: Theme.of(
+                    context,
+                  ).primaryColor.withValues(alpha: .2),
+                  buttonIcon: Icon(widget.icon, color: Colors.grey),
+                  buttonText: Text(
+                    widget.title,
+                    style: const TextStyle(fontSize: 16),
                   ),
-                  if (_selected.isEmpty)
-                    Container(
-                        padding: const EdgeInsets.all(10),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          widget.placeHolder,
-                          style: const TextStyle(color: Colors.black45),
-                        ))
-                  else
-                    Container(),
-                ],
-              ),
-            ])));
+                  title: Text(
+                    widget.modalTitle,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  initialValue: _selected,
+                  items: widget.choices
+                      .map((String tag) => MultiSelectItem<String>(tag, tag))
+                      .toList(),
+                  onConfirm: (List<String> values) {
+                    setState(() {
+                      _selected = values;
+                    });
+                    widget.onChange(values);
+                  },
+                  chipDisplay: MultiSelectChipDisplay<String>(
+                    // icon: Icon(MdiIcons.tag, size: 6, color: Colors.white),
+                    chipColor: Theme.of(
+                      context,
+                    ).primaryColor.withValues(alpha: .8),
+                    textStyle: const TextStyle(color: Colors.white),
+                    onTap: (String value) {
+                      _selected.remove(value);
+                    },
+                  ),
+                ),
+                if (_selected.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.placeHolder,
+                      style: const TextStyle(color: Colors.black45),
+                    ),
+                  )
+                else
+                  Container(),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

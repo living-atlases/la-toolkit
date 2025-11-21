@@ -41,7 +41,7 @@ class FileUtils {
     uploadInput.onClick.listen((html.MouseEvent event) {
       debugPrint('Clicked');
       BodyElement().onFocus.first.then((html.Event event) {
-//      BodyElement().onFocus.listen((event) {
+        //      BodyElement().onFocus.listen((event) {
         debugPrint(event.toString());
         completer.completeError(errorMessage);
       });
@@ -56,7 +56,7 @@ class FileUtils {
       await onChange(e, uploadInput, completer, errorMessage);
     }); */
     // document.body!.append(uploadInput);
-/*    uploadInput.onClick.listen((event) {
+    /*    uploadInput.onClick.listen((event) {
 //      document.body.onfocus.
     });*/
     uploadInput.click();
@@ -69,10 +69,11 @@ class FileUtils {
   }
 
   static Future<dynamic> onChange(
-      html.Event e,
-      html.FileUploadInputElement uploadInput,
-      Completer<String> completer,
-      String errorMessage) async {
+    html.Event e,
+    html.FileUploadInputElement uploadInput,
+    Completer<String> completer,
+    String errorMessage,
+  ) async {
     debugPrint(e.type);
 
     final List<html.File>? files = uploadInput.files;
@@ -98,21 +99,27 @@ class FileUtils {
     }
   }
 
-  static Future<Uint8List?> _getHtmlFileContent(File blob, completer) async {
+  static Future<Uint8List?> _getHtmlFileContent(
+    File blob,
+    dynamic completer,
+  ) async {
     Uint8List? file;
     final html.FileReader reader = FileReader();
     reader.readAsDataUrl(blob.slice(0, blob.size, blob.type));
-    reader.onError
-        .listen((html.ProgressEvent error) => completer.completeError(error));
-    reader.onLoadEnd.listen((html.ProgressEvent event) {
-      final String r = reader.result.toString().split(',').last;
-      final Uint8List data = const Base64Decoder().convert(r);
-      file = data;
-    }).onData((html.ProgressEvent data) {
-      final String r = reader.result.toString().split(',').last;
-      file = const Base64Decoder().convert(r);
-      // return file;
-    });
+    reader.onError.listen(
+      (html.ProgressEvent error) => completer.completeError(error),
+    );
+    reader.onLoadEnd
+        .listen((html.ProgressEvent event) {
+          final String r = reader.result.toString().split(',').last;
+          final Uint8List data = const Base64Decoder().convert(r);
+          file = data;
+        })
+        .onData((html.ProgressEvent data) {
+          final String r = reader.result.toString().split(',').last;
+          file = const Base64Decoder().convert(r);
+          // return file;
+        });
     while (file == null) {
       await Future.delayed(const Duration(milliseconds: 1000));
       if (file != null) {

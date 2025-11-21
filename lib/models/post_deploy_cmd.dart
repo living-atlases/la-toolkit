@@ -9,16 +9,16 @@ part 'post_deploy_cmd.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class PostDeployCmd extends DeployCmd {
-  PostDeployCmd(
-      {this.configurePostfix = true,
-      super.limitToServers,
-      super.skipTags,
-      super.tags,
-      super.advanced,
-      super.continueEvenIfFails,
-      super.debug,
-      super.dryRun})
-      : super(deployServices: <String>['all'], onlyProperties: false);
+  PostDeployCmd({
+    this.configurePostfix = true,
+    super.limitToServers,
+    super.skipTags,
+    super.tags,
+    super.advanced,
+    super.continueEvenIfFails,
+    super.debug,
+    super.dryRun,
+  }) : super(deployServices: <String>['all'], onlyProperties: false);
 
   factory PostDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PostDeployCmdFromJson(json);
@@ -29,7 +29,7 @@ class PostDeployCmd extends DeployCmd {
     'email_sender_password',
     'email_sender_server',
     'email_sender_server_port',
-    'email_sender_server_tls'
+    'email_sender_server_tls',
   ];
 
   @override
@@ -38,7 +38,9 @@ class PostDeployCmd extends DeployCmd {
   @override
   String get desc {
     final List<String> tasks = <String>[];
-    if (configurePostfix) tasks.add('configure postfix');
+    if (configurePostfix) {
+      tasks.add('configure postfix');
+    }
     final String result =
         'Post-deploy tasks (${tasks.join(', ')}${toStringServers()})';
     return dryRun ? 'Dry run $result' : StringUtils.capitalize(result);

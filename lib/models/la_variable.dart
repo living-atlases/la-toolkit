@@ -1,6 +1,7 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
+
 import './is_json_serializable.dart';
 import './la_service_name.dart';
 import './la_variable_desc.dart';
@@ -12,22 +13,23 @@ enum LAVariableStatus { deployed, undeployed }
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAVariable implements IsJsonSerializable<LAVariable> {
-  LAVariable(
-      {String? id,
-      required this.nameInt,
-      required this.service,
-      this.value,
-      required this.projectId})
-      : id = id ?? ObjectId().toString();
+  LAVariable({
+    String? id,
+    required this.nameInt,
+    required this.service,
+    this.value,
+    required this.projectId,
+  }) : id = id ?? ObjectId().toString();
 
   LAVariable.fromDesc(LAVariableDesc desc, this.projectId)
-      : id = ObjectId().toString(),
-        nameInt = desc.nameInt,
-        service = desc.service,
-        status = LAVariableStatus.undeployed;
+    : id = ObjectId().toString(),
+      nameInt = desc.nameInt,
+      service = desc.service,
+      status = LAVariableStatus.undeployed;
 
   factory LAVariable.fromJson(Map<String, dynamic> json) =>
       _$LAVariableFromJson(json);
+
   // Basic
   String id;
   String nameInt;
@@ -38,6 +40,7 @@ class LAVariable implements IsJsonSerializable<LAVariable> {
   // Status
   LAVariableStatus status = LAVariableStatus.undeployed;
   static const String varInvPrefix = 'LA_variable_';
+
   @override
   Map<String, dynamic> toJson() => _$LAVariableToJson(this);
 

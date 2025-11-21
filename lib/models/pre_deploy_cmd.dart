@@ -9,23 +9,23 @@ part 'pre_deploy_cmd.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class PreDeployCmd extends DeployCmd {
-  PreDeployCmd(
-      {this.addAnsibleUser = false,
-      this.addSshKeys = false,
-      this.giveSudo = false,
-      this.etcHosts = true,
-      this.solrLimits = true,
-      this.addAdditionalDeps = true,
-      bool? rootBecome,
-      super.limitToServers,
-      super.skipTags,
-      super.tags,
-      super.advanced,
-      super.continueEvenIfFails,
-      super.debug,
-      super.dryRun})
-      : rootBecome = rootBecome ?? false,
-        super(deployServices: <String>['all'], onlyProperties: false);
+  PreDeployCmd({
+    this.addAnsibleUser = false,
+    this.addSshKeys = false,
+    this.giveSudo = false,
+    this.etcHosts = true,
+    this.solrLimits = true,
+    this.addAdditionalDeps = true,
+    bool? rootBecome,
+    super.limitToServers,
+    super.skipTags,
+    super.tags,
+    super.advanced,
+    super.continueEvenIfFails,
+    super.debug,
+    super.dryRun,
+  }) : rootBecome = rootBecome ?? false,
+       super(deployServices: <String>['all'], onlyProperties: false);
 
   factory PreDeployCmd.fromJson(Map<String, dynamic> json) =>
       _$PreDeployCmdFromJson(json);
@@ -43,12 +43,24 @@ class PreDeployCmd extends DeployCmd {
   @override
   List<String> get tags {
     final List<String> tags = <String>[];
-    if (addAnsibleUser) tags.add('pre-task-def-user');
-    if (addSshKeys) tags.add('pre-task-ssh-keys');
-    if (giveSudo) tags.add('pre-task-sudo');
-    if (etcHosts) tags.add('pre-task-etc-hosts');
-    if (solrLimits) tags.add('pre-task-solr-limits');
-    if (addAdditionalDeps) tags.add('pre-task-deps');
+    if (addAnsibleUser) {
+      tags.add('pre-task-def-user');
+    }
+    if (addSshKeys) {
+      tags.add('pre-task-ssh-keys');
+    }
+    if (giveSudo) {
+      tags.add('pre-task-sudo');
+    }
+    if (etcHosts) {
+      tags.add('pre-task-etc-hosts');
+    }
+    if (solrLimits) {
+      tags.add('pre-task-solr-limits');
+    }
+    if (addAdditionalDeps) {
+      tags.add('pre-task-deps');
+    }
     return tags;
   }
 

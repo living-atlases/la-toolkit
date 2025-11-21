@@ -9,11 +9,12 @@ part 'la_releases.g.dart';
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LAReleases {
-  const LAReleases(
-      {required this.name,
-      required this.artifacts,
-      required this.latest,
-      required this.versions});
+  const LAReleases({
+    required this.name,
+    required this.artifacts,
+    required this.latest,
+    required this.versions,
+  });
 
   factory LAReleases.fromJson(Map<String, dynamic> json) =>
       _$LAReleasesFromJson(json);
@@ -32,14 +33,14 @@ class LAReleases {
           artifacts == other.artifacts &&
           name == other.name &&
           latest == other.latest &&
-          const ListEquality().equals(versions, other.versions);
+          const ListEquality<String>().equals(versions, other.versions);
 
   @override
   int get hashCode =>
       name.hashCode ^
       artifacts.hashCode ^
       latest.hashCode ^
-      const ListEquality().hash(versions);
+      const ListEquality<String>().hash(versions);
 
   @override
   String toString() {
