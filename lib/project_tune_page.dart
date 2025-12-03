@@ -582,7 +582,9 @@ class MessageItem implements ListItem {
         ? defValueFunc(project)
         : null;
     final List<String>? selectValues = defValueResult != null
-        ? defValueResult as List<String>?
+        ? defValueResult is List<String>
+              ? defValueResult
+              : <String>[defValueResult as String]
         : null;
     return ListTile(
       title: (varDesc.type == LAVariableType.bool)
