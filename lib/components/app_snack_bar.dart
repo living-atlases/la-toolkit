@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+
 import '../models/app_state.dart';
 import '../redux/actions.dart';
 import 'app_snack_bar_message.dart';
@@ -15,26 +16,30 @@ class AppSnackBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _AppSnackBarViewModel>(
       converter: (Store<AppState> store) => _AppSnackBarViewModel(
-          messageToShow: store.state.appSnackBarMessages.isNotEmpty
-              ? store.state.appSnackBarMessages.first
-              : AppSnackBarMessage.empty,
-          onSnackBarShowed: (AppSnackBarMessage message) =>
-              store.dispatch(OnShowedSnackBar(message))),
+        messageToShow: store.state.appSnackBarMessages.isNotEmpty
+            ? store.state.appSnackBarMessages.first
+            : AppSnackBarMessage.empty,
+        onSnackBarShowed: (AppSnackBarMessage message) =>
+            store.dispatch(OnShowedSnackBar(message)),
+      ),
       builder: (BuildContext context, _AppSnackBarViewModel view) => child,
-      onWillChange:
-          (_AppSnackBarViewModel? oldVm, _AppSnackBarViewModel newVm) {
+      onWillChange: (_AppSnackBarViewModel? oldVm, _AppSnackBarViewModel newVm) {
         // onDidChange: (newVm) {
         final AppSnackBarMessage appSnackMessage = newVm.messageToShow;
         if (appSnackMessage != AppSnackBarMessage.empty) {
           // debugPrint(
           //    ">>>>>>>>>>>>>>>> Snackbar message '${appSnackMessage?.message}'");
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(appSnackMessage.message),
-            duration: appSnackMessage.duration ??
-                const Duration(
-                    milliseconds: 4000), // 4000 is the default one in Flutter
-            action: appSnackMessage.action,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(appSnackMessage.message),
+              duration:
+                  appSnackMessage.duration ??
+                  const Duration(
+                    milliseconds: 4000,
+                  ), // 4000 is the default one in Flutter
+              action: appSnackMessage.action,
+            ),
+          );
           newVm.onSnackBarShowed(appSnackMessage);
           // newViewModel.setShowToastSuccessful();
         }
@@ -46,8 +51,10 @@ class AppSnackBar extends StatelessWidget {
 
 @immutable
 class _AppSnackBarViewModel {
-  const _AppSnackBarViewModel(
-      {required this.onSnackBarShowed, required this.messageToShow});
+  const _AppSnackBarViewModel({
+    required this.onSnackBarShowed,
+    required this.messageToShow,
+  });
 
   final Function onSnackBarShowed;
   final AppSnackBarMessage messageToShow;

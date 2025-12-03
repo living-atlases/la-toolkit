@@ -53,9 +53,10 @@ class _PipelinesTimelineState extends State<PipelinesTimeline> {
     super.initState();
     cmd = widget.cmd;
     focus = FocusNode(debugLabel: 'Button');
-    // ignore: deprecated_member_use
+
     _nodeAttachment = focus.attach(
       context,
+      // ignore: deprecated_member_use
       onKey: (FocusNode node, RawKeyEvent event) {
         // ignore: deprecated_member_use
         log('Was shift: $isShiftPressed');

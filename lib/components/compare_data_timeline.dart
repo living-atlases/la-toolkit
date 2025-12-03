@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+// ignore_for_file: always_specify_types
 import 'package:timelines_plus/timelines_plus.dart';
 
 class CompareDataTimeline<T extends CompareDataTimelinePhase>
     extends StatefulWidget {
-  const CompareDataTimeline(
-      {super.key,
-      required this.currentPhase,
-      required this.phaseValues,
-      required this.failed});
+  const CompareDataTimeline({
+    super.key,
+    required this.currentPhase,
+    required this.phaseValues,
+    required this.failed,
+  });
 
   final T currentPhase;
 
@@ -138,7 +140,7 @@ class CompareDataTimelineState<T extends CompareDataTimelinePhase>
             final bool isActive = widget.currentPhase == phase;
             final bool isComplete =
                 widget.phaseValues.indexOf(widget.currentPhase) >
-                    widget.phaseValues.indexOf(phase);
+                widget.phaseValues.indexOf(phase);
             final bool isFailed = widget.failed && isActive;
             return TimelineTile(
               direction: Axis.horizontal,
@@ -152,37 +154,36 @@ class CompareDataTimelineState<T extends CompareDataTimelinePhase>
                     color: isFailed
                         ? Colors.red
                         : isActive
-                            ? Colors.green
-                            : Colors.grey,
+                        ? Colors.green
+                        : Colors.grey,
                   ),
                 ),
               ),
               node: TimelineNode(
-                  indicator: CustomPaint(
-                    size: const Size(20.0, 20.0),
-                    painter: IconPainter(
-                      icon: isFailed
-                          ? Icons.error
-                          : isActive
-                              ? Icons.check_circle
-                              : isComplete
-                                  ? Icons.check_circle
-                                  : Icons.circle_outlined,
-                      color: isFailed
-                          ? Colors.red
-                          : isActive
-                              ? Colors.green
-                              : isComplete
-                                  ? Colors.blue
-                                  : Colors.grey,
-                    ),
+                indicator: CustomPaint(
+                  size: const Size(20.0, 20.0),
+                  painter: IconPainter(
+                    icon: isFailed
+                        ? Icons.error
+                        : isActive
+                        ? Icons.check_circle
+                        : isComplete
+                        ? Icons.check_circle
+                        : Icons.circle_outlined,
+                    color: isFailed
+                        ? Colors.red
+                        : isActive
+                        ? Colors.green
+                        : isComplete
+                        ? Colors.blue
+                        : Colors.grey,
                   ),
-                  startConnector: const SolidLineConnector(
-                    color: Colors.blue,
-                  ),
-                  endConnector: SolidLineConnector(
-                    color: isActive ? Colors.green : Colors.blue,
-                  )),
+                ),
+                startConnector: const SolidLineConnector(color: Colors.blue),
+                endConnector: SolidLineConnector(
+                  color: isActive ? Colors.green : Colors.blue,
+                ),
+              ),
             );
           }).toList(),
         ),
@@ -199,12 +200,17 @@ class IconPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final TextPainter textPainter =
-        TextPainter(textDirection: TextDirection.ltr);
+    final TextPainter textPainter = TextPainter(
+      textDirection: TextDirection.ltr,
+    );
     textPainter.text = TextSpan(
-        text: String.fromCharCode(icon.codePoint),
-        style: TextStyle(
-            fontSize: size.width, fontFamily: icon.fontFamily, color: color));
+      text: String.fromCharCode(icon.codePoint),
+      style: TextStyle(
+        fontSize: size.width,
+        fontFamily: icon.fontFamily,
+        color: color,
+      ),
+    );
     textPainter.layout();
     textPainter.paint(canvas, Offset.zero);
   }
