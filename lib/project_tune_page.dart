@@ -584,7 +584,7 @@ class MessageItem implements ListItem {
     final List<String>? selectValues = defValueResult != null
         ? defValueResult is List<String>
               ? defValueResult
-              : <String>[defValueResult as String]
+              : <String>['$defValueResult']
         : null;
     return ListTile(
       title: (varDesc.type == LAVariableType.bool)
@@ -606,7 +606,7 @@ class MessageItem implements ListItem {
                 const SizedBox(width: 20),
                 GenericSelector<String>(
                   values: selectValues ?? <String>[],
-                  currentValue: '$initialValue',
+                  currentValue: initialValue != null ? '$initialValue' : null,
                   onChange: (String newValue) => <void>{onChanged(newValue)},
                 ),
               ],
