@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_dynamic_calls
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -325,11 +326,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
                 .add(const Duration(hours: 1))
                 .isBefore(DateTime.now())) {
           Api.getServiceDetailsForVersionCheck(project).then((
-            Map<String, String> serviceVersions,
+            dynamic serviceVersions,
           ) {
-            store.dispatch(OnPortalRunningVersionsRetrieved(serviceVersions));
+            final Map<String, String> versions =
+                serviceVersions as Map<String, String>;
+            store.dispatch(OnPortalRunningVersionsRetrieved(versions));
             if (AppUtils.isDev()) {
-              log(serviceVersions.toString());
+              log(versions.toString());
             }
           });
         }

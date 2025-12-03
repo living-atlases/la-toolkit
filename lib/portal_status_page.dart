@@ -80,21 +80,23 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
             (LAServer s) => s.id == serverId,
           );
           resultWidgets.add(TextTitle(text: s.name));
-          vm.checkResults[serverId]!.forEach((dynamic check) {
-            final ServiceStatus st = int.parse(check['code'] as String) == 0
+          for (final dynamic check
+              in (vm.checkResults[serverId]! as List<dynamic>)) {
+            final Map<String, dynamic> checkMap = check as Map<String, dynamic>;
+            final ServiceStatus st = int.parse(checkMap['code'] as String) == 0
                 ? ServiceStatus.success
                 : ServiceStatus.failed;
-            final String args = check['service'] as String == 'check_url'
-                ? utf8.decode(base64.decode(check['args'] as String))
-                : check['args'] as String;
+            final String args = checkMap['service'] as String == 'check_url'
+                ? utf8.decode(base64.decode(checkMap['args'] as String))
+                : checkMap['args'] as String;
             resultWidgets.add(
               CheckResultCard(
-                title: "${check['service']} $args",
+                title: "${checkMap['service']} $args",
                 status: st,
-                subtitle: utf8.decode(base64.decode(check['msg'] as String)),
+                subtitle: utf8.decode(base64.decode(checkMap['msg'] as String)),
               ),
             );
-          });
+          }
         }
         final String pageTitle = '${vm.project.shortName} Portal Status';
         return Title(

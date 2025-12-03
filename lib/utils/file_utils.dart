@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_dynamic_calls
 // import 'package:file_picker/file_picker.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -111,12 +112,14 @@ class FileUtils {
     );
     reader.onLoadEnd
         .listen((html.ProgressEvent event) {
-          final String r = reader.result.toString().split(',').last;
+          final String? resultStr = reader.result as String?;
+          final String r = resultStr?.split(',').last ?? '';
           final Uint8List data = const Base64Decoder().convert(r);
           file = data;
         })
         .onData((html.ProgressEvent data) {
-          final String r = reader.result.toString().split(',').last;
+          final String? resultStr = reader.result as String?;
+          final String r = resultStr?.split(',').last ?? '';
           file = const Base64Decoder().convert(r);
           // return file;
         });

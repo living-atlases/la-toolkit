@@ -94,7 +94,7 @@ class LAProjectTimeline extends StatelessWidget {
                       padding: EdgeInsets.all(8.0),
                       child: CircularProgressIndicator(
                         strokeWidth: 3.0,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     );
                   } else if (index < vm.status.value) {

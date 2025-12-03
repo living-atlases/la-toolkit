@@ -571,9 +571,19 @@ class MessageItem implements ListItem {
     final bool deployed = laVariable.status == LAVariableStatus.deployed;
     // ignore: prefer_typing_uninitialized_variables
     dynamic defValue;
-    if (varDesc.defValue != null) {
-      defValue = varDesc.defValue!(project);
+    final dynamic defValueFunc = varDesc.defValue;
+    if (defValueFunc != null) {
+      // ignore: avoid_dynamic_calls
+      defValue = defValueFunc(project);
     }
+
+    final dynamic defValueResult = defValueFunc != null
+        // ignore: avoid_dynamic_calls
+        ? defValueFunc(project)
+        : null;
+    final List<String>? selectValues = defValueResult != null
+        ? defValueResult as List<String>?
+        : null;
     return ListTile(
       title: (varDesc.type == LAVariableType.bool)
           ? SwitchListTile(
@@ -593,7 +603,7 @@ class MessageItem implements ListItem {
                 Text('${varDesc.name}: '),
                 const SizedBox(width: 20),
                 GenericSelector<String>(
-                  values: varDesc.defValue!(project) as List<String>,
+                  values: selectValues ?? <String>[],
                   currentValue: '$initialValue',
                   onChange: (String newValue) => <void>{onChanged(newValue)},
                 ),

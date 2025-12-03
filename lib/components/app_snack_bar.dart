@@ -37,9 +37,11 @@ class AppSnackBar extends StatelessWidget {
                   const Duration(
                     milliseconds: 4000,
                   ), // 4000 is the default one in Flutter
+              // ignore: avoid_dynamic_calls
               action: appSnackMessage.action,
             ),
           );
+          // ignore: avoid_dynamic_calls
           newVm.onSnackBarShowed(appSnackMessage);
           // newViewModel.setShowToastSuccessful();
         }

@@ -400,11 +400,11 @@ AppState _onTestConnectivityResults(
   // ignore: avoid_dynamic_calls
   final dynamic servers = action.results['servers'];
   if (servers != null) {
-    servers.forEach((dynamic server) {
+    for (final dynamic server in (servers as List<dynamic>)) {
       currentProject.upsertServer(
         LAServer.fromJson(server as Map<String, dynamic>),
       );
-    });
+    }
   }
 
   if (currentProject.status != LAProjectStatus.inProduction) {

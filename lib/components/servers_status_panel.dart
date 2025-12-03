@@ -11,8 +11,11 @@ import 'server_status_card.dart';
 import 'term_dialog.dart';
 
 class ServersStatusPanel extends StatefulWidget {
-  const ServersStatusPanel(
-      {super.key, required this.extendedStatus, required this.results});
+  const ServersStatusPanel({
+    super.key,
+    required this.extendedStatus,
+    required this.results,
+  });
 
   final bool extendedStatus;
   final Map<String, dynamic> results;
@@ -25,21 +28,23 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ServersStatusPanelViewModel>(
-        distinct: true,
-        converter: (Store<AppState> store) {
-          return _ServersStatusPanelViewModel(
-            project: store.state.currentProject,
-            openTerm: (LAProject project, LAServer server) =>
-                TermDialog.openTerm(context, false, project.id, server.name),
-            refreshServer: (LAProject project, String serverId) {
-              store.dispatch(
-                  TestServicesSingleServer(project, serverId, () {}, () {}));
-            },
-          );
-        },
-        builder: (BuildContext context, _ServersStatusPanelViewModel vm) {
-          final Map<String, dynamic> results = widget.results;
-          return Wrap(children: <Widget>[
+      distinct: true,
+      converter: (Store<AppState> store) {
+        return _ServersStatusPanelViewModel(
+          project: store.state.currentProject,
+          openTerm: (LAProject project, LAServer server) =>
+              TermDialog.openTerm(context, false, project.id, server.name),
+          refreshServer: (LAProject project, String serverId) {
+            store.dispatch(
+              TestServicesSingleServer(project, serverId, () {}, () {}),
+            );
+          },
+        );
+      },
+      builder: (BuildContext context, _ServersStatusPanelViewModel vm) {
+        final Map<String, dynamic> results = widget.results;
+        return Wrap(
+          children: <Widget>[
             for (final LAServer server in vm.project.serversWithServices())
               () {
                 // Check if monitoring tools are installed for this server
@@ -47,13 +52,17 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
                 final bool hasMonitoring = !results.containsKey(monitoringKey);
                 final String monitoringError = hasMonitoring
                     ? ''
-                    : (results[monitoringKey]?['error'] as String? ??
-                        'Monitoring tools not installed. Run pre-deploy step.');
+                    : ((results[monitoringKey]
+                                  as Map<String, dynamic>?)?['error']
+                              as String? ??
+                          'Monitoring tools not installed. Run pre-deploy step.');
 
                 return ServerStatusCard(
                   server: server,
                   services: vm.project.getServerServicesFull(
-                      id: server.id, type: DeploymentType.vm),
+                    id: server.id,
+                    type: DeploymentType.vm,
+                  ),
                   alaInstallVersion: vm.project.alaInstallRelease!,
                   extendedStatus: widget.extendedStatus,
                   status: results.isNotEmpty && results[server.id] != null
@@ -64,17 +73,20 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
                   onTerm: () => vm.openTerm(vm.project, server),
                   onRefresh: () => vm.refreshServer(vm.project, server.id),
                 );
-              }()
-          ]);
-        });
+              }(),
+          ],
+        );
+      },
+    );
   }
 }
 
 class _ServersStatusPanelViewModel {
-  _ServersStatusPanelViewModel(
-      {required this.project,
-      required this.openTerm,
-      required this.refreshServer});
+  _ServersStatusPanelViewModel({
+    required this.project,
+    required this.openTerm,
+    required this.refreshServer,
+  });
 
   final LAProject project;
   final void Function(LAProject, LAServer) openTerm;

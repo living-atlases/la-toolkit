@@ -222,7 +222,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
         final List<dynamic> swVersionsList =
             a('software_versions') as List<dynamic>;
         for (final dynamic swVersion in swVersionsList) {
-          swVersions[swVersion[0] as String] = swVersion[1] as String;
+          final List<dynamic> swList = swVersion as List<dynamic>;
+          swVersions[swList[0] as String] = swList[1] as String;
         }
       }
       p.assign(server, tempServerServices[server.id]!, swVersions);
@@ -693,12 +694,17 @@ check results length: ${checkResults.length}''';
     final bool isEmpty = variable.value == null;
     final LAVariableDesc desc = LAVariableDesc.get(nameInt);
     final Object? value = variable.value ??= desc.defValue != null
-        ? desc.defValue!(this)
+        ? _callDefValue(desc.defValue, this)
         : null;
     if (isEmpty && value != null) {
       setVariable(desc, value);
     }
     return value;
+  }
+
+  Object? _callDefValue(dynamic defValue, LAProject project) {
+    // ignore: avoid_dynamic_calls
+    return defValue(project);
   }
 
   String? getSwVersionOfService(String nameInt) {
@@ -1489,7 +1495,9 @@ check results length: ${checkResults.length}''';
   static List<LAProject> import({required String yoRcJson}) {
     final List<LAProject> list = <LAProject>[];
     final Map<String, dynamic> yoRc =
-        json.decode(yoRcJson)['generator-living-atlas']['promptValues']
+        ((json.decode(yoRcJson)
+                    as Map<String, dynamic>)['generator-living-atlas']
+                as Map<String, dynamic>)['promptValues']
             as Map<String, dynamic>;
     final LAProject p = LAProject.fromObject(yoRc);
     final List<LAProject> hubs = _importHubs(yoRc, p);
@@ -1508,7 +1516,8 @@ check results length: ${checkResults.length}''';
 
     for (final dynamic genJson in projectsJ) {
       final Map<String, dynamic> pJson =
-          genJson['generator-living-atlas']['promptValues']
+          ((genJson as Map<String, dynamic>)['generator-living-atlas']
+                  as Map<String, dynamic>)['promptValues']
               as Map<String, dynamic>;
       pJson['LA_id'] = null;
       final LAProject p = LAProject.fromObject(pJson);
