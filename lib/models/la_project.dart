@@ -455,7 +455,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     if (debug) {
       if (kDebugMode) {
         debugPrint(
-          "Valid at end: ${valid ? 'yes' : 'no'}, tempStatus: ${status.title}",
+          "Valid at end: ${valid ? 'yes' : 'no'}, tempStatus: ${status.title(isHub)}",
         );
       }
     }
@@ -600,7 +600,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     return '''
 PROJECT: longName: $longName ($shortName) dirName: $dirName domain: $domain, ssl: $useSSL, hub: $isHub, allWServReady: ___${allServersWithServicesReady()}___
-isHub: $isHub isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title}__, ala-install: $alaInstallRelease, generator: $generatorRelease
+isHub: $isHub isCreated: $isCreated fstDeployed: $fstDeployed validCreated: ${validateCreation()}, status: __${status.title(isHub)}__, ala-install: $alaInstallRelease, generator: $generatorRelease
 lastCmdEntry ${lastCmdEntry != null ? lastCmdEntry!.deployCmd.toString() : 'none'} map: $mapBoundsFstPoint $mapBoundsSndPoint, zoom: $mapZoom
 servers (${servers.length}): ${servers.join('| ')}
 clusters (${clusters.length}): ${clusters.join('| ')}
