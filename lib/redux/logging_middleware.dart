@@ -4,6 +4,7 @@ import 'package:redux_logging/redux_logging.dart';
 
 enum LogLevel { none, actions, all }
 
+// ignore: avoid_types_as_parameter_names
 LoggingMiddleware<dynamic> customLogPrinter<State>({
   Logger? logger,
   Level level = Level.INFO,
