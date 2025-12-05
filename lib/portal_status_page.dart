@@ -11,10 +11,12 @@ import 'package:tuple/tuple.dart';
 import 'components/app_snack_bar.dart';
 import 'components/check_result_card.dart';
 import 'components/la_app_bar.dart';
+import 'components/project_drawer.dart';
 import 'components/scroll_panel.dart';
 import 'components/servers_status_panel.dart';
 import 'components/service_check_progress_indicator.dart';
 import 'components/services_status_panel.dart';
+import 'components/terms_drawer.dart';
 import 'components/text_title.dart';
 import 'la_theme.dart';
 import 'models/app_state.dart';
@@ -111,6 +113,7 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
               showBack: true,
               loading: vm.loading,
               actions: <Widget>[
+                //  ProjectDrawer.appBarIcon(vm.project, _scaffoldKey),
                 const IconButton(
                   icon: Tooltip(
                     message: 'Pause to check services',
@@ -130,8 +133,16 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                     },
                   ),
                 ),
+                IconButton(
+                  color: Colors.white,
+                  icon: Icon(MdiIcons.console),
+                  tooltip: '${vm.project.shortName} terminals',
+                  onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+                ),
               ],
             ),
+            drawer: const ProjectDrawer(),
+            endDrawer: const TermsDrawer(),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
             // TODO(vjrj): Use here badges - https://github.com/hacktons/convex_bottom_bar/
