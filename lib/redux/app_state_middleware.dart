@@ -23,6 +23,7 @@ import '../models/cmd_history_entry.dart';
 import '../models/host_services_checks.dart';
 import '../models/la_project.dart';
 import '../models/la_releases.dart';
+import '../models/la_server.dart';
 import '../models/la_service_constants.dart';
 import '../models/la_service_desc.dart';
 import '../models/post_deploy_cmd.dart';
@@ -380,6 +381,35 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         );
       }
     }
+    if (action is TestConnectivitySingleServer) {
+      final LAProject project = action.project;
+      try {
+        await genSshConf(project);
+        // Get only the specific server
+        final LAServer? server = project.servers.firstWhereOrNull(
+          (LAServer s) => s.id == action.serverId,
+        );
+        if (server != null) {
+          Api.testConnectivity(<LAServer>[server]).then((
+            Map<String, dynamic> results,
+          ) {
+            store.dispatch(OnTestConnectivityResults(results));
+            action.onServersStatusReady();
+          });
+        } else {
+          action.onFailed();
+        }
+      } catch (e) {
+        action.onFailed();
+        store.dispatch(
+          ShowSnackBar(
+            AppSnackBarMessage(
+              'Failed to test the connectivity with this server.',
+            ),
+          ),
+        );
+      }
+    }
     if (action is TestServicesProject) {
       try {
         Api.checkHostServices(action.project.id, action.hostsServicesChecks)
@@ -419,6 +449,15 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             .then((Map<String, dynamic> results) {
               action.onResults();
               store.dispatch(OnTestServicesResults(results));
+              // Also test connectivity for this server after checking services
+              store.dispatch(
+                TestConnectivitySingleServer(
+                  action.project,
+                  action.serverId,
+                  () {},
+                  () {},
+                ),
+              );
             })
             .catchError((dynamic e) {
               action.onFailed();

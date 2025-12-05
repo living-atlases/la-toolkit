@@ -388,19 +388,32 @@ AppState _onTestConnectivityResults(
 ) {
   final LAProject currentProject = state.currentProject;
 
-  for (final LAServer server in currentProject.servers) {
-    server.reachable = ServiceStatus.unknown;
-    server.sshReachable = ServiceStatus.unknown;
-    server.sudoEnabled = ServiceStatus.unknown;
-    server.osName = '';
-    server.osVersion = '';
-    currentProject.upsertServer(server);
-  }
-
   // ignore: avoid_dynamic_calls
   final dynamic servers = action.results['servers'];
+
+  // Only reset and update servers that are in the results
   if (servers != null) {
+    final Set<String> updatedServerIds = <String>{};
+
     for (final dynamic server in (servers as List<dynamic>)) {
+      final Map<String, dynamic> serverData = server as Map<String, dynamic>;
+      updatedServerIds.add(serverData['id'] as String);
+    }
+
+    // Reset only the servers that will be updated
+    for (final LAServer server in currentProject.servers) {
+      if (updatedServerIds.contains(server.id)) {
+        server.reachable = ServiceStatus.unknown;
+        server.sshReachable = ServiceStatus.unknown;
+        server.sudoEnabled = ServiceStatus.unknown;
+        server.osName = '';
+        server.osVersion = '';
+        currentProject.upsertServer(server);
+      }
+    }
+
+    // Update with new data
+    for (final dynamic server in servers) {
       currentProject.upsertServer(
         LAServer.fromJson(server as Map<String, dynamic>),
       );

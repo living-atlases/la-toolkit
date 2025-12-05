@@ -117,7 +117,10 @@ class OnProjectDeleted extends AppActions {
 
 class OnProjectUpdated extends AppActions {
   OnProjectUpdated(
-      this.projectId, this.projectsJson, this.updateCurrentProject);
+    this.projectId,
+    this.projectsJson,
+    this.updateCurrentProject,
+  );
 
   String projectId;
   List<dynamic> projectsJson;
@@ -192,11 +195,12 @@ class OnViewLogs extends AppActions {
 }
 
 class PrepareDeployProject extends AppActions {
-  PrepareDeployProject(
-      {required this.project,
-      required this.onReady,
-      required this.deployCmd,
-      required this.onError});
+  PrepareDeployProject({
+    required this.project,
+    required this.onReady,
+    required this.deployCmd,
+    required this.onError,
+  });
 
   LAProject project;
   VoidCallback onReady;
@@ -211,8 +215,11 @@ class SaveCurrentCmd extends AppActions {
 }
 
 abstract class DeployAction extends AppActions {
-  DeployAction(
-      {required this.project, required this.onStart, required this.onError});
+  DeployAction({
+    required this.project,
+    required this.onStart,
+    required this.onError,
+  });
 
   LAProject project;
   Function(CmdHistoryEntry cmd, int port, int ttydPid) onStart;
@@ -220,41 +227,45 @@ abstract class DeployAction extends AppActions {
 }
 
 class DeployProject extends DeployAction {
-  DeployProject(
-      {required this.cmd,
-      required super.project,
-      required super.onStart,
-      required super.onError});
+  DeployProject({
+    required this.cmd,
+    required super.project,
+    required super.onStart,
+    required super.onError,
+  });
 
   DeployCmd cmd;
 }
 
 class BrandingDeploy extends DeployAction {
-  BrandingDeploy(
-      {required this.cmd,
-      required super.project,
-      required super.onStart,
-      required super.onError});
+  BrandingDeploy({
+    required this.cmd,
+    required super.project,
+    required super.onStart,
+    required super.onError,
+  });
 
   BrandingDeployCmd cmd;
 }
 
 class PipelinesRun extends DeployAction {
-  PipelinesRun(
-      {required this.cmd,
-      required super.project,
-      required super.onStart,
-      required super.onError});
+  PipelinesRun({
+    required this.cmd,
+    required super.project,
+    required super.onStart,
+    required super.onError,
+  });
 
   PipelinesCmd cmd;
 }
 
 class GetCmdResults extends AppActions {
-  GetCmdResults(
-      {required this.cmdHistoryEntry,
-      required this.fstRetrieved,
-      required this.onReady,
-      required this.onFailed});
+  GetCmdResults({
+    required this.cmdHistoryEntry,
+    required this.fstRetrieved,
+    required this.onReady,
+    required this.onFailed,
+  });
 
   CmdHistoryEntry cmdHistoryEntry;
   VoidCallback onReady;
@@ -279,8 +290,11 @@ class OpenProjectTools extends AppActions {
 }
 
 class UpdateProject extends AppActions {
-  UpdateProject(this.project,
-      [this.updateCurrentProject = true, this.openProjectView = true]);
+  UpdateProject(
+    this.project, [
+    this.updateCurrentProject = true,
+    this.openProjectView = true,
+  ]);
 
   LAProject project;
   bool updateCurrentProject;
@@ -310,16 +324,37 @@ typedef ErrorCallback = void Function(int error);
 
 class TestConnectivityProject extends AppActions {
   TestConnectivityProject(
-      this.project, this.onServersStatusReady, this.onFailed);
+    this.project,
+    this.onServersStatusReady,
+    this.onFailed,
+  );
 
   LAProject project;
   VoidCallback onServersStatusReady;
   VoidCallback onFailed;
 }
 
+class TestConnectivitySingleServer extends AppActions {
+  TestConnectivitySingleServer(
+    this.project,
+    this.serverId,
+    this.onServersStatusReady,
+    this.onFailed,
+  );
+
+  LAProject project;
+  String serverId;
+  VoidCallback onServersStatusReady;
+  VoidCallback onFailed;
+}
+
 class TestServicesProject extends AppActions {
   TestServicesProject(
-      this.project, this.hostsServicesChecks, this.onResults, this.onFailed);
+    this.project,
+    this.hostsServicesChecks,
+    this.onResults,
+    this.onFailed,
+  );
 
   LAProject project;
   HostsServicesChecks hostsServicesChecks;
@@ -329,7 +364,11 @@ class TestServicesProject extends AppActions {
 
 class TestServicesSingleServer extends AppActions {
   TestServicesSingleServer(
-      this.project, this.serverId, this.onResults, this.onFailed);
+    this.project,
+    this.serverId,
+    this.onResults,
+    this.onFailed,
+  );
 
   LAProject project;
   String serverId;
@@ -413,7 +452,11 @@ class OnTestServicesResults extends AppActions {
 
 class OnTestServicesProgress extends AppActions {
   OnTestServicesProgress(
-      this.serverId, this.serverName, this.status, this.results);
+    this.serverId,
+    this.serverName,
+    this.status,
+    this.results,
+  );
 
   String serverId;
   String serverName;
@@ -432,11 +475,12 @@ class OnInitCasKeys extends AppActions {
 }
 
 class OnInitCasKeysResults extends AppActions {
-  OnInitCasKeysResults(
-      {required this.pac4jCookieSigningKey,
-      required this.pac4jCookieEncryptionKey,
-      required this.casWebflowSigningKey,
-      required this.casWebflowEncryptionKey});
+  OnInitCasKeysResults({
+    required this.pac4jCookieSigningKey,
+    required this.pac4jCookieEncryptionKey,
+    required this.casWebflowSigningKey,
+    required this.casWebflowEncryptionKey,
+  });
 
   String pac4jCookieSigningKey;
   String pac4jCookieEncryptionKey;
@@ -449,11 +493,12 @@ class OnInitCasOAuthKeys extends AppActions {
 }
 
 class OnInitCasOAuthKeysResults extends AppActions {
-  OnInitCasOAuthKeysResults(
-      {required this.casOauthSigningKey,
-      required this.casOauthEncryptionKey,
-      required this.casOauthAccessTokenSigningKey,
-      required this.casOauthAccessTokenEncryptionKey});
+  OnInitCasOAuthKeysResults({
+    required this.casOauthSigningKey,
+    required this.casOauthEncryptionKey,
+    required this.casOauthAccessTokenSigningKey,
+    required this.casOauthAccessTokenEncryptionKey,
+  });
 
   String casOauthSigningKey;
   String casOauthEncryptionKey;
@@ -468,12 +513,13 @@ class OnSelectTuneTab extends AppActions {
 }
 
 class SolrQuery extends AppActions {
-  SolrQuery(
-      {required this.project,
-      required this.solrHost,
-      required this.query,
-      required this.onError,
-      required this.onResult});
+  SolrQuery({
+    required this.project,
+    required this.solrHost,
+    required this.query,
+    required this.onError,
+    required this.onResult,
+  });
 
   final String project;
   final String solrHost;
@@ -483,12 +529,13 @@ class SolrQuery extends AppActions {
 }
 
 class SolrRawQuery extends AppActions {
-  SolrRawQuery(
-      {required this.project,
-      required this.solrHost,
-      required this.query,
-      required this.onError,
-      required this.onResult});
+  SolrRawQuery({
+    required this.project,
+    required this.solrHost,
+    required this.query,
+    required this.onError,
+    required this.onResult,
+  });
 
   final String project;
   final String solrHost;
@@ -498,13 +545,14 @@ class SolrRawQuery extends AppActions {
 }
 
 class MySqlQuery extends AppActions {
-  MySqlQuery(
-      {required this.project,
-      required this.mySqlHost,
-      required this.db,
-      required this.query,
-      required this.onError,
-      required this.onResult});
+  MySqlQuery({
+    required this.project,
+    required this.mySqlHost,
+    required this.db,
+    required this.query,
+    required this.onError,
+    required this.onResult,
+  });
 
   final String project;
   final String mySqlHost;
