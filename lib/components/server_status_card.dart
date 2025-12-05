@@ -25,6 +25,7 @@ class ServerStatusCard extends StatelessWidget {
     required this.alaInstallVersion,
     required this.onTerm,
     required this.onRefresh,
+    required this.enableRefresh,
     required this.status,
     this.hasMonitoringTools = true,
     this.monitoringError = '',
@@ -36,6 +37,7 @@ class ServerStatusCard extends StatelessWidget {
   final String alaInstallVersion;
   final VoidCallback onTerm;
   final VoidCallback onRefresh;
+  final bool enableRefresh;
   final List<dynamic> status;
   final bool hasMonitoringTools;
   final String monitoringError;
@@ -60,7 +62,6 @@ class ServerStatusCard extends StatelessWidget {
         margin: const EdgeInsets.all(10),
         child: Stack(
           children: <Widget>[
-            // Warning icon si no tiene herramientas de monitorización
             if (!hasMonitoringTools)
               Positioned(
                 top: 5,
@@ -74,20 +75,21 @@ class ServerStatusCard extends StatelessWidget {
                   ),
                 ),
               ),
-            Positioned(
-              top: 5,
-              right: 5,
-              child: Tooltip(
-                message: 'Refresh status for ${server.name}',
-                child: IconButton(
-                  iconSize: 18,
-                  padding: const EdgeInsets.all(4),
-                  constraints: const BoxConstraints(),
-                  onPressed: () => onRefresh(),
-                  icon: Icon(MdiIcons.reload, color: Colors.grey.shade600),
+            if (enableRefresh)
+              Positioned(
+                top: 5,
+                right: 5,
+                child: Tooltip(
+                  message: 'Refresh status for ${server.name}',
+                  child: IconButton(
+                    iconSize: 18,
+                    padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints(),
+                    onPressed: () => onRefresh(),
+                    icon: Icon(MdiIcons.reload, color: Colors.grey.shade600),
+                  ),
                 ),
               ),
-            ),
             Padding(
               padding: EdgeInsets.all(extendedStatus ? 10 : 5),
               child: Row(
@@ -185,6 +187,17 @@ class ConnectivityStatus extends StatelessWidget {
 
   final LAServer server;
 
+  String getReachabilityMessage(LAServer server) {
+    if (server.reachable == ServiceStatus.success) {
+      return 'Ping to this server works great';
+    } else if (server.reachable != ServiceStatus.success &&
+        server.sshReachable == ServiceStatus.success) {
+      return 'I cannot ping this server, although I can reach it by ssh. Is the ping filtered in your firewall?';
+    } else {
+      return 'I cannot ping or ssh this server';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -193,11 +206,8 @@ class ConnectivityStatus extends StatelessWidget {
       children: <Widget>[
         SimpleServerStatusItem(
           'REACHABLE',
-          server.reachable == ServiceStatus.success ||
-              server.sshReachable == ServiceStatus.success,
-          server.sshReachable == ServiceStatus.success
-              ? 'I cannot ping this server, although I can reach it by ssh. Is the ping filtered in your firewall?'
-              : 'Ping to this server works great',
+          server.reachable == ServiceStatus.success,
+          getReachabilityMessage(server),
           'I cannot reach this server, review your IP and ssh configuration for this server',
         ),
         SimpleServerStatusItem(

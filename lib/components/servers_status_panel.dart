@@ -65,6 +65,7 @@ class _ServersStatusPanelState extends State<ServersStatusPanel> {
                   ),
                   alaInstallVersion: vm.project.alaInstallRelease!,
                   extendedStatus: widget.extendedStatus,
+                  enableRefresh: widget.extendedStatus,
                   status: results.isNotEmpty && results[server.id] != null
                       ? results[server.id]! as List<dynamic>
                       : <dynamic>[],
