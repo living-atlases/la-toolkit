@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
@@ -135,9 +136,26 @@ class ServerStatusCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
-                          'IP: ${server.ip}',
-                          style: GoogleFonts.robotoMono(),
+                        GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(text: server.ip));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Copied to clipboard'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          child: Tooltip(
+                            message: 'Click to copy IP to clipboard',
+                            child: Text(
+                              'IP: ${server.ip}',
+                              style: GoogleFonts.robotoMono(
+                                // color: Colors.blue,
+                                //  decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
                         ),
                         if (extendedStatus) const SizedBox(height: 10),
                         if (extendedStatus)
