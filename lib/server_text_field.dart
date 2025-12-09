@@ -4,13 +4,14 @@ import 'la_theme.dart';
 import 'project_edit_page.dart';
 import 'utils/regexp.dart';
 
-class ServerTextField extends StatelessWidget {
-  const ServerTextField(
-      {super.key,
-      required this.controller,
-      required this.focusNode,
-      required this.formKey,
-      required this.onAddServer});
+class ServerTextField extends StatefulWidget {
+  const ServerTextField({
+    super.key,
+    required this.controller,
+    required this.focusNode,
+    required this.formKey,
+    required this.onAddServer,
+  });
 
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -21,20 +22,29 @@ class ServerTextField extends StatelessWidget {
       "Something typically like 'vm1', 'vm2', 'vm3' or 'aws-ip-12-34-56-78', 'aws-ip-12-34-56-79', 'aws-ip-12-34-56-80'";
 
   @override
+  State<ServerTextField> createState() => _ServerTextFieldState();
+}
+
+class _ServerTextFieldState extends State<ServerTextField> {
+  @override
   Widget build(BuildContext context) {
     return Form(
-        key: formKey,
-        child: Column(children: <Widget>[
+      key: widget.formKey,
+      child: Column(
+        children: <Widget>[
           // Add TextFormFields and ElevatedButton here.
           TextFormField(
-            controller: controller,
+            controller: widget.controller,
             showCursor: true,
             cursorColor: Colors.orange,
             style: LAColorTheme.unDeployedTextStyle,
+            onChanged: (_) {
+              setState(() {});
+            },
             onFieldSubmitted: (String value) {
               addServer(value.toLowerCase());
             },
-            focusNode: focusNode,
+            focusNode: widget.focusNode,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String? value) {
               return value != null &&
@@ -45,28 +55,36 @@ class ServerTextField extends StatelessWidget {
                   : 'Invalid server name.';
             },
             decoration: InputDecoration(
-                suffixIcon: IconButton(
-                    icon: const Icon(Icons.add_circle),
-                    onPressed: () {
-                      debugPrint('Trying to add server/s ${controller.text}');
-                      if (formKey.currentState != null &&
-                          formKey.currentState!.validate()) {
-                        controller.text = controller.text.toLowerCase();
-                        addServer(controller.text);
-                      }
-                    },
-                    color: LAColorTheme.inactive),
-                hintText: serverHint,
-                labelText:
-                    "Type the name of your servers, comma or space separated (Press 'enter' to add it)"),
-          )
-        ]));
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.add_circle),
+                onPressed: () {
+                  debugPrint(
+                    'Trying to add server/s ${widget.controller.text}',
+                  );
+                  if (widget.formKey.currentState != null &&
+                      widget.formKey.currentState!.validate()) {
+                    widget.controller.text = widget.controller.text
+                        .toLowerCase();
+                    addServer(widget.controller.text);
+                  }
+                },
+                color: LAColorTheme.inactive,
+              ),
+              hintText: ServerTextField.serverHint,
+              labelText:
+                  "Type the name of your servers, comma or space separated (Press 'enter' to add it)",
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void addServer(String value) {
     LAProjectEditPage.serversNameSplit(value).forEach((String server) {
-      onAddServer(server.trim());
-      controller.clear();
+      widget.onAddServer(server.trim());
+      widget.controller.clear();
     });
+    setState(() {});
   }
 }
