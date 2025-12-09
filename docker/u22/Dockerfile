@@ -106,7 +106,7 @@ RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 RUN su - ubuntu -c 'cd /home/ubuntu/base-branding && npm install'
 
 # ala-install
-RUN su - ubuntu -c 'git clone --branch v2.3.0 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
+RUN su - ubuntu -c 'git clone --branch v2.4.1 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
 # apt.gbif.es LA pipelines and deps
 RUN echo "deb [arch=amd64] https://apt.gbif.es/ bionic main" > /etc/apt/sources.list.d/ala.list && \
