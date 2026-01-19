@@ -384,7 +384,7 @@ class LAVariableDesc {
       help: 'OIDC',
       depends: LAServiceName.cas,
       service: LAServiceName.cas,
-      defValue: (_) => false,
+      defValue: (_) => true,
       type: LAVariableType.bool,
     ),
     'jwt_in_use': LAVariableDesc(
