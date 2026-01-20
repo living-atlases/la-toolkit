@@ -47,7 +47,10 @@ services:
       - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
 
   mongo:
-    image: mongo:4
+    # Early versions used mongo:4. If you were using it, you'll need:
+    # - Back up first (see mongo-db-backup) and upgrade progressively 4 -> 5 -> 6 -> 7 -> 8.
+    # - Or back up, start with an empty mongo:8 instance and restore your la-toolkit DB backup.
+    image: mongo:8
     restart: always
     container_name: la-toolkit-mongo
     # Uncomment if mongo-express is not enough
@@ -68,9 +71,9 @@ services:
     container_name: la-toolkit-mongo-db-backup
     restart: always
     links:
-     - mongo
+      - mongo
     depends_on:
-     - mongo
+      - mongo
     environment:
       - DB_HOST=mongo
       - DB_USER=la_toolkit_mongo_admin

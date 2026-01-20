@@ -9,7 +9,7 @@ services:
     ports:
       - "2010:2010"
       - "2011-2100:2011-2100"
-      # Internal an external ports should match in the previous range. 
+      # Internal an external ports should match in the previous range.
       # So don't do these kind of redirections:
       # - "3011-3100:2011-2100"
     depends_on:
@@ -28,17 +28,17 @@ services:
       # TOOLKIT_HTTPS: "false"
       # TOOLKIT_TERM_PROXY: "false"
       # In a simple desktop deployment, the toolkit uses localhost to connect to
-      # the backend and later opens other ports to show the terminal or SSH into 
-      # servers, etc. 
-      # However, in an public server deployment, a different schema is needed. 
+      # the backend and later opens other ports to show the terminal or SSH into
+      # servers, etc.
+      # However, in an public server deployment, a different schema is needed.
       # Instead of connecting to localhost:SOMEPORT via websocket, we connect to
-      # la-toolkit.l-a.site/ttySOMEPORT, or similar and the proxy configuration 
-      # redirects to the internal server:SOMEPORT. 
-      # The TOOLKIT_TERM_PROXY flag allows the terminal to use the localhost 
+      # la-toolkit.l-a.site/ttySOMEPORT, or similar and the proxy configuration
+      # redirects to the internal server:SOMEPORT.
+      # The TOOLKIT_TERM_PROXY flag allows the terminal to use the localhost
       # schema if false or the proxy schema if true.
       #
-      # In other words, if you are using the toolkit in a desktop, you don't 
-      # need to configure nothing, but if you are trying to connect to a toolkit 
+      # In other words, if you are using the toolkit in a desktop, you don't
+      # need to configure nothing, but if you are trying to connect to a toolkit
       # in an internal network without proxy configuration, SSL configuration, etc.
       # configure it as follows:
       # TOOLKIT_PUBLIC_URL: "10.1.2.3:2010"
@@ -50,7 +50,7 @@ services:
       # TOOLKIT_HTTPS: "true"
       # TOOLKIT_TERM_PROXY: "true"
       #
-      # see: apache-vhost-sample.conf for a sample apache vhost configuration 
+      # see: apache-vhost-sample.conf for a sample apache vhost configuration
 
 
     # The volumes should be writeable by your user so maybe you have to set your uid:gid here
@@ -67,7 +67,10 @@ services:
       # - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
 
   mongo:
-    image: mongo:4
+    # Early versions used mongo:4. If you were using it, you'll need:
+    # - Back up first (see mongo-db-backup) and upgrade progressively 4 -> 5 -> 6 -> 7 -> 8.
+    # - Or back up, start with an empty mongo:8 instance and restore your la-toolkit DB backup.
+    image: mongo:8
     restart: always
     container_name: la-toolkit-mongo
     # Uncomment if mongo-express if you want to access mongo from the outside
@@ -90,9 +93,9 @@ services:
     container_name: la-toolkit-mongo-db-backup
     restart: always
     links:
-     - mongo
+      - mongo
     depends_on:
-     - mongo
+      - mongo
     environment:
       - DB_HOST=mongo
       - DB_USER=la_toolkit_mongo_admin
@@ -109,20 +112,20 @@ services:
     volumes:
       - /data/la-toolkit/backups:/backups
 
-#  Optionally in production (because this will open your db to the outside):
-#
-#  mongo-express:
-#    image: mongo-express
-#    container_name: la-toolkit-mongo-express
-#    restart: always
-#    depends_on:
-#     - mongo
-#    ports:
-#      - 9081:8081
-#    environment:
-#      ME_CONFIG_MONGODB_SERVER: mongo
-#      ME_CONFIG_MONGODB_ADMINUSERNAME: la_toolkit_mongo_admin
-#      ME_CONFIG_MONGODB_ADMINPASSWORD: la_toolkit_changeme
+  #  Optionally in production (because this will open your db to the outside):
+  #
+  #  mongo-express:
+  #    image: mongo-express
+  #    container_name: la-toolkit-mongo-express
+  #    restart: always
+  #    depends_on:
+  #     - mongo
+  #    ports:
+  #      - 9081:8081
+  #    environment:
+  #      ME_CONFIG_MONGODB_SERVER: mongo
+  #      ME_CONFIG_MONGODB_ADMINUSERNAME: la_toolkit_mongo_admin
+  #      ME_CONFIG_MONGODB_ADMINPASSWORD: la_toolkit_changeme
 
   # 'watchtower' upgrade automatically the la-toolkit, whenever there is a new Docker image available,
   # but a container restart is also need to get the new image
