@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   la-toolkit:
     image: livingatlases/la-toolkit:latest
@@ -70,7 +68,7 @@ services:
     # Early versions used mongo:4. If you were using it, you'll need:
     # - Back up first (see mongo-db-backup) and upgrade progressively 4 -> 5 -> 6 -> 7 -> 8.
     # - Or back up, start with an empty mongo:8 instance and restore your la-toolkit DB backup.
-    image: mongo:8
+    image: mongo:8.0.17
     restart: always
     container_name: la-toolkit-mongo
     # Uncomment if mongo-express if you want to access mongo from the outside
