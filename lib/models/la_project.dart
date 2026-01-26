@@ -794,6 +794,12 @@ check results length: ${checkResults.length}''';
     if (assignedServices.contains(dockerSwarm)) {
       _addDockerClusterIfNotExists();
     }
+    if (assignedServices.contains(dockerCompose)) {
+      _addDockerClusterIfNotExists(
+        serverId: sOrCId,
+        type: DeploymentType.dockerCompose,
+      );
+    }
     for (final String sN in newServices) {
       final LAService service = getService(sN);
       serviceIds.add(service.id);
@@ -893,15 +899,33 @@ check results length: ${checkResults.length}''';
     if (serviceName == dockerSwarm && isDockerClusterConfigured()) {
       // For now, we remove all cluster because we only support one unique cluster
       if (getServiceDeploysForSomeService(dockerSwarm).isEmpty) {
-        clusters.clear();
-        clusterServices.clear();
+        clusters.removeWhere(
+          (LACluster c) => c.type == DeploymentType.dockerSwarm,
+        );
+        clusterServices.removeWhere(
+          (String key, List<String> value) => !clusters.any(
+            (LACluster c) =>
+                c.id == key && c.type == DeploymentType.dockerSwarm,
+          ),
+        );
       }
+    }
+    if (serviceName == dockerCompose) {
+      clusters.removeWhere(
+        (LACluster c) =>
+            c.serverId == sIdOrCid && c.type == DeploymentType.dockerCompose,
+      );
+      clusterServices.removeWhere(
+        (String key, List<String> value) =>
+            !clusters.any((LACluster c) => c.id == key),
+      );
     }
   }
 
   bool isDockerClusterConfigured() {
     return isDockerEnabled &&
-        getServiceDeploysForSomeService(dockerSwarm).isNotEmpty;
+        (getServiceDeploysForSomeService(dockerSwarm).isNotEmpty ||
+            getServiceDeploysForSomeService(dockerCompose).isNotEmpty);
   }
 
   static HashSet<String> _addSubServices(HashSet<String> newServices) {
@@ -1262,13 +1286,16 @@ check results length: ${checkResults.length}''';
   }
 
   List<String> dockerServers() {
-    final List<String> dList = getServiceDeploysForSomeService(dockerSwarm)
-        .map(
-          (LAServiceDeploy sd) =>
-              servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
-        )
-        .toSet()
-        .toList();
+    final List<String> dList = <String>{
+      ...getServiceDeploysForSomeService(dockerSwarm).map(
+        (LAServiceDeploy sd) =>
+            servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
+      ),
+      ...getServiceDeploysForSomeService(dockerCompose).map(
+        (LAServiceDeploy sd) =>
+            servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
+      ),
+    }.toList();
     dList.sort();
     return dList;
   }
@@ -1314,7 +1341,8 @@ check results length: ${checkResults.length}''';
               (canBeRedeployed.contains(s.nameInt) ||
                   notAssigned.contains(s.nameInt)) &&
               (type == DeploymentType.vm ||
-                  (type == DeploymentType.dockerSwarm &&
+                  ((type == DeploymentType.dockerSwarm ||
+                          type == DeploymentType.dockerCompose) &&
                       LAServiceDesc.listDockerCapableS.contains(s.nameInt))),
         )
         .toList();
@@ -1732,7 +1760,8 @@ check results length: ${checkResults.length}''';
 
   bool get isPipelinesInUse => !isHub && getService(pipelines).use;
 
-  bool get isDockerEnabled => !isHub && getService(dockerSwarm).use;
+  bool get isDockerEnabled =>
+      !isHub && (getService(dockerSwarm).use || getService(dockerCompose).use);
 
   LAServer? getPipelinesMaster() {
     if (isPipelinesInUse && getVariableOrNull('pipelines_master') != null) {
@@ -1782,9 +1811,30 @@ check results length: ${checkResults.length}''';
 
   bool get showToolkitDeps => !isHub;
 
-  void _addDockerClusterIfNotExists() {
-    if (clusters.isEmpty) {
-      clusters.add(LACluster(id: ObjectId().toString(), projectId: id));
+  void _addDockerClusterIfNotExists({
+    String? serverId,
+    DeploymentType type = DeploymentType.dockerSwarm,
+  }) {
+    if (type == DeploymentType.dockerSwarm) {
+      if (clusters.isEmpty) {
+        clusters.add(LACluster(id: ObjectId().toString(), projectId: id));
+      }
+    } else if (type == DeploymentType.dockerCompose) {
+      if (!clusters.any(
+        (LACluster c) =>
+            c.serverId == serverId && c.type == DeploymentType.dockerCompose,
+      )) {
+        final LAServer? server = getServerById(serverId!);
+        clusters.add(
+          LACluster(
+            id: ObjectId().toString(),
+            projectId: id,
+            serverId: serverId,
+            name: 'Docker Compose on ${server?.name ?? serverId}',
+            type: DeploymentType.dockerCompose,
+          ),
+        );
+      }
     }
   }
 }

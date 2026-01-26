@@ -15,6 +15,7 @@ class LACluster implements IsJsonSerializable<LACluster> {
     this.name = 'Docker Swarm Cluster',
     this.type = DeploymentType.dockerSwarm,
     required this.projectId,
+    this.serverId,
   }) : id = id ?? ObjectId().toString();
 
   factory LACluster.fromJson(Map<String, dynamic> json) =>
@@ -29,6 +30,7 @@ class LACluster implements IsJsonSerializable<LACluster> {
 
   // Relations
   String projectId;
+  String? serverId;
 
   @override
   Map<String, dynamic> toJson() => _$LAClusterToJson(this);
@@ -42,12 +44,17 @@ class LACluster implements IsJsonSerializable<LACluster> {
           name == other.name &&
           id == other.id &&
           type == other.type &&
-          projectId == other.projectId;
+          projectId == other.projectId &&
+          serverId == other.serverId;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode =>
-      name.hashCode ^ id.hashCode ^ type.hashCode ^ projectId.hashCode;
+      name.hashCode ^
+      id.hashCode ^
+      type.hashCode ^
+      projectId.hashCode ^
+      serverId.hashCode;
 
   @override
   String toString() {

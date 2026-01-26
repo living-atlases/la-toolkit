@@ -86,7 +86,7 @@ class _$LAVariableCWProxyImpl implements _$LAVariableCWProxy {
       value: value == const $CopyWithPlaceholder()
           ? _value.value
           // ignore: cast_nullable_to_non_nullable
-          : value,
+          : value as Object?,
       projectId: projectId == const $CopyWithPlaceholder() || projectId == null
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
@@ -168,6 +168,7 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.events: 'events',
   LAServiceName.events_elasticsearch: 'events_elasticsearch',
   LAServiceName.docker_swarm: 'docker_swarm',
+  LAServiceName.docker_compose: 'docker_compose',
   LAServiceName.docker_common: 'docker_common',
   LAServiceName.gatus: 'gatus',
   LAServiceName.portainer: 'portainer',

@@ -198,6 +198,7 @@ const _$DeploymentTypeEnumMap = {
   DeploymentType.vm: 'vm',
   DeploymentType.dockerSwarm: 'dockerSwarm',
   DeploymentType.k8s: 'k8s',
+  DeploymentType.dockerCompose: 'dockerCompose',
 };
 
 const _$ServiceStatusEnumMap = {

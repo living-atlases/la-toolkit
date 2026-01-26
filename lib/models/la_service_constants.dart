@@ -48,6 +48,7 @@ const String java = 'java';
 final String events = LAServiceName.events.toS();
 final String eventsElasticSearch = LAServiceName.events_elasticsearch.toS();
 final String dockerSwarm = LAServiceName.docker_swarm.toS();
+final String dockerCompose = LAServiceName.docker_compose.toS();
 final String dockerCommon = LAServiceName.docker_common.toS();
 final String gatus = LAServiceName.gatus.toS();
 final String portainer = LAServiceName.portainer.toS();
@@ -61,6 +62,7 @@ List<String> servicesWithoutUrlButShow = <String>[
   pipelines,
   solrcloud,
   dockerSwarm,
+  dockerCompose,
   zookeeper,
   cassandra,
   dockerCommon

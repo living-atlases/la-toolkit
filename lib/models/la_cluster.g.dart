@@ -15,6 +15,8 @@ abstract class _$LAClusterCWProxy {
 
   LACluster projectId(String projectId);
 
+  LACluster serverId(String? serverId);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LACluster(...).copyWith.fieldName(value)`.
   ///
@@ -27,6 +29,7 @@ abstract class _$LAClusterCWProxy {
     String name,
     DeploymentType type,
     String projectId,
+    String? serverId,
   });
 }
 
@@ -50,6 +53,9 @@ class _$LAClusterCWProxyImpl implements _$LAClusterCWProxy {
   LACluster projectId(String projectId) => call(projectId: projectId);
 
   @override
+  LACluster serverId(String? serverId) => call(serverId: serverId);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LACluster(...).copyWith.fieldName(value)`.
   ///
@@ -62,6 +68,7 @@ class _$LAClusterCWProxyImpl implements _$LAClusterCWProxy {
     Object? name = const $CopyWithPlaceholder(),
     Object? type = const $CopyWithPlaceholder(),
     Object? projectId = const $CopyWithPlaceholder(),
+    Object? serverId = const $CopyWithPlaceholder(),
   }) {
     return LACluster(
       id: id == const $CopyWithPlaceholder()
@@ -80,6 +87,10 @@ class _$LAClusterCWProxyImpl implements _$LAClusterCWProxy {
           ? _value.projectId
           // ignore: cast_nullable_to_non_nullable
           : projectId as String,
+      serverId: serverId == const $CopyWithPlaceholder()
+          ? _value.serverId
+          // ignore: cast_nullable_to_non_nullable
+          : serverId as String?,
     );
   }
 }
@@ -102,6 +113,7 @@ LACluster _$LAClusterFromJson(Map<String, dynamic> json) => LACluster(
       $enumDecodeNullable(_$DeploymentTypeEnumMap, json['type']) ??
       DeploymentType.dockerSwarm,
   projectId: json['projectId'] as String,
+  serverId: json['serverId'] as String?,
 );
 
 Map<String, dynamic> _$LAClusterToJson(LACluster instance) => <String, dynamic>{
@@ -109,10 +121,12 @@ Map<String, dynamic> _$LAClusterToJson(LACluster instance) => <String, dynamic>{
   'name': instance.name,
   'type': _$DeploymentTypeEnumMap[instance.type]!,
   'projectId': instance.projectId,
+  'serverId': instance.serverId,
 };
 
 const _$DeploymentTypeEnumMap = {
   DeploymentType.vm: 'vm',
   DeploymentType.dockerSwarm: 'dockerSwarm',
   DeploymentType.k8s: 'k8s',
+  DeploymentType.dockerCompose: 'dockerCompose',
 };

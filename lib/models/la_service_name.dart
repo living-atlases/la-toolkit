@@ -58,6 +58,7 @@ enum LAServiceName {
   events_elasticsearch,
   // ignore: constant_identifier_names
   docker_swarm,
+  docker_compose,
   docker_common,
   gatus,
   portainer,

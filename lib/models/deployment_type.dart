@@ -1,1 +1,1 @@
-enum DeploymentType { vm, dockerSwarm, k8s }
+enum DeploymentType { vm, dockerSwarm, k8s, dockerCompose }
