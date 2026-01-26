@@ -184,7 +184,7 @@ class ServerDetailsCard extends StatelessWidget {
                             regexp: LARegExp.aliasesRegexp,
                             onChanged: (String value) {
                               server.aliases = value.isEmpty
-                                  ? []
+                                  ? <String>[]
                                   : value.split(' ');
                               onSave(server);
                             },
