@@ -37,8 +37,9 @@ Future<void> main() async {
     useMaterial3: true,
   );
 
-  const String dotFile =
-      kReleaseMode ? 'env.production.txt' : 'env.development.txt';
+  const String dotFile = kReleaseMode
+      ? 'env.production.txt'
+      : 'env.development.txt';
   await dotenv.load(fileName: dotFile);
 
   /*
@@ -50,17 +51,20 @@ Future<void> main() async {
   if (kReleaseMode && !AppUtils.isDemo()) {
     // Get the env from the server in production also
     final Uri url = Uri(
-        scheme: Uri.base.scheme,
-        host: Uri.base.host,
-        port: Uri.base.port,
-        path: '/api/v1/get-env');
+      scheme: Uri.base.scheme,
+      host: Uri.base.host,
+      port: Uri.base.port,
+      path: '/api/v1/get-env',
+    );
     log('Uri env: $url');
     final http.Response response = await http.get(url);
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse =
           jsonDecode(response.body) as Map<String, dynamic>;
-      final Map<String, String> serverEnvStringMap =
-          jsonResponse.map((String key, dynamic value) {
+      final Map<String, String> serverEnvStringMap = jsonResponse.map((
+        String key,
+        dynamic value,
+      ) {
         return MapEntry<String, String>(key, value.toString());
       });
       await dotenv.load(fileName: dotFile, mergeWith: serverEnvStringMap);
@@ -82,10 +86,7 @@ Future<void> main() async {
   final Store<AppState> store = Store<AppState>(
     appReducer,
     initialState: initialState,
-    middleware: <Middleware<AppState>>[
-      customLogPrinter(),
-      appStateMiddleware,
-    ],
+    middleware: <Middleware<AppState>>[customLogPrinter(), appStateMiddleware],
   );
   store.onChange.listen((AppState state) {
     // Disable for now
@@ -93,20 +94,51 @@ Future<void> main() async {
     try {
       appStateMiddleware.saveAppState(state);
     } catch (e) {
-      store.dispatch(ShowSnackBar(
-        AppSnackBarMessage.ok(
-            'Something failed when trying to save your configuration'),
-      ));
+      store.dispatch(
+        ShowSnackBar(
+          AppSnackBarMessage.ok(
+            'Something failed when trying to save your configuration',
+          ),
+        ),
+      );
     }
   });
   store.dispatch(ProjectsLoad());
   store.dispatch(OnFetchSoftwareDepsState());
 
   if (!AppUtils.isDemo()) {
-    final SailsIOClient io = SailsIOClient(socket_io_client.io(
+    // Fetch system status (e.g. DB upgrade required)
+    final Uri statusUrl = Uri(
+      scheme: Uri.base.scheme,
+      host: Uri.base.host,
+      port: Uri.base.port,
+      path: '/api/v1/get-system-status',
+    );
+    http
+        .get(statusUrl)
+        .then((http.Response response) {
+          if (response.statusCode == 200) {
+            final Map<String, dynamic> statusJson =
+                jsonDecode(response.body) as Map<String, dynamic>;
+            store.dispatch(
+              OnFetchSystemStatus(
+                statusJson['dbUpgradeRequired'] as bool? ?? false,
+              ),
+            );
+          }
+        })
+        .catchError((dynamic e) {
+          log('Failed to fetch system status: $e');
+        });
+
+    final SailsIOClient io = SailsIOClient(
+      socket_io_client.io(
         "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",
-        socket_io_client.OptionBuilder()
-            .setTransports(<String>['websocket']).build()));
+        socket_io_client.OptionBuilder().setTransports(<String>[
+          'websocket',
+        ]).build(),
+      ),
+    );
 
     io.socket.onConnect((_) {
       // log('sails websocket: Connected to backend');
@@ -118,12 +150,12 @@ Future<void> main() async {
     });
 
     io.get(
-        url:
-            "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
-        cb: (dynamic body, JWR jwrResponse) {
-          // log(body);
-          // log(jwrResponse.toJson());
-        });
+      url: "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
+      cb: (dynamic body, JWR jwrResponse) {
+        // log(body);
+        // log(jwrResponse.toJson());
+      },
+    );
 
     // https://sailsjs.com/documentation/reference/web-sockets/socket-client/io-socket-on
     final Debouncer debouncer = Debouncer(milliseconds: 1000);
@@ -149,8 +181,11 @@ Future<void> main() async {
 
   if (initialState.failedLoad) {
     store.dispatch(OnFetchStateFailed());
-    store.dispatch(ShowSnackBar(
-        AppSnackBarMessage.ok('Failed to retrieve your configuration')));
+    store.dispatch(
+      ShowSnackBar(
+        AppSnackBarMessage.ok('Failed to retrieve your configuration'),
+      ),
+    );
   }
 
   runApp(LaToolkitApp(store: store, theme: theme));
@@ -170,34 +205,37 @@ class LaToolkitApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
-        store: store,
-        child: GlobalLoaderOverlay(
-            // useDefaultLoading: true,
-            overlayColor: Colors.grey.withValues(alpha: 0.5),
-            child: MaterialApp.router(
-              routerDelegate: _routerDelegate,
-              routeInformationParser: BeamerParser(),
-              backButtonDispatcher:
-                  BeamerBackButtonDispatcher(delegate: Routes().routerDelegate),
-              // navigatorKey: MainKeys.navKey,
-              builder: (BuildContext context, Widget? widget) =>
-                  ResponsiveWrapper.builder(
-                      BouncingScrollWrapper.builder(context, widget!),
-                      maxWidth: 1200,
-                      // minWidth: 450,
-                      defaultScale: true,
-                      breakpoints: <ResponsiveBreakpoint>[
-                        const ResponsiveBreakpoint.resize(450, name: MOBILE),
-                        const ResponsiveBreakpoint.autoScale(800, name: TABLET),
-                        const ResponsiveBreakpoint.autoScale(1000,
-                            name: TABLET),
-                        const ResponsiveBreakpoint.resize(1200, name: DESKTOP),
-                        const ResponsiveBreakpoint.resize(2460, name: '4K'),
-                      ],
-                      background: Container(color: const Color(0xFFF5F5F5))),
-              title: appName,
-              theme: theme,
-              debugShowCheckedModeBanner: AppUtils.isDev(),
-            )));
+      store: store,
+      child: GlobalLoaderOverlay(
+        // useDefaultLoading: true,
+        overlayColor: Colors.grey.withValues(alpha: 0.5),
+        child: MaterialApp.router(
+          routerDelegate: _routerDelegate,
+          routeInformationParser: BeamerParser(),
+          backButtonDispatcher: BeamerBackButtonDispatcher(
+            delegate: Routes().routerDelegate,
+          ),
+          // navigatorKey: MainKeys.navKey,
+          builder: (BuildContext context, Widget? widget) =>
+              ResponsiveWrapper.builder(
+                BouncingScrollWrapper.builder(context, widget!),
+                maxWidth: 1200,
+                // minWidth: 450,
+                defaultScale: true,
+                breakpoints: <ResponsiveBreakpoint>[
+                  const ResponsiveBreakpoint.resize(450, name: MOBILE),
+                  const ResponsiveBreakpoint.autoScale(800, name: TABLET),
+                  const ResponsiveBreakpoint.autoScale(1000, name: TABLET),
+                  const ResponsiveBreakpoint.resize(1200, name: DESKTOP),
+                  const ResponsiveBreakpoint.resize(2460, name: '4K'),
+                ],
+                background: Container(color: const Color(0xFFF5F5F5)),
+              ),
+          title: appName,
+          theme: theme,
+          debugShowCheckedModeBanner: AppUtils.isDev(),
+        ),
+      ),
+    );
   }
 }

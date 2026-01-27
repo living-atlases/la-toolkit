@@ -44,9 +44,9 @@ RUN echo 'export PATH="$PATH:$NPM_PACKAGES/bin"' >> /home/ubuntu/.profile
 
 # Assh and .ssh directories for ubuntu user
 RUN mkdir -p /home/ubuntu/.ssh/assh.d && \
-    chmod 0700 /home/ubuntu/.ssh && \
-    chmod 0700 /home/ubuntu/.ssh/assh.d && \
-    chown ubuntu:ubuntu -R /home/ubuntu/.ssh
+        chmod 0700 /home/ubuntu/.ssh && \
+        chmod 0700 /home/ubuntu/.ssh/assh.d && \
+        chown ubuntu:ubuntu -R /home/ubuntu/.ssh
 
 # assh install
 RUN curl -L -o /tmp/assh.tar.gz -O https://github.com/moul/assh/releases/download/v2.16.0/assh_2.16.0_linux_amd64.tar.gz
@@ -97,8 +97,7 @@ RUN su - ubuntu -c 'npm config set prefix "/home/ubuntu/.npm-packages"'
 RUN su - ubuntu -c 'npm install -g yo@5.1.0'
 RUN su - ubuntu -c 'npm install -g sails'
 RUN su - ubuntu -c 'npm install -g forever'
-RUN su - ubuntu -c 'npm install -g db-migrate'
-RUN su - ubuntu -c 'npm install -g db-migrate-mongodb'
+RUN su - ubuntu -c 'npm install -g migrate-mongo'
 RUN echo "2021060901"
 RUN su - ubuntu -c 'npm install -g generator-living-atlas'
 
@@ -110,7 +109,7 @@ RUN su - ubuntu -c 'git clone --branch v2.4.1 https://github.com/AtlasOfLivingAu
 
 # apt.gbif.es LA pipelines and deps
 RUN echo "deb [arch=amd64] https://apt.gbif.es/ bionic main" > /etc/apt/sources.list.d/ala.list && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F697D8D2ADB9E24A
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F697D8D2ADB9E24A
 
 # la-pipelines dependencies (commented right now as we only need to check the la-pipelines available)
 # yq

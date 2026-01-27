@@ -46,6 +46,12 @@ class OnFetchBackendVersion extends AppActions {
   String version;
 }
 
+class OnFetchSystemStatus extends AppActions {
+  OnFetchSystemStatus(this.dbUpgradeRequired);
+
+  bool dbUpgradeRequired;
+}
+
 class OnLAVersionsSwCheckEnd extends AppActions {
   OnLAVersionsSwCheckEnd(this.releases, this.time);
 

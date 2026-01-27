@@ -76,6 +76,7 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, OnInitCasKeysResults>(_onInitCasKeysResults),
   TypedReducer<AppState, OnInitCasOAuthKeysResults>(_onInitCasOAuthKeysResults),
   TypedReducer<AppState, OnSelectTuneTab>(_onSelectTuneTab),
+  TypedReducer<AppState, OnFetchSystemStatus>(_onFetchSystemStatus),
 ];
 
 final Reducer<AppState> appReducer = combineReducers<AppState>(
@@ -132,6 +133,10 @@ AppState _onFetchGeneratorReleases(
 
 AppState _onFetchBackendVersion(AppState state, OnFetchBackendVersion action) {
   return state.copyWith(backendVersion: action.version);
+}
+
+AppState _onFetchSystemStatus(AppState state, OnFetchSystemStatus action) {
+  return state.copyWith(dbUpgradeRequired: action.dbUpgradeRequired);
 }
 
 AppState _onFetchGeneratorReleasesFailed(

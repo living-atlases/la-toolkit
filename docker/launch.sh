@@ -43,7 +43,8 @@ do
     echo Trying to connect to the mongo db at $PARSED_HOST:$PARSED_PORT...
     sleep 3
 done
-cd /home/ubuntu/la-toolkit && db-migrate up
+# Run migrations, but don't exit if they fail so the UI can show the status
+cd /home/ubuntu/la-toolkit && npm run migrate || echo "WARNING: Migration failed. Proceeding to start app..."
 # log more in cause of startup issues adding --verbose
 # -w needs to increase file opened limits
 cd /home/ubuntu/la-toolkit && forever app.js --prod --port 2010
