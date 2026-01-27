@@ -20,7 +20,7 @@ class ServersCardList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, ServersCardListViewModel>(
-      // distinct: false,
+      distinct: false,
       converter: (Store<AppState> store) {
         return ServersCardListViewModel(
           currentProject: store.state.currentProject,
