@@ -81,7 +81,7 @@ services:
       - DEFAULT_BACKUP_INTERVAL=1440
       - DEFAULT_CLEAN_UP_TIME=8640
       - DEFAULT_CHECKSUM=TRUE
-      - DEFAULT_COMPRESSION=GZ
+      - DEFAULT_CHECKSUM_TYPE=MD5
       - TZ=Europe/Copenhagen
     volumes:
       - /data/la-toolkit/backups:/backup
@@ -110,7 +110,10 @@ services:
     image: containrrr/watchtower
     container_name: la-toolkit-watchtower
     restart: unless-stopped
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=3600
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     # Additional watchtower args
-    # commmand:
+    # command:
