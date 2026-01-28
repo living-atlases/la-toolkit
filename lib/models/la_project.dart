@@ -515,6 +515,16 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return allReady;
   }
 
+  bool hasDockerSupportedServicesInUse() {
+    return services.any(
+      (LAService s) => s.use && LAServiceDesc.get(s.nameInt).dockerSupport,
+    );
+  }
+
+  bool hasAnyServerWithDockerCompose() {
+    return getServiceDeploysForSomeService(dockerCompose).isNotEmpty;
+  }
+
   bool allServersWithServicesReady() {
     bool allReady = true && serversWithServices().isNotEmpty;
     serversWithServices().forEach((LAServer s) {
@@ -911,10 +921,40 @@ check results length: ${checkResults.length}''';
       }
     }
     if (serviceName == dockerCompose) {
+      // Find all docker-compose clusters for this server
+      final List<LACluster> dockerComposeClusters = clusters
+          .where(
+            (LACluster c) =>
+                c.serverId == sIdOrCid &&
+                c.type == DeploymentType.dockerCompose,
+          )
+          .toList();
+
+      // For each cluster, remove all services and their deployments
+      for (final LACluster cluster in dockerComposeClusters) {
+        // Get all services in this cluster
+        final List<String>? servicesInCluster = clusterServices[cluster.id];
+        if (servicesInCluster != null) {
+          // Remove all service deployments for this cluster
+          for (final String serviceNameInt in servicesInCluster) {
+            final LAService service = getService(serviceNameInt);
+            serviceDeploys.removeWhere(
+              (LAServiceDeploy sD) =>
+                  sD.projectId == id &&
+                  sD.clusterId == cluster.id &&
+                  sD.type == DeploymentType.dockerCompose &&
+                  sD.serviceId == service.id,
+            );
+          }
+        }
+      }
+
+      // Remove the clusters
       clusters.removeWhere(
         (LACluster c) =>
             c.serverId == sIdOrCid && c.type == DeploymentType.dockerCompose,
       );
+      // Remove cluster services
       clusterServices.removeWhere(
         (String key, List<String> value) =>
             !clusters.any((LACluster c) => c.id == key),
