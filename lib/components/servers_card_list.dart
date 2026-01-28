@@ -20,7 +20,8 @@ class ServersCardList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, ServersCardListViewModel>(
-      distinct: false,
+      // Default value, so commenting
+      // distinct: false,
       converter: (Store<AppState> store) {
         return ServersCardListViewModel(
           currentProject: store.state.currentProject,
@@ -196,25 +197,55 @@ class ServerServicesViewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDockerSwarm = type == DeploymentType.dockerSwarm;
+    final ShapeBorder cardShape = type == DeploymentType.vm
+        ? CardConstants.defaultShape
+        : isDockerSwarm
+        ? CardConstants.deprecatedClusterShape
+        : CardConstants.defaultClusterShape;
+
     return IntrinsicWidth(
       child: Card(
         margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         elevation: CardConstants.defaultElevation,
-        shape: type == DeploymentType.vm
-            ? CardConstants.defaultShape
-            : CardConstants.defaultClusterShape,
+        shape: cardShape,
         child: Container(
           width: 300,
           margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-          child: ListTile(
-            key: ValueKey<String>('${name}basic-tile'),
-            contentPadding: EdgeInsets.zero,
-            title: Text(name),
-            subtitle: Text(
-              LAService.servicesForHumans(
-                project.getServerServicesFull(id: id, type: type),
+          decoration: isDockerSwarm
+              ? BoxDecoration(borderRadius: BorderRadius.circular(4))
+              : null,
+          foregroundDecoration: isDockerSwarm
+              ? BoxDecoration(borderRadius: BorderRadius.circular(4))
+              : null,
+          child: Stack(
+            children: <Widget>[
+              ListTile(
+                key: ValueKey<String>('${name}basic-tile'),
+                contentPadding: EdgeInsets.zero,
+                title: isDockerSwarm
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(name),
+                          const Text(
+                            'Deprecated',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(name),
+                subtitle: Text(
+                  LAService.servicesForHumans(
+                    project.getServerServicesFull(id: id, type: type),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),

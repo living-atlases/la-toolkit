@@ -75,70 +75,109 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
       }
     }
     final bool isAServer = widget.server != null;
+    final bool isDockerSwarm =
+        !isAServer && widget.type == DeploymentType.dockerSwarm;
+    final ShapeBorder cardShape = widget.type == DeploymentType.vm
+        ? CardConstants.defaultShape
+        : isDockerSwarm
+        ? CardConstants.deprecatedClusterShape
+        : CardConstants.defaultClusterShape;
+
     return IntrinsicWidth(
       child: Card(
         elevation: CardConstants.defaultElevation,
-        shape: widget.type == DeploymentType.vm
-            ? CardConstants.defaultShape
-            : CardConstants.defaultClusterShape,
+        shape: cardShape,
         // color: Colors.black12,
         margin: const EdgeInsets.all(10),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Container(
+          decoration: isDockerSwarm
+              ? BoxDecoration(borderRadius: BorderRadius.circular(4))
+              : null,
+          child: Stack(
             children: <Widget>[
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  isAServer
-                      ? widget.server!.name
-                      : widget.type == DeploymentType.dockerCompose
-                      ? widget.cluster?.name ?? 'Docker compose'
-                      : 'Docker swarm cluster',
-                  style: const TextStyle(
-                    color: LAColorTheme.inactive,
-                    fontSize: 20,
-                  ),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    if (isAServer)
-                      RenameServerIcon(widget.server!, widget.onEditing, (
-                        String newName,
-                      ) {
-                        widget.onRename(newName);
-                      }),
-                    if (isAServer)
-                      Tooltip(
-                        message: 'Delete this server',
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.delete, color: Colors.grey),
-                          onPressed: () {
-                            widget.onEditing();
-                            UiUtils.showAlertDialog(
-                              context,
-                              () => widget.onDeleted(widget.server!),
-                              () {},
-                              title: "Deleting server '${widget.server!.name}'",
-                            );
-                          },
-                        ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: isDockerSwarm
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  widget.cluster?.name ??
+                                      'Docker swarm cluster',
+                                  style: const TextStyle(
+                                    color: LAColorTheme.inactive,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                const Text(
+                                  'deprecated',
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontSize: 12,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Text(
+                              isAServer
+                                  ? widget.server!.name
+                                  : widget.cluster?.name ?? 'Docker compose',
+                              style: const TextStyle(
+                                color: LAColorTheme.inactive,
+                                fontSize: 20,
+                              ),
+                            ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          if (isAServer)
+                            RenameServerIcon(widget.server!, widget.onEditing, (
+                              String newName,
+                            ) {
+                              widget.onRename(newName);
+                            }),
+                          if (isAServer)
+                            Tooltip(
+                              message: 'Delete this server',
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  widget.onEditing();
+                                  UiUtils.showAlertDialog(
+                                    context,
+                                    () => widget.onDeleted(widget.server!),
+                                    () {},
+                                    title:
+                                        "Deleting server '${widget.server!.name}'",
+                                  );
+                                },
+                              ),
+                            ),
+                        ],
                       ),
+                    ),
+                    const SizedBox(height: 10),
+                    // ignore: sized_box_for_whitespace
+                    Container(
+                      width: 300,
+                      child: Wrap(
+                        spacing: 3.0, // spacing between adjacent chips
+                        runSpacing: 5.0,
+                        children: chips,
+                      ),
+                    ),
                   ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              // ignore: sized_box_for_whitespace
-              Container(
-                width: 300,
-                child: Wrap(
-                  spacing: 3.0, // spacing between adjacent chips
-                  runSpacing: 5.0,
-                  children: chips,
                 ),
               ),
             ],
