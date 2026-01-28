@@ -145,26 +145,6 @@ class _HomePageState extends State<HomePage> {
                 ),
                 body: Column(
                   children: <Widget>[
-                    if (vm.state.dbUpgradeRequired)
-                      MaterialBanner(
-                        backgroundColor: Colors.orange.shade100,
-                        content: const Text(
-                          'Database Upgrade Required: Your MongoDB data is from an older version (4.x) and is incompatible with the current image (8.x). Please perform a manual upgrade (backup, delete volume, restore).',
-                          style: TextStyle(color: Colors.black87),
-                        ),
-                        leading: const Icon(
-                          Icons.warning,
-                          color: Colors.orange,
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              // Maybe link to documentation or just dismiss
-                            },
-                            child: const Text('DISMISS'),
-                          ),
-                        ],
-                      ),
                     const Expanded(child: AppSnackBar(LAProjectsList())),
                   ],
                 ),

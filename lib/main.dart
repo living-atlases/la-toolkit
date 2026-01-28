@@ -107,30 +107,6 @@ Future<void> main() async {
   store.dispatch(OnFetchSoftwareDepsState());
 
   if (!AppUtils.isDemo()) {
-    // Fetch system status (e.g. DB upgrade required)
-    final Uri statusUrl = Uri(
-      scheme: Uri.base.scheme,
-      host: Uri.base.host,
-      port: Uri.base.port,
-      path: '/api/v1/get-system-status',
-    );
-    http
-        .get(statusUrl)
-        .then((http.Response response) {
-          if (response.statusCode == 200) {
-            final Map<String, dynamic> statusJson =
-                jsonDecode(response.body) as Map<String, dynamic>;
-            store.dispatch(
-              OnFetchSystemStatus(
-                statusJson['dbUpgradeRequired'] as bool? ?? false,
-              ),
-            );
-          }
-        })
-        .catchError((dynamic e) {
-          log('Failed to fetch system status: $e');
-        });
-
     final SailsIOClient io = SailsIOClient(
       socket_io_client.io(
         "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",

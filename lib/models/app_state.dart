@@ -61,7 +61,6 @@ class AppState {
     this.lastSwCheck,
     bool? loading,
     bool? depsLoading,
-    bool? dbUpgradeRequired,
     List<SshKey>? sshKeys,
     Map<String, Map<String, dynamic>>? serviceCheckProgress,
   }) : projects = projects ?? <LAProject>[],
@@ -74,7 +73,6 @@ class AppState {
        laReleases = laReleases ?? <String, LAReleases>{},
        loading = loading ?? false,
        depsLoading = depsLoading ?? false,
-       dbUpgradeRequired = dbUpgradeRequired ?? false,
        serviceCheckProgress =
            serviceCheckProgress ?? <String, Map<String, dynamic>>{},
        appSnackBarMessages = appSnackBarMessages ?? <AppSnackBarMessage>[];
@@ -106,8 +104,6 @@ class AppState {
   @JsonKey(includeToJson: false, includeFromJson: false)
   final bool depsLoading;
   @JsonKey(includeToJson: false, includeFromJson: false)
-  final bool dbUpgradeRequired;
-  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<String, Map<String, dynamic>> serviceCheckProgress;
   final DateTime? lastSwCheck;
 
@@ -128,7 +124,6 @@ class AppState {
           pkgInfo == other.pkgInfo &&
           loading == other.loading &&
           depsLoading == other.depsLoading &&
-          dbUpgradeRequired == other.dbUpgradeRequired &&
           backendVersion == other.backendVersion &&
           lastSwCheck == other.lastSwCheck &&
           listEquals(projects, other.projects) &&
@@ -158,7 +153,6 @@ class AppState {
       backendVersion.hashCode ^
       loading.hashCode ^
       depsLoading.hashCode ^
-      dbUpgradeRequired.hashCode ^
       lastSwCheck.hashCode ^
       const ListEquality<AppSnackBarMessage>().hash(appSnackBarMessages) ^
       const ListEquality<LAProject>().hash(projects) ^
