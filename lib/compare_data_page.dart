@@ -46,36 +46,52 @@ class CompareDataPage extends StatefulWidget {
 }
 
 class _CompareDataViewModel implements SolrQueryExecutor {
-  _CompareDataViewModel(
-      {required this.state,
-      required this.doSolrQuery,
-      required this.doSolrRawQuery,
-      required this.doMySqlQuery});
+  _CompareDataViewModel({
+    required this.state,
+    required this.doSolrQuery,
+    required this.doSolrRawQuery,
+    required this.doMySqlQuery,
+  });
 
   final AppState state;
   final void Function(
-      String solrHost,
-      String query,
-      Function(Map<String, dynamic>) onResult,
-      Function(String) onError) doSolrQuery;
-  final void Function(String solrHost, String query, Function(dynamic) onResult,
-      Function(String) onError) doSolrRawQuery;
+    String solrHost,
+    String query,
+    Function(Map<String, dynamic>) onResult,
+    Function(String) onError,
+  )
+  doSolrQuery;
   final void Function(
-          String query, Function(dynamic) onResult, Function(String) onError)
-      doMySqlQuery;
+    String solrHost,
+    String query,
+    Function(dynamic) onResult,
+    Function(String) onError,
+  )
+  doSolrRawQuery;
+  final void Function(
+    String query,
+    Function(dynamic) onResult,
+    Function(String) onError,
+  )
+  doMySqlQuery;
 
   @override
   void query(
-      String solrHost,
-      String query,
-      Function(Map<String, dynamic> result) onResult,
-      Function(String message) onError) {
+    String solrHost,
+    String query,
+    Function(Map<String, dynamic> result) onResult,
+    Function(String message) onError,
+  ) {
     doSolrQuery(solrHost, query, onResult, onError);
   }
 
   @override
-  void rawQuery(String solrHost, String query,
-      Function(dynamic result) onResult, Function(String message) onError) {
+  void rawQuery(
+    String solrHost,
+    String query,
+    Function(dynamic result) onResult,
+    Function(String message) onError,
+  ) {
     doSolrRawQuery(solrHost, query, onResult, onError);
   }
 }
@@ -134,124 +150,165 @@ class _CompareDataPageState extends State<CompareDataPage> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _CompareDataViewModel>(
-        converter: (Store<AppState> store) {
-      return _CompareDataViewModel(
-        state: store.state,
-        doSolrQuery: (String solrHost, String query,
-            Function(Map<String, dynamic>) onResult, Function(String) onError) {
-          store.dispatch(SolrQuery(
-              project: p.id,
-              solrHost: solrHost,
-              query: query,
-              onError: onError,
-              onResult: onResult));
-        },
-        doSolrRawQuery: (String solrHost, String query,
-            Function(dynamic) onResult, Function(String) onError) {
-          store.dispatch(SolrRawQuery(
-              project: p.id,
-              solrHost: solrHost,
-              query: query,
-              onError: onError,
-              onResult: onResult));
-        },
-        doMySqlQuery: (String query, Function(dynamic) onResult,
-            Function(String) onError) {
-          store.dispatch(MySqlQuery(
-              project: p.id,
-              mySqlHost: collectoryHost,
-              db: 'collectory',
-              query: query,
-              onError: onError,
-              onResult: onResult));
-        },
-      );
-    }, builder: (BuildContext context, _CompareDataViewModel vm) {
-      if (tab == 3) {
-        launchEnabled = true;
-      }
-      p = vm.state.currentProject;
-      collectoryHost = p
-          .getServerById(
-              p.getServiceDeploysForSomeService(collectory)[0].serverId!)!
-          .name;
-      final Map<String, dynamic> services =
-          p.getServiceDetailsForVersionCheck();
-      alaHubUrl = (services[alaHub] as Map<String, dynamic>)['url'] as String;
-      collectoryUrl =
-          (services[collectory] as Map<String, dynamic>)['url'] as String;
-      final List<String> solrHosts = <String>[];
-      for (final String service in <String>[solr, solrcloud]) {
-        p
-            .getServiceDeploysForSomeService(service)
-            .forEach((LAServiceDeploy sd) {
-          if (sd.serverId == null) {
-            final String dockerHost = p
-                .getServerById(p
-                    .getServiceDeploysForSomeService(dockerSwarm)[0]
-                    .serverId!)!
-                .name;
-            if (!solrHosts.contains(dockerHost)) {
-              solrHosts.add(dockerHost);
-            }
-          } else {
-            final LAServer? server = p.getServerById(sd.serverId!);
-            solrHosts.add(server!.name);
-          }
-        });
-      }
+      converter: (Store<AppState> store) {
+        return _CompareDataViewModel(
+          state: store.state,
+          doSolrQuery:
+              (
+                String solrHost,
+                String query,
+                Function(Map<String, dynamic>) onResult,
+                Function(String) onError,
+              ) {
+                store.dispatch(
+                  SolrQuery(
+                    project: p.id,
+                    solrHost: solrHost,
+                    query: query,
+                    onError: onError,
+                    onResult: onResult,
+                  ),
+                );
+              },
+          doSolrRawQuery:
+              (
+                String solrHost,
+                String query,
+                Function(dynamic) onResult,
+                Function(String) onError,
+              ) {
+                store.dispatch(
+                  SolrRawQuery(
+                    project: p.id,
+                    solrHost: solrHost,
+                    query: query,
+                    onError: onError,
+                    onResult: onResult,
+                  ),
+                );
+              },
+          doMySqlQuery:
+              (
+                String query,
+                Function(dynamic) onResult,
+                Function(String) onError,
+              ) {
+                store.dispatch(
+                  MySqlQuery(
+                    project: p.id,
+                    mySqlHost: collectoryHost,
+                    db: 'collectory',
+                    query: query,
+                    onError: onError,
+                    onResult: onResult,
+                  ),
+                );
+              },
+        );
+      },
+      builder: (BuildContext context, _CompareDataViewModel vm) {
+        if (tab == 3) {
+          launchEnabled = true;
+        }
+        p = vm.state.currentProject;
+        collectoryHost = p
+            .getServerById(
+              p.getServiceDeploysForSomeService(collectory)[0].serverId!,
+            )!
+            .name;
+        final Map<String, dynamic> services = p
+            .getServiceDetailsForVersionCheck();
+        alaHubUrl = (services[alaHub] as Map<String, dynamic>)['url'] as String;
+        collectoryUrl =
+            (services[collectory] as Map<String, dynamic>)['url'] as String;
+        final List<String> solrHosts = <String>[];
+        for (final String service in <String>[solr, solrcloud]) {
+          p.getServiceDeploysForSomeService(service).forEach((
+            LAServiceDeploy sd,
+          ) {
+            if (sd.serverId == null) {
+              // Docker cluster - get first host from either Swarm or Compose
+              final List<LAServiceDeploy> swarmDeploys = p
+                  .getServiceDeploysForSomeService(dockerSwarm);
+              final List<LAServiceDeploy> composeDeploys = p
+                  .getServiceDeploysForSomeService(dockerCompose);
+              final LAServiceDeploy? dockerDeploy = swarmDeploys.isNotEmpty
+                  ? swarmDeploys[0]
+                  : (composeDeploys.isNotEmpty ? composeDeploys[0] : null);
 
-      final List<DropdownMenuItem<String>> solrHostsMenuItems =
-          <DropdownMenuItem<String>>[];
-      for (final String element in solrHosts) {
-        // ignore: always_specify_types
-        solrHostsMenuItems.add(
-            DropdownMenuItem<String>(value: element, child: Text(element)));
-      }
-      Future<void> onCoreOrCollectionSelected(String? value) async {
-        setState(() {
-          if (value != null) {
-            _setCheckIndexPhase();
-            coreOrCollection1 = value;
-
-            if (tab == 0) {
-              launchEnabled = true;
-            } else if (tab == 2 && recordsToCompare != null) {
-              launchEnabled = true;
+              if (dockerDeploy != null && dockerDeploy.serverId != null) {
+                final String dockerHost = p
+                    .getServerById(dockerDeploy.serverId!)!
+                    .name;
+                if (!solrHosts.contains(dockerHost)) {
+                  solrHosts.add(dockerHost);
+                }
+              }
             } else {
-              if (coreOrCollection2 != null) {
+              final LAServer? server = p.getServerById(sd.serverId!);
+              solrHosts.add(server!.name);
+            }
+          });
+        }
+
+        final List<DropdownMenuItem<String>> solrHostsMenuItems =
+            <DropdownMenuItem<String>>[];
+        for (final String element in solrHosts) {
+          // ignore: always_specify_types
+          solrHostsMenuItems.add(
+            DropdownMenuItem<String>(value: element, child: Text(element)),
+          );
+        }
+        Future<void> onCoreOrCollectionSelected(String? value) async {
+          setState(() {
+            if (value != null) {
+              _setCheckIndexPhase();
+              coreOrCollection1 = value;
+
+              if (tab == 0) {
+                launchEnabled = true;
+              } else if (tab == 2 && recordsToCompare != null) {
+                launchEnabled = true;
+              } else {
+                if (coreOrCollection2 != null) {
+                  launchEnabled = true;
+                }
+              }
+              somethingFailed = false;
+            }
+          });
+          if (value != null) {
+            isPipelineIndex1 = await isAPipelinesIndex(
+              vm,
+              solrHost1!,
+              coreOrCollection1!,
+            );
+            setState(() {});
+          }
+        }
+
+        Future<void> onSndCoreOrCollectionSelected(String? value) async {
+          setState(() {
+            if (value != null) {
+              _setCheckIndexPhase();
+              coreOrCollection2 = value;
+              if (coreOrCollection1 != null) {
                 launchEnabled = true;
               }
             }
             somethingFailed = false;
-          }
-        });
-        if (value != null) {
-          isPipelineIndex1 =
-              await isAPipelinesIndex(vm, solrHost1!, coreOrCollection1!);
-          setState(() {});
-        }
-      }
-
-      Future<void> onSndCoreOrCollectionSelected(String? value) async {
-        setState(() {
+          });
           if (value != null) {
-            _setCheckIndexPhase();
-            coreOrCollection2 = value;
-            if (coreOrCollection1 != null) {
-              launchEnabled = true;
-            }
+            isPipelineIndex2 = await isAPipelinesIndex(
+              vm,
+              solrHost2!,
+              coreOrCollection2!,
+            );
+            setState(() {});
           }
-          somethingFailed = false;
-        });
-        if (value != null) {
-          isPipelineIndex2 =
-              await isAPipelinesIndex(vm, solrHost2!, coreOrCollection2!);
-          setState(() {});
         }
-      }
 
-      return Scaffold(
+        return Scaffold(
           key: _scaffoldKey,
           appBar: LAAppBar(
             context: context,
@@ -267,16 +324,21 @@ class _CompareDataPageState extends State<CompareDataPage> {
             style: TabStyle.react,
             items: const <TabItem<dynamic>>[
               TabItem<dynamic>(
-                  icon: Icons.image_search_outlined,
-                  title: 'Compare records with GBIF'),
+                icon: Icons.image_search_outlined,
+                title: 'Compare records with GBIF',
+              ),
               TabItem<dynamic>(
-                  icon: Icons.compare_arrows,
-                  title: 'Solr indexes comparative'),
+                icon: Icons.compare_arrows,
+                title: 'Solr indexes comparative',
+              ),
               TabItem<dynamic>(
-                  icon: Icons.repeat_one, title: 'Compare some records'),
+                icon: Icons.repeat_one,
+                title: 'Compare some records',
+              ),
               TabItem<dynamic>(
-                  icon: Icons.difference,
-                  title: 'Compare collections with GBIF'),
+                icon: Icons.difference,
+                title: 'Compare collections with GBIF',
+              ),
             ],
             initialActiveIndex: 0,
             //optional, default as 0
@@ -284,245 +346,279 @@ class _CompareDataPageState extends State<CompareDataPage> {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
-          body: AppSnackBar(ScrollPanel(
+          body: AppSnackBar(
+            ScrollPanel(
               withPadding: true,
               padding: 40,
-              child: Row(children: <Widget>[
-                Expanded(
-                  //flex: 1,
-                  child: Container(),
-                ),
-                Expanded(
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    //flex: 1,
+                    child: Container(),
+                  ),
+                  Expanded(
                     flex: 10, // 80%,
                     child: SingleChildScrollView(
-                        child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        // mainAxisSize: MainAxisSize.min,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          // mainAxisSize: MainAxisSize.min,
+                          const SizedBox(height: 20),
 
-                        const SizedBox(height: 20),
-
-                        Text(tab == 0
-                            ? 'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'
-                            : tab == 1
+                          Text(
+                            tab == 0
+                                ? 'This tool compares taxonomic data between records from your LA Portal and their equivalent records published in GBIF.org. The comparison focuses on several key fields such as scientificName, kingdom, phylum, class, order, family, genus and species. Additionally, it considers other fields like country, etc'
+                                : tab == 1
                                 ? 'This tool compare two solr cores or two solrcloud collections in your LA Portal'
                                 : tab == 2
-                                    ? 'This tool compare some LA records or a data resource with the equivalent in GBIF'
-                                    : 'This tools compare the Collections metadata with GBIF'),
-                        const SizedBox(height: 10),
+                                ? 'This tool compare some LA records or a data resource with the equivalent in GBIF'
+                                : 'This tools compare the Collections metadata with GBIF',
+                          ),
+                          const SizedBox(height: 10),
 
-                        if (tab == 0)
-                          CompareDataTimeline<CompareWithGbifDataPhase>(
+                          if (tab == 0)
+                            CompareDataTimeline<CompareWithGbifDataPhase>(
                               currentPhase: currentPhaseTab0,
                               failed: somethingFailed,
-                              phaseValues:
-                                  CompareWithGbifDataPhase.values.toList()),
-                        if (tab == 1)
-                          CompareDataTimeline<CompareSolrIndexesPhase>(
+                              phaseValues: CompareWithGbifDataPhase.values
+                                  .toList(),
+                            ),
+                          if (tab == 1)
+                            CompareDataTimeline<CompareSolrIndexesPhase>(
                               currentPhase: currentPhaseTab1,
                               failed: somethingFailed,
-                              phaseValues:
-                                  CompareSolrIndexesPhase.values.toList()),
-                        if (tab == 2)
-                          CompareDataTimeline<CompareSomeWithGbifDataPhase>(
+                              phaseValues: CompareSolrIndexesPhase.values
+                                  .toList(),
+                            ),
+                          if (tab == 2)
+                            CompareDataTimeline<CompareSomeWithGbifDataPhase>(
                               currentPhase: currentPhaseTab2,
                               failed: somethingFailed,
-                              phaseValues:
-                                  CompareSomeWithGbifDataPhase.values.toList()),
-                        if (tab == 3)
-                          CompareDataTimeline<
-                                  CompareCollectionsWithGbifDataPhase>(
+                              phaseValues: CompareSomeWithGbifDataPhase.values
+                                  .toList(),
+                            ),
+                          if (tab == 3)
+                            CompareDataTimeline<
+                              CompareCollectionsWithGbifDataPhase
+                            >(
                               currentPhase: currentPhaseTab3,
                               failed: somethingFailed,
                               phaseValues: CompareCollectionsWithGbifDataPhase
                                   .values
-                                  .toList()),
-                        if (tab != 3)
-                          ButtonTheme(
+                                  .toList(),
+                            ),
+                          if (tab != 3)
+                            ButtonTheme(
                               materialTapTargetSize:
                                   MaterialTapTargetSize.padded,
                               child: DropdownButton<String>(
-                                  underline: DropdownButtonHideUnderline(
-                                    child: Container(),
-                                  ),
-                                  disabledHint:
-                                      const Text('No solr host available'),
-                                  hint: Text(
-                                      'Select Solr host${tab == 1 ? ' A' : ''}'),
-                                  value: solrHost1,
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      if (newValue != null) {
-                                        solrHost1 = newValue;
-                                      }
-                                    });
-                                    setState(() {
-                                      if (newValue != null) {
-                                        currentPhaseTab0 =
-                                            CompareWithGbifDataPhase.getCores;
-                                        currentPhaseTab1 =
-                                            CompareSolrIndexesPhase.getCores;
-                                        fetchCoreOrCollections(vm, solrHost1!)
-                                            .then((List<String> result) {
-                                          setState(() {
-                                            coreOrCollections1 = result;
-                                          });
+                                underline: DropdownButtonHideUnderline(
+                                  child: Container(),
+                                ),
+                                disabledHint: const Text(
+                                  'No solr host available',
+                                ),
+                                hint: Text(
+                                  'Select Solr host${tab == 1 ? ' A' : ''}',
+                                ),
+                                value: solrHost1,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    if (newValue != null) {
+                                      solrHost1 = newValue;
+                                    }
+                                  });
+                                  setState(() {
+                                    if (newValue != null) {
+                                      currentPhaseTab0 =
+                                          CompareWithGbifDataPhase.getCores;
+                                      currentPhaseTab1 =
+                                          CompareSolrIndexesPhase.getCores;
+                                      fetchCoreOrCollections(
+                                        vm,
+                                        solrHost1!,
+                                      ).then((List<String> result) {
+                                        setState(() {
+                                          coreOrCollections1 = result;
                                         });
-                                      }
-                                    });
-                                  },
-                                  // isExpanded: true,
-                                  elevation: 16,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  items: solrHostsMenuItems)),
-                        if (tab == 1)
-                          ButtonTheme(
+                                      });
+                                    }
+                                  });
+                                },
+                                // isExpanded: true,
+                                elevation: 16,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                items: solrHostsMenuItems,
+                              ),
+                            ),
+                          if (tab == 1)
+                            ButtonTheme(
                               materialTapTargetSize:
                                   MaterialTapTargetSize.padded,
                               child: DropdownButton<String>(
-                                  underline: DropdownButtonHideUnderline(
-                                    child: Container(),
-                                  ),
-                                  disabledHint:
-                                      const Text('No solr host available'),
-                                  hint: Text(
-                                      'Select Solr host${tab == 1 ? ' B' : ''}'),
-                                  value: solrHost2,
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      if (newValue != null) {
-                                        solrHost2 = newValue;
-                                      }
-                                    });
-                                    setState(() {
-                                      if (solrHost2 != null &&
-                                          solrHost1 != null) {
-                                        currentPhaseTab1 =
-                                            CompareSolrIndexesPhase.getCores;
-                                        fetchCoreOrCollections(vm, solrHost2!)
-                                            .then((List<String> result) {
-                                          setState(() {
-                                            coreOrCollections2 = result;
-                                          });
+                                underline: DropdownButtonHideUnderline(
+                                  child: Container(),
+                                ),
+                                disabledHint: const Text(
+                                  'No solr host available',
+                                ),
+                                hint: Text(
+                                  'Select Solr host${tab == 1 ? ' B' : ''}',
+                                ),
+                                value: solrHost2,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    if (newValue != null) {
+                                      solrHost2 = newValue;
+                                    }
+                                  });
+                                  setState(() {
+                                    if (solrHost2 != null &&
+                                        solrHost1 != null) {
+                                      currentPhaseTab1 =
+                                          CompareSolrIndexesPhase.getCores;
+                                      fetchCoreOrCollections(
+                                        vm,
+                                        solrHost2!,
+                                      ).then((List<String> result) {
+                                        setState(() {
+                                          coreOrCollections2 = result;
                                         });
-                                      }
-                                    });
-                                  },
-                                  // isExpanded: true,
-                                  elevation: 16,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  items: solrHostsMenuItems)),
-                        _coreDropdownMenu(coreOrCollections1, coreOrCollection1,
-                            onCoreOrCollectionSelected, tab == 1 ? ' A' : ''),
-                        if (tab == 0)
-                          SizedBox(
+                                      });
+                                    }
+                                  });
+                                },
+                                // isExpanded: true,
+                                elevation: 16,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                items: solrHostsMenuItems,
+                              ),
+                            ),
+                          _coreDropdownMenu(
+                            coreOrCollections1,
+                            coreOrCollection1,
+                            onCoreOrCollectionSelected,
+                            tab == 1 ? ' A' : '',
+                          ),
+                          if (tab == 0)
+                            SizedBox(
                               width: 200,
                               child: ButtonTheme(
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.padded,
-                                  child: InputDecorator(
-                                      decoration: const InputDecoration(
-                                        labelText: 'Num. of records to compare',
-                                      ),
-                                      child: DropdownButton<int>(
-                                        underline: DropdownButtonHideUnderline(
-                                            child: Container()),
-                                        value: numberOfRecords,
-                                        items: recordsNumberOptions
-                                            .map((int value) {
-                                          return DropdownMenuItem<int>(
-                                            value: value,
-                                            child: Text(value.toString()),
-                                          );
-                                        }).toList(),
-                                        onChanged: (int? newValue) {
-                                          setState(() {
-                                            numberOfRecords = newValue!;
-                                          });
-                                        },
-                                      )))),
-                        if (tab == 1)
-                          _coreDropdownMenu(
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.padded,
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Num. of records to compare',
+                                  ),
+                                  child: DropdownButton<int>(
+                                    underline: DropdownButtonHideUnderline(
+                                      child: Container(),
+                                    ),
+                                    value: numberOfRecords,
+                                    items: recordsNumberOptions.map((
+                                      int value,
+                                    ) {
+                                      return DropdownMenuItem<int>(
+                                        value: value,
+                                        child: Text(value.toString()),
+                                      );
+                                    }).toList(),
+                                    onChanged: (int? newValue) {
+                                      setState(() {
+                                        numberOfRecords = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (tab == 1)
+                            _coreDropdownMenu(
                               coreOrCollections2,
                               coreOrCollection2,
                               onSndCoreOrCollectionSelected,
-                              tab == 1 ? ' B' : ''),
-                        const SizedBox(height: 10),
-                        if (coreOrCollection1 != null)
-                          Text(
+                              tab == 1 ? ' B' : '',
+                            ),
+                          const SizedBox(height: 10),
+                          if (coreOrCollection1 != null)
+                            Text(
                               isPipelineIndex1
                                   ? "'$coreOrCollection1' is a pipelines index"
                                   : "'$coreOrCollection1' is a normal index",
-                              style: const TextStyle(color: Colors.grey)),
-                        if (tab == 1 && coreOrCollection2 != null)
-                          Text(
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          if (tab == 1 && coreOrCollection2 != null)
+                            Text(
                               isPipelineIndex2
                                   ? "'$coreOrCollection2' is a pipelines index"
                                   : "'$coreOrCollection2' is a normal index",
-                              style: const TextStyle(color: Colors.grey)),
-                        if (tab == 1)
-                          Column(
-                            children: <Widget>[
-                              SwitchListTile(
-                                title: const Text('Compare DRs'),
-                                value: compareDrs,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    compareDrs = value;
-                                  });
-                                },
-                              ),
-                              SwitchListTile(
-                                title: const Text('Compare Institutions'),
-                                value: compareInst,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    compareInst = value;
-                                  });
-                                },
-                              ),
-                              SwitchListTile(
-                                title: const Text('Compare Species'),
-                                value: compareSpecies,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    compareSpecies = value;
-                                  });
-                                },
-                              ),
-                              SwitchListTile(
-                                title: const Text('Truncate Species'),
-                                value: truncateSpecies,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    truncateSpecies = value;
-                                  });
-                                },
-                              ),
-                              SwitchListTile(
-                                title: const Text('Compare Hubs'),
-                                value: compareHubs,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    compareHubs = value;
-                                  });
-                                },
-                              ),
-                              SwitchListTile(
-                                title: const Text('Compare Layers'),
-                                value: compareLayers,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    compareLayers = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        if (tab == 1 && compareLayers)
-                          SizedBox(
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          if (tab == 1)
+                            Column(
+                              children: <Widget>[
+                                SwitchListTile(
+                                  title: const Text('Compare DRs'),
+                                  value: compareDrs,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      compareDrs = value;
+                                    });
+                                  },
+                                ),
+                                SwitchListTile(
+                                  title: const Text('Compare Institutions'),
+                                  value: compareInst,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      compareInst = value;
+                                    });
+                                  },
+                                ),
+                                SwitchListTile(
+                                  title: const Text('Compare Species'),
+                                  value: compareSpecies,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      compareSpecies = value;
+                                    });
+                                  },
+                                ),
+                                SwitchListTile(
+                                  title: const Text('Truncate Species'),
+                                  value: truncateSpecies,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      truncateSpecies = value;
+                                    });
+                                  },
+                                ),
+                                SwitchListTile(
+                                  title: const Text('Compare Hubs'),
+                                  value: compareHubs,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      compareHubs = value;
+                                    });
+                                  },
+                                ),
+                                SwitchListTile(
+                                  title: const Text('Compare Layers'),
+                                  value: compareLayers,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      compareLayers = value;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          if (tab == 1 && compareLayers)
+                            SizedBox(
                               width: 400,
                               child: TextField(
                                 onChanged: (String value) {
@@ -531,17 +627,20 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                         // value.replaceAll(' ', '').split(',');
                                         value
                                             .split(commaSpaceSepRegExp)
-                                            .where((String layer) =>
-                                                layer.isNotEmpty)
+                                            .where(
+                                              (String layer) =>
+                                                  layer.isNotEmpty,
+                                            )
                                             .toList();
                                   });
                                 },
                                 decoration: const InputDecoration(
                                   labelText: 'Layer fields to compare',
                                 ),
-                              )),
-                        if (tab == 2)
-                          SizedBox(
+                              ),
+                            ),
+                          if (tab == 2)
+                            SizedBox(
                               width: 400,
                               child: TextField(
                                 maxLines: 5,
@@ -554,13 +653,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   labelText:
                                       'LA Record ids to compare or a data resource',
                                 ),
-                              )),
-                        if (tab == 3)
-                          SizedBox(
+                              ),
+                            ),
+                          if (tab == 3)
+                            SizedBox(
                               width: 400,
                               child: TextFormField(
                                 // maxLines: 1,
-
                                 onChanged: (String value) {
                                   setState(() {
                                     drsToCompare = value;
@@ -571,8 +670,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                   labelText:
                                       'DRs to compare, or a number for n drs or blank for all',
                                 ),
-                              )),
-                        LaunchBtn(
+                              ),
+                            ),
+                          LaunchBtn(
                             icon: Icons.settings,
                             execBtn: 'Run',
                             onTap: !launchEnabled
@@ -589,10 +689,16 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                         });
                                         final Map<String, dynamic> results =
                                             await _compareRecordsWithGBIF(
-                                                vm, tab == 2);
+                                              vm,
+                                              tab == 2,
+                                            );
                                         setState(() {
-                                          statistics = results['statistics']
-                                              as Map<String, Map<String, int>>;
+                                          statistics =
+                                              results['statistics']
+                                                  as Map<
+                                                    String,
+                                                    Map<String, int>
+                                                  >;
                                           errorMessages =
                                               results['errorMessages']
                                                   as Map<String, String>;
@@ -617,127 +723,161 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                           somethingFailed = false;
                                         });
                                         await _compareCollectionsWithGBIF(
-                                            vm, drsToCompare);
+                                          vm,
+                                          drsToCompare,
+                                        );
                                         setState(() {
                                           launchEnabled = true;
                                         });
                                         break;
                                     }
-                                  }),
-                        if (tab == 0 || tab == 2) const SizedBox(height: 10),
-                        if ((tab == 0 || tab == 2) && errorMessages != null)
-                          Container(
+                                  },
+                          ),
+                          if (tab == 0 || tab == 2) const SizedBox(height: 10),
+                          if ((tab == 0 || tab == 2) && errorMessages != null)
+                            Container(
                               alignment: Alignment.topLeft,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: errorMessages!.entries.mapIndexed(
-                                    (int index,
-                                        MapEntry<String, String> entry) {
+                                children: errorMessages!.entries.mapIndexed((
+                                  int index,
+                                  MapEntry<String, String> entry,
+                                ) {
                                   final Color backgroundColor = index.isOdd
                                       ? Colors.white
                                       : Colors.transparent;
                                   return ListTile(
-                                      tileColor: backgroundColor,
-                                      leading: entry.key == 'TOTAL' ||
-                                              entry.key == 'SUMMARY'
-                                          ? null
-                                          : GestureDetector(
-                                              onTap: () =>
-                                                  FlutterClipboard.copy(
-                                                          entry.key)
-                                                      .then((dynamic value) {
-                                                    if (!context.mounted) {
-                                                      return;
-                                                    }
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                            const SnackBar(
-                                                                content: Text(
-                                                      'Copied to clipboard',
-                                                      style: TextStyle(
+                                    tileColor: backgroundColor,
+                                    leading:
+                                        entry.key == 'TOTAL' ||
+                                            entry.key == 'SUMMARY'
+                                        ? null
+                                        : GestureDetector(
+                                            onTap: () =>
+                                                FlutterClipboard.copy(
+                                                  entry.key,
+                                                ).then((dynamic value) {
+                                                  if (!context.mounted) {
+                                                    return;
+                                                  }
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        'Copied to clipboard',
+                                                        style: TextStyle(
                                                           fontFamily: 'Courier',
-                                                          fontSize: 14),
-                                                    )));
-                                                  }),
-                                              child: Text(entry.key)),
-                                      title: Row(children: <Widget>[
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }),
+                                            child: Text(entry.key),
+                                          ),
+                                    title: Row(
+                                      children: <Widget>[
                                         Flexible(
-                                            // height: 40,
-                                            child: MarkdownBody(
-                                          data: entry.value,
-                                          onTapLink: (String text, String? url,
-                                              String? title) {
-                                            if (url != null) {
-                                              launchUrl(Uri.parse(url));
-                                            }
-                                          },
-                                        ))
-                                      ]));
+                                          // height: 40,
+                                          child: MarkdownBody(
+                                            data: entry.value,
+                                            onTapLink:
+                                                (
+                                                  String text,
+                                                  String? url,
+                                                  String? title,
+                                                ) {
+                                                  if (url != null) {
+                                                    launchUrl(Uri.parse(url));
+                                                  }
+                                                },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
                                 }).toList(),
-                              )),
-                        if ((tab == 0 || tab == 2) &&
-                            errorMessages != null &&
-                            errorMessages!.length == 1)
-                          const Padding(
+                              ),
+                            ),
+                          if ((tab == 0 || tab == 2) &&
+                              errorMessages != null &&
+                              errorMessages!.length == 1)
+                            const Padding(
                               padding: EdgeInsets.all(12.0),
-                              child: Text('No differences found')),
-                        if ((tab == 0 || tab == 2) &&
-                            errorMessages != null &&
-                            errorMessages!.isNotEmpty)
-                          ElevatedButton(
-                            onPressed: () {
-                              if (errorMessages != null) {
-                                _generateAndDownloadHtmlForErrors(
-                                    errorMessages!);
-                              }
-                            },
-                            child: const Text('Download issues'),
-                          ),
-                        if ((tab == 0 || tab == 2) && statistics != null)
-                          SizedBox(
+                              child: Text('No differences found'),
+                            ),
+                          if ((tab == 0 || tab == 2) &&
+                              errorMessages != null &&
+                              errorMessages!.isNotEmpty)
+                            ElevatedButton(
+                              onPressed: () {
+                                if (errorMessages != null) {
+                                  _generateAndDownloadHtmlForErrors(
+                                    errorMessages!,
+                                  );
+                                }
+                              },
+                              child: const Text('Download issues'),
+                            ),
+                          if ((tab == 0 || tab == 2) && statistics != null)
+                            SizedBox(
                               width: double.infinity,
                               height: 600,
                               child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: CompareGbifCharts(
-                                      statistics: statistics!))),
-                        if (tab == 1 || tab == 3) const SizedBox(height: 10),
-                        if ((tab == 1 || tab == 3) &&
-                            indexDiffReport.isNotEmpty)
-                          MarkdownBody(data: indexDiffReport),
-                        if (tab == 1 || tab == 3) const SizedBox(height: 10),
-                        if ((tab == 1 || tab == 3) &&
-                            indexDiffReport.isNotEmpty)
-                          ElevatedButton(
-                            onPressed: () {
-                              if (indexDiffReport.isNotEmpty) {
-                                _generateAndDownloadHtmlForContent(
-                                    indexDiffReport, true);
-                              }
-                            },
-                            child: const Text('Download report'),
-                          ),
-                        if (tab == 1 || tab == 3) const SizedBox(height: 10),
-                        if ((tab == 1 || tab == 3) &&
-                            indexDiffReport.isNotEmpty)
-                          ElevatedButton(
-                            onPressed: () {
-                              if (indexDiffReport.isNotEmpty) {
-                                _generateAndDownloadHtmlForContent(
-                                    indexDiffReport, false);
-                              }
-                            },
-                            child: const Text('Download markdown report'),
-                          ),
-                      ],
-                    ))),
-                Expanded(
-                  // flex: 1,
-                  child: Container(),
-                ),
-              ]))));
-    });
+                                padding: const EdgeInsets.all(16.0),
+                                child: CompareGbifCharts(
+                                  statistics: statistics!,
+                                ),
+                              ),
+                            ),
+                          if (tab == 1 || tab == 3) const SizedBox(height: 10),
+                          if ((tab == 1 || tab == 3) &&
+                              indexDiffReport.isNotEmpty)
+                            MarkdownBody(data: indexDiffReport),
+                          if (tab == 1 || tab == 3) const SizedBox(height: 10),
+                          if ((tab == 1 || tab == 3) &&
+                              indexDiffReport.isNotEmpty)
+                            ElevatedButton(
+                              onPressed: () {
+                                if (indexDiffReport.isNotEmpty) {
+                                  _generateAndDownloadHtmlForContent(
+                                    indexDiffReport,
+                                    true,
+                                  );
+                                }
+                              },
+                              child: const Text('Download report'),
+                            ),
+                          if (tab == 1 || tab == 3) const SizedBox(height: 10),
+                          if ((tab == 1 || tab == 3) &&
+                              indexDiffReport.isNotEmpty)
+                            ElevatedButton(
+                              onPressed: () {
+                                if (indexDiffReport.isNotEmpty) {
+                                  _generateAndDownloadHtmlForContent(
+                                    indexDiffReport,
+                                    false,
+                                  );
+                                }
+                              },
+                              child: const Text('Download markdown report'),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    // flex: 1,
+                    child: Container(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _setCheckIndexPhase() {
@@ -748,8 +888,12 @@ class _CompareDataPageState extends State<CompareDataPage> {
     }
   }
 
-  Uri asUri(String base, String path, Map<String, String> params,
-      [bool debug = false]) {
+  Uri asUri(
+    String base,
+    String path,
+    Map<String, String> params, [
+    bool debug = false,
+  ]) {
     Uri uri = Uri.parse(base + path);
     if (params.isNotEmpty) {
       uri = uri.replace(queryParameters: params);
@@ -766,8 +910,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
   static const String gbifBaseUrl = 'https://api.gbif.org/v1';
 
   Future<Map<String, dynamic>> _compareRecordsWithGBIF(
-      _CompareDataViewModel vm, bool notRandom,
-      [bool debug = false]) async {
+    _CompareDataViewModel vm,
+    bool notRandom, [
+    bool debug = false,
+  ]) async {
     setState(() {
       if (notRandom) {
         currentPhaseTab2 = CompareSomeWithGbifDataPhase.detectSolrIndexType;
@@ -777,8 +923,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
     });
 
     try {
-      isPipelineIndex1 =
-          await isAPipelinesIndex(vm, solrHost1!, coreOrCollection1!);
+      isPipelineIndex1 = await isAPipelinesIndex(
+        vm,
+        solrHost1!,
+        coreOrCollection1!,
+      );
     } catch (e) {
       setState(() {
         if (notRandom) {
@@ -789,8 +938,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
       });
     }
 
-    final Map<String, dynamic> laRecords =
-        !notRandom ? await getRandomLARecords(vm) : await getLARecords(vm);
+    final Map<String, dynamic> laRecords = !notRandom
+        ? await getRandomLARecords(vm)
+        : await getLARecords(vm);
 
     final Map<String, dynamic> recordsGBIFIds = <String, dynamic>{};
     final Map<String, String> initialMessages = <String, String>{};
@@ -816,8 +966,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
       final String queryParams =
           'occurrenceId=$occIDEnc&datasetKey=${record[gbifDatasetId]}';
-      final Uri gbifRecordUri =
-          Uri.parse('$gbifBaseUrl/occurrence/search?$queryParams');
+      final Uri gbifRecordUri = Uri.parse(
+        '$gbifBaseUrl/occurrence/search?$queryParams',
+      );
       if (debug) {
         debugPrint(gbifRecordUri.toString());
       }
@@ -852,7 +1003,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
         'Number of LA records processed ${laRecords.length}, number of GBIF records found for these records: ${recordsGBIFIds.length}';
     initialMessages.addAll(notFoundMessages);
     final Map<String, dynamic> results = generateStatistics(
-        laRecords, recordsGBIFIds, initialMessages, notRandom);
+      laRecords,
+      recordsGBIFIds,
+      initialMessages,
+      notRandom,
+    );
     if (debug) {
       debugPrint('Results: $results');
     }
@@ -861,23 +1016,27 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Future<Map<String, dynamic>> getDrs(
-      SolrQueryExecutor vm, String solrHost) async {
+    SolrQueryExecutor vm,
+    String solrHost,
+  ) async {
     final Map<String, dynamic>? result = await getFacetData(
-        solrHost: solrHost,
-        solrExec: vm,
-        collection: coreOrCollection1!,
-        q: 'dataResourceUid:*',
-        facetField: isPipelineIndex1 ? 'dataResourceUid' : 'data_resource_uid',
-        facetLimit: -1,
-        sort: 'index');
+      solrHost: solrHost,
+      solrExec: vm,
+      collection: coreOrCollection1!,
+      q: 'dataResourceUid:*',
+      facetField: isPipelineIndex1 ? 'dataResourceUid' : 'data_resource_uid',
+      facetLimit: -1,
+      sort: 'index',
+    );
 
     if (result == null) {
       somethingFailed = true;
       return <String, dynamic>{};
     }
     // ignore: avoid_dynamic_calls
-    final Map<String, dynamic> drs = result['facet_counts']['facet_fields']
-        ['dataResourceUid'] as Map<String, dynamic>;
+    final Map<String, dynamic> drs =
+        result['facet_counts']['facet_fields']['dataResourceUid']
+            as Map<String, dynamic>;
     setState(() {
       currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
     });
@@ -889,19 +1048,22 @@ class _CompareDataPageState extends State<CompareDataPage> {
         Completer<Map<String, dynamic>>();
 
     vm.doMySqlQuery(
-        'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json FROM data_resource dr ORDER BY dr.last_updated DESC',
-        (dynamic result) {
-      completer.complete(result as Map<String, dynamic>);
-    }, (String error) {
-      debugPrint('Error: $error');
-      somethingFailed = true;
-    });
+      'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json FROM data_resource dr ORDER BY dr.last_updated DESC',
+      (dynamic result) {
+        completer.complete(result as Map<String, dynamic>);
+      },
+      (String error) {
+        debugPrint('Error: $error');
+        somethingFailed = true;
+      },
+    );
 
     return completer.future;
   }
 
   Future<Map<String, dynamic>> getRandomLARecords(
-      _CompareDataViewModel vm) async {
+    _CompareDataViewModel vm,
+  ) async {
     setState(() {
       currentPhaseTab0 = CompareWithGbifDataPhase.getDrs;
     });
@@ -916,38 +1078,44 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     for (int i = 0; i < numberOfRecords; i++) {
       final int drOffset = Random().nextInt(dataResources.length);
-      final MapEntry<String, dynamic> dataResource =
-          dataResources.entries.toList()[drOffset];
-      final int recordOffset =
-          Random().nextInt(min(20000, dataResource.value as int));
+      final MapEntry<String, dynamic> dataResource = dataResources.entries
+          .toList()[drOffset];
+      final int recordOffset = Random().nextInt(
+        min(20000, dataResource.value as int),
+      );
 
       final Completer<void> completer = Completer<void>();
 
-      final String field =
-          isPipelineIndex1 ? 'dataResourceUid' : 'data_resource_uid';
+      final String field = isPipelineIndex1
+          ? 'dataResourceUid'
+          : 'data_resource_uid';
 
       vm.doSolrQuery(
-          solrHost1!,
-          Uri.parse(
-                  'http://localhost:8983/solr/${coreOrCollection1!}/select?q=$field:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false')
-              .toString(), (Map<String, dynamic> result) {
-        final Map<String, dynamic> occ =
-            ((result['response'] as Map<String, dynamic>)['docs']
-                as List<dynamic>)[0] as Map<String, dynamic>;
+        solrHost1!,
+        Uri.parse(
+          'http://localhost:8983/solr/${coreOrCollection1!}/select?q=$field:${dataResource.key}&rows=1&wt=json&start=$recordOffset&facet=false',
+        ).toString(),
+        (Map<String, dynamic> result) {
+          final Map<String, dynamic> occ =
+              ((result['response'] as Map<String, dynamic>)['docs']
+                      as List<dynamic>)[0]
+                  as Map<String, dynamic>;
 
-        final String? id = occ['id'] as String?;
-        final String? gbifDrId = drs[dataResource.key] as String?;
+          final String? id = occ['id'] as String?;
+          final String? gbifDrId = drs[dataResource.key] as String?;
 
-        // SKIP DRS with null gbif_registry_key
-        if (id != null && gbifDrId != null) {
-          occ[gbifDatasetId] = gbifDrId;
-          records[id] = occ;
-        }
-        completer.complete();
-      }, (String error) {
-        debugPrint('Error: $error');
-        somethingFailed = true;
-      });
+          // SKIP DRS with null gbif_registry_key
+          if (id != null && gbifDrId != null) {
+            occ[gbifDatasetId] = gbifDrId;
+            records[id] = occ;
+          }
+          completer.complete();
+        },
+        (String error) {
+          debugPrint('Error: $error');
+          somethingFailed = true;
+        },
+      );
 
       await completer.future;
     }
@@ -986,8 +1154,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
         solrHost1!,
         'http://localhost:8983/solr/${coreOrCollection1!}/select?q=dataResourceUid:$dataResourceUid&q.op=OR&rows=10000&wt=json&facet=false',
         (Map<String, dynamic> result) {
-          final List<dynamic> docs = (result['response']
-              as Map<String, dynamic>)['docs'] as List<dynamic>;
+          final List<dynamic> docs =
+              (result['response'] as Map<String, dynamic>)['docs']
+                  as List<dynamic>;
 
           for (final dynamic doc in docs) {
             final Map<String, dynamic> occ = doc as Map<String, dynamic>;
@@ -1017,8 +1186,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
           solrHost1!,
           'http://localhost:8983/solr/${coreOrCollection1!}/select?q=id:$uuid&rows=1&wt=json&facet=false',
           (Map<String, dynamic> result) {
-            final List<dynamic> docs = (result['response']
-                as Map<String, dynamic>)['docs'] as List<dynamic>;
+            final List<dynamic> docs =
+                (result['response'] as Map<String, dynamic>)['docs']
+                    as List<dynamic>;
             if (docs.isNotEmpty) {
               final Map<String, dynamic> occ = docs[0] as Map<String, dynamic>;
               final String? id = occ['id'] as String?;
@@ -1045,14 +1215,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Map<String, dynamic> generateStatistics(
-      Map<String, dynamic> recordsLA,
-      Map<String, dynamic> recordsGBIF,
-      Map<String, String> initialMessages,
-      bool onlyOneRecord) {
+    Map<String, dynamic> recordsLA,
+    Map<String, dynamic> recordsGBIF,
+    Map<String, String> initialMessages,
+    bool onlyOneRecord,
+  ) {
     final Map<String, Map<String, int>> stats = <String, Map<String, int>>{
       'matches': <String, int>{},
       'mismatches': <String, int>{},
-      'nulls': <String, int>{}
+      'nulls': <String, int>{},
     };
 
     final Map<String, String> errorMessages = initialMessages;
@@ -1113,7 +1284,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
             stats['mismatches']!['scientificName'] =
                 stats['mismatches']!['scientificName']! + 1;
             errors.add(
-                "1. **Scientific name** differs: [$fullScientificNameLA](${alaHubUrl}occurrences/$id) (raw: '$fullRawScientificNameLA') vs [$scientificNameGBIF](https://gbif.org/occurrence/${recordGBIF['key']})");
+              "1. **Scientific name** differs: [$fullScientificNameLA](${alaHubUrl}occurrences/$id) (raw: '$fullRawScientificNameLA') vs [$scientificNameGBIF](https://gbif.org/occurrence/${recordGBIF['key']})",
+            );
           }
         } else {
           final String? value1 = recordLA[field] as String?;
@@ -1126,7 +1298,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
           } else {
             stats['mismatches']![field] = stats['mismatches']![field]! + 1;
             errors.add(
-                '1. _${StringUtils.capitalize(field)}_ differs: [$value1](${alaHubUrl}occurrences/$id) vs [$value2](https://gbif.org/occurrence/${recordGBIF['key']})');
+              '1. _${StringUtils.capitalize(field)}_ differs: [$value1](${alaHubUrl}occurrences/$id) vs [$value2](https://gbif.org/occurrence/${recordGBIF['key']})',
+            );
           }
         }
       }
@@ -1150,7 +1323,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     return <String, dynamic>{
       'statistics': stats,
-      'errorMessages': errorMessages
+      'errorMessages': errorMessages,
     };
   }
 
@@ -1171,11 +1344,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Future<void> _generateAndDownloadMd(
-      StringBuffer markdownContent, String fileName) async {
+    StringBuffer markdownContent,
+    String fileName,
+  ) async {
     final DateTime now = DateTime.now();
     final String formattedDate = DateFormat('yyyyMMddhhmm').format(now);
-    final html.Blob blob =
-        html.Blob(<String>[markdownContent.toString()], 'text/markdown');
+    final html.Blob blob = html.Blob(<String>[
+      markdownContent.toString(),
+    ], 'text/markdown');
     final String fileNameWithDate = '${formattedDate}_$fileName.md';
     if (kIsWeb) {
       final String url = html.Url.createObjectUrlFromBlob(blob);
@@ -1197,10 +1373,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Future<void> _generateAndDownloadHtml(String content, String fileName) async {
-    final String htmlContent =
-        md.markdownToHtml(content, extensionSet: md.ExtensionSet.gitHubWeb);
+    final String htmlContent = md.markdownToHtml(
+      content,
+      extensionSet: md.ExtensionSet.gitHubWeb,
+    );
 
-    final String styledHtmlContent = '''
+    final String styledHtmlContent =
+        '''
   <!DOCTYPE html>
   <html>
   <head>
@@ -1227,8 +1406,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final String fileNameAndDate = '${formattedDate}_$fileName.html';
 
     if (kIsWeb) {
-      final html.Blob blob =
-          html.Blob(<String>[styledHtmlContent], 'text/html');
+      final html.Blob blob = html.Blob(<String>[
+        styledHtmlContent,
+      ], 'text/html');
       final String url = html.Url.createObjectUrlFromBlob(blob);
       html.AnchorElement(href: url)
         ..setAttribute('download', fileNameAndDate)
@@ -1263,42 +1443,50 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Future<List<String>> getCoreOrCollections(
-      _CompareDataViewModel vm, String solrHost) async {
+    _CompareDataViewModel vm,
+    String solrHost,
+  ) async {
     final Completer<List<String>> collCompleter = Completer<List<String>>();
     final Completer<List<String>> aliasCompleter = Completer<List<String>>();
 
     vm.doSolrQuery(
-        solrHost, 'http://localhost:8983/solr/admin/collections?action=LIST',
-        (Map<String, dynamic> result) {
-      final List<String> results = <String>[];
-      final List<dynamic> docs = result['collections'] as List<dynamic>;
+      solrHost,
+      'http://localhost:8983/solr/admin/collections?action=LIST',
+      (Map<String, dynamic> result) {
+        final List<String> results = <String>[];
+        final List<dynamic> docs = result['collections'] as List<dynamic>;
 
-      for (final dynamic doc in docs) {
-        results.add(doc.toString());
-      }
-      collCompleter.complete(results);
-    }, (String error) {
-      debugPrint('Error: $error');
-      somethingFailed = true;
-    });
+        for (final dynamic doc in docs) {
+          results.add(doc.toString());
+        }
+        collCompleter.complete(results);
+      },
+      (String error) {
+        debugPrint('Error: $error');
+        somethingFailed = true;
+      },
+    );
 
-    vm.doSolrQuery(solrHost,
-        'http://localhost:8983/solr/admin/collections?action=LISTALIASES',
-        (Map<String, dynamic> result) {
-      final List<String> results = <String>[];
-      final Map<String, dynamic> aliases =
-          result['aliases'] as Map<String, dynamic>;
+    vm.doSolrQuery(
+      solrHost,
+      'http://localhost:8983/solr/admin/collections?action=LISTALIASES',
+      (Map<String, dynamic> result) {
+        final List<String> results = <String>[];
+        final Map<String, dynamic> aliases =
+            result['aliases'] as Map<String, dynamic>;
 
-      // ignore: prefer_foreach
-      for (final String alias in aliases.keys) {
-        results.add(alias);
-      }
+        // ignore: prefer_foreach
+        for (final String alias in aliases.keys) {
+          results.add(alias);
+        }
 
-      aliasCompleter.complete(results);
-    }, (String error) {
-      debugPrint('Error: $error');
-      somethingFailed = true;
-    });
+        aliasCompleter.complete(results);
+      },
+      (String error) {
+        debugPrint('Error: $error');
+        somethingFailed = true;
+      },
+    );
 
     final List<String> results = <String>[];
     results.addAll(await collCompleter.future);
@@ -1307,43 +1495,53 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Future<List<String>> fetchCoreOrCollections(
-      _CompareDataViewModel vm, String solrHost) async {
+    _CompareDataViewModel vm,
+    String solrHost,
+  ) async {
     return getCoreOrCollections(vm, solrHost);
   }
 
   Widget _coreDropdownMenu(
-      List<String> coreOrCollections,
-      String? initialSelection,
-      Function(String?) onCoreSelected,
-      String colSuffix) {
+    List<String> coreOrCollections,
+    String? initialSelection,
+    Function(String?) onCoreSelected,
+    String colSuffix,
+  ) {
     return coreOrCollections1.isEmpty
         ? Container()
         : Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: ButtonTheme(
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-                child: DropdownButton<String>(
-                    underline: DropdownButtonHideUnderline(
-                      child: Container(),
-                    ),
-                    disabledHint: const Text('No collection available'),
-                    hint: Text('Select collection$colSuffix'),
-                    value: initialSelection,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        onCoreSelected(newValue);
-                      });
-                    },
-                    elevation: 16,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    items: coreOrCollections
-                        .map((String element) => DropdownMenuItem<String>(
-                            value: element, child: Text(element)))
-                        .toList())));
+              materialTapTargetSize: MaterialTapTargetSize.padded,
+              child: DropdownButton<String>(
+                underline: DropdownButtonHideUnderline(child: Container()),
+                disabledHint: const Text('No collection available'),
+                hint: Text('Select collection$colSuffix'),
+                value: initialSelection,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    onCoreSelected(newValue);
+                  });
+                },
+                elevation: 16,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                items: coreOrCollections
+                    .map(
+                      (String element) => DropdownMenuItem<String>(
+                        value: element,
+                        child: Text(element),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          );
   }
 
-  Future<void> _compareSolrIndexes(SolrQueryExecutor solrExec,
-      [bool debug = false]) async {
+  Future<void> _compareSolrIndexes(
+    SolrQueryExecutor solrExec, [
+    bool debug = false,
+  ]) async {
     solrCompareHosts.clear();
     solrCompareHosts.add(solrHost1!);
     solrCompareHosts.add(solrHost2!);
@@ -1351,8 +1549,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
     coreOrCollectionList.add(coreOrCollection1!);
     coreOrCollectionList.add(coreOrCollection2!);
     compareTitles.clear();
-    compareTitles.addAll(
-        <String>['solrA $coreOrCollection1', 'solrB $coreOrCollection2']);
+    compareTitles.addAll(<String>[
+      'solrA $coreOrCollection1',
+      'solrB $coreOrCollection2',
+    ]);
     SolrCompareResult.csvFormat = false;
 
     setState(() {
@@ -1364,16 +1564,23 @@ class _CompareDataPageState extends State<CompareDataPage> {
         'q': '*:*',
         'rows': '0',
         'wt': 'json',
-        'facet': 'false'
+        'facet': 'false',
       });
-      final List<dynamic> resources = await httpGet(
-              collectoryUrl, '/ws/dataResource', <String, String>{}, debug)
-          as List<dynamic>;
+      final List<dynamic> resources =
+          await httpGet(
+                collectoryUrl,
+                '/ws/dataResource',
+                <String, String>{},
+                debug,
+              )
+              as List<dynamic>;
 
       for (final dynamic ddr in resources) {
         final Map<String, dynamic> dr = ddr as Map<String, dynamic>;
-        compareResults.putIfAbsent(dr['uid'] as String,
-            () => SolrCompareResult.empty(dr['uid'] as String));
+        compareResults.putIfAbsent(
+          dr['uid'] as String,
+          () => SolrCompareResult.empty(dr['uid'] as String),
+        );
       }
       await getDrTotals(solrExec);
 
@@ -1392,8 +1599,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
         debugPrint(mapped.toString());
       }
       final SolrCompareResult unmapped = SolrCompareResult(
-              'Unmapped', compareResults.entries.first.value.a - a)
-          .setB(compareResults.entries.first.value.b - b);
+        'Unmapped',
+        compareResults.entries.first.value.a - a,
+      ).setB(compareResults.entries.first.value.b - b);
       if (debug) {
         debugPrint(unmapped.toString());
       }
@@ -1401,7 +1609,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
         final Map<SolrCompareResult, SolrCompareResult> diff =
             Map<SolrCompareResult, SolrCompareResult>.from(compareResults)
               ..removeWhere(
-                  (SolrCompareResult e, SolrCompareResult v) => v.d != 0);
+                (SolrCompareResult e, SolrCompareResult v) => v.d != 0,
+              );
         debugPrint('results size: ${diff.length}');
       }
       reset();
@@ -1411,10 +1620,12 @@ class _CompareDataPageState extends State<CompareDataPage> {
       if (truncateSpecies) {
         debugPrint(compareResults.length.toString());
         final List<MapEntry<String, SolrCompareResult>> speciesList =
-            compareResults.entries.toList()
-              ..sort((MapEntry<String, SolrCompareResult> a,
-                      MapEntry<String, SolrCompareResult> b) =>
-                  b.value.d.compareTo(a.value.d));
+            compareResults.entries.toList()..sort(
+              (
+                MapEntry<String, SolrCompareResult> a,
+                MapEntry<String, SolrCompareResult> b,
+              ) => b.value.d.compareTo(a.value.d),
+            );
 
         final Map<String, SolrCompareResult> truncatedResults =
             Map<String, SolrCompareResult>.fromEntries(speciesList.take(20));
@@ -1461,14 +1672,20 @@ class _CompareDataPageState extends State<CompareDataPage> {
       reportPrint(';${compareTitles[0]};${compareTitles[1]};difference');
     } else {
       reportPrint(
-          '| $title |  ${compareTitles[0]}  | ${compareTitles[1]} | difference |');
+        '| $title |  ${compareTitles[0]}  | ${compareTitles[1]} | difference |',
+      );
       reportPrint(
-          '| ------------- | ------------- | ------------- | ------------- |');
+        '| ------------- | ------------- | ------------- | ------------- |',
+      );
     }
   }
 
-  Future<dynamic> httpGet(String base, String path, Map<String, String> params,
-      [bool debug = false]) async {
+  Future<dynamic> httpGet(
+    String base,
+    String path,
+    Map<String, String> params, [
+    bool debug = false,
+  ]) async {
     final Uri uri = asUri(base, path, params, debug);
     try {
       final http.Response response = await http.get(uri);
@@ -1489,8 +1706,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final List<SolrCompareResult> sorted = compareResults.values.toList();
     bool empty = true;
     //   debugPrint(sorted.toString());
-    sorted
-        .sort((SolrCompareResult a, SolrCompareResult b) => a.d.compareTo(b.d));
+    sorted.sort(
+      (SolrCompareResult a, SolrCompareResult b) => a.d.compareTo(b.d),
+    );
     for (final SolrCompareResult r in sorted) {
       if (r.d != 0) {
         empty = false;
@@ -1505,62 +1723,74 @@ class _CompareDataPageState extends State<CompareDataPage> {
   Future<void> getDrTotals(SolrQueryExecutor queryExec) async {
     try {
       await Future.wait(
-          solrCompareHosts.mapIndexed((int i, String solrHost) async {
-        final String field =
-            (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
-                ? 'dataResourceUid'
-                : 'data_resource_uid';
-        final Map<String, dynamic>? response = await getFacetData(
+        solrCompareHosts.mapIndexed((int i, String solrHost) async {
+          final String field =
+              (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
+              ? 'dataResourceUid'
+              : 'data_resource_uid';
+          final Map<String, dynamic>? response = await getFacetData(
             solrHost: solrHost,
             solrExec: queryExec,
             collection: coreOrCollectionList[i],
             q: '$field:*',
             facetField: field,
             facetLimit: -1,
-            sort: 'index');
-        if (response == null) {
-          somethingFailed = true;
-        } else {
-          if (!response.containsKey('facet_counts') ||
-              response['facet_counts'] is! Map<String, dynamic> ||
-              !(response['facet_counts'] as Map<String, dynamic>)
-                  .containsKey('facet_fields') ||
-              (response['facet_counts'] as Map<String, dynamic>)['facet_fields']
-                  is! Map<String, dynamic> ||
-              !((response['facet_counts']
-                          as Map<String, dynamic>)['facet_fields']
-                      as Map<String, dynamic>)
-                  .containsKey(field)) {
-            debugPrint('$isPipelineIndex1 $isPipelineIndex2 $field');
-            debugPrint(
-                'Error: The response $response does not have facet_counts/facet_fields/$field');
-          }
-          // ignore: avoid_dynamic_calls
-          final Map<String, dynamic> drs = response['facet_counts']
-              ['facet_fields'][field] as Map<String, dynamic>;
-          /* final Map<String, dynamic> drs = ((response['facet_counts']
+            sort: 'index',
+          );
+          if (response == null) {
+            somethingFailed = true;
+          } else {
+            if (!response.containsKey('facet_counts') ||
+                response['facet_counts'] is! Map<String, dynamic> ||
+                !(response['facet_counts'] as Map<String, dynamic>).containsKey(
+                  'facet_fields',
+                ) ||
+                (response['facet_counts']
+                        as Map<String, dynamic>)['facet_fields']
+                    is! Map<String, dynamic> ||
+                !((response['facet_counts']
+                            as Map<String, dynamic>)['facet_fields']
+                        as Map<String, dynamic>)
+                    .containsKey(field)) {
+              debugPrint('$isPipelineIndex1 $isPipelineIndex2 $field');
+              debugPrint(
+                'Error: The response $response does not have facet_counts/facet_fields/$field',
+              );
+            }
+            // ignore: avoid_dynamic_calls
+            final Map<String, dynamic> drs =
+                response['facet_counts']['facet_fields'][field]
+                    as Map<String, dynamic>;
+            /* final Map<String, dynamic> drs = ((response['facet_counts']
                   as Map<String, dynamic>)['facet_fields']
               as Map<String, dynamic>)[field] as Map<String, dynamic>; */
-          for (final MapEntry<String, dynamic> e in drs.entries) {
-            String key;
-            if (!compareResults.containsKey(e.key)) {
-              // debugPrint('${e.key} not found in collectory');
-              key = '~~${e.key}~~';
-              compareResults.putIfAbsent(
-                  key, () => SolrCompareResult.empty(key));
-            } else {
-              key = e.key;
-            }
-            if (i == 0) {
-              compareResults.update(
-                  key, (SolrCompareResult el) => el.setA(e.value as int));
-            } else {
-              compareResults.update(
-                  key, (SolrCompareResult el) => el.setB(e.value as int));
+            for (final MapEntry<String, dynamic> e in drs.entries) {
+              String key;
+              if (!compareResults.containsKey(e.key)) {
+                // debugPrint('${e.key} not found in collectory');
+                key = '~~${e.key}~~';
+                compareResults.putIfAbsent(
+                  key,
+                  () => SolrCompareResult.empty(key),
+                );
+              } else {
+                key = e.key;
+              }
+              if (i == 0) {
+                compareResults.update(
+                  key,
+                  (SolrCompareResult el) => el.setA(e.value as int),
+                );
+              } else {
+                compareResults.update(
+                  key,
+                  (SolrCompareResult el) => el.setB(e.value as int),
+                );
+              }
             }
           }
-        }
-      }));
+        }),
+      );
     } catch (all) {
       debugPrint('Error: $all');
       somethingFailed = true;
@@ -1568,50 +1798,59 @@ class _CompareDataPageState extends State<CompareDataPage> {
     }
   }
 
-  Future<void> getFieldDiff(String bStoreField, String pipelinesField,
-      SolrQueryExecutor queryExec) async {
+  Future<void> getFieldDiff(
+    String bStoreField,
+    String pipelinesField,
+    SolrQueryExecutor queryExec,
+  ) async {
     try {
       await Future.wait(
-          solrCompareHosts.mapIndexed((int i, String solrHost) async {
-        final String field =
-            (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
-                ? pipelinesField
-                : bStoreField;
-        final Map<String, dynamic>? response = await getFacetData(
+        solrCompareHosts.mapIndexed((int i, String solrHost) async {
+          final String field =
+              (i == 0 && isPipelineIndex1) || (i == 1 && isPipelineIndex2)
+              ? pipelinesField
+              : bStoreField;
+          final Map<String, dynamic>? response = await getFacetData(
             solrHost: solrHost,
             solrExec: queryExec,
             collection: coreOrCollectionList[i],
             q: '$field:*',
             facetField: field,
             facetLimit: -1,
-            sort: 'index');
-        if (response == null) {
-          somethingFailed = true;
-        } else {
-          if (!response.containsKey('facet_counts') ||
-              response['facet_counts'] is! Map<String, dynamic> ||
-              !(response['facet_counts'] as Map<String, dynamic>)
-                  .containsKey('facet_fields') ||
-              (response['facet_counts'] as Map<String, dynamic>)['facet_fields']
-                  is! Map<String, dynamic> ||
-              !((response['facet_counts']
-                          as Map<String, dynamic>)['facet_fields']
-                      as Map<String, dynamic>)
-                  .containsKey(field)) {
-            debugPrint(
-                'Error: The response $response does not have facet_counts/facet_fields/$field');
-          }
-          // ignore: avoid_dynamic_calls
-          final Map<String, dynamic> results = response['facet_counts']
-              ['facet_fields'][field] as Map<String, dynamic>;
-          /* final Map<String, dynamic> results =
+            sort: 'index',
+          );
+          if (response == null) {
+            somethingFailed = true;
+          } else {
+            if (!response.containsKey('facet_counts') ||
+                response['facet_counts'] is! Map<String, dynamic> ||
+                !(response['facet_counts'] as Map<String, dynamic>).containsKey(
+                  'facet_fields',
+                ) ||
+                (response['facet_counts']
+                        as Map<String, dynamic>)['facet_fields']
+                    is! Map<String, dynamic> ||
+                !((response['facet_counts']
+                            as Map<String, dynamic>)['facet_fields']
+                        as Map<String, dynamic>)
+                    .containsKey(field)) {
+              debugPrint(
+                'Error: The response $response does not have facet_counts/facet_fields/$field',
+              );
+            }
+            // ignore: avoid_dynamic_calls
+            final Map<String, dynamic> results =
+                response['facet_counts']['facet_fields'][field]
+                    as Map<String, dynamic>;
+            /* final Map<String, dynamic> results =
             ((response!['facet_counts'] as Map<String, dynamic>)['facet_fields']
                 as Map<String, dynamic>)[field] as Map<String, dynamic>; */
-          for (final MapEntry<String, dynamic> entry in results.entries) {
-            storeResults(entry.key, entry.value as int, i);
+            for (final MapEntry<String, dynamic> entry in results.entries) {
+              storeResults(entry.key, entry.value as int, i);
+            }
           }
-        }
-      }));
+        }),
+      );
     } catch (all) {
       somethingFailed = true;
       rethrow;
@@ -1619,21 +1858,27 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Future<bool> isAPipelinesIndex(
-      SolrQueryExecutor solrExec, String solrHost, String collection,
-      [bool debug = true]) async {
+    SolrQueryExecutor solrExec,
+    String solrHost,
+    String collection, [
+    bool debug = true,
+  ]) async {
     try {
-      final String response = await doSolrRawQuery(
-          solrExec,
-          solrHost,
-          '/solr/$collection/select',
-          <String, String>{
-            'q': '*:*',
-            'wt': 'csv',
-            'rows': '0',
-            'facet': '',
-            'fl': 'data*'
-          },
-          debug) as String;
+      final String response =
+          await doSolrRawQuery(
+                solrExec,
+                solrHost,
+                '/solr/$collection/select',
+                <String, String>{
+                  'q': '*:*',
+                  'wt': 'csv',
+                  'rows': '0',
+                  'facet': '',
+                  'fl': 'data*',
+                },
+                debug,
+              )
+              as String;
       debugPrint('Response: $response');
       return response.contains('dataResourceUid');
     } catch (all) {
@@ -1643,14 +1888,27 @@ class _CompareDataPageState extends State<CompareDataPage> {
     }
   }
 
-  Future<List<void>> queryTotals(SolrQueryExecutor solrExec, List<String> solrS,
-      String query, Map<String, String> params) async {
-    return Future.wait(solrS.mapIndexed((int i, String solrHost) async {
-      final Map<String, dynamic> response = await doSolrQuery(
-          solrExec, solrHost, '/solr/${coreOrCollectionList[i]}$query', params);
-      storeResults(totals,
-          (response['response'] as Map<String, dynamic>)['numFound'] as int, i);
-    }));
+  Future<List<void>> queryTotals(
+    SolrQueryExecutor solrExec,
+    List<String> solrS,
+    String query,
+    Map<String, String> params,
+  ) async {
+    return Future.wait(
+      solrS.mapIndexed((int i, String solrHost) async {
+        final Map<String, dynamic> response = await doSolrQuery(
+          solrExec,
+          solrHost,
+          '/solr/${coreOrCollectionList[i]}$query',
+          params,
+        );
+        storeResults(
+          totals,
+          (response['response'] as Map<String, dynamic>)['numFound'] as int,
+          i,
+        );
+      }),
+    );
   }
 
   void storeResults(String key, int num, int index) {
@@ -1664,18 +1922,27 @@ class _CompareDataPageState extends State<CompareDataPage> {
     }
   }
 
-  Future<Map<String, dynamic>> doSolrQuery(SolrQueryExecutor solrExec,
-      String solrHost, String path, Map<String, String> params,
-      [bool debug = false]) async {
+  Future<Map<String, dynamic>> doSolrQuery(
+    SolrQueryExecutor solrExec,
+    String solrHost,
+    String path,
+    Map<String, String> params, [
+    bool debug = false,
+  ]) async {
     final Uri uri = asUri('http://localhost:8983', path, params, debug);
     try {
       final Completer<Map<String, dynamic>> completer =
           Completer<Map<String, dynamic>>();
-      solrExec.query(solrHost, uri.toString(), (Map<String, dynamic> response) {
-        completer.complete(response);
-      }, (String message) {
-        _handleError('Error reading url: $uri $message');
-      });
+      solrExec.query(
+        solrHost,
+        uri.toString(),
+        (Map<String, dynamic> response) {
+          completer.complete(response);
+        },
+        (String message) {
+          _handleError('Error reading url: $uri $message');
+        },
+      );
       return completer.future;
     } catch (all) {
       somethingFailed = true;
@@ -1684,17 +1951,26 @@ class _CompareDataPageState extends State<CompareDataPage> {
     }
   }
 
-  Future<dynamic> doSolrRawQuery(SolrQueryExecutor solrExec, String solrHost,
-      String path, Map<String, String> params,
-      [bool debug = false]) async {
+  Future<dynamic> doSolrRawQuery(
+    SolrQueryExecutor solrExec,
+    String solrHost,
+    String path,
+    Map<String, String> params, [
+    bool debug = false,
+  ]) async {
     final Uri uri = asUri('http://localhost:8983', path, params, debug);
     try {
       final Completer<dynamic> completer = Completer<dynamic>();
-      solrExec.rawQuery(solrHost, uri.toString(), (dynamic response) {
-        completer.complete(response);
-      }, (String message) {
-        _handleError('Error reading url: $uri $message');
-      });
+      solrExec.rawQuery(
+        solrHost,
+        uri.toString(),
+        (dynamic response) {
+          completer.complete(response);
+        },
+        (String message) {
+          _handleError('Error reading url: $uri $message');
+        },
+      );
       return completer.future;
     } catch (all) {
       somethingFailed = true;
@@ -1726,7 +2002,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   int calculateSampleSize(
-      double confidenceLevel, double marginOfError, int populationSize) {
+    double confidenceLevel,
+    double marginOfError,
+    int populationSize,
+  ) {
     final double Z = getZValue(confidenceLevel);
     const double p = 0.5;
     final double e = marginOfError;
@@ -1737,15 +2016,17 @@ class _CompareDataPageState extends State<CompareDataPage> {
     int sampleSize = (numerator / denominator).ceil();
 
     if (populationSize != null && populationSize > 0) {
-      sampleSize =
-          (sampleSize / (1 + ((sampleSize - 1) / populationSize))).ceil();
+      sampleSize = (sampleSize / (1 + ((sampleSize - 1) / populationSize)))
+          .ceil();
     }
 
     return sampleSize;
   }
 
   Future<List<String>> getUUIDsFromDataResource(
-      String dataResourceUid, _CompareDataViewModel vm) async {
+    String dataResourceUid,
+    _CompareDataViewModel vm,
+  ) async {
     const int pageSize = 1000;
     int start = 0;
     final List<String> uuids = <String>[];
@@ -1756,8 +2037,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
       solrHost1!,
       'http://localhost:8983/solr/${coreOrCollection1!}/select?q=dataResourceUid:$dataResourceUid&q.op=OR&fl=id&rows=0',
       (Map<String, dynamic> initialResult) {
-        final int totalResults = (initialResult['response']
-            as Map<String, dynamic>)['numFound'] as int;
+        final int totalResults =
+            (initialResult['response'] as Map<String, dynamic>)['numFound']
+                as int;
         initialCompleter.complete(totalResults);
       },
       (String error) {
@@ -1775,8 +2057,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
         solrHost1!,
         'http://localhost:8983/solr/${coreOrCollection1!}/select?q=dataResourceUid:$dataResourceUid&q.op=OR&fl=id&rows=$pageSize&start=$start',
         (Map<String, dynamic> paginatedResult) {
-          final List<dynamic> docs = (paginatedResult['response']
-              as Map<String, dynamic>)['docs'] as List<dynamic>;
+          final List<dynamic> docs =
+              (paginatedResult['response'] as Map<String, dynamic>)['docs']
+                  as List<dynamic>;
 
           for (final dynamic doc in docs) {
             uuids.add((doc as Map<String, dynamic>)['id'] as String);
@@ -1798,11 +2081,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   Future<Map<String, dynamic>> _compareDrsWithGbif(
-      Uri gbifUri, String gbifDrId, _CompareDataViewModel vm) async {
+    Uri gbifUri,
+    String gbifDrId,
+    _CompareDataViewModel vm,
+  ) async {
     final http.Response response = await http.get(gbifUri);
     if (response.statusCode != 200) {
       throw Exception(
-          'Error obtaining the GBIF dataset: ${response.statusCode}');
+        'Error obtaining the GBIF dataset: ${response.statusCode}',
+      );
     }
     final String body = convert.utf8.decode(response.bodyBytes);
     final Map<String, dynamic> gbifData =
@@ -1812,13 +2099,16 @@ class _CompareDataPageState extends State<CompareDataPage> {
     final List<dynamic> gbifContacts =
         // ignore: avoid_dynamic_calls
         gbifData['contacts'].where((dynamic contact) {
-      final Map<String, dynamic> gbifContact = contact as Map<String, dynamic>;
-      final String uniqueKey = _generateKey(gbifContact);
-      return uniqueGbifContacts.add(uniqueKey);
-    }).toList() as List<dynamic>;
+              final Map<String, dynamic> gbifContact =
+                  contact as Map<String, dynamic>;
+              final String uniqueKey = _generateKey(gbifContact);
+              return uniqueGbifContacts.add(uniqueKey);
+            }).toList()
+            as List<dynamic>;
 
     final Completer<List<dynamic>> dbCompleter = Completer<List<dynamic>>();
-    final String query = '''
+    final String query =
+        '''
 SELECT JSON_ARRAYAGG(
          JSON_OBJECT(
            'firstName', c.first_name,
@@ -1865,19 +2155,18 @@ SELECT JSON_ARRAYAGG(
       processedContacts.add(gbifName);
 
       final Map<String, dynamic>? matchingDbContact =
-          dbContacts.firstWhereOrNull(
-        (dynamic dbContactRaw) {
-          final Map<String, dynamic> dbContact =
-              dbContactRaw as Map<String, dynamic>;
-          final String dbKey = _generateKey(dbContact);
-          return dbKey == gbifName;
-        },
-      ) as Map<String, dynamic>?;
+          dbContacts.firstWhereOrNull((dynamic dbContactRaw) {
+                final Map<String, dynamic> dbContact =
+                    dbContactRaw as Map<String, dynamic>;
+                final String dbKey = _generateKey(dbContact);
+                return dbKey == gbifName;
+              })
+              as Map<String, dynamic>?;
 
       if (matchingDbContact == null) {
         differences.add(<String, dynamic>{
           'type': 'contact_missing_in_db',
-          'gbifContact': _summarizeContact(gbifContact)
+          'gbifContact': _summarizeContact(gbifContact),
         });
       } else {
         final Map<String, dynamic> mismatch = <String, dynamic>{};
@@ -1888,7 +2177,7 @@ SELECT JSON_ARRAYAGG(
           'phone',
           'organization',
           'position',
-          'userId'
+          'userId',
         ]) {
           if (key == 'phone') {
             final String dbPhoneValue = matchingDbContact[key] as String? ?? '';
@@ -1903,10 +2192,12 @@ SELECT JSON_ARRAYAGG(
 
             for (final String gbifPhone in gbifPhoneValues) {
               try {
-                final PhoneNumber dbPhoneParsed =
-                    _phoneNumberParse(dbPhoneValue);
-                final PhoneNumber gbifPhoneParsed =
-                    _phoneNumberParse(gbifPhone);
+                final PhoneNumber dbPhoneParsed = _phoneNumberParse(
+                  dbPhoneValue,
+                );
+                final PhoneNumber gbifPhoneParsed = _phoneNumberParse(
+                  gbifPhone,
+                );
                 if (dbPhoneParsed == gbifPhoneParsed) {
                   phoneMatch = true;
                   break;
@@ -1967,7 +2258,7 @@ SELECT JSON_ARRAYAGG(
           differences.add(<String, dynamic>{
             'type': 'contact_mismatch',
             'gbifContact': gbifContact,
-            'differences': mismatch
+            'differences': mismatch,
           });
         }
       }
@@ -1989,7 +2280,7 @@ SELECT JSON_ARRAYAGG(
       if (!existsInGbif) {
         differences.add(<String, dynamic>{
           'type': 'contact_missing_in_gbif',
-          'dbContact': _summarizeContact(dbContact)
+          'dbContact': _summarizeContact(dbContact),
         });
       }
     }
@@ -1997,28 +2288,36 @@ SELECT JSON_ARRAYAGG(
     // Check for contact number differences
 
     final Set<String> uniqueGbifNames = gbifContacts
-        .map((dynamic gbifContact) =>
-            '${(gbifContact as Map<String, dynamic>)['firstName']} ${_normalizeLastName(gbifContact['lastName'] as String?)} ${gbifContact['email']}')
+        .map(
+          (dynamic gbifContact) =>
+              '${(gbifContact as Map<String, dynamic>)['firstName']} ${_normalizeLastName(gbifContact['lastName'] as String?)} ${gbifContact['email']}',
+        )
         .toSet();
 
     differencesStats.add(<String, dynamic>{
       'type': 'contact_number_difference',
       'gbifContactCount': uniqueGbifNames.length,
-      'dbContactCount': dbContacts.length
+      'dbContactCount': dbContacts.length,
     });
 
     return <String, dynamic>{
       'differences': differences,
-      'differencesStats': differencesStats
+      'differencesStats': differencesStats,
     };
   }
 
   String _generateKey(Map<String, dynamic> c) =>
-      '${c['organization'] ?? ''} ${c['position'] is List<dynamic> && (c['position'] as List<dynamic>).isNotEmpty ? (c['position'] as List<dynamic>)[0] : c['position'] is String ? c['position'] : ''} ${c['firstName'] ?? ''} ${_normalizeLastName(c['lastName'] as String?)}';
+      '${c['organization'] ?? ''} ${c['position'] is List<dynamic> && (c['position'] as List<dynamic>).isNotEmpty
+          ? (c['position'] as List<dynamic>)[0]
+          : c['position'] is String
+          ? c['position']
+          : ''} ${c['firstName'] ?? ''} ${_normalizeLastName(c['lastName'] as String?)}';
 
   Future<void> _compareCollectionsWithGBIF(
-      _CompareDataViewModel vm, String? drsToCompareS,
-      [bool debug = false]) async {
+    _CompareDataViewModel vm,
+    String? drsToCompareS, [
+    bool debug = false,
+  ]) async {
     try {
       setState(() {
         currentPhaseTab3 = CompareCollectionsWithGbifDataPhase.getDrs;
@@ -2035,8 +2334,10 @@ SELECT JSON_ARRAYAGG(
             .toList();
       } else if (drsToCompareS != null && int.tryParse(drsToCompareS) != null) {
         // parse a sublists of drs
-        drsToCompare =
-            allDrs.keys.toList().sublist(0, int.parse(drsToCompareS));
+        drsToCompare = allDrs.keys.toList().sublist(
+          0,
+          int.parse(drsToCompareS),
+        );
       } else {
         drsToCompare = allDrs.keys.toList();
       }
@@ -2075,8 +2376,11 @@ SELECT JSON_ARRAYAGG(
         }
         final String gbifUriS = 'https://api.gbif.org/v1/dataset/$gbifDrId';
         final Uri gbifUri = Uri.parse(gbifUriS);
-        final Map<String, dynamic> comparison =
-            await _compareDrsWithGbif(gbifUri, gbifDrId, vm);
+        final Map<String, dynamic> comparison = await _compareDrsWithGbif(
+          gbifUri,
+          gbifDrId,
+          vm,
+        );
         final List<Map<String, dynamic>> differences =
             comparison['differences'] as List<Map<String, dynamic>>;
         final List<Map<String, dynamic>> differencesStats =
@@ -2086,17 +2390,21 @@ SELECT JSON_ARRAYAGG(
           resourcesWithDifferences++;
           totalDifferences += differences.length;
           reportPrint(
-              '| **$dr** | Differences Found (${differences.length}) |');
+            '| **$dr** | Differences Found (${differences.length}) |',
+          );
           for (final Map<String, dynamic> difference in differences) {
             if (difference['type'] == 'contact_missing_in_db') {
               reportPrint(
-                  '| Contact missing in Collectory | ${_contactForHumans(difference['gbifContact'] as Map<String, dynamic>)} |');
+                '| Contact missing in Collectory | ${_contactForHumans(difference['gbifContact'] as Map<String, dynamic>)} |',
+              );
             } else if (difference['type'] == 'contact_missing_in_gbif') {
               reportPrint(
-                  '| Contact missing in GBIF | ${_contactForHumans(difference['dbContact'] as Map<String, dynamic>)} |');
+                '| Contact missing in GBIF | ${_contactForHumans(difference['dbContact'] as Map<String, dynamic>)} |',
+              );
             } else if (difference['type'] == 'contact_mismatch') {
               reportPrint(
-                  '| Contact mismatch | ${difference['differences']} |');
+                '| Contact mismatch | ${difference['differences']} |',
+              );
             }
           }
         } else {
@@ -2105,17 +2413,21 @@ SELECT JSON_ARRAYAGG(
         }
         final Map<String, dynamic> stats = differencesStats[0];
         reportPrint(
-            '| Contact totals | [GBIF]($gbifUriS): ${stats['gbifContactCount']}, Collectory: ${stats['dbContactCount']} |');
+          '| Contact totals | [GBIF]($gbifUriS): ${stats['gbifContactCount']}, Collectory: ${stats['dbContactCount']} |',
+        );
       }
 
       // Add summary to the report
       reportPrint('\n## Summary\n');
       reportPrint(
-          '| Total Resources | Resources with Differences | Resources without Differences | Total Differences |');
+        '| Total Resources | Resources with Differences | Resources without Differences | Total Differences |',
+      );
       reportPrint(
-          '|-----------------|----------------------------|-------------------------------|-------------------|');
+        '|-----------------|----------------------------|-------------------------------|-------------------|',
+      );
       reportPrint(
-          '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalDifferences |');
+        '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalDifferences |',
+      );
 
       setState(() {
         currentPhaseTab3 = CompareCollectionsWithGbifDataPhase.finished;
@@ -2141,7 +2453,7 @@ SELECT JSON_ARRAYAGG(
       'organizationName',
       'position',
       'positionName',
-      'userId'
+      'userId',
     ]) {
       if (_hasSomeValue(contact, key)) {
         summary[key] = contact[key];
@@ -2155,8 +2467,10 @@ SELECT JSON_ARRAYAGG(
       return PhoneNumber.findPotentialPhoneNumbers(value).first;
     } catch (_) {
       try {
-        return PhoneNumber.parse(value,
-            callerCountry: callerCountry ?? IsoCode.ES);
+        return PhoneNumber.parse(
+          value,
+          callerCountry: callerCountry ?? IsoCode.ES,
+        );
       } catch (_) {
         return PhoneNumber.parse(value);
       }
@@ -2176,7 +2490,7 @@ SELECT JSON_ARRAYAGG(
       'organizationName',
       'position',
       'positionName',
-      'userId'
+      'userId',
     ]) {
       if (_hasSomeValue(contact, key)) {
         if (summary.isNotEmpty) {
