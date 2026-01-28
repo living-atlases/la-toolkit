@@ -59,7 +59,7 @@ class DependenciesManager {
             Version? versionP;
             try {
               versionP = v(version);
-            } catch (e, stacktrace) {
+            } catch (e) {
               log('🔴 ERROR parsing version for $sw: version="$version" - $e');
               // log(stacktrace.toString());
               return;
@@ -100,7 +100,7 @@ class DependenciesManager {
                       Version? versionOfDepP;
                       try {
                         versionOfDepP = v(versionOfDep);
-                      } catch (e, stacktrace) {
+                      } catch (e) {
                         log(
                           '🔴 ERROR parsing version for dependency $dependency: version="$versionOfDep" (from $sw) - $e',
                         );
