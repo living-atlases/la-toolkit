@@ -1049,7 +1049,10 @@ check results length: ${checkResults.length}''';
     final Map<String, String> versions = <String, String>{};
     for (final LAServiceDeploy sd in serviceDeploys.where(
       (LAServiceDeploy sd) =>
-          (onlyDocker && sd.type == DeploymentType.dockerSwarm) || !onlyDocker,
+          (onlyDocker &&
+              (sd.type == DeploymentType.dockerSwarm ||
+                  sd.type == DeploymentType.dockerCompose)) ||
+          !onlyDocker,
     )) {
       versions.addAll(sd.softwareVersions);
     }
@@ -1103,14 +1106,17 @@ check results length: ${checkResults.length}''';
 
     clusterServices.forEach((String id, List<String> serviceNames) {
       for (final String currentService in serviceNames) {
-        final List<String> serverCluster =
-            getServiceDeploysForSomeService(dockerSwarm)
-                .map(
-                  (LAServiceDeploy sd) => servers
-                      .firstWhere((LAServer s) => s.id == sd.serverId)
-                      .name,
-                )
-                .toList();
+        // Get servers for both Docker Swarm and Docker Compose
+        final List<String> serverCluster = <String>{
+          ...getServiceDeploysForSomeService(dockerSwarm).map(
+            (LAServiceDeploy sd) =>
+                servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
+          ),
+          ...getServiceDeploysForSomeService(dockerCompose).map(
+            (LAServiceDeploy sd) =>
+                servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
+          ),
+        }.toList();
         serverCluster.sort();
         if (serviceName == currentService) {
           hostnames.addAll(serverCluster);
@@ -1274,14 +1280,48 @@ check results length: ${checkResults.length}''';
       final Set<String> nginxDockerInternalAliases = <String>{};
       clusterServices.forEach((String id, List<String> serviceNames) {
         for (final String currentService in serviceNames) {
-          final LAService s = getService(currentService);
-          nginxDockerInternalAliases.add(s.url(domain));
+          final LAServiceDesc desc = LAServiceDesc.get(currentService);
+          // Only add services that have URLs and are not sub-services
+          if (!desc.withoutUrl && !desc.isSubService) {
+            final LAService s = getService(currentService);
+            nginxDockerInternalAliases.add(s.url(domain));
+          }
         }
       });
       conf['LA_nginx_docker_internal_aliases'] = nginxDockerInternalAliases
           .toList();
       final List<String> dockerSolrHosts = dockerServers();
       conf['LA_docker_solr_hosts'] = dockerSolrHosts;
+
+      // Docker Swarm specific variables
+      final List<LAServiceDeploy> dockerSwarmDeploys =
+          getServiceDeploysForSomeService(dockerSwarm);
+      if (dockerSwarmDeploys.isNotEmpty) {
+        conf['LA_use_docker_swarm'] = true;
+        final List<String> swarmHosts = dockerSwarmDeploys
+            .map(
+              (LAServiceDeploy sd) =>
+                  servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
+            )
+            .toList();
+        swarmHosts.sort();
+        conf['LA_docker_swarm_hostname'] = swarmHosts.join(', ');
+      }
+
+      // Docker Compose specific variables
+      final List<LAServiceDeploy> dockerComposeDeploys =
+          getServiceDeploysForSomeService(dockerCompose);
+      if (dockerComposeDeploys.isNotEmpty) {
+        conf['LA_use_docker_compose'] = true;
+        final List<String> composeHosts = dockerComposeDeploys
+            .map(
+              (LAServiceDeploy sd) =>
+                  servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
+            )
+            .toList();
+        composeHosts.sort();
+        conf['LA_docker_compose_hostname'] = composeHosts.join(', ');
+      }
     }
 
     // Release versions
