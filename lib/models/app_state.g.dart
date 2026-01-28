@@ -43,8 +43,6 @@ abstract class _$AppStateCWProxy {
 
   AppState sshKeys(List<SshKey>? sshKeys);
 
-  AppState dbUpgradeRequired(bool? dbUpgradeRequired);
-
   AppState serviceCheckProgress(
     Map<String, Map<String, dynamic>>? serviceCheckProgress,
   );
@@ -74,7 +72,6 @@ abstract class _$AppStateCWProxy {
     DateTime? lastSwCheck,
     bool? loading,
     bool? depsLoading,
-    bool? dbUpgradeRequired,
     List<SshKey>? sshKeys,
     Map<String, Map<String, dynamic>>? serviceCheckProgress,
   });
@@ -149,10 +146,6 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
   AppState sshKeys(List<SshKey>? sshKeys) => call(sshKeys: sshKeys);
 
   @override
-  AppState dbUpgradeRequired(bool? dbUpgradeRequired) =>
-      call(dbUpgradeRequired: dbUpgradeRequired);
-
-  @override
   AppState serviceCheckProgress(
     Map<String, Map<String, dynamic>>? serviceCheckProgress,
   ) => call(serviceCheckProgress: serviceCheckProgress);
@@ -183,7 +176,6 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
     Object? lastSwCheck = const $CopyWithPlaceholder(),
     Object? loading = const $CopyWithPlaceholder(),
     Object? depsLoading = const $CopyWithPlaceholder(),
-    Object? dbUpgradeRequired = const $CopyWithPlaceholder(),
     Object? sshKeys = const $CopyWithPlaceholder(),
     Object? serviceCheckProgress = const $CopyWithPlaceholder(),
   }) {
@@ -261,10 +253,6 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
           ? _value.depsLoading
           // ignore: cast_nullable_to_non_nullable
           : depsLoading as bool?,
-      dbUpgradeRequired: dbUpgradeRequired == const $CopyWithPlaceholder()
-          ? _value.dbUpgradeRequired
-          // ignore: cast_nullable_to_non_nullable
-          : dbUpgradeRequired as bool?,
       sshKeys: sshKeys == const $CopyWithPlaceholder()
           ? _value.sshKeys
           // ignore: cast_nullable_to_non_nullable
