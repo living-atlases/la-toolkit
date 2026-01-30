@@ -1198,27 +1198,30 @@ check results length: ${checkResults.length}''';
     });
 
     clusterServices.forEach((String id, List<String> serviceNames) {
-      for (final String currentService in serviceNames) {
-        // Get servers for both Docker Swarm and Docker Compose
-        final List<String> serverCluster = <String>{
-          ...getServiceDeploysForSomeService(dockerSwarm)
-              .map(
-                (LAServiceDeploy sd) => servers
-                    .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
-                    ?.name,
-              )
-              .nonNulls,
-          ...getServiceDeploysForSomeService(dockerCompose)
-              .map(
-                (LAServiceDeploy sd) => servers
-                    .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
-                    ?.name,
-              )
-              .nonNulls,
-        }.toList();
-        serverCluster.sort();
-        if (serviceName == currentService) {
-          hostnames.addAll(serverCluster);
+      if (serviceNames.contains(serviceName)) {
+        final LACluster? cluster = clusters.firstWhereOrNull(
+          (LACluster c) => c.id == id,
+        );
+        if (cluster != null) {
+          if (cluster.type == DeploymentType.dockerCompose) {
+            final LAServer? server = servers.firstWhereOrNull(
+              (LAServer s) => s.id == cluster.serverId,
+            );
+            if (server != null) {
+              hostnames.add(server.name);
+            }
+          } else if (cluster.type == DeploymentType.dockerSwarm) {
+            final List<String> swarmHosts =
+                getServiceDeploysForSomeService(dockerSwarm)
+                    .map(
+                      (LAServiceDeploy sd) => servers
+                          .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
+                          ?.name,
+                    )
+                    .nonNulls
+                    .toList();
+            hostnames.addAll(swarmHosts);
+          }
         }
       }
     });
@@ -1376,21 +1379,64 @@ check results length: ${checkResults.length}''';
     }
     // Docker related vars
     if (isDockerClusterConfigured()) {
-      final Set<String> nginxDockerInternalAliases = <String>{};
-      clusterServices.forEach((String id, List<String> serviceNames) {
-        for (final String currentService in serviceNames) {
-          final LAServiceDesc desc = LAServiceDesc.get(currentService);
-          // Only add services that have URLs and are not sub-services
-          if (!desc.withoutUrl && !desc.isSubService) {
-            final LAService s = getService(currentService);
-            nginxDockerInternalAliases.add(s.url(domain));
+      debugPrint('DEBUG: assembleConf isDockerClusterConfigured = true');
+      final List<String> dockerSolrHosts = dockerServers();
+
+      final Map<String, List<String>> nginxDockerInternalAliasesByHost =
+          <String, List<String>>{};
+      debugPrint('DEBUG: dockerSolrHosts: $dockerSolrHosts');
+
+      for (final LAService service in services) {
+        if (service.use) {
+          final List<String> hosts = getHostnames(service.nameInt);
+          if (hosts.isNotEmpty) {
+            for (final String host in hosts) {
+              // Only add alias if the host is part of the docker cluster
+              if (dockerSolrHosts.contains(host)) {
+                final LAServiceDesc desc = LAServiceDesc.get(service.nameInt);
+                if (!desc.withoutUrl && !desc.isSubService) {
+                  nginxDockerInternalAliasesByHost.putIfAbsent(
+                    host,
+                    () => <String>[],
+                  );
+                  final String url = service.url(domain);
+                  if (!nginxDockerInternalAliasesByHost[host]!.contains(url)) {
+                    nginxDockerInternalAliasesByHost[host]!.add(url);
+                  }
+                }
+              }
+            }
           }
         }
-      });
-      conf['LA_nginx_docker_internal_aliases'] = nginxDockerInternalAliases
-          .toList();
-      final List<String> dockerSolrHosts = dockerServers();
-      conf['LA_docker_solr_hosts'] = dockerSolrHosts;
+      }
+
+      debugPrint(
+        'DEBUG: nginxDockerInternalAliasesByHost result: $nginxDockerInternalAliasesByHost',
+      );
+      conf['LA_nginx_docker_internal_aliases_by_host'] =
+          nginxDockerInternalAliasesByHost;
+
+      // LA_docker_solr_hosts should contain only hosts where solr/solrcloud is running
+      List<String> realSolrHosts;
+      if (getServiceDeploysForSomeService(solrcloud).isNotEmpty) {
+        realSolrHosts = getHostnames(solrcloud);
+      } else {
+        realSolrHosts = getHostnames(solr);
+      }
+
+      // If no explicit solr assignment, and we are using docker swarn/compose,
+      // maybe we should fallback or keep empty.
+      // Keeping empty is safer if we want to reflect "where solr is".
+      // But if user didn't assign solr yet, existing logic added all docker servers.
+      // However, if solr is not assigned, 'solr_hosts' count will be 0 in ansible, which is fine?
+
+      // Fallback for backward compatibility or default behavior if services not assigned but 'LA_use_solrcloud' is true?
+      if (realSolrHosts.isEmpty && (conf['LA_use_solrcloud'] == true)) {
+        // If solrcloud is enabled but not assigned, likely a misconfiguration or early state.
+        // We do not fallback to all servers.
+      }
+
+      conf['LA_docker_solr_hosts'] = realSolrHosts.toSet().toList()..sort();
 
       // Docker Swarm specific variables
       final List<LAServiceDeploy> dockerSwarmDeploys =
@@ -1450,6 +1496,10 @@ check results length: ${checkResults.length}''';
     );
 
     conf['LA_software_versions'] = swVersionsList;
+
+    for (final String varName in LAVariableDesc.map.keys) {
+      getVariableValue(varName);
+    }
 
     for (final LAVariable variable in variables) {
       conf['${LAVariable.varInvPrefix}${variable.nameInt}'] = variable.value;
