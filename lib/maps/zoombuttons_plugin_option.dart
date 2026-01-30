@@ -4,20 +4,21 @@ import 'package:flutter_map/plugin_api.dart';
 // https://github.com/fleaflet/flutter_map/blob/8c49bfa1d9bdd2b1c1e9ce4ba01660ba12a2d8ef/example/lib/pages/zoombuttons_plugin_option.dart
 
 class FlutterMapZoomButtons extends StatelessWidget {
-  const FlutterMapZoomButtons(
-      {super.key,
-      this.minZoom = 1,
-      this.maxZoom = 18,
-      this.mini = true,
-      this.padding = 2.0,
-      this.alignment = Alignment.topRight,
-      this.zoomInColor,
-      this.zoomInColorIcon,
-      this.zoomInIcon = Icons.zoom_in,
-      this.zoomOutColor,
-      this.zoomOutColorIcon,
-      this.zoomOutIcon = Icons.zoom_out,
-      this.options = const FitBoundsOptions(padding: EdgeInsets.all(12))});
+  const FlutterMapZoomButtons({
+    super.key,
+    this.minZoom = 1,
+    this.maxZoom = 18,
+    this.mini = true,
+    this.padding = 2.0,
+    this.alignment = Alignment.topRight,
+    this.zoomInColor,
+    this.zoomInColorIcon,
+    this.zoomInIcon = Icons.zoom_in,
+    this.zoomOutColor,
+    this.zoomOutColorIcon,
+    this.zoomOutIcon = Icons.zoom_out,
+    this.options = const FitBoundsOptions(padding: EdgeInsets.all(12)),
+  });
 
   final double minZoom;
   final double maxZoom;
@@ -41,25 +42,35 @@ class FlutterMapZoomButtons extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-            padding:
-                EdgeInsets.only(left: padding, top: padding, right: padding),
+            padding: EdgeInsets.only(
+              left: padding,
+              top: padding,
+              right: padding,
+            ),
             child: FloatingActionButton(
               heroTag: 'zoomInButton',
               mini: mini,
               backgroundColor: zoomInColor ?? Theme.of(context).primaryColor,
               onPressed: () {
                 final LatLngBounds bounds = map.bounds;
-                final CenterZoom centerZoom =
-                    map.getBoundsCenterZoom(bounds, options);
+                final CenterZoom centerZoom = map.getBoundsCenterZoom(
+                  bounds,
+                  options,
+                );
                 double zoom = centerZoom.zoom + 1;
                 if (zoom > maxZoom) {
                   zoom = maxZoom;
                 }
-                map.move(centerZoom.center, zoom,
-                    source: MapEventSource.custom);
+                map.move(
+                  centerZoom.center,
+                  zoom,
+                  source: MapEventSource.custom,
+                );
               },
-              child: Icon(zoomInIcon,
-                  color: zoomInColorIcon ?? IconTheme.of(context).color),
+              child: Icon(
+                zoomInIcon,
+                color: zoomInColorIcon ?? IconTheme.of(context).color,
+              ),
             ),
           ),
           Padding(
@@ -70,17 +81,24 @@ class FlutterMapZoomButtons extends StatelessWidget {
               backgroundColor: zoomOutColor ?? Theme.of(context).primaryColor,
               onPressed: () {
                 final LatLngBounds bounds = map.bounds;
-                final CenterZoom centerZoom =
-                    map.getBoundsCenterZoom(bounds, options);
+                final CenterZoom centerZoom = map.getBoundsCenterZoom(
+                  bounds,
+                  options,
+                );
                 double zoom = centerZoom.zoom - 1;
                 if (zoom < minZoom) {
                   zoom = minZoom;
                 }
-                map.move(centerZoom.center, zoom,
-                    source: MapEventSource.custom);
+                map.move(
+                  centerZoom.center,
+                  zoom,
+                  source: MapEventSource.custom,
+                );
               },
-              child: Icon(zoomOutIcon,
-                  color: zoomOutColorIcon ?? IconTheme.of(context).color),
+              child: Icon(
+                zoomOutIcon,
+                color: zoomOutColorIcon ?? IconTheme.of(context).color,
+              ),
             ),
           ),
         ],

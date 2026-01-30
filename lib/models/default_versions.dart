@@ -28,7 +28,7 @@ class DefaultVersions {
     spatial: '1.0.2',
     spatialService: '1.1.0',
     speciesLists: '4.0.3',
-    userdetails: '3.0.2'
+    userdetails: '3.0.2',
   };
 
   static final Map<String, String> defVersions2_0_11 = <String, String>{
@@ -91,10 +91,10 @@ class DefaultVersions {
 
   static Map<VersionConstraint, Map<String, String>> map =
       <VersionConstraint, Map<String, String>>{
-    // ala-install vs rest of components
-    vc('<= 2.0.11'): defVersions2_0_11,
-    vc('> 2.0.11 < 2.1.0'): defVersions2_0_11,
-    vc('>= 2.1.0 < 2.1.10'): defVersions2_1_0,
-    vc('>= 2.1.10'): defVersions2_1_10
-  };
+        // ala-install vs rest of components
+        vc('<= 2.0.11'): defVersions2_0_11,
+        vc('> 2.0.11 < 2.1.0'): defVersions2_0_11,
+        vc('>= 2.1.0 < 2.1.10'): defVersions2_1_0,
+        vc('>= 2.1.10'): defVersions2_1_10,
+      };
 }

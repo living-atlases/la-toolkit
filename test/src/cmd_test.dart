@@ -22,45 +22,59 @@ void main() {
     expect(cmd.desc, equals('Deploy of collections and species services'));
     cmd.limitToServers = <String>['vm1'];
     expect(
-        cmd.desc, equals('Deploy of collections and species services in vm1'));
+      cmd.desc,
+      equals('Deploy of collections and species services in vm1'),
+    );
     cmd.tags = <String>['tomcat'];
     expect(
-        cmd.desc,
-        equals(
-            'Deploy of collections and species services in vm1 (tags: tomcat)'));
+      cmd.desc,
+      equals(
+        'Deploy of collections and species services in vm1 (tags: tomcat)',
+      ),
+    );
     cmd.tags = <String>['tomcat', 'properties', 'nginx'];
     cmd.deployServices = <String>[collectory, bie, spatial, solr];
     expect(
-        cmd.desc,
-        equals(
-            'Deploy of collections, species, spatial and solr services in vm1 (tags: tomcat, properties, nginx)'));
+      cmd.desc,
+      equals(
+        'Deploy of collections, species, spatial and solr services in vm1 (tags: tomcat, properties, nginx)',
+      ),
+    );
     cmd.deployServices = <String>[
       collectory,
       bie,
       spatial,
       solr,
       biocacheService,
-      alaHub
+      alaHub,
     ];
     expect(
-        cmd.desc,
-        equals(
-            'Deploy of some services in vm1 (tags: tomcat, properties, nginx)'));
+      cmd.desc,
+      equals(
+        'Deploy of some services in vm1 (tags: tomcat, properties, nginx)',
+      ),
+    );
     cmd.onlyProperties = true;
     cmd.tags = <String>[];
     expect(
-        cmd.desc, equals('Deploy of some services in vm1 (tags: properties)'));
+      cmd.desc,
+      equals('Deploy of some services in vm1 (tags: properties)'),
+    );
     cmd.tags = <String>['tomcat', 'properties', 'nginx', 'java'];
     cmd.deployServices = <String>[collectory, bie];
     expect(
-        cmd.desc,
-        equals(
-            'Deploy of collections and species services in vm1 (only some tasks)'));
+      cmd.desc,
+      equals(
+        'Deploy of collections and species services in vm1 (only some tasks)',
+      ),
+    );
     cmd.dryRun = true;
     cmd.onlyProperties = false;
     cmd.tags = <String>[];
-    expect(cmd.desc,
-        equals('Dry run deploy of collections and species services in vm1'));
+    expect(
+      cmd.desc,
+      equals('Dry run deploy of collections and species services in vm1'),
+    );
   });
 
   test('Test pre-cmd to String', () {
@@ -69,14 +83,18 @@ void main() {
     cmd.giveSudo = true;
     cmd.addSshKeys = true;
     expect(
-        cmd.desc,
-        equals(
-            "Pre-deploy tasks (add default user, add ssh keys, add sudo permissions, setup '/etc/hosts', setup solr limits, additional deps install)"));
+      cmd.desc,
+      equals(
+        "Pre-deploy tasks (add default user, add ssh keys, add sudo permissions, setup '/etc/hosts', setup solr limits, additional deps install)",
+      ),
+    );
     cmd.dryRun = true;
     expect(
-        cmd.desc,
-        equals(
-            "Dry run pre-deploy tasks (add default user, add ssh keys, add sudo permissions, setup '/etc/hosts', setup solr limits, additional deps install)"));
+      cmd.desc,
+      equals(
+        "Dry run pre-deploy tasks (add default user, add ssh keys, add sudo permissions, setup '/etc/hosts', setup solr limits, additional deps install)",
+      ),
+    );
   });
 
   test('Test post-cmd to String', () {
@@ -117,17 +135,19 @@ void main() {
           'giveSudo': false,
           'etcHosts': false,
           'solrLimits': true,
-          'addAdditionalDeps': true
+          'addAdditionalDeps': true,
         },
-        'cmdHistoryEntryId': '6084263ae185829aa740c3ad'
-      }
+        'cmdHistoryEntryId': '6084263ae185829aa740c3ad',
+      },
     };
     final CmdHistoryEntry cmdEntry = CmdHistoryEntry.fromJson(cmdEntryJ);
     expect(cmdEntry.cmd.type, equals(CmdType.preDeploy));
     expect(
-        cmdEntry.deployCmd!.desc,
-        equals(
-            'Pre-deploy tasks (setup solr limits, additional deps install in ala-install-test-1)'));
+      cmdEntry.deployCmd!.desc,
+      equals(
+        'Pre-deploy tasks (setup solr limits, additional deps install in ala-install-test-1)',
+      ),
+    );
   });
 
   test('Test pipeline cmd to String', () {
@@ -136,20 +156,28 @@ void main() {
     expect(cmd.desc, equals('Pipelines data processing of all drs'));
     cmd.steps = <String>{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
     expect(
-        cmd.desc, equals('Pipelines data processing of all drs (some steps)'));
+      cmd.desc,
+      equals('Pipelines data processing of all drs (some steps)'),
+    );
     cmd.steps = <String>{'interpret', 'validate', 'dwca-export'};
     expect(
-        cmd.desc,
-        equals(
-            'Pipelines data processing of all drs (interpret, validate and dwca-export steps)'));
+      cmd.desc,
+      equals(
+        'Pipelines data processing of all drs (interpret, validate and dwca-export steps)',
+      ),
+    );
     cmd.steps = <String>{'interpret', 'validate'};
     expect(
-        cmd.desc,
-        equals(
-            'Pipelines data processing of all drs (interpret and validate steps)'));
+      cmd.desc,
+      equals(
+        'Pipelines data processing of all drs (interpret and validate steps)',
+      ),
+    );
     cmd.steps = const <String>{'interpret'};
-    expect(cmd.desc,
-        equals('Pipelines data processing of all drs (interpret step)'));
+    expect(
+      cmd.desc,
+      equals('Pipelines data processing of all drs (interpret step)'),
+    );
     cmd.dryRun = true;
     cmd.steps = <String>{};
     expect(cmd.desc, equals('Dry run of Pipelines data processing of all drs'));

@@ -12,16 +12,15 @@ class CmdTermPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Material App Bar'),
-      ),
+      appBar: AppBar(title: const Text('Material App Bar')),
       body: InteractiveViewer(
-          child: Container(
-        alignment: Alignment.center,
-/*              width: 1000,
+        child: Container(
+          alignment: Alignment.center,
+          /*              width: 1000,
               height: 1000,*/
-        // child: EmbedWebView(src: TermDialog.getInitialUrl(port)))),
-      )),
+          // child: EmbedWebView(src: TermDialog.getInitialUrl(port)))),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {},

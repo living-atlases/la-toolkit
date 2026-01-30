@@ -2,33 +2,24 @@ import './la_service_constants.dart';
 import 'basic_service.dart';
 
 class LAServiceDepsDesc {
-  LAServiceDepsDesc({
-    required this.nameInt,
-    required this.serviceDepends,
-  });
+  LAServiceDepsDesc({required this.nameInt, required this.serviceDepends});
 
   String nameInt;
   List<BasicService> serviceDepends;
 
-  static final Map<String, LAServiceDepsDesc> v2_0_4 =
-      <String, LAServiceDepsDesc>{
+  static final Map<String, LAServiceDepsDesc>
+  v2_0_4 = <String, LAServiceDepsDesc>{
     collectory: LAServiceDepsDesc(
       nameInt: collectory,
       serviceDepends: <BasicService>[Nginx.def, Tomcat.def, MySql.def],
     ),
     alaHub: LAServiceDepsDesc(
       nameInt: alaHub,
-      serviceDepends: <BasicService>[
-        Nginx.def,
-        Tomcat.def,
-      ],
+      serviceDepends: <BasicService>[Nginx.def, Tomcat.def],
     ),
     biocacheService: LAServiceDepsDesc(
       nameInt: biocacheService,
-      serviceDepends: <BasicService>[
-        Nginx.def,
-        Tomcat.def,
-      ],
+      serviceDepends: <BasicService>[Nginx.def, Tomcat.def],
     ),
     bie: LAServiceDepsDesc(
       nameInt: bie,
@@ -44,16 +35,12 @@ class LAServiceDepsDesc {
         Nginx.def,
         ElasticSearch.v7_7_1,
         PostGis.def,
-        PostgresSql.def
+        PostgresSql.def,
       ],
     ),
     speciesLists: LAServiceDepsDesc(
       nameInt: speciesLists,
-      serviceDepends: <BasicService>[
-        Nginx.def,
-        Tomcat.def,
-        MySql.def,
-      ],
+      serviceDepends: <BasicService>[Nginx.def, Tomcat.def, MySql.def],
     ),
     regions: LAServiceDepsDesc(
       nameInt: regions,
@@ -97,12 +84,7 @@ class LAServiceDepsDesc {
     ),
     apikey: LAServiceDepsDesc(
       nameInt: apikey,
-      serviceDepends: <BasicService>[
-        Nginx.def,
-        MySql.def,
-        Cas.def,
-        ApiKey.def,
-      ],
+      serviceDepends: <BasicService>[Nginx.def, MySql.def, Cas.def, ApiKey.def],
     ),
     casManagement: LAServiceDepsDesc(
       nameInt: casManagement,
@@ -143,7 +125,7 @@ class LAServiceDepsDesc {
         Nginx.def,
         Tomcat.def,
         Postfix.def,
-        MySql.def
+        MySql.def,
       ],
     ),
     doi: LAServiceDepsDesc(
@@ -157,20 +139,25 @@ class LAServiceDepsDesc {
       ],
     ),
     namematchingService: LAServiceDepsDesc(
-        nameInt: namematchingService,
-        serviceDepends: <BasicService>[Nginx.def, NameMatchingService.def]),
+      nameInt: namematchingService,
+      serviceDepends: <BasicService>[Nginx.def, NameMatchingService.def],
+    ),
     sensitiveDataService: LAServiceDepsDesc(
-        nameInt: sensitiveDataService,
-        serviceDepends: <BasicService>[Nginx.def, NameMatchingService.def]),
+      nameInt: sensitiveDataService,
+      serviceDepends: <BasicService>[Nginx.def, NameMatchingService.def],
+    ),
     dataQuality: LAServiceDepsDesc(
-        nameInt: dataQuality,
-        serviceDepends: <BasicService>[Nginx.def, Tomcat.def, PostgresSql.def]),
+      nameInt: dataQuality,
+      serviceDepends: <BasicService>[Nginx.def, Tomcat.def, PostgresSql.def],
+    ),
     biocacheBackend: LAServiceDepsDesc(
       nameInt: biocacheBackend,
       serviceDepends: <BasicService>[Cassandra.v3],
     ),
     branding: LAServiceDepsDesc(
-        nameInt: 'branding', serviceDepends: <BasicService>[Nginx.def]),
+      nameInt: 'branding',
+      serviceDepends: <BasicService>[Nginx.def],
+    ),
     biocacheCli: LAServiceDepsDesc(
       nameInt: biocacheCli,
       serviceDepends: <BasicService>[],
@@ -201,10 +188,7 @@ class LAServiceDepsDesc {
     ),
     pdfgen: LAServiceDepsDesc(
       nameInt: pdfgen,
-      serviceDepends: <BasicService>[
-        Nginx.def,
-        Tomcat.def,
-      ],
+      serviceDepends: <BasicService>[Nginx.def, Tomcat.def],
     ),
     ecodata: LAServiceDepsDesc(
       nameInt: ecodata,
@@ -212,7 +196,7 @@ class LAServiceDepsDesc {
         Nginx.def,
         Ecodata.def,
         Mongo.v4_0,
-        ElasticSearch.v7_14_1
+        ElasticSearch.v7_14_1,
       ],
     ),
     ecodataReporting: LAServiceDepsDesc(
@@ -228,17 +212,25 @@ class LAServiceDepsDesc {
       serviceDepends: <BasicService>[ElasticSearch.v7_17_7],
     ),
     dockerSwarm: LAServiceDepsDesc(
-        nameInt: dockerSwarm, serviceDepends: <BasicService>[]),
+      nameInt: dockerSwarm,
+      serviceDepends: <BasicService>[],
+    ),
     dockerCommon: LAServiceDepsDesc(
-        nameInt: dockerCommon, serviceDepends: <BasicService>[]),
+      nameInt: dockerCommon,
+      serviceDepends: <BasicService>[],
+    ),
     gatus: LAServiceDepsDesc(nameInt: gatus, serviceDepends: <BasicService>[]),
-    portainer:
-        LAServiceDepsDesc(nameInt: portainer, serviceDepends: <BasicService>[]),
-    cassandra:
-        LAServiceDepsDesc(nameInt: cassandra, serviceDepends: <BasicService>[])
+    portainer: LAServiceDepsDesc(
+      nameInt: portainer,
+      serviceDepends: <BasicService>[],
+    ),
+    cassandra: LAServiceDepsDesc(
+      nameInt: cassandra,
+      serviceDepends: <BasicService>[],
+    ),
   };
 
-/*
+  /*
   static final Map<String, Map<String, LAServiceDepsDesc>> map = {
     "v2.0.6": v2_0_4,
     "v2.0.5": v2_0_4,

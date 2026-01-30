@@ -592,14 +592,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
       sToS = serverServices.entries
           .map(
             (MapEntry<String, List<String>> entry) =>
-                '${servers.firstWhere((LAServer server) => server.id == entry.key).name} has ${entry.value}',
+                '${servers.firstWhereOrNull((LAServer server) => server.id == entry.key)?.name ?? entry.key} has ${entry.value}',
           )
           .toList()
           .join('\n');
       cToS = clusterServices.entries
           .map(
             (MapEntry<String, List<String>> entry) =>
-                '${clusters.firstWhere((LACluster cluster) => cluster.id == entry.key).name} has ${entry.value}',
+                '${clusters.firstWhereOrNull((LACluster cluster) => cluster.id == entry.key)?.name ?? entry.key} has ${entry.value}',
           )
           .toList()
           .join('\n');
@@ -804,6 +804,7 @@ check results length: ${checkResults.length}''';
     if (assignedServices.contains(dockerSwarm)) {
       _addDockerClusterIfNotExists(
         serverId: serverId,
+        // ignore: avoid_redundant_argument_values
         type: DeploymentType.dockerSwarm,
       );
     }
@@ -909,38 +910,42 @@ check results length: ${checkResults.length}''';
             sD.serviceId == service.id,
       );
     }
-    if (serviceName == dockerSwarm) {
-      // Find all docker-swarm clusters for this server
-      final List<LACluster> dockerSwarmClusters = clusters
-          .where(
-            (LACluster c) =>
-                c.serverId == sIdOrCid && c.type == DeploymentType.dockerSwarm,
-          )
+    if (serviceName == dockerSwarm || serviceName == dockerCompose) {
+      final DeploymentType dType = serviceName == dockerSwarm
+          ? DeploymentType.dockerSwarm
+          : DeploymentType.dockerCompose;
+      // Find all docker clusters of this type for this server
+      final List<LACluster> dockerClusters = clusters
+          .where((LACluster c) => c.serverId == sIdOrCid && c.type == dType)
           .toList();
 
       // For each cluster, remove all services and their deployments
-      for (final LACluster cluster in dockerSwarmClusters) {
+      for (final LACluster cluster in dockerClusters) {
         // Get all services in this cluster
         final List<String>? servicesInCluster = clusterServices[cluster.id];
         if (servicesInCluster != null) {
           // Remove all service deployments for this cluster
-          for (final String serviceNameInt in servicesInCluster) {
-            final LAService service = getService(serviceNameInt);
-            serviceDeploys.removeWhere(
-              (LAServiceDeploy sD) =>
-                  sD.projectId == id &&
-                  sD.clusterId == cluster.id &&
-                  sD.type == DeploymentType.dockerSwarm &&
-                  sD.serviceId == service.id,
+          for (final String sNameInt in servicesInCluster) {
+            // Find the service by name instead of using getService to avoid assertion
+            final LAService? service = services.firstWhereOrNull(
+              (LAService s) => s.nameInt == sNameInt,
             );
+            if (service != null) {
+              serviceDeploys.removeWhere(
+                (LAServiceDeploy sD) =>
+                    sD.projectId == id &&
+                    sD.clusterId == cluster.id &&
+                    sD.type == dType &&
+                    sD.serviceId == service.id,
+              );
+            }
           }
         }
       }
 
       // Remove the clusters
       clusters.removeWhere(
-        (LACluster c) =>
-            c.serverId == sIdOrCid && c.type == DeploymentType.dockerSwarm,
+        (LACluster c) => c.serverId == sIdOrCid && c.type == dType,
       );
       // Remove cluster services
       clusterServices.removeWhere(
@@ -1113,20 +1118,43 @@ check results length: ${checkResults.length}''';
   }
 
   void deleteCluster(LACluster clusterToDelete) {
-    // Remove all cluster services
+    if (AppUtils.isDev()) {
+      debugPrint(
+        '🗑️ Deleting cluster: ${clusterToDelete.name} (${clusterToDelete.id})',
+      );
+    }
+
+    // 1. Unassign all services assigned to this cluster first
+    final List<String> servicesInCluster = List<String>.from(
+      getClusterServices(clusterId: clusterToDelete.id),
+    );
+    for (final String sName in servicesInCluster) {
+      unAssignByType(clusterToDelete.id, clusterToDelete.type, sName);
+    }
+
+    // 2. Unassign the managing docker service from the server
+    if (clusterToDelete.serverId != null) {
+      final String dockerServiceName =
+          clusterToDelete.type == DeploymentType.dockerSwarm
+          ? dockerSwarm
+          : dockerCompose;
+
+      if (AppUtils.isDev()) {
+        debugPrint('   ✓ Unassigning $dockerServiceName from server');
+      }
+
+      unAssignByType(
+        clusterToDelete.serverId!,
+        DeploymentType.vm,
+        dockerServiceName,
+      );
+    }
+
+    // 3. Final cleanup of the cluster itself (safety check if not already removed by unAssignByType)
     clusterServices.remove(clusterToDelete.id);
+    clusters.removeWhere((c) => c.id == clusterToDelete.id);
 
-    // Remove all service deploys associated with this cluster
-    serviceDeploys = serviceDeploys
-        .where((LAServiceDeploy sd) => sd.clusterId != clusterToDelete.id)
-        .toList();
-
-    // Remove the cluster itself
-    clusters = clusters
-        .where((LACluster c) => c.id != clusterToDelete.id)
-        .toList();
-
-    // Clean up any inconsistencies
+    // Clean up any inconsistent service deploys
     serviceDeploys.removeWhere(
       (LAServiceDeploy sd) =>
           sd.clusterId != null &&
@@ -1149,10 +1177,12 @@ check results length: ${checkResults.length}''';
     serverServices.forEach((String id, List<String> serviceNames) {
       for (final String currentService in serviceNames) {
         if (serviceName == currentService) {
-          final LAServer server = servers.firstWhere(
+          final LAServer? server = servers.firstWhereOrNull(
             (LAServer s) => s.id == id,
           );
-          hostnames.add(server.name);
+          if (server != null) {
+            hostnames.add(server.name);
+          }
         }
       }
     });
@@ -1161,14 +1191,20 @@ check results length: ${checkResults.length}''';
       for (final String currentService in serviceNames) {
         // Get servers for both Docker Swarm and Docker Compose
         final List<String> serverCluster = <String>{
-          ...getServiceDeploysForSomeService(dockerSwarm).map(
-            (LAServiceDeploy sd) =>
-                servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
-          ),
-          ...getServiceDeploysForSomeService(dockerCompose).map(
-            (LAServiceDeploy sd) =>
-                servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
-          ),
+          ...getServiceDeploysForSomeService(dockerSwarm)
+              .map(
+                (LAServiceDeploy sd) => servers
+                    .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
+                    ?.name,
+              )
+              .nonNulls,
+          ...getServiceDeploysForSomeService(dockerCompose)
+              .map(
+                (LAServiceDeploy sd) => servers
+                    .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
+                    ?.name,
+              )
+              .nonNulls,
         }.toList();
         serverCluster.sort();
         if (serviceName == currentService) {
@@ -1353,9 +1389,11 @@ check results length: ${checkResults.length}''';
         conf['LA_use_docker_swarm'] = true;
         final List<String> swarmHosts = dockerSwarmDeploys
             .map(
-              (LAServiceDeploy sd) =>
-                  servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
+              (LAServiceDeploy sd) => servers
+                  .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
+                  ?.name,
             )
+            .nonNulls
             .toList();
         swarmHosts.sort();
         conf['LA_docker_swarm_hostname'] = swarmHosts.join(', ');
@@ -1368,9 +1406,11 @@ check results length: ${checkResults.length}''';
         conf['LA_use_docker_compose'] = true;
         final List<String> composeHosts = dockerComposeDeploys
             .map(
-              (LAServiceDeploy sd) =>
-                  servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
+              (LAServiceDeploy sd) => servers
+                  .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
+                  ?.name,
             )
+            .nonNulls
             .toList();
         composeHosts.sort();
         conf['LA_docker_compose_hostname'] = composeHosts.join(', ');
@@ -1420,31 +1460,31 @@ check results length: ${checkResults.length}''';
 
   List<String> dockerServers() {
     final List<String> dList = <String>{
-      ...getServiceDeploysForSomeService(dockerSwarm).map(
-        (LAServiceDeploy sd) =>
-            servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
-      ),
-      ...getServiceDeploysForSomeService(dockerCompose).map(
-        (LAServiceDeploy sd) =>
-            servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
-      ),
+      ...getServiceDeploysForSomeService(dockerSwarm)
+          .map(
+            (LAServiceDeploy sd) => servers
+                .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
+                ?.name,
+          )
+          .nonNulls,
+      ...getServiceDeploysForSomeService(dockerCompose)
+          .map(
+            (LAServiceDeploy sd) => servers
+                .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
+                ?.name,
+          )
+          .nonNulls,
     }.toList();
     dList.sort();
     return dList;
   }
 
   List<String> getServerServices({required String serverId}) {
-    if (!serverServices.containsKey(serverId)) {
-      serverServices[serverId] = List<String>.empty(growable: true);
-    }
-    return serverServices[serverId]!;
+    return serverServices[serverId] ?? <String>[];
   }
 
   List<String> getClusterServices({required String clusterId}) {
-    if (!clusterServices.containsKey(clusterId)) {
-      clusterServices[clusterId] = List<String>.empty(growable: true);
-    }
-    return clusterServices[clusterId]!;
+    return clusterServices[clusterId] ?? <String>[];
   }
 
   List<LAService> getServerServicesFull({
@@ -1598,17 +1638,19 @@ check results length: ${checkResults.length}''';
           full,
         );
         try {
-          final LAServer server = servers.firstWhere(
+          final LAServer? server = servers.firstWhereOrNull(
             (LAServer s) => s.id == sd.serverId,
           );
-          hostsChecks.add(
-            sd,
-            server,
-            service.deps,
-            service.nameInt,
-            serversIds,
-            full,
-          );
+          if (server != null) {
+            hostsChecks.add(
+              sd,
+              server,
+              service.deps,
+              service.nameInt,
+              serversIds,
+              full,
+            );
+          }
         } catch (e) {
           if (kDebugMode) {
             debugPrint('Error in _getHostServicesChecks: $e with SD: $sd');
@@ -1960,6 +2002,7 @@ check results length: ${checkResults.length}''';
             projectId: id,
             serverId: serverId,
             name: 'Docker Swarm on ${server?.name ?? serverId}',
+            // ignore: avoid_redundant_argument_values
             type: DeploymentType.dockerSwarm,
           ),
         );

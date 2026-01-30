@@ -18,9 +18,11 @@ void main() {
   test('LAServicesDesc cas and pipelines are incompatible', () {
     // port collision
     expect(
-        LAServiceDesc.getE(LAServiceName.pipelines)
-            .isCompatibleWith(alaInstallVersion, LAServiceDesc.get('cas')),
-        equals(false));
+      LAServiceDesc.getE(
+        LAServiceName.pipelines,
+      ).isCompatibleWith(alaInstallVersion, LAServiceDesc.get('cas')),
+      equals(false),
+    );
   });
 
   // Test with a new release, should get v2.0.4 by default
@@ -28,22 +30,28 @@ void main() {
 
   test('LAServicesDesc images and doi are incompatible', () {
     expect(
-        LAServiceDesc.get('images')
-            .isCompatibleWith(alaInstallVersion, LAServiceDesc.get('doi')),
-        equals(false));
+      LAServiceDesc.get(
+        'images',
+      ).isCompatibleWith(alaInstallVersion, LAServiceDesc.get('doi')),
+      equals(false),
+    );
   });
 
   test('LAServicesDesc collectory and species-lists are incompatible', () {
     expect(
-        LAServiceDesc.get('collectory').isCompatibleWith(
-            alaInstallVersion, LAServiceDesc.getE(LAServiceName.species_lists)),
-        equals(true));
+      LAServiceDesc.get('collectory').isCompatibleWith(
+        alaInstallVersion,
+        LAServiceDesc.getE(LAServiceName.species_lists),
+      ),
+      equals(true),
+    );
   });
 
   test('List variables', () {
     String list = '';
-    final List<String> laVariablesList =
-        LAVariableDesc.map.values.map((LAVariableDesc v) => v.nameInt).toList();
+    final List<String> laVariablesList = LAVariableDesc.map.values
+        .map((LAVariableDesc v) => v.nameInt)
+        .toList();
     laVariablesList.sort();
     for (final String e in laVariablesList) {
       list = "${list}LA_variable_$e: 'LA_variable_$e',\n";

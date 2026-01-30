@@ -12,14 +12,16 @@ class ToolShortcut extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // https://api.flutter.dev/flutter/material/Colors/grey-constant.html
-    final Color color =
-        tool.enabled ? LAColorTheme.laPalette : Colors.grey[500]!;
-    final Color backgroundColor =
-        tool.enabled ? Colors.white : Colors.grey[200]!;
+    final Color color = tool.enabled
+        ? LAColorTheme.laPalette
+        : Colors.grey[500]!;
+    final Color backgroundColor = tool.enabled
+        ? Colors.white
+        : Colors.grey[200]!;
     final double elevation = tool.enabled ? 4 : 0;
     final Widget btn = ElevatedButton(
       style: TextButton.styleFrom(
-// ElevatedButton.styleFrom(
+        // ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         elevation: elevation,
         shape: const RoundedRectangleBorder(

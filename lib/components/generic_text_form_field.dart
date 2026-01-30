@@ -5,32 +5,33 @@ import '../utils/debounce.dart';
 import 'help_icon.dart';
 
 class GenericTextFormField extends StatefulWidget {
-  const GenericTextFormField(
-      {super.key,
-      this.label,
-      this.hint,
-      this.hintStyle,
-      required this.initialValue,
-      this.prefixText,
-      this.wikipage,
-      this.regexp,
-      required this.error,
-      required this.onChanged,
-      this.isDense = false,
-      this.isCollapsed = false,
-      this.focusNode,
-      this.minLines,
-      this.maxLines = 1,
-      this.fillColor,
-      this.allowEmpty = false,
-      this.enabledBorder = false,
-      this.monoSpaceFont = false,
-      this.obscureText = false,
-      this.keyboardType,
-      this.deployed = false,
-      this.enabled = true,
-      this.selected = true,
-      this.contentPadding});
+  const GenericTextFormField({
+    super.key,
+    this.label,
+    this.hint,
+    this.hintStyle,
+    required this.initialValue,
+    this.prefixText,
+    this.wikipage,
+    this.regexp,
+    required this.error,
+    required this.onChanged,
+    this.isDense = false,
+    this.isCollapsed = false,
+    this.focusNode,
+    this.minLines,
+    this.maxLines = 1,
+    this.fillColor,
+    this.allowEmpty = false,
+    this.enabledBorder = false,
+    this.monoSpaceFont = false,
+    this.obscureText = false,
+    this.keyboardType,
+    this.deployed = false,
+    this.enabled = true,
+    this.selected = true,
+    this.contentPadding,
+  });
 
   final String? label;
   final String? hint;
@@ -96,74 +97,84 @@ class _GenericTextFormFieldState extends State<GenericTextFormField>
     super.build(context);
 
     final InputDecoration decoration = InputDecoration(
-        fillColor: widget.fillColor,
-        labelText: widget.label,
-        hintText: widget.hint,
-        isCollapsed: widget.isCollapsed,
-        isDense: widget.isDense,
-        labelStyle: widget.hintStyle,
-        hintStyle: const TextStyle(
-          height: 1.5, // sets the distance between label and input
-        ),
-        prefixText: widget.prefixText,
-        contentPadding: widget.contentPadding,
-        // ?? EdgeInsets.only(top: 2),
-        filled: widget.fillColor != null,
-        suffixIcon: widget.wikipage == null
-            ? widget.obscureText
+      fillColor: widget.fillColor,
+      labelText: widget.label,
+      hintText: widget.hint,
+      isCollapsed: widget.isCollapsed,
+      isDense: widget.isDense,
+      labelStyle: widget.hintStyle,
+      hintStyle: const TextStyle(
+        height: 1.5, // sets the distance between label and input
+      ),
+      prefixText: widget.prefixText,
+      contentPadding: widget.contentPadding,
+      // ?? EdgeInsets.only(top: 2),
+      filled: widget.fillColor != null,
+      suffixIcon: widget.wikipage == null
+          ? widget.obscureText
                 ? MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
-                        child: Icon(obscureTextState
+                      child: Icon(
+                        obscureTextState
                             ? Icons.visibility
-                            : Icons.visibility_off),
-                        onTapUp: (TapUpDetails tap) => showPass(true),
-                        onTapDown: (TapDownDetails tap) => showPass(false)))
+                            : Icons.visibility_off,
+                      ),
+                      onTapUp: (TapUpDetails tap) => showPass(true),
+                      onTapDown: (TapDownDetails tap) => showPass(false),
+                    ),
+                  )
                 : null
-            : Padding(
-                padding:
-                    const EdgeInsets.only(top: 5), // add padding to adjust icon
-                child: HelpIcon(wikipage: widget.wikipage!)),
-        enabledBorder: widget.enabledBorder
-            ? OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey[500]!))
-            : null // , width: 1.0),
-        );
+          : Padding(
+              padding: const EdgeInsets.only(
+                top: 5,
+              ), // add padding to adjust icon
+              child: HelpIcon(wikipage: widget.wikipage!),
+            ),
+      enabledBorder: widget.enabledBorder
+          ? OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[500]!))
+          : null, // , width: 1.0),
+    );
 
     final TextStyle style = widget.deployed
         ? !widget.monoSpaceFont
-            ? LAColorTheme.deployedTextStyle
-            : LAColorTheme.fixedDeployedTextStyle
+              ? LAColorTheme.deployedTextStyle
+              : LAColorTheme.fixedDeployedTextStyle
         : !widget.monoSpaceFont
-            ? LAColorTheme.unDeployedTextStyle
-            : LAColorTheme.fixedUnDeployedTextStyle;
+        ? LAColorTheme.unDeployedTextStyle
+        : LAColorTheme.fixedUnDeployedTextStyle;
     return Form(
-        key: formKey,
-        child: Column(
-            // Need this to align correctly error with text field
-            crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              TextFormField(
-                  decoration: decoration,
-                  enabled: widget.enabled,
-                  controller: _controller,
-                  onTap: () => widget.selected
-                      ? _controller.selection = TextSelection(
-                          baseOffset: 0, extentOffset: _controller.text.length)
-                      : null,
-                  onChanged: (String value) => onChange(value),
-                  style: style,
-                  focusNode: widget.focusNode,
-                  obscureText: obscureTextState,
-                  minLines: widget.minLines,
-                  maxLines: widget.maxLines,
-                  keyboardType: widget.keyboardType,
-                  // Now moved to controller initialization
-                  // initialValue: widget.initialValue,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (_) => validator())
-            ]));
+      key: formKey,
+      child: Column(
+        // Need this to align correctly error with text field
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          TextFormField(
+            decoration: decoration,
+            enabled: widget.enabled,
+            controller: _controller,
+            onTap: () => widget.selected
+                ? _controller.selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: _controller.text.length,
+                  )
+                : null,
+            onChanged: (String value) => onChange(value),
+            style: style,
+            focusNode: widget.focusNode,
+            obscureText: obscureTextState,
+            minLines: widget.minLines,
+            maxLines: widget.maxLines,
+            keyboardType: widget.keyboardType,
+            // Now moved to controller initialization
+            // initialValue: widget.initialValue,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (_) => validator(),
+          ),
+        ],
+      ),
+    );
   }
 
   void onChange(String value) {

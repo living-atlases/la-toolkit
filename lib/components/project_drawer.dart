@@ -32,99 +32,110 @@ class ProjectDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ProjectDrawerViewModel>(
-        converter: (Store<AppState> store) {
-      return _ProjectDrawerViewModel(
-        state: store.state,
-      );
-    }, builder: (BuildContext context, _ProjectDrawerViewModel vm) {
-      return Drawer(
+      converter: (Store<AppState> store) {
+        return _ProjectDrawerViewModel(state: store.state);
+      },
+      builder: (BuildContext context, _ProjectDrawerViewModel vm) {
+        return Drawer(
           child: ListView(
-              // Important: Remove any padding from the ListView.
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                context.beamBack();
-              },
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: LAColorTheme.laPalette.shade300,
-                ),
-                child: Column(
-                  children: <Widget>[
-                    if (vm.state.currentProject
-                                .getVariableValue('favicon_url') !=
-                            null &&
-                        !AppUtils.isDemo())
-                      ImageIcon(
-                          NetworkImage(AppUtils.proxyImg(vm.state.currentProject
-                              .getVariableValue('favicon_url')! as String)),
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  context.beamBack();
+                },
+                child: DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: LAColorTheme.laPalette.shade300,
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      if (vm.state.currentProject.getVariableValue(
+                                'favicon_url',
+                              ) !=
+                              null &&
+                          !AppUtils.isDemo())
+                        ImageIcon(
+                          NetworkImage(
+                            AppUtils.proxyImg(
+                              vm.state.currentProject.getVariableValue(
+                                    'favicon_url',
+                                  )!
+                                  as String,
+                            ),
+                          ),
                           color: LAColorTheme.laPalette,
-                          size: 80)
-                    else
-                      Image.asset(
-                        'assets/images/la-icon.png',
-                        fit: BoxFit.scaleDown,
-                        height: 80.0,
-                      ),
-                    const SizedBox(height: 10.0),
-                    // FIXME
-                    Text(vm.state.currentProject.shortName,
+                          size: 80,
+                        )
+                      else
+                        Image.asset(
+                          'assets/images/la-icon.png',
+                          fit: BoxFit.scaleDown,
+                          height: 80.0,
+                        ),
+                      const SizedBox(height: 10.0),
+                      Text(
+                        vm.state.currentProject.shortName,
                         style: const TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
-                        )),
-                  ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(LAIcon.la),
-              title: const Text('Home'),
-              onTap: () {
-                context.beamBack();
-              },
-            ),
-            ListTile(
-              leading: Icon(MdiIcons.key),
-              title: const Text('SSH Keys'),
-              onTap: () {
-                BeamerCond.of(context, SshKeysLocation());
-              },
-            ),
-            TermDialog.drawerItem(context),
-            Column(children: _createProjectLinks(vm.state.currentProject)),
-            if (AppUtils.isDev())
               ListTile(
-                leading: const Icon(Icons.build),
-                title: const Text('Sandbox'),
+                leading: const Icon(LAIcon.la),
+                title: const Text('Home'),
                 onTap: () {
-                  BeamerCond.of(context, SandboxLocation());
+                  context.beamBack();
                 },
               ),
-            Column(children: ListTileLink.drawerBottomLinks(context, false))
-          ]));
-    });
+              ListTile(
+                leading: Icon(MdiIcons.key),
+                title: const Text('SSH Keys'),
+                onTap: () {
+                  BeamerCond.of(context, SshKeysLocation());
+                },
+              ),
+              TermDialog.drawerItem(context),
+              Column(children: _createProjectLinks(vm.state.currentProject)),
+              if (AppUtils.isDev())
+                ListTile(
+                  leading: const Icon(Icons.build),
+                  title: const Text('Sandbox'),
+                  onTap: () {
+                    BeamerCond.of(context, SandboxLocation());
+                  },
+                ),
+              Column(children: ListTileLink.drawerBottomLinks(context, false)),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   List<Widget> _createProjectLinks(LAProject currentProject) {
     return <Widget>[
       for (final ProdServiceDesc serviceDesc in currentProject.prodServices)
         if (!LAServiceDesc.internalServices.contains(serviceDesc.nameInt))
-          ServiceListTileLink(desc: serviceDesc)
+          ServiceListTileLink(desc: serviceDesc),
     ];
   }
 }
 
 class ServiceListTileLink extends StatelessWidget {
   ServiceListTileLink({super.key, required ProdServiceDesc desc})
-      : icon = desc.icon,
-        name = desc.name,
-        tooltip = desc.tooltip,
-        url = desc.url,
-        admin = desc.admin,
-        alaAdmin = desc.alaAdmin,
-        help = desc.help;
+    : icon = desc.icon,
+      name = desc.name,
+      tooltip = desc.tooltip,
+      url = desc.url,
+      admin = desc.admin,
+      alaAdmin = desc.alaAdmin,
+      help = desc.help;
   final IconData icon;
   final String name;
   final String tooltip;
@@ -140,18 +151,17 @@ class ServiceListTileLink extends StatelessWidget {
       title: name,
       tooltip: tooltip,
       url: url,
-      additionalTrailingIcon:
-          alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
+      additionalTrailingIcon: alaAdmin
+          ? AdminIconButton(url: url, alaAdmin: true)
+          : null,
       trailingIcon: help != null
-          ? HelpIcon(
-              wikipage: help!,
-            )
+          ? HelpIcon(wikipage: help!)
           : admin
-              ? AdminIconButton(
-                  url: url,
-                  // alaAdmin: false
-                )
-              : null,
+          ? AdminIconButton(
+              url: url,
+              // alaAdmin: false
+            )
+          : null,
     );
   }
 }

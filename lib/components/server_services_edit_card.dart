@@ -27,6 +27,7 @@ class ServerServicesEditCard extends StatefulWidget {
     required this.onDeletedCluster,
     required this.onRename,
     required this.onEditing,
+    required this.onToggleExpand,
   });
 
   final LAServer? server;
@@ -41,6 +42,7 @@ class ServerServicesEditCard extends StatefulWidget {
   final Function(LACluster) onDeletedCluster;
   final Function(String) onRename;
   final Function() onEditing;
+  final VoidCallback onToggleExpand;
   final DeploymentType type;
 
   @override
@@ -133,6 +135,11 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
+                        IconButton(
+                          icon: const Icon(Icons.expand_less),
+                          onPressed: widget.onToggleExpand,
+                          tooltip: 'Collapse',
+                        ),
                         if (isAServer)
                           RenameServerIcon(widget.server!, widget.onEditing, (
                             String newName,
@@ -150,20 +157,21 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                                 color: Colors.grey,
                               ),
                               onPressed: () {
+                                final LAServer? s = widget.server;
+                                if (s == null) return;
                                 widget.onEditing();
                                 UiUtils.showAlertDialog(
                                   context,
-                                  () => widget.onDeleted(widget.server!),
+                                  () => widget.onDeleted(s),
                                   () {},
-                                  title:
-                                      "Deleting server '${widget.server!.name}'",
+                                  title: "Deleting server '${s.name}'",
                                 );
                               },
                             ),
                           ),
                         if (!isAServer)
                           Tooltip(
-                            message: 'Delete this cluster',
+                            message: 'Delete this',
                             child: IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
@@ -172,14 +180,14 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                                 color: Colors.grey,
                               ),
                               onPressed: () {
+                                final LACluster? c = widget.cluster;
+                                if (c == null) return;
                                 widget.onEditing();
                                 UiUtils.showAlertDialog(
                                   context,
-                                  () =>
-                                      widget.onDeletedCluster(widget.cluster!),
+                                  () => widget.onDeletedCluster(c),
                                   () {},
-                                  title:
-                                      "Deleting cluster '${widget.cluster!.name}'",
+                                  title: "Deleting cluster '${c.name}'",
                                 );
                               },
                             ),

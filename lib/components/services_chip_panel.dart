@@ -4,12 +4,13 @@ import '../models/la_service_desc.dart';
 import '../utils/string_utils.dart';
 
 class ServicesChipPanel extends StatefulWidget {
-  const ServicesChipPanel(
-      {super.key,
-      required this.onChange,
-      required this.services,
-      required this.initialValue,
-      required this.isHub});
+  const ServicesChipPanel({
+    super.key,
+    required this.onChange,
+    required this.services,
+    required this.initialValue,
+    required this.isHub,
+  });
 
   final Function(List<String>) onChange;
   final List<String> services;
@@ -29,7 +30,6 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
     // labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     // color: Colors.red,
     // margin: EdgeInsets.fromLTRB(0, 40, 40, 20),
-
     borderRadius: BorderRadius.all(Radius.circular(15)),
     padding: EdgeInsets.fromLTRB(10, 0, 10, 2),
 
@@ -39,8 +39,8 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
   List<String> _selectAllOrElements(List<String> values) {
     final List<String> newVal = values.isNotEmpty
         ? values.last == 'all'
-            ? <String>['all']
-            : values.where((String item) => item != 'all').toList()
+              ? <String>['all']
+              : values.where((String item) => item != 'all').toList()
         : <String>[];
     // debugPrint(newVal);
     return newVal;
@@ -55,8 +55,9 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
   @override
   Widget build(BuildContext context) {
     return Form(
-        key: _formKey,
-        child: Column(children: <Widget>[
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
           FormField<List<String>>(
             autovalidateMode: AutovalidateMode.always,
             initialValue: formValue,
@@ -76,73 +77,85 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                 children: <Widget>[
                   Expanded(
                     child: ChipsChoice<String>.multiple(
-                        key: _chipsKey,
-                        wrapped: true,
-                        choiceCheckmark: true,
-                        value: formValue,
-                        onChanged: (List<String> values) {
-                          setState(() {
-                            formValue = _selectAllOrElements(values);
-                            widget.onChange(formValue);
-                          });
-                          // debugPrint("onChanged: $values");
-                          // return state.didChange(values);
-                        },
-                        runSpacing: -10,
-                        choiceItems: C2Choice.listFrom<String, LAServiceDesc>(
+                      key: _chipsKey,
+                      wrapped: true,
+                      choiceCheckmark: true,
+                      value: formValue,
+                      onChanged: (List<String> values) {
+                        setState(() {
+                          formValue = _selectAllOrElements(values);
+                          widget.onChange(formValue);
+                        });
+                        // debugPrint("onChanged: $values");
+                        // return state.didChange(values);
+                      },
+                      runSpacing: -10,
+                      choiceItems:
+                          C2Choice.listFrom<String, LAServiceDesc>(
                             source: LAServiceDesc.list(widget.isHub)
-                                .where((LAServiceDesc s) =>
-                                    widget.services.contains(s.nameInt))
+                                .where(
+                                  (LAServiceDesc s) =>
+                                      widget.services.contains(s.nameInt),
+                                )
                                 .toList(),
                             value: (int i, LAServiceDesc v) => v.nameInt,
                             label: (int i, LAServiceDesc v) => v.name,
                             tooltip: (int i, LAServiceDesc v) =>
                                 StringUtils.capitalize(v.desc),
-                            disabled: (int i, LAServiceDesc v) => false)
-                          ..add(C2Choice<String>(
-                              value: 'all', label: 'all', style: allStyle)),
-                        choiceBuilder: (C2Choice<String> item, int i) {
-                          if (item.value == 'all') {
-                            return CustomChip(
-                                label: item.label,
-                                width: double.infinity,
-                                height: 40,
-                                // color: Colors.redAccent,
-                                margin: const EdgeInsets.fromLTRB(0, 15, 30, 5),
-                                selected: item.selected,
-                                onSelect: item.select!);
-                          } else {
-                            return null;
-                          }
-                        },
-                        choiceStyle: C2ChipStyle.outlined(
-                          // borderWidth: 1,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(25)),
-                          margin: margin,
-                          height: 40,
-                          padding: padding,
-                          selectedStyle: C2ChipStyle.filled(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(25),
+                            disabled: (int i, LAServiceDesc v) => false,
+                          )..add(
+                            C2Choice<String>(
+                              value: 'all',
+                              label: 'all',
+                              style: allStyle,
                             ),
                           ),
-                          // labelStyle: TextStyle(fontSize: 12),
-                        ) //borderOpacity: .9),
-                        /*   choiceActiveStyle: const C2ChipStyle(
+                      choiceBuilder: (C2Choice<String> item, int i) {
+                        if (item.value == 'all') {
+                          return CustomChip(
+                            label: item.label,
+                            width: double.infinity,
+                            height: 40,
+                            // color: Colors.redAccent,
+                            margin: const EdgeInsets.fromLTRB(0, 15, 30, 5),
+                            selected: item.selected,
+                            onSelect: item.select!,
+                          );
+                        } else {
+                          return null;
+                        }
+                      },
+                      choiceStyle: C2ChipStyle.outlined(
+                        // borderWidth: 1,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(25),
+                        ),
+                        margin: margin,
+                        height: 40,
+                        padding: padding,
+                        selectedStyle: C2ChipStyle.filled(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(25),
+                          ),
+                        ),
+                        // labelStyle: TextStyle(fontSize: 12),
+                      ), //borderOpacity: .9),
+                      /*   choiceActiveStyle: const C2ChipStyle(
                         // color: Colors.indigo,
                         margin: margin,
                         padding: padding,
                         labelStyle: TextStyle(fontSize: 12),
                         brightness: Brightness.dark,
                       ), */
-                        ),
-                  )
+                    ),
+                  ),
                 ],
               );
             },
-          )
-        ]));
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -171,11 +184,7 @@ class CustomChip extends StatelessWidget {
     return AnimatedContainer(
       width: width,
       height: height,
-      margin: margin ??
-          const EdgeInsets.symmetric(
-            vertical: 15,
-            horizontal: 5,
-          ),
+      margin: margin ?? const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
         color: selected
@@ -194,12 +203,9 @@ class CustomChip extends StatelessWidget {
           alignment: Alignment.center,
           children: <Widget>[
             Visibility(
-                visible: selected,
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 24,
-                )),
+              visible: selected,
+              child: const Icon(Icons.check, color: Colors.white, size: 24),
+            ),
             Positioned(
               left: 0,
               top: 9,

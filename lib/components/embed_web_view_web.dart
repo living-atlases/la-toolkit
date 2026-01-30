@@ -12,12 +12,13 @@ import '../not_in_demo.dart';
 import '../utils/utils.dart'; // https://github.com/flutter/flutter/issues/41563#issuecomment-794384561
 
 class EmbedWebView extends StatefulWidget {
-  const EmbedWebView(
-      {super.key,
-      required this.src,
-      this.height,
-      this.width,
-      required this.notify});
+  const EmbedWebView({
+    super.key,
+    required this.src,
+    this.height,
+    this.width,
+    required this.notify,
+  });
 
   final String src;
   final double? height, width;
@@ -86,30 +87,34 @@ class EmbedWebViewState extends State<EmbedWebView>
       // _socket.onConnectError((e) => onWebsocketEnd());
     }
     return SafeArea(
-        bottom: false,
-        child: Container(
-            color: LAColorTheme.laPalette,
-            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-            child: !AppUtils.isDemo()
-                ? Center(
-                    child: SizedBox(
-                      width: widget.width,
-                      height: widget.height,
-                      child: HtmlElementView(
-                        // key: UniqueKey(),
-                        viewType: widget.src,
-                      ),
-                    ),
-                  )
-                : const NotInTheDemoPanel()));
+      bottom: false,
+      child: Container(
+        color: LAColorTheme.laPalette,
+        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+        child: !AppUtils.isDemo()
+            ? Center(
+                child: SizedBox(
+                  width: widget.width,
+                  height: widget.height,
+                  child: HtmlElementView(
+                    // key: UniqueKey(),
+                    viewType: widget.src,
+                  ),
+                ),
+              )
+            : const NotInTheDemoPanel(),
+      ),
+    );
   }
 
   void onWebsocketEnd() {
     final String? perm = html.Notification.permission;
     if (perm == 'granted') {
-      html.Notification('LA Toolkit: Command finished',
-          icon:
-              'https://raw.githubusercontent.com/living-atlases/artwork/master/icon-white.png');
+      html.Notification(
+        'LA Toolkit: Command finished',
+        icon:
+            'https://raw.githubusercontent.com/living-atlases/artwork/master/icon-white.png',
+      );
     }
   }
 }

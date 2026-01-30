@@ -33,7 +33,7 @@ enum ResultType {
   ok,
   rescued,
   skipped,
-  unreachable
+  unreachable,
 }
 
 extension ParseToString on ResultType {

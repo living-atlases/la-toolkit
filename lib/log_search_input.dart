@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class LogSearchInput extends StatefulWidget {
-  const LogSearchInput({
-    super.key,
-    this.onChanged,
-    this.debounceTime,
-  });
+  const LogSearchInput({super.key, this.onChanged, this.debounceTime});
   final ValueChanged<String>? onChanged;
   final Duration? debounceTime;
 
@@ -24,33 +20,31 @@ class _LogSearchInputState extends State<LogSearchInput> {
   @override
   void initState() {
     _textChangesSubscription = _textChangeStreamController.stream
-        .debounceTime(
-          widget.debounceTime ?? const Duration(seconds: 1),
-        )
+        .debounceTime(widget.debounceTime ?? const Duration(seconds: 1))
         .distinct()
         .listen((String text) {
-      final ValueChanged<String>? onChanged = widget.onChanged;
-      if (onChanged != null) {
-        onChanged(text);
-      }
-    });
+          final ValueChanged<String>? onChanged = widget.onChanged;
+          if (onChanged != null) {
+            onChanged(text);
+          }
+        });
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) => SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: TextField(
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              labelText: 'Search the history',
-            ),
-            onChanged: _textChangeStreamController.add,
-          ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: TextField(
+        decoration: const InputDecoration(
+          prefixIcon: Icon(Icons.search),
+          labelText: 'Search the history',
         ),
-      );
+        onChanged: _textChangeStreamController.add,
+      ),
+    ),
+  );
 
   @override
   void dispose() {

@@ -18,17 +18,20 @@ class _GeneratorSelectorState extends State<GeneratorSelector> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _GeneratorSelectorViewModel>(
-        converter: (Store<AppState> store) {
-      return _GeneratorSelectorViewModel(state: store.state);
-    }, builder: (BuildContext context, _GeneratorSelectorViewModel vm) {
-      final LAProject currentProject = vm.state.currentProject;
-      return SoftwareSelector(
+      converter: (Store<AppState> store) {
+        return _GeneratorSelectorViewModel(state: store.state);
+      },
+      builder: (BuildContext context, _GeneratorSelectorViewModel vm) {
+        final LAProject currentProject = vm.state.currentProject;
+        return SoftwareSelector(
           label: 'la-generator release:',
           versions: vm.state.generatorReleases,
           initialValue: currentProject.generatorRelease,
           roundStyle: false,
-          onChange: widget.onChange);
-    });
+          onChange: widget.onChange,
+        );
+      },
+    );
   }
 }
 

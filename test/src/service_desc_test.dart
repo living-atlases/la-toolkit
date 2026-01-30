@@ -12,13 +12,19 @@ void main() {
     // Set<String> list1 = LAServiceDesc.list(false).map((s) => s.nameInt).toSet();
     // Set<String> list2 = LAServiceName.values.map((s) => s.toS()).toSet();
     // print("List difference: ${list2.difference(list1).toList().toString()}");
-    expect(LAServiceDesc.list(false).toSet().length,
-        equals(LAServiceDesc.list(false).length));
+    expect(
+      LAServiceDesc.list(false).toSet().length,
+      equals(LAServiceDesc.list(false).length),
+    );
     // +1 because 'all'
-    expect(LAServiceDesc.list(false).length + 1,
-        equals(LAServiceName.values.length));
-    expect(LAServiceDepsDesc.v2_0_4.length + 1,
-        equals(LAServiceName.values.length));
+    expect(
+      LAServiceDesc.list(false).length + 1,
+      equals(LAServiceName.values.length),
+    );
+    expect(
+      LAServiceDepsDesc.v2_0_4.length + 1,
+      equals(LAServiceName.values.length),
+    );
   });
 
   test('child services without parent', () {
@@ -30,8 +36,10 @@ void main() {
   });
 
   test('Compare services creation', () {
-    expect('collectory'.toServiceDescName() == LAServiceName.collectory,
-        equals(true));
+    expect(
+      'collectory'.toServiceDescName() == LAServiceName.collectory,
+      equals(true),
+    );
   });
 
   test('Compare different services ', () {

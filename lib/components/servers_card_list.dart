@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -39,12 +38,18 @@ class ServersCardList extends StatelessWidget {
             if (dockerEnabled)
               for (final LACluster cluster in project.clusters)
                 ServerServicesHoverCard(
+                  key: ValueKey<String>('cluster-${cluster.id}'),
                   cluster: cluster,
                   project: project,
                   vm: vm,
                 ),
             for (final LAServer server in project.servers)
-              ServerServicesHoverCard(server: server, project: project, vm: vm),
+              ServerServicesHoverCard(
+                key: ValueKey<String>('server-${server.id}'),
+                server: server,
+                project: project,
+                vm: vm,
+              ),
           ],
         );
       },
@@ -72,116 +77,87 @@ class ServerServicesHoverCard extends StatefulWidget {
 }
 
 class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
-  bool _editing = false;
-  bool _hover = false;
-  bool _stillHover = false;
+  bool _expanded = false;
 
   @override
   Widget build(BuildContext context) {
     final bool isAServer = widget.server != null;
-    final DeploymentType type = isAServer
-        ? DeploymentType.vm
-        : widget.cluster!.type;
-    final String sId = isAServer ? widget.server!.id : widget.cluster!.id;
-    final String name = isAServer ? widget.server!.name : widget.cluster!.name;
+    final LACluster? cluster = widget.cluster;
+    final LAServer? server = widget.server;
+
+    if (!isAServer && cluster == null) {
+      return const SizedBox.shrink();
+    }
+
+    final DeploymentType type = isAServer ? DeploymentType.vm : cluster!.type;
+    final String sId = isAServer ? server!.id : cluster!.id;
+    final String name = isAServer ? server!.name : cluster!.name;
     final Map<String, List<LAService>> servicesAssignable = widget.project
         .getServerServicesAssignable(type);
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onHover: (PointerHoverEvent s) {
-        setState(() {
-          _hover = true;
-        });
-        Future<void>.delayed(const Duration(milliseconds: 500), () {
-          setState(() {
-            if (_hover) {
-              _stillHover = true;
-            }
-          });
-        });
-      },
-      onExit: (PointerExitEvent s) {
-        setState(() {
-          _hover = false;
-        });
-        if (!_editing) {
-          Future<void>.delayed(const Duration(milliseconds: 1000), () {
-            setState(() {
-              if (!_hover) {
-                _stillHover = false;
-              }
-            });
-          });
-        }
-      },
-      child: AnimatedSwitcher(
-        duration: const Duration(microseconds: 1200),
-        child: _stillHover
-            ? ServerServicesEditCard(
-                server: widget.server,
-                cluster: widget.cluster,
-                type: type,
-                isHub: widget.project.isHub,
-                currentServerServices: isAServer
-                    ? widget.project.getServerServices(
-                        serverId: widget.server!.id,
-                      )
-                    : widget.project.getClusterServices(
-                        clusterId: widget.cluster!.id,
-                      ),
-                availableServicesForServer:
-                    servicesAssignable[sId] ?? <LAService>[],
-                allServices: widget.project.services,
-                onAssigned: (List<String> list) {
-                  widget.project.assignByType(
-                    sId,
-                    type,
-                    list,
-                    null,
-                    widget.vm.laReleases,
-                  );
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: _expanded
+          ? ServerServicesEditCard(
+              key: const ValueKey<String>('expanded'),
+              server: widget.server,
+              cluster: widget.cluster,
+              type: type,
+              isHub: widget.project.isHub,
+              currentServerServices: isAServer
+                  ? widget.project.getServerServices(serverId: server!.id)
+                  : widget.project.getClusterServices(clusterId: cluster!.id),
+              availableServicesForServer:
+                  servicesAssignable[sId] ?? <LAService>[],
+              allServices: widget.project.services,
+              onAssigned: (List<String> list) {
+                widget.project.assignByType(
+                  sId,
+                  type,
+                  list,
+                  null,
+                  widget.vm.laReleases,
+                );
+                widget.vm.onSaveCurrentProject(widget.project);
+              },
+              onUnassigned: (String service) {
+                widget.project.unAssignByType(sId, type, service);
+                widget.vm.onSaveCurrentProject(widget.project);
+              },
+              onRename: (String newName) {
+                if (isAServer) {
+                  widget.server!.name = newName;
+                  widget.project.upsertServer(widget.server!);
                   widget.vm.onSaveCurrentProject(widget.project);
-                },
-                onUnassigned: (String service) {
-                  widget.project.unAssignByType(sId, type, service);
-                  widget.vm.onSaveCurrentProject(widget.project);
-                },
-                onRename: (String newName) {
-                  if (isAServer) {
-                    widget.server!.name = newName;
-                    widget.project.upsertServer(widget.server!);
-                    widget.vm.onSaveCurrentProject(widget.project);
-                    setState(() {
-                      _editing = false;
-                    });
-                  }
-                },
-                onDeleted: (LAServer server) {
-                  setState(() {
-                    _editing = false;
-                  });
-                  widget.project.delete(server);
-                  widget.vm.onSaveCurrentProject(widget.project);
-                },
-                onDeletedCluster: (LACluster cluster) {
-                  setState(() {
-                    _editing = false;
-                  });
-                  widget.project.deleteCluster(cluster);
-                  widget.vm.onSaveCurrentProject(widget.project);
-                },
-                onEditing: () => setState(() {
-                  _editing = true;
-                }),
-              )
-            : ServerServicesViewCard(
-                id: sId,
-                name: name,
-                type: type,
-                project: widget.project,
-                vm: widget.vm,
-              ),
-      ),
+                }
+              },
+              onDeleted: (LAServer server) {
+                widget.project.delete(server);
+                widget.vm.onSaveCurrentProject(widget.project);
+              },
+              onDeletedCluster: (LACluster cluster) {
+                widget.project.deleteCluster(cluster);
+                widget.vm.onSaveCurrentProject(widget.project);
+              },
+              onEditing: () {},
+              onToggleExpand: () {
+                setState(() {
+                  _expanded = !_expanded;
+                });
+              },
+            )
+          : ServerServicesViewCard(
+              key: const ValueKey<String>('collapsed'),
+              id: sId,
+              name: name,
+              type: type,
+              project: widget.project,
+              vm: widget.vm,
+              onToggleExpand: () {
+                setState(() {
+                  _expanded = !_expanded;
+                });
+              },
+            ),
     );
   }
 }
@@ -194,6 +170,7 @@ class ServerServicesViewCard extends StatelessWidget {
     required this.type,
     required this.project,
     required this.vm,
+    required this.onToggleExpand,
   });
 
   final String id;
@@ -201,6 +178,7 @@ class ServerServicesViewCard extends StatelessWidget {
   final DeploymentType type;
   final LAProject project;
   final ServersCardListViewModel vm;
+  final VoidCallback onToggleExpand;
 
   @override
   Widget build(BuildContext context) {
@@ -244,6 +222,11 @@ class ServerServicesViewCard extends StatelessWidget {
                   LAService.servicesForHumans(
                     project.getServerServicesFull(id: id, type: type),
                   ),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.expand_more),
+                  onPressed: onToggleExpand,
+                  tooltip: 'Expand to assign services',
                 ),
               ),
             ],

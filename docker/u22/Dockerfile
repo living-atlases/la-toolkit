@@ -144,7 +144,7 @@ RUN sed -i '/^#.*\. \/etc\/bash_completion/s/^#//' /etc/bash.bashrc
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-RUN echo "1.6.9"
+RUN echo "1.6.9-d3"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 

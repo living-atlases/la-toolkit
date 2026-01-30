@@ -8,7 +8,7 @@ part 'la_lat_lng.g.dart';
 @CopyWith()
 class LALatLng extends LatLng {
   LALatLng({required double latitude, required double longitude})
-      : super(latitude, longitude);
+    : super(latitude, longitude);
 
   LALatLng.from(super.latitude, super.longitude);
 

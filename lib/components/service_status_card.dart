@@ -21,32 +21,45 @@ class ServiceStatusCard extends StatelessWidget {
 
     // debugPrint(service.serviceDeploys);
     return IntrinsicWidth(
-        child: Card(
-            elevation: CardConstants.defaultElevation,
-            // color: Colors.black12,
-            margin: const EdgeInsets.all(10),
-            child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Row(children: <Widget>[
-                  Tooltip(
-                      message:
-                          'Status: ${StringUtils.capitalize(service.status.toSforHumans())}',
-                      child: Icon(service.icon,
-                          size: 30, color: service.status.color)),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(service.name,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      const SizedBox(height: 5),
-                      Text(service.subtitle, style: subtitle),
-                    ],
+      child: Card(
+        elevation: CardConstants.defaultElevation,
+        // color: Colors.black12,
+        margin: const EdgeInsets.all(10),
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Row(
+            children: <Widget>[
+              Tooltip(
+                message:
+                    'Status: ${StringUtils.capitalize(service.status.toSforHumans())}',
+                child: Icon(
+                  service.icon,
+                  size: 30,
+                  color: service.status.color,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    service.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                  const SizedBox(width: 5),
-                  ServiceSmallLinks(service: service, iconDefSize: iconDefSize),
-                ]))));
+                  const SizedBox(height: 5),
+                  Text(service.subtitle, style: subtitle),
+                ],
+              ),
+              const SizedBox(width: 5),
+              ServiceSmallLinks(service: service, iconDefSize: iconDefSize),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -63,36 +76,46 @@ class ServiceSmallLinks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          if (service.nameInt != biocacheBackend)
-            SimpleServiceStatusItem(
-                icon: Tooltip(
-                    message: service.tooltip,
-                    child: InkWell(
-                      child: Icon(Icons.link,
-                          size: iconDefSize, color: LAColorTheme.link),
-                      onTap: () async => launchUrl(Uri.parse(service.url)),
-                    ))),
-          if (service.admin)
-            SimpleServiceStatusItem(
-                icon: AdminIconButton(
-                    url: service.url,
-                    color: LAColorTheme.link,
-                    size: iconDefSize,
-                    tooltip: 'Admin section',
-                    min: true)),
-          if (service.alaAdmin)
-            SimpleServiceStatusItem(
-                icon: AdminIconButton(
-                    url: service.url,
-                    color: LAColorTheme.link,
-                    size: iconDefSize,
-                    tooltip: 'AlaAdmin section',
-                    min: true,
-                    alaAdmin: true)),
-        ]);
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        if (service.nameInt != biocacheBackend)
+          SimpleServiceStatusItem(
+            icon: Tooltip(
+              message: service.tooltip,
+              child: InkWell(
+                child: Icon(
+                  Icons.link,
+                  size: iconDefSize,
+                  color: LAColorTheme.link,
+                ),
+                onTap: () async => launchUrl(Uri.parse(service.url)),
+              ),
+            ),
+          ),
+        if (service.admin)
+          SimpleServiceStatusItem(
+            icon: AdminIconButton(
+              url: service.url,
+              color: LAColorTheme.link,
+              size: iconDefSize,
+              tooltip: 'Admin section',
+              min: true,
+            ),
+          ),
+        if (service.alaAdmin)
+          SimpleServiceStatusItem(
+            icon: AdminIconButton(
+              url: service.url,
+              color: LAColorTheme.link,
+              size: iconDefSize,
+              tooltip: 'AlaAdmin section',
+              min: true,
+              alaAdmin: true,
+            ),
+          ),
+      ],
+    );
   }
 }
 
@@ -103,8 +126,6 @@ class SimpleServiceStatusItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: <Widget>[
-      icon,
-    ]);
+    return Row(children: <Widget>[icon]);
   }
 }

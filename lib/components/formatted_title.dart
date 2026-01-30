@@ -5,12 +5,13 @@ import '../la_theme.dart';
 import '../utils/string_utils.dart';
 
 class FormattedTitle extends StatelessWidget {
-  const FormattedTitle(
-      {super.key,
-      required this.title,
-      this.fontSize,
-      this.color,
-      this.subtitle});
+  const FormattedTitle({
+    super.key,
+    required this.title,
+    this.fontSize,
+    this.color,
+    this.subtitle,
+  });
   final String title;
   final Widget? subtitle;
   final double? fontSize;
@@ -19,13 +20,18 @@ class FormattedTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        contentPadding: EdgeInsets.zero,
-        title: Text(StringUtils.capitalize(title),
-            style: GoogleFonts.signika(
-                textStyle: TextStyle(
-                    color: color ?? LAColorTheme.laPalette.shade500,
-                    fontSize: fontSize ?? 18,
-                    fontWeight: FontWeight.w400))),
-        subtitle: subtitle);
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        StringUtils.capitalize(title),
+        style: GoogleFonts.signika(
+          textStyle: TextStyle(
+            color: color ?? LAColorTheme.laPalette.shade500,
+            fontSize: fontSize ?? 18,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+      subtitle: subtitle,
+    );
   }
 }

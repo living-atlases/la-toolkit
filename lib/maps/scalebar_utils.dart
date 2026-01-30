@@ -13,7 +13,10 @@ double toRadians(double degrees) {
 }
 
 LatLng calculateEndingGlobalCoordinates(
-    LatLng start, double startBearing, double distance) {
+  LatLng start,
+  double startBearing,
+  double distance,
+) {
   const double mSemiMajorAxis = 6378137.0; //WGS84 major axis
   const double mSemiMinorAxis = (1.0 - 1.0 / 298.257223563) * 6378137.0;
   const double mFlattening = 1.0 / 298.257223563;
@@ -44,12 +47,14 @@ LatLng calculateEndingGlobalCoordinates(
   final double uSquared = cos2Alpha * (aSquared - bSquared) / bSquared;
 
   // eq. 3
-  final double A = 1 +
+  final double A =
+      1 +
       (uSquared / 16384) *
           (4096 + uSquared * (-768 + uSquared * (320 - 175 * uSquared)));
 
   // eq. 4
-  final double B = (uSquared / 1024) *
+  final double B =
+      (uSquared / 1024) *
       (256 + uSquared * (-128 + uSquared * (74 - 47 * uSquared)));
 
   // iterate until there is a negligible change in sigma
@@ -71,7 +76,8 @@ LatLng calculateEndingGlobalCoordinates(
     final double cosSignma = cos(sigma);
 
     // eq. 6
-    deltaSigma = B *
+    deltaSigma =
+        B *
         sinSigma *
         (cosSigmaM2 +
             (B / 4.0) *
@@ -101,10 +107,12 @@ LatLng calculateEndingGlobalCoordinates(
 
   // eq. 8
   final double phi2 = atan2(
-      sinU1 * cosSigma + cosU1 * sinSigma * cosAlpha1,
-      (1.0 - f) *
-          sqrt(sin2Alpha +
-              pow(sinU1 * sinSigma - cosU1 * cosSigma * cosAlpha1, 2.0)));
+    sinU1 * cosSigma + cosU1 * sinSigma * cosAlpha1,
+    (1.0 - f) *
+        sqrt(
+          sin2Alpha + pow(sinU1 * sinSigma - cosU1 * cosSigma * cosAlpha1, 2.0),
+        ),
+  );
 
   // eq. 9
   // This fixes the pole crossing defect spotted by Matt Feemster. When a
@@ -117,13 +125,16 @@ LatLng calculateEndingGlobalCoordinates(
   // sinSigma * cosAlpha1);
   // double lambda = Math.atan(tanLambda);
   final double lambda = atan2(
-      sinSigma * sinAlpha1, cosU1 * cosSigma - sinU1 * sinSigma * cosAlpha1);
+    sinSigma * sinAlpha1,
+    cosU1 * cosSigma - sinU1 * sinSigma * cosAlpha1,
+  );
 
   // eq. 10
   final double C = (f / 16) * cos2Alpha * (4 + f * (4 - 3 * cos2Alpha));
 
   // eq. 11
-  final double L = lambda -
+  final double L =
+      lambda -
       (1 - C) *
           f *
           sinAlpha *

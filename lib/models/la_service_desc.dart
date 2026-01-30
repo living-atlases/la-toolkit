@@ -802,7 +802,16 @@ class LAServiceDesc {
   };
 
   static LAServiceDesc get(String nameInt) {
-    return _map[nameInt]!;
+    return _map[nameInt] ??
+        LAServiceDesc(
+          name: nameInt,
+          nameInt: nameInt,
+          group: 'unknown',
+          desc: 'Unknown service',
+          icon: Icons.help_outline,
+          optional: true,
+          path: '',
+        );
   }
 
   static bool isLAService(String nameInt) {
@@ -937,7 +946,9 @@ class LAServiceDesc {
       return false;
     }
 
+    if (!deps.containsKey(nameInt)) return compatible;
     for (final BasicService service in deps[nameInt]!.serviceDepends) {
+      if (!deps.containsKey(otherService.nameInt)) continue;
       for (final BasicService otherService
           in deps[otherService.nameInt]!.serviceDepends) {
         compatible = compatible && service.isCompatible(otherService);

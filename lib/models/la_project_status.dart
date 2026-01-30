@@ -7,7 +7,7 @@ enum LAProjectStatus {
   advancedDefined,
   reachable,
   firstDeploy,
-  inProduction
+  inProduction,
 }
 
 extension LAProjectStatusExtension on LAProjectStatus {

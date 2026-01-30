@@ -143,9 +143,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                   ],
                 ),
-                body: Column(
+                body: const Column(
                   children: <Widget>[
-                    const Expanded(child: AppSnackBar(LAProjectsList())),
+                    Expanded(child: AppSnackBar(LAProjectsList())),
                   ],
                 ),
                 floatingActionButton: vm.state.loading ? null : _moreBtn(vm),

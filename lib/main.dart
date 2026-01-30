@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:beamer/beamer.dart';
 import 'package:cron/cron.dart';
@@ -25,9 +26,63 @@ import 'utils/debounce.dart';
 import 'utils/utils.dart';
 
 Future<void> main() async {
-  //Chain.capture(() async {
-  final AppStateMiddleware appStateMiddleware = AppStateMiddleware();
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Handle Flutter framework errors
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    log('❌ Flutter Framework Error:');
+    log(details.exception.toString());
+    log(details.stack.toString());
+  };
+
+  // Handle platform errors (asynchronous)
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    log('❌ Platform/Async Error:');
+    log(error.toString());
+    log(stack.toString());
+    return true;
+  };
+
+  // Custom Error Widget for the Red Screen of Death
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Material(
+      child: Container(
+        color: Colors.red.shade50,
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+              const SizedBox(height: 10),
+              Text(
+                'Error: ${details.exception}',
+                style: TextStyle(
+                  color: Colors.red.shade900,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (kDebugMode && details.stack != null) ...[
+                const SizedBox(height: 10),
+                Text(
+                  details.stack
+                      .toString()
+                      .split('\n')
+                      .take(5)
+                      .join('\n'), // Show first 5 lines
+                  style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  };
+
+  final AppStateMiddleware appStateMiddleware = AppStateMiddleware();
 
   final ThemeData theme = ThemeData.from(
     colorScheme: ColorScheme.fromSeed(

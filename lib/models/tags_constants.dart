@@ -97,7 +97,7 @@ class TagsConstants {
     'webapi',
     'webapps',
     'webserver',
-    'xpack'
+    'xpack',
   ];
 
   static final List<String> v2_1_0 = <String>[
@@ -206,7 +206,7 @@ class TagsConstants {
     'webserver',
     'yq',
     'zookeeper',
-    'zookeeper_config'
+    'zookeeper_config',
   ];
 
   static final List<String> v2_1_7 = <String>[
@@ -335,7 +335,7 @@ class TagsConstants {
     'xpack',
     'yq',
     'zookeeper',
-    'zookeeper_config'
+    'zookeeper_config',
   ];
 
   static final List<String> v2_3_0 = <String>[
@@ -464,7 +464,7 @@ class TagsConstants {
     'xpack',
     'yq',
     'zookeeper',
-    'zookeeper_config'
+    'zookeeper_config',
   ];
 
   static final Map<String, List<String>> _map = <String, List<String>>{

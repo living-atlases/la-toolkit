@@ -15,17 +15,17 @@ extension ServiceCheckTypeToString on ServiceCheckType {
 
 @JsonSerializable(explicitToJson: true)
 class HostServiceCheck {
-  HostServiceCheck(
-      {String? id,
-      required this.name,
-      required this.type,
-      this.host = 'localhost',
-      HashSet<String>? serviceDeploys,
-      HashSet<String>? services,
-      this.args = ''})
-      : id = id ?? ObjectId().toString(),
-        serviceDeploys = serviceDeploys ?? HashSet<String>(),
-        services = services ?? HashSet<String>();
+  HostServiceCheck({
+    String? id,
+    required this.name,
+    required this.type,
+    this.host = 'localhost',
+    HashSet<String>? serviceDeploys,
+    HashSet<String>? services,
+    this.args = '',
+  }) : id = id ?? ObjectId().toString(),
+       serviceDeploys = serviceDeploys ?? HashSet<String>(),
+       services = services ?? HashSet<String>();
 
   factory HostServiceCheck.fromJson(Map<String, dynamic> json) =>
       _$HostServiceCheckFromJson(json);

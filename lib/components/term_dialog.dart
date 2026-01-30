@@ -11,61 +11,68 @@ import '../utils/utils.dart';
 import 'embed_web_view.dart';
 
 class TermDialog {
-  static Future<void> show(BuildContext context,
-      {String title = 'Console',
-      required int port,
-      required int pid,
-      required bool notify,
-      VoidCallback? onClose}) async {
+  static Future<void> show(
+    BuildContext context, {
+    String title = 'Console',
+    required int port,
+    required int pid,
+    required bool notify,
+    VoidCallback? onClose,
+  }) async {
     // debugPrint("${getInitialUrl(port)}");
     await showFloatingModalBottomSheet(
-        // This can be added to the custom modal
-        // expand: false,
-        context: context,
-        // isDismissible: true,
-        // useRootNavigator: true,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext context) => Material(
-              child: Scaffold(
-                appBar: AppBar(
-                  leading: Icon(
-                    MdiIcons.console,
-                    // color: Colors.white,
-                  ),
-                  title: Text(
-                    title,
-                    // style: const TextStyle(color: Colors.white),
-                  ),
-                  actions: <Widget>[
-                    Tooltip(
-                        message: 'Close the console',
-                        child: TextButton(
-                            child: const Icon(Icons.close),
-                            //, color: Colors.white),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            })),
-                  ],
+      // This can be added to the custom modal
+      // expand: false,
+      context: context,
+      // isDismissible: true,
+      // useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) => Material(
+        child: Scaffold(
+          appBar: AppBar(
+            leading: Icon(
+              MdiIcons.console,
+              // color: Colors.white,
+            ),
+            title: Text(
+              title,
+              // style: const TextStyle(color: Colors.white),
+            ),
+            actions: <Widget>[
+              Tooltip(
+                message: 'Close the console',
+                child: TextButton(
+                  child: const Icon(Icons.close),
+                  //, color: Colors.white),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
-                body: termArea(port, notify),
               ),
-            ));
+            ],
+          ),
+          body: termArea(port, notify),
+        ),
+      ),
+    );
     Api.termClose(port: port, pid: pid);
     if (onClose != null) {
       onClose();
     }
   }
 
-  static String getInitialUrl(int port) => (dotenv.env['TERM_PROXY'] ?? 'false')
-          .parseBool()
+  static String getInitialUrl(int port) =>
+      (dotenv.env['TERM_PROXY'] ?? 'false').parseBool()
       ? '${AppUtils.scheme}://${dotenv.env['BACKEND']!.split(":")[0]}/ttyd$port'
       : '${AppUtils.scheme}://${dotenv.env['BACKEND']!.split(":")[0]}:$port/';
 
   static Widget termArea(int port, bool notify) {
     return InteractiveViewer(
-        child: Container(
-            alignment: Alignment.center,
-            child: EmbedWebView(src: getInitialUrl(port), notify: notify)));
+      child: Container(
+        alignment: Alignment.center,
+        child: EmbedWebView(src: getInitialUrl(port), notify: notify),
+      ),
+    );
   }
 
   static Future<T?> showFloatingModalBottomSheet<T>({
@@ -74,12 +81,11 @@ class TermDialog {
     Color? backgroundColor,
   }) async {
     final T? result = await showCustomModalBottomSheet(
-        context: context,
-        builder: builder,
-        containerWidget: (_, Animation<double> animation, Widget child) =>
-            FloatingModal(
-              child: child,
-            ));
+      context: context,
+      builder: builder,
+      containerWidget: (_, Animation<double> animation, Widget child) =>
+          FloatingModal(child: child),
+    );
 
     return result;
   }
@@ -95,25 +101,30 @@ class TermDialog {
   }
 
   // Opens a bash or a ssh on server
-  static void openTerm(BuildContext context, bool notify,
-      [String? projectId, String? server]) {
+  static void openTerm(
+    BuildContext context,
+    bool notify, [
+    String? projectId,
+    String? server,
+  ]) {
     // context.loaderOverlay.show();
     context.loaderOverlay.show();
     Api.term(
-        onStart: (String cmd, int port, int ttydPid) {
-          if (context.mounted) {
-            context.loaderOverlay.hide();
-          }
-          TermDialog.show(context, port: port, pid: ttydPid, notify: notify);
-        },
-        onError: (int error) {
-          if (context.mounted) {
-            context.loaderOverlay.hide();
-          }
-          UiUtils.termErrorAlert(context, error.toString());
-        },
-        projectId: projectId,
-        server: server);
+      onStart: (String cmd, int port, int ttydPid) {
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
+        TermDialog.show(context, port: port, pid: ttydPid, notify: notify);
+      },
+      onError: (int error) {
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
+        UiUtils.termErrorAlert(context, error.toString());
+      },
+      projectId: projectId,
+      server: server,
+    );
   }
 }
 

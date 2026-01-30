@@ -84,29 +84,32 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
                   ),
                   borderData: FlBorderData(
                     show: true,
-                    border: Border.all(
-                      color: const Color(0xffe7e8ec),
-                    ),
+                    border: Border.all(color: const Color(0xffe7e8ec)),
                   ),
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
                       getTooltipColor: (BarChartGroupData group) =>
                           Colors.transparent,
-                      getTooltipItem: (BarChartGroupData group, int groupIndex,
-                          BarChartRodData rod, int rodIndex) {
-                        return BarTooltipItem(
-                          rod.toY.toString(),
-                          TextStyle(
-                            color: rodIndex == 0
-                                ? Colors.green
-                                : rodIndex == 1
+                      getTooltipItem:
+                          (
+                            BarChartGroupData group,
+                            int groupIndex,
+                            BarChartRodData rod,
+                            int rodIndex,
+                          ) {
+                            return BarTooltipItem(
+                              rod.toY.toString(),
+                              TextStyle(
+                                color: rodIndex == 0
+                                    ? Colors.green
+                                    : rodIndex == 1
                                     ? Colors.red
                                     : Colors.grey,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        );
-                      },
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            );
+                          },
                       tooltipRoundedRadius: 20,
                       tooltipMargin: 8,
                       tooltipPadding: const EdgeInsets.all(8),
@@ -142,10 +145,7 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
         Container(
           width: 16,
           height: 16,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 4),
         Text(text, style: const TextStyle(color: Colors.black)),
@@ -170,8 +170,9 @@ class CompareGbifChartsState extends State<CompareGbifCharts> {
     final Map<String, int> mismatches = widget.statistics['mismatches']!;
     final Map<String, int> nulls = widget.statistics['nulls']!;
 
-    return List<BarChartGroupData>.generate(ComparisonField.values.length,
-        (int i) {
+    return List<BarChartGroupData>.generate(ComparisonField.values.length, (
+      int i,
+    ) {
       final String key = ComparisonField.values[i].getName;
       return BarChartGroupData(
         x: i,

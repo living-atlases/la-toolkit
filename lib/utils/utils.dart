@@ -36,8 +36,9 @@ class AppUtils {
 
   static Uri uri(String a, String p, [Map<String, String>? query]) =>
       https ? Uri.https(a, p, query) : Uri.http(a, p, query);
-  static String scheme =
-      (dotenv.env['HTTPS'] ?? 'false').parseBool() ? 'https' : 'http';
+  static String scheme = (dotenv.env['HTTPS'] ?? 'false').parseBool()
+      ? 'https'
+      : 'http';
 
   static String proxyImg(String imgUrl) {
     return "$scheme://${dotenv.env['BACKEND']}/api/v1/image-proxy/${Uri.encodeFull(imgUrl)}";
@@ -60,20 +61,26 @@ class UiUtils {
     fontSize: 24,
     fontWeight: FontWeight.bold,
   );
-  static const TextStyle subtitleStyle =
-      TextStyle(fontWeight: FontWeight.w400, fontSize: 18);
+  static const TextStyle subtitleStyle = TextStyle(
+    fontWeight: FontWeight.w400,
+    fontSize: 18,
+  );
   static const TextStyle dateStyle = TextStyle(
-      color: LAColorTheme.inactive,
-      fontWeight: FontWeight.w400,
-      fontSize: 18,
-      fontStyle: FontStyle.italic);
+    color: LAColorTheme.inactive,
+    fontWeight: FontWeight.w400,
+    fontSize: 18,
+    fontStyle: FontStyle.italic,
+  );
 
   static void showAlertDialog(
-      BuildContext context, VoidCallback onConfirm, VoidCallback onCancel,
-      {String title = 'Please Confirm',
-      String subtitle = 'Are you sure?',
-      String confirmBtn = 'CONFIRM',
-      String cancelBtn = 'CANCEL'}) {
+    BuildContext context,
+    VoidCallback onConfirm,
+    VoidCallback onCancel, {
+    String title = 'Please Confirm',
+    String subtitle = 'Are you sure?',
+    String confirmBtn = 'CONFIRM',
+    String cancelBtn = 'CANCEL',
+  }) {
     // set up the buttons
     final Widget cancelButton = TextButton(
       child: Text(cancelBtn),
@@ -83,19 +90,17 @@ class UiUtils {
       },
     );
     final Widget continueButton = TextButton(
-        child: Text(confirmBtn),
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pop();
-          onConfirm();
-        });
+      child: Text(confirmBtn),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        onConfirm();
+      },
+    );
     // set up the AlertDialog
     final AlertDialog alert = AlertDialog(
       title: Text(title),
       content: Text(subtitle),
-      actions: <Widget>[
-        cancelButton,
-        continueButton,
-      ],
+      actions: <Widget>[cancelButton, continueButton],
     );
     // show the dialog
     showDialog(
@@ -108,14 +113,13 @@ class UiUtils {
 
   static void showSnackBarError(BuildContext context, String e) {
     try {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e),
-        duration: const Duration(days: 365),
-        action: SnackBarAction(
-          label: 'OK',
-          onPressed: () {},
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e),
+          duration: const Duration(days: 365),
+          action: SnackBarAction(label: 'OK', onPressed: () {}),
         ),
-      ));
+      );
     } catch (error) {
       // Widget tree is no longer stable, cannot show snackbar
       // This can happen if the widget was disposed before the error was shown
@@ -125,34 +129,37 @@ class UiUtils {
   static void termErrorAlert(BuildContext context, String error) {
     try {
       Alert(
-          context: context,
-          closeIcon: const Icon(Icons.close),
-          image: const Icon(Icons.error_outline,
-              size: 60, color: LAColorTheme.inactive),
-          title: 'ERROR',
-          style: const AlertStyle(
-              constraints: BoxConstraints.expand(height: 600, width: 600)),
-          content: Column(children: <Widget>[
-            Text(
-              'We had some problem ($error)',
-            ),
-            const SizedBox(
-              height: 20,
-            ),
+        context: context,
+        closeIcon: const Icon(Icons.close),
+        image: const Icon(
+          Icons.error_outline,
+          size: 60,
+          color: LAColorTheme.inactive,
+        ),
+        title: 'ERROR',
+        style: const AlertStyle(
+          constraints: BoxConstraints.expand(height: 600, width: 600),
+        ),
+        content: Column(
+          children: <Widget>[
+            Text('We had some problem ($error)'),
+            const SizedBox(height: 20),
             // Text(error),
-          ]),
-          buttons: <DialogButton>[
-            DialogButton(
-              width: 450,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text(
-                'OK',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            )
-          ]).show();
+          ],
+        ),
+        buttons: <DialogButton>[
+          DialogButton(
+            width: 450,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+        ],
+      ).show();
     } catch (e) {
       // Widget tree is no longer stable, cannot show alert
       // This can happen if the widget was disposed before the alert was shown
@@ -164,14 +171,17 @@ class UiUtils {
 }
 
 class DeployUtils {
-  static dynamic doDeploy(
-      {required BuildContext context,
-      required Store<AppState> store,
-      required LAProject project,
-      required CommonCmd commonCmd}) {
-    context.loaderOverlay
-        .show(widgetBuilder: (dynamic progress) => const LoadingTextOverlay());
-    store.dispatch(PrepareDeployProject(
+  static dynamic doDeploy({
+    required BuildContext context,
+    required Store<AppState> store,
+    required LAProject project,
+    required CommonCmd commonCmd,
+  }) {
+    context.loaderOverlay.show(
+      widgetBuilder: (dynamic progress) => const LoadingTextOverlay(),
+    );
+    store.dispatch(
+      PrepareDeployProject(
         project: project,
         onReady: () {
           if (context.mounted) {
@@ -195,18 +205,22 @@ class DeployUtils {
             context.loaderOverlay.hide();
           }
           UiUtils.showSnackBarError(context, e);
-        }));
+        },
+      ),
+    );
   }
 
-  static void deployActionLaunch(
-      {required BuildContext context,
-      required Store<AppState> store,
-      required LAProject project,
-      required DeployCmd deployCmd}) {
+  static void deployActionLaunch({
+    required BuildContext context,
+    required Store<AppState> store,
+    required LAProject project,
+    required DeployCmd deployCmd,
+  }) {
     context.loaderOverlay.show();
     if (deployCmd.runtimeType == PostDeployCmd) {
       // We generate again the inventories with the smtp values
-      store.dispatch(PrepareDeployProject(
+      store.dispatch(
+        PrepareDeployProject(
           project: project,
           onReady: () {},
           deployCmd: deployCmd,
@@ -215,9 +229,12 @@ class DeployUtils {
               context.loaderOverlay.hide();
             }
             UiUtils.showSnackBarError(context, e);
-          }));
+          },
+        ),
+      );
     }
-    store.dispatch(DeployProject(
+    store.dispatch(
+      DeployProject(
         project: project,
         cmd: deployCmd,
         onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
@@ -226,26 +243,84 @@ class DeployUtils {
           }
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
-          TermDialog.show(context,
-              port: port,
-              pid: ttydPid,
-              notify: true,
-              title: 'Ansible console', onClose: () async {
-            if (!deployCmd.dryRun) {
+          TermDialog.show(
+            context,
+            port: port,
+            pid: ttydPid,
+            notify: true,
+            title: 'Ansible console',
+            onClose: () async {
+              if (!deployCmd.dryRun) {
+                // Show the results
+                store.dispatch(
+                  DeployUtils.getCmdResults(context, cmdEntry, true),
+                );
+              }
+              //  if (context.mounted) {
+              // context.loaderOverlay.hide();
+              //}
+            },
+          );
+        },
+        onError: (int error) {
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              action: SnackBarAction(
+                label: 'OK',
+                onPressed: () {
+                  // Some code to undo the change.
+                },
+              ),
+              content: Text(
+                'Oooopss, some problem have arisen trying to start the deploy: $error',
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  static void brandingDeployActionLaunch({
+    required BuildContext context,
+    required Store<AppState> store,
+    required LAProject project,
+    required BrandingDeployCmd deployCmd,
+  }) {
+    context.loaderOverlay.show();
+    store.dispatch(
+      BrandingDeploy(
+        project: project,
+        cmd: deployCmd,
+        onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+          }
+          /* Not used right now, maybe in the future
+          context.beamToNamed('/term/$port/$ttydPid'); */
+          TermDialog.show(
+            context,
+            port: port,
+            pid: ttydPid,
+            // title: 'Console',
+            notify: false,
+            onClose: () async {
               // Show the results
-              store
-                  .dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
-            }
-            //  if (context.mounted) {
-            // context.loaderOverlay.hide();
-//}
-          });
+              store.dispatch(
+                DeployUtils.getCmdResults(context, cmdEntry, true),
+              );
+            },
+          );
         },
         onError: (int error) {
           if (context.mounted) {
             context.loaderOverlay.hide();
           }
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
               action: SnackBarAction(
                 label: 'OK',
                 onPressed: () {
@@ -253,57 +328,24 @@ class DeployUtils {
                 },
               ),
               content: Text(
-                  'Oooopss, some problem have arisen trying to start the deploy: $error')));
-        }));
-  }
-
-  static void brandingDeployActionLaunch(
-      {required BuildContext context,
-      required Store<AppState> store,
-      required LAProject project,
-      required BrandingDeployCmd deployCmd}) {
-    context.loaderOverlay.show();
-    store.dispatch(BrandingDeploy(
-        project: project,
-        cmd: deployCmd,
-        onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
-          if (context.mounted) {
-            context.loaderOverlay.hide();
-          }
-          /* Not used right now, maybe in the future
-          context.beamToNamed('/term/$port/$ttydPid'); */
-          TermDialog.show(context,
-              port: port,
-              pid: ttydPid,
-              // title: 'Console',
-              notify: false, onClose: () async {
-            // Show the results
-            store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
-          });
-        },
-        onError: (int error) {
-          if (context.mounted) {
-            context.loaderOverlay.hide();
-          }
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              action: SnackBarAction(
-                label: 'OK',
-                onPressed: () {
-                  // Some code to undo the change.
-                },
+                'Oooopss, some problem have arisen trying to deploy the branding: $error',
               ),
-              content: Text(
-                  'Oooopss, some problem have arisen trying to deploy the branding: $error')));
-        }));
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  static void pipelinesRun(
-      {required BuildContext context,
-      required Store<AppState> store,
-      required LAProject project,
-      required PipelinesCmd cmd}) {
+  static void pipelinesRun({
+    required BuildContext context,
+    required Store<AppState> store,
+    required LAProject project,
+    required PipelinesCmd cmd,
+  }) {
     context.loaderOverlay.show();
-    store.dispatch(PipelinesRun(
+    store.dispatch(
+      PipelinesRun(
         project: project,
         cmd: cmd,
         onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
@@ -312,20 +354,26 @@ class DeployUtils {
           }
           /* Not used right now, maybe in the future
           context.beamToNamed('/term/$port/$ttydPid'); */
-          TermDialog.show(context,
-              port: port,
-              pid: ttydPid,
-              // title: 'Console',
-              notify: true, onClose: () async {
-            // Show the results
-            store.dispatch(DeployUtils.getCmdResults(context, cmdEntry, true));
-          });
+          TermDialog.show(
+            context,
+            port: port,
+            pid: ttydPid,
+            // title: 'Console',
+            notify: true,
+            onClose: () async {
+              // Show the results
+              store.dispatch(
+                DeployUtils.getCmdResults(context, cmdEntry, true),
+              );
+            },
+          );
         },
         onError: (int error) {
           if (context.mounted) {
             context.loaderOverlay.hide();
           }
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
               action: SnackBarAction(
                 label: 'OK',
                 onPressed: () {
@@ -333,41 +381,50 @@ class DeployUtils {
                 },
               ),
               content: Text(
-                  'Oooopss, some problem have arisen trying to run pipelines: $error')));
-        }));
+                'Oooopss, some problem have arisen trying to run pipelines: $error',
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   static AppActions getCmdResults(
-      BuildContext context, CmdHistoryEntry cmdHistory, bool fstRetrieved) {
+    BuildContext context,
+    CmdHistoryEntry cmdHistory,
+    bool fstRetrieved,
+  ) {
     context.loaderOverlay.show();
     return GetCmdResults(
-        cmdHistoryEntry: cmdHistory,
-        fstRetrieved: fstRetrieved,
-        onReady: () {
-          if (context.mounted) {
-            context.loaderOverlay.hide();
-          }
-          BeamerCond.of(context, CmdResultsLocation());
-        },
-        onFailed: () {
-          if (context.mounted) {
-            context.loaderOverlay.hide();
-          }
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:
-                const Text('There was some problem retrieving the results'),
-            duration: const Duration(days: 365),
-            action: SnackBarAction(
-              label: 'OK',
-              onPressed: () {},
+      cmdHistoryEntry: cmdHistory,
+      fstRetrieved: fstRetrieved,
+      onReady: () {
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
+        BeamerCond.of(context, CmdResultsLocation());
+      },
+      onFailed: () {
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'There was some problem retrieving the results',
             ),
-          ));
-        });
+            duration: const Duration(days: 365),
+            action: SnackBarAction(label: 'OK', onPressed: () {}),
+          ),
+        );
+      },
+    );
   }
 }
 
 class LADateUtils {
-/*  static Future<String> now() async {
+  /*  static Future<String> now() async {
     final DateTime now = DateTime.now();
     String locale = await findSystemLocale();
     final DateFormat formatter = DateFormat.yMd(locale).add_jm();
@@ -375,9 +432,9 @@ class LADateUtils {
     return formatter.format(now);
   }*/
   static String formatDuration(double duration) => prettyDuration(
-        Duration(milliseconds: duration.toInt()),
-        // abbreviated: false
-      );
+    Duration(milliseconds: duration.toInt()),
+    // abbreviated: false
+  );
 
   static String formatDate(DateTime date) => Moment.now().from(date);
 }

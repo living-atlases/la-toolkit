@@ -93,7 +93,7 @@ void main() {
     final List<String> ipAddresses = <String>[
       '127.0.0.1',
       '10.0.0.1',
-      '1.1.1.1'
+      '1.1.1.1',
     ];
     for (final String ipv4 in ipAddresses) {
       expect(LARegExp.ipv4.hasMatch(ipv4), equals(true));
@@ -110,7 +110,7 @@ void main() {
       // Not empty (lets allow)
       //   '',
       // Neither ipv6
-      '::1'
+      '::1',
     ];
     for (final String ipv4 in ipAddresses) {
       expect(LARegExp.ipv4.hasMatch(ipv4), equals(false));
@@ -123,7 +123,7 @@ void main() {
       '10.0.0.1',
       '172.16.20.1',
       'fd12:3456:789a:1::1',
-      '192.168.0.1'
+      '192.168.0.1',
     ];
     for (final String privateIp in ipAddresses) {
       expect(LARegExp.privateIp.hasMatch(privateIp), equals(true));
@@ -145,7 +145,7 @@ void main() {
     final List<String> ipAddresses = <String>[
       '::1',
       '2620:119:35::35',
-      'fe80::1ff:fe23:4567:890a'
+      'fe80::1ff:fe23:4567:890a',
     ];
     for (final String ipv6 in ipAddresses) {
       expect(LARegExp.ipv6.hasMatch(ipv6), equals(true));
@@ -171,7 +171,7 @@ void main() {
       '1.1.1.1',
       '::1',
       '2620:119:35::35',
-      'fe80::1ff:fe23:4567:890a'
+      'fe80::1ff:fe23:4567:890a',
     ];
     for (final String ip in ipAddresses) {
       expect(LARegExp.ip.hasMatch(ip), equals(true));
@@ -183,7 +183,7 @@ void main() {
       'l-a.site',
       'example.org',
       'b.a.example.com',
-      'c.b.a.example.com'
+      'c.b.a.example.com',
     ];
     for (final String d in domains) {
       expect(LARegExp.domainRegexp.hasMatch(d), equals(true));
@@ -205,11 +205,13 @@ LDC6u3BXM1L0gBvHPNOnD5l2Lp5EjUkQ9CBf2j4A4gfH+iWQZyk08esAG/iwArAVxkl368
 jeTUJOTrTe+mWXXU770gYyQTxa2ycnYrlZucn1S3vsvn6eq7NZZ8NRbyv1n15Ocg+nHK4f
 uKOrwPhU3NbKQwtjb0Wsxx1gAmQqIOLTpAdsrAauPxC7TPYA5qQVCphvimKuhQM/1gMV22
 5JrnjspVlthCzuFYUjXOKC3wxz6FFEtwnXu3uC5bVVkmkNadJmD21gD23yk4BraGXVYpRM
-IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
+IB+X+OTUUI8= dhopson@VMUbuntu-DSH''',
     ];
     for (final String key in pubKeys) {
       expect(
-          LARegExp.sshPubKey.hasMatch(key.replaceAll('\n', '')), equals(true));
+        LARegExp.sshPubKey.hasMatch(key.replaceAll('\n', '')),
+        equals(true),
+      );
     }
   });
 
@@ -222,7 +224,7 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       'http//example.com',
       'http:/example.com/favico.ico',
       'example.com',
-      ''
+      '',
     ];
     for (final String url in urls) {
       expect(LARegExp.url.hasMatch(url), equals(true));
@@ -242,8 +244,11 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
     ];
 
     for (final String email in validEmails) {
-      expect(LARegExp.email.hasMatch(email), true,
-          reason: 'Expected $email to be a valid email address');
+      expect(
+        LARegExp.email.hasMatch(email),
+        true,
+        reason: 'Expected $email to be a valid email address',
+      );
     }
   });
 
@@ -259,22 +264,17 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
     ];
 
     for (final String email in invalidEmails) {
-      expect(LARegExp.email.hasMatch(email), false,
-          reason: 'Expected $email to be an invalid email address');
+      expect(
+        LARegExp.email.hasMatch(email),
+        false,
+        reason: 'Expected $email to be an invalid email address',
+      );
     }
   });
 
   test('test valid and invalid port numbers', () {
-    final List<String> valid = <String>[
-      '1',
-      '22',
-      '8080',
-      '60000',
-    ];
-    final List<String> invalid = <String>[
-      '70000',
-      'abc',
-    ];
+    final List<String> valid = <String>['1', '22', '8080', '60000'];
+    final List<String> invalid = <String>['70000', 'abc'];
     for (final String current in valid) {
       expect(LARegExp.portNumber.hasMatch(current), equals(true));
     }
@@ -284,49 +284,32 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
   });
 
   test('test subdomains', () {
-    final List<String> subdomains = <String>[
-      'aa',
-      'a-b',
-      'a_b',
-      'a.b',
-    ];
+    final List<String> subdomains = <String>['aa', 'a-b', 'a_b', 'a.b'];
     for (final String sub in subdomains) {
       expect(LARegExp.subdomain.hasMatch(sub), equals(true));
     }
   });
 
   test('test invalid subdomains', () {
-    final List<String> subdomains = <String>[
-      'a*b',
-      'a b',
-      'a\b',
-    ];
+    final List<String> subdomains = <String>['a*b', 'a b', 'a\b'];
     for (final String sub in subdomains) {
       // print("Testing $sub");
-      expect(
-        LARegExp.subdomain.hasMatch(sub),
-        equals(false),
-      );
+      expect(LARegExp.subdomain.hasMatch(sub), equals(false));
     }
   });
 
   test('test not empty fields', () {
-    final List<String> emptyVars = <String>[
-      '',
-      ' ',
-      '   ',
-    ];
+    final List<String> emptyVars = <String>['', ' ', '   '];
     for (final String sub in emptyVars) {
-      expect(
-        LARegExp.something.hasMatch(sub),
-        equals(false),
-      );
+      expect(LARegExp.something.hasMatch(sub), equals(false));
     }
   });
 
   test('test correct slash removal', () {
-    expect(StringUtils.removeLastSlash('http://example.com/'),
-        equals('http://example.com'));
+    expect(
+      StringUtils.removeLastSlash('http://example.com/'),
+      equals('http://example.com'),
+    );
   });
 
   test('test drs', () {
@@ -336,21 +319,27 @@ IB+X+OTUUI8= dhopson@VMUbuntu-DSH'''
       'dr2 dr3',
       'dr3 dr4 dr5 dr6',
       'dr3 dr4 dr5 dr6 ',
-      'dr1    '
+      'dr1    ',
     ];
     final List<String> inValidValues = <String>[
       'dr',
       '123',
       'dr234 dr',
-      'dr2 dra3'
+      'dr2 dra3',
     ];
     for (final String value in validValues) {
-      expect(LARegExp.drs.hasMatch(value), equals(true),
-          reason: '$value should match');
+      expect(
+        LARegExp.drs.hasMatch(value),
+        equals(true),
+        reason: '$value should match',
+      );
     }
     for (final String value in inValidValues) {
-      expect(LARegExp.drs.hasMatch(value), equals(false),
-          reason: '$value should not match');
+      expect(
+        LARegExp.drs.hasMatch(value),
+        equals(false),
+        reason: '$value should not match',
+      );
     }
   });
 }

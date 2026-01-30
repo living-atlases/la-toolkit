@@ -7,9 +7,7 @@ class RequestCreateOne<T> {
 
   final T entity;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entity': entity,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entity': entity};
 }
 
 class SuccessCreateOne<T> {
@@ -17,9 +15,7 @@ class SuccessCreateOne<T> {
 
   final T entity;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entity': entity,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entity': entity};
 }
 
 class FailCreateOne<T> {
@@ -28,8 +24,10 @@ class FailCreateOne<T> {
   final T? entity;
   final dynamic error;
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'entity': entity, 'error': error};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'entity': entity,
+    'error': error,
+  };
 }
 
 class RequestCreateMany<T> {
@@ -37,9 +35,7 @@ class RequestCreateMany<T> {
 
   final List<T> entities;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entites': entities,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entites': entities};
 }
 
 class SuccessCreateMany<T> {
@@ -47,9 +43,7 @@ class SuccessCreateMany<T> {
 
   final List<T> entities;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entites': entities,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entites': entities};
 }
 
 class FailCreateMany<T> {
@@ -58,8 +52,10 @@ class FailCreateMany<T> {
   final List<T> entities;
   final dynamic error;
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'entites': entities, 'error': error};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'entites': entities,
+    'error': error,
+  };
 }
 
 // cRud
@@ -73,9 +69,9 @@ class RequestRetrieveOne<T> {
   final bool forceRefresh;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'forceRefresh': forceRefresh,
-      };
+    'id': id,
+    'forceRefresh': forceRefresh,
+  };
 }
 
 class SuccessRetrieveOne<T> {
@@ -83,9 +79,7 @@ class SuccessRetrieveOne<T> {
 
   final T entity;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entity': entity,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entity': entity};
 }
 
 /// A recent copy of the entity was already in the store
@@ -95,16 +89,11 @@ class SuccessRetrieveOneFromCache<T> {
 
   final T entity;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entity': entity,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entity': entity};
 }
 
 class FailRetrieveOne<T> {
-  const FailRetrieveOne({
-    required this.id,
-    this.error,
-  });
+  const FailRetrieveOne({required this.id, this.error});
 
   final String id;
   final dynamic error;
@@ -117,9 +106,7 @@ class RequestRetrieveMany<T> {
 
   final List<String> ids;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'ids': ids,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'ids': ids};
 }
 
 class SuccessRetrieveMany<T> {
@@ -127,9 +114,7 @@ class SuccessRetrieveMany<T> {
 
   final List<T> entities;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entities': entities,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entities': entities};
 }
 
 class FailRetrieveMany<T> {
@@ -138,21 +123,21 @@ class FailRetrieveMany<T> {
   final List<String> ids;
   final dynamic error;
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'ids': ids, 'error': error};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'ids': ids,
+    'error': error,
+  };
 }
 
 class RequestRetrieveAll<T> {
-  const RequestRetrieveAll({
-    this.forceRefresh = false,
-  });
+  const RequestRetrieveAll({this.forceRefresh = false});
 
   /// Whether to force a refresh (if you are using a caching mechanism)
   final bool forceRefresh;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'forceRefresh': forceRefresh,
-      };
+    'forceRefresh': forceRefresh,
+  };
 }
 
 class SuccessRetrieveAll<T> {
@@ -160,9 +145,7 @@ class SuccessRetrieveAll<T> {
 
   final List<T> entities;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entities': entities,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entities': entities};
 }
 
 /// A recent copy of the entity was already in the store
@@ -172,9 +155,7 @@ class SuccessRetrieveAllFromCache<T> {
 
   final List<T> entities;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entities': entities,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entities': entities};
 }
 
 class FailRetrieveAll<T> {
@@ -182,9 +163,7 @@ class FailRetrieveAll<T> {
 
   final dynamic error;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'error': error,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'error': error};
 }
 
 // crUd
@@ -193,9 +172,7 @@ class RequestUpdateOne<T> {
 
   final T entity;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entity': entity,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entity': entity};
 }
 
 class RequestUpdateOneProps<T> {
@@ -212,9 +189,7 @@ class SuccessUpdateOne<T> {
 
   final T entity;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entity': entity,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entity': entity};
 }
 
 class FailUpdateOne<T> {
@@ -223,8 +198,10 @@ class FailUpdateOne<T> {
   final T entity;
   final dynamic error;
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'entity': entity, 'error': error};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'entity': entity,
+    'error': error,
+  };
 }
 
 class RequestUpdateMany<T> {
@@ -232,9 +209,7 @@ class RequestUpdateMany<T> {
 
   final List<T> entities;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entities': entities,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entities': entities};
 }
 
 class SuccessUpdateMany<T> {
@@ -242,9 +217,7 @@ class SuccessUpdateMany<T> {
 
   final List<T> entities;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'entities': entities,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'entities': entities};
 }
 
 class FailUpdateMany<T> {
@@ -253,8 +226,10 @@ class FailUpdateMany<T> {
   final List<T> entities;
   final dynamic error;
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'entities': entities, 'error': error};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'entities': entities,
+    'error': error,
+  };
 }
 
 // cruD
@@ -264,9 +239,7 @@ class RequestDeleteOne<T> {
 
   final String id;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'id': id};
 }
 
 class SuccessDeleteOne<T> {
@@ -274,9 +247,7 @@ class SuccessDeleteOne<T> {
 
   final String id;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'id': id};
 }
 
 class FailDeleteOne<T> {
@@ -293,9 +264,7 @@ class RequestDeleteMany<T> {
 
   final List<String> ids;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'ids': ids,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'ids': ids};
 }
 
 class SuccessDeleteMany<T> {
@@ -303,9 +272,7 @@ class SuccessDeleteMany<T> {
 
   final List<String> ids;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'ids': ids,
-      };
+  Map<String, dynamic> toJson() => <String, dynamic>{'ids': ids};
 }
 
 class FailDeleteMany<T> {
@@ -315,7 +282,7 @@ class FailDeleteMany<T> {
   final dynamic error;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'ids': ids,
-        'error': error,
-      };
+    'ids': ids,
+    'error': error,
+  };
 }

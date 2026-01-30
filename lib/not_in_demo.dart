@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NotInTheDemoPanel extends StatelessWidget {
-  const NotInTheDemoPanel({
-    super.key,
-  });
+  const NotInTheDemoPanel({super.key});
 
   @override
   Widget build(BuildContext context) {

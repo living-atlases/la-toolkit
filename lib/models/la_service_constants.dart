@@ -65,5 +65,5 @@ List<String> servicesWithoutUrlButShow = <String>[
   dockerCompose,
   zookeeper,
   cassandra,
-  dockerCommon
+  dockerCommon,
 ];

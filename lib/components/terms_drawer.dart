@@ -30,78 +30,92 @@ class TermsDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _TermsDrawerViewModel>(
-        converter: (Store<AppState> store) {
-      return _TermsDrawerViewModel(
-        state: store.state,
-        openTerm: (LAProject project, LAServer server) =>
-            TermDialog.openTerm(context, false, project.id, server.name),
-      );
-    }, builder: (BuildContext context, _TermsDrawerViewModel vm) {
-      return Drawer(
+      converter: (Store<AppState> store) {
+        return _TermsDrawerViewModel(
+          state: store.state,
+          openTerm: (LAProject project, LAServer server) =>
+              TermDialog.openTerm(context, false, project.id, server.name),
+        );
+      },
+      builder: (BuildContext context, _TermsDrawerViewModel vm) {
+        return Drawer(
           child: ListView(
-              // Important: Remove any padding from the ListView.
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                context.beamBack();
-              },
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: LAColorTheme.laPalette.shade300,
-                ),
-                child: Column(
-                  children: <Widget>[
-                    if (vm.state.currentProject
-                                .getVariableValue('favicon_url') !=
-                            null &&
-                        !AppUtils.isDemo())
-                      ImageIcon(
-                          NetworkImage(AppUtils.proxyImg(vm.state.currentProject
-                              .getVariableValue('favicon_url')! as String)),
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  context.beamBack();
+                },
+                child: DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: LAColorTheme.laPalette.shade300,
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      if (vm.state.currentProject.getVariableValue(
+                                'favicon_url',
+                              ) !=
+                              null &&
+                          !AppUtils.isDemo())
+                        ImageIcon(
+                          NetworkImage(
+                            AppUtils.proxyImg(
+                              vm.state.currentProject.getVariableValue(
+                                    'favicon_url',
+                                  )!
+                                  as String,
+                            ),
+                          ),
                           color: LAColorTheme.laPalette,
-                          size: 80)
-                    else
-                      Image.asset(
-                        'assets/images/la-icon.png',
-                        fit: BoxFit.scaleDown,
-                        height: 80.0,
-                      ),
-                    const SizedBox(height: 10.0),
-                    // FIXME
-                    Text('${vm.state.currentProject.shortName} Terminals',
+                          size: 80,
+                        )
+                      else
+                        Image.asset(
+                          'assets/images/la-icon.png',
+                          fit: BoxFit.scaleDown,
+                          height: 80.0,
+                        ),
+                      const SizedBox(height: 10.0),
+                      Text(
+                        '${vm.state.currentProject.shortName} Terminals',
                         style: const TextStyle(
                           fontSize: 24.0,
                           color: Colors.white,
-                        )),
-                  ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            // The docker console
-            TermDialog.drawerItem(context),
-            for (final LAServer server in vm.state.currentProject.servers)
-              Tooltip(
+              // The docker console
+              TermDialog.drawerItem(context),
+              for (final LAServer server in vm.state.currentProject.servers)
+                Tooltip(
                   message: 'Open a terminal in ${server.name}',
                   child: ListTile(
-                      leading: Icon(MdiIcons.console),
-                      title: Text(server.name),
-                      onTap: () =>
-                          vm.openTerm(vm.state.currentProject, server))),
-          ]));
-    });
+                    leading: Icon(MdiIcons.console),
+                    title: Text(server.name),
+                    onTap: () => vm.openTerm(vm.state.currentProject, server),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
 class ServiceListTileLink extends StatelessWidget {
   ServiceListTileLink({super.key, required ProdServiceDesc desc})
-      : icon = desc.icon,
-        name = desc.name,
-        tooltip = desc.tooltip,
-        url = desc.url,
-        admin = desc.admin,
-        alaAdmin = desc.alaAdmin,
-        help = desc.help;
+    : icon = desc.icon,
+      name = desc.name,
+      tooltip = desc.tooltip,
+      url = desc.url,
+      admin = desc.admin,
+      alaAdmin = desc.alaAdmin,
+      help = desc.help;
   final IconData icon;
   final String name;
   final String tooltip;
@@ -117,18 +131,17 @@ class ServiceListTileLink extends StatelessWidget {
       title: name,
       tooltip: tooltip,
       url: url,
-      additionalTrailingIcon:
-          alaAdmin ? AdminIconButton(url: url, alaAdmin: true) : null,
+      additionalTrailingIcon: alaAdmin
+          ? AdminIconButton(url: url, alaAdmin: true)
+          : null,
       trailingIcon: help != null
-          ? HelpIcon(
-              wikipage: help!,
-            )
+          ? HelpIcon(wikipage: help!)
           : admin
-              ? AdminIconButton(
-                  url: url,
-                  // alaAdmin: false
-                )
-              : null,
+          ? AdminIconButton(
+              url: url,
+              // alaAdmin: false
+            )
+          : null,
     );
   }
 }

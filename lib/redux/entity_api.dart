@@ -17,9 +17,11 @@ class EntityApi<T extends IsJsonSerializable<T>> {
   Future<Map<String, dynamic>> create(T entity) async {
     final Uri url = baseUri();
     try {
-      final Response response = await http.post(url,
-          headers: <String, String>{'Content-type': 'application/json'},
-          body: utf8.encode(json.encode(entity.toJson())));
+      final Response response = await http.post(
+        url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(entity.toJson())),
+      );
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
@@ -31,12 +33,16 @@ class EntityApi<T extends IsJsonSerializable<T>> {
   }
 
   Future<Map<String, dynamic>> update(
-      String id, Map<String, dynamic> toUpdate) async {
+    String id,
+    Map<String, dynamic> toUpdate,
+  ) async {
     final Uri url = baseUri(id);
     try {
-      final Response response = await http.patch(url,
-          headers: <String, String>{'Content-type': 'application/json'},
-          body: utf8.encode(json.encode(toUpdate)));
+      final Response response = await http.patch(
+        url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(json.encode(toUpdate)),
+      );
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
@@ -47,15 +53,16 @@ class EntityApi<T extends IsJsonSerializable<T>> {
     }
   }
 
-  Future<List<dynamic>> find(
-      {Tuple2<String, String>? filter,
-      String? where,
-      int? limit,
-      int? skip,
-      String? sort,
-      String? select,
-      String? omit,
-      String populate = ''}) async {
+  Future<List<dynamic>> find({
+    Tuple2<String, String>? filter,
+    String? where,
+    int? limit,
+    int? skip,
+    String? sort,
+    String? select,
+    String? omit,
+    String populate = '',
+  }) async {
     final Map<String, String> queryParam = <String, String>{};
     if (filter != null) {
       queryParam[filter.item1] = filter.item2;
@@ -96,10 +103,11 @@ class EntityApi<T extends IsJsonSerializable<T>> {
     }
   }
 
-  Future<Map<String, dynamic>> addTo(
-      {required String id,
-      required String association,
-      required String fk}) async {
+  Future<Map<String, dynamic>> addTo({
+    required String id,
+    required String association,
+    required String fk,
+  }) async {
     // employee/7/involvedInPurchases/47
     final String path = '$id/$association/$fk';
     final Uri url = baseUri(path);
@@ -109,7 +117,8 @@ class EntityApi<T extends IsJsonSerializable<T>> {
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
         throw Exception(
-            'Failed to associate entity (${response.reasonPhrase})');
+          'Failed to associate entity (${response.reasonPhrase})',
+        );
       }
     } catch (e) {
       throw Exception('Failed to associate entity ($e)');
@@ -133,10 +142,13 @@ class EntityApi<T extends IsJsonSerializable<T>> {
   }
 
   Uri baseUri([String path = '', Map<String, String>? queryParameters]) =>
-      AppUtils.uri(dotenv.env['BACKEND']!,
-          "/$model${path != "" ? '/$path' : ''}", queryParameters);
+      AppUtils.uri(
+        dotenv.env['BACKEND']!,
+        "/$model${path != "" ? '/$path' : ''}",
+        queryParameters,
+      );
 
-/*
+  /*
 -- create
 -- find
 -- addTo

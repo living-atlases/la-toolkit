@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_dynamic_calls
+
 import 'dart:async';
 import 'dart:convert' as convert;
 import 'dart:io';
@@ -1033,7 +1035,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
       somethingFailed = true;
       return <String, dynamic>{};
     }
-    // ignore: avoid_dynamic_calls
+
     final Map<String, dynamic> drs =
         result['facet_counts']['facet_fields']['dataResourceUid']
             as Map<String, dynamic>;
@@ -1757,7 +1759,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
                 'Error: The response $response does not have facet_counts/facet_fields/$field',
               );
             }
-            // ignore: avoid_dynamic_calls
             final Map<String, dynamic> drs =
                 response['facet_counts']['facet_fields'][field]
                     as Map<String, dynamic>;
@@ -1838,7 +1839,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
                 'Error: The response $response does not have facet_counts/facet_fields/$field',
               );
             }
-            // ignore: avoid_dynamic_calls
             final Map<String, dynamic> results =
                 response['facet_counts']['facet_fields'][field]
                     as Map<String, dynamic>;
@@ -2097,7 +2097,6 @@ class _CompareDataPageState extends State<CompareDataPage> {
 
     final Set<String> uniqueGbifContacts = <String>{};
     final List<dynamic> gbifContacts =
-        // ignore: avoid_dynamic_calls
         gbifData['contacts'].where((dynamic contact) {
               final Map<String, dynamic> gbifContact =
                   contact as Map<String, dynamic>;
