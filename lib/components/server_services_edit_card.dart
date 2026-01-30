@@ -24,6 +24,7 @@ class ServerServicesEditCard extends StatefulWidget {
     required this.onAssigned,
     required this.onUnassigned,
     required this.onDeleted,
+    required this.onDeletedCluster,
     required this.onRename,
     required this.onEditing,
   });
@@ -37,6 +38,7 @@ class ServerServicesEditCard extends StatefulWidget {
   final Function(List<String>) onAssigned;
   final Function(String) onUnassigned;
   final Function(LAServer) onDeleted;
+  final Function(LACluster) onDeletedCluster;
   final Function(String) onRename;
   final Function() onEditing;
   final DeploymentType type;
@@ -89,99 +91,116 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
         shape: cardShape,
         // color: Colors.black12,
         margin: const EdgeInsets.all(10),
-        child: Container(
-          decoration: isDockerSwarm
-              ? BoxDecoration(borderRadius: BorderRadius.circular(4))
-              : null,
-          child: Stack(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: isDockerSwarm
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  widget.cluster?.name ??
-                                      'Docker swarm cluster',
-                                  style: const TextStyle(
-                                    color: LAColorTheme.inactive,
-                                    fontSize: 20,
-                                  ),
+        child: Stack(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: isDockerSwarm
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                widget.cluster?.name ?? 'Docker swarm cluster',
+                                style: const TextStyle(
+                                  color: LAColorTheme.inactive,
+                                  fontSize: 20,
                                 ),
-                                const Text(
-                                  'deprecated',
-                                  style: TextStyle(
-                                    color: Colors.orange,
-                                    fontSize: 12,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Text(
-                              isAServer
-                                  ? widget.server!.name
-                                  : widget.cluster?.name ?? 'Docker compose',
-                              style: const TextStyle(
-                                color: LAColorTheme.inactive,
-                                fontSize: 20,
                               ),
-                            ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          if (isAServer)
-                            RenameServerIcon(widget.server!, widget.onEditing, (
-                              String newName,
-                            ) {
-                              widget.onRename(newName);
-                            }),
-                          if (isAServer)
-                            Tooltip(
-                              message: 'Delete this server',
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.grey,
+                              const Text(
+                                'deprecated',
+                                style: TextStyle(
+                                  color: Colors.orange,
+                                  fontSize: 12,
+                                  fontStyle: FontStyle.italic,
                                 ),
-                                onPressed: () {
-                                  widget.onEditing();
-                                  UiUtils.showAlertDialog(
-                                    context,
-                                    () => widget.onDeleted(widget.server!),
-                                    () {},
-                                    title:
-                                        "Deleting server '${widget.server!.name}'",
-                                  );
-                                },
                               ),
+                            ],
+                          )
+                        : Text(
+                            isAServer
+                                ? widget.server!.name
+                                : widget.cluster?.name ?? 'Docker compose',
+                            style: const TextStyle(
+                              color: LAColorTheme.inactive,
+                              fontSize: 20,
                             ),
-                        ],
-                      ),
+                          ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        if (isAServer)
+                          RenameServerIcon(widget.server!, widget.onEditing, (
+                            String newName,
+                          ) {
+                            widget.onRename(newName);
+                          }),
+                        if (isAServer)
+                          Tooltip(
+                            message: 'Delete this server',
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                widget.onEditing();
+                                UiUtils.showAlertDialog(
+                                  context,
+                                  () => widget.onDeleted(widget.server!),
+                                  () {},
+                                  title:
+                                      "Deleting server '${widget.server!.name}'",
+                                );
+                              },
+                            ),
+                          ),
+                        if (!isAServer)
+                          Tooltip(
+                            message: 'Delete this cluster',
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                widget.onEditing();
+                                UiUtils.showAlertDialog(
+                                  context,
+                                  () =>
+                                      widget.onDeletedCluster(widget.cluster!),
+                                  () {},
+                                  title:
+                                      "Deleting cluster '${widget.cluster!.name}'",
+                                );
+                              },
+                            ),
+                          ),
+                      ],
                     ),
-                    const SizedBox(height: 10),
-                    // ignore: sized_box_for_whitespace
-                    Container(
-                      width: 300,
-                      child: Wrap(
-                        spacing: 3.0, // spacing between adjacent chips
-                        runSpacing: 5.0,
-                        children: chips,
-                      ),
+                  ),
+                  const SizedBox(height: 10),
+                  // ignore: sized_box_for_whitespace
+                  Container(
+                    width: 300,
+                    child: Wrap(
+                      spacing: 3.0, // spacing between adjacent chips
+                      runSpacing: 5.0,
+                      children: chips,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

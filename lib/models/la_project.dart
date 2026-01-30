@@ -802,11 +802,14 @@ check results length: ${checkResults.length}''';
     }
     final List<String> serviceIds = <String>[];
     if (assignedServices.contains(dockerSwarm)) {
-      _addDockerClusterIfNotExists();
+      _addDockerClusterIfNotExists(
+        serverId: serverId,
+        type: DeploymentType.dockerSwarm,
+      );
     }
     if (assignedServices.contains(dockerCompose)) {
       _addDockerClusterIfNotExists(
-        serverId: sOrCId,
+        serverId: serverId,
         type: DeploymentType.dockerCompose,
       );
     }
@@ -906,19 +909,44 @@ check results length: ${checkResults.length}''';
             sD.serviceId == service.id,
       );
     }
-    if (serviceName == dockerSwarm && isDockerClusterConfigured()) {
-      // For now, we remove all cluster because we only support one unique cluster
-      if (getServiceDeploysForSomeService(dockerSwarm).isEmpty) {
-        clusters.removeWhere(
-          (LACluster c) => c.type == DeploymentType.dockerSwarm,
-        );
-        clusterServices.removeWhere(
-          (String key, List<String> value) => !clusters.any(
+    if (serviceName == dockerSwarm) {
+      // Find all docker-swarm clusters for this server
+      final List<LACluster> dockerSwarmClusters = clusters
+          .where(
             (LACluster c) =>
-                c.id == key && c.type == DeploymentType.dockerSwarm,
-          ),
-        );
+                c.serverId == sIdOrCid && c.type == DeploymentType.dockerSwarm,
+          )
+          .toList();
+
+      // For each cluster, remove all services and their deployments
+      for (final LACluster cluster in dockerSwarmClusters) {
+        // Get all services in this cluster
+        final List<String>? servicesInCluster = clusterServices[cluster.id];
+        if (servicesInCluster != null) {
+          // Remove all service deployments for this cluster
+          for (final String serviceNameInt in servicesInCluster) {
+            final LAService service = getService(serviceNameInt);
+            serviceDeploys.removeWhere(
+              (LAServiceDeploy sD) =>
+                  sD.projectId == id &&
+                  sD.clusterId == cluster.id &&
+                  sD.type == DeploymentType.dockerSwarm &&
+                  sD.serviceId == service.id,
+            );
+          }
+        }
       }
+
+      // Remove the clusters
+      clusters.removeWhere(
+        (LACluster c) =>
+            c.serverId == sIdOrCid && c.type == DeploymentType.dockerSwarm,
+      );
+      // Remove cluster services
+      clusterServices.removeWhere(
+        (String key, List<String> value) =>
+            !clusters.any((LACluster c) => c.id == key),
+      );
     }
     if (serviceName == dockerCompose) {
       // Find all docker-compose clusters for this server
@@ -1081,6 +1109,31 @@ check results length: ${checkResults.length}''';
     if (!isDockerClusterConfigured()) {
       clusters.clear();
     }
+    validateCreation();
+  }
+
+  void deleteCluster(LACluster clusterToDelete) {
+    // Remove all cluster services
+    clusterServices.remove(clusterToDelete.id);
+
+    // Remove all service deploys associated with this cluster
+    serviceDeploys = serviceDeploys
+        .where((LAServiceDeploy sd) => sd.clusterId != clusterToDelete.id)
+        .toList();
+
+    // Remove the cluster itself
+    clusters = clusters
+        .where((LACluster c) => c.id != clusterToDelete.id)
+        .toList();
+
+    // Clean up any inconsistencies
+    serviceDeploys.removeWhere(
+      (LAServiceDeploy sd) =>
+          sd.clusterId != null &&
+          clusters.firstWhereOrNull((LACluster c) => c.id == sd.clusterId) ==
+              null,
+    );
+
     validateCreation();
   }
 
@@ -1896,8 +1949,20 @@ check results length: ${checkResults.length}''';
     DeploymentType type = DeploymentType.dockerSwarm,
   }) {
     if (type == DeploymentType.dockerSwarm) {
-      if (clusters.isEmpty) {
-        clusters.add(LACluster(id: ObjectId().toString(), projectId: id));
+      if (!clusters.any(
+        (LACluster c) =>
+            c.serverId == serverId && c.type == DeploymentType.dockerSwarm,
+      )) {
+        final LAServer? server = getServerById(serverId!);
+        clusters.add(
+          LACluster(
+            id: ObjectId().toString(),
+            projectId: id,
+            serverId: serverId,
+            name: 'Docker Swarm on ${server?.name ?? serverId}',
+            type: DeploymentType.dockerSwarm,
+          ),
+        );
       }
     } else if (type == DeploymentType.dockerCompose) {
       if (!clusters.any(

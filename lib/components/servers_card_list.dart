@@ -163,6 +163,13 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                   widget.project.delete(server);
                   widget.vm.onSaveCurrentProject(widget.project);
                 },
+                onDeletedCluster: (LACluster cluster) {
+                  setState(() {
+                    _editing = false;
+                  });
+                  widget.project.deleteCluster(cluster);
+                  widget.vm.onSaveCurrentProject(widget.project);
+                },
                 onEditing: () => setState(() {
                   _editing = true;
                 }),
@@ -212,12 +219,6 @@ class ServerServicesViewCard extends StatelessWidget {
         child: Container(
           width: 300,
           margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-          decoration: isDockerSwarm
-              ? BoxDecoration(borderRadius: BorderRadius.circular(4))
-              : null,
-          foregroundDecoration: isDockerSwarm
-              ? BoxDecoration(borderRadius: BorderRadius.circular(4))
-              : null,
           child: Stack(
             children: <Widget>[
               ListTile(
