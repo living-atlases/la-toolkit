@@ -117,7 +117,7 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
               'Servers & define which services will run in which servers',
             ),
             subtitle: const Text(
-              'Some service can be deployed in several servers for web redundancy or to conform a cluster. Note: the la-toolkit does not configure load balancing in redundant web services.',
+              'Some services can be deployed in several servers for web redundancy or to conform a cluster. Note: the la-toolkit does not configure load balancing in redundant web services.',
             ),
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

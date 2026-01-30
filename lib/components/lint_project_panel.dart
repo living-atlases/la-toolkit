@@ -149,7 +149,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 !project.allServicesAssigned())
               AlertCard(
                 message:
-                    'Some service is not assigned to a server$notAssignedMessage',
+                    'Some services is not assigned to a server$notAssignedMessage',
               ),
             if (basicDefined &&
                 project.servers.isNotEmpty &&
