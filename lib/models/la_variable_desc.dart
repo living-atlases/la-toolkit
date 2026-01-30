@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import '../utils/regexp.dart';
 import './la_cluster.dart';
 import './la_server.dart';
-import './la_service_constants.dart';
 import './la_service_deploy.dart';
 import './la_service_name.dart';
 import 'la_project.dart';
@@ -23,6 +22,7 @@ enum LAVariableSubcategory {
   ssl,
   pipelines,
   events,
+  dockerCompose,
 }
 
 extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
@@ -46,6 +46,8 @@ extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
         return 'Other keys';
       case LAVariableSubcategory.pipelines:
         return 'Pipelines configuration';
+      case LAVariableSubcategory.dockerCompose:
+        return 'Docker Compose variables';
     }
   }
 }
@@ -69,6 +71,7 @@ class LAVariableDesc {
     this.protected = false,
     this.onlyHub = false,
     this.allowEmpty = true,
+    this.isVisible,
   });
 
   String name;
@@ -82,6 +85,7 @@ class LAVariableDesc {
   String? help;
   LAServiceName? depends;
   Function? defValue;
+  bool Function(LAProject)? isVisible;
   bool advanced;
   bool enabled;
   bool inTunePage;
@@ -106,6 +110,7 @@ class LAVariableDesc {
           inTunePage == other.inTunePage &&
           protected == other.protected &&
           enabled == other.enabled &&
+          isVisible == other.isVisible &&
           onlyHub == other.onlyHub &&
           allowEmpty == other.allowEmpty;
 
@@ -123,6 +128,7 @@ class LAVariableDesc {
       inTunePage.hashCode ^
       protected.hashCode ^
       enabled.hashCode ^
+      isVisible.hashCode ^
       onlyHub.hashCode ^
       allowEmpty.hashCode;
 
@@ -145,7 +151,7 @@ class LAVariableDesc {
       regExp: LARegExp.projectNameRegexp,
       help: 'Glossary#map-area-name',
       error: 'Name of the map area invalid.',
-      hint: "For e.g.: 'Australia', 'Vermont', 'United Kingdom', ...",
+      hint: "For e.g.: 'Australia', 'Brazil', 'United Kingdom', ...",
       inTunePage: false,
     ),
     'biocache_query_context': LAVariableDesc(
@@ -510,7 +516,7 @@ class LAVariableDesc {
       defValue: (LAProject p) {
         final List<String> options = <String>[];
         for (final LAServiceDeploy sd in p.getServiceDeploysForSomeService(
-          pipelines,
+          LAServiceName.pipelines.toS(),
         )) {
           String? sId = sd.serverId;
           if (sId == null && sd.clusterId != null) {
@@ -541,6 +547,56 @@ class LAVariableDesc {
       service: LAServiceName.pipelines,
       defValue: (_) => false,
       type: LAVariableType.bool,
+    ),
+    'branding_source': LAVariableDesc(
+      name: 'Source for the branding',
+      nameInt: 'branding_source',
+      subcategory: LAVariableSubcategory.dockerCompose,
+      service: LAServiceName.docker_compose,
+      depends: LAServiceName.docker_compose,
+      regExp: LARegExp.anything,
+      defValue: (LAProject project) =>
+          '../${project.shortName.toLowerCase().replaceFirst('la ', '').replaceAll(' ', '-')}-branding',
+      hint:
+          'Can be a directory or a git address. By default ../<project-short-name>-branding/. If a git address is used, it will be cloned and built.',
+    ),
+    'use_la_site_certs': LAVariableDesc(
+      name: 'Use l-a.site certificates?',
+      nameInt: 'use_la_site_certs',
+      subcategory: LAVariableSubcategory.dockerCompose,
+      service: LAServiceName.docker_compose,
+      depends: LAServiceName.docker_compose,
+      defValue: (_) => false,
+      type: LAVariableType.bool,
+      help:
+          'https://github.com/AtlasOfLivingAustralia/documentation/wiki/Before-Start-Your-LA-Installation',
+      hint:
+          'Only useful for demos using a subdomain of l-a.site. Docker-compose will download and use SSL certificates automatically and auto-configure the portal with SSL.',
+    ),
+    'docker_mail_development_mode': LAVariableDesc(
+      name: 'Enable mail development mode?',
+      nameInt: 'docker_mail_development_mode',
+      subcategory: LAVariableSubcategory.dockerCompose,
+      service: LAServiceName.docker_compose,
+      depends: LAServiceName.docker_compose,
+      defValue: (_) => false,
+      type: LAVariableType.bool,
+      hint:
+          'Useful for test portals to monitor if emails are being sent correctly without using a real email server.',
+    ),
+    'docker_mail_development_url': LAVariableDesc(
+      name: 'Mail development URL',
+      nameInt: 'docker_mail_development_url',
+      subcategory: LAVariableSubcategory.dockerCompose,
+      service: LAServiceName.docker_compose,
+      depends: LAServiceName.docker_compose,
+      defValue: (_) => 'mailhog.l-a.site',
+      regExp: LARegExp.domainRegexp,
+      isVisible: (LAProject project) =>
+          project.getVariableValue('docker_mail_development_mode') as bool? ??
+          false,
+      hint:
+          'URL for the test mail server (e.g., mailhog.l-a.site) where you can monitor sent emails.',
     ),
   };
 
