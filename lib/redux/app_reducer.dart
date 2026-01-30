@@ -33,6 +33,9 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
     _onFetchGeneratorReleasesFailed,
   ),
   TypedReducer<AppState, Loading>(_loading),
+  TypedReducer<AppState, OnRegenerateInventorySuccess>(
+    _onRegenerateInventorySuccess,
+  ),
   TypedReducer<AppState, CreateProject>(_createProject),
   TypedReducer<AppState, ImportProject>(_importProject),
   TypedReducer<AppState, AddTemplateProjects>(_addTemplateProjects),
@@ -143,6 +146,13 @@ AppState _onFetchGeneratorReleasesFailed(
 
 AppState _loading(AppState state, Loading action) {
   return state.copyWith(loading: true);
+}
+
+AppState _onRegenerateInventorySuccess(
+  AppState state,
+  OnRegenerateInventorySuccess action,
+) {
+  return state.copyWith(loading: false);
 }
 
 AppState _createProject(AppState state, CreateProject action) {

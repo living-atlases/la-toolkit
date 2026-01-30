@@ -145,6 +145,16 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             );
             BeamerCond.of(context, PortalStatusLocation());
           },
+          onRegenerateInventory: (LAProject project) {
+            store.dispatch(
+              RegenerateInventory(
+                project,
+                onSuccess: () => _showRegenerateInventoryStatus(context, true),
+                onError: (String info) =>
+                    _showRegenerateInventoryStatus(context, false, info: info),
+              ),
+            );
+          },
           onPipelinesTasks: (LAProject project) {
             BeamerCond.of(context, PipelinesLocation());
           },
@@ -265,10 +275,18 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             action: () => vm.onDeployBranding(project),
           ),
           Tool(
+            icon: const Icon(Icons.inventory),
+            title: 'Generate Inventories',
+            tooltip: 'Regenerate your inventory files without downloading them',
+            enabled: isCreatedAndAccessibleOrInProduction,
+            grid: 6,
+            action: () => vm.onRegenerateInventory(project),
+          ),
+          Tool(
             icon: Icon(MdiIcons.rocketLaunch),
             title: 'Deploy',
             tooltip: 'Install/update your LA $Portal or some services',
-            grid: 12,
+            grid: 6,
             enabled: isCreatedAndAccessibleOrInProduction,
             action: () => vm.onDeployProject(project),
           ),
@@ -545,6 +563,46 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
     ).show();
   }
 
+  void _showRegenerateInventoryStatus(
+    BuildContext context,
+    bool success, {
+    String? info,
+  }) {
+    Alert(
+      context: context,
+      closeIcon: const Icon(Icons.close),
+      image: Icon(
+        success ? MdiIcons.checkboxMarkedCircleOutline : Icons.error_outline,
+        size: 60,
+        color: success ? LAColorTheme.up : LAColorTheme.down,
+      ),
+      title: 'Generate Inventories',
+      content: Column(
+        children: <Widget>[
+          const SizedBox(height: 20),
+          Text(
+            success
+                ? 'Your inventories have been successfully generated!'
+                : 'Uuppps! Something went wrong generating your inventories: $info',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+          ),
+        ],
+      ),
+      buttons: <DialogButton>[
+        DialogButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text(
+            'OK',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+      ],
+    ).show();
+  }
+
   void onFinish(BuildContext context, bool withError) {
     if (context.mounted) {
       context.loaderOverlay.hide();
@@ -632,6 +690,7 @@ class _ProjectPageViewModel {
     required this.onPortalStatus,
     required this.onDataCompare,
     required this.onCreateHub,
+    required this.onRegenerateInventory,
   });
 
   final LAProject project;
@@ -654,6 +713,7 @@ class _ProjectPageViewModel {
   final void Function(LAProject project) onPipelinesTasks;
   final void Function(LAProject project) onDataCompare;
   final void Function(LAProject project) onCreateHub;
+  final void Function(LAProject project) onRegenerateInventory;
   final void Function(LAProject project, LAProject hub) onOpenHub;
 
   @override

@@ -307,6 +307,16 @@ class GenerateInvProject extends AppActions {
   LAProject project;
 }
 
+class RegenerateInventory extends AppActions {
+  RegenerateInventory(this.project, {this.onSuccess, this.onError});
+
+  LAProject project;
+  VoidCallback? onSuccess;
+  Function(String)? onError;
+}
+
+class OnRegenerateInventorySuccess extends AppActions {}
+
 class EditService extends AppActions {
   EditService(this.service);
 
