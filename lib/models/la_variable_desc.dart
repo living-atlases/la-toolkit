@@ -1,4 +1,6 @@
+import 'package:collection/collection.dart';
 import '../utils/regexp.dart';
+import './la_cluster.dart';
 import './la_server.dart';
 import './la_service_constants.dart';
 import './la_service_deploy.dart';
@@ -510,9 +512,22 @@ class LAVariableDesc {
         for (final LAServiceDeploy sd in p.getServiceDeploysForSomeService(
           pipelines,
         )) {
-          options.add(
-            p.servers.firstWhere((LAServer s) => s.id == sd.serverId).name,
-          );
+          String? sId = sd.serverId;
+          if (sId == null && sd.clusterId != null) {
+            final LACluster? cluster = p.clusters.firstWhereOrNull(
+              (LACluster c) => c.id == sd.clusterId,
+            );
+            sId = cluster?.serverId;
+          }
+
+          if (sId != null) {
+            final LAServer? server = p.servers.firstWhereOrNull(
+              (LAServer s) => s.id == sId,
+            );
+            if (server != null && !options.contains(server.name)) {
+              options.add(server.name);
+            }
+          }
         }
         return options;
       },

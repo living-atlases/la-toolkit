@@ -1900,10 +1900,11 @@ check results length: ${checkResults.length}''';
     final String? version =
         (alaInstallIsNotTagged(alaInstallRelease!)
                 ? DefaultVersions.map.entries.first
-                : DefaultVersions.map.entries.firstWhere(
-                    (MapEntry<VersionConstraint, Map<String, String>> e) =>
-                        e.key.allows(v(alaInstallRelease!)),
-                  ))
+                : DefaultVersions.map.entries.firstWhereOrNull(
+                        (MapEntry<VersionConstraint, Map<String, String>> e) =>
+                            e.key.allows(v(alaInstallRelease!)),
+                      ) ??
+                      DefaultVersions.map.entries.first)
             .value[nameInt];
     return version ?? '';
   }
@@ -1911,16 +1912,10 @@ check results length: ${checkResults.length}''';
   Map<String, dynamic> getServiceDetailsForVersionCheck() {
     final Map<String, dynamic> versions = <String, dynamic>{};
     for (final LAServiceDeploy sd in serviceDeploys) {
-      final LAService service = services.firstWhere(
+      final LAService? service = services.firstWhereOrNull(
         (LAService s) => s.id == sd.serviceId,
-        orElse: () {
-          final String msg = 'Missing serviceId ${sd.serviceId}';
-          if (kDebugMode) {
-            debugPrint(msg);
-          }
-          throw Exception(msg);
-        },
       );
+      if (service == null) continue;
       final String serviceName = service.nameInt;
       final LAServiceDesc desc = LAServiceDesc.get(serviceName);
       if (!desc.withoutUrl) {
@@ -1944,6 +1939,14 @@ check results length: ${checkResults.length}''';
   }
 
   bool get isPipelinesInUse => !isHub && getService(pipelines).use;
+
+  bool get isPipelinesOnVM =>
+      serverServices.values.any((services) => services.contains(pipelines));
+
+  bool get isPipelinesOnlyInClusters {
+    if (!isPipelinesInUse) return false;
+    return !isPipelinesOnVM;
+  }
 
   bool get isDockerEnabled =>
       !isHub && (getService(dockerSwarm).use || getService(dockerCompose).use);

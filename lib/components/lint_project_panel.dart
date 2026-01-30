@@ -223,6 +223,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               ),
             if (basicDefined &&
                 project.isPipelinesInUse &&
+                !project.isPipelinesOnlyInClusters &&
                 project.getPipelinesMaster() == null)
               AlertCard(
                 message: 'You should select a master server for pipelines',
@@ -231,6 +232,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               ),
             if (basicDefined &&
                 project.isPipelinesInUse &&
+                !project.isPipelinesOnlyInClusters &&
                 project.getHostnames(pipelines).length < 3)
               AlertCard(
                 message:
@@ -240,6 +242,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               ),
             if (basicDefined &&
                 project.isPipelinesInUse &&
+                !project.isPipelinesOnlyInClusters &&
                 project.getService(solrcloud).use &&
                 project.getHostnames(solrcloud).isNotEmpty &&
                 project.getHostnames(solrcloud).length.isEven)
@@ -251,6 +254,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               ),
             if (basicDefined &&
                 project.isPipelinesInUse &&
+                !project.isPipelinesOnlyInClusters &&
                 project.getService(zookeeper).use &&
                 project.getHostnames(zookeeper).isNotEmpty &&
                 project.getHostnames(zookeeper).length.isEven)
@@ -261,6 +265,7 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 action: () => BeamerCond.of(context, LAProjectEditLocation()),
               ),
             if (project.isPipelinesInUse &&
+                !project.isPipelinesOnlyInClusters &&
                 project.getHostnames(pipelines).isNotEmpty &&
                 project.getHostnames(pipelines).join(' ').contains('_'))
               AlertCard(

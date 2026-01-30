@@ -180,7 +180,10 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                             .getService(laVar.value.depends!.toS())
                             .use)) && */
                   ((!project.advancedTune && !laVar.value.advanced) ||
-                      project.advancedTune),
+                      project.advancedTune) &&
+                  // Hide pipelines config if only in Docker Compose
+                  (laVar.value.depends != LAServiceName.pipelines ||
+                      project.isPipelinesOnVM),
             )
             .forEach((MapEntry<String, LAVariableDesc> entry) {
               if (entry.value.service != lastCategory) {
@@ -569,18 +572,18 @@ class MessageItem implements ListItem {
     final Object? initialValue = project.getVariableValue(varDesc.nameInt);
     final LAVariable laVariable = project.getVariable(varDesc.nameInt);
     final bool deployed = laVariable.status == LAVariableStatus.deployed;
-    // ignore: prefer_typing_uninitialized_variables
     dynamic defValue;
     final dynamic defValueFunc = varDesc.defValue;
     if (defValueFunc != null) {
-      // ignore: avoid_dynamic_calls
-      defValue = defValueFunc(project);
+      try {
+        // ignore: avoid_dynamic_calls
+        defValue = defValueFunc(project);
+      } catch (e) {
+        debugPrint('Error calling defValue for ${varDesc.nameInt}: $e');
+      }
     }
 
-    final dynamic defValueResult = defValueFunc != null
-        // ignore: avoid_dynamic_calls
-        ? defValueFunc(project)
-        : null;
+    final dynamic defValueResult = defValue;
     final List<String>? selectValues = defValueResult != null
         ? defValueResult is List<String>
               ? defValueResult
