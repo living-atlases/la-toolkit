@@ -164,7 +164,8 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               const AlertCard(
                 message: 'All servers should have configured their SSH keys',
               ),
-            if (!project.servicesInDifferentServers(collectory, alaHub))
+            if (!project.servicesInDifferentServers(collectory, alaHub) &&
+                !project.hasAnyServerWithDockerCompose())
               const AlertCard(
                 message:
                     'The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled',
@@ -188,14 +189,16 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               ),
             if (!project.isHub &&
                 project.getService(biocacheBackend).use &&
-                !project.getService(solr).use)
+                !project.getService(solr).use &&
+                !project.hasAnyServerWithDockerCompose())
               const AlertCard(
                 message:
                     'You should use solr standalone for indexing biocache-store',
               ),
             if (!project.isHub &&
                 project.getService(bie).use &&
-                !project.getService(solr).use)
+                !project.getService(solr).use &&
+                !project.hasAnyServerWithDockerCompose())
               const AlertCard(
                 message: 'You should use solr standalone for indexing species',
               ),
