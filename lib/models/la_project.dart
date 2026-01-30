@@ -889,6 +889,16 @@ check results length: ${checkResults.length}''';
     HashSet<String> servicesToDel = HashSet<String>();
     servicesToDel.add(serviceName);
     servicesToDel = _addSubServices(servicesToDel);
+
+    // Also remove any service that lists this service as parent
+    final List<LAServiceDesc> allServices = LAServiceDesc.list(false);
+    for (final String sName in servicesToDel.toList()) {
+      servicesToDel.addAll(
+        allServices
+            .where((LAServiceDesc s) => s.parentService?.toS() == sName)
+            .map((LAServiceDesc s) => s.nameInt),
+      );
+    }
     if (isServer && serverServices[sIdOrCid] != null) {
       serverServices[sIdOrCid]?.removeWhere(
         (String c) => servicesToDel.contains(c),
