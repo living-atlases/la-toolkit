@@ -30,6 +30,7 @@ class ServerServicesEditCard extends StatefulWidget {
     required this.onRename,
     required this.onEditing,
     required this.onToggleExpand,
+    required this.loading,
   });
 
   final LAServer? server;
@@ -46,12 +47,23 @@ class ServerServicesEditCard extends StatefulWidget {
   final Function() onEditing;
   final VoidCallback onToggleExpand;
   final DeploymentType type;
+  final bool loading;
 
   @override
   State<ServerServicesEditCard> createState() => _ServerServicesEditCardState();
 }
 
 class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
+  String? _loadingService;
+
+  @override
+  void didUpdateWidget(ServerServicesEditCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.loading && !widget.loading) {
+      _loadingService = null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isAServer = widget.server != null;
@@ -70,6 +82,7 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
             isSelected: isInThisServer,
             onSelected: () {
               setState(() {
+                _loadingService = serviceDesc.nameInt;
                 widget.onAssigned(
                   widget.currentServerServices..add(serviceDesc.nameInt),
                 );
@@ -77,12 +90,14 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
             },
             onDeleted: () {
               setState(() {
+                _loadingService = serviceDesc.nameInt;
                 widget.onUnassigned(serviceDesc.nameInt);
                 widget.onAssigned(
                   widget.currentServerServices..remove(serviceDesc.nameInt),
                 );
               });
             },
+            isLoading: widget.loading && _loadingService == serviceDesc.nameInt,
           ),
         );
       }
@@ -294,10 +309,12 @@ class _ServiceChip extends StatelessWidget {
     required this.onDeleted,
     this.isImplicit = false,
     this.tooltip,
+    this.isLoading = false,
   });
 
   final bool isSelected;
   final bool isImplicit;
+  final bool isLoading;
   final String? tooltip;
   final LAServiceDesc service;
   final VoidCallback onSelected;
@@ -308,7 +325,16 @@ class _ServiceChip extends StatelessWidget {
     return InputChip(
       padding: const EdgeInsets.all(2.0),
       // avatar: isSelected ? null : Icon(icon),
-      avatar: Icon(service.icon),
+      avatar: isLoading
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.grey,
+              ),
+            )
+          : Icon(service.icon),
       showCheckmark: false,
       label: Text(
         service.nameInt == dockerSwarm

@@ -27,6 +27,7 @@ class ServersCardList extends StatelessWidget {
         return ServersCardListViewModel(
           currentProject: store.state.currentProject,
           laReleases: store.state.laReleases,
+          loading: store.state.loading,
           onSaveCurrentProject: (LAProject project) {
             store.dispatch(SaveCurrentProject(project));
           },
@@ -146,6 +147,7 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                   _expanded = !_expanded;
                 });
               },
+              loading: widget.vm.loading,
             )
           : ServerServicesViewCard(
               key: const ValueKey<String>('collapsed'),
@@ -256,9 +258,11 @@ class ServersCardListViewModel {
     required this.currentProject,
     required this.onSaveCurrentProject,
     required this.laReleases,
+    required this.loading,
   });
 
   final LAProject currentProject;
+  final bool loading;
   final void Function(LAProject project) onSaveCurrentProject;
   final Map<String, LAReleases> laReleases;
 
@@ -267,8 +271,9 @@ class ServersCardListViewModel {
       identical(this, other) ||
       other is ServersCardListViewModel &&
           runtimeType == other.runtimeType &&
-          currentProject == other.currentProject;
+          currentProject == other.currentProject &&
+          loading == other.loading;
 
   @override
-  int get hashCode => currentProject.hashCode;
+  int get hashCode => currentProject.hashCode ^ loading.hashCode;
 }
