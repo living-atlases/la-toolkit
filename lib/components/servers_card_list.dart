@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 
+import '../la_theme.dart';
 import '../models/app_state.dart';
 import '../models/deployment_type.dart';
 import '../models/la_cluster.dart';
@@ -202,22 +204,33 @@ class ServerServicesViewCard extends StatelessWidget {
               ListTile(
                 key: ValueKey<String>('${name}basic-tile'),
                 contentPadding: EdgeInsets.zero,
-                title: isDockerSwarm
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(name),
-                          const Text(
-                            'Deprecated',
-                            style: TextStyle(
-                              color: Colors.orange,
-                              fontSize: 12,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ],
-                      )
-                    : Text(name),
+                title: Row(
+                  children: [
+                    Icon(
+                      type == DeploymentType.vm ? Icons.dns : MdiIcons.docker,
+                      color: LAColorTheme.inactive,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: isDockerSwarm
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(name),
+                                const Text(
+                                  'Deprecated',
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontSize: 12,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Text(name),
+                    ),
+                  ],
+                ),
                 subtitle: Text(
                   LAService.servicesForHumans(
                     project.getServerServicesFull(id: id, type: type),
