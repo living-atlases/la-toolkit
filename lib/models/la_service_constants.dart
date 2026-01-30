@@ -54,6 +54,11 @@ final String gatus = LAServiceName.gatus.toS();
 final String portainer = LAServiceName.portainer.toS();
 final String cassandra = LAServiceName.cassandra.toS();
 
+const String mysql = 'mysql';
+const String postgres = 'postgres';
+const String mongo = 'mongo';
+const String elasticsearch = 'elasticsearch';
+
 const List<String> laTools = <String>[alaInstall, generator, toolkit];
 const List<String> laToolsNoAlaInstall = <String>[generator, toolkit];
 List<String> servicesWithoutUrlButShow = <String>[

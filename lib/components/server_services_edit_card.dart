@@ -3,6 +3,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../la_theme.dart';
 import '../models/deployment_type.dart';
+import '../models/docker_compose_dependencies.dart';
 import '../models/la_cluster.dart';
 import '../models/la_server.dart';
 import '../models/la_service.dart';
@@ -53,6 +54,7 @@ class ServerServicesEditCard extends StatefulWidget {
 class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
   @override
   Widget build(BuildContext context) {
+    final bool isAServer = widget.server != null;
     final List<Widget> chips = <Widget>[];
     for (final LAService service in widget.allServices) {
       final LAServiceDesc serviceDesc = LAServiceDesc.get(service.nameInt);
@@ -85,7 +87,56 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
         );
       }
     }
-    final bool isAServer = widget.server != null;
+
+    // Add implicit services (DBs etc) for Docker Compose
+    if (!isAServer && widget.type == DeploymentType.dockerCompose) {
+      final Set<String> implicitServices =
+          DockerComposeDependencies.getImplicitServices(
+            widget.currentServerServices,
+          );
+      for (final String implicitService in implicitServices) {
+        // Only add if not already selected explicitly (avoid duplicates)
+        if (!widget.currentServerServices.contains(implicitService)) {
+          // Create a custom descriptor for implicit services to show proper icon
+          // without adding them to global LAServiceDesc map
+          IconData icon = MdiIcons.database;
+          if (implicitService == elasticsearch) {
+            icon = MdiIcons.databaseSearch;
+          }
+
+          final LAServiceDesc serviceDesc = LAServiceDesc(
+            name: implicitService,
+            nameInt: implicitService,
+            group: implicitService,
+            desc: 'Implicit $implicitService service',
+            optional: true,
+            path: '',
+            icon: icon,
+          );
+
+          final List<String> dependentServices =
+              DockerComposeDependencies.getDependentServices(
+                implicitService,
+                widget.currentServerServices,
+              );
+          final String tooltip = dependentServices.isNotEmpty
+              ? 'Used by ${dependentServices.join(", ")}'
+              : 'Implicit dependency';
+
+          chips.add(
+            _ServiceChip(
+              service: serviceDesc,
+              isSelected: true,
+              isImplicit: true,
+              tooltip: tooltip,
+              onSelected: () {}, // Read-only
+              onDeleted: () {}, // Cannot be deleted directly
+            ),
+          );
+        }
+      }
+    }
+    // final bool isAServer = widget.server != null; // Already defined above
     final bool isDockerSwarm =
         !isAServer && widget.type == DeploymentType.dockerSwarm;
     final ShapeBorder cardShape = widget.type == DeploymentType.vm
@@ -241,9 +292,13 @@ class _ServiceChip extends StatelessWidget {
     required this.isSelected,
     required this.onSelected,
     required this.onDeleted,
+    this.isImplicit = false,
+    this.tooltip,
   });
 
   final bool isSelected;
+  final bool isImplicit;
+  final String? tooltip;
   final LAServiceDesc service;
   final VoidCallback onSelected;
   final VoidCallback onDeleted;
@@ -268,8 +323,9 @@ class _ServiceChip extends StatelessWidget {
       ),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       selected: isSelected,
-      selectedColor: LAColorTheme.laPalette,
+      selectedColor: isImplicit ? Colors.grey : LAColorTheme.laPalette,
       onSelected: (bool selected) => selected ? onSelected() : onDeleted(),
+      tooltip: tooltip,
       // Very slow:
       //   tooltip: service.alias != null ? 'aka ${service.alias!}' : '',
       // Cannot use with onSelected
