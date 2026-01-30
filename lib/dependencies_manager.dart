@@ -54,6 +54,7 @@ class DependenciesManager {
         if (version != 'custom' &&
             version != 'upstream' &&
             version != 'la-develop' &&
+            version != 'null' &&
             version.isNotEmpty) {
           if (Dependencies.map[sw] != null) {
             Version? versionP;
@@ -96,6 +97,7 @@ class DependenciesManager {
                     if (versionOfDep != 'custom' &&
                         versionOfDep != 'upstream' &&
                         versionOfDep != 'la-develop' &&
+                        versionOfDep != 'null' &&
                         versionOfDep.isNotEmpty) {
                       Version? versionOfDepP;
                       try {
