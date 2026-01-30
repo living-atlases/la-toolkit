@@ -183,7 +183,10 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                       project.advancedTune) &&
                   // Hide pipelines config if only in Docker Compose
                   (laVar.value.depends != LAServiceName.pipelines ||
-                      project.isPipelinesOnVM),
+                      project.isPipelinesOnVM) &&
+                  // Handle conditional visibility
+                  (laVar.value.isVisible == null ||
+                      laVar.value.isVisible!(project)),
             )
             .forEach((MapEntry<String, LAVariableDesc> entry) {
               if (entry.value.service != lastCategory) {
@@ -636,7 +639,17 @@ class MessageItem implements ListItem {
   }
 
   @override
-  Widget buildSubtitle(BuildContext context) => const Text('');
+  Widget buildSubtitle(BuildContext context) => varDesc.hint != null
+      ? Padding(
+          padding: const EdgeInsets.only(bottom: 15, left: 15, right: 15),
+          child: Text(
+            varDesc.hint!,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall!.copyWith(color: Theme.of(context).hintColor),
+          ),
+        )
+      : const SizedBox.shrink();
 }
 
 @immutable
