@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../la_theme.dart';
 import '../models/deployment_type.dart';
@@ -65,14 +66,20 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
           _ServiceChip(
             service: serviceDesc,
             isSelected: isInThisServer,
-            onSelected: () => widget.onAssigned(
-              widget.currentServerServices..add(serviceDesc.nameInt),
-            ),
+            onSelected: () {
+              setState(() {
+                widget.onAssigned(
+                  widget.currentServerServices..add(serviceDesc.nameInt),
+                );
+              });
+            },
             onDeleted: () {
-              widget.onUnassigned(serviceDesc.nameInt);
-              widget.onAssigned(
-                widget.currentServerServices..remove(serviceDesc.nameInt),
-              );
+              setState(() {
+                widget.onUnassigned(serviceDesc.nameInt);
+                widget.onAssigned(
+                  widget.currentServerServices..remove(serviceDesc.nameInt),
+                );
+              });
             },
           ),
         );
@@ -102,36 +109,49 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                 children: <Widget>[
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: isDockerSwarm
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                widget.cluster?.name ?? 'Docker swarm cluster',
-                                style: const TextStyle(
-                                  color: LAColorTheme.inactive,
-                                  fontSize: 20,
+                    title: Row(
+                      children: [
+                        Icon(
+                          isAServer ? Icons.dns : MdiIcons.docker,
+                          color: LAColorTheme.inactive,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: isDockerSwarm
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      widget.cluster?.name ??
+                                          'Docker swarm cluster',
+                                      style: const TextStyle(
+                                        color: LAColorTheme.inactive,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'deprecated',
+                                      style: TextStyle(
+                                        color: Colors.orange,
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Text(
+                                  isAServer
+                                      ? widget.server!.name
+                                      : widget.cluster?.name ??
+                                            'Docker compose',
+                                  style: const TextStyle(
+                                    color: LAColorTheme.inactive,
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
-                              const Text(
-                                'deprecated',
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 12,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Text(
-                            isAServer
-                                ? widget.server!.name
-                                : widget.cluster?.name ?? 'Docker compose',
-                            style: const TextStyle(
-                              color: LAColorTheme.inactive,
-                              fontSize: 20,
-                            ),
-                          ),
+                        ),
+                      ],
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
