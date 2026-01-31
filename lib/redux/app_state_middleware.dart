@@ -373,6 +373,11 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         action.openProjectView,
       );
     }
+    if (action is SaveCurrentProject) {
+      store.dispatch(Loading());
+      final LAProject project = action.project;
+      await _updateProject(project, store, true, false);
+    }
     if (action is ProjectsLoad) {
       store.dispatch(Loading());
       Api.getConf().then((List<dynamic> projects) {
