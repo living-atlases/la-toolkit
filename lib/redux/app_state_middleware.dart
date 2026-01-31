@@ -902,6 +902,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           ShowSnackBar(AppSnackBarMessage.ok('Failed to update project')),
         );
       }
+      store.dispatch(OnUpdateProjectFailed());
     }
   }
 

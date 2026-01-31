@@ -329,6 +329,14 @@ class SaveCurrentProject extends AppActions {
   LAProject project;
 }
 
+class UpdateProjectLocal extends AppActions {
+  UpdateProjectLocal(this.project);
+
+  LAProject project;
+}
+
+class OnUpdateProjectFailed extends AppActions {}
+
 typedef VoidCallback = void Function();
 typedef ErrorCallback = void Function(int error);
 

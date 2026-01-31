@@ -13,6 +13,7 @@ import '../models/la_server.dart';
 import '../models/la_service.dart';
 import '../redux/actions.dart';
 import '../utils/card_constants.dart';
+import '../utils/debounce.dart';
 import 'server_services_edit_card.dart';
 
 class ServersCardList extends StatelessWidget {
@@ -30,6 +31,9 @@ class ServersCardList extends StatelessWidget {
           loading: store.state.loading,
           onSaveCurrentProject: (LAProject project) {
             store.dispatch(SaveCurrentProject(project));
+          },
+          onUpdateProjectLocal: (LAProject project) {
+            store.dispatch(UpdateProjectLocal(project));
           },
         );
       },
@@ -80,6 +84,7 @@ class ServerServicesHoverCard extends StatefulWidget {
 }
 
 class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
+  final Debouncer _debouncer = Debouncer(milliseconds: 2000);
   bool _expanded = false;
 
   @override
@@ -120,26 +125,41 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
                   null,
                   widget.vm.laReleases,
                 );
-                widget.vm.onSaveCurrentProject(widget.project);
+                widget.vm.onUpdateProjectLocal(widget.project);
+                _debouncer.run(
+                  () => widget.vm.onSaveCurrentProject(widget.project),
+                );
               },
               onUnassigned: (String service) {
                 widget.project.unAssignByType(sId, type, service);
-                widget.vm.onSaveCurrentProject(widget.project);
+                widget.vm.onUpdateProjectLocal(widget.project);
+                _debouncer.run(
+                  () => widget.vm.onSaveCurrentProject(widget.project),
+                );
               },
               onRename: (String newName) {
                 if (isAServer) {
                   widget.server!.name = newName;
                   widget.project.upsertServer(widget.server!);
-                  widget.vm.onSaveCurrentProject(widget.project);
+                  widget.vm.onUpdateProjectLocal(widget.project);
+                  _debouncer.run(
+                    () => widget.vm.onSaveCurrentProject(widget.project),
+                  );
                 }
               },
               onDeleted: (LAServer server) {
                 widget.project.delete(server);
-                widget.vm.onSaveCurrentProject(widget.project);
+                widget.vm.onUpdateProjectLocal(widget.project);
+                _debouncer.run(
+                  () => widget.vm.onSaveCurrentProject(widget.project),
+                );
               },
               onDeletedCluster: (LACluster cluster) {
                 widget.project.deleteCluster(cluster);
-                widget.vm.onSaveCurrentProject(widget.project);
+                widget.vm.onUpdateProjectLocal(widget.project);
+                _debouncer.run(
+                  () => widget.vm.onSaveCurrentProject(widget.project),
+                );
               },
               onEditing: () {},
               onToggleExpand: () {
@@ -257,6 +277,7 @@ class ServersCardListViewModel {
   const ServersCardListViewModel({
     required this.currentProject,
     required this.onSaveCurrentProject,
+    required this.onUpdateProjectLocal,
     required this.laReleases,
     required this.loading,
   });
@@ -264,6 +285,7 @@ class ServersCardListViewModel {
   final LAProject currentProject;
   final bool loading;
   final void Function(LAProject project) onSaveCurrentProject;
+  final void Function(LAProject project) onUpdateProjectLocal;
   final Map<String, LAReleases> laReleases;
 
   @override

@@ -49,6 +49,8 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, OpenProjectTools>(_openProjectTools),
   TypedReducer<AppState, EditService>(_editService),
   TypedReducer<AppState, SaveCurrentProject>(_saveCurrentProject),
+  TypedReducer<AppState, UpdateProjectLocal>(_updateProjectLocal),
+  TypedReducer<AppState, OnUpdateProjectFailed>(_onUpdateProjectFailed),
   TypedReducer<AppState, OnDemoAddProjects>(_onDemoAddProjects),
   TypedReducer<AppState, OnProjectsAdded>(_onProjectsAdded),
   TypedReducer<AppState, OnProjectUpdated>(_onProjectUpdated),
@@ -252,6 +254,18 @@ AppState _generateInvProject(AppState state, GenerateInvProject action) {
 
 AppState _saveCurrentProject(AppState state, SaveCurrentProject action) {
   return state.copyWith(currentProject: action.project, loading: true);
+}
+
+AppState _updateProjectLocal(AppState state, UpdateProjectLocal action) {
+  // Use copyWith to force a new instance, triggering ViewModel updates
+  return state.copyWith(
+    currentProject: action.project.copyWith(),
+    loading: false,
+  );
+}
+
+AppState _onUpdateProjectFailed(AppState state, OnUpdateProjectFailed action) {
+  return state.copyWith(loading: false);
 }
 
 AppState _onDemoAddProjects(AppState state, OnDemoAddProjects action) {
