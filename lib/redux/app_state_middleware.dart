@@ -303,25 +303,34 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is RegenerateInventory) {
       store.dispatch(Loading());
-      Api.regenerateInv(
-        project: action.project,
-        onError: (String info) {
-          store.dispatch(OnRegenerateInventorySuccess());
-          if (action.onError != null) {
-            action.onError!(info);
-          } else {
-            store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(info)));
-          }
-        },
-      ).then((_) {
+      Api.generatorSelect(action.project.generatorRelease!, (String error) {
         store.dispatch(OnRegenerateInventorySuccess());
-        if (action.onSuccess != null) {
-          action.onSuccess!();
+        if (action.onError != null) {
+          action.onError!(error);
         } else {
-          store.dispatch(
-            ShowSnackBar(AppSnackBarMessage.ok('Inventories generated!')),
-          );
+          store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(error)));
         }
+      }).then((_) {
+        Api.regenerateInv(
+          project: action.project,
+          onError: (String info) {
+            store.dispatch(OnRegenerateInventorySuccess());
+            if (action.onError != null) {
+              action.onError!(info);
+            } else {
+              store.dispatch(ShowSnackBar(AppSnackBarMessage.ok(info)));
+            }
+          },
+        ).then((_) {
+          store.dispatch(OnRegenerateInventorySuccess());
+          if (action.onSuccess != null) {
+            action.onSuccess!();
+          } else {
+            store.dispatch(
+              ShowSnackBar(AppSnackBarMessage.ok('Inventories generated!')),
+            );
+          }
+        });
       });
     }
     if (action is DelProject) {
