@@ -284,7 +284,7 @@ class Api {
       dotenv.env['BACKEND']!,
       '/api/v1/gen/$id/false',
     );
-    http
+    await http
         .get(url)
         .then(
           (http.Response response) => response.statusCode != 200
