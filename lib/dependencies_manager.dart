@@ -254,7 +254,7 @@ class DependenciesManager {
           log('Checking $swToCheck in $sw');
         }
         final String? version = selectedVersions[sw];
-        if (version != null) {
+        if (version != null && version != 'null') {
           final Map<VersionConstraint, Map<String, VersionConstraint>>? deps =
               Dependencies.map[sw];
           if (version != 'custom' &&
