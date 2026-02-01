@@ -53,7 +53,7 @@ Future<void> main() async {
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               const Icon(Icons.error_outline, color: Colors.red, size: 48),
               const SizedBox(height: 10),
               Text(
@@ -64,7 +64,7 @@ Future<void> main() async {
                 ),
                 textAlign: TextAlign.center,
               ),
-              if (kDebugMode && details.stack != null) ...[
+              if (kDebugMode && details.stack != null) ...<Widget>[
                 const SizedBox(height: 10),
                 Text(
                   details.stack

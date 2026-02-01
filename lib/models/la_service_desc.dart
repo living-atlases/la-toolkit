@@ -946,9 +946,13 @@ class LAServiceDesc {
       return false;
     }
 
-    if (!deps.containsKey(nameInt)) return compatible;
+    if (!deps.containsKey(nameInt)) {
+      return compatible;
+    }
     for (final BasicService service in deps[nameInt]!.serviceDepends) {
-      if (!deps.containsKey(otherService.nameInt)) continue;
+      if (!deps.containsKey(otherService.nameInt)) {
+        continue;
+      }
       for (final BasicService otherService
           in deps[otherService.nameInt]!.serviceDepends) {
         compatible = compatible && service.isCompatible(otherService);

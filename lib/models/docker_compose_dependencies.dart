@@ -1,33 +1,33 @@
 import 'la_service_constants.dart';
 
 class DockerComposeDependencies {
-  static final Map<String, List<String>> _serviceDependencies = {
+  static final Map<String, List<String>> _serviceDependencies = <String, List<String>>{
     // MySQL dependencies
-    cas: [mysql],
-    collectory: [mysql],
-    speciesLists: [mysql],
-    logger: [mysql],
-    alerts: [mysql],
+    cas: <String>[mysql],
+    collectory: <String>[mysql],
+    speciesLists: <String>[mysql],
+    logger: <String>[mysql],
+    alerts: <String>[mysql],
 
     // Postgres dependencies
-    spatial: [postgres],
-    images: [postgres, elasticsearch],
-    doi: [postgres, elasticsearch],
-    dataQuality: [postgres],
+    spatial: <String>[postgres],
+    images: <String>[postgres, elasticsearch],
+    doi: <String>[postgres, elasticsearch],
+    dataQuality: <String>[postgres],
 
     // Mongo dependencies
     // cas is already listed above for mysql, we need to handle multi-values carefully in the getter
-    ecodata: [mongo, elasticsearch],
+    ecodata: <String>[mongo, elasticsearch],
 
     // Elasticsearch dependencies - handled in the lists above
-    events: [elasticsearch],
+    events: <String>[elasticsearch],
   };
 
   /// Returns a set of implicit services required by the given list of services
   static Set<String> getImplicitServices(List<String> currentServices) {
-    final Set<String> implicitServices = {};
+    final Set<String> implicitServices = <String>{};
 
-    for (final service in currentServices) {
+    for (final String service in currentServices) {
       // Special handling for CAS which needs both MySQL and Mongo
       if (service == cas) {
         implicitServices.add(mysql);
@@ -45,9 +45,9 @@ class DockerComposeDependencies {
     String dbService,
     List<String> currentServices,
   ) {
-    final List<String> dependentServices = [];
+    final List<String> dependentServices = <String>[];
 
-    for (final service in currentServices) {
+    for (final String service in currentServices) {
       if (service == cas && (dbService == mysql || dbService == mongo)) {
         dependentServices.add(service);
       } else if (_serviceDependencies.containsKey(service)) {

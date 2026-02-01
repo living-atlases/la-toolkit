@@ -1162,7 +1162,7 @@ check results length: ${checkResults.length}''';
 
     // 3. Final cleanup of the cluster itself (safety check if not already removed by unAssignByType)
     clusterServices.remove(clusterToDelete.id);
-    clusters.removeWhere((c) => c.id == clusterToDelete.id);
+    clusters.removeWhere((LACluster c) => c.id == clusterToDelete.id);
 
     // Clean up any inconsistent service deploys
     serviceDeploys.removeWhere(
@@ -1497,9 +1497,7 @@ check results length: ${checkResults.length}''';
 
     conf['LA_software_versions'] = swVersionsList;
 
-    for (final String varName in LAVariableDesc.map.keys) {
-      getVariableValue(varName);
-    }
+    LAVariableDesc.map.keys.forEach(getVariableValue);
 
     for (final LAVariable variable in variables) {
       conf['${LAVariable.varInvPrefix}${variable.nameInt}'] = variable.value;
@@ -1965,7 +1963,9 @@ check results length: ${checkResults.length}''';
       final LAService? service = services.firstWhereOrNull(
         (LAService s) => s.id == sd.serviceId,
       );
-      if (service == null) continue;
+      if (service == null) {
+        continue;
+      }
       final String serviceName = service.nameInt;
       final LAServiceDesc desc = LAServiceDesc.get(serviceName);
       if (!desc.withoutUrl) {
@@ -1990,11 +1990,14 @@ check results length: ${checkResults.length}''';
 
   bool get isPipelinesInUse => !isHub && getService(pipelines).use;
 
-  bool get isPipelinesOnVM =>
-      serverServices.values.any((services) => services.contains(pipelines));
+  bool get isPipelinesOnVM => serverServices.values.any(
+    (List<String> services) => services.contains(pipelines),
+  );
 
   bool get isPipelinesOnlyInClusters {
-    if (!isPipelinesInUse) return false;
+    if (!isPipelinesInUse) {
+      return false;
+    }
     return !isPipelinesOnVM;
   }
 

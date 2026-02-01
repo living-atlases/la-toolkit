@@ -176,7 +176,7 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Row(
-                      children: [
+                      children: <Widget>[
                         Icon(
                           isAServer ? Icons.dns : MdiIcons.docker,
                           color: LAColorTheme.inactive,
@@ -244,7 +244,9 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                               ),
                               onPressed: () {
                                 final LAServer? s = widget.server;
-                                if (s == null) return;
+                                if (s == null) {
+                                  return;
+                                }
                                 widget.onEditing();
                                 UiUtils.showAlertDialog(
                                   context,
@@ -267,7 +269,9 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                               ),
                               onPressed: () {
                                 final LACluster? c = widget.cluster;
-                                if (c == null) return;
+                                if (c == null) {
+                                  return;
+                                }
                                 widget.onEditing();
                                 UiUtils.showAlertDialog(
                                   context,

@@ -227,7 +227,7 @@ class ServerServicesViewCard extends StatelessWidget {
                 key: ValueKey<String>('${name}basic-tile'),
                 contentPadding: EdgeInsets.zero,
                 title: Row(
-                  children: [
+                  children: <Widget>[
                     Icon(
                       type == DeploymentType.vm ? Icons.dns : MdiIcons.docker,
                       color: LAColorTheme.inactive,
