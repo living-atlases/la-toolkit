@@ -215,6 +215,10 @@ class LAServiceDepsDesc {
       nameInt: dockerSwarm,
       serviceDepends: <BasicService>[],
     ),
+    dockerCompose: LAServiceDepsDesc(
+      nameInt: dockerCompose,
+      serviceDepends: <BasicService>[],
+    ),
     dockerCommon: LAServiceDepsDesc(
       nameInt: dockerCommon,
       serviceDepends: <BasicService>[],
