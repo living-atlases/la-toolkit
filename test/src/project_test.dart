@@ -10,11 +10,11 @@ import 'package:la_toolkit/models/la_server.dart';
 import 'package:la_toolkit/models/la_service.dart';
 import 'package:la_toolkit/models/la_service_constants.dart';
 import 'package:la_toolkit/models/la_service_deploy.dart';
-import 'package:la_toolkit/models/la_service_desc.dart';
 import 'package:la_toolkit/models/la_service_name.dart';
 import 'package:la_toolkit/models/la_variable.dart';
 import 'package:la_toolkit/models/ssh_key.dart';
 import 'package:latlong2/latlong.dart';
+import 'check_services_helper.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -1481,50 +1481,31 @@ void main() {
     expect(p.shortName, equals('GBIF.ES'));
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
-    LAServiceDesc.list(
-      p.isHub,
-    ).where((LAServiceDesc s) => s.nameInt != sds).toList().forEach((
-      LAServiceDesc service,
-    ) {
-      if (!<String>[
-        sds,
-        pipelines,
-        spark,
-        hadoop,
-        pipelinesJenkins,
-        solrcloud,
-        zookeeper,
-        namematchingService,
-        sensitiveDataService,
-        dataQuality,
-        biocollect,
-        pdfgen,
-        ecodata,
-        ecodataReporting,
-        events,
-        eventsElasticSearch,
-        dockerSwarm,
-        dockerCommon,
-        gatus,
-        portainer,
-        cassandra,
-      ].contains(service.nameInt)) {
-        expect(
-          p.getService(service.nameInt).use,
-          equals(true),
-          reason:
-              '${service.nameInt} should be in Use and is ${p.getService(service.nameInt).use}',
-        );
-      }
-      if (!service.withoutUrl) {
-        expect(p.getService(service.nameInt).usesSubdomain, equals(true));
-        expect(p.getService(service.nameInt).iniPath, equals(''));
-        expect(
-          p.getService(service.nameInt).suburl.contains('gbif.es'),
-          equals(false),
-        );
-      }
-    });
+    checkServices(p, <String>[
+      sds,
+      pipelines,
+      spark,
+      hadoop,
+      pipelinesJenkins,
+      solrcloud,
+      solr,
+      zookeeper,
+      namematchingService,
+      sensitiveDataService,
+      dataQuality,
+      biocollect,
+      pdfgen,
+      ecodata,
+      ecodataReporting,
+      events,
+      eventsElasticSearch,
+      dockerSwarm,
+      dockerCommon,
+      dockerCompose,
+      gatus,
+      portainer,
+      cassandra,
+    ]);
     expect(p.getService(collectory).suburl, equals('colecciones'));
     expect(p.getService(bie).suburl, equals('especies'));
     expect(p.getService(spatial).suburl, equals('espacial'));
@@ -1541,70 +1522,49 @@ void main() {
     expect(p.domain, equals('demo.gbif.es'));
     expect(p.useSSL, equals(true));
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
-    for (final LAServiceDesc service in LAServiceDesc.list(p.isHub)) {
-      // print(service.nameInt);
-      final List<String> notUsedServices = <String>[
-        webapi,
-        doi,
-        regions,
-        alerts,
-        sds,
-        cas,
-        apikey,
-        userdetails,
-        casManagement,
-        spatial,
-        spatialService,
-        geoserver,
-        dashboard,
-        pipelines,
-        spark,
-        hadoop,
-        pipelinesJenkins,
-        solrcloud,
-        zookeeper,
-        namematchingService,
-        sensitiveDataService,
-        dataQuality,
-        biocollect,
-        pdfgen,
-        ecodata,
-        ecodataReporting,
-        events,
-        eventsElasticSearch,
-        dockerSwarm,
-        dockerCommon,
-        gatus,
-        portainer,
-        cassandra,
-      ];
-      if (notUsedServices.contains(service.nameInt)) {
-        expect(
-          p.getService(service.nameInt).use,
-          equals(false),
-          reason: '${service.nameInt} should not be in Use',
-        );
-      }
-      if (!notUsedServices.contains(service.nameInt)) {
-        expect(
-          p.getService(service.nameInt).use,
-          equals(true),
-          reason: '${service.nameInt} should be in Use',
-        );
-        if (!service.withoutUrl && service.nameInt != branding) {
-          expect(
-            p.getService(service.nameInt).usesSubdomain,
-            equals(false),
-            reason: '${service.nameInt} should not use subdomain',
-          );
-        }
-        expect(
-          p.getService(collectory).fullUrl(true, 'demo.gbif.es'),
-          equals('https://demo.gbif.es/colecciones'),
-        );
-        expect(p.getService(collectory).path, equals('/colecciones'));
-      }
-    }
+    checkServices(p, <String>[
+      webapi,
+      doi,
+      regions,
+      alerts,
+      sds,
+      cas,
+      apikey,
+      userdetails,
+      casManagement,
+      spatial,
+      spatialService,
+      geoserver,
+      dashboard,
+      pipelines,
+      spark,
+      hadoop,
+      pipelinesJenkins,
+      solrcloud,
+      solr,
+      zookeeper,
+      namematchingService,
+      sensitiveDataService,
+      dataQuality,
+      biocollect,
+      pdfgen,
+      ecodata,
+      ecodataReporting,
+      events,
+      eventsElasticSearch,
+      dockerSwarm,
+      dockerCommon,
+      dockerCompose,
+      gatus,
+      portainer,
+      cassandra,
+    ]);
+
+    expect(
+      p.getService(collectory).fullUrl(true, 'demo.gbif.es'),
+      equals('https://demo.gbif.es/colecciones'),
+    );
+    expect(p.getService(collectory).path, equals('/colecciones'));
 
     p = LAProject.import(yoRcJson: yoRcJsonCa)[0];
     expect(p.longName, equals('Canadensys'));
@@ -1612,55 +1572,35 @@ void main() {
     expect(p.domain, equals('canadensys.net'));
     expect(p.useSSL, equals(true));
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
-    for (final LAServiceDesc service in LAServiceDesc.list(p.isHub)) {
-      // print("${service.nameInt}");
-      if (!<String>[
-        speciesLists,
-        webapi,
-        doi,
-        bie,
-        regions,
-        sds,
-        pipelines,
-        spark,
-        hadoop,
-        pipelinesJenkins,
-        solrcloud,
-        zookeeper,
-        namematchingService,
-        sensitiveDataService,
-        dataQuality,
-        biocollect,
-        pdfgen,
-        ecodata,
-        ecodataReporting,
-        events,
-        eventsElasticSearch,
-        dockerSwarm,
-        gatus,
-        dockerCommon,
-        portainer,
-        cassandra,
-      ].contains(service.nameInt)) {
-        expect(
-          p.getService(service.nameInt).use,
-          equals(true),
-          reason: '${service.nameInt} should be in Use',
-        );
-      }
-      if (!service.withoutUrl) {
-        expect(p.getService(service.nameInt).usesSubdomain, equals(true));
-        if (!<String>[
-          collectory,
-          alaHub,
-          biocacheService,
-          alerts,
-          images,
-        ].contains(service.nameInt)) {
-          expect(p.getService(service.nameInt).iniPath, equals(''));
-        }
-      }
-    }
+    checkServices(p, <String>[
+      speciesLists,
+      webapi,
+      doi,
+      regions,
+      sds,
+      pipelines,
+      spark,
+      hadoop,
+      pipelinesJenkins,
+      solrcloud,
+      solr,
+      zookeeper,
+      namematchingService,
+      sensitiveDataService,
+      dataQuality,
+      biocollect,
+      pdfgen,
+      ecodata,
+      ecodataReporting,
+      events,
+      eventsElasticSearch,
+      dockerSwarm,
+      gatus,
+      dockerCommon,
+      dockerCompose,
+      portainer,
+      cassandra,
+    ]);
 
     expect(p.getService(doi).use, equals(false));
     expect(p.getService(collectory).iniPath, equals('collections'));
