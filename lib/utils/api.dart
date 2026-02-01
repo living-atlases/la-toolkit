@@ -284,8 +284,13 @@ class Api {
       dotenv.env['BACKEND']!,
       '/api/v1/gen/$id/false',
     );
+    final Map<String, dynamic> body = project.toGeneratorJson();
     await http
-        .get(url)
+        .post(
+          url,
+          headers: <String, String>{'Content-type': 'application/json'},
+          body: utf8.encode(json.encode(body)),
+        )
         .then(
           (http.Response response) => response.statusCode != 200
               ? onError(userError)

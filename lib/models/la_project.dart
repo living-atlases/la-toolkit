@@ -789,8 +789,34 @@ check results length: ${checkResults.length}''';
     Map<String, LAReleases>? laReleases,
   ]) {
     final bool isServer = type == DeploymentType.vm;
-    final String? serverId = isServer ? sOrCId : null;
-    final String? clusterId = !isServer ? sOrCId : null;
+    String? serverId = isServer ? sOrCId : null;
+    String? clusterId = !isServer ? sOrCId : null;
+
+    if (!isServer) {
+      final LAServer? potentialServer = getServerById(sOrCId);
+      if (potentialServer != null) {
+        serverId = potentialServer.id;
+        LACluster? cluster = clusters.firstWhereOrNull(
+          (c) => c.serverId == serverId && c.type == type,
+        );
+        if (cluster == null) {
+          _addDockerClusterIfNotExists(serverId: serverId, type: type);
+          cluster = clusters.firstWhereOrNull(
+            (c) => c.serverId == serverId && c.type == type,
+          );
+        }
+        clusterId = cluster!.id;
+      } else {
+        final LACluster? cluster = clusters.firstWhereOrNull(
+          (c) => c.id == sOrCId,
+        );
+        if (cluster != null) {
+          serverId = cluster.serverId;
+          clusterId = cluster.id;
+        }
+      }
+    }
+
     HashSet<String> newServices = HashSet<String>();
     newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
@@ -798,7 +824,11 @@ check results length: ${checkResults.length}''';
     if (isServer) {
       serverServices[sOrCId] = newServices.toList();
     } else {
-      clusterServices[sOrCId] = newServices.toList();
+      if (clusterId != null) {
+        if (kDebugMode)
+          debugPrint("Assigning to cluster: $clusterId services: $newServices");
+        clusterServices[clusterId] = newServices.toList();
+      }
     }
     final List<String> serviceIds = <String>[];
     if (assignedServices.contains(dockerSwarm)) {
@@ -884,8 +914,25 @@ check results length: ${checkResults.length}''';
     String serviceName,
   ) {
     final bool isServer = type == DeploymentType.vm;
-    final String? serverId = isServer ? sIdOrCid : null;
-    final String? clusterId = !isServer ? sIdOrCid : null;
+    String? serverId = isServer ? sIdOrCid : null;
+    String? clusterId = !isServer ? sIdOrCid : null;
+
+    if (!isServer) {
+      final LAServer? potentialServer = getServerById(sIdOrCid);
+      if (potentialServer != null) {
+        LACluster? cluster = clusters.firstWhereOrNull(
+          (c) => c.serverId == potentialServer.id && c.type == type,
+        );
+        clusterId = cluster?.id;
+        serverId = potentialServer.id;
+      } else {
+        final LACluster? cluster = clusters.firstWhereOrNull(
+          (c) => c.id == sIdOrCid,
+        );
+        serverId = cluster?.serverId;
+        clusterId = sIdOrCid;
+      }
+    }
     HashSet<String> servicesToDel = HashSet<String>();
     servicesToDel.add(serviceName);
     servicesToDel = _addSubServices(servicesToDel);
@@ -904,8 +951,8 @@ check results length: ${checkResults.length}''';
         (String c) => servicesToDel.contains(c),
       );
     }
-    if (!isServer && clusterServices[sIdOrCid] != null) {
-      clusterServices[sIdOrCid]?.removeWhere(
+    if (!isServer && clusterId != null && clusterServices[clusterId] != null) {
+      clusterServices[clusterId]?.removeWhere(
         (String c) => servicesToDel.contains(c),
       );
     }
@@ -1008,7 +1055,12 @@ check results length: ${checkResults.length}''';
   bool isDockerClusterConfigured() {
     return isDockerEnabled &&
         (getServiceDeploysForSomeService(dockerSwarm).isNotEmpty ||
-            getServiceDeploysForSomeService(dockerCompose).isNotEmpty);
+            getServiceDeploysForSomeService(dockerCompose).isNotEmpty ||
+            clusters.any(
+              (LACluster c) =>
+                  c.type == DeploymentType.dockerCompose ||
+                  c.type == DeploymentType.dockerSwarm,
+            ));
   }
 
   static HashSet<String> _addSubServices(HashSet<String> newServices) {
@@ -1198,17 +1250,30 @@ check results length: ${checkResults.length}''';
     });
 
     clusterServices.forEach((String id, List<String> serviceNames) {
+      if (kDebugMode && serviceName == 'solr')
+        debugPrint("Checking cluster $id services: $serviceNames");
       if (serviceNames.contains(serviceName)) {
         final LACluster? cluster = clusters.firstWhereOrNull(
           (LACluster c) => c.id == id,
         );
         if (cluster != null) {
+          if (kDebugMode && serviceName == 'solr')
+            debugPrint(
+              "Cluster found: ${cluster.id}, type: ${cluster.type}, serverId: ${cluster.serverId}",
+            );
           if (cluster.type == DeploymentType.dockerCompose) {
             final LAServer? server = servers.firstWhereOrNull(
               (LAServer s) => s.id == cluster.serverId,
             );
             if (server != null) {
+              if (kDebugMode && serviceName == 'solr')
+                debugPrint("Server found: ${server.name} (id: ${server.id})");
               hostnames.add(server.name);
+            } else {
+              if (kDebugMode && serviceName == 'solr')
+                debugPrint(
+                  "Server NOT found for cluster ${cluster.id} (serverId: ${cluster.serverId})",
+                );
             }
           } else if (cluster.type == DeploymentType.dockerSwarm) {
             final List<String> swarmHosts =
@@ -1225,6 +1290,8 @@ check results length: ${checkResults.length}''';
         }
       }
     });
+    if (kDebugMode && serviceName == 'solr')
+      debugPrint("getHostnames($serviceName) returning: $hostnames");
     return hostnames.toList();
   }
 
@@ -1367,41 +1434,108 @@ check results length: ${checkResults.length}''';
     if (additionalVariables != '') {
       conf['LA_additionalVariables'] = additionalVariables;
     }
+
+    // Default values (from api/libs/transform.js)
+    conf['LA_use_git'] = true;
+    conf['LA_generate_branding'] = true;
+
+    // Variable Mappings (Mapping generic variables to specific keys expected by generator)
+    // Inspect variables list if possible, or force known mappings based on potential presence in `conf`?
+    // Since variables might end up in `additionalVariables` string or similar,
+    // or generated into Ansible vars elsewhere.
+    // However, the generator expects these keys at the TOP LEVEL of yo-rc.json.
+
+    // We need to fetch these specific variables from the project's variable list and map them.
+    // Assuming we can access `variables` list.
+    for (final LAVariable variable in variables) {
+      String? mappedKey;
+
+      if (variable.nameInt == 'enable_data_quality')
+        mappedKey = 'LA_enable_data_quality';
+      else if (variable.nameInt == 'enable_events')
+        mappedKey = 'LA_enable_events';
+      else if (variable.nameInt == 'pipelines_jenkins_use')
+        mappedKey = 'LA_use_pipelines_jenkins';
+      // Handle standard LA_variable_ mappings (L163+ in transform.js)
+      // transform.js maps LA_variable_ansible_user -> LA_variable_ansible_user (Identity)
+      // So if our variable name is 'ansible_user', we need to emit 'LA_variable_ansible_user'
+      else {
+        // Default mapping for all other variables: LA_variable_<name>
+        mappedKey = 'LA_variable_${variable.nameInt}';
+      }
+
+      if (mappedKey != null) {
+        conf[mappedKey] = variable.value;
+      }
+    }
     for (final LAService service in services) {
-      conf['LA_use_${service.nameInt}'] = service.use;
-      conf['LA_${service.nameInt}_uses_subdomain'] = service.usesSubdomain;
-      conf['LA_${service.nameInt}_hostname'] =
-          getHostnames(service.nameInt).isNotEmpty
+      if (service.nameInt == 'docker_compose' ||
+          service.nameInt == 'docker_swarm') {
+        continue;
+      }
+
+      final bool useIt = service.use;
+
+      // Mappings based on api/libs/transform.js
+      String keyName = service.nameInt;
+      if (keyName == 'cas') keyName = 'CAS';
+      if (keyName == 'biocache_backend') keyName = 'biocache_store';
+      // transform.js: LA_use_ala_bie: "LA_use_species"
+      if (keyName == 'ala_bie') keyName = 'species';
+      // LA_use_species_lists remains LA_use_species_lists in transform.js map
+
+      conf['LA_use_$keyName'] = useIt;
+
+      String hostnameKey = 'LA_${service.nameInt}_hostname';
+      String subdomainKey = 'LA_${service.nameInt}_uses_subdomain';
+      String urlKey = 'LA_${service.nameInt}_url';
+      String pathKey = 'LA_${service.nameInt}_path';
+
+      if (service.nameInt == 'species_lists') {
+        hostnameKey = 'LA_lists_hostname';
+        subdomainKey = 'LA_lists_uses_subdomain';
+        urlKey = 'LA_lists_url';
+        pathKey = 'LA_lists_path';
+      }
+
+      conf[subdomainKey] = service.usesSubdomain;
+      conf[hostnameKey] = getHostnames(service.nameInt).isNotEmpty
           ? getHostnames(service.nameInt).join(', ')
           : '';
-      conf['LA_${service.nameInt}_url'] = service.url(domain);
-      conf['LA_${service.nameInt}_path'] = service.path;
+
+      conf[urlKey] = service.url(domain);
+      conf[pathKey] = service.path;
     }
     // Docker related vars
     if (isDockerClusterConfigured()) {
-      debugPrint('DEBUG: assembleConf isDockerClusterConfigured = true');
-      final List<String> dockerSolrHosts = dockerServers();
-
-      final Map<String, List<String>> nginxDockerInternalAliasesByHost =
-          <String, List<String>>{};
-      debugPrint('DEBUG: dockerSolrHosts: $dockerSolrHosts');
+      final Map<String, dynamic> nginxDockerInternalAliasesByHost =
+          <String, dynamic>{};
 
       for (final LAService service in services) {
         if (service.use) {
-          final List<String> hosts = getHostnames(service.nameInt);
-          if (hosts.isNotEmpty) {
-            for (final String host in hosts) {
-              // Only add alias if the host is part of the docker cluster
-              if (dockerSolrHosts.contains(host)) {
+          final List<LAServiceDeploy> deploys = getServiceDeploysForSomeService(
+            service.nameInt,
+          );
+          for (final LAServiceDeploy sd in deploys) {
+            if (sd.type == DeploymentType.dockerSwarm ||
+                sd.type == DeploymentType.dockerCompose) {
+              final LAServer? server = servers.firstWhereOrNull(
+                (s) => s.id == sd.serverId,
+              );
+              if (server != null) {
                 final LAServiceDesc desc = LAServiceDesc.get(service.nameInt);
                 if (!desc.withoutUrl && !desc.isSubService) {
                   nginxDockerInternalAliasesByHost.putIfAbsent(
-                    host,
+                    server.name,
                     () => <String>[],
                   );
                   final String url = service.url(domain);
-                  if (!nginxDockerInternalAliasesByHost[host]!.contains(url)) {
-                    nginxDockerInternalAliasesByHost[host]!.add(url);
+                  if (!(nginxDockerInternalAliasesByHost[server.name]!
+                          as List<String>)
+                      .contains(url)) {
+                    (nginxDockerInternalAliasesByHost[server.name]!
+                            as List<String>)
+                        .add(url);
                   }
                 }
               }
@@ -1410,9 +1544,6 @@ check results length: ${checkResults.length}''';
         }
       }
 
-      debugPrint(
-        'DEBUG: nginxDockerInternalAliasesByHost result: $nginxDockerInternalAliasesByHost',
-      );
       conf['LA_nginx_docker_internal_aliases_by_host'] =
           nginxDockerInternalAliasesByHost;
 
@@ -1456,20 +1587,29 @@ check results length: ${checkResults.length}''';
       }
 
       // Docker Compose specific variables
-      final List<LAServiceDeploy> dockerComposeDeploys =
-          getServiceDeploysForSomeService(dockerCompose);
-      if (dockerComposeDeploys.isNotEmpty) {
+      // Iterate clusters to find docker compose usage
+      final List<String> composeHosts = <String>[];
+      bool anyServiceInDockerCompose = false;
+
+      for (final LACluster cluster in clusters.where(
+        (c) => c.type == DeploymentType.dockerCompose,
+      )) {
+        final servicesInCluster = clusterServices[cluster.id];
+        if (servicesInCluster != null && servicesInCluster.isNotEmpty) {
+          anyServiceInDockerCompose = true;
+          if (cluster.serverId != null) {
+            final LAServer? s = getServerById(cluster.serverId!);
+            if (s != null) composeHosts.add(s.name);
+          }
+        }
+      }
+
+      if (anyServiceInDockerCompose) {
         conf['LA_use_docker_compose'] = true;
-        final List<String> composeHosts = dockerComposeDeploys
-            .map(
-              (LAServiceDeploy sd) => servers
-                  .firstWhereOrNull((LAServer s) => s.id == sd.serverId)
-                  ?.name,
-            )
-            .nonNulls
-            .toList();
         composeHosts.sort();
-        conf['LA_docker_compose_hostname'] = composeHosts.join(', ');
+        conf['LA_docker_compose_hostname'] = composeHosts.toSet().toList().join(
+          ', ',
+        );
       }
     }
 
