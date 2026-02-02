@@ -117,8 +117,6 @@ class LAProject implements IsJsonSerializable<LAProject> {
     // This can happen when loading from server if clusterServices wasn't persisted correctly
     _rebuildEmptyClusterServices(project);
 
-    // VALIDATION ONLY - Do not auto-sanitize
-    // User has manual control via sanitizeProjectData() method
     final List<String> integrityErrors = project.validateDataIntegrity();
     if (integrityErrors.isNotEmpty) {
       if (kDebugMode) {
@@ -128,9 +126,6 @@ class LAProject implements IsJsonSerializable<LAProject> {
         for (final String error in integrityErrors) {
           debugPrint('  - $error');
         }
-        debugPrint(
-          '💡 Call project.sanitizeProjectData() to auto-fix, or manually correct the issues',
-        );
       }
     }
 
@@ -139,16 +134,26 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
   /// Rebuilds clusterServices from serviceDeploys if empty clusters are found
   /// This handles the case where data was loaded from server but clusterServices wasn't persisted
+  /// CRITICAL: Only includes services that are NOT already in serverServices (prevents duplicates)
   static void _rebuildEmptyClusterServices(LAProject project) {
     bool rebuilt = false;
 
     // Find clusters that have no services assigned but have serviceDeploys
     for (final LACluster cluster in project.clusters) {
+      // Skip if cluster.serverId is null (can't have duplicates if not linked to server)
+      if (cluster.serverId == null) {
+        continue;
+      }
+
       final List<String> servicesInCluster =
           project.clusterServices[cluster.id] ?? <String>[];
 
       // If cluster is empty, try to rebuild from serviceDeploys
       if (servicesInCluster.isEmpty) {
+        // Get services already assigned to this server's VM
+        final List<String> servicesInServerVM =
+            project.serverServices[cluster.serverId] ?? <String>[];
+
         final List<String> servicesFromDeploys = project.serviceDeploys
             .where((LAServiceDeploy sd) {
               // Match by clusterId first (if explicitly set)
@@ -167,6 +172,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
               return service?.nameInt;
             })
             .whereType<String>()
+            // CRITICAL: Exclude services already in serverServices to prevent duplicates
+            .where((serviceName) => !servicesInServerVM.contains(serviceName))
             .toList();
 
         if (servicesFromDeploys.isNotEmpty) {
@@ -694,96 +701,6 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
 
     return errors;
-  }
-
-  /// Automatically corrects common data integrity issues:
-  /// 1. Removes services from clusterServices if they're also in serverServices for the same server
-  /// 2. Removes docker services from clusterServices (they belong in serverServices)
-  /// 3. Removes orphaned clusterServices entries for deleted clusters
-  /// Returns a map of corrections made (for logging/audit purposes)
-  Map<String, dynamic> sanitizeProjectData() {
-    final Map<String, dynamic> corrections = <String, dynamic>{
-      'servicesRemovedFromClusters': <String>[],
-      'dockerServicesRemovedFromClusters': <String>[],
-      'orphanedClustersRemoved': <String>[],
-      'missingClusterEntriesCreated': <String>[],
-    };
-
-    // Correction 1: Remove services from clusterServices if they're in serverServices for the same server
-    for (final LAServer server in servers) {
-      final List<String> servicesInVM = serverServices[server.id] ?? <String>[];
-
-      for (final LACluster cluster in clusters.where(
-        (c) => c.serverId == server.id,
-      )) {
-        final List<String>? clusterServicesList = clusterServices[cluster.id];
-        if (clusterServicesList != null) {
-          final List<String> servicesToRemove = clusterServicesList
-              .where((service) => servicesInVM.contains(service))
-              .toList();
-
-          for (final String service in servicesToRemove) {
-            clusterServicesList.remove(service);
-            corrections['servicesRemovedFromClusters']!.add(
-              '${server.name}/${cluster.name}: $service',
-            );
-          }
-        }
-      }
-    }
-
-    // Correction 2: Remove docker services from clusterServices (they belong in serverServices)
-    for (final LACluster cluster in clusters) {
-      final List<String>? clusterServicesList = clusterServices[cluster.id];
-      if (clusterServicesList != null) {
-        final List<String> dockerServices = clusterServicesList
-            .where(
-              (service) => service == dockerSwarm || service == dockerCompose,
-            )
-            .toList();
-
-        for (final String service in dockerServices) {
-          clusterServicesList.remove(service);
-          final LAServer? server = getServerById(cluster.serverId!);
-          corrections['dockerServicesRemovedFromClusters']!.add(
-            '${server?.name ?? cluster.serverId}/${cluster.name}: $service',
-          );
-        }
-      }
-    }
-
-    // Correction 3: Remove orphaned clusterServices entries
-    final List<String> clusterIds = clusters.map((c) => c.id).toList();
-    final List<String> orphanedIds = clusterServices.keys
-        .where((id) => !clusterIds.contains(id))
-        .toList();
-    for (final String orphanedId in orphanedIds) {
-      clusterServices.remove(orphanedId);
-      corrections['orphanedClustersRemoved']!.add(orphanedId);
-    }
-
-    // Correction 4: Create missing clusterServices entries for clusters
-    for (final LACluster cluster in clusters) {
-      if (!clusterServices.containsKey(cluster.id)) {
-        clusterServices[cluster.id] = <String>[];
-        corrections['missingClusterEntriesCreated']!.add(cluster.id);
-      }
-    }
-
-    if (kDebugMode) {
-      debugPrint('🧹 Data sanitization completed:');
-      corrections.forEach((String key, dynamic value) {
-        final List<dynamic> valueList = value as List<dynamic>;
-        if (valueList.isNotEmpty) {
-          debugPrint('  $key: ${valueList.length} items');
-          for (final item in valueList) {
-            debugPrint('    - $item');
-          }
-        }
-      });
-    }
-
-    return corrections;
   }
 
   List<String> getServersNameList() {
@@ -2493,6 +2410,27 @@ check results length: ${checkResults.length}''';
       }
     }
     return allIncompatibilities;
+  }
+
+  List<String> getDockerComposeVMWarnings() {
+    final List<String> warnings = <String>[];
+    serverServices.forEach((String serverId, List<String> services) {
+      if (services.contains(dockerCompose)) {
+        final LAServer? server = getServerById(serverId);
+        if (server != null) {
+          for (final String serviceName in services) {
+            if (serviceName != dockerSwarm &&
+                serviceName != dockerCompose &&
+                serviceName != dockerCommon) {
+              warnings.add(
+                "Service ${LAServiceDesc.get(serviceName).name} is assigned to VM ${server.name} directly, but this VM is a Docker Compose host. Please assign it to the Docker Compose cluster or use a different VM.",
+              );
+            }
+          }
+        }
+      }
+    });
+    return warnings;
   }
 
   bool get showSoftwareVersions => !isHub;
