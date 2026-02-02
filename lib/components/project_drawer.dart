@@ -87,6 +87,14 @@ class ProjectDrawer extends StatelessWidget {
                   ),
                 ),
               ),
+              if (AppUtils.isDev())
+                ListTile(
+                  leading: const Icon(Icons.code),
+                  title: const Text('View Project JSON'),
+                  onTap: () {
+                    JsonViewerDialog.show(context, vm.state.currentProject);
+                  },
+                ),
               ListTile(
                 leading: const Icon(LAIcon.la),
                 title: const Text('Home'),
@@ -109,14 +117,6 @@ class ProjectDrawer extends StatelessWidget {
                   title: const Text('Sandbox'),
                   onTap: () {
                     BeamerCond.of(context, SandboxLocation());
-                  },
-                ),
-              if (AppUtils.isDev())
-                ListTile(
-                  leading: const Icon(Icons.code),
-                  title: const Text('View Project JSON'),
-                  onTap: () {
-                    JsonViewerDialog.show(context, vm.state.currentProject);
                   },
                 ),
               Column(children: ListTileLink.drawerBottomLinks(context, false)),
