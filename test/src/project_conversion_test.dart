@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/models/deployment_type.dart';
 import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/models/la_server.dart';
-import 'package:la_toolkit/models/la_variable.dart';
 import 'package:la_toolkit/models/la_service_name.dart';
+import 'package:la_toolkit/models/la_variable.dart';
 import 'package:objectid/objectid.dart';
 
 void main() {
@@ -54,6 +54,9 @@ void main() {
 
       // LA_solrcloud_hostname should contain s1 because it's hosted there (even if inside docker)
       expect(json['LA_solrcloud_hostname'], contains('s1'));
+
+      // LA_collectory_hostname should contain s1 because it's hosted there (even if inside docker)
+      expect(json['LA_collectory_hostname'], contains('s1'));
 
       // LA_docker_compose_hostname should contain s1
       expect(json['LA_docker_compose_hostname'], contains('s1'));
@@ -234,6 +237,265 @@ void main() {
       // Verify specific structure correctness
       expect(json['LA_docker_compose_hostname'], contains('s1'));
     });
+
+    test(
+      'Test Case 5: Single server with Docker Compose - hostnames should not be empty',
+      () {
+        final project = LAProject(
+          longName: 'Test Docker Hostnames',
+          shortName: 'testdh',
+          domain: 'testdh.com',
+          alaInstallRelease: '1.0.0',
+          generatorRelease: '1.0.0',
+        );
+
+        final server = LAServer(
+          id: ObjectId().toString(),
+          name: 'docker-server-1',
+          ip: '192.168.1.100',
+          projectId: project.id,
+        );
+        project.upsertServer(server);
+
+        // Enable and assign solrcloud to docker compose
+        project.serviceInUse('docker_compose', true);
+        project.serviceInUse('solrcloud', true);
+        project.assignByType(server.id, DeploymentType.dockerCompose, [
+          'solrcloud',
+        ]);
+
+        final json = project.toGeneratorJson();
+
+        debugPrint('LA_solrcloud_hostname: ${json['LA_solrcloud_hostname']}');
+        debugPrint(
+          'LA_docker_compose_hostname: ${json['LA_docker_compose_hostname']}',
+        );
+        debugPrint('serverServices: ${project.serverServices}');
+        debugPrint('clusterServices: ${project.clusterServices}');
+        debugPrint(
+          'clusters: ${project.clusters.map((c) => '${c.name} (id: ${c.id}, serverId: ${c.serverId})').toList()}',
+        );
+
+        expect(
+          json['LA_use_solrcloud'],
+          isTrue,
+          reason: 'solrcloud should be in use',
+        );
+        expect(
+          json['LA_use_docker_compose'],
+          isTrue,
+          reason: 'docker_compose should be in use',
+        );
+        expect(
+          json['LA_solrcloud_hostname'],
+          isNotEmpty,
+          reason: 'solrcloud hostname should not be empty',
+        );
+        expect(
+          json['LA_solrcloud_hostname'],
+          contains('docker-server-1'),
+          reason: 'solrcloud hostname should contain the server name',
+        );
+        expect(
+          json['LA_docker_compose_hostname'],
+          isNotEmpty,
+          reason: 'docker_compose hostname should not be empty',
+        );
+        expect(
+          json['LA_docker_compose_hostname'],
+          contains('docker-server-1'),
+          reason: 'docker_compose hostname should contain the server name',
+        );
+      },
+    );
+
+    test('Test Case 6: Multiple services in Docker Compose cluster', () {
+      final project = LAProject(
+        longName: 'Test Multiple Docker Services',
+        shortName: 'testmds',
+        domain: 'testmds.com',
+        alaInstallRelease: '1.0.0',
+        generatorRelease: '1.0.0',
+      );
+
+      final server = LAServer(
+        id: ObjectId().toString(),
+        name: 'docker-multi',
+        ip: '192.168.1.200',
+        projectId: project.id,
+      );
+      project.upsertServer(server);
+
+      // Enable multiple services
+      project.serviceInUse('docker_compose', true);
+      project.serviceInUse('solrcloud', true);
+      project.serviceInUse('collectory', true);
+      project.serviceInUse('ala_hub', true);
+
+      // Assign services to docker compose
+      project.assignByType(server.id, DeploymentType.dockerCompose, [
+        'solrcloud',
+        'collectory',
+        'ala_hub',
+      ]);
+
+      final json = project.toGeneratorJson();
+
+      debugPrint('Test Case 6:');
+      debugPrint('LA_solrcloud_hostname: ${json['LA_solrcloud_hostname']}');
+      debugPrint('LA_collectory_hostname: ${json['LA_collectory_hostname']}');
+      debugPrint('LA_ala_hub_hostname: ${json['LA_ala_hub_hostname']}');
+      debugPrint(
+        'clusters: ${project.clusters.map((c) => 'name=${c.name}, serverId=${c.serverId}').toList()}',
+      );
+
+      expect(json['LA_solrcloud_hostname'], contains('docker-multi'));
+      expect(json['LA_collectory_hostname'], contains('docker-multi'));
+      expect(json['LA_ala_hub_hostname'], contains('docker-multi'));
+    });
+
+    test(
+      'Test Case 7: Mixed deployment - VM and Docker Compose on same server',
+      () {
+        final project = LAProject(
+          longName: 'Test Mixed Deployment',
+          shortName: 'testmixed',
+          domain: 'testmixed.com',
+          alaInstallRelease: '1.0.0',
+          generatorRelease: '1.0.0',
+        );
+
+        final server = LAServer(
+          id: ObjectId().toString(),
+          name: 'mixed-server',
+          ip: '192.168.1.50',
+          projectId: project.id,
+        );
+        project.upsertServer(server);
+
+        // Assign CAS to VM
+        project.serviceInUse('cas', true);
+        project.assign(server, ['cas']);
+
+        // Assign solrcloud to Docker Compose
+        project.serviceInUse('docker_compose', true);
+        project.serviceInUse('solrcloud', true);
+        project.assignByType(server.id, DeploymentType.dockerCompose, [
+          'solrcloud',
+        ]);
+
+        final json = project.toGeneratorJson();
+
+        debugPrint('Test Case 7:');
+        debugPrint('LA_cas_hostname: ${json['LA_cas_hostname']}');
+        debugPrint('LA_solrcloud_hostname: ${json['LA_solrcloud_hostname']}');
+
+        expect(json['LA_cas_hostname'], contains('mixed-server'));
+        expect(json['LA_solrcloud_hostname'], contains('mixed-server'));
+      },
+    );
+
+    test('Test Case 8: Two servers with separate Docker Compose clusters', () {
+      final project = LAProject(
+        longName: 'Test Two Docker Servers',
+        shortName: 'testtds',
+        domain: 'testtds.com',
+        alaInstallRelease: '1.0.0',
+        generatorRelease: '1.0.0',
+      );
+
+      final server1 = LAServer(
+        id: ObjectId().toString(),
+        name: 'docker-srv1',
+        ip: '192.168.1.10',
+        projectId: project.id,
+      );
+      final server2 = LAServer(
+        id: ObjectId().toString(),
+        name: 'docker-srv2',
+        ip: '192.168.1.11',
+        projectId: project.id,
+      );
+      project.upsertServer(server1);
+      project.upsertServer(server2);
+
+      // Enable services
+      project.serviceInUse('docker_compose', true);
+      project.serviceInUse('solrcloud', true);
+      project.serviceInUse('collectory', true);
+
+      // Assign solrcloud to server1's docker compose
+      project.assignByType(server1.id, DeploymentType.dockerCompose, [
+        'solrcloud',
+      ]);
+
+      // Assign collectory to server2's docker compose
+      project.assignByType(server2.id, DeploymentType.dockerCompose, [
+        'collectory',
+      ]);
+
+      final json = project.toGeneratorJson();
+
+      debugPrint('Test Case 8:');
+      debugPrint('LA_solrcloud_hostname: ${json['LA_solrcloud_hostname']}');
+      debugPrint('LA_collectory_hostname: ${json['LA_collectory_hostname']}');
+      debugPrint(
+        'LA_docker_compose_hostname: ${json['LA_docker_compose_hostname']}',
+      );
+
+      expect(json['LA_solrcloud_hostname'], contains('docker-srv1'));
+      expect(json['LA_collectory_hostname'], contains('docker-srv2'));
+      expect(json['LA_docker_compose_hostname'], contains('docker-srv1'));
+      expect(json['LA_docker_compose_hostname'], contains('docker-srv2'));
+    });
+
+    test(
+      'Test Case 9: getHostnames method directly for Docker Compose service',
+      () {
+        final project = LAProject(
+          longName: 'Test GetHostnames',
+          shortName: 'testgh',
+          domain: 'testgh.com',
+          alaInstallRelease: '1.0.0',
+          generatorRelease: '1.0.0',
+        );
+
+        final server = LAServer(
+          id: ObjectId().toString(),
+          name: 'hostname-test-srv',
+          ip: '192.168.1.99',
+          projectId: project.id,
+        );
+        project.upsertServer(server);
+
+        project.serviceInUse('docker_compose', true);
+        project.serviceInUse('solrcloud', true);
+        project.assignByType(server.id, DeploymentType.dockerCompose, [
+          'solrcloud',
+        ]);
+
+        final hostnames = project.getHostnames('solrcloud');
+
+        debugPrint('Test Case 9:');
+        debugPrint('Direct getHostnames for solrcloud: $hostnames');
+        debugPrint('Server ID: ${server.id}');
+        debugPrint(
+          'Clusters: ${project.clusters.map((c) => 'id=${c.id}, serverId=${c.serverId}, type=${c.type}').toList()}',
+        );
+        debugPrint('clusterServices: ${project.clusterServices}');
+
+        expect(
+          hostnames,
+          isNotEmpty,
+          reason: 'getHostnames should return at least one hostname',
+        );
+        expect(
+          hostnames,
+          contains('hostname-test-srv'),
+          reason: 'getHostnames should return the correct server name',
+        );
+      },
+    );
   });
 }
 

@@ -788,6 +788,11 @@ check results length: ${checkResults.length}''';
     Map<String, String>? softwareVersions,
     Map<String, LAReleases>? laReleases,
   ]) {
+    if (kDebugMode) {
+      debugPrint(
+        '📝 assignByType: sOrCId=$sOrCId, type=$type, services=$assignedServices',
+      );
+    }
     final bool isServer = type == DeploymentType.vm;
     String? serverId = isServer ? sOrCId : null;
     String? clusterId = !isServer ? sOrCId : null;
@@ -795,15 +800,34 @@ check results length: ${checkResults.length}''';
     if (!isServer) {
       final LAServer? potentialServer = getServerById(sOrCId);
       if (potentialServer != null) {
+        if (kDebugMode) {
+          debugPrint(
+            '  🔍 Detected serverId passed for non-VM deployment: ${potentialServer.name}',
+          );
+        }
         serverId = potentialServer.id;
         LACluster? cluster = clusters.firstWhereOrNull(
           (c) => c.serverId == serverId && c.type == type,
         );
         if (cluster == null) {
+          if (kDebugMode) {
+            debugPrint('  📦 Cluster not found, creating new cluster...');
+          }
           _addDockerClusterIfNotExists(serverId: serverId, type: type);
           cluster = clusters.firstWhereOrNull(
             (c) => c.serverId == serverId && c.type == type,
           );
+          if (kDebugMode) {
+            debugPrint(
+              '  ✓ Cluster after creation: id=${cluster?.id}, serverId=${cluster?.serverId}',
+            );
+          }
+        } else {
+          if (kDebugMode) {
+            debugPrint(
+              '  ✓ Found existing cluster: id=${cluster.id}, serverId=${cluster.serverId}',
+            );
+          }
         }
         clusterId = cluster!.id;
       } else {
@@ -811,10 +835,23 @@ check results length: ${checkResults.length}''';
           (c) => c.id == sOrCId,
         );
         if (cluster != null) {
+          if (kDebugMode) {
+            debugPrint('  🔍 Detected clusterId passed: ${cluster.name}');
+          }
           serverId = cluster.serverId;
           clusterId = cluster.id;
+        } else {
+          if (kDebugMode) {
+            debugPrint(
+              '  ⚠ WARNING: Could not find server or cluster for: $sOrCId',
+            );
+          }
         }
       }
+    }
+
+    if (kDebugMode) {
+      debugPrint('  📌 Final values: serverId=$serverId, clusterId=$clusterId');
     }
 
     HashSet<String> newServices = HashSet<String>();
@@ -2196,12 +2233,22 @@ check results length: ${checkResults.length}''';
     String? serverId,
     DeploymentType type = DeploymentType.dockerSwarm,
   }) {
+    if (kDebugMode) {
+      debugPrint(
+        '🔧 _addDockerClusterIfNotExists called: serverId=$serverId, type=$type',
+      );
+    }
     if (type == DeploymentType.dockerSwarm) {
       if (!clusters.any(
         (LACluster c) =>
             c.serverId == serverId && c.type == DeploymentType.dockerSwarm,
       )) {
         final LAServer? server = getServerById(serverId!);
+        if (kDebugMode) {
+          debugPrint(
+            '  ✓ Creating Docker Swarm cluster for server: ${server?.name ?? serverId}',
+          );
+        }
         clusters.add(
           LACluster(
             id: ObjectId().toString(),
@@ -2212,6 +2259,10 @@ check results length: ${checkResults.length}''';
             type: DeploymentType.dockerSwarm,
           ),
         );
+      } else {
+        if (kDebugMode) {
+          debugPrint('  ⚠ Docker Swarm cluster already exists for this server');
+        }
       }
     } else if (type == DeploymentType.dockerCompose) {
       if (!clusters.any(
@@ -2219,15 +2270,30 @@ check results length: ${checkResults.length}''';
             c.serverId == serverId && c.type == DeploymentType.dockerCompose,
       )) {
         final LAServer? server = getServerById(serverId!);
-        clusters.add(
-          LACluster(
-            id: ObjectId().toString(),
-            projectId: id,
-            serverId: serverId,
-            name: 'Docker Compose on ${server?.name ?? serverId}',
-            type: DeploymentType.dockerCompose,
-          ),
+        if (kDebugMode) {
+          debugPrint(
+            '  ✓ Creating Docker Compose cluster for server: ${server?.name ?? serverId} (serverId: $serverId)',
+          );
+        }
+        final newCluster = LACluster(
+          id: ObjectId().toString(),
+          projectId: id,
+          serverId: serverId,
+          name: 'Docker Compose on ${server?.name ?? serverId}',
+          type: DeploymentType.dockerCompose,
         );
+        clusters.add(newCluster);
+        if (kDebugMode) {
+          debugPrint(
+            '  ✓ Created cluster: id=${newCluster.id}, serverId=${newCluster.serverId}',
+          );
+        }
+      } else {
+        if (kDebugMode) {
+          debugPrint(
+            '  ⚠ Docker Compose cluster already exists for this server',
+          );
+        }
       }
     }
   }

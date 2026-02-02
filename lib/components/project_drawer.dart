@@ -13,6 +13,7 @@ import '../routes.dart';
 import '../utils/utils.dart';
 import 'admin_icon_button.dart';
 import 'help_icon.dart';
+import 'json_viewer_dialog.dart';
 import 'la_icon.dart';
 import 'list_tile_link.dart';
 import 'term_dialog.dart';
@@ -108,6 +109,14 @@ class ProjectDrawer extends StatelessWidget {
                   title: const Text('Sandbox'),
                   onTap: () {
                     BeamerCond.of(context, SandboxLocation());
+                  },
+                ),
+              if (AppUtils.isDev())
+                ListTile(
+                  leading: const Icon(Icons.code),
+                  title: const Text('View Project JSON'),
+                  onTap: () {
+                    JsonViewerDialog.show(context, vm.state.currentProject);
                   },
                 ),
               Column(children: ListTileLink.drawerBottomLinks(context, false)),
