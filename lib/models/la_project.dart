@@ -110,8 +110,81 @@ class LAProject implements IsJsonSerializable<LAProject> {
     validateCreation();
   }
 
-  factory LAProject.fromJson(Map<String, dynamic> json) =>
-      _$LAProjectFromJson(json);
+  factory LAProject.fromJson(Map<String, dynamic> json) {
+    final LAProject project = _$LAProjectFromJson(json);
+
+    // CRITICAL FIX: Rebuild clusterServices from serviceDeploys if it's empty
+    // This can happen when loading from server if clusterServices wasn't persisted correctly
+    _rebuildEmptyClusterServices(project);
+
+    // VALIDATION ONLY - Do not auto-sanitize
+    // User has manual control via sanitizeProjectData() method
+    final List<String> integrityErrors = project.validateDataIntegrity();
+    if (integrityErrors.isNotEmpty) {
+      if (kDebugMode) {
+        debugPrint(
+          '⚠️  Data integrity issues detected in project "${project.shortName}":',
+        );
+        for (final String error in integrityErrors) {
+          debugPrint('  - $error');
+        }
+        debugPrint(
+          '💡 Call project.sanitizeProjectData() to auto-fix, or manually correct the issues',
+        );
+      }
+    }
+
+    return project;
+  }
+
+  /// Rebuilds clusterServices from serviceDeploys if empty clusters are found
+  /// This handles the case where data was loaded from server but clusterServices wasn't persisted
+  static void _rebuildEmptyClusterServices(LAProject project) {
+    bool rebuilt = false;
+
+    // Find clusters that have no services assigned but have serviceDeploys
+    for (final LACluster cluster in project.clusters) {
+      final List<String> servicesInCluster =
+          project.clusterServices[cluster.id] ?? <String>[];
+
+      // If cluster is empty, try to rebuild from serviceDeploys
+      if (servicesInCluster.isEmpty) {
+        final List<String> servicesFromDeploys = project.serviceDeploys
+            .where((LAServiceDeploy sd) {
+              // Match by clusterId first (if explicitly set)
+              if (sd.clusterId == cluster.id) return true;
+              // If clusterId is null/empty, match by serverId and type
+              if ((sd.clusterId == null || sd.clusterId!.isEmpty) &&
+                  sd.serverId == cluster.serverId &&
+                  sd.type == cluster.type)
+                return true;
+              return false;
+            })
+            .map((LAServiceDeploy sd) {
+              final LAService? service = project.services.firstWhereOrNull(
+                (s) => s.id == sd.serviceId,
+              );
+              return service?.nameInt;
+            })
+            .whereType<String>()
+            .toList();
+
+        if (servicesFromDeploys.isNotEmpty) {
+          project.clusterServices[cluster.id] = servicesFromDeploys;
+          rebuilt = true;
+          if (kDebugMode) {
+            debugPrint(
+              '🔧 Rebuilt clusterServices for ${cluster.name}: ${servicesFromDeploys.join(", ")}',
+            );
+          }
+        }
+      }
+    }
+
+    if (rebuilt && kDebugMode) {
+      debugPrint('✅ clusterServices rebuilt from serviceDeploys');
+    }
+  }
 
   factory LAProject.fromObject(
     Map<String, dynamic> yoRc, {
@@ -550,6 +623,169 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return true;
   }
 
+  /// Validates critical invariants for data consistency:
+  /// 1. No service can be assigned to both a VM (serverServices) and a cluster (clusterServices) for the same server
+  /// 2. Docker services (dockerSwarm, dockerCompose) should only be in serverServices, never in clusterServices
+  /// 3. A VM cannot have multiple docker-compose or docker-swarm clusters of the same type
+  /// Returns a list of validation errors (empty if all valid)
+  List<String> validateDataIntegrity() {
+    final List<String> errors = <String>[];
+
+    // Check 1: No service duplication between serverServices and clusterServices for the same server
+    for (final LAServer server in servers) {
+      final List<String> servicesInVM = serverServices[server.id] ?? <String>[];
+
+      // Get all services in clusters for this server
+      final Set<String> servicesInClusters = <String>{};
+      for (final LACluster cluster in clusters.where(
+        (c) => c.serverId == server.id,
+      )) {
+        final List<String> clusterServices =
+            this.clusterServices[cluster.id] ?? <String>[];
+        servicesInClusters.addAll(clusterServices);
+      }
+
+      // Check for overlap
+      final Set<String> overlap = servicesInVM.toSet().intersection(
+        servicesInClusters,
+      );
+      if (overlap.isNotEmpty) {
+        errors.add(
+          'Server "${server.name}" (${server.id}) has services assigned to both VM and cluster(s): ${overlap.join(", ")}',
+        );
+      }
+
+      // Check 2: Docker services should never be in clusterServices
+      for (final String service in servicesInClusters) {
+        if (service == dockerSwarm || service == dockerCompose) {
+          errors.add(
+            'Server "${server.name}" (${server.id}) has docker service "$service" incorrectly assigned to cluster instead of VM',
+          );
+        }
+      }
+    }
+
+    // Check 3: No multiple docker-compose clusters per VM
+    for (final LAServer server in servers) {
+      final List<LACluster> dockerComposeClusters = clusters
+          .where(
+            (c) =>
+                c.serverId == server.id &&
+                c.type == DeploymentType.dockerCompose,
+          )
+          .toList();
+      if (dockerComposeClusters.length > 1) {
+        errors.add(
+          'Server "${server.name}" (${server.id}) has ${dockerComposeClusters.length} docker-compose clusters (expected 0 or 1)',
+        );
+      }
+
+      final List<LACluster> dockerSwarmClusters = clusters
+          .where(
+            (c) =>
+                c.serverId == server.id && c.type == DeploymentType.dockerSwarm,
+          )
+          .toList();
+      if (dockerSwarmClusters.length > 1) {
+        errors.add(
+          'Server "${server.name}" (${server.id}) has ${dockerSwarmClusters.length} docker-swarm clusters (expected 0 or 1)',
+        );
+      }
+    }
+
+    return errors;
+  }
+
+  /// Automatically corrects common data integrity issues:
+  /// 1. Removes services from clusterServices if they're also in serverServices for the same server
+  /// 2. Removes docker services from clusterServices (they belong in serverServices)
+  /// 3. Removes orphaned clusterServices entries for deleted clusters
+  /// Returns a map of corrections made (for logging/audit purposes)
+  Map<String, dynamic> sanitizeProjectData() {
+    final Map<String, dynamic> corrections = <String, dynamic>{
+      'servicesRemovedFromClusters': <String>[],
+      'dockerServicesRemovedFromClusters': <String>[],
+      'orphanedClustersRemoved': <String>[],
+      'missingClusterEntriesCreated': <String>[],
+    };
+
+    // Correction 1: Remove services from clusterServices if they're in serverServices for the same server
+    for (final LAServer server in servers) {
+      final List<String> servicesInVM = serverServices[server.id] ?? <String>[];
+
+      for (final LACluster cluster in clusters.where(
+        (c) => c.serverId == server.id,
+      )) {
+        final List<String>? clusterServicesList = clusterServices[cluster.id];
+        if (clusterServicesList != null) {
+          final List<String> servicesToRemove = clusterServicesList
+              .where((service) => servicesInVM.contains(service))
+              .toList();
+
+          for (final String service in servicesToRemove) {
+            clusterServicesList.remove(service);
+            corrections['servicesRemovedFromClusters']!.add(
+              '${server.name}/${cluster.name}: $service',
+            );
+          }
+        }
+      }
+    }
+
+    // Correction 2: Remove docker services from clusterServices (they belong in serverServices)
+    for (final LACluster cluster in clusters) {
+      final List<String>? clusterServicesList = clusterServices[cluster.id];
+      if (clusterServicesList != null) {
+        final List<String> dockerServices = clusterServicesList
+            .where(
+              (service) => service == dockerSwarm || service == dockerCompose,
+            )
+            .toList();
+
+        for (final String service in dockerServices) {
+          clusterServicesList.remove(service);
+          final LAServer? server = getServerById(cluster.serverId!);
+          corrections['dockerServicesRemovedFromClusters']!.add(
+            '${server?.name ?? cluster.serverId}/${cluster.name}: $service',
+          );
+        }
+      }
+    }
+
+    // Correction 3: Remove orphaned clusterServices entries
+    final List<String> clusterIds = clusters.map((c) => c.id).toList();
+    final List<String> orphanedIds = clusterServices.keys
+        .where((id) => !clusterIds.contains(id))
+        .toList();
+    for (final String orphanedId in orphanedIds) {
+      clusterServices.remove(orphanedId);
+      corrections['orphanedClustersRemoved']!.add(orphanedId);
+    }
+
+    // Correction 4: Create missing clusterServices entries for clusters
+    for (final LACluster cluster in clusters) {
+      if (!clusterServices.containsKey(cluster.id)) {
+        clusterServices[cluster.id] = <String>[];
+        corrections['missingClusterEntriesCreated']!.add(cluster.id);
+      }
+    }
+
+    if (kDebugMode) {
+      debugPrint('🧹 Data sanitization completed:');
+      corrections.forEach((String key, dynamic value) {
+        final List<dynamic> valueList = value as List<dynamic>;
+        if (valueList.isNotEmpty) {
+          debugPrint('  $key: ${valueList.length} items');
+          for (final item in valueList) {
+            debugPrint('    - $item');
+          }
+        }
+      });
+    }
+
+    return corrections;
+  }
+
   List<String> getServersNameList() {
     return servers.map((LAServer s) => s.name).toList();
   }
@@ -879,15 +1115,67 @@ check results length: ${checkResults.length}''';
     newServices.addAll(assignedServices);
     // In the same server nameindexer and biocache_cli
     newServices = _addSubServices(newServices);
+
+    // CRITICAL: Enforce strict exclusivity - a service cannot be in both serverServices AND clusterServices for the same server
     if (isServer) {
+      // When assigning to VM, ensure these services are NOT in any cluster of this server
+      if (serverId != null) {
+        for (final LACluster cluster in clusters.where(
+          (c) => c.serverId == serverId,
+        )) {
+          final List<String>? clusterServicesList = clusterServices[cluster.id];
+          if (clusterServicesList != null) {
+            clusterServicesList.removeWhere(
+              (service) => newServices.contains(service),
+            );
+            if (kDebugMode && clusterServicesList.isNotEmpty) {
+              debugPrint(
+                '  🧹 Removed duplicate services from cluster ${cluster.name}',
+              );
+            }
+          }
+        }
+      }
       serverServices[sOrCId] = newServices.toList();
     } else {
+      // When assigning to cluster, ensure these services are NOT in the server's VM services
+      // Also ensure docker services are never in clusterServices
+      final List<String> servicesCleaned = newServices
+          .where(
+            (service) => service != dockerSwarm && service != dockerCompose,
+          )
+          .toList();
+
+      if (serverId != null && servicesCleaned.length < newServices.length) {
+        if (kDebugMode) {
+          debugPrint(
+            '  ⚠ Docker services removed from cluster assignment (they belong in serverServices): '
+            '${newServices.where((s) => s == dockerSwarm || s == dockerCompose).join(", ")}',
+          );
+        }
+      }
+
+      if (serverId != null) {
+        final List<String>? serverServicesList = serverServices[serverId];
+        if (serverServicesList != null) {
+          serverServicesList.removeWhere(
+            (service) => servicesCleaned.contains(service),
+          );
+          if (kDebugMode && serverServicesList.isNotEmpty) {
+            debugPrint('  🧹 Removed duplicate services from server');
+          }
+        }
+      }
+
       if (clusterId != null) {
         if (kDebugMode)
-          debugPrint("Assigning to cluster: $clusterId services: $newServices");
-        clusterServices[clusterId] = newServices.toList();
+          debugPrint(
+            "Assigning to cluster: $clusterId services: $servicesCleaned",
+          );
+        clusterServices[clusterId] = servicesCleaned;
       }
     }
+
     final List<String> serviceIds = <String>[];
     if (assignedServices.contains(dockerSwarm)) {
       _addDockerClusterIfNotExists(
@@ -2220,12 +2508,21 @@ check results length: ${checkResults.length}''';
         '🔧 _addDockerClusterIfNotExists called: serverId=$serverId, type=$type',
       );
     }
+
+    // Defensive check: cannot create cluster without serverId
+    if (serverId == null) {
+      if (kDebugMode) {
+        debugPrint('  ⚠ Cannot create cluster: serverId is null');
+      }
+      return;
+    }
+
     if (type == DeploymentType.dockerSwarm) {
       if (!clusters.any(
         (LACluster c) =>
             c.serverId == serverId && c.type == DeploymentType.dockerSwarm,
       )) {
-        final LAServer? server = getServerById(serverId!);
+        final LAServer? server = getServerById(serverId);
         if (kDebugMode) {
           debugPrint(
             '  ✓ Creating Docker Swarm cluster for server: ${server?.name ?? serverId}',
@@ -2254,7 +2551,7 @@ check results length: ${checkResults.length}''';
         (LACluster c) =>
             c.serverId == serverId && c.type == DeploymentType.dockerCompose,
       )) {
-        final LAServer? server = getServerById(serverId!);
+        final LAServer? server = getServerById(serverId);
         if (kDebugMode) {
           debugPrint(
             '  ✓ Creating Docker Compose cluster for server: ${server?.name ?? serverId} (serverId: $serverId)',
