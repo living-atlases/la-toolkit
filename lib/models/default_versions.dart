@@ -7,7 +7,7 @@ class DefaultVersions {
     namematchingService: '3.5',
     alerts: '2.0.3',
     apikey: '1.7.0',
-    bie: '2.0.2',
+    bie: '4.1.3',
     bieIndex: '1.8.1',
     biocacheCli: '2.6.0',
     alaHub: '4.0.12.4',
@@ -34,7 +34,7 @@ class DefaultVersions {
   static final Map<String, String> defVersions2_0_11 = <String, String>{
     alaHub: '3.2.9',
     alerts: '1.5.1',
-    bie: '1.5.0',
+    bie: '4.1.3',
     bieIndex: '1.4.11',
     biocacheService: '2.4.2',
     biocacheCli: '2.6.0',
@@ -63,7 +63,7 @@ class DefaultVersions {
   static final Map<String, String> defVersions2_1_0 = <String, String>{
     alaHub: '3.2.9',
     alerts: '1.5.1',
-    bie: '1.5.0',
+    bie: '4.1.3',
     bieIndex: '1.4.11',
     biocacheService: '2.4.2',
     biocacheCli: '2.6.0',
