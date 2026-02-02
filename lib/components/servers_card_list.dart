@@ -40,23 +40,81 @@ class ServersCardList extends StatelessWidget {
       builder: (BuildContext context, ServersCardListViewModel vm) {
         final LAProject project = vm.currentProject;
         final bool dockerEnabled = project.isDockerClusterConfigured();
-        return Wrap(
-          children: <Widget>[
-            if (dockerEnabled)
-              for (final LACluster cluster in project.clusters)
-                ServerServicesHoverCard(
-                  key: ValueKey<String>('cluster-${cluster.id}'),
-                  cluster: cluster,
-                  project: project,
-                  vm: vm,
-                ),
-            for (final LAServer server in project.servers)
+
+        // Build VM cards
+        final List<Widget> vmCards = <Widget>[
+          for (final LAServer server in project.servers)
+            ServerServicesHoverCard(
+              key: ValueKey<String>('server-${server.id}'),
+              server: server,
+              project: project,
+              vm: vm,
+            ),
+        ];
+
+        // Build Cluster cards
+        final List<Widget> clusterCards = <Widget>[
+          if (dockerEnabled)
+            for (final LACluster cluster in project.clusters)
               ServerServicesHoverCard(
-                key: ValueKey<String>('server-${server.id}'),
-                server: server,
+                key: ValueKey<String>('cluster-${cluster.id}'),
+                cluster: cluster,
                 project: project,
                 vm: vm,
               ),
+        ];
+
+        // Build the layout: VMs on top, Clusters below (if any)
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            // VMs section - always shown
+            Wrap(children: vmCards),
+            // Clusters section - only if there are clusters
+            if (clusterCards.isNotEmpty) ...<Widget>[
+              // Horizontal divider
+              Container(
+                height: 2,
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: <Color>[
+                      LAColorTheme.inactive.withValues(alpha: 0.1),
+                      LAColorTheme.inactive.withValues(alpha: 0.3),
+                      LAColorTheme.inactive.withValues(alpha: 0.1),
+                    ],
+                  ),
+                ),
+              ),
+              // Clusters header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                child: Row(
+                  children: <Widget>[
+                    Icon(
+                      MdiIcons.docker,
+                      color: LAColorTheme.inactive,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Docker Clusters',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: LAColorTheme.inactive,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Clusters cards
+              Wrap(children: clusterCards),
+            ],
           ],
         );
       },
