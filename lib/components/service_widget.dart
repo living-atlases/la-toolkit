@@ -48,12 +48,9 @@ class ServiceWidget extends StatelessWidget {
         final LAProject currentProject = vm.currentProject;
         final LAService service = vm.currentProject.getService(serviceName);
         final LAServiceDesc serviceDesc = LAServiceDesc.get(serviceName);
-        final bool isHub = currentProject.isHub;
-        final bool noDependsOrInUse =
-            serviceDesc.depends == null ||
-            (isHub ? vm.currentProject.parent! : vm.currentProject)
-                .getServiceE(serviceDesc.depends!)
-                .use;
+        final bool noDependsOrInUse = currentProject.isDependencySatisfied(
+          serviceDesc.depends,
+        );
         final bool withoutUrl = serviceDesc.withoutUrl;
         final bool visible =
             noDependsOrInUse &&

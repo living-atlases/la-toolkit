@@ -649,6 +649,27 @@ check results length: ${checkResults.length}''';
     return getService(nameInt.toS());
   }
 
+  bool isDependencySatisfied(LAServiceName? dependency) {
+    if (dependency == null) {
+      return true;
+    }
+    final bool isHub = this.isHub;
+    final LAProject targetProject = isHub ? parent! : this;
+
+    // Direct dependency check
+    if (targetProject.getServiceE(dependency).use) {
+      return true;
+    }
+
+    // Semantic alternative: docker_compose can satisfy docker_swarm
+    if (dependency == LAServiceName.docker_swarm &&
+        targetProject.getServiceE(LAServiceName.docker_compose).use) {
+      return true;
+    }
+
+    return false;
+  }
+
   LAService getService(String nameInt) {
     if (AppUtils.isDev()) {
       assert(
@@ -1047,46 +1068,6 @@ check results length: ${checkResults.length}''';
             !clusters.any((LACluster c) => c.id == key),
       );
     }
-    if (serviceName == dockerCompose) {
-      // Find all docker-compose clusters for this server
-      final List<LACluster> dockerComposeClusters = clusters
-          .where(
-            (LACluster c) =>
-                c.serverId == sIdOrCid &&
-                c.type == DeploymentType.dockerCompose,
-          )
-          .toList();
-
-      // For each cluster, remove all services and their deployments
-      for (final LACluster cluster in dockerComposeClusters) {
-        // Get all services in this cluster
-        final List<String>? servicesInCluster = clusterServices[cluster.id];
-        if (servicesInCluster != null) {
-          // Remove all service deployments for this cluster
-          for (final String serviceNameInt in servicesInCluster) {
-            final LAService service = getService(serviceNameInt);
-            serviceDeploys.removeWhere(
-              (LAServiceDeploy sD) =>
-                  sD.projectId == id &&
-                  sD.clusterId == cluster.id &&
-                  sD.type == DeploymentType.dockerCompose &&
-                  sD.serviceId == service.id,
-            );
-          }
-        }
-      }
-
-      // Remove the clusters
-      clusters.removeWhere(
-        (LACluster c) =>
-            c.serverId == sIdOrCid && c.type == DeploymentType.dockerCompose,
-      );
-      // Remove cluster services
-      clusterServices.removeWhere(
-        (String key, List<String> value) =>
-            !clusters.any((LACluster c) => c.id == key),
-      );
-    }
   }
 
   bool isDockerClusterConfigured() {
@@ -1223,18 +1204,19 @@ check results length: ${checkResults.length}''';
       );
     }
 
+    final DeploymentType clusterType = clusterToDelete.type;
+
     // 1. Unassign all services assigned to this cluster first
     final List<String> servicesInCluster = List<String>.from(
       getClusterServices(clusterId: clusterToDelete.id),
     );
     for (final String sName in servicesInCluster) {
-      unAssignByType(clusterToDelete.id, clusterToDelete.type, sName);
+      unAssignByType(clusterToDelete.id, clusterType, sName);
     }
 
     // 2. Unassign the managing docker service from the server
     if (clusterToDelete.serverId != null) {
-      final String dockerServiceName =
-          clusterToDelete.type == DeploymentType.dockerSwarm
+      final String dockerServiceName = clusterType == DeploymentType.dockerSwarm
           ? dockerSwarm
           : dockerCompose;
 
@@ -2249,16 +2231,19 @@ check results length: ${checkResults.length}''';
             '  ✓ Creating Docker Swarm cluster for server: ${server?.name ?? serverId}',
           );
         }
-        clusters.add(
-          LACluster(
-            id: ObjectId().toString(),
-            projectId: id,
-            serverId: serverId,
-            name: 'Docker Swarm on ${server?.name ?? serverId}',
-            // ignore: avoid_redundant_argument_values
-            type: DeploymentType.dockerSwarm,
-          ),
+        final newCluster = LACluster(
+          id: ObjectId().toString(),
+          projectId: id,
+          serverId: serverId,
+          name: 'Docker Swarm on ${server?.name ?? serverId}',
+          // ignore: avoid_redundant_argument_values
+          type: DeploymentType.dockerSwarm,
         );
+        clusters.add(newCluster);
+        // Initialize clusterServices entry to maintain consistency
+        if (!clusterServices.containsKey(newCluster.id)) {
+          clusterServices[newCluster.id] = <String>[];
+        }
       } else {
         if (kDebugMode) {
           debugPrint('  ⚠ Docker Swarm cluster already exists for this server');
@@ -2283,6 +2268,10 @@ check results length: ${checkResults.length}''';
           type: DeploymentType.dockerCompose,
         );
         clusters.add(newCluster);
+        // Initialize clusterServices entry to maintain consistency
+        if (!clusterServices.containsKey(newCluster.id)) {
+          clusterServices[newCluster.id] = <String>[];
+        }
         if (kDebugMode) {
           debugPrint(
             '  ✓ Created cluster: id=${newCluster.id}, serverId=${newCluster.serverId}',
