@@ -8,7 +8,7 @@ void main() {
   test(
     'LA_nginx_docker_internal_aliases_by_host should include all docker hosts',
     () {
-      final project = LAProject(
+      final LAProject project = LAProject(
         longName: 'Test Nginx Aliases',
         shortName: 'testnga',
         domain: 'test.com',
@@ -17,19 +17,19 @@ void main() {
       );
 
       // Create 3 servers
-      final server1 = LAServer(
+      final LAServer server1 = LAServer(
         id: ObjectId().toString(),
         name: 'host1',
         ip: '192.168.1.1',
         projectId: project.id,
       );
-      final server2 = LAServer(
+      final LAServer server2 = LAServer(
         id: ObjectId().toString(),
         name: 'host2',
         ip: '192.168.1.2',
         projectId: project.id,
       );
-      final server3 = LAServer(
+      final LAServer server3 = LAServer(
         id: ObjectId().toString(),
         name: 'host3',
         ip: '192.168.1.3',
@@ -46,22 +46,22 @@ void main() {
       project.serviceInUse('ala_bie', true);
 
       // Assign services to clusters on different hosts
-      project.assignByType(server1.id, DeploymentType.dockerCompose, [
+      project.assignByType(server1.id, DeploymentType.dockerCompose, <String>[
         'collectory',
       ]);
-      project.assignByType(server2.id, DeploymentType.dockerCompose, [
+      project.assignByType(server2.id, DeploymentType.dockerCompose, <String>[
         'images',
       ]);
-      project.assignByType(server3.id, DeploymentType.dockerCompose, [
+      project.assignByType(server3.id, DeploymentType.dockerCompose, <String>[
         'ala_bie',
       ]);
 
-      final json = project.toGeneratorJson();
-      final aliases =
+      final Map<String, dynamic> json = project.toGeneratorJson();
+      final Map<String, dynamic>? aliases =
           json['LA_nginx_docker_internal_aliases_by_host']
               as Map<String, dynamic>?;
 
-      print('Aliases: $aliases');
+      // print('Aliases: $aliases');
 
       expect(aliases, isNotNull);
       expect(

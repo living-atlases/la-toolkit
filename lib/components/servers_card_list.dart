@@ -81,8 +81,6 @@ class ServersCardList extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
                     colors: <Color>[
                       LAColorTheme.inactive.withValues(alpha: 0.1),
                       LAColorTheme.inactive.withValues(alpha: 0.3),

@@ -4,6 +4,7 @@ import 'package:la_toolkit/models/la_cluster.dart';
 import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/models/la_server.dart';
 import 'package:la_toolkit/models/la_service_constants.dart';
+import 'package:la_toolkit/models/la_service_deploy.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +30,7 @@ void main() {
       project.upsertServer(server);
 
       // 2. Assign docker-compose to the server (this creates the cluster automatically)
-      project.assignByType(server.id, DeploymentType.vm, [dockerCompose]);
+      project.assignByType(server.id, DeploymentType.vm, <String>[dockerCompose]);
 
       // Verify it's assigned and cluster was created
       expect(
@@ -59,7 +60,7 @@ void main() {
       );
 
       final bool hasDeploy = project.serviceDeploys.any(
-        (sd) =>
+        (LAServiceDeploy sd) =>
             sd.serverId == server.id &&
             sd.serviceId == project.getService(dockerCompose).id,
       );
@@ -114,14 +115,14 @@ void main() {
       project.upsertServer(server);
 
       // 2. Assign docker-compose to the server
-      project.assignByType(server.id, DeploymentType.vm, [dockerCompose]);
+      project.assignByType(server.id, DeploymentType.vm, <String>[dockerCompose]);
 
       // 3. Get the cluster and assign services to it
       final LACluster cluster = project.clusters.first;
 
       // Assign some services to the cluster (e.g., solr)
       project.getService(solr).use = true;
-      project.assignByType(cluster.id, DeploymentType.dockerCompose, [solr]);
+      project.assignByType(cluster.id, DeploymentType.dockerCompose, <String>[solr]);
 
       // Verify services are assigned
       expect(
@@ -160,7 +161,7 @@ void main() {
       );
 
       final bool hasClusterDeploys = project.serviceDeploys.any(
-        (sd) => sd.clusterId == cluster.id,
+        (LAServiceDeploy sd) => sd.clusterId == cluster.id,
       );
       expect(
         hasClusterDeploys,
@@ -209,16 +210,16 @@ void main() {
       project.upsertServer(server2);
 
       // Assign docker-compose to both servers (each gets its own cluster)
-      project.assignByType(server1.id, DeploymentType.vm, [dockerCompose]);
-      project.assignByType(server2.id, DeploymentType.vm, [dockerCompose]);
+      project.assignByType(server1.id, DeploymentType.vm, <String>[dockerCompose]);
+      project.assignByType(server2.id, DeploymentType.vm, <String>[dockerCompose]);
 
       expect(project.clusters.length, equals(2));
 
       final LACluster cluster1 = project.clusters.firstWhere(
-        (c) => c.serverId == server1.id,
+        (LACluster c) => c.serverId == server1.id,
       );
       final LACluster cluster2 = project.clusters.firstWhere(
-        (c) => c.serverId == server2.id,
+        (LACluster c) => c.serverId == server2.id,
       );
 
       // Both servers should have dockerCompose assigned

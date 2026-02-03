@@ -20,7 +20,7 @@ void main() {
         );
         p.upsertServer(vm1);
         p.serviceInUse(dockerCompose, true);
-        p.assign(vm1, [dockerCompose, collectory]); // Assigned both to VM
+        p.assign(vm1, <String>[dockerCompose, collectory]); // Assigned both to VM
 
         final List<String> warnings = p.getDockerComposeVMWarnings();
         expect(warnings, isNotEmpty);
@@ -43,8 +43,8 @@ void main() {
         );
         p.upsertServer(vm1);
         p.serviceInUse(dockerCompose, true);
-        p.assign(vm1, [dockerCompose]);
-        p.assignByType(vm1.id, DeploymentType.dockerCompose, [collectory]);
+        p.assign(vm1, <String>[dockerCompose]);
+        p.assignByType(vm1.id, DeploymentType.dockerCompose, <String>[collectory]);
 
         final List<String> warnings = p.getDockerComposeVMWarnings();
         expect(warnings, isEmpty);
@@ -62,7 +62,7 @@ void main() {
           projectId: p.id,
         );
         p.upsertServer(vm1);
-        p.assign(vm1, [collectory]);
+        p.assign(vm1, <String>[collectory]);
 
         final List<String> warnings = p.getDockerComposeVMWarnings();
         expect(warnings, isEmpty);
@@ -83,24 +83,24 @@ void main() {
         );
         p.upsertServer(vm1);
         p.serviceInUse(dockerCompose, true);
-        p.assign(vm1, [dockerCompose]);
+        p.assign(vm1, <String>[dockerCompose]);
 
         // 1. Assign to Docker Cluster
-        p.assignByType(vm1.id, DeploymentType.dockerCompose, [collectory]);
+        p.assignByType(vm1.id, DeploymentType.dockerCompose, <String>[collectory]);
         expect(
           p.getClusterServices(clusterId: p.clusters.first.id),
           contains(collectory),
         );
 
         // 2. Assign to VM
-        p.assign(vm1, [collectory]);
+        p.assign(vm1, <String>[collectory]);
 
         // 3. Verify it is in BOTH (Relaxing exclusivity)
         expect(p.getServerServices(serverId: vm1.id), contains(collectory));
         expect(
           p.getClusterServices(clusterId: p.clusters.first.id),
           contains(collectory),
-          reason: "Should still be in cluster",
+          reason: 'Should still be in cluster',
         );
 
         // 4. Unassign from VM
@@ -114,7 +114,7 @@ void main() {
         expect(
           p.getClusterServices(clusterId: p.clusters.first.id),
           contains(collectory),
-          reason: "Should remain in cluster after unassign from VM",
+          reason: 'Should remain in cluster after unassign from VM',
         );
       },
     );

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/models/deployment_type.dart';
+import 'package:la_toolkit/models/la_cluster.dart';
 import 'package:la_toolkit/models/la_project.dart';
 
 void main() {
@@ -15,7 +16,7 @@ void main() {
       // with docker-compose clusters that have serverId set.
       // This data structure mimics what would be persisted in the backend,
       // based on real LA_LADemo project data.
-      sampleProjectJson = {
+      sampleProjectJson = <String, dynamic>{
         'id': 'test-project-docker-compose-1',
         'longName': 'Test Project with Docker Compose',
         'shortName': 'TPDC',
@@ -33,30 +34,30 @@ void main() {
         'generatorRelease': '1.6.9',
         'createdAt': 1677571200000,
         'mapZoom': 5.0,
-        'mapBoundsFstPoint': {
+        'mapBoundsFstPoint': <String, double>{
           'latitude': 7.874575060529807,
           'longitude': 4.449218749999986,
         },
-        'mapBoundsSndPoint': {
+        'mapBoundsSndPoint': <String, double>{
           'latitude': -57.29206142558941,
           'longitude': 180.0,
         },
         'fstDeployed': false,
-        'servers': [
-          {
+        'servers': <Map<String, Object>>[
+          <String, Object>{
             'id': 'server-docker-cluster-1',
             'projectId': 'test-project-docker-compose-1',
             'name': 'gbif-es-docker-cluster-2023-1',
             'ip': '172.16.16.114',
             'sshPort': 22,
             'sshUser': 'ubuntu',
-            'gateways': [],
+            'gateways': <dynamic>[],
             'reachable': 'unknown',
             'sshReachable': 'unknown',
             'sudoEnabled': 'unknown',
             'osName': 'Ubuntu',
             'osVersion': '22.04 LTS',
-            'sshKey': {
+            'sshKey': <String, Object>{
               'name': 'test-key',
               'desc': 'test key',
               'encrypted': false,
@@ -64,20 +65,20 @@ void main() {
               'public': 'ssh-rsa AAAAB3NzaC1yc2EAAAA...',
             },
           },
-          {
+          <String, Object>{
             'id': 'server-docker-cluster-2',
             'projectId': 'test-project-docker-compose-1',
             'name': 'gbif-es-docker-cluster-2023-2',
             'ip': '172.16.16.78',
             'sshPort': 22,
             'sshUser': 'ubuntu',
-            'gateways': [],
+            'gateways': <dynamic>[],
             'reachable': 'unknown',
             'sshReachable': 'unknown',
             'sudoEnabled': 'unknown',
             'osName': 'Ubuntu',
             'osVersion': '22.04 LTS',
-            'sshKey': {
+            'sshKey': <String, Object>{
               'name': 'test-key',
               'desc': 'test key',
               'encrypted': false,
@@ -85,20 +86,20 @@ void main() {
               'public': 'ssh-rsa AAAAB3NzaC1yc2EAAAA...',
             },
           },
-          {
+          <String, Object>{
             'id': 'server-docker-cluster-3',
             'projectId': 'test-project-docker-compose-1',
             'name': 'gbif-es-docker-cluster-2023-3',
             'ip': '172.16.16.56',
             'sshPort': 22,
             'sshUser': 'ubuntu',
-            'gateways': [],
+            'gateways': <dynamic>[],
             'reachable': 'unknown',
             'sshReachable': 'unknown',
             'sudoEnabled': 'unknown',
             'osName': 'Ubuntu',
             'osVersion': '22.04 LTS',
-            'sshKey': {
+            'sshKey': <String, Object>{
               'name': 'test-key',
               'desc': 'test key',
               'encrypted': false,
@@ -107,22 +108,22 @@ void main() {
             },
           },
         ],
-        'clusters': [
-          {
+        'clusters': <Map<String, String>>[
+          <String, String>{
             'id': 'cluster-docker-compose-1',
             'projectId': 'test-project-docker-compose-1',
             'serverId': 'server-docker-cluster-1',
             'name': 'Docker Compose on gbif-es-docker-cluster-2023-1',
             'type': 'dockerCompose',
           },
-          {
+          <String, String>{
             'id': 'cluster-docker-compose-2',
             'projectId': 'test-project-docker-compose-1',
             'serverId': 'server-docker-cluster-2',
             'name': 'Docker Compose on gbif-es-docker-cluster-2023-2',
             'type': 'dockerCompose',
           },
-          {
+          <String, String>{
             'id': 'cluster-docker-compose-3',
             'projectId': 'test-project-docker-compose-1',
             'serverId': 'server-docker-cluster-3',
@@ -130,25 +131,25 @@ void main() {
             'type': 'dockerCompose',
           },
         ],
-        'services': [],
-        'serviceDeploys': [],
-        'variables': [],
-        'cmdHistoryEntries': [],
-        'serverServices': {
-          'server-docker-cluster-1': [],
-          'server-docker-cluster-2': [],
-          'server-docker-cluster-3': [],
+        'services': <dynamic>[],
+        'serviceDeploys': <dynamic>[],
+        'variables': <dynamic>[],
+        'cmdHistoryEntries': <dynamic>[],
+        'serverServices': <String, List<dynamic>>{
+          'server-docker-cluster-1': <dynamic>[],
+          'server-docker-cluster-2': <dynamic>[],
+          'server-docker-cluster-3': <dynamic>[],
         },
-        'clusterServices': {
-          'cluster-docker-compose-1': [],
-          'cluster-docker-compose-2': [],
-          'cluster-docker-compose-3': [],
+        'clusterServices': <String, List<dynamic>>{
+          'cluster-docker-compose-1': <dynamic>[],
+          'cluster-docker-compose-2': <dynamic>[],
+          'cluster-docker-compose-3': <dynamic>[],
         },
-        'checkResults': {},
-        'runningVersions': {},
-        'selectedVersions': {},
+        'checkResults': <dynamic, dynamic>{},
+        'runningVersions': <dynamic, dynamic>{},
+        'selectedVersions': <dynamic, dynamic>{},
         'parent': null,
-        'hubs': [],
+        'hubs': <dynamic>[],
         'lastCmdEntry': null,
         'lastCmdDetails': null,
       };
@@ -165,8 +166,8 @@ void main() {
       );
 
       // Find all docker-compose clusters
-      final dockerComposeClusters = project.clusters
-          .where((c) => c.type == DeploymentType.dockerCompose)
+      final List<LACluster> dockerComposeClusters = project.clusters
+          .where((LACluster c) => c.type == DeploymentType.dockerCompose)
           .toList();
 
       expect(
@@ -201,11 +202,11 @@ void main() {
     test('All docker-compose clusters have non-null serverId', () {
       final LAProject project = LAProject.fromJson(sampleProjectJson);
 
-      final dockerComposeClusters = project.clusters
-          .where((c) => c.type == DeploymentType.dockerCompose)
+      final List<LACluster> dockerComposeClusters = project.clusters
+          .where((LACluster c) => c.type == DeploymentType.dockerCompose)
           .toList();
 
-      for (final cluster in dockerComposeClusters) {
+      for (final LACluster cluster in dockerComposeClusters) {
         expect(
           cluster.serverId,
           isNotNull,
@@ -221,8 +222,8 @@ void main() {
         LAProject project = LAProject.fromJson(sampleProjectJson);
 
         // Verify initial state
-        final dockerComposeCluster = project.clusters.firstWhere(
-          (c) => c.type == DeploymentType.dockerCompose,
+        final LACluster dockerComposeCluster = project.clusters.firstWhere(
+          (LACluster c) => c.type == DeploymentType.dockerCompose,
         );
         expect(
           dockerComposeCluster.serverId,
@@ -231,14 +232,14 @@ void main() {
         );
 
         // Serialize to JSON
-        final serializedJson = project.toJson();
+        final Map<String, dynamic> serializedJson = project.toJson();
 
         // Re-deserialize
         project = LAProject.fromJson(serializedJson);
 
         // Verify serverId is still present after round-trip
-        final restoredDockerCluster = project.clusters.firstWhere(
-          (c) => c.type == DeploymentType.dockerCompose,
+        final LACluster restoredDockerCluster = project.clusters.firstWhere(
+          (LACluster c) => c.type == DeploymentType.dockerCompose,
         );
         expect(
           restoredDockerCluster.serverId,
@@ -247,10 +248,10 @@ void main() {
         );
 
         // Verify all clusters still have serverId
-        final allRestoredClusters = project.clusters
-            .where((c) => c.type == DeploymentType.dockerCompose)
+        final List<LACluster> allRestoredClusters = project.clusters
+            .where((LACluster c) => c.type == DeploymentType.dockerCompose)
             .toList();
-        for (final cluster in allRestoredClusters) {
+        for (final LACluster cluster in allRestoredClusters) {
           expect(
             cluster.serverId,
             isNotNull,
@@ -280,7 +281,7 @@ void main() {
       );
 
       // Check that all clusters have serverId in the JSON
-      for (final clusterJson in clustersJson) {
+      for (final dynamic clusterJson in clustersJson) {
         final Map<String, dynamic> cluster =
             clusterJson as Map<String, dynamic>;
         expect(
@@ -305,14 +306,16 @@ void main() {
       () {
         final LAProject project = LAProject.fromJson(sampleProjectJson);
 
-        final dockerComposeClusters = project.clusters
-            .where((c) => c.type == DeploymentType.dockerCompose)
+        final List<LACluster> dockerComposeClusters = project.clusters
+            .where((LACluster c) => c.type == DeploymentType.dockerCompose)
             .toList();
 
         expect(dockerComposeClusters.isNotEmpty, true);
 
         // Each cluster should reference a different server
-        final serverIds = dockerComposeClusters.map((c) => c.serverId).toSet();
+        final Set<String?> serverIds = dockerComposeClusters
+            .map((LACluster c) => c.serverId)
+            .toSet();
 
         expect(
           serverIds.length,
@@ -321,7 +324,9 @@ void main() {
         );
 
         // All should be different cluster IDs
-        final clusterIds = dockerComposeClusters.map((c) => c.id).toSet();
+        final Set<String> clusterIds = dockerComposeClusters
+            .map((LACluster c) => c.id)
+            .toSet();
         expect(
           clusterIds.length,
           equals(3),
@@ -333,11 +338,11 @@ void main() {
     test('Cluster services are correctly mapped to docker-compose cluster', () {
       final LAProject project = LAProject.fromJson(sampleProjectJson);
 
-      final dockerComposeClusterId = project.clusters
-          .firstWhere((c) => c.type == DeploymentType.dockerCompose)
+      final String dockerComposeClusterId = project.clusters
+          .firstWhere((LACluster c) => c.type == DeploymentType.dockerCompose)
           .id;
 
-      final servicesInCluster =
+      final List<String> servicesInCluster =
           project.clusterServices[dockerComposeClusterId] ?? <String>[];
 
       // In this test data, clusters have no services assigned
@@ -362,11 +367,11 @@ void main() {
       final LAProject restored = LAProject.fromJson(parsed);
 
       // Find docker cluster
-      final originalDockerCluster = original.clusters.firstWhere(
-        (c) => c.type == DeploymentType.dockerCompose,
+      final LACluster originalDockerCluster = original.clusters.firstWhere(
+        (LACluster c) => c.type == DeploymentType.dockerCompose,
       );
-      final restoredDockerCluster = restored.clusters.firstWhere(
-        (c) => c.type == DeploymentType.dockerCompose,
+      final LACluster restoredDockerCluster = restored.clusters.firstWhere(
+        (LACluster c) => c.type == DeploymentType.dockerCompose,
       );
 
       expect(

@@ -10,9 +10,9 @@ void main() {
   group('LACluster Serialization Tests', () {
     test('LACluster with serverId serializes correctly', () {
       // Create a simple cluster with serverId
-      final String projectId = 'project123';
-      final String serverId = 'server456';
-      final String clusterId = 'cluster789';
+      const String projectId = 'project123';
+      const String serverId = 'server456';
+      const String clusterId = 'cluster789';
 
       final LACluster cluster = LACluster(
         id: clusterId,
@@ -49,15 +49,13 @@ void main() {
     });
 
     test('LACluster without serverId (null) serializes correctly', () {
-      final String projectId = 'project123';
-      final String clusterId = 'cluster789';
+      const String projectId = 'project123';
+      const String clusterId = 'cluster789';
 
       final LACluster cluster = LACluster(
         id: clusterId,
         projectId: projectId,
-        serverId: null,
         name: 'Orphan cluster',
-        type: DeploymentType.dockerSwarm,
       );
 
       final Map<String, dynamic> json = cluster.toJson();
@@ -76,7 +74,7 @@ void main() {
     });
 
     test('LACluster deserializes from JSON with serverId correctly', () {
-      final Map<String, dynamic> json = {
+      final Map<String, dynamic> json = <String, dynamic>{
         'id': 'cluster123',
         'projectId': 'project456',
         'serverId': 'server789',
@@ -98,13 +96,12 @@ void main() {
     });
 
     test('LACluster round-trip serialization preserves serverId', () {
-      final String serverId = 'server_id_xyz';
+      const String serverId = 'server_id_xyz';
       final LACluster originalCluster = LACluster(
         id: 'cluster_id_abc',
         projectId: 'project_id_def',
         serverId: serverId,
         name: 'Test Docker Cluster',
-        type: DeploymentType.dockerSwarm,
       );
 
       // Serialize and deserialize
@@ -174,7 +171,7 @@ void main() {
 
     test('LAProject deserializes Docker Compose cluster with serverId', () {
       // Create a JSON representation of a project with a docker-compose cluster
-      final Map<String, dynamic> projectJson = {
+      final Map<String, dynamic> projectJson = <String, dynamic>{
         'id': 'project_deser_1',
         'longName': 'Deserialization Test',
         'shortName': 'DT',
@@ -188,12 +185,12 @@ void main() {
         'advancedTune': false,
         'additionalVariables': '',
         'createdAt': 1643587200,
-        'mapBoundsFstPoint': {'latitude': -44.0, 'longitude': 112.0},
-        'mapBoundsSndPoint': {'latitude': -9.0, 'longitude': 154.0},
+        'mapBoundsFstPoint': <String, double>{'latitude': -44.0, 'longitude': 112.0},
+        'mapBoundsSndPoint': <String, double>{'latitude': -9.0, 'longitude': 154.0},
         'mapZoom': 5.0,
         'servers': <dynamic>[],
         'clusters': <dynamic>[
-          {
+          <String, String>{
             'id': 'docker_compose_deser_1',
             'projectId': 'project_deser_1',
             'serverId': 'server_deser_1',
@@ -233,7 +230,7 @@ void main() {
     test(
       'Multiple clusters with different serverIds serialize independently',
       () {
-        final String projectId = 'project_multi_1';
+        const String projectId = 'project_multi_1';
 
         final LACluster cluster1 = LACluster(
           id: 'cluster_1',
@@ -248,11 +245,10 @@ void main() {
           projectId: projectId,
           serverId: 'server_2',
           name: 'Docker Swarm on Server 2',
-          type: DeploymentType.dockerSwarm,
         );
 
-        final json1 = cluster1.toJson();
-        final json2 = cluster2.toJson();
+        final Map<String, dynamic> json1 = cluster1.toJson();
+        final Map<String, dynamic> json2 = cluster2.toJson();
 
         expect(
           json1['serverId'],

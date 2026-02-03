@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../la_theme.dart';
+import '../models/la_cluster.dart';
 import '../models/la_project.dart';
 
 class JsonViewerDialog extends StatelessWidget {
@@ -97,7 +98,7 @@ class JsonViewerDialog extends StatelessWidget {
                       'Clusters:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    for (final cluster in project.clusters)
+                    for (final LACluster cluster in project.clusters)
                       Padding(
                         padding: const EdgeInsets.only(left: 16),
                         child: Text(
@@ -112,7 +113,7 @@ class JsonViewerDialog extends StatelessWidget {
                       'Cluster Services:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    for (final entry in project.clusterServices.entries)
+                    for (final MapEntry<String, List<String>> entry in project.clusterServices.entries)
                       Padding(
                         padding: const EdgeInsets.only(left: 16),
                         child: Text(

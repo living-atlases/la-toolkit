@@ -39,7 +39,7 @@ void main() {
 
       // Check that collectory is NOT in any cluster's services
       final List<LACluster> clusters = p.clusters
-          .where((c) => c.serverId == vm1.id)
+          .where((LACluster c) => c.serverId == vm1.id)
           .toList();
       for (final LACluster cluster in clusters) {
         final List<String> clusterServices =
@@ -74,7 +74,7 @@ void main() {
 
       final int clustersAfterFirst = p.clusters
           .where(
-            (c) =>
+            (LACluster c) =>
                 c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
           )
           .length;
@@ -89,7 +89,7 @@ void main() {
 
       final int clustersAfterSecond = p.clusters
           .where(
-            (c) =>
+            (LACluster c) =>
                 c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
           )
           .length;
@@ -130,7 +130,7 @@ void main() {
 
         // Check that dockerCompose is NOT in any clusterServices
         for (final LACluster cluster in p.clusters.where(
-          (c) => c.serverId == vm1.id,
+          (LACluster c) => c.serverId == vm1.id,
         )) {
           final List<String> clusterServices =
               p.clusterServices[cluster.id] ?? <String>[];
@@ -173,7 +173,7 @@ void main() {
       ]);
 
       final LACluster? cluster = p.clusters.firstWhereOrNull(
-        (c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
+        (LACluster c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
       );
       expect(cluster, isNotNull, reason: 'Cluster should be created');
 
@@ -246,14 +246,14 @@ void main() {
         // Check each VM has separate cluster
         final List<LACluster> vm1Clusters = p.clusters
             .where(
-              (c) =>
+              (LACluster c) =>
                   c.serverId == vm1.id &&
                   c.type == DeploymentType.dockerCompose,
             )
             .toList();
         final List<LACluster> vm2Clusters = p.clusters
             .where(
-              (c) =>
+              (LACluster c) =>
                   c.serverId == vm2.id &&
                   c.type == DeploymentType.dockerCompose,
             )
@@ -332,13 +332,13 @@ void main() {
 
         // Find the restored server by name
         final LAServer? restoredServer = restoredP.servers.firstWhereOrNull(
-          (s) => s.name == 'vm1',
+          (LAServer s) => s.name == 'vm1',
         );
         expect(restoredServer, isNotNull);
 
         // Find the restored cluster using restored server's ID
         final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-          (c) =>
+          (LACluster c) =>
               c.serverId == restoredServer!.id &&
               c.type == DeploymentType.dockerCompose,
         );
@@ -469,7 +469,7 @@ void main() {
 
         // Find the restored cluster
         final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-          (c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
+          (LACluster c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
         );
         expect(
           restoredCluster,
@@ -514,7 +514,7 @@ void main() {
       final LAProject restoredP = LAProject.fromJson(json);
 
       final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-        (c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
+        (LACluster c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
       );
 
       final List<String> restoredServices =
@@ -566,7 +566,7 @@ void main() {
 
       // Find restored cluster
       final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-        (c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
+        (LACluster c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
       );
 
       expect(restoredCluster, isNotNull);
@@ -596,7 +596,7 @@ void main() {
 
       // Get the cluster that was created
       final LACluster? cluster = p.clusters.firstWhereOrNull(
-        (c) => c.type == DeploymentType.dockerCompose && c.serverId == vm1.id,
+        (LACluster c) => c.type == DeploymentType.dockerCompose && c.serverId == vm1.id,
       );
       expect(cluster, isNotNull);
       expect(cluster!.serverId, equals(vm1.id));
@@ -607,7 +607,7 @@ void main() {
 
       // Verify serverId is preserved after deserialization
       final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-        (c) => c.type == DeploymentType.dockerCompose,
+        (LACluster c) => c.type == DeploymentType.dockerCompose,
       );
       expect(restoredCluster, isNotNull);
       expect(
@@ -668,13 +668,13 @@ void main() {
 
         // Find the restored server
         final LAServer? restoredServer = restoredP.servers.firstWhereOrNull(
-          (s) => s.name == 'vm1',
+          (LAServer s) => s.name == 'vm1',
         );
         expect(restoredServer, isNotNull);
 
         // Find the restored cluster using the restored server's ID
         final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-          (c) =>
+          (LACluster c) =>
               c.serverId == restoredServer!.id &&
               c.type == DeploymentType.dockerCompose,
         );
