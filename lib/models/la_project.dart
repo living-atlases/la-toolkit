@@ -571,12 +571,21 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   List<LAServer> serversWithServices() {
-    return servers
-        .where(
-          (LAServer s) =>
-              serverServices[s.id] != null && serverServices[s.id]!.isNotEmpty,
-        )
-        .toList();
+    return servers.where((LAServer s) {
+      final bool hasServerServices =
+          serverServices[s.id] != null && serverServices[s.id]!.isNotEmpty;
+      if (hasServerServices) return true;
+
+      // Check if any cluster on this server has services
+      final bool hasClusterServices = clusters
+          .where((LACluster c) => c.serverId == s.id)
+          .any(
+            (LACluster c) =>
+                clusterServices[c.id] != null &&
+                clusterServices[c.id]!.isNotEmpty,
+          );
+      return hasClusterServices;
+    }).toList();
   }
 
   bool allServersWithIPs() {
@@ -1695,6 +1704,40 @@ check results length: ${checkResults.length}''';
       final Map<String, dynamic> nginxDockerInternalAliasesByHost =
           <String, dynamic>{};
 
+      for (final LACluster cluster in clusters) {
+        if (cluster.type == DeploymentType.dockerSwarm ||
+            cluster.type == DeploymentType.dockerCompose) {
+          final LAServer? server = servers.firstWhereOrNull(
+            (s) => s.id == cluster.serverId,
+          );
+          if (server != null) {
+            final List<String> serviceNames =
+                clusterServices[cluster.id] ?? <String>[];
+            for (final String sN in serviceNames) {
+              final LAService service = getService(sN);
+              if (service.use) {
+                final LAServiceDesc desc = LAServiceDesc.get(sN);
+                if (!desc.withoutUrl && !desc.isSubService) {
+                  nginxDockerInternalAliasesByHost.putIfAbsent(
+                    server.name,
+                    () => <String>[],
+                  );
+                  final String url = service.url(domain);
+                  if (!(nginxDockerInternalAliasesByHost[server.name]!
+                          as List<String>)
+                      .contains(url)) {
+                    (nginxDockerInternalAliasesByHost[server.name]!
+                            as List<String>)
+                        .add(url);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Also check serviceDeploys for any stray docker-type assignments NOT in clusters
       for (final LAService service in services) {
         if (service.use) {
           final List<LAServiceDeploy> deploys = getServiceDeploysForSomeService(
