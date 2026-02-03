@@ -110,89 +110,6 @@ class LAProject implements IsJsonSerializable<LAProject> {
     validateCreation();
   }
 
-  factory LAProject.fromJson(Map<String, dynamic> json) {
-    final LAProject project = _$LAProjectFromJson(json);
-
-    // CRITICAL FIX: Rebuild clusterServices from serviceDeploys if it's empty
-    // This can happen when loading from server if clusterServices wasn't persisted correctly
-    _rebuildEmptyClusterServices(project);
-
-    final List<String> integrityErrors = project.validateDataIntegrity();
-    if (integrityErrors.isNotEmpty) {
-      if (kDebugMode) {
-        debugPrint(
-          '⚠️  Data integrity issues detected in project "${project.shortName}":',
-        );
-        for (final String error in integrityErrors) {
-          debugPrint('  - $error');
-        }
-      }
-    }
-
-    return project;
-  }
-
-  /// Rebuilds clusterServices from serviceDeploys if empty clusters are found
-  /// This handles the case where data was loaded from server but clusterServices wasn't persisted
-  /// CRITICAL: Only includes services that are NOT already in serverServices (prevents duplicates)
-  static void _rebuildEmptyClusterServices(LAProject project) {
-    bool rebuilt = false;
-
-    // Find clusters that have no services assigned but have serviceDeploys
-    for (final LACluster cluster in project.clusters) {
-      // Skip if cluster.serverId is null (can't have duplicates if not linked to server)
-      if (cluster.serverId == null) {
-        continue;
-      }
-
-      final List<String> servicesInCluster =
-          project.clusterServices[cluster.id] ?? <String>[];
-
-      // If cluster is empty, try to rebuild from serviceDeploys
-      if (servicesInCluster.isEmpty) {
-        // Get services already assigned to this server's VM
-        final List<String> servicesInServerVM =
-            project.serverServices[cluster.serverId] ?? <String>[];
-
-        final List<String> servicesFromDeploys = project.serviceDeploys
-            .where((LAServiceDeploy sd) {
-              // Match by clusterId first (if explicitly set)
-              if (sd.clusterId == cluster.id) return true;
-              // If clusterId is null/empty, match by serverId and type
-              if ((sd.clusterId == null || sd.clusterId!.isEmpty) &&
-                  sd.serverId == cluster.serverId &&
-                  sd.type == cluster.type)
-                return true;
-              return false;
-            })
-            .map((LAServiceDeploy sd) {
-              final LAService? service = project.services.firstWhereOrNull(
-                (s) => s.id == sd.serviceId,
-              );
-              return service?.nameInt;
-            })
-            .whereType<String>()
-            // CRITICAL: Exclude services already in serverServices to prevent duplicates
-            .where((serviceName) => !servicesInServerVM.contains(serviceName))
-            .toList();
-
-        if (servicesFromDeploys.isNotEmpty) {
-          project.clusterServices[cluster.id] = servicesFromDeploys;
-          rebuilt = true;
-          if (kDebugMode) {
-            debugPrint(
-              '🔧 Rebuilt clusterServices for ${cluster.name}: ${servicesFromDeploys.join(", ")}',
-            );
-          }
-        }
-      }
-    }
-
-    if (rebuilt && kDebugMode) {
-      debugPrint('✅ clusterServices rebuilt from serviceDeploys');
-    }
-  }
-
   factory LAProject.fromObject(
     Map<String, dynamic> yoRc, {
     bool debug = false,
@@ -359,6 +276,94 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
     // TODO(vjrj): map zoom
     return p;
+  }
+
+  factory LAProject.fromJson(Map<String, dynamic> json) {
+    final LAProject project = _$LAProjectFromJson(json);
+
+    // CRITICAL FIX: Rebuild clusterServices from serviceDeploys if it's empty
+    // This can happen when loading from server if clusterServices wasn't persisted correctly
+    _rebuildEmptyClusterServices(project);
+
+    final List<String> integrityErrors = project.validateDataIntegrity();
+    if (integrityErrors.isNotEmpty) {
+      if (kDebugMode) {
+        debugPrint(
+          '⚠️  Data integrity issues detected in project "${project.shortName}":',
+        );
+        for (final String error in integrityErrors) {
+          debugPrint('  - $error');
+        }
+      }
+    }
+
+    return project;
+  }
+
+  /// Rebuilds clusterServices from serviceDeploys if empty clusters are found
+  /// This handles the case where data was loaded from server but clusterServices wasn't persisted
+  /// CRITICAL: Only includes services that are NOT already in serverServices (prevents duplicates)
+  static void _rebuildEmptyClusterServices(LAProject project) {
+    bool rebuilt = false;
+
+    // Find clusters that have no services assigned but have serviceDeploys
+    for (final LACluster cluster in project.clusters) {
+      // Skip if cluster.serverId is null (can't have duplicates if not linked to server)
+      if (cluster.serverId == null) {
+        continue;
+      }
+
+      final List<String> servicesInCluster =
+          project.clusterServices[cluster.id] ?? <String>[];
+
+      // If cluster is empty, try to rebuild from serviceDeploys
+      if (servicesInCluster.isEmpty) {
+        // Get services already assigned to this server's VM
+        final List<String> servicesInServerVM =
+            project.serverServices[cluster.serverId] ?? <String>[];
+
+        final List<String> servicesFromDeploys = project.serviceDeploys
+            .where((LAServiceDeploy sd) {
+              // Match by clusterId first (if explicitly set)
+              if (sd.clusterId == cluster.id) {
+                return true;
+              }
+              // If clusterId is null/empty, match by serverId and type
+              if ((sd.clusterId == null || sd.clusterId!.isEmpty) &&
+                  sd.serverId == cluster.serverId &&
+                  sd.type == cluster.type) {
+                return true;
+              }
+              return false;
+            })
+            .map((LAServiceDeploy sd) {
+              final LAService? service = project.services.firstWhereOrNull(
+                (LAService s) => s.id == sd.serviceId,
+              );
+              return service?.nameInt;
+            })
+            .whereType<String>()
+            // CRITICAL: Exclude services already in serverServices to prevent duplicates
+            .where(
+              (String serviceName) => !servicesInServerVM.contains(serviceName),
+            )
+            .toList();
+
+        if (servicesFromDeploys.isNotEmpty) {
+          project.clusterServices[cluster.id] = servicesFromDeploys;
+          rebuilt = true;
+          if (kDebugMode) {
+            debugPrint(
+              '🔧 Rebuilt clusterServices for ${cluster.name}: ${servicesFromDeploys.join(", ")}',
+            );
+          }
+        }
+      }
+    }
+
+    if (rebuilt && kDebugMode) {
+      debugPrint('✅ clusterServices rebuilt from serviceDeploys');
+    }
   }
 
   // Basic -----
@@ -574,7 +579,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return servers.where((LAServer s) {
       final bool hasServerServices =
           serverServices[s.id] != null && serverServices[s.id]!.isNotEmpty;
-      if (hasServerServices) return true;
+      if (hasServerServices) {
+        return true;
+      }
 
       // Check if any cluster on this server has services
       final bool hasClusterServices = clusters
@@ -654,7 +661,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       // Get all services in clusters for this server
       final Set<String> servicesInClusters = <String>{};
       for (final LACluster cluster in clusters.where(
-        (c) => c.serverId == server.id,
+        (LACluster c) => c.serverId == server.id,
       )) {
         final List<String> clusterServices =
             this.clusterServices[cluster.id] ?? <String>[];
@@ -685,7 +692,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     for (final LAServer server in servers) {
       final List<LACluster> dockerComposeClusters = clusters
           .where(
-            (c) =>
+            (LACluster c) =>
                 c.serverId == server.id &&
                 c.type == DeploymentType.dockerCompose,
           )
@@ -698,7 +705,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
 
       final List<LACluster> dockerSwarmClusters = clusters
           .where(
-            (c) =>
+            (LACluster c) =>
                 c.serverId == server.id && c.type == DeploymentType.dockerSwarm,
           )
           .toList();
@@ -990,7 +997,7 @@ check results length: ${checkResults.length}''';
         }
         serverId = potentialServer.id;
         LACluster? cluster = clusters.firstWhereOrNull(
-          (c) => c.serverId == serverId && c.type == type,
+          (LACluster c) => c.serverId == serverId && c.type == type,
         );
         if (cluster == null) {
           if (kDebugMode) {
@@ -998,7 +1005,7 @@ check results length: ${checkResults.length}''';
           }
           _addDockerClusterIfNotExists(serverId: serverId, type: type);
           cluster = clusters.firstWhereOrNull(
-            (c) => c.serverId == serverId && c.type == type,
+            (LACluster c) => c.serverId == serverId && c.type == type,
           );
           if (kDebugMode) {
             debugPrint(
@@ -1015,7 +1022,7 @@ check results length: ${checkResults.length}''';
         clusterId = cluster!.id;
       } else {
         final LACluster? cluster = clusters.firstWhereOrNull(
-          (c) => c.id == sOrCId,
+          (LACluster c) => c.id == sOrCId,
         );
         if (cluster != null) {
           if (kDebugMode) {
@@ -1049,14 +1056,15 @@ check results length: ${checkResults.length}''';
       // Also ensure docker services are never in clusterServices
       final List<String> servicesCleaned = newServices
           .where(
-            (service) => service != dockerSwarm && service != dockerCompose,
+            (String service) =>
+                service != dockerSwarm && service != dockerCompose,
           )
           .toList();
 
       if (clusterId != null) {
         if (kDebugMode)
           debugPrint(
-            "Assigning to cluster: $clusterId services: $servicesCleaned",
+            'Assigning to cluster: $clusterId services: $servicesCleaned',
           );
         clusterServices[clusterId] = servicesCleaned;
       }
@@ -1152,14 +1160,14 @@ check results length: ${checkResults.length}''';
     if (!isServer) {
       final LAServer? potentialServer = getServerById(sIdOrCid);
       if (potentialServer != null) {
-        LACluster? cluster = clusters.firstWhereOrNull(
-          (c) => c.serverId == potentialServer.id && c.type == type,
+        final LACluster? cluster = clusters.firstWhereOrNull(
+          (LACluster c) => c.serverId == potentialServer.id && c.type == type,
         );
         clusterId = cluster?.id;
         serverId = potentialServer.id;
       } else {
         final LACluster? cluster = clusters.firstWhereOrNull(
-          (c) => c.id == sIdOrCid,
+          (LACluster c) => c.id == sIdOrCid,
         );
         serverId = cluster?.serverId;
         clusterId = sIdOrCid;
@@ -1444,7 +1452,7 @@ check results length: ${checkResults.length}''';
 
     clusterServices.forEach((String id, List<String> serviceNames) {
       if (kDebugMode && serviceName == 'solr')
-        debugPrint("Checking cluster $id services: $serviceNames");
+        debugPrint('Checking cluster $id services: $serviceNames');
       if (serviceNames.contains(serviceName)) {
         final LACluster? cluster = clusters.firstWhereOrNull(
           (LACluster c) => c.id == id,
@@ -1452,7 +1460,7 @@ check results length: ${checkResults.length}''';
         if (cluster != null) {
           if (kDebugMode && serviceName == 'solr')
             debugPrint(
-              "Cluster found: ${cluster.id}, type: ${cluster.type}, serverId: ${cluster.serverId}",
+              'Cluster found: ${cluster.id}, type: ${cluster.type}, serverId: ${cluster.serverId}',
             );
           if (cluster.type == DeploymentType.dockerCompose) {
             final LAServer? server = servers.firstWhereOrNull(
@@ -1460,12 +1468,12 @@ check results length: ${checkResults.length}''';
             );
             if (server != null) {
               if (kDebugMode && serviceName == 'solr')
-                debugPrint("Server found: ${server.name} (id: ${server.id})");
+                debugPrint('Server found: ${server.name} (id: ${server.id})');
               hostnames.add(server.name);
             } else {
               if (kDebugMode && serviceName == 'solr')
                 debugPrint(
-                  "Server NOT found for cluster ${cluster.id} (serverId: ${cluster.serverId})",
+                  'Server NOT found for cluster ${cluster.id} (serverId: ${cluster.serverId})',
                 );
             }
           } else if (cluster.type == DeploymentType.dockerSwarm) {
@@ -1484,7 +1492,7 @@ check results length: ${checkResults.length}''';
       }
     });
     if (kDebugMode && serviceName == 'solr')
-      debugPrint("getHostnames($serviceName) returning: $hostnames");
+      debugPrint('getHostnames($serviceName) returning: $hostnames');
     return hostnames.toList();
   }
 
@@ -1496,12 +1504,13 @@ check results length: ${checkResults.length}''';
       current.serversWithServices().forEach((LAServer server) {
         final String hostnames = current
             .getServerServicesFull(id: server.id, type: DeploymentType.vm)
-            .where(
-              (LAService s) =>
+            .where((LAService s) {
+              final LAServiceDesc desc = LAServiceDesc.get(s.nameInt);
+              return !desc.withoutUrl &&
                   !LAServiceDesc.subServices.contains(s.nameInt) &&
                   s.nameInt != biocacheBackend &&
-                  s.nameInt != pipelines,
-            )
+                  s.nameInt != pipelines;
+            })
             .map((LAService s) => s.url(current.domain))
             .toSet() // to remove dups
             .toList()
@@ -1671,10 +1680,16 @@ check results length: ${checkResults.length}''';
 
       // Mappings based on api/libs/transform.js
       String keyName = service.nameInt;
-      if (keyName == 'cas') keyName = 'CAS';
-      if (keyName == 'biocache_backend') keyName = 'biocache_store';
+      if (keyName == 'cas') {
+        keyName = 'CAS';
+      }
+      if (keyName == 'biocache_backend') {
+        keyName = 'biocache_store';
+      }
       // transform.js: LA_use_ala_bie: "LA_use_species"
-      if (keyName == 'ala_bie') keyName = 'species';
+      if (keyName == 'ala_bie') {
+        keyName = 'species';
+      }
       // LA_use_species_lists remains LA_use_species_lists in transform.js map
 
       conf['LA_use_$keyName'] = useIt;
@@ -1708,7 +1723,7 @@ check results length: ${checkResults.length}''';
         if (cluster.type == DeploymentType.dockerSwarm ||
             cluster.type == DeploymentType.dockerCompose) {
           final LAServer? server = servers.firstWhereOrNull(
-            (s) => s.id == cluster.serverId,
+            (LAServer s) => s.id == cluster.serverId,
           );
           if (server != null) {
             final List<String> serviceNames =
@@ -1747,7 +1762,7 @@ check results length: ${checkResults.length}''';
             if (sd.type == DeploymentType.dockerSwarm ||
                 sd.type == DeploymentType.dockerCompose) {
               final LAServer? server = servers.firstWhereOrNull(
-                (s) => s.id == sd.serverId,
+                (LAServer s) => s.id == sd.serverId,
               );
               if (server != null) {
                 final LAServiceDesc desc = LAServiceDesc.get(service.nameInt);
@@ -1819,14 +1834,16 @@ check results length: ${checkResults.length}''';
       bool anyServiceInDockerCompose = false;
 
       for (final LACluster cluster in clusters.where(
-        (c) => c.type == DeploymentType.dockerCompose,
+        (LACluster c) => c.type == DeploymentType.dockerCompose,
       )) {
-        final servicesInCluster = clusterServices[cluster.id];
+        final List<String>? servicesInCluster = clusterServices[cluster.id];
         if (servicesInCluster != null && servicesInCluster.isNotEmpty) {
           anyServiceInDockerCompose = true;
           if (cluster.serverId != null) {
             final LAServer? s = getServerById(cluster.serverId!);
-            if (s != null) composeHosts.add(s.name);
+            if (s != null) {
+              composeHosts.add(s.name);
+            }
           }
         }
       }
@@ -1838,6 +1855,87 @@ check results length: ${checkResults.length}''';
           ', ',
         );
       }
+
+      // Docker Compose extra hosts for resolution of other VMs/servies
+      final Map<String, dynamic> dockerExtraHostsByHost = <String, dynamic>{};
+      final LAProject proj = isHub ? parent! : this;
+      final List<LAProject> projects = <LAProject>[proj, ...proj.hubs];
+
+      for (final LAServer server in servers) {
+        final bool isCompose = clusters.any(
+          (LACluster c) =>
+              c.serverId == server.id && c.type == DeploymentType.dockerCompose,
+        );
+        if (isCompose) {
+          final Set<String> extraHosts = <String>{};
+          for (final LAProject current in projects) {
+            for (final LAServer otherServer in current.servers) {
+              if (otherServer.id == server.id && current.id == id) {
+                continue;
+              }
+
+              final Set<String> hns = <String>{};
+
+              // Physical host name
+              hns.add(otherServer.name);
+
+              // Helper function to gather URLs from a list of services
+              void addUrlsForServices(List<LAService> servicesList) {
+                hns.addAll(
+                  servicesList
+                      .where((LAService s) {
+                        final LAServiceDesc desc = LAServiceDesc.get(s.nameInt);
+                        return !desc.withoutUrl &&
+                            !desc.isSubService &&
+                            s.nameInt != biocacheBackend &&
+                            s.nameInt != pipelines;
+                      })
+                      .expand((LAService s) => s.url(current.domain).split(' '))
+                      .where(
+                        (String url) =>
+                            url.isNotEmpty &&
+                            url != 'docker' &&
+                            url != 'compose' &&
+                            url != 'common' &&
+                            !url.startsWith('compose.'),
+                      ),
+                );
+              }
+
+              // 1. VM Services
+              addUrlsForServices(
+                current.getServerServicesFull(
+                  id: otherServer.id,
+                  type: DeploymentType.vm,
+                ),
+              );
+
+              // 2. Cluster Services (Docker Compose, Swarm, etc)
+              final List<LACluster> otherClusters = current.clusters
+                  .where((LACluster c) => c.serverId == otherServer.id)
+                  .toList();
+              for (final LACluster cluster in otherClusters) {
+                addUrlsForServices(
+                  current.getServerServicesFull(
+                    id: cluster.id,
+                    type: cluster.type,
+                  ),
+                );
+              }
+
+              for (final String hn in hns) {
+                if (hn.isNotEmpty) {
+                  extraHosts.add('$hn:${otherServer.ip}');
+                }
+              }
+            }
+          }
+          if (extraHosts.isNotEmpty) {
+            dockerExtraHostsByHost[server.name] = extraHosts.toList()..sort();
+          }
+        }
+      }
+      conf['LA_docker_extra_hosts_by_host'] = dockerExtraHostsByHost;
     }
 
     // Release versions
@@ -2426,7 +2524,7 @@ check results length: ${checkResults.length}''';
                 serviceName != dockerCompose &&
                 serviceName != dockerCommon) {
               warnings.add(
-                "Service ${LAServiceDesc.get(serviceName).name} is assigned to VM ${server.name} directly, but this VM is a Docker Compose host. Please assign it to the Docker Compose cluster or use a different VM.",
+                'Service ${LAServiceDesc.get(serviceName).name} is assigned to VM ${server.name} directly, but this VM is a Docker Compose host. Please assign it to the Docker Compose cluster or use a different VM.',
               );
             }
           }
@@ -2469,7 +2567,7 @@ check results length: ${checkResults.length}''';
             '  ✓ Creating Docker Swarm cluster for server: ${server?.name ?? serverId}',
           );
         }
-        final newCluster = LACluster(
+        final LACluster newCluster = LACluster(
           id: ObjectId().toString(),
           projectId: id,
           serverId: serverId,
@@ -2498,7 +2596,7 @@ check results length: ${checkResults.length}''';
             '  ✓ Creating Docker Compose cluster for server: ${server?.name ?? serverId} (serverId: $serverId)',
           );
         }
-        final newCluster = LACluster(
+        final LACluster newCluster = LACluster(
           id: ObjectId().toString(),
           projectId: id,
           serverId: serverId,
