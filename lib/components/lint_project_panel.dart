@@ -164,6 +164,8 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               const AlertCard(
                 message: 'All servers should have configured their SSH keys',
               ),
+            for (final String warning in project.getDockerComposeVMWarnings())
+              AlertCard(message: warning),
             if (!project.servicesInDifferentServers(collectory, alaHub) &&
                 !project.hasAnyServerWithDockerCompose())
               const AlertCard(

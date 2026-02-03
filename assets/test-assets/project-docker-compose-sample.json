@@ -1,0 +1,110 @@
+{
+  "id": "test-project-docker-compose-1",
+  "longName": "Test Project with Docker Compose",
+  "shortName": "TPDC",
+  "domain": "test-docker.example.com",
+  "theme": "clean",
+  "useSSL": true,
+  "isCreated": true,
+  "isHub": false,
+  "status": "basicDefined",
+  "advancedEdit": false,
+  "advancedTune": false,
+  "additionalVariables": "",
+  "alaInstallRelease": "2.3.4",
+  "generatorRelease": "1.6.9",
+  "createdAt": 1677571200000,
+  "mapZoom": 5,
+  "mapBoundsFstPoint": {
+    "lat": -25.2744,
+    "lng": 133.7751
+  },
+  "mapBoundsSndPoint": {
+    "lat": -12.4637,
+    "lng": 130.8355
+  },
+  "servers": [
+    {
+      "id": "server-docker-prod-1",
+      "projectId": "test-project-docker-compose-1",
+      "name": "Docker Production Server",
+      "ip": "192.168.1.100",
+      "sshPort": 22,
+      "sshUser": {
+        "name": "ubuntu",
+        "uid": "1000"
+      },
+      "gateways": [],
+      "reachable": "unknown",
+      "sshReachable": "unknown",
+      "sudoEnabled": "unknown",
+      "osName": "Ubuntu",
+      "osVersion": "22.04 LTS",
+      "sshKey": {
+        "private": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA...",
+        "public": "ssh-rsa AAAAB3NzaC1yc2EAAAA..."
+      }
+    }
+  ],
+  "clusters": [
+    {
+      "id": "cluster-docker-compose-1",
+      "projectId": "test-project-docker-compose-1",
+      "serverId": "server-docker-prod-1",
+      "name": "Docker Compose on Docker Production Server",
+      "type": "dockerCompose"
+    },
+    {
+      "id": "cluster-docker-swarm-1",
+      "projectId": "test-project-docker-compose-1",
+      "serverId": "server-docker-prod-1",
+      "name": "Docker Swarm on Docker Production Server",
+      "type": "dockerSwarm"
+    }
+  ],
+  "services": [
+    {
+      "id": "service-ala-hub-1",
+      "projectId": "test-project-docker-compose-1",
+      "nameInt": "ala_hub",
+      "name": "ALA Hub",
+      "docLink": "https://github.com/living-atlases/ala-hub",
+      "description": "Main web interface for the Atlas",
+      "enabled": true,
+      "requiredRoles": [],
+      "incompatibleServices": [],
+      "selectedVersion": "3.3.4"
+    }
+  ],
+  "serviceDeploys": [
+    {
+      "id": "service-deploy-ala-hub-1",
+      "projectId": "test-project-docker-compose-1",
+      "serverId": "server-docker-prod-1",
+      "clusterId": "cluster-docker-compose-1",
+      "serviceId": "service-ala-hub-1",
+      "type": "dockerCompose"
+    }
+  ],
+  "variables": [],
+  "cmdHistoryEntries": [],
+  "serverServices": {
+    "server-docker-prod-1": [
+      "docker_compose",
+      "docker_swarm"
+    ]
+  },
+  "clusterServices": {
+    "cluster-docker-compose-1": [
+      "ala_hub"
+    ],
+    "cluster-docker-swarm-1": []
+  },
+  "checkResults": {},
+  "runningVersions": {},
+  "selectedVersions": {},
+  "parent": null,
+  "hubs": [],
+  "lastCmdEntry": null,
+  "lastCmdDetails": null
+}

@@ -1033,26 +1033,7 @@ check results length: ${checkResults.length}''';
     // In the same server nameindexer and biocache_cli
     newServices = _addSubServices(newServices);
 
-    // CRITICAL: Enforce strict exclusivity - a service cannot be in both serverServices AND clusterServices for the same server
     if (isServer) {
-      // When assigning to VM, ensure these services are NOT in any cluster of this server
-      if (serverId != null) {
-        for (final LACluster cluster in clusters.where(
-          (c) => c.serverId == serverId,
-        )) {
-          final List<String>? clusterServicesList = clusterServices[cluster.id];
-          if (clusterServicesList != null) {
-            clusterServicesList.removeWhere(
-              (service) => newServices.contains(service),
-            );
-            if (kDebugMode && clusterServicesList.isNotEmpty) {
-              debugPrint(
-                '  🧹 Removed duplicate services from cluster ${cluster.name}',
-              );
-            }
-          }
-        }
-      }
       serverServices[sOrCId] = newServices.toList();
     } else {
       // When assigning to cluster, ensure these services are NOT in the server's VM services
@@ -1062,27 +1043,6 @@ check results length: ${checkResults.length}''';
             (service) => service != dockerSwarm && service != dockerCompose,
           )
           .toList();
-
-      if (serverId != null && servicesCleaned.length < newServices.length) {
-        if (kDebugMode) {
-          debugPrint(
-            '  ⚠ Docker services removed from cluster assignment (they belong in serverServices): '
-            '${newServices.where((s) => s == dockerSwarm || s == dockerCompose).join(", ")}',
-          );
-        }
-      }
-
-      if (serverId != null) {
-        final List<String>? serverServicesList = serverServices[serverId];
-        if (serverServicesList != null) {
-          serverServicesList.removeWhere(
-            (service) => servicesCleaned.contains(service),
-          );
-          if (kDebugMode && serverServicesList.isNotEmpty) {
-            debugPrint('  🧹 Removed duplicate services from server');
-          }
-        }
-      }
 
       if (clusterId != null) {
         if (kDebugMode)
