@@ -116,6 +116,9 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
             store.dispatch(OpenProjectTools(project));
             BeamerCond.of(context, LAProjectViewLocation());
           },
+          onUpdateProjectLocal: (LAProject project) {
+            store.dispatch(UpdateProjectLocal(project));
+          },
           onSelectTuneTab: (int tab) =>
               store.dispatch(OnSelectTuneTab(currentTab: tab)),
         );
@@ -207,8 +210,11 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
               }
               items.add(
                 MessageItem(project, entry.value, (Object value) {
-                  project.setVariable(entry.value, value);
-                  vm.onSaveProject(project);
+                  final LAProject newProject = project.copyWith(
+                    variables: List<LAVariable>.from(project.variables),
+                  );
+                  newProject.setVariable(entry.value, value);
+                  vm.onUpdateProjectLocal(newProject);
                 }),
               );
             });
@@ -291,8 +297,10 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                           trailing: Switch(
                             value: project.advancedTune,
                             onChanged: (bool value) {
-                              project.advancedTune = value;
-                              vm.onSaveProject(project);
+                              final LAProject newProject = project.copyWith(
+                                advancedTune: value,
+                              );
+                              vm.onUpdateProjectLocal(newProject);
                             },
                           ),
                         ),
@@ -311,17 +319,18 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                           trailing: Switch(
                             value: vm.status == LAProjectStatus.inProduction,
                             onChanged: (bool value) {
+                              final LAProject newProject = project.copyWith();
                               if (value) {
-                                project.isCreated = true;
-                                project.fstDeployed = true;
-                                project.status = LAProjectStatus.inProduction;
-                                project.validateCreation();
-                                vm.onSaveProject(project);
+                                newProject.isCreated = true;
+                                newProject.fstDeployed = true;
+                                newProject.status =
+                                    LAProjectStatus.inProduction;
+                                newProject.validateCreation();
                               } else {
-                                project.status = LAProjectStatus.firstDeploy;
-                                project.validateCreation();
-                                vm.onSaveProject(project);
+                                newProject.status = LAProjectStatus.firstDeploy;
+                                newProject.validateCreation();
                               }
+                              vm.onUpdateProjectLocal(newProject);
                             },
                           ),
                         ),
@@ -364,8 +373,9 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                   onChange: (String? value) {
                                     final String version =
                                         value ?? vm.alaInstallReleases[0];
-                                    project.alaInstallRelease = version;
-                                    vm.onSaveProject(project);
+                                    final LAProject newProject = project
+                                        .copyWith(alaInstallRelease: version);
+                                    vm.onUpdateProjectLocal(newProject);
                                   },
                                 ),
                               ),
@@ -375,8 +385,9 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                   onChange: (String? value) {
                                     final String version =
                                         value ?? vm.generatorReleases[0];
-                                    project.generatorRelease = version;
-                                    vm.onSaveProject(project);
+                                    final LAProject newProject = project
+                                        .copyWith(generatorRelease: version);
+                                    vm.onUpdateProjectLocal(newProject);
                                   },
                                 ),
                               ),
@@ -394,9 +405,14 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                           LAReleasesSelectors(
                             onSoftwareSelected:
                                 (String sw, String version, bool save) {
-                                  project.setServiceDeployRelease(sw, version);
                                   if (save) {
-                                    vm.onSaveProject(project);
+                                    final LAProject newProject = project
+                                        .copyWith();
+                                    newProject.setServiceDeployRelease(
+                                      sw,
+                                      version,
+                                    );
+                                    vm.onUpdateProjectLocal(newProject);
                                   }
                                 },
                           ),
@@ -458,10 +474,12 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                             error: '',
                             selected: false,
                             onChanged: (String value) {
-                              project.additionalVariables = base64.encode(
-                                utf8.encode(value),
+                              final LAProject newProject = project.copyWith(
+                                additionalVariables: base64.encode(
+                                  utf8.encode(value),
+                                ),
                               );
-                              vm.onSaveProject(project);
+                              vm.onUpdateProjectLocal(newProject);
                             },
                           ),
                       /* trailing: HelpIcon(
@@ -660,6 +678,7 @@ class _ProjectTuneViewModel {
     required this.laReleases,
     required this.currentTab,
     required this.onUpdateProject,
+    required this.onUpdateProjectLocal,
     required this.softwareReleasesReady,
     required this.onSaveProject,
     required this.onInitCasKeys,
@@ -678,6 +697,7 @@ class _ProjectTuneViewModel {
   final LAProjectStatus status;
   final Map<String, LAReleases> laReleases;
   final void Function(LAProject) onUpdateProject;
+  final void Function(LAProject) onUpdateProjectLocal;
   final void Function(LAProject) onSaveProject;
   final void Function(LAProject) onCancel;
   final void Function(int) onSelectTuneTab;

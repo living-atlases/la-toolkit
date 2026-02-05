@@ -927,8 +927,9 @@ check results length: ${checkResults.length}''';
   }
 
   void setVariable(LAVariableDesc variableDesc, Object value) {
-    final LAVariable cur = getVariable(variableDesc.nameInt);
-    cur.value = value;
+    final LAVariable cur = getVariable(
+      variableDesc.nameInt,
+    ).copyWith(value: value);
     variables.removeWhere((LAVariable v) => v.nameInt == variableDesc.nameInt);
     variables.add(cur);
   }

@@ -590,7 +590,7 @@ class LAVariableDesc {
       subcategory: LAVariableSubcategory.dockerCompose,
       service: LAServiceName.docker_compose,
       depends: LAServiceName.docker_compose,
-      defValue: (_) => 'mailhog.l-a.site',
+      defValue: (LAProject project) => 'mail.${project.domain}',
       regExp: LARegExp.domainRegexp,
       isVisible: (LAProject project) =>
           project.getVariableValue('docker_mail_development_mode') as bool? ??
