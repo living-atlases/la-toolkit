@@ -544,14 +544,17 @@ void main() {
 
         // s3: Docker Compose with images
         project.serviceInUse('images', true);
-        project.assignByType(s3.id, DeploymentType.dockerCompose, <String>['images']);
+        project.assignByType(s3.id, DeploymentType.dockerCompose, <String>[
+          'images',
+        ]);
 
         final Map<String, dynamic> json = project.toGeneratorJson();
         final Map<String, dynamic> extraHostsByHost =
             json['LA_docker_extra_hosts_by_host'] as Map<String, dynamic>;
 
         expect(extraHostsByHost.containsKey('vm2'), isTrue);
-        final List<String> vm2ExtraHosts = extraHostsByHost['vm2'] as List<String>;
+        final List<String> vm2ExtraHosts =
+            extraHostsByHost['vm2'] as List<String>;
 
         // vm2 (Compose) should resolve:
         // s1: vm1, records.ehtest.org
@@ -567,7 +570,8 @@ void main() {
         expect(vm2ExtraHosts, contains('images.ehtest.org:10.0.0.3'));
 
         expect(extraHostsByHost.containsKey('vm3'), isTrue);
-        final List<String> vm3ExtraHosts = extraHostsByHost['vm3'] as List<String>;
+        final List<String> vm3ExtraHosts =
+            extraHostsByHost['vm3'] as List<String>;
         // vm3 (Compose) should resolve:
         // s1: vm1, records.ehtest.org
         // s2: vm2, collections.ehtest.org
@@ -581,6 +585,68 @@ void main() {
         expect(vm3ExtraHosts, isNot(contains('compose.ehtest.org:10.0.0.2')));
       },
     );
+
+    test('Test Case 11: Nginx Fast Mode Logic', () {
+      final LAProject project = LAProject(
+        longName: 'Fast Mode Test',
+        shortName: 'fastmode',
+        domain: 'fast.test',
+        alaInstallRelease: '1.0.0',
+        generatorRelease: '1.0.0',
+      );
+      final LAServer server = LAServer(
+        id: 's1',
+        name: 'vm1',
+        ip: '10.0.0.1',
+        projectId: project.id,
+      );
+      project.upsertServer(server);
+
+      // Scenario 1: Only services with subdomains enabled (ala_hub use subdomains by default)
+      project.serviceInUse('ala_hub', true);
+      project.assign(server, <String>['ala_hub']);
+      project.serviceInUse('collectory', true);
+      project.assign(server, <String>['collectory']);
+
+      Map<String, dynamic> json = project.toGeneratorJson();
+      expect(
+        json['LA_nginx_vhost_fast_mode'],
+        isTrue,
+        reason: 'All used services use subdomains (defaults)',
+      );
+
+      // Scenario 2: Enable CAS. Even if CAS uses subdomain (it might by default?), it should be ignored for global calculation
+      // But CAS global constant is false.
+      project.serviceInUse('cas', true);
+      project.assign(server, <String>['cas']);
+      json = project.toGeneratorJson();
+      expect(
+        json['LA_nginx_vhost_fast_mode'],
+        isTrue,
+        reason:
+            'CAS presence should not affect fast mode if others use subdomains',
+      );
+
+      // Scenario 3: Disable subdomains for one service (e.g. collectory)
+      project.getService('collectory').usesSubdomain = false;
+      json = project.toGeneratorJson();
+      expect(
+        json['LA_nginx_vhost_fast_mode'],
+        isFalse,
+        reason: 'One service using path should disable fast mode',
+      );
+
+      // Scenario 4: Re-enable subdomain for collectory
+      project.getService('collectory').usesSubdomain = true;
+      json = project.toGeneratorJson();
+      expect(json['LA_nginx_vhost_fast_mode'], isTrue);
+
+      // Scenario 5: Add a service that defaults to NO url? (Checked logic excludes withoutUrl)
+      // e.g. biocache_backend (biocache_store)?
+      // check LAServiceDesc for biocache_backend
+      // It has keys, maybe not withoutUrl.
+      // pipelines?
+    });
   });
 }
 
@@ -609,7 +675,9 @@ LAProject createProjectWithDockerAndVM() {
   // Assign solrcloud to Docker Compose on the same server
   project.serviceInUse('docker_compose', true);
   project.serviceInUse('solrcloud', true);
-  project.assignByType(server.id, DeploymentType.dockerCompose, <String>['solrcloud']);
+  project.assignByType(server.id, DeploymentType.dockerCompose, <String>[
+    'solrcloud',
+  ]);
 
   return project;
 }
