@@ -1102,12 +1102,27 @@ check results length: ${checkResults.length}''';
           );
 
           // First, try to get version from existing deploys of the same service (already persisted in BD)
+          bool versionSetManually = false;
           final String? existingVersion = getServiceDeployRelease(sN);
           if (existingVersion != null && existingVersion.isNotEmpty) {
             versions[sN] = existingVersion;
+            // existingVersion is a sticky default, NOT a manual override for the purpose of Docker vs VM switching.
           } else if (selectedVersions.containsKey(sN)) {
             // Fallback to in-memory selected versions (for current session)
             versions[sN] = selectedVersions[sN]!;
+            versionSetManually = true;
+          }
+
+          if (!versionSetManually &&
+              type == DeploymentType.dockerCompose &&
+              laReleases != null) {
+            final String nexusKey = '${service.nameInt}_nexus';
+            if (laReleases.containsKey(nexusKey)) {
+              final String? latestNexus = laReleases[nexusKey]?.latest;
+              if (latestNexus != null && latestNexus.isNotEmpty) {
+                versions[sN] = latestNexus;
+              }
+            }
           }
 
           // Ansible versions have the highest priority
@@ -1671,6 +1686,21 @@ check results length: ${checkResults.length}''';
         conf[mappedKey] = variable.value;
       }
     }
+
+    if (isDockerClusterConfigured()) {
+      final Object? brandingSource = getVariableValue('branding_source');
+      if (brandingSource != null && brandingSource is String) {
+        conf['LA_variable_branding_source'] = brandingSource;
+        if (brandingSource.endsWith('.git') ||
+            brandingSource.startsWith('http') ||
+            brandingSource.startsWith('git@')) {
+          conf['LA_variable_branding_build_source'] = 'git';
+        } else {
+          conf['LA_variable_branding_build_source'] = 'local';
+        }
+      }
+    }
+
     for (final LAService service in services) {
       if (service.nameInt == 'docker_compose' ||
           service.nameInt == 'docker_swarm') {
@@ -1787,8 +1817,17 @@ check results length: ${checkResults.length}''';
         }
       }
 
-      conf['LA_nginx_docker_internal_aliases_by_host'] =
-          nginxDockerInternalAliasesByHost;
+      final List<String> sortedKeys =
+          nginxDockerInternalAliasesByHost.keys.toList()..sort();
+      final Map<String, dynamic> sortedNginxAliases = <String, dynamic>{};
+      for (final String key in sortedKeys) {
+        final List<String> urls =
+            nginxDockerInternalAliasesByHost[key] as List<String>;
+        urls.sort();
+        sortedNginxAliases[key] = urls;
+      }
+
+      conf['LA_nginx_docker_internal_aliases_by_host'] = sortedNginxAliases;
 
       // LA_docker_solr_hosts should contain only hosts where solr/solrcloud is running
       List<String> realSolrHosts;
@@ -1936,7 +1975,15 @@ check results length: ${checkResults.length}''';
           }
         }
       }
-      conf['LA_docker_extra_hosts_by_host'] = dockerExtraHostsByHost;
+      if (dockerExtraHostsByHost.isNotEmpty) {
+        final List<String> extraHostsKeys = dockerExtraHostsByHost.keys.toList()
+          ..sort();
+        final Map<String, dynamic> sortedExtraHosts = <String, dynamic>{};
+        for (final String key in extraHostsKeys) {
+          sortedExtraHosts[key] = dockerExtraHostsByHost[key];
+        }
+        conf['LA_docker_extra_hosts_by_host'] = sortedExtraHosts;
+      }
     }
 
     // Release versions
@@ -1979,6 +2026,29 @@ check results length: ${checkResults.length}''';
       }
       conf['LA_hubs'] = hubsConf;
     }
+    // Calculate global nginx fast mode
+    // Fast mode applies if all active web services (except CAS) are using subdomains.
+    final bool allSubdomains = services
+        .where((LAService s) {
+          if (!s.use) {
+            return false;
+          }
+          if (s.nameInt == 'cas') {
+            return false;
+          }
+          if (s.nameInt == 'docker_compose' || s.nameInt == 'docker_swarm') {
+            return false;
+          }
+          final LAServiceDesc desc = LAServiceDesc.get(s.nameInt);
+          if (desc.withoutUrl) {
+            return false;
+          }
+          return true;
+        })
+        .every((LAService s) => s.usesSubdomain);
+
+    conf['LA_nginx_vhost_fast_mode'] = allSubdomains;
+
     return conf;
   }
 

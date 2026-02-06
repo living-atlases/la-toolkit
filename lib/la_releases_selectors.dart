@@ -64,6 +64,33 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
               serviceDesc.artifacts != null &&
               releases != null &&
               releases.versions.isNotEmpty) {
+            // Prepare versions list
+            List<String> versions = List<String>.from(releases.versions);
+
+            // Check if there are nexus versions available
+            final String nexusKey = '${serviceNameInt}_nexus';
+            if (vm.laReleases.containsKey(nexusKey)) {
+              final LAReleases? nexusReleases = vm.laReleases[nexusKey];
+              if (nexusReleases != null && nexusReleases.versions.isNotEmpty) {
+                if (project.isDockerClusterConfigured()) {
+                  // If using Docker Compose, show ONLY Nexus versions, excluding Snapshots
+                  versions = nexusReleases.versions
+                      .where((String v) => !v.contains('SNAPSHOT'))
+                      .toList();
+                } else {
+                  // Otherwise merge them (or keep as is, but user asked for "only nexus if docker")
+                  // If NOT using docker, we probably want Apt versions + Nexus?
+                  // Or just Apt? Let's assume merge for flexibility if not purely Docker.
+                  // Actually, let's keep the merge for non-docker case to be safe,
+                  // or just original versions if user implies strict separation.
+                  // Given "if I use docker compose, only show nexus",
+                  // the inverse "if I use VM, show Apt (and maybe Nexus?)"
+                  // Let's stick to: Docker -> Nexus Only. VM/Hybrid -> Merge (safest fallback).
+                  versions.addAll(nexusReleases.versions);
+                }
+              }
+            }
+
             final Map<String, TextStyle> highlight = <String, TextStyle>{};
             final String? runningVersion = vm.runningVersionsRetrieved
                 ? project.runningVersions[serviceNameInt]
@@ -75,7 +102,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
               runningVersion,
             );
             if (vm.runningVersionsRetrieved) {
-              for (final String version in releases.versions) {
+              for (final String version in versions) {
                 if (version == initialValue) {
                   highlight[version] = TextStyle(
                     color: LAColorTheme.unDeployedColor,
@@ -101,7 +128,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
                     serviceDesc.nameInt,
                   ),
                   highlight: highlight,
-                  versions: releases.versions,
+                  versions: versions,
                   initialValue: initialValue,
                   onChange: (String? value) {
                     if (value != null) {

@@ -246,6 +246,14 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           final Map<String, String> servicesAndSub = <String, String>{};
           for (final LAServiceDesc service in LAServiceDesc.listWithArtifact) {
             servicesAndSub[service.nameInt] = service.artifacts!;
+            if (service.nameInt == sensitiveDataService) {
+              servicesAndSub['${sensitiveDataService}_nexus'] =
+                  'ala-sensitive-data-service';
+            }
+            if (service.nameInt == namematchingService) {
+              servicesAndSub['${namematchingService}_nexus'] =
+                  'ala-namematching-service';
+            }
           }
           releases = await getDepsVersions(servicesAndSub);
           store.dispatch(OnLAVersionsSwCheckEnd(releases, DateTime.now()));
