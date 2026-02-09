@@ -25,6 +25,7 @@ class DefaultVersions {
     regions: '3.4',
     sds: '1.6.3',
     solr: '7.7.3',
+    solrcloud: '8.9.0',
     spatial: '1.0.2',
     spatialService: '1.1.0',
     speciesLists: '4.0.3',

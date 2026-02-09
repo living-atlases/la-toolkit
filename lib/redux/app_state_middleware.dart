@@ -801,7 +801,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           );
           continue;
         }
-        log('Processing $service deps');
+        log('Processing $service deps (artifacts: ${deps[service]})');
         final List<String> versions = <String>[];
         final List<String> releasesVersions = getResponseVersions(
           jsonBody,

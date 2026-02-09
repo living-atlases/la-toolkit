@@ -1990,7 +1990,9 @@ check results length: ${checkResults.length}''';
     final Map<String, List<dynamic>> swVersions = <String, List<dynamic>>{};
     for (final LAServiceDeploy sd in serviceDeploys) {
       sd.softwareVersions.forEach((String sw, String value) {
-        if (LAServiceDesc.swToAnsibleVars[sw] != null) {
+        if (LAServiceDesc.swToAnsibleVars[sw] != null &&
+            value.isNotEmpty &&
+            value != 'null') {
           // LAServer server = servers.firstWhere((s) => s.id == sd.serverId);
           swVersions[sw] = <dynamic>[LAServiceDesc.swToAnsibleVars[sw], value];
 
