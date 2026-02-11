@@ -72,7 +72,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
             if (vm.laReleases.containsKey(nexusKey)) {
               final LAReleases? nexusReleases = vm.laReleases[nexusKey];
               if (nexusReleases != null && nexusReleases.versions.isNotEmpty) {
-                if (project.isDockerClusterConfigured()) {
+                if (project.isServiceInDockerCompose(serviceNameInt)) {
                   // If using Docker Compose, show ONLY Nexus versions, excluding Snapshots
                   versions = nexusReleases.versions
                       .where((String v) => !v.contains('SNAPSHOT'))
@@ -98,7 +98,7 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
             final String initialValue = _getInitialValue(
               project,
               serviceNameInt,
-              releases,
+              versions,
               runningVersion,
             );
             if (vm.runningVersionsRetrieved) {
@@ -166,20 +166,20 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
   String _getInitialValue(
     LAProject project,
     String swName,
-    LAReleases releases,
+    List<String> finalVersions,
     String? currentVersion,
   ) {
     final String? storedVersion = project.getServiceDeployRelease(swName);
     if (storedVersion == null) {
       assert(
-        releases.versions.isNotEmpty,
+        finalVersions.isNotEmpty,
         'There is not releases for $swName for some reason',
       );
       final bool setCurrentVersion =
-          currentVersion != null && releases.versions.contains(currentVersion);
+          currentVersion != null && finalVersions.contains(currentVersion);
       final String defVersion = setCurrentVersion
           ? currentVersion
-          : releases.versions[0];
+          : finalVersions[0];
       return defVersion;
     } else {
       return storedVersion;

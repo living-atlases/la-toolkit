@@ -254,6 +254,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               servicesAndSub['${namematchingService}_nexus'] =
                   'ala-namematching-service';
             }
+            if (service.nameInt == pipelines) {
+              servicesAndSub['${pipelines}_nexus'] = 'pipelines';
+            }
           }
           releases = await getDepsVersions(servicesAndSub);
           store.dispatch(OnLAVersionsSwCheckEnd(releases, DateTime.now()));

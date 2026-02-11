@@ -1279,6 +1279,17 @@ check results length: ${checkResults.length}''';
             ));
   }
 
+  bool isServiceInDockerCompose(String serviceNameInt) {
+    if (!getService(serviceNameInt).use) {
+      return false;
+    }
+    return clusters.any(
+      (LACluster c) =>
+          c.type == DeploymentType.dockerCompose &&
+          (clusterServices[c.id]?.contains(serviceNameInt) ?? false),
+    );
+  }
+
   static HashSet<String> _addSubServices(HashSet<String> newServices) {
     // In the same server nameindexer and biocache_cli
     if (newServices.contains(biocacheBackend)) {
