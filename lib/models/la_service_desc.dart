@@ -1014,9 +1014,10 @@ class LAServiceDesc {
     'data_quality': 'data_quality_filter_service_version',
     'solr': 'solr_version',
     'solrcloud': 'solrcloud_version',
-    biocollect: 'biocollect_version',
-    ecodata: 'ecodata_version',
-    pdfgen: 'pdf_service_version',
+    'biocollect': 'biocollect_version',
+    'pipelines': 'pipelines_version',
+    'ecodata': 'ecodata_version',
+    'pdfgen': 'pdf_service_version',
   };
 
   @override

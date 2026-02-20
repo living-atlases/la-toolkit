@@ -2012,6 +2012,10 @@ check results length: ${checkResults.length}''';
               '>= 3.0.0',
             ).allows(v(value));
           }
+        } else {
+          debugPrint(
+            'Not included $sw because value is not empty: ${value.isNotEmpty} and \'${LAServiceDesc.swToAnsibleVars[sw]}\' ${LAServiceDesc.swToAnsibleVars[sw] != null}',
+          );
         }
       });
     }
