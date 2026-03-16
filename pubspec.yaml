@@ -153,6 +153,8 @@ dependencies:
   phone_numbers_parser: ^9.0.3
   path_provider: ^2.1.5
   intl: ^0.17.0
+  # AI Assistant - Chat UI with streaming support
+  flutter_gen_ai_chat_ui: ^2.7.0
 
 dependency_overrides:
 #intl: ^0.18.1
