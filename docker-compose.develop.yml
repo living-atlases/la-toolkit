@@ -29,6 +29,12 @@ services:
       # TOOLKIT_HTTPS: "false"
       # TOOLKIT_TERM_PROXY: "false"
 
+      # AI Assistant - ChromaDB configuration
+      # For development with SSH tunnel: ssh -L 8000:localhost:8000 ubuntu@la-toolkit-kb-dev-2026 -N -f
+      # Then use: CHROMA_DB_PATH=http://host.docker.internal:8000
+      # For production with embedded KB: CHROMA_DB_PATH=/home/ubuntu/kb-data
+      CHROMA_DB_PATH: "http://host.docker.internal:8000"
+
       # The volumes should be writeable by your user so maybe you have to set your uid:gid here
       # user: "1000:1000"
       # or if you are using docker desktop and GNU/Linux via:
