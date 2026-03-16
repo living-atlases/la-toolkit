@@ -127,6 +127,27 @@ enum CompareCollectionsWithGbifDataPhase implements CompareDataTimelinePhase {
   }
 }
 
+enum CompareIptWithCollectoryDataPhase implements CompareDataTimelinePhase {
+  getDrs,
+  getIptMetadata,
+  compareMetadata,
+  finished;
+
+  @override
+  String title() {
+    switch (this) {
+      case getDrs:
+        return 'Get Datasets';
+      case getIptMetadata:
+        return 'Get IPT Metadata';
+      case compareMetadata:
+        return 'Compare EML Metadata';
+      case finished:
+        return 'Finished';
+    }
+  }
+}
+
 class CompareDataTimelineState<T extends CompareDataTimelinePhase>
     extends State<CompareDataTimeline<T>> {
   @override

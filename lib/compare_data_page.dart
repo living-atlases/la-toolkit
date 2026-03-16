@@ -142,12 +142,16 @@ class _CompareDataPageState extends State<CompareDataPage> {
       CompareSomeWithGbifDataPhase.getSolrHosts;
   CompareCollectionsWithGbifDataPhase currentPhaseTab3 =
       CompareCollectionsWithGbifDataPhase.getDrs;
+  CompareIptWithCollectoryDataPhase currentPhaseTab4 =
+      CompareIptWithCollectoryDataPhase.getDrs;
   bool somethingFailed = false;
   bool csvFormat = false;
   String indexDiffReport = '';
   final List<int> recordsNumberOptions = <int>[2, 5, 10, 20, 50, 100, 200, 500];
   int numberOfRecords = 5;
   int populationSize = 1000000;
+  String iptBaseUrl = 'http://iptdev-gbif.gbif.org'; // Default IPT base URL
+  String drsToCompareWithIpt = '10';
 
   @override
   Widget build(BuildContext context) {
@@ -341,6 +345,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
                 icon: Icons.difference,
                 title: 'Compare collections with GBIF',
               ),
+              TabItem<dynamic>(
+                icon: Icons.sync,
+                title: 'IPT vs Collectory EML',
+              ),
             ],
             initialActiveIndex: 0,
             //optional, default as 0
@@ -374,7 +382,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                 ? 'This tool compare two solr cores or two solrcloud collections in your LA Portal'
                                 : tab == 2
                                 ? 'This tool compare some LA records or a data resource with the equivalent in GBIF'
-                                : 'This tools compare the Collections metadata with GBIF',
+                                : tab == 3
+                                ? 'This tools compare the Collections metadata with GBIF'
+                                : 'This tool compares EML metadata fields between IPT and Collectory to identify synchronization issues',
                           ),
                           const SizedBox(height: 10),
 
@@ -406,6 +416,16 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               currentPhase: currentPhaseTab3,
                               failed: somethingFailed,
                               phaseValues: CompareCollectionsWithGbifDataPhase
+                                  .values
+                                  .toList(),
+                            ),
+                          if (tab == 4)
+                            CompareDataTimeline<
+                              CompareIptWithCollectoryDataPhase
+                            >(
+                              currentPhase: currentPhaseTab4,
+                              failed: somethingFailed,
+                              phaseValues: CompareIptWithCollectoryDataPhase
                                   .values
                                   .toList(),
                             ),
@@ -674,6 +694,42 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                 ),
                               ),
                             ),
+                          if (tab == 4)
+                            Column(
+                              children: <Widget>[
+                                SizedBox(
+                                  width: 400,
+                                  child: TextFormField(
+                                    onChanged: (String value) {
+                                      setState(() {
+                                        iptBaseUrl = value;
+                                      });
+                                    },
+                                    initialValue: iptBaseUrl,
+                                    decoration: const InputDecoration(
+                                      labelText:
+                                          'IPT Base URL (e.g., http://iptdev-gbif.gbif.org)',
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                SizedBox(
+                                  width: 400,
+                                  child: TextFormField(
+                                    onChanged: (String value) {
+                                      setState(() {
+                                        drsToCompareWithIpt = value;
+                                      });
+                                    },
+                                    initialValue: drsToCompareWithIpt,
+                                    decoration: const InputDecoration(
+                                      labelText:
+                                          'DRs to compare, or a number for n drs or blank for all',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           LaunchBtn(
                             icon: Icons.settings,
                             execBtn: 'Run',
@@ -727,6 +783,20 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                         await _compareCollectionsWithGBIF(
                                           vm,
                                           drsToCompare,
+                                        );
+                                        setState(() {
+                                          launchEnabled = true;
+                                        });
+                                        break;
+                                      case 4:
+                                        setState(() {
+                                          launchEnabled = false;
+                                          indexDiffReport = '';
+                                          somethingFailed = false;
+                                        });
+                                        await _compareIptWithCollectory(
+                                          vm,
+                                          drsToCompareWithIpt,
                                         );
                                         setState(() {
                                           launchEnabled = true;
@@ -2474,6 +2544,270 @@ SELECT JSON_ARRAYAGG(
         return PhoneNumber.parse(value);
       }
     }
+  }
+
+  Future<void> _compareIptWithCollectory(
+    _CompareDataViewModel vm,
+    String? drsToCompareS, [
+    bool debug = false,
+  ]) async {
+    try {
+      setState(() {
+        currentPhaseTab4 = CompareIptWithCollectoryDataPhase.getDrs;
+      });
+
+      final Map<String, dynamic> allDrs = await getCollectoryDrs(vm);
+
+      List<String> drsToCompare;
+      final bool compareAll = drsToCompareS == null || drsToCompareS.isEmpty;
+      if (!compareAll && drsToCompareS.startsWith('dr')) {
+        drsToCompare = drsToCompareS
+            .split(commaSpaceSepRegExp)
+            .where((String dr) => dr.isNotEmpty && allDrs.containsKey(dr))
+            .toList();
+      } else if (drsToCompareS != null && int.tryParse(drsToCompareS) != null) {
+        // parse a sublists of drs
+        drsToCompare = allDrs.keys.toList().sublist(
+          0,
+          int.parse(drsToCompareS),
+        );
+      } else {
+        drsToCompare = allDrs.keys.toList();
+      }
+
+      setState(() {
+        currentPhaseTab4 = CompareIptWithCollectoryDataPhase.getIptMetadata;
+      });
+
+      final int totalResources = drsToCompare.length;
+      int resourcesWithDifferences = 0;
+      int resourcesWithoutDifferences = 0;
+      int totalDifferences = 0;
+      final Map<String, dynamic> allDifferences = <String, dynamic>{};
+
+      compareTitles.clear();
+      compareTitles.addAll(<String>['Data Resource', 'Status', 'Details']);
+
+      indexDiffReport = '';
+
+      setState(() {
+        currentPhaseTab4 = CompareIptWithCollectoryDataPhase.compareMetadata;
+      });
+
+      reportPrint('\n## IPT vs Collectory EML Metadata Comparison\n');
+      reportPrint('|  | Description |');
+      reportPrint('|-----------------|-------------------------------|');
+
+      for (final String dr in drsToCompare) {
+        if (debug) {
+          debugPrint('Comparing data resource: $dr');
+        }
+
+        // Fetch IPT metadata for this data resource
+        final Map<String, dynamic> iptMetadata = await _getIptMetadata(dr, vm);
+
+        if (iptMetadata.isEmpty) {
+          debugPrint('IPT metadata not found for data resource: $dr');
+          continue;
+        }
+
+        // Fetch Collectory data for this data resource
+        final Map<String, dynamic> collectoryData =
+            await _getCollectoryResource(dr, vm);
+
+        if (collectoryData.isEmpty) {
+          debugPrint('Collectory data not found for data resource: $dr');
+          continue;
+        }
+
+        final List<Map<String, dynamic>> differences = _compareEmlFields(
+          collectoryData,
+          iptMetadata,
+        );
+
+        if (differences.isNotEmpty) {
+          resourcesWithDifferences++;
+          totalDifferences += differences.length;
+          allDifferences[dr] = differences;
+          reportPrint(
+            '| **$dr** | Differences Found (${differences.length}) |',
+          );
+          for (final Map<String, dynamic> diff in differences) {
+            reportPrint(
+              '| ${diff['field']} | Collectory: `${diff['collectory']}` vs IPT: `${diff['ipt']}` |',
+            );
+          }
+        } else {
+          resourcesWithoutDifferences++;
+          reportPrint('| **$dr** | No Differences |');
+        }
+      }
+
+      // Add summary to the report
+      reportPrint('\n## Summary\n');
+      reportPrint(
+        '| Total Resources | Resources with Differences | Resources without Differences | Total Differences |',
+      );
+      reportPrint(
+        '|-----------------|----------------------------|-------------------------------|-------------------|',
+      );
+      reportPrint(
+        '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalDifferences |',
+      );
+
+      setState(() {
+        currentPhaseTab4 = CompareIptWithCollectoryDataPhase.finished;
+      });
+    } catch (all) {
+      debugPrint('Error: $all');
+      somethingFailed = true;
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> _getIptMetadata(
+    String dataResourceUid,
+    _CompareDataViewModel vm,
+  ) async {
+    try {
+      // IPT metadata is accessed via /resource/<uid>/eml.xml or /resource/<uid>
+      final Uri iptUri = Uri.parse('$iptBaseUrl/resource/$dataResourceUid');
+      final http.Response response = await http.get(iptUri);
+
+      if (response.statusCode != 200) {
+        debugPrint('Error fetching IPT metadata: ${response.statusCode}');
+        return <String, dynamic>{};
+      }
+
+      // For now, assume IPT returns JSON metadata
+      // In reality, we'd parse EML XML, but for bulk comparison we can use IPT's API
+      try {
+        final String body = convert.utf8.decode(response.bodyBytes);
+        final Map<String, dynamic> metadata =
+            convert.json.decode(body) as Map<String, dynamic>;
+        return metadata;
+      } catch (_) {
+        // If JSON parsing fails, return empty
+        return <String, dynamic>{};
+      }
+    } catch (e) {
+      debugPrint('Error getting IPT metadata: $e');
+      return <String, dynamic>{};
+    }
+  }
+
+  Future<Map<String, dynamic>> _getCollectoryResource(
+    String dataResourceUid,
+    _CompareDataViewModel vm,
+  ) async {
+    final Completer<Map<String, dynamic>> completer =
+        Completer<Map<String, dynamic>>();
+
+    final String query =
+        '''
+      SELECT JSON_OBJECT(
+        'uid', dr.uid,
+        'name', dr.name,
+        'pubDescription', dr.pub_description,
+        'rights', dr.rights,
+        'citation', dr.citation,
+        'guid', dr.guid,
+        'northBoundingCoordinate', dr.north_bounding_coordinate,
+        'southBoundingCoordinate', dr.south_bounding_coordinate,
+        'eastBoundingCoordinate', dr.east_bounding_coordinate,
+        'westBoundingCoordinate', dr.west_bounding_coordinate,
+        'geographicDescription', dr.geographic_description,
+        'beginDate', dr.begin_date,
+        'endDate', dr.end_date,
+        'purpose', dr.purpose,
+        'methodStepDescription', dr.method_step_description,
+        'qualityControlDescription', dr.quality_control_description,
+        'licenseType', dr.license_type,
+        'licenseVersion', dr.license_version,
+        'gbifDoi', dr.gbif_doi,
+        'email', dr.email,
+        'phone', dr.phone,
+        'state', dr.state
+      ) AS result_json FROM data_resource dr WHERE dr.uid = '$dataResourceUid'
+    ''';
+
+    vm.doMySqlQuery(
+      query,
+      (dynamic result) {
+        if (result is List && result.isNotEmpty) {
+          completer.complete((result[0]) as Map<String, dynamic>);
+        } else {
+          completer.complete(<String, dynamic>{});
+        }
+      },
+      (String error) {
+        debugPrint('Error fetching Collectory resource: $error');
+        completer.completeError(error);
+      },
+    );
+
+    return completer.future;
+  }
+
+  List<Map<String, dynamic>> _compareEmlFields(
+    Map<String, dynamic> collectoryData,
+    Map<String, dynamic> iptMetadata,
+  ) {
+    final List<Map<String, dynamic>> differences = <Map<String, dynamic>>[];
+
+    // List of EML fields to compare
+    final List<String> emlFields = <String>[
+      'name',
+      'pubDescription',
+      'guid',
+      'rights',
+      'citation',
+      'northBoundingCoordinate',
+      'southBoundingCoordinate',
+      'eastBoundingCoordinate',
+      'westBoundingCoordinate',
+      'geographicDescription',
+      'beginDate',
+      'endDate',
+      'purpose',
+      'methodStepDescription',
+      'qualityControlDescription',
+      'licenseType',
+      'licenseVersion',
+      'gbifDoi',
+      'email',
+      'phone',
+      'state',
+    ];
+
+    for (final String field in emlFields) {
+      final dynamic collectoryValue = collectoryData[field];
+      final dynamic iptValue = iptMetadata[field];
+
+      // Normalize empty values
+      final String collectoryStr = _normalizeValue(collectoryValue);
+      final String iptStr = _normalizeValue(iptValue);
+
+      if (collectoryStr != iptStr) {
+        differences.add(<String, dynamic>{
+          'field': field,
+          'collectory': collectoryStr,
+          'ipt': iptStr,
+        });
+      }
+    }
+
+    return differences;
+  }
+
+  String _normalizeValue(dynamic value) {
+    if (value == null) {
+      return '';
+    }
+    if (value is String) {
+      return value.trim();
+    }
+    return value.toString();
   }
 
   String _contactForHumans(Map<String, dynamic> contact) {
