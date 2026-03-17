@@ -148,6 +148,15 @@ RUN echo "1.6.9-d3"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
+# AI Assistant - Install ChromaDB Python and download KB data
+RUN python3 -m pip install --break-system-packages chromadb
+RUN mkdir -p /home/ubuntu/kb-data
+# TODO: Replace with actual kb-data download URL when KB is published
+# For now, KB is included in la-toolkit-backend clone, so we can copy it if needed
+# RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.6.9/kb-data.tar.gz | \
+#     tar xzf - -C /home/ubuntu/kb-data --strip-components=1
+RUN chown -R ubuntu:ubuntu /home/ubuntu/kb-data
+
 RUN echo "2025072801"
 # la-toolkit frontend
 RUN curl -L https://github.com/living-atlases/la-toolkit/releases/download/v1.6.9/flutter-web-1.6.9.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
