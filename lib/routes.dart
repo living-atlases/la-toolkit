@@ -1,6 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 
+import 'ai_assistant_page.dart';
 import 'branding_deploy_page.dart';
 import 'cmd_term_page.dart';
 import 'compare_data_page.dart';
@@ -33,6 +34,7 @@ class Routes {
         locationBuilder: BeamerLocationBuilder(
           beamLocations: <BeamLocation<RouteInformationSerializable<dynamic>>>[
             HomeLocation(),
+            AiAssistantLocation(),
             LAProjectEditLocation(),
             LAProjectServersLocation(),
             LAProjectViewLocation(),
@@ -317,6 +319,21 @@ class CompareDataLocation extends NamedBeamLocation {
           key: ValueKey<String>(route),
           child: const CompareDataPage(),
           title: 'Compare Data',
+        ),
+      ];
+}
+
+class AiAssistantLocation extends NamedBeamLocation {
+  @override
+  String get route => AiAssistantPage.routeName;
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) =>
+      <BeamPage>[
+        BeamPage(
+          key: ValueKey<String>(route),
+          child: const AiAssistantPage(),
+          title: 'AI Assistant',
         ),
       ];
 }

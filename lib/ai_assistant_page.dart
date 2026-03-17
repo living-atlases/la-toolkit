@@ -10,6 +10,8 @@ import '../utils/utils.dart';
 class AiAssistantPage extends StatefulWidget {
   const AiAssistantPage({Key? key}) : super(key: key);
 
+  static const String routeName = 'ai-assistant';
+
   @override
   State<AiAssistantPage> createState() => _AiAssistantPageState();
 }

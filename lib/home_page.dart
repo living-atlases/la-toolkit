@@ -200,6 +200,16 @@ class _HomePageState extends State<HomePage> {
       // childMarginTop: 2,
       children: <SpeedDialChild>[
         SpeedDialChild(
+          child: const Icon(Icons.chat_outlined),
+          backgroundColor: LAColorTheme.laPalette,
+          foregroundColor: Colors.white,
+          label: 'AI Assistant - Ask about LA',
+          labelStyle: const TextStyle(fontSize: 18.0),
+          onTap: () {
+            BeamerCond.of(context, AiAssistantLocation());
+          },
+        ),
+        SpeedDialChild(
           child: const Icon(Icons.copy_outlined),
           backgroundColor: LAColorTheme.laPalette,
           foregroundColor: Colors.white,
