@@ -52,7 +52,7 @@ services:
       - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
 
   chromadb:
-    image: ghcr.io/chroma-core/chroma:0.4.24
+    image: ghcr.io/chroma-core/chroma:0.3.21
     container_name: la-toolkit-chromadb
     restart: always
     hostname: chromadb
