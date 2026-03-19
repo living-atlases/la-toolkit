@@ -14,6 +14,8 @@ services:
       # So don't do these kind of redirections:
       # - "3011-3100:2011-2100"
     depends_on:
+      chromadb:
+        condition: service_healthy
       mongo:
         condition: service_healthy
     environment:
@@ -30,10 +32,8 @@ services:
       # TOOLKIT_TERM_PROXY: "false"
 
       # AI Assistant - ChromaDB configuration
-      # For development with SSH tunnel: ssh -L 8000:localhost:8000 ubuntu@la-toolkit-kb-dev-2026 -N -f
-      # Then use: CHROMA_DB_PATH=http://host.docker.internal:8000
-      # For production with embedded KB: CHROMA_DB_PATH=/home/ubuntu/kb-data
-      CHROMA_DB_PATH: "http://host.docker.internal:8000"
+      # Using the chromadb docker service (via docker DNS)
+      CHROMA_DB_PATH: "http://chromadb:8000"
 
       # The volumes should be writeable by your user so maybe you have to set your uid:gid here
       # user: "1000:1000"
@@ -50,6 +50,26 @@ services:
       # Take into account that if your change from 'custom' to other ala-install version
       # code changes will be git stashed
       - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
+
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:0.4.24
+    container_name: la-toolkit-chromadb
+    restart: always
+    hostname: chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./la_toolkit_backend/kb-data:/chroma/chroma:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    environment:
+      - CHROMA_DB_IMPL=duckdb+parquet
+      - ALLOW_RESET=true
+      - ANONYMIZED_TELEMETRY=false
 
   mongo:
     # Early versions used mongo:4. If you were using it, you'll need:
