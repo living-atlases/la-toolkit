@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:markdown/markdown.dart' as md;
 
-import '../models/app_state.dart';
-import '../redux/app/app_actions.dart';
-import '../utils/ai_service.dart';
-import '../utils/utils.dart';
+import 'utils/ai_service.dart';
 
 class AiAssistantPage extends StatefulWidget {
-  const AiAssistantPage({Key? key}) : super(key: key);
+  const AiAssistantPage({super.key});
 
   static const String routeName = 'ai-assistant';
 
@@ -100,25 +95,22 @@ Type your question below and I'll search the LA Toolkit knowledge base for you.'
     setState(() => _isLoading = true);
 
     try {
-      // Get current project from Redux
-      final state = StoreProvider.of<AppState>(context, listen: false).state;
-      final currentProject = state.currentProject;
-
-      // Query AI
+      // Query AI (projectId would be passed from Redux context in future)
       final response = await AiService.query(
         question: question,
-        projectId: currentProject?.id,
+        projectId: null,
         includeContext: true,
       );
 
       // Add assistant response
+      final responseMap = response as Map<String, dynamic>? ?? {};
       _messages.add(
         ChatMessage(
           id: DateTime.now().toString(),
           role: ChatRole.assistant,
-          content: response['answer'] ?? 'No answer available',
-          sources: _extractSources(response['sources']),
-          context: response['contextUsed'],
+          content: (responseMap['answer'] as String?) ?? 'No answer available',
+          sources: _extractSources(responseMap['sources']),
+          context: responseMap['contextUsed'] as Map<String, dynamic>?,
         ),
       );
     } catch (e) {
@@ -139,12 +131,13 @@ Type your question below and I'll search the LA Toolkit knowledge base for you.'
   List<ChatSource>? _extractSources(dynamic sources) {
     if (sources is! List) return null;
 
-    return sources.map<ChatSource>((source) {
+    return sources.map<ChatSource>((dynamic source) {
+      final sourceMap = source as Map<String, dynamic>? ?? {};
       return ChatSource(
-        title: source['file'] ?? 'Unknown',
-        description: source['snippet'] ?? '',
-        url: source['file'],
-        relevance: source['relevance'] ?? 0.0,
+        title: (sourceMap['file'] as String?) ?? 'Unknown',
+        description: (sourceMap['snippet'] as String?) ?? '',
+        url: sourceMap['file'] as String?,
+        relevance: (sourceMap['relevance'] as num?)?.toDouble() ?? 0.0,
       );
     }).toList();
   }
@@ -160,9 +153,6 @@ Type your question below and I'll search the LA Toolkit knowledge base for you.'
     return Scaffold(
       appBar: AppBar(
         title: const Text('AI Assistant'),
-        subtitle: _aiAvailable
-            ? const Text('Knowledge Base Ready')
-            : const Text('Not Available'),
         backgroundColor: _aiAvailable ? null : Colors.orange,
       ),
       body: Column(
@@ -265,8 +255,8 @@ Type your question below and I'll search the LA Toolkit knowledge base for you.'
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: isUser
-                    ? Theme.of(context).primaryColor.withOpacity(0.2)
-                    : Colors.grey.withOpacity(0.2),
+                    ? Theme.of(context).primaryColor.withValues(alpha: 0.2)
+                    : Colors.grey.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -398,7 +388,7 @@ Type your question below and I'll search the LA Toolkit knowledge base for you.'
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: Text(
-                            '${(source.relevance * 100).toStringAsFixed(0)}%',
+                            '${((source.relevance ?? 0.0) * 100).toStringAsFixed(0)}%',
                             style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ),
@@ -419,7 +409,7 @@ Type your question below and I'll search the LA Toolkit knowledge base for you.'
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
