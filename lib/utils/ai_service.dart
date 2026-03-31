@@ -18,11 +18,11 @@ class AiService {
     int topK = 5,
   }) async {
     try {
-      final response = await http
+      final http.Response response = await http
           .post(
             Uri.parse('$_baseUrl/ai/query'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
+            headers: <String, String>{'Content-Type': 'application/json'},
+            body: jsonEncode(<String, dynamic>{
               'question': question,
               'projectId': projectId,
               'includeContext': includeContext,
