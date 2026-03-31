@@ -13,37 +13,45 @@ void main() {
     );
 
     // Add server
-    final server = LAServer(name: 'server1', projectId: p.id);
+    final LAServer server = LAServer(name: 'server1', projectId: p.id);
     p.upsertServer(server);
 
     // Assign solrcloud
     // p.assign(server, [solrcloud]);
 
     // Check JSON
-    var json = p.toGeneratorJson();
-    var swVersions = json['LA_software_versions'] as List<List<dynamic>>;
+    final Map<String, dynamic> json = p.toGeneratorJson();
+    final List<List<dynamic>> swVersions =
+        json['LA_software_versions'] as List<List<dynamic>>;
 
+    // ignore: avoid_print
     print('Software Versions (Solrcloud not assigned): $swVersions');
 
     // Check if solrcloud_version is present
-    bool hasSolrCloud = swVersions.any((v) => v[0] == 'solrcloud_version');
+    final bool hasSolrCloud = swVersions.any(
+      (List<dynamic> v) => v[0] == 'solrcloud_version',
+    );
     expect(hasSolrCloud, false);
 
     // Now assign Solrcloud
-    p.assign(server, [solrcloud]);
+    p.assign(server, <String>[solrcloud]);
 
-    json = p.toGeneratorJson();
-    swVersions = json['LA_software_versions'] as List<List<dynamic>>;
-    print('Software Versions (Solrcloud assigned): $swVersions');
+    final Map<String, dynamic> json2 = p.toGeneratorJson();
+    final List<List<dynamic>> swVersions2 =
+        json2['LA_software_versions'] as List<List<dynamic>>;
+    // ignore: avoid_print
+    print('Software Versions (Solrcloud assigned): $swVersions2');
 
-    var solrCloudEntry = swVersions.firstWhere(
-      (v) => v[0] == 'solrcloud_version',
-      orElse: () => [],
+    final List<dynamic> solrCloudEntry = swVersions2.firstWhere(
+      (List<dynamic> v) => v[0] == 'solrcloud_version',
+      orElse: () => <dynamic>[],
     );
 
     if (solrCloudEntry.isNotEmpty) {
+      // ignore: avoid_print
       print('Solrcloud version value: ${solrCloudEntry[1]}');
     } else {
+      // ignore: avoid_print
       print('Solrcloud version not found after assignment');
     }
   });
@@ -57,23 +65,27 @@ void main() {
     );
 
     // Add server
-    final server = LAServer(name: 'server1', projectId: p.id);
+    final LAServer server = LAServer(name: 'server1', projectId: p.id);
     p.upsertServer(server);
 
     // Assign solrcloud
-    p.assign(server, [solrcloud]);
+    p.assign(server, <String>[solrcloud]);
 
-    var json = p.toGeneratorJson();
-    var swVersions = json['LA_software_versions'] as List<List<dynamic>>;
+    final Map<String, dynamic> json = p.toGeneratorJson();
+    final List<List<dynamic>> swVersions =
+        json['LA_software_versions'] as List<List<dynamic>>;
+    // ignore: avoid_print
     print('Software Versions (2.1.10): $swVersions');
 
-    var solrCloudEntry = swVersions.firstWhere(
-      (v) => v[0] == 'solrcloud_version',
-      orElse: () => [],
+    final List<dynamic> solrCloudEntry = swVersions.firstWhere(
+      (List<dynamic> v) => v[0] == 'solrcloud_version',
+      orElse: () => <dynamic>[],
     );
     if (solrCloudEntry.isNotEmpty) {
+      // ignore: avoid_print
       print('Solrcloud version (2.1.10): "${solrCloudEntry[1]}"');
     } else {
+      // ignore: avoid_print
       print('Solrcloud version (2.1.10) not found');
     }
   });
@@ -83,25 +95,27 @@ void main() {
       longName: 'Test Project',
       shortName: 'TP',
       domain: 'test.com',
-      alaInstallRelease: null,
     );
 
     // Add server
-    final server = LAServer(name: 'server1', projectId: p.id);
+    final LAServer server = LAServer(name: 'server1', projectId: p.id);
     p.upsertServer(server);
 
     // Assign solrcloud
-    p.assign(server, [solrcloud]);
+    p.assign(server, <String>[solrcloud]);
 
-    var json = p.toGeneratorJson();
-    var swVersions = json['LA_software_versions'] as List<List<dynamic>>;
+    final Map<String, dynamic> json = p.toGeneratorJson();
+    final List<List<dynamic>> swVersions =
+        json['LA_software_versions'] as List<List<dynamic>>;
+    // ignore: avoid_print
     print('Software Versions (release null): $swVersions');
 
-    var solrCloudEntry = swVersions.firstWhere(
-      (v) => v[0] == 'solrcloud_version',
-      orElse: () => [],
+    final List<dynamic> solrCloudEntry = swVersions.firstWhere(
+      (List<dynamic> v) => v[0] == 'solrcloud_version',
+      orElse: () => <dynamic>[],
     );
     if (solrCloudEntry.isNotEmpty) {
+      // ignore: avoid_print
       print('Solrcloud version (null release): ${solrCloudEntry[1]}');
     }
   });

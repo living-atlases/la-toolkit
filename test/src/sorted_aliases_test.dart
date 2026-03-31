@@ -65,7 +65,7 @@ void main() {
               as Map<String, dynamic>;
 
       final List<String> keys = aliases.keys.toList();
-      expect(keys, equals(['alpha', 'beta', 'zebra']));
+      expect(keys, equals(const <String>['alpha', 'beta', 'zebra']));
     },
   );
 }

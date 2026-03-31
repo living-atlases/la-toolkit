@@ -12,16 +12,17 @@ void main() {
       alaInstallRelease: '2.1.10',
     );
 
-    final server = LAServer(name: 'server1', projectId: p.id);
+    final LAServer server = LAServer(name: 'server1', projectId: p.id);
     p.upsertServer(server);
-    p.assign(server, [solrcloud]);
+    p.assign(server, <String>[solrcloud]);
 
-    final json = p.toGeneratorJson();
-    final swVersions = json['LA_software_versions'] as List<List<dynamic>>;
+    final Map<String, dynamic> json = p.toGeneratorJson();
+    final List<List<dynamic>> swVersions =
+        json['LA_software_versions'] as List<List<dynamic>>;
 
-    final solrCloudEntry = swVersions.firstWhere(
-      (v) => v[0] == 'solrcloud_version',
-      orElse: () => [],
+    final List<dynamic> solrCloudEntry = swVersions.firstWhere(
+      (List<dynamic> v) => v[0] == 'solrcloud_version',
+      orElse: () => <dynamic>[],
     );
 
     expect(
@@ -44,18 +45,19 @@ void main() {
       alaInstallRelease: '2.0.0', // Older version might not have solrcloud
     );
 
-    final server = LAServer(name: 'server1', projectId: p.id);
+    final LAServer server = LAServer(name: 'server1', projectId: p.id);
     p.upsertServer(server);
 
     // Assign solrcloud, but 2.0.0 defaults might not have it
-    p.assign(server, [solrcloud]);
+    p.assign(server, <String>[solrcloud]);
 
-    final json = p.toGeneratorJson();
-    final swVersions = json['LA_software_versions'] as List<List<dynamic>>;
+    final Map<String, dynamic> json = p.toGeneratorJson();
+    final List<List<dynamic>> swVersions =
+        json['LA_software_versions'] as List<List<dynamic>>;
 
-    final solrCloudEntry = swVersions.firstWhere(
-      (v) => v[0] == 'solrcloud_version',
-      orElse: () => [],
+    final List<dynamic> solrCloudEntry = swVersions.firstWhere(
+      (List<dynamic> v) => v[0] == 'solrcloud_version',
+      orElse: () => <dynamic>[],
     );
 
     expect(
@@ -73,16 +75,17 @@ void main() {
       alaInstallRelease: '2.1.10',
     );
 
-    final server = LAServer(name: 'server1', projectId: p.id);
+    final LAServer server = LAServer(name: 'server1', projectId: p.id);
     p.upsertServer(server);
-    p.assign(server, [spatial]);
+    p.assign(server, <String>[spatial]);
 
-    final json = p.toGeneratorJson();
-    final swVersions = json['LA_software_versions'] as List<List<dynamic>>;
+    final Map<String, dynamic> json = p.toGeneratorJson();
+    final List<List<dynamic>> swVersions =
+        json['LA_software_versions'] as List<List<dynamic>>;
 
-    final spatialEntry = swVersions.firstWhere(
-      (v) => v[0] == 'spatial_hub_version',
-      orElse: () => [],
+    final List<dynamic> spatialEntry = swVersions.firstWhere(
+      (List<dynamic> v) => v[0] == 'spatial_hub_version',
+      orElse: () => <dynamic>[],
     );
 
     expect(

@@ -49,6 +49,7 @@ void main() {
         // We allow some manual additions that might not be in the main list yet if they are in service constants
         // but here we just check for obvious typos or missing constants.
         if (!knownServices.contains(key)) {
+          // ignore: avoid_print
           print(
             'Note: Key "$key" from swToAnsibleVars is not in LAServiceDesc.listS(false)',
           );

@@ -81,9 +81,11 @@ void main() {
 
         final List<dynamic> swVersions =
             conf['LA_software_versions'] as List<dynamic>;
-        final bool hasPipelines = swVersions.any(
-          (v) => v[0] == 'pipelines_version' && v[1] == '1.0.0-SNAPSHOT',
-        );
+        final bool hasPipelines = swVersions.any((dynamic v) {
+          final List<dynamic> versionPair = v as List<dynamic>;
+          return versionPair[0] == 'pipelines_version' &&
+              versionPair[1] == '1.0.0-SNAPSHOT';
+        });
 
         expect(
           hasPipelines,
