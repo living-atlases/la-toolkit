@@ -98,7 +98,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
        cmdHistoryEntries = cmdHistoryEntries ?? <CmdHistoryEntry>[],
        fstDeployed = fstDeployed ?? false,
        mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng.from(-44, 112),
-       mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154) {
+       mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154),
+       // Hub projects must have a parent
+       assert(!isHub || parent != null, 'Hub projects must have a parent') {
     this.services = this.services.map((LAService s) {
       s.projectId = this.id;
       return s;
@@ -1627,7 +1629,15 @@ check results length: ${checkResults.length}''';
   }
 
   // In Hubs we use the portal etcHost
-  Map<String, dynamic> toGeneratorJson({String? etcHosts}) {
+  /// Generates the configuration JSON for ansible/yeoman templates.
+  ///
+  /// For hub projects, this inherits service configuration from the parent.
+  /// The [skipHubProcessing] parameter prevents infinite recursion when a hub
+  /// calls parent.toGeneratorJson() to obtain inherited values.
+  Map<String, dynamic> toGeneratorJson({
+    String? etcHosts,
+    bool skipHubProcessing = false,
+  }) {
     // Warn: new vars should be added also to transform.js map in backend
     final Map<String, dynamic> conf = <String, dynamic>{
       'LA_id': id,
@@ -2014,7 +2024,7 @@ check results length: ${checkResults.length}''';
           }
         } else {
           debugPrint(
-            'Not included $sw because value is not empty: ${value.isNotEmpty} and \'${LAServiceDesc.swToAnsibleVars[sw]}\' ${LAServiceDesc.swToAnsibleVars[sw] != null}',
+            'Not included $sw because value is not empty: ${value.isNotEmpty} and "${LAServiceDesc.swToAnsibleVars[sw]}" ${LAServiceDesc.swToAnsibleVars[sw] != null}',
           );
         }
       });
@@ -2034,7 +2044,7 @@ check results length: ${checkResults.length}''';
     }
 
     // Hubs
-    if (hubs.isNotEmpty) {
+    if (hubs.isNotEmpty && !skipHubProcessing) {
       final List<Map<String, dynamic>> hubsConf = <Map<String, dynamic>>[];
       for (final LAProject hub in hubs) {
         hubsConf.add(
@@ -2065,6 +2075,97 @@ check results length: ${checkResults.length}''';
         .every((LAService s) => s.usesSubdomain);
 
     conf['LA_nginx_vhost_fast_mode'] = allSubdomains;
+
+    // Hub inheritance: inherit service variables from parent
+    if (isHub && parent != null) {
+      final Map<String, dynamic> parentConf = parent!.toGeneratorJson(
+        skipHubProcessing: true,
+      );
+
+      // Iterate over all services actually configured in the parent project.
+      // This is the source of truth - no hardcoded list needed.
+      // NOTE: We iterate ALL parent services regardless of use=true/false,
+      // because the parent's main service loop generates hostname/url/path
+      // for every service whether enabled or not. The hub template needs those
+      // variables too (e.g. LA_biocache_backend_hostname even when use=false).
+      for (final LAService parentService in parent!.services) {
+        final String serviceKey = parentService.nameInt;
+        // Check if hub uses this service
+        final LAService? hubService = services.cast<LAService?>().firstWhere(
+          (LAService? s) => s?.nameInt == serviceKey && (s?.use ?? false),
+          orElse: () => null,
+        );
+
+        final bool hubUsesService = hubService != null;
+
+        // If hub uses service, check if it has been explicitly customized by user
+        // vs. using the automatic hub initialization value
+        bool hasCustomConfig = false;
+        if (hubUsesService) {
+          final LAServiceDesc desc = LAServiceDesc.get(serviceKey);
+          final String hubIniPath = hubService.iniPath;
+
+          // For hubs, getInitialServices() automatically sets iniPath = suburl (from descriptor)
+          // e.g., for ala_hub: descriptor.suburl = "records", so iniPath = "records"
+          // This is NOT a user customization, just initialization.
+          //
+          // A hub has custom config only if iniPath differs from descriptor's original name/suburl
+          final String descOriginalName =
+              desc.name; // e.g., "records" for ala_hub
+
+          if (hubIniPath != descOriginalName && hubIniPath.isNotEmpty) {
+            hasCustomConfig = true;
+          }
+        }
+
+        // Only inherit if:
+        // 1. Hub doesn't use the service at all, OR
+        // 2. Hub uses the service but hasn't explicitly customized it
+        if (hubUsesService && hasCustomConfig) {
+          continue; // Skip - hub has explicitly customized this service
+        }
+
+        final List<String> varTypes = <String>[
+          'path',
+          'url',
+          'hostname',
+          'uses_subdomain',
+        ];
+
+        for (final String varType in varTypes) {
+          // Handle special case for species_lists -> lists
+          String actualKey = serviceKey;
+          if (serviceKey == 'species_lists') {
+            actualKey = 'lists';
+          }
+
+          final String fullKey = 'LA_${actualKey}_$varType';
+
+          // Only inherit if parent has this variable
+          if (parentConf.containsKey(fullKey)) {
+            conf[fullKey] = parentConf[fullKey];
+          }
+        }
+
+        // Also inherit the LA_use_<service> flag
+        // Apply same name transformations as in the main service loop (lines 1728-1738)
+        String actualKey = serviceKey;
+        if (serviceKey == 'cas') {
+          actualKey = 'CAS';
+        }
+        if (serviceKey == 'biocache_backend') {
+          actualKey = 'biocache_store';
+        }
+        if (serviceKey == 'ala_bie') {
+          actualKey = 'species';
+        }
+        // species_lists remains species_lists for LA_use_species_lists
+        final String useKey = 'LA_use_$actualKey';
+        if (parentConf.containsKey(useKey)) {
+          conf[useKey] = parentConf[useKey];
+        }
+      }
+    }
 
     return conf;
   }
