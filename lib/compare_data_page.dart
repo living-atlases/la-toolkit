@@ -2257,6 +2257,15 @@ class _CompareDataPageState extends State<CompareDataPage> {
         .trim();
   }
 
+  /// Sanitizes a string for safe embedding in a markdown table cell:
+  /// replaces newlines/tabs with spaces and escapes pipe characters.
+  String _mdCell(String value) {
+    return value
+        .replaceAll(RegExp(r'[\r\n\t]+'), ' ')
+        .replaceAll('|', r'\|')
+        .trim();
+  }
+
   /// Compares Collectory EML fields against GBIF EML fields and returns a list
   /// of per-field differences.
   List<Map<String, dynamic>> _compareEmlFieldsWithGbif(
@@ -2649,8 +2658,10 @@ SELECT JSON_ARRAYAGG(
             reportPrint('| **EML field differences** | |');
             for (final Map<String, dynamic> diff in emlDifferences) {
               final String field = diff['field'] as String? ?? '';
-              final String collectoryVal = diff['collectory'] as String? ?? '';
-              final String gbifVal = diff['gbif'] as String? ?? '';
+              final String collectoryVal = _mdCell(
+                diff['collectory'] as String? ?? '',
+              );
+              final String gbifVal = _mdCell(diff['gbif'] as String? ?? '');
               reportPrint(
                 '| EML: $field | Collectory: `$collectoryVal` → GBIF: `$gbifVal` |',
               );
@@ -2886,30 +2897,19 @@ SELECT JSON_ARRAYAGG(
     final String query =
         '''
       SELECT JSON_OBJECT(
-        'uid', dr.uid,
         'name', dr.name,
-        'pubDescription', dr.pub_description,
-        'rights', dr.rights,
-        'citation', dr.citation,
-        'guid', dr.guid,
+        'pubDescription', REPLACE(REPLACE(REPLACE(CONVERT(dr.pub_description USING utf8mb4), CHAR(34), ''), '\\r', ' '), '\\n', ' '),
+        'citation', REPLACE(REPLACE(REPLACE(CONVERT(dr.citation USING utf8mb4), CHAR(34), ''), '\\r', ' '), '\\n', ' '),
         'northBoundingCoordinate', dr.north_bounding_coordinate,
         'southBoundingCoordinate', dr.south_bounding_coordinate,
         'eastBoundingCoordinate', dr.east_bounding_coordinate,
         'westBoundingCoordinate', dr.west_bounding_coordinate,
-        'geographicDescription', dr.geographic_description,
+        'geographicDescription', REPLACE(REPLACE(REPLACE(CONVERT(dr.geographic_description USING utf8mb4), CHAR(34), ''), '\\r', ' '), '\\n', ' '),
         'beginDate', dr.begin_date,
         'endDate', dr.end_date,
-        'purpose', dr.purpose,
-        'methodStepDescription', dr.method_step_description,
-        'qualityControlDescription', dr.quality_control_description,
         'licenseType', dr.license_type,
         'licenseVersion', dr.license_version,
-        'licenseUrl', COALESCE(lic.url, ''),
-        'websiteUrl', dr.website_url,
-        'gbifDoi', dr.gbif_doi,
-        'email', dr.email,
-        'phone', dr.phone,
-        'state', dr.state
+        'licenseUrl', COALESCE(lic.url, '')
       ) AS result_json
       FROM data_resource dr
       LEFT JOIN licence lic
