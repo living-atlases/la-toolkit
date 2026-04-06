@@ -2150,11 +2150,140 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return uuids;
   }
 
+  /// Normalizes the GBIF dataset API response into a flat map of EML fields
+  /// that can be compared directly with Collectory DB fields.
+  Map<String, String> _extractGbifEmlFields(Map<String, dynamic> gbifData) {
+    final Map<String, String> fields = <String, String>{};
+
+    // title → name
+    fields['name'] = _normalizeValue(gbifData['title']);
+
+    // description → pubDescription
+    fields['pubDescription'] = _normalizeValue(gbifData['description']);
+
+    // license URL → license (raw comparison)
+    fields['license'] = _normalizeValue(gbifData['license']);
+
+    // citation.text → citation
+    final dynamic citationRaw = gbifData['citation'];
+    if (citationRaw is Map<String, dynamic>) {
+      fields['citation'] = _normalizeValue(citationRaw['text']);
+    } else {
+      fields['citation'] = _normalizeValue(citationRaw);
+    }
+
+    // homepage → websiteUrl
+    fields['websiteUrl'] = _normalizeValue(gbifData['homepage']);
+
+    // additionalInfo → purpose
+    fields['purpose'] = _normalizeValue(gbifData['additionalInfo']);
+
+    // geographicCoverages[0] → bounding coordinates + geographic description
+    final List<dynamic> geoCoverages =
+        gbifData['geographicCoverages'] as List<dynamic>? ?? <dynamic>[];
+    if (geoCoverages.isNotEmpty) {
+      final Map<String, dynamic> geo = geoCoverages[0] as Map<String, dynamic>;
+      fields['geographicDescription'] = _normalizeValue(geo['description']);
+      final Map<String, dynamic>? bbox =
+          geo['boundingBox'] as Map<String, dynamic>?;
+      if (bbox != null) {
+        fields['northBoundingCoordinate'] = _normalizeCoordinate(
+          bbox['maxLatitude'],
+        );
+        fields['southBoundingCoordinate'] = _normalizeCoordinate(
+          bbox['minLatitude'],
+        );
+        fields['eastBoundingCoordinate'] = _normalizeCoordinate(
+          bbox['maxLongitude'],
+        );
+        fields['westBoundingCoordinate'] = _normalizeCoordinate(
+          bbox['minLongitude'],
+        );
+      }
+    }
+
+    // temporalCoverages[0] → beginDate / endDate
+    final List<dynamic> tempCoverages =
+        gbifData['temporalCoverages'] as List<dynamic>? ?? <dynamic>[];
+    if (tempCoverages.isNotEmpty) {
+      final Map<String, dynamic> temporal =
+          tempCoverages[0] as Map<String, dynamic>;
+      fields['beginDate'] = _normalizeDateValue(temporal['start']);
+      fields['endDate'] = _normalizeDateValue(temporal['end']);
+    }
+
+    return fields;
+  }
+
+  /// Normalizes a coordinate value (num or String) to a string with up to 4
+  /// decimal places, stripping trailing zeros.
+  String _normalizeCoordinate(dynamic value) {
+    if (value == null) {
+      return '';
+    }
+    final double? d = value is num
+        ? value.toDouble()
+        : double.tryParse(value.toString());
+    if (d == null) {
+      return value.toString().trim();
+    }
+    // Format with 4 decimal places then strip trailing zeros
+    String s = d.toStringAsFixed(4);
+    s = s.replaceAll(RegExp(r'\.?0+$'), '');
+    return s;
+  }
+
+  /// Normalizes an ISO-8601 datetime string to a date-only string (yyyy-MM-dd).
+  String _normalizeDateValue(dynamic value) {
+    if (value == null) {
+      return '';
+    }
+    final String s = value.toString().trim();
+    // If the value has a T, take just the date part
+    final int tIndex = s.indexOf('T');
+    if (tIndex > 0) {
+      return s.substring(0, tIndex);
+    }
+    return s;
+  }
+
+  /// Compares Collectory EML fields against GBIF EML fields and returns a list
+  /// of per-field differences.
+  List<Map<String, dynamic>> _compareEmlFieldsWithGbif(
+    Map<String, dynamic> collectoryData,
+    Map<String, String> gbifEmlFields,
+  ) {
+    final List<Map<String, dynamic>> differences = <Map<String, dynamic>>[];
+
+    for (final MapEntry<String, String> entry in gbifEmlFields.entries) {
+      final String field = entry.key;
+      final String gbifValue = entry.value;
+      final String collectoryValue = _normalizeValue(collectoryData[field]);
+
+      // Skip if both are empty
+      if (gbifValue.isEmpty && collectoryValue.isEmpty) {
+        continue;
+      }
+
+      if (gbifValue != collectoryValue) {
+        differences.add(<String, dynamic>{
+          'type': 'eml_field_mismatch',
+          'field': field,
+          'collectory': collectoryValue,
+          'gbif': gbifValue,
+        });
+      }
+    }
+
+    return differences;
+  }
+
   Future<Map<String, dynamic>> _compareDrsWithGbif(
     Uri gbifUri,
     String gbifDrId,
-    _CompareDataViewModel vm,
-  ) async {
+    _CompareDataViewModel vm, {
+    String? drUid,
+  }) async {
     final http.Response response = await http.get(gbifUri);
     if (response.statusCode != 200) {
       throw Exception(
@@ -2369,9 +2498,22 @@ SELECT JSON_ARRAYAGG(
       'dbContactCount': dbContacts.length,
     });
 
+    // EML field comparison
+    List<Map<String, dynamic>> emlDifferences = <Map<String, dynamic>>[];
+    if (drUid != null) {
+      final Map<String, dynamic> collectoryResource =
+          await _getCollectoryResource(drUid, vm);
+      final Map<String, String> gbifEmlFields = _extractGbifEmlFields(gbifData);
+      emlDifferences = _compareEmlFieldsWithGbif(
+        collectoryResource,
+        gbifEmlFields,
+      );
+    }
+
     return <String, dynamic>{
       'differences': differences,
       'differencesStats': differencesStats,
+      'emlDifferences': emlDifferences,
     };
   }
 
@@ -2449,17 +2591,20 @@ SELECT JSON_ARRAYAGG(
           gbifUri,
           gbifDrId,
           vm,
+          drUid: dr,
         );
         final List<Map<String, dynamic>> differences =
             comparison['differences'] as List<Map<String, dynamic>>;
         final List<Map<String, dynamic>> differencesStats =
             comparison['differencesStats'] as List<Map<String, dynamic>>;
+        final List<Map<String, dynamic>> emlDifferences =
+            comparison['emlDifferences'] as List<Map<String, dynamic>>;
 
-        if (differences.isNotEmpty) {
+        if (differences.isNotEmpty || emlDifferences.isNotEmpty) {
           resourcesWithDifferences++;
-          totalDifferences += differences.length;
+          totalDifferences += differences.length + emlDifferences.length;
           reportPrint(
-            '| **$dr** | Differences Found (${differences.length}) |',
+            '| **$dr** | Differences Found (${differences.length + emlDifferences.length}) |',
           );
           for (final Map<String, dynamic> difference in differences) {
             if (difference['type'] == 'contact_missing_in_db') {
@@ -2473,6 +2618,17 @@ SELECT JSON_ARRAYAGG(
             } else if (difference['type'] == 'contact_mismatch') {
               reportPrint(
                 '| Contact mismatch | ${difference['differences']} |',
+              );
+            }
+          }
+          if (emlDifferences.isNotEmpty) {
+            reportPrint('| **EML field differences** | |');
+            for (final Map<String, dynamic> diff in emlDifferences) {
+              final String field = diff['field'] as String? ?? '';
+              final String collectoryVal = diff['collectory'] as String? ?? '';
+              final String gbifVal = diff['gbif'] as String? ?? '';
+              reportPrint(
+                '| EML: $field | Collectory: `$collectoryVal` → GBIF: `$gbifVal` |',
               );
             }
           }
@@ -2724,6 +2880,7 @@ SELECT JSON_ARRAYAGG(
         'qualityControlDescription', dr.quality_control_description,
         'licenseType', dr.license_type,
         'licenseVersion', dr.license_version,
+        'websiteUrl', dr.website_url,
         'gbifDoi', dr.gbif_doi,
         'email', dr.email,
         'phone', dr.phone,
