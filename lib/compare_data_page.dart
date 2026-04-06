@@ -2467,7 +2467,6 @@ SELECT JSON_ARRAYAGG(
             final String dbContactValue =
                 matchingDbContact[key] as String? ?? '';
             if (gbifContact[key] is List<dynamic>) {
-              debugPrint('Current gbifKey: $key');
               final List<String> gbifContactValue =
                   (gbifContact[key] as List<dynamic>? ?? <dynamic>[])
                       .map((dynamic e) => e as String)
