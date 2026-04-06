@@ -2166,13 +2166,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
     // license URL → licenseUrl (compared against licence.url from Collectory DB)
     fields['licenseUrl'] = _normalizeValue(gbifData['license']);
 
-    // citation.text → citation
-    final dynamic citationRaw = gbifData['citation'];
-    if (citationRaw is Map<String, dynamic>) {
-      fields['citation'] = _normalizeValue(citationRaw['text']);
-    } else {
-      fields['citation'] = _normalizeValue(citationRaw);
-    }
+    // citation: NOT compared — GBIF auto-generates its own citation text
+    // (appending "accessed via GBIF.org on <date>"), which never matches the
+    // publisher-provided citation stored in Collectory. The two values are
+    // semantically different and comparison always produces false positives.
 
     // homepage → websiteUrl: NOT compared — Collectory stores IPT URL, GBIF
     // stores the dataset homepage. Different semantics.
@@ -2286,9 +2283,18 @@ class _CompareDataPageState extends State<CompareDataPage> {
         collectoryValue = _stripHtmlTags(collectoryValue);
       }
 
-      // For licenseUrl: skip comparison if Collectory has no licence set
-      if (field == 'licenseUrl' && collectoryValue.isEmpty) {
-        continue;
+      // For licenseUrl: skip comparison if Collectory has no licence set.
+      // Also normalize http:// → https:// on both sides: Collectory's Licence
+      // table may store either scheme, but GBIF always uses https://.
+      if (field == 'licenseUrl') {
+        if (collectoryValue.isEmpty) {
+          continue;
+        }
+        normalizedGbifValue = normalizedGbifValue.replaceFirst(
+          'http://',
+          'https://',
+        );
+        collectoryValue = collectoryValue.replaceFirst('http://', 'https://');
       }
 
       // Skip if both are empty
