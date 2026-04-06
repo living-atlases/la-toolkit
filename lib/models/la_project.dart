@@ -98,9 +98,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
        cmdHistoryEntries = cmdHistoryEntries ?? <CmdHistoryEntry>[],
        fstDeployed = fstDeployed ?? false,
        mapBoundsFstPoint = mapBoundsFstPoint ?? LALatLng.from(-44, 112),
-       mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154),
-       // Hub projects must have a parent
-       assert(!isHub || parent != null, 'Hub projects must have a parent') {
+       mapBoundsSndPoint = mapBoundsSndPoint ?? LALatLng.from(-9, 154) {
     this.services = this.services.map((LAService s) {
       s.projectId = this.id;
       return s;
@@ -716,6 +714,15 @@ class LAProject implements IsJsonSerializable<LAProject> {
           'Server "${server.name}" (${server.id}) has ${dockerSwarmClusters.length} docker-swarm clusters (expected 0 or 1)',
         );
       }
+    }
+
+    // Check 4: Hub projects must have a parent assigned at runtime
+    // NOTE: parent is not persisted in JSON and is assigned post-deserialization,
+    // so this cannot be an assert in the constructor.
+    if (isHub && parent == null) {
+      errors.add(
+        'Hub project "$shortName" has no parent assigned (parent is null)',
+      );
     }
 
     return errors;
