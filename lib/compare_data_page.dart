@@ -2158,11 +2158,13 @@ class _CompareDataPageState extends State<CompareDataPage> {
     // title → name
     fields['name'] = _normalizeValue(gbifData['title']);
 
-    // description → pubDescription
-    fields['pubDescription'] = _normalizeValue(gbifData['description']);
+    // description → pubDescription (GBIF may wrap in <p> tags)
+    fields['pubDescription'] = _stripHtmlTags(
+      _normalizeValue(gbifData['description']),
+    );
 
-    // license URL → license (raw comparison)
-    fields['license'] = _normalizeValue(gbifData['license']);
+    // license URL → licenseUrl (compared against licence.url from Collectory DB)
+    fields['licenseUrl'] = _normalizeValue(gbifData['license']);
 
     // citation.text → citation
     final dynamic citationRaw = gbifData['citation'];
@@ -2172,11 +2174,11 @@ class _CompareDataPageState extends State<CompareDataPage> {
       fields['citation'] = _normalizeValue(citationRaw);
     }
 
-    // homepage → websiteUrl
-    fields['websiteUrl'] = _normalizeValue(gbifData['homepage']);
+    // homepage → websiteUrl: NOT compared — Collectory stores IPT URL, GBIF
+    // stores the dataset homepage. Different semantics.
 
-    // additionalInfo → purpose
-    fields['purpose'] = _normalizeValue(gbifData['additionalInfo']);
+    // additionalInfo → purpose: NOT compared — additionalInfo in GBIF does not
+    // reliably map to Collectory's purpose field.
 
     // geographicCoverages[0] → bounding coordinates + geographic description
     final List<dynamic> geoCoverages =
@@ -2247,6 +2249,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return s;
   }
 
+  /// Strips HTML tags from a string, collapsing whitespace.
+  String _stripHtmlTags(String value) {
+    return value
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
+
   /// Compares Collectory EML fields against GBIF EML fields and returns a list
   /// of per-field differences.
   List<Map<String, dynamic>> _compareEmlFieldsWithGbif(
@@ -2258,19 +2268,31 @@ class _CompareDataPageState extends State<CompareDataPage> {
     for (final MapEntry<String, String> entry in gbifEmlFields.entries) {
       final String field = entry.key;
       final String gbifValue = entry.value;
-      final String collectoryValue = _normalizeValue(collectoryData[field]);
+      String collectoryValue = _normalizeValue(collectoryData[field]);
 
-      // Skip if both are empty
-      if (gbifValue.isEmpty && collectoryValue.isEmpty) {
+      // Strip HTML tags from both sides for pubDescription
+      String normalizedGbifValue = gbifValue;
+      if (field == 'pubDescription') {
+        normalizedGbifValue = _stripHtmlTags(gbifValue);
+        collectoryValue = _stripHtmlTags(collectoryValue);
+      }
+
+      // For licenseUrl: skip comparison if Collectory has no licence set
+      if (field == 'licenseUrl' && collectoryValue.isEmpty) {
         continue;
       }
 
-      if (gbifValue != collectoryValue) {
+      // Skip if both are empty
+      if (normalizedGbifValue.isEmpty && collectoryValue.isEmpty) {
+        continue;
+      }
+
+      if (normalizedGbifValue != collectoryValue) {
         differences.add(<String, dynamic>{
           'type': 'eml_field_mismatch',
           'field': field,
           'collectory': collectoryValue,
-          'gbif': gbifValue,
+          'gbif': normalizedGbifValue,
         });
       }
     }
@@ -2560,7 +2582,8 @@ SELECT JSON_ARRAYAGG(
       final int totalResources = drsToCompare.length;
       int resourcesWithDifferences = 0;
       int resourcesWithoutDifferences = 0;
-      int totalDifferences = 0;
+      int totalContactDifferences = 0;
+      int totalEmlDifferences = 0;
 
       compareTitles.clear();
       compareTitles.addAll(<String>['Data Resource', 'Status', 'Details']);
@@ -2602,7 +2625,8 @@ SELECT JSON_ARRAYAGG(
 
         if (differences.isNotEmpty || emlDifferences.isNotEmpty) {
           resourcesWithDifferences++;
-          totalDifferences += differences.length + emlDifferences.length;
+          totalContactDifferences += differences.length;
+          totalEmlDifferences += emlDifferences.length;
           reportPrint(
             '| **$dr** | Differences Found (${differences.length + emlDifferences.length}) |',
           );
@@ -2645,13 +2669,13 @@ SELECT JSON_ARRAYAGG(
       // Add summary to the report
       reportPrint('\n## Summary\n');
       reportPrint(
-        '| Total Resources | Resources with Differences | Resources without Differences | Total Differences |',
+        '| Total Resources | Resources with Differences | Resources without Differences | Contact Differences | EML Differences |',
       );
       reportPrint(
-        '|-----------------|----------------------------|-------------------------------|-------------------|',
+        '|-----------------|----------------------------|-------------------------------|---------------------|-----------------|',
       );
       reportPrint(
-        '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalDifferences |',
+        '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalContactDifferences | $totalEmlDifferences |',
       );
 
       setState(() {
@@ -2880,18 +2904,26 @@ SELECT JSON_ARRAYAGG(
         'qualityControlDescription', dr.quality_control_description,
         'licenseType', dr.license_type,
         'licenseVersion', dr.license_version,
+        'licenseUrl', COALESCE(lic.url, ''),
         'websiteUrl', dr.website_url,
         'gbifDoi', dr.gbif_doi,
         'email', dr.email,
         'phone', dr.phone,
         'state', dr.state
-      ) AS result_json FROM data_resource dr WHERE dr.uid = '$dataResourceUid'
+      ) AS result_json
+      FROM data_resource dr
+      LEFT JOIN licence lic
+        ON lic.acronym = dr.license_type
+        AND (dr.license_version IS NULL OR lic.licence_version = dr.license_version)
+      WHERE dr.uid = '$dataResourceUid'
     ''';
 
     vm.doMySqlQuery(
       query,
       (dynamic result) {
-        if (result is List && result.isNotEmpty) {
+        if (result is Map<String, dynamic>) {
+          completer.complete(result);
+        } else if (result is List && result.isNotEmpty) {
           completer.complete((result[0]) as Map<String, dynamic>);
         } else {
           completer.complete(<String, dynamic>{});
