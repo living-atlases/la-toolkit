@@ -2166,10 +2166,28 @@ class _CompareDataPageState extends State<CompareDataPage> {
     // license URL → licenseUrl (compared against licence.url from Collectory DB)
     fields['licenseUrl'] = _normalizeValue(gbifData['license']);
 
-    // citation: NOT compared — GBIF auto-generates its own citation text
-    // (appending "accessed via GBIF.org on <date>"), which never matches the
-    // publisher-provided citation stored in Collectory. The two values are
-    // semantically different and comparison always produces false positives.
+    // citation.text → citation
+    // GBIF auto-appends " accessed via GBIF.org on YYYY-MM-DD." when
+    // citationProvidedBySource is false. Strip that suffix so the remaining
+    // base citation (author, title, DOI) can be compared with Collectory.
+    final dynamic citationRaw = gbifData['citation'];
+    if (citationRaw is Map<String, dynamic>) {
+      final bool providedBySource =
+          citationRaw['citationProvidedBySource'] as bool? ?? false;
+      String citationText = _normalizeValue(citationRaw['text']);
+      if (!providedBySource) {
+        // Strip the GBIF-appended suffix: " accessed via GBIF.org on YYYY-MM-DD."
+        citationText = citationText
+            .replaceAll(
+              RegExp(r'\s+accessed via GBIF\.org on \d{4}-\d{2}-\d{2}\.?$'),
+              '',
+            )
+            .trim();
+      }
+      fields['citation'] = citationText;
+    } else {
+      fields['citation'] = _normalizeValue(citationRaw);
+    }
 
     // homepage → websiteUrl: NOT compared — Collectory stores IPT URL, GBIF
     // stores the dataset homepage. Different semantics.
