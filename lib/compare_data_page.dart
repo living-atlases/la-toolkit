@@ -2896,7 +2896,7 @@ SELECT JSON_ARRAYAGG(
     final String query =
         '''
       SELECT JSON_OBJECT(
-        'name', dr.name,
+        'name', REPLACE(CONVERT(dr.name USING utf8mb4), CHAR(34), ''),
         'pubDescription', REPLACE(REPLACE(REPLACE(CONVERT(dr.pub_description USING utf8mb4), CHAR(34), ''), '\\r', ' '), '\\n', ' '),
         'citation', REPLACE(REPLACE(REPLACE(CONVERT(dr.citation USING utf8mb4), CHAR(34), ''), '\\r', ' '), '\\n', ' '),
         'northBoundingCoordinate', dr.north_bounding_coordinate,
