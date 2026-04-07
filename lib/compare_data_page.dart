@@ -20,6 +20,7 @@ import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:xml/xml.dart' as xml;
 
 import 'components/app_snack_bar.dart';
 import 'components/compare_data_timeline.dart';
@@ -903,12 +904,14 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                 ),
                               ),
                             ),
-                          if (tab == 1 || tab == 3) const SizedBox(height: 10),
-                          if ((tab == 1 || tab == 3) &&
+                          if (tab == 1 || tab == 3 || tab == 4)
+                            const SizedBox(height: 10),
+                          if ((tab == 1 || tab == 3 || tab == 4) &&
                               indexDiffReport.isNotEmpty)
                             MarkdownBody(data: indexDiffReport),
-                          if (tab == 1 || tab == 3) const SizedBox(height: 10),
-                          if ((tab == 1 || tab == 3) &&
+                          if (tab == 1 || tab == 3 || tab == 4)
+                            const SizedBox(height: 10),
+                          if ((tab == 1 || tab == 3 || tab == 4) &&
                               indexDiffReport.isNotEmpty)
                             ElevatedButton(
                               onPressed: () {
@@ -921,8 +924,9 @@ class _CompareDataPageState extends State<CompareDataPage> {
                               },
                               child: const Text('Download report'),
                             ),
-                          if (tab == 1 || tab == 3) const SizedBox(height: 10),
-                          if ((tab == 1 || tab == 3) &&
+                          if (tab == 1 || tab == 3 || tab == 4)
+                            const SizedBox(height: 10),
+                          if ((tab == 1 || tab == 3 || tab == 4) &&
                               indexDiffReport.isNotEmpty)
                             ElevatedButton(
                               onPressed: () {
@@ -2817,20 +2821,29 @@ SELECT JSON_ARRAYAGG(
           debugPrint('Comparing data resource: $dr');
         }
 
-        // Fetch IPT metadata for this data resource
-        final Map<String, dynamic> iptMetadata = await _getIptMetadata(dr, vm);
-
-        if (iptMetadata.isEmpty) {
-          debugPrint('IPT metadata not found for data resource: $dr');
-          continue;
-        }
-
-        // Fetch Collectory data for this data resource
+        // Fetch Collectory data first (we need websiteUrl to locate the IPT resource)
         final Map<String, dynamic> collectoryData =
             await _getCollectoryResource(dr, vm);
 
         if (collectoryData.isEmpty) {
           debugPrint('Collectory data not found for data resource: $dr');
+          continue;
+        }
+
+        // Fetch IPT metadata using the websiteUrl from Collectory
+        final String websiteUrl = collectoryData['websiteUrl'] as String? ?? '';
+        final Map<String, dynamic> iptMetadata = await _getIptMetadata(
+          dr,
+          websiteUrl,
+        );
+
+        if (iptMetadata.isEmpty) {
+          debugPrint('IPT metadata not found for data resource: $dr');
+          resourcesWithDifferences++;
+          totalDifferences++;
+          reportPrint(
+            '| **$dr** | ⚠ IPT EML not fetched — websiteUrl: `$websiteUrl` |',
+          );
           continue;
         }
 
@@ -2844,11 +2857,24 @@ SELECT JSON_ARRAYAGG(
           totalDifferences += differences.length;
           allDifferences[dr] = differences;
           reportPrint(
-            '| **$dr** | Differences Found (${differences.length}) |',
+            '| **$dr** | Differences Found (${differences.length}) — IPT: `$websiteUrl` |',
           );
           for (final Map<String, dynamic> diff in differences) {
+            // Sanitize values for embedding in a markdown table cell:
+            // replace any line breaks (LF, CR, CRLF) with a space and
+            // escape pipe characters.
+            final String collectoryVal = (diff['collectory'] as String)
+                .replaceAll('\r\n', ' ')
+                .replaceAll('\r', ' ')
+                .replaceAll('\n', ' ')
+                .replaceAll('|', r'\|');
+            final String iptVal = (diff['ipt'] as String)
+                .replaceAll('\r\n', ' ')
+                .replaceAll('\r', ' ')
+                .replaceAll('\n', ' ')
+                .replaceAll('|', r'\|');
             reportPrint(
-              '| ${diff['field']} | Collectory: `${diff['collectory']}` vs IPT: `${diff['ipt']}` |',
+              '| ${diff['field']} | Collectory: `$collectoryVal` vs IPT: `$iptVal` |',
             );
           }
         } else {
@@ -2879,33 +2905,333 @@ SELECT JSON_ARRAYAGG(
     }
   }
 
+  /// Fetches EML from the IPT and parses it into a fields map comparable
+  /// to what [_compareEmlFields] expects.
+  ///
+  /// [websiteUrl] is the Collectory `website_url`, e.g.
+  /// `https://ipt.gbif.es/resource?r=biobserva-aves`.  The IPT EML endpoint
+  /// is derived by replacing `resource?r=` with `eml.do?r=`.
   Future<Map<String, dynamic>> _getIptMetadata(
     String dataResourceUid,
-    _CompareDataViewModel vm,
+    String websiteUrl,
   ) async {
     try {
-      // IPT metadata is accessed via /resource/<uid>/eml.xml or /resource/<uid>
-      final Uri iptUri = Uri.parse('$iptBaseUrl/resource/$dataResourceUid');
-      final http.Response response = await http.get(iptUri);
+      // Derive the EML URL from the IPT resource page URL.
+      // Handles multiple URL patterns stored in Collectory's website_url:
+      //   https://ipt.gbif.es/resource?r=biobserva-aves
+      //     -> https://ipt.gbif.es/eml.do?r=biobserva-aves
+      //   https://ipt.gbif.es/resource.do?r=biobserva-aves  (legacy IPT)
+      //     -> https://ipt.gbif.es/eml.do?r=biobserva-aves
+      //   https://ipt.gbif.es/manage/resource.do?r=biobserva-aves  (manage URL)
+      //     -> https://ipt.gbif.es/eml.do?r=biobserva-aves
+      final Uri emlUri;
+
+      // Extract the 'r' query parameter from any IPT resource URL variant.
+      final RegExp resourceRe = RegExp(
+        r'(resource(?:\.do)?\?(?:.*&)?r=|manage/resource(?:\.do)?\?(?:.*&)?r=)',
+      );
+      if (resourceRe.hasMatch(websiteUrl)) {
+        // Parse the URL to extract the 'r' param reliably.
+        final Uri parsed = Uri.parse(websiteUrl);
+        final String? resourceId = parsed.queryParameters['r'];
+        if (resourceId == null || resourceId.isEmpty) {
+          debugPrint(
+            'Could not extract IPT resource id from websiteUrl "$websiteUrl" '
+            'for $dataResourceUid',
+          );
+          return <String, dynamic>{};
+        }
+        final String base =
+            '${parsed.scheme}://${parsed.host}'
+            '${parsed.port != 80 && parsed.port != 443 && parsed.port != -1 ? ':${parsed.port}' : ''}';
+        emlUri = Uri.parse('$base/eml.do?r=$resourceId');
+      } else {
+        debugPrint(
+          'No recognizable IPT websiteUrl "$websiteUrl" '
+          'for $dataResourceUid — skipping EML fetch',
+        );
+        return <String, dynamic>{};
+      }
+
+      final http.Response response = await http.get(emlUri);
 
       if (response.statusCode != 200) {
-        debugPrint('Error fetching IPT metadata: ${response.statusCode}');
+        debugPrint(
+          'Error fetching IPT EML for $dataResourceUid: '
+          'HTTP ${response.statusCode} from $emlUri',
+        );
         return <String, dynamic>{};
       }
 
-      // For now, assume IPT returns JSON metadata
-      // In reality, we'd parse EML XML, but for bulk comparison we can use IPT's API
-      try {
-        final String body = convert.utf8.decode(response.bodyBytes);
-        final Map<String, dynamic> metadata =
-            convert.json.decode(body) as Map<String, dynamic>;
-        return metadata;
-      } catch (_) {
-        // If JSON parsing fails, return empty
-        return <String, dynamic>{};
+      final xml.XmlDocument doc = xml.XmlDocument.parse(response.body);
+
+      /// Helper: get trimmed text of the first matching element.
+      String elemText(String tag, {xml.XmlNode? root}) {
+        final Iterable<xml.XmlElement> elems = (root ?? doc).findAllElements(
+          tag,
+        );
+        return elems.isEmpty ? '' : (elems.first.innerText.trim());
       }
+
+      /// Helper: collect <para> children into a single string.
+      /// Falls back to the element's own innerText when no <para> children
+      /// exist (some EML files embed the text directly without <para>).
+      String parasText(String parentTag, {xml.XmlNode? root}) {
+        final Iterable<xml.XmlElement> parents = (root ?? doc).findAllElements(
+          parentTag,
+        );
+        if (parents.isEmpty) {
+          return '';
+        }
+        final xml.XmlElement parent = parents.first;
+        final Iterable<xml.XmlElement> paras = parent.findElements('para');
+        if (paras.isEmpty) {
+          // No <para> children — use the element's own text directly.
+          return parent.innerText.trim();
+        }
+        return paras.map((xml.XmlElement p) => p.innerText.trim()).join(' ');
+      }
+
+      // -- guid: packageId attribute on root eml element --
+      // IPT packageId includes a version suffix, e.g.
+      // "35e0cdd1-d493-4a73-bca8-2850c61ef79f/v1.15" — strip it so the UUID
+      // can be compared with Collectory's guid field.
+      final String rawGuid = doc.rootElement.getAttribute('packageId') ?? '';
+      final String guid = rawGuid.contains('/')
+          ? rawGuid.substring(0, rawGuid.lastIndexOf('/'))
+          : rawGuid;
+
+      // -- name: dataset/title --
+      final String name = elemText('title');
+
+      // -- pubDescription: dataset/abstract/para(s) --
+      final String pubDescription = parasText('abstract');
+
+      // -- rights: dataset/intellectualRights/para(s) --
+      final String rights = parasText('intellectualRights');
+
+      // -- citation: additionalMetadata/metadata/gbif/citation (inner text) --
+      final String citation = elemText('citation');
+
+      // -- geographic coverage --
+      final xml.XmlElement? geoCov = doc
+          .findAllElements('geographicCoverage')
+          .firstOrNull;
+      final String geographicDescription = geoCov != null
+          ? elemText('geographicDescription', root: geoCov)
+          : '';
+      final xml.XmlElement? bbox = geoCov
+          ?.findElements('boundingCoordinates')
+          .firstOrNull;
+      final String north = bbox != null
+          ? elemText('northBoundingCoordinate', root: bbox)
+          : '';
+      final String south = bbox != null
+          ? elemText('southBoundingCoordinate', root: bbox)
+          : '';
+      final String east = bbox != null
+          ? elemText('eastBoundingCoordinate', root: bbox)
+          : '';
+      final String west = bbox != null
+          ? elemText('westBoundingCoordinate', root: bbox)
+          : '';
+
+      // -- temporal coverage --
+      final xml.XmlElement? tempCov = doc
+          .findAllElements('temporalCoverage')
+          .firstOrNull;
+      final String beginDate = tempCov != null
+          ? elemText('beginDate', root: tempCov)
+          : '';
+      final String endDate = tempCov != null
+          ? elemText('endDate', root: tempCov)
+          : '';
+
+      // -- purpose --
+      final String purpose = parasText('purpose');
+
+      // -- methodStep description --
+      final xml.XmlElement? methodStep = doc
+          .findAllElements('methodStep')
+          .firstOrNull;
+      final String methodStepDescription = methodStep != null
+          ? parasText('description', root: methodStep)
+          : '';
+
+      // -- qualityControl description --
+      final xml.XmlElement? qc = doc
+          .findAllElements('qualityControl')
+          .firstOrNull;
+      final String qualityControlDescription = qc != null
+          ? parasText('description', root: qc)
+          : '';
+
+      // -- license --
+      // Collectory stores licenseType (e.g. "CC-BY") and licenseVersion
+      // (e.g. "4.0") in the data_resource table.  These values come from the
+      // Licence lookup table, whose acronyms use hyphens (CC-BY, CC-BY-NC,
+      // CC0).
+      //
+      // IPT EML may encode the license in two different ways:
+      //
+      // 1. Modern (IPT 2.x+): <licensed><identifier>CC BY-4.0</identifier>
+      //    The SPDX identifier uses spaces in the type (e.g. "CC BY") which
+      //    doesn't match Collectory's hyphenated acronyms.
+      //
+      // 2. Legacy: <intellectualRights><para><ulink url="https://...legalcode">
+      //    Here we look up the URL in a known map that mirrors Collectory's
+      //    Licence table (same acronyms and versions).
+      //
+      // Strategy: try <licensed><identifier> first; if empty, fall back to
+      // <intellectualRights> URL lookup.
+
+      // Known CC license URL → (licenseType, licenseVersion) mapping.
+      // Acronyms match Collectory's Licence.acronym values (hyphenated).
+      const Map<String, Map<String, String>> licenseUrlMap =
+          <String, Map<String, String>>{
+            'https://creativecommons.org/publicdomain/zero/1.0/legalcode':
+                <String, String>{'type': 'CC0', 'version': '1.0'},
+            'http://creativecommons.org/publicdomain/zero/1.0/legalcode':
+                <String, String>{'type': 'CC0', 'version': '1.0'},
+            'https://creativecommons.org/licenses/by/4.0/legalcode':
+                <String, String>{'type': 'CC-BY', 'version': '4.0'},
+            'http://creativecommons.org/licenses/by/4.0/legalcode':
+                <String, String>{'type': 'CC-BY', 'version': '4.0'},
+            'https://creativecommons.org/licenses/by-nc/4.0/legalcode':
+                <String, String>{'type': 'CC-BY-NC', 'version': '4.0'},
+            'http://creativecommons.org/licenses/by-nc/4.0/legalcode':
+                <String, String>{'type': 'CC-BY-NC', 'version': '4.0'},
+            'https://creativecommons.org/licenses/by/3.0/legalcode':
+                <String, String>{'type': 'CC-BY', 'version': '3.0'},
+            'http://creativecommons.org/licenses/by/3.0/legalcode':
+                <String, String>{'type': 'CC-BY', 'version': '3.0'},
+            'https://creativecommons.org/licenses/by-nc/3.0/legalcode':
+                <String, String>{'type': 'CC-BY-NC', 'version': '3.0'},
+            'http://creativecommons.org/licenses/by-nc/3.0/legalcode':
+                <String, String>{'type': 'CC-BY-NC', 'version': '3.0'},
+          };
+
+      // Also a map from SPDX identifier → Collectory acronym (for modern EML).
+      const Map<String, String> spdxToCollectoryType = <String, String>{
+        'CC0': 'CC0',
+        'CC BY': 'CC-BY',
+        'CC BY-NC': 'CC-BY-NC',
+        'CC BY-SA': 'CC-BY-SA',
+        'CC BY-ND': 'CC-BY-ND',
+        'CC BY-NC-SA': 'CC-BY-NC-SA',
+        'CC BY-NC-ND': 'CC-BY-NC-ND',
+      };
+
+      String licenseType = '';
+      String licenseVersion = '';
+
+      // Try modern <licensed><identifier> first.
+      final xml.XmlElement? licensed = doc
+          .findAllElements('licensed')
+          .firstOrNull;
+      final String licenseIdentifier = licensed != null
+          ? elemText('identifier', root: licensed)
+          : '';
+
+      if (licenseIdentifier.isNotEmpty) {
+        // SPDX-style: "CC0-1.0", "CC BY-4.0", "CC BY-SA-4.0"
+        // The version is the last '-'-separated token that is numeric.
+        final RegExp versionPattern = RegExp(r'^\d[\d.]*$');
+        final int lastDash = licenseIdentifier.lastIndexOf('-');
+        if (lastDash != -1 &&
+            versionPattern.hasMatch(
+              licenseIdentifier.substring(lastDash + 1),
+            )) {
+          final String spdxType = licenseIdentifier.substring(0, lastDash);
+          licenseType = spdxToCollectoryType[spdxType] ?? spdxType;
+          licenseVersion = licenseIdentifier.substring(lastDash + 1);
+        } else {
+          licenseType =
+              spdxToCollectoryType[licenseIdentifier] ?? licenseIdentifier;
+        }
+      } else {
+        // Fallback: extract license URL from <intellectualRights> ulink.
+        final xml.XmlElement? rights = doc
+            .findAllElements('intellectualRights')
+            .firstOrNull;
+        if (rights != null) {
+          final Iterable<xml.XmlElement> ulinks = rights.findAllElements(
+            'ulink',
+          );
+          for (final xml.XmlElement ulink in ulinks) {
+            final String url = ulink.getAttribute('url') ?? '';
+            final Map<String, String>? mapped = licenseUrlMap[url];
+            if (mapped != null) {
+              licenseType = mapped['type'] ?? '';
+              licenseVersion = mapped['version'] ?? '';
+              break;
+            }
+          }
+          // If no ulink match, try plain text of the para (some EMLs).
+          if (licenseType.isEmpty) {
+            final String rightsText = parasText('intellectualRights');
+            // Extract URL from plain text if it contains a CC URL.
+            final RegExp urlRe = RegExp(r'https?://[^\s]+legalcode');
+            final RegExpMatch? m = urlRe.firstMatch(rightsText);
+            if (m != null) {
+              final Map<String, String>? mapped = licenseUrlMap[m.group(0)];
+              if (mapped != null) {
+                licenseType = mapped['type'] ?? '';
+                licenseVersion = mapped['version'] ?? '';
+              }
+            }
+          }
+        }
+      }
+
+      // -- DOI: first alternateIdentifier that looks like a DOI --
+      final String gbifDoi = doc
+          .findAllElements('alternateIdentifier')
+          .map((xml.XmlElement e) => e.innerText.trim())
+          .firstWhere(
+            (String s) => s.startsWith('10.') || s.contains('doi.org'),
+            orElse: () => '',
+          );
+
+      // -- contact info from first dataset/contact --
+      final xml.XmlElement? contact = doc
+          .findAllElements('contact')
+          .firstOrNull;
+      final String email = contact != null
+          ? elemText('electronicMailAddress', root: contact)
+          : '';
+      final String phone = contact != null
+          ? elemText('phone', root: contact)
+          : '';
+      final String state = contact != null
+          ? elemText('administrativeArea', root: contact)
+          : '';
+
+      return <String, dynamic>{
+        'guid': guid,
+        'name': name,
+        'pubDescription': pubDescription,
+        'rights': rights,
+        'citation': citation,
+        'geographicDescription': geographicDescription,
+        'northBoundingCoordinate': north,
+        'southBoundingCoordinate': south,
+        'eastBoundingCoordinate': east,
+        'westBoundingCoordinate': west,
+        'beginDate': beginDate,
+        'endDate': endDate,
+        'purpose': purpose,
+        'methodStepDescription': methodStepDescription,
+        'qualityControlDescription': qualityControlDescription,
+        'licenseType': licenseType,
+        'licenseVersion': licenseVersion,
+        'gbifDoi': gbifDoi,
+        'email': email,
+        'phone': phone,
+        'state': state,
+      };
     } catch (e) {
-      debugPrint('Error getting IPT metadata: $e');
+      debugPrint('Error getting IPT EML metadata for $dataResourceUid: $e');
       return <String, dynamic>{};
     }
   }
@@ -2932,7 +3258,8 @@ SELECT JSON_ARRAYAGG(
         'endDate', dr.end_date,
         'licenseType', dr.license_type,
         'licenseVersion', dr.license_version,
-        'licenseUrl', COALESCE(lic.url, '')
+        'licenseUrl', COALESCE(lic.url, ''),
+        'websiteUrl', COALESCE(dr.website_url, '')
       ) AS result_json
       FROM data_resource dr
       LEFT JOIN licence lic
@@ -2967,12 +3294,14 @@ SELECT JSON_ARRAYAGG(
   ) {
     final List<Map<String, dynamic>> differences = <Map<String, dynamic>>[];
 
-    // List of EML fields to compare
+    // List of EML fields to compare — only fields that are stored in the
+    // Collectory data_resource table (and returned by _getCollectoryResource).
+    // Fields that Collectory does not store (guid, rights, purpose,
+    // methodStepDescription, qualityControlDescription, gbifDoi, email,
+    // phone, state) are excluded to avoid noise from structural gaps.
     final List<String> emlFields = <String>[
       'name',
       'pubDescription',
-      'guid',
-      'rights',
       'citation',
       'northBoundingCoordinate',
       'southBoundingCoordinate',
@@ -2981,15 +3310,8 @@ SELECT JSON_ARRAYAGG(
       'geographicDescription',
       'beginDate',
       'endDate',
-      'purpose',
-      'methodStepDescription',
-      'qualityControlDescription',
       'licenseType',
       'licenseVersion',
-      'gbifDoi',
-      'email',
-      'phone',
-      'state',
     ];
 
     for (final String field in emlFields) {
@@ -3016,10 +3338,11 @@ SELECT JSON_ARRAYAGG(
     if (value == null) {
       return '';
     }
-    if (value is String) {
-      return value.trim();
-    }
-    return value.toString();
+    final String s = value is String ? value : value.toString();
+    // Collapse all whitespace sequences (spaces, tabs, CR, LF) to a single
+    // space and trim edges.  This avoids false positives when Collectory and
+    // IPT store the same text with different line-endings or spacing.
+    return s.trim().replaceAll(RegExp(r'\s+'), ' ');
   }
 
   String _contactForHumans(Map<String, dynamic> contact) {
