@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:path_provider/path_provider.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
+import 'package:pretty_diff_text/pretty_diff_text.dart';
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
@@ -148,6 +149,20 @@ class _CompareDataPageState extends State<CompareDataPage> {
   bool somethingFailed = false;
   bool csvFormat = false;
   String indexDiffReport = '';
+  // Structured diff results for tab 4 (IPT vs Collectory), used to render
+  // per-field PrettyDiffText widgets.
+  // Each entry: {'dr': String, 'websiteUrl': String, 'field': String,
+  //              'collectory': String, 'ipt': String}
+  final List<Map<String, dynamic>> _iptDiffResults = <Map<String, dynamic>>[];
+  // Summary-only markdown for tab 4 (used alongside the rich diff table).
+  String _iptSummaryReport = '';
+  // Structured diff results for tab 3 (Collectory vs GBIF), used to render
+  // per-field PrettyDiffText widgets.
+  // Each entry: {'dr': String, 'gbifUrl': String, 'type': String,
+  //              'field': String, 'collectory': String, 'gbif': String}
+  final List<Map<String, dynamic>> _gbifDiffResults = <Map<String, dynamic>>[];
+  // Summary-only markdown for tab 3 (used alongside the rich diff table).
+  String _gbifSummaryReport = '';
   final List<int> recordsNumberOptions = <int>[2, 5, 10, 20, 50, 100, 200, 500];
   int numberOfRecords = 5;
   int populationSize = 1000000;
@@ -214,7 +229,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
         );
       },
       builder: (BuildContext context, _CompareDataViewModel vm) {
-        if (tab == 3) {
+        if (tab == 3 || tab == 4) {
           launchEnabled = true;
         }
         p = vm.state.currentProject;
@@ -779,6 +794,8 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                         setState(() {
                                           launchEnabled = false;
                                           indexDiffReport = '';
+                                          _gbifDiffResults.clear();
+                                          _gbifSummaryReport = '';
                                           somethingFailed = false;
                                         });
                                         await _compareCollectionsWithGBIF(
@@ -906,9 +923,19 @@ class _CompareDataPageState extends State<CompareDataPage> {
                             ),
                           if (tab == 1 || tab == 3 || tab == 4)
                             const SizedBox(height: 10),
-                          if ((tab == 1 || tab == 3 || tab == 4) &&
-                              indexDiffReport.isNotEmpty)
+                          // Tab 1: plain markdown report
+                          if (tab == 1 && indexDiffReport.isNotEmpty)
                             MarkdownBody(data: indexDiffReport),
+                          // Tab 3: summary markdown + rich diff table
+                          if (tab == 3 && _gbifSummaryReport.isNotEmpty)
+                            MarkdownBody(data: _gbifSummaryReport),
+                          if (tab == 3 && _gbifDiffResults.isNotEmpty)
+                            _buildGbifDiffTable(_gbifDiffResults),
+                          // Tab 4: summary markdown + rich diff table
+                          if (tab == 4 && _iptSummaryReport.isNotEmpty)
+                            MarkdownBody(data: _iptSummaryReport),
+                          if (tab == 4 && _iptDiffResults.isNotEmpty)
+                            _buildIptDiffTable(_iptDiffResults),
                           if (tab == 1 || tab == 3 || tab == 4)
                             const SizedBox(height: 10),
                           if ((tab == 1 || tab == 3 || tab == 4) &&
@@ -2272,6 +2299,23 @@ class _CompareDataPageState extends State<CompareDataPage> {
   String _stripHtmlTags(String value) {
     return value
         .replaceAll(RegExp(r'<[^>]*>'), '')
+        // Decode common HTML entities so e.g. &ldquo; and " compare equal.
+        .replaceAll('&ldquo;', '"')
+        .replaceAll('&rdquo;', '"')
+        .replaceAll('&lsquo;', "'")
+        .replaceAll('&rsquo;', "'")
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&apos;', "'")
+        .replaceAll('&quot;', '"')
+        // Normalize typographic quotes to straight quotes (may come from
+        // decoded entities above or directly from the stored text).
+        .replaceAll('\u201C', '"')
+        .replaceAll('\u201D', '"')
+        .replaceAll('\u2018', "'")
+        .replaceAll('\u2019', "'")
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
   }
@@ -2625,6 +2669,8 @@ SELECT JSON_ARRAYAGG(
       compareTitles.addAll(<String>['Data Resource', 'Status', 'Details']);
 
       indexDiffReport = '';
+      _gbifDiffResults.clear();
+      _gbifSummaryReport = '';
 
       setState(() {
         currentPhaseTab3 = CompareCollectionsWithGbifDataPhase.finished;
@@ -2668,17 +2714,43 @@ SELECT JSON_ARRAYAGG(
           );
           for (final Map<String, dynamic> difference in differences) {
             if (difference['type'] == 'contact_missing_in_db') {
-              reportPrint(
-                '| Contact missing in Collectory | ${_contactForHumans(difference['gbifContact'] as Map<String, dynamic>)} |',
+              final String contactDesc = _contactForHumans(
+                difference['gbifContact'] as Map<String, dynamic>,
               );
+              reportPrint('| Contact missing in Collectory | $contactDesc |');
+              _gbifDiffResults.add(<String, dynamic>{
+                'dr': dr,
+                'gbifUrl': gbifUriS,
+                'type': 'contact_missing_in_collectory',
+                'field': 'Contact missing in Collectory',
+                'collectory': '',
+                'gbif': contactDesc,
+              });
             } else if (difference['type'] == 'contact_missing_in_gbif') {
-              reportPrint(
-                '| Contact missing in GBIF | ${_contactForHumans(difference['dbContact'] as Map<String, dynamic>)} |',
+              final String contactDesc = _contactForHumans(
+                difference['dbContact'] as Map<String, dynamic>,
               );
+              reportPrint('| Contact missing in GBIF | $contactDesc |');
+              _gbifDiffResults.add(<String, dynamic>{
+                'dr': dr,
+                'gbifUrl': gbifUriS,
+                'type': 'contact_missing_in_gbif',
+                'field': 'Contact missing in GBIF',
+                'collectory': contactDesc,
+                'gbif': '',
+              });
             } else if (difference['type'] == 'contact_mismatch') {
               reportPrint(
                 '| Contact mismatch | ${difference['differences']} |',
               );
+              _gbifDiffResults.add(<String, dynamic>{
+                'dr': dr,
+                'gbifUrl': gbifUriS,
+                'type': 'contact_mismatch',
+                'field': 'Contact mismatch',
+                'collectory': difference['differences']?.toString() ?? '',
+                'gbif': difference['differences']?.toString() ?? '',
+              });
             }
           }
           if (emlDifferences.isNotEmpty) {
@@ -2692,6 +2764,14 @@ SELECT JSON_ARRAYAGG(
               reportPrint(
                 '| EML: $field | Collectory: `$collectoryVal` → GBIF: `$gbifVal` |',
               );
+              _gbifDiffResults.add(<String, dynamic>{
+                'dr': dr,
+                'gbifUrl': gbifUriS,
+                'type': 'eml',
+                'field': 'EML: $field',
+                'collectory': diff['collectory'] as String? ?? '',
+                'gbif': diff['gbif'] as String? ?? '',
+              });
             }
           }
         } else {
@@ -2704,17 +2784,20 @@ SELECT JSON_ARRAYAGG(
         );
       }
 
-      // Add summary to the report
-      reportPrint('\n## Summary\n');
-      reportPrint(
+      // Build summary markdown for tab 3
+      final StringBuffer summaryBuf = StringBuffer();
+      summaryBuf.writeln('\n## Summary\n');
+      summaryBuf.writeln(
         '| Total Resources | Resources with Differences | Resources without Differences | Contact Differences | EML Differences |',
       );
-      reportPrint(
+      summaryBuf.writeln(
         '|-----------------|----------------------------|-------------------------------|---------------------|-----------------|',
       );
-      reportPrint(
+      summaryBuf.writeln(
         '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalContactDifferences | $totalEmlDifferences |',
       );
+      _gbifSummaryReport = summaryBuf.toString();
+      reportPrint(_gbifSummaryReport);
 
       setState(() {
         currentPhaseTab3 = CompareCollectionsWithGbifDataPhase.finished;
@@ -2807,6 +2890,8 @@ SELECT JSON_ARRAYAGG(
       compareTitles.addAll(<String>['Data Resource', 'Status', 'Details']);
 
       indexDiffReport = '';
+      _iptDiffResults.clear();
+      _iptSummaryReport = '';
 
       setState(() {
         currentPhaseTab4 = CompareIptWithCollectoryDataPhase.compareMetadata;
@@ -2876,6 +2961,14 @@ SELECT JSON_ARRAYAGG(
             reportPrint(
               '| ${diff['field']} | Collectory: `$collectoryVal` vs IPT: `$iptVal` |',
             );
+            // Also store structured diff for PrettyDiffText rendering.
+            _iptDiffResults.add(<String, dynamic>{
+              'dr': dr,
+              'websiteUrl': websiteUrl,
+              'field': diff['field'],
+              'collectory': diff['collectory'],
+              'ipt': diff['ipt'],
+            });
           }
         } else {
           resourcesWithoutDifferences++;
@@ -2894,6 +2987,13 @@ SELECT JSON_ARRAYAGG(
       reportPrint(
         '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalDifferences |',
       );
+
+      // Build the summary-only markdown for the tab 4 rich view header.
+      _iptSummaryReport =
+          '## Summary\n\n'
+          '| Total Resources | Resources with Differences | Resources without Differences | Total Differences |\n'
+          '|-----------------|----------------------------|-------------------------------|-------------------|\n'
+          '| $totalResources | $resourcesWithDifferences | $resourcesWithoutDifferences | $totalDifferences |\n';
 
       setState(() {
         currentPhaseTab4 = CompareIptWithCollectoryDataPhase.finished;
@@ -3318,9 +3418,28 @@ SELECT JSON_ARRAYAGG(
       final dynamic collectoryValue = collectoryData[field];
       final dynamic iptValue = iptMetadata[field];
 
-      // Normalize empty values
-      final String collectoryStr = _normalizeValue(collectoryValue);
-      final String iptStr = _normalizeValue(iptValue);
+      // Fields where the MySQL JSON_OBJECT transport strips double-quotes
+      // (CHAR(34) → '') to avoid JSON parse errors. Use quote-agnostic
+      // normalization so `"Foo"` and `Foo` compare equal.
+      final bool quoteStripped =
+          field == 'pubDescription' ||
+          field == 'citation' ||
+          field == 'name' ||
+          field == 'geographicDescription';
+
+      String collectoryStr = quoteStripped
+          ? _normalizeValueNoQuotes(collectoryValue)
+          : _normalizeValue(collectoryValue);
+      String iptStr = quoteStripped
+          ? _normalizeValueNoQuotes(iptValue)
+          : _normalizeValue(iptValue);
+
+      // pubDescription: Collectory may store HTML in pub_description; strip
+      // tags on both sides so `<p>foo</p>` equals `foo` from IPT EML.
+      if (field == 'pubDescription') {
+        collectoryStr = _stripHtmlTags(collectoryStr);
+        iptStr = _stripHtmlTags(iptStr);
+      }
 
       if (collectoryStr != iptStr) {
         differences.add(<String, dynamic>{
@@ -3334,6 +3453,324 @@ SELECT JSON_ARRAYAGG(
     return differences;
   }
 
+  /// Renders a rich diff table for Collectory vs GBIF differences.
+  /// Groups rows by data resource and shows each field diff with [PrettyDiffText].
+  /// Red = Collectory value, Green = GBIF value.
+  Widget _buildGbifDiffTable(List<Map<String, dynamic>> diffs) {
+    const TextStyle headerStyle = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 13,
+    );
+    const BorderSide border = BorderSide(color: Color(0xFFCCCCCC));
+    const TableBorder tableBorder = TableBorder(
+      top: border,
+      bottom: border,
+      left: border,
+      right: border,
+      horizontalInside: border,
+      verticalInside: border,
+    );
+
+    Widget cell(Widget child, {Color? bg}) => Container(
+      color: bg,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: child,
+    );
+
+    final List<TableRow> rows = <TableRow>[
+      // Header
+      TableRow(
+        decoration: const BoxDecoration(color: Color(0xFFF3F3F3)),
+        children: <Widget>[
+          cell(const Text('Resource / Field', style: headerStyle)),
+          cell(
+            Row(
+              children: <Widget>[
+                const Text('Differences', style: headerStyle),
+                const SizedBox(width: 16),
+                Container(
+                  width: 10,
+                  height: 10,
+                  color: const Color(0xFFFFCCCC),
+                ),
+                const SizedBox(width: 4),
+                const Text(
+                  'Collectory',
+                  style: TextStyle(fontSize: 11, color: Colors.red),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  width: 10,
+                  height: 10,
+                  color: const Color(0xFFCCFFCC),
+                ),
+                const SizedBox(width: 4),
+                const Text(
+                  'GBIF',
+                  style: TextStyle(fontSize: 11, color: Colors.green),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ];
+
+    // Group by dr to emit a dr header row before its field rows.
+    String? lastDr;
+    for (final Map<String, dynamic> d in diffs) {
+      final String dr = d['dr'] as String;
+      final String gbifUrl = d['gbifUrl'] as String? ?? '';
+      final String field = d['field'] as String;
+      final String collectoryVal = d['collectory'] as String;
+      final String gbifVal = d['gbif'] as String;
+
+      if (dr != lastDr) {
+        lastDr = dr;
+        rows.add(
+          TableRow(
+            decoration: const BoxDecoration(color: Color(0xFFFFF8E1)),
+            children: <Widget>[
+              cell(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      dr,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    if (gbifUrl.isNotEmpty)
+                      Text(
+                        gbifUrl,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              cell(const SizedBox.shrink()),
+            ],
+          ),
+        );
+      }
+
+      rows.add(
+        TableRow(
+          children: <Widget>[
+            cell(
+              Text(
+                field,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.blueGrey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            cell(
+              PrettyDiffText(
+                oldText: collectoryVal,
+                newText: gbifVal,
+                defaultTextStyle: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.black87,
+                ),
+                addedTextStyle: const TextStyle(
+                  fontSize: 12,
+                  backgroundColor: Color(0xFFCCFFCC),
+                  color: Color(0xFF1A7A1A),
+                ),
+                deletedTextStyle: const TextStyle(
+                  fontSize: 12,
+                  backgroundColor: Color(0xFFFFCCCC),
+                  color: Color(0xFF8B0000),
+                  decoration: TextDecoration.lineThrough,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Table(
+        border: tableBorder,
+        columnWidths: const <int, TableColumnWidth>{
+          0: IntrinsicColumnWidth(),
+          1: FlexColumnWidth(),
+        },
+        children: rows,
+      ),
+    );
+  }
+
+  /// Renders a rich diff table for IPT vs Collectory EML field differences.
+  /// Groups rows by data resource and shows each field diff with [PrettyDiffText].
+  /// Renders IPT vs Collectory differences as a single two-column table
+  /// (mirroring the markdown table style) where the right cell shows an
+  /// inline [PrettyDiffText] instead of raw text.
+  Widget _buildIptDiffTable(List<Map<String, dynamic>> diffs) {
+    const TextStyle headerStyle = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 13,
+    );
+    const BorderSide border = BorderSide(color: Color(0xFFCCCCCC));
+    const TableBorder tableBorder = TableBorder(
+      top: border,
+      bottom: border,
+      left: border,
+      right: border,
+      horizontalInside: border,
+      verticalInside: border,
+    );
+
+    Widget cell(Widget child, {Color? bg}) => Container(
+      color: bg,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: child,
+    );
+
+    final List<TableRow> rows = <TableRow>[
+      // Header
+      TableRow(
+        decoration: const BoxDecoration(color: Color(0xFFF3F3F3)),
+        children: <Widget>[
+          cell(const Text('Resource / Field', style: headerStyle)),
+          cell(
+            Row(
+              children: <Widget>[
+                const Text('Differences', style: headerStyle),
+                const SizedBox(width: 16),
+                Container(
+                  width: 10,
+                  height: 10,
+                  color: const Color(0xFFFFCCCC),
+                ),
+                const SizedBox(width: 4),
+                const Text(
+                  'Collectory',
+                  style: TextStyle(fontSize: 11, color: Colors.red),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  width: 10,
+                  height: 10,
+                  color: const Color(0xFFCCFFCC),
+                ),
+                const SizedBox(width: 4),
+                const Text(
+                  'IPT',
+                  style: TextStyle(fontSize: 11, color: Colors.green),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ];
+
+    // Group by dr to emit a dr header row before its field rows.
+    String? lastDr;
+    for (final Map<String, dynamic> d in diffs) {
+      final String dr = d['dr'] as String;
+      final String websiteUrl = d['websiteUrl'] as String? ?? '';
+      final String field = d['field'] as String;
+      final String collectoryVal = d['collectory'] as String;
+      final String iptVal = d['ipt'] as String;
+
+      if (dr != lastDr) {
+        lastDr = dr;
+        rows.add(
+          TableRow(
+            decoration: const BoxDecoration(color: Color(0xFFFFF8E1)),
+            children: <Widget>[
+              cell(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      dr,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    if (websiteUrl.isNotEmpty)
+                      Text(
+                        websiteUrl,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              cell(const SizedBox.shrink()),
+            ],
+          ),
+        );
+      }
+
+      rows.add(
+        TableRow(
+          children: <Widget>[
+            cell(
+              Text(
+                field,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.blueGrey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            cell(
+              PrettyDiffText(
+                oldText: collectoryVal,
+                newText: iptVal,
+                defaultTextStyle: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.black87,
+                ),
+                addedTextStyle: const TextStyle(
+                  fontSize: 12,
+                  backgroundColor: Color(0xFFCCFFCC),
+                  color: Color(0xFF1A7A1A),
+                ),
+                deletedTextStyle: const TextStyle(
+                  fontSize: 12,
+                  backgroundColor: Color(0xFFFFCCCC),
+                  color: Color(0xFF8B0000),
+                  decoration: TextDecoration.lineThrough,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Table(
+        border: tableBorder,
+        columnWidths: const <int, TableColumnWidth>{
+          0: IntrinsicColumnWidth(),
+          1: FlexColumnWidth(),
+        },
+        children: rows,
+      ),
+    );
+  }
+
   String _normalizeValue(dynamic value) {
     if (value == null) {
       return '';
@@ -3342,7 +3779,23 @@ SELECT JSON_ARRAYAGG(
     // Collapse all whitespace sequences (spaces, tabs, CR, LF) to a single
     // space and trim edges.  This avoids false positives when Collectory and
     // IPT store the same text with different line-endings or spacing.
-    return s.trim().replaceAll(RegExp(r'\s+'), ' ');
+    return s
+        .trim()
+        .replaceAll(RegExp(r'\s+'), ' ')
+        // Normalize typographic quotes to straight double quotes so e.g. IPT
+        // EML curly-quote characters compare equal to HTML-entity-decoded ones.
+        .replaceAll('\u201C', '"') // " → "
+        .replaceAll('\u201D', '"') // " → "
+        .replaceAll('\u2018', "'") // ' → '
+        .replaceAll('\u2019', "'"); // ' → '
+  }
+
+  /// Like [_normalizeValue] but also strips all quote characters.
+  /// Used when comparing fields where the MySQL JSON transport strips double
+  /// quotes (CHAR(34)) from Collectory values, making quote-exact comparison
+  /// impossible.
+  String _normalizeValueNoQuotes(dynamic value) {
+    return _normalizeValue(value).replaceAll('"', '').replaceAll("'", '');
   }
 
   String _contactForHumans(Map<String, dynamic> contact) {
