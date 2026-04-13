@@ -166,7 +166,10 @@ class _CompareDataPageState extends State<CompareDataPage> {
   final List<int> recordsNumberOptions = <int>[2, 5, 10, 20, 50, 100, 200, 500];
   int numberOfRecords = 5;
   int populationSize = 1000000;
-  String iptBaseUrl = 'http://iptdev-gbif.gbif.org'; // Default IPT base URL
+  // IPT host selector for tab 4: null = not yet loaded, empty = no IPT hosts found
+  String? iptBaseUrl; // Selected IPT host (e.g. 'https://ipt.gbif.es')
+  List<String> iptHosts = <String>[]; // Available IPT hosts from Collectory
+  bool iptHostsLoaded = false; // Whether the hosts query has run
   String drsToCompareWithIpt = '10';
 
   @override
@@ -713,20 +716,68 @@ class _CompareDataPageState extends State<CompareDataPage> {
                           if (tab == 4)
                             Column(
                               children: <Widget>[
+                                // IPT host selector — populated from
+                                // data_resource.website_url in Collectory.
                                 SizedBox(
                                   width: 400,
-                                  child: TextFormField(
-                                    onChanged: (String value) {
-                                      setState(() {
-                                        iptBaseUrl = value;
-                                      });
-                                    },
-                                    initialValue: iptBaseUrl,
-                                    decoration: const InputDecoration(
-                                      labelText:
-                                          'IPT Base URL (e.g., http://iptdev-gbif.gbif.org)',
-                                    ),
-                                  ),
+                                  child: !iptHostsLoaded
+                                      ? OutlinedButton.icon(
+                                          icon: const Icon(Icons.refresh),
+                                          label: const Text(
+                                            'Load IPT data providers',
+                                          ),
+                                          onPressed: () async {
+                                            final List<String> hosts =
+                                                await getIptHosts(vm);
+                                            setState(() {
+                                              iptHosts = hosts;
+                                              iptHostsLoaded = true;
+                                              // Pre-select if exactly one host
+                                              if (hosts.length == 1) {
+                                                iptBaseUrl = hosts.first;
+                                              } else if (iptBaseUrl != null &&
+                                                  !hosts.contains(iptBaseUrl)) {
+                                                // Reset if current value not in new list
+                                                iptBaseUrl = null;
+                                              }
+                                            });
+                                          },
+                                        )
+                                      : iptHosts.isEmpty
+                                      ? const Text(
+                                          'No IPT data providers found in Collectory',
+                                          style: TextStyle(color: Colors.grey),
+                                        )
+                                      : InputDecorator(
+                                          decoration: const InputDecoration(
+                                            labelText: 'IPT data provider',
+                                          ),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<String>(
+                                              value: iptBaseUrl,
+                                              hint: const Text(
+                                                'Select IPT data provider',
+                                              ),
+                                              isExpanded: true,
+                                              items: iptHosts
+                                                  .map(
+                                                    (String host) =>
+                                                        DropdownMenuItem<
+                                                          String
+                                                        >(
+                                                          value: host,
+                                                          child: Text(host),
+                                                        ),
+                                                  )
+                                                  .toList(),
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  iptBaseUrl = value;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
                                 ),
                                 const SizedBox(height: 10),
                                 SizedBox(
@@ -815,6 +866,7 @@ class _CompareDataPageState extends State<CompareDataPage> {
                                         await _compareIptWithCollectory(
                                           vm,
                                           drsToCompareWithIpt,
+                                          iptBaseUrl,
                                         );
                                         setState(() {
                                           launchEnabled = true;
@@ -1146,18 +1198,71 @@ class _CompareDataPageState extends State<CompareDataPage> {
     return drs;
   }
 
-  Future<Map<String, dynamic>> getCollectoryDrs(_CompareDataViewModel vm) {
+  /// Fetches all collectory data resources, optionally filtering by IPT host.
+  ///
+  /// [iptHostFilter] - if provided, only DRs whose `website_url` contains this
+  /// host string are returned (e.g. `'ipt.gbif.es'`).
+  Future<Map<String, dynamic>> getCollectoryDrs(
+    _CompareDataViewModel vm, {
+    String? iptHostFilter,
+  }) {
     final Completer<Map<String, dynamic>> completer =
         Completer<Map<String, dynamic>>();
 
+    final String whereClause =
+        (iptHostFilter != null && iptHostFilter.isNotEmpty)
+        ? "WHERE dr.website_url LIKE '%${iptHostFilter.replaceAll("'", "''")}%'"
+        : '';
+
     vm.doMySqlQuery(
-      'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json FROM data_resource dr ORDER BY dr.last_updated DESC',
+      'SELECT JSON_OBJECTAGG(dr.uid, dr.gbif_registry_key) AS result_json '
+      'FROM data_resource dr $whereClause ORDER BY dr.last_updated DESC',
       (dynamic result) {
         completer.complete(result as Map<String, dynamic>);
       },
       (String error) {
         debugPrint('Error: $error');
         somethingFailed = true;
+      },
+    );
+
+    return completer.future;
+  }
+
+  /// Fetches the distinct IPT hosts present in Collectory's data_resource.website_url.
+  ///
+  /// Returns a list of host strings like `['https://ipt.gbif.es', 'https://iptdev.gbif.org']`.
+  Future<List<String>> getIptHosts(_CompareDataViewModel vm) {
+    final Completer<List<String>> completer = Completer<List<String>>();
+
+    // Fetch all website_url values that look like IPT resource URLs.
+    // We extract the host part in Dart to avoid complex MySQL regex escaping.
+    vm.doMySqlQuery(
+      'SELECT JSON_ARRAYAGG(website_url) AS result_json '
+      'FROM data_resource '
+      "WHERE website_url LIKE '%/resource%' AND website_url != ''",
+      (dynamic result) {
+        final Set<String> hostSet = <String>{};
+        if (result is List) {
+          for (final dynamic raw in result) {
+            if (raw is String && raw.isNotEmpty) {
+              // Extract scheme+host by taking everything before '/resource'
+              final int idx = raw.indexOf('/resource');
+              if (idx > 0) {
+                // Strip trailing slashes for consistency
+                hostSet.add(
+                  raw.substring(0, idx).replaceAll(RegExp(r'/+$'), ''),
+                );
+              }
+            }
+          }
+        }
+        final List<String> hosts = hostSet.toList()..sort();
+        completer.complete(hosts);
+      },
+      (String error) {
+        debugPrint('Error fetching IPT hosts: $error');
+        completer.complete(<String>[]);
       },
     );
 
@@ -2282,17 +2387,45 @@ class _CompareDataPageState extends State<CompareDataPage> {
   }
 
   /// Normalizes an ISO-8601 datetime string to a date-only string (yyyy-MM-dd).
+  ///
+  /// Handles:
+  ///   - MySQL DATETIME: "2012-01-07 00:00:00" → "2012-01-07"
+  ///   - ISO-8601 with T:  "2012-01-07T00:00:00Z" → "2012-01-07"
+  ///   - Plain date:       "2012-01-07" → "2012-01-07"
+  ///   - Year-only:        "1990" → "1990"
   String _normalizeDateValue(dynamic value) {
     if (value == null) {
       return '';
     }
     final String s = value.toString().trim();
-    // If the value has a T, take just the date part
-    final int tIndex = s.indexOf('T');
-    if (tIndex > 0) {
-      return s.substring(0, tIndex);
+    if (s.isEmpty) {
+      return '';
+    }
+    // Take only the date part (first 10 chars) when string is longer than
+    // yyyy-MM-dd (handles both MySQL "yyyy-MM-dd HH:mm:ss" and ISO "...THH:mm:ssZ").
+    if (s.length > 10 && (s[10] == ' ' || s[10] == 'T')) {
+      return s.substring(0, 10);
     }
     return s;
+  }
+
+  /// Compares two already-normalized date strings using the lowest common
+  /// precision.  If either side contains only a year (4 digits), both are
+  /// truncated to 4 chars before comparing, so "1990" and "1990-01-01" are
+  /// considered equal.
+  bool _datesAreEqual(String a, String b) {
+    if (a == b) {
+      return true;
+    }
+    // If either is a year-only value, compare only the year part.
+    final bool aYearOnly = RegExp(r'^\d{4}$').hasMatch(a);
+    final bool bYearOnly = RegExp(r'^\d{4}$').hasMatch(b);
+    if (aYearOnly || bYearOnly) {
+      final String aYear = a.length >= 4 ? a.substring(0, 4) : a;
+      final String bYear = b.length >= 4 ? b.substring(0, 4) : b;
+      return aYear == bYear;
+    }
+    return false;
   }
 
   /// Strips HTML tags from a string, collapsing whitespace.
@@ -2850,6 +2983,7 @@ SELECT JSON_ARRAYAGG(
   Future<void> _compareIptWithCollectory(
     _CompareDataViewModel vm,
     String? drsToCompareS, [
+    String? iptHostFilter,
     bool debug = false,
   ]) async {
     try {
@@ -2857,7 +2991,11 @@ SELECT JSON_ARRAYAGG(
         currentPhaseTab4 = CompareIptWithCollectoryDataPhase.getDrs;
       });
 
-      final Map<String, dynamic> allDrs = await getCollectoryDrs(vm);
+      // Fetch only DRs belonging to the selected IPT host (if one was chosen).
+      final Map<String, dynamic> allDrs = await getCollectoryDrs(
+        vm,
+        iptHostFilter: iptHostFilter,
+      );
 
       List<String> drsToCompare;
       final bool compareAll = drsToCompareS == null || drsToCompareS.isEmpty;
@@ -3354,8 +3492,8 @@ SELECT JSON_ARRAYAGG(
         'eastBoundingCoordinate', dr.east_bounding_coordinate,
         'westBoundingCoordinate', dr.west_bounding_coordinate,
         'geographicDescription', REPLACE(REPLACE(REPLACE(CONVERT(dr.geographic_description USING utf8mb4), CHAR(34), ''), '\\r', ' '), '\\n', ' '),
-        'beginDate', dr.begin_date,
-        'endDate', dr.end_date,
+        'beginDate', DATE_FORMAT(dr.begin_date, '%Y-%m-%d'),
+        'endDate', DATE_FORMAT(dr.end_date, '%Y-%m-%d'),
         'licenseType', dr.license_type,
         'licenseVersion', dr.license_version,
         'licenseUrl', COALESCE(lic.url, ''),
@@ -3427,10 +3565,18 @@ SELECT JSON_ARRAYAGG(
           field == 'name' ||
           field == 'geographicDescription';
 
-      String collectoryStr = quoteStripped
+      // Date fields: Collectory DATETIME columns return "yyyy-MM-dd HH:mm:ss"
+      // while IPT EML contains "yyyy-MM-dd".  Normalize both to date-only.
+      final bool isDateField = field == 'beginDate' || field == 'endDate';
+
+      String collectoryStr = isDateField
+          ? _normalizeDateValue(collectoryValue)
+          : quoteStripped
           ? _normalizeValueNoQuotes(collectoryValue)
           : _normalizeValue(collectoryValue);
-      String iptStr = quoteStripped
+      String iptStr = isDateField
+          ? _normalizeDateValue(iptValue)
+          : quoteStripped
           ? _normalizeValueNoQuotes(iptValue)
           : _normalizeValue(iptValue);
 
@@ -3441,7 +3587,11 @@ SELECT JSON_ARRAYAGG(
         iptStr = _stripHtmlTags(iptStr);
       }
 
-      if (collectoryStr != iptStr) {
+      final bool areEqual = isDateField
+          ? _datesAreEqual(collectoryStr, iptStr)
+          : collectoryStr == iptStr;
+
+      if (!areEqual) {
         differences.add(<String, dynamic>{
           'field': field,
           'collectory': collectoryStr,
