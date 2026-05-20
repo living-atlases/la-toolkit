@@ -14,7 +14,7 @@ Last Update: Mar 19, 2026 02:01 AM
 
 ### 2. Docker Compose Files Updated
 
-#### Development (docker-compose.develop.yml)
+#### Development (docker-compose.yml --profile dev)
 **Changes Made**:
 - ✅ Added chromadb service with healthcheck
 - ✅ Updated la-toolkit depends_on to include chromadb (service_healthy condition)
@@ -125,7 +125,7 @@ ALLOW_RESET: false
 cd /home/vjrj/proyectos/gbif/dev/la_toolkit
 
 # Start ChromaDB and MongoDB
-docker compose -f docker-compose.develop.yml up -d chromadb mongo
+docker compose --profile dev up -d chromadb mongo
 
 # Monitor startup
 docker compose logs -f chromadb
@@ -152,10 +152,10 @@ curl http://localhost:8000/api/v1/heartbeat
 ### STEP 3: Build & Start LA Toolkit Backend (30 min)
 ```bash
 # Build docker image (first time, subsequent updates use existing image)
-docker compose -f docker-compose.develop.yml build la-toolkit
+docker compose --profile dev build la-toolkit-dev
 
 # Start toolkit (automatically waits for chromadb healthy condition)
-docker compose -f docker-compose.develop.yml up -d la-toolkit
+docker compose --profile dev up -d la-toolkit-dev
 
 # Monitor logs for bootstrap completion
 docker compose logs -f la-toolkit | grep -E "(ai-query|bootstrap|listening)"
@@ -313,8 +313,8 @@ docker stats la-toolkit-chromadb
 # LA Toolkit: 1GB minimum, 2GB recommended
 
 # Restart with resource limits
-docker compose -f docker-compose.develop.yml down
-docker compose -f docker-compose.develop.yml up -d
+docker compose --profile dev down
+docker compose --profile dev up -d
 ```
 
 ---
@@ -357,7 +357,7 @@ docker compose -f docker-compose.develop.yml up -d
 
 | File | Lines Changed | Change Type | Status |
 |------|---------------|-------------|--------|
-| docker-compose.develop.yml | +16 | Addition + Modification | ✅ Complete |
+| docker-compose.yml (profiles) | +16 | Addition + Modification | ✅ Complete |
 | docker-compose.yml | +36 | Addition + Modification | ✅ Complete |
 | scripts/update-kb.sh | +56 | New File | ✅ Complete |
 | la_toolkit_backend/kb-data/ | 91 MB | New Data | ✅ Downloaded |

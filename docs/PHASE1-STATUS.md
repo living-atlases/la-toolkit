@@ -15,7 +15,7 @@ Integrate ChromaDB knowledge base with LA Toolkit backend/frontend for AI-powere
 ## ✅ Completed Tasks
 
 ### 1. Docker Infrastructure (100%)
-- ✅ Modified `docker-compose.develop.yml` - Added ChromaDB service with proper healthcheck
+- ✅ Modified `docker-compose.yml --profile dev` - Added ChromaDB service with proper healthcheck
 - ✅ Modified `docker-compose.yml` (production) - Secured with localhost-only ports
 - ✅ Both files include:
   - ChromaDB service definition  
@@ -141,15 +141,15 @@ ValueError: You are using a deprecated configuration of Chroma.
 ### Immediate (30 minutes)
 1. **Verify ChromaDB Service Health**
    ```bash
-   docker compose -f docker-compose.develop.yml up chromadb
-   docker compose -f docker-compose.develop.yml ps chromadb
+   docker compose --profile dev up chromadb
+   docker compose --profile dev ps chromadb
    curl http://localhost:8000/api/v1/heartbeat
    ```
 
 2. **Start Full Stack**
    ```bash
-   docker compose -f docker-compose.develop.yml up -d
-   docker compose -f docker-compose.develop.yml ps
+   docker compose --profile dev up -d
+   docker compose --profile dev ps
    ```
 
 ### Testing (1 hour)

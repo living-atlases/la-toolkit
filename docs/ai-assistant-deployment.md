@@ -43,7 +43,7 @@ The LA Toolkit AI Assistant provides intelligent, context-aware help for deployi
 
 **Terminal 1**: Start MongoDB
 ```bash
-docker-compose -f docker-compose.develop.yml up mongo
+docker compose --profile dev up mongo
 ```
 
 **Terminal 2**: Start ChromaDB

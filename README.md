@@ -126,12 +126,28 @@ or just copy the [`docker-compose.yml`](https://github.com/living-atlases/la-too
 ### Directly using docker-compose
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
-This will start three containers (la-toolkit, la-toolkit-mongo and la-toolkit-watchtower). You can see it with `docker ps`. Verify that they start correctly.
+This will start the containers (la-toolkit, la-toolkit-mongo, la-toolkit-chromadb and la-toolkit-watchtower). You can see it with `docker ps`. Verify that they start correctly.
 
 Open the toolkit in http://localhost:2010/
+
+### Development mode
+
+Copy the dev environment file and start with the `dev` profile:
+
+```
+cp .env.dev.example .env
+docker compose --profile dev up -d
+```
+
+This starts the shared services (chromadb, mongo) plus the dev la-toolkit image on port 20010
+and mongo-express on port 9081. To rebuild the dev image locally:
+
+```
+docker compose --profile dev build && docker compose --profile dev up -d
+```
 
 ### or using a docker-compose helper
 
@@ -163,13 +179,13 @@ Get the latest version of the la-toolkit with:
 ./dockerTask.sh update
 ```
 
-or :
+or:
 
 ```
-docker-compose kill
-docker-compose rm -f
-docker-compose pull 
-docker-compose up -d
+docker compose kill
+docker compose rm -f
+docker compose pull
+docker compose up -d
 ```
 
 TODO: Add the update task to the Windows script.
@@ -196,10 +212,16 @@ You should:
 
 ## Logs and debugging
 
-Startup errors can be debuged running `docker-compose` without `-d`:
+Startup errors can be debuged running `docker compose` without `-d`:
 
 ```
-docker-compose -f ./docker-compose.yml up 
+docker compose up
+```
+
+For the dev profile:
+
+```
+docker compose --profile dev up
 ```
 
 Runtime server errors during the use of the la-toolkit can be debugged looking the logs with:
