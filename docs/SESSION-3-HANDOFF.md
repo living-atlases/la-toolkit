@@ -68,10 +68,10 @@ docker images | grep chroma
 ### If Image is Ready
 ```bash
 # Start all services
-docker compose -f docker-compose.develop.yml up -d
+docker compose --profile dev up -d
 
 # Verify services are healthy
-docker compose -f docker-compose.develop.yml ps
+docker compose --profile dev ps
 
 # Test ChromaDB healthcheck
 curl http://localhost:8000/api/v1/heartbeat
@@ -108,7 +108,7 @@ See PHASE1-STATUS.md for three fallback approaches:
 | Chat UI | ✅ 100% | ai_assistant_page.dart | 473 lines, message display |
 | Routes | ✅ 100% | routes.dart | /ai-assistant registered |
 | KB Data | ✅ 100% | la_toolkit_backend/kb-data/ | 91 MB, 2,444 docs verified |
-| Docker Config (Dev) | ✅ 100% | docker-compose.develop.yml | ChromaDB 0.3.21, healthcheck |
+| Docker Config (Dev) | ✅ 100% | docker-compose.yml (profile: dev) | ChromaDB 0.3.21, healthcheck |
 | Docker Config (Prod) | ✅ 100% | docker-compose.yml | Secure localhost-only |
 | Test Suite | ✅ 100% | scripts/test-phase1.sh | All tests prepared |
 | KB Sync Script | ✅ 100% | scripts/update-kb.sh | Cron-ready |
@@ -199,7 +199,7 @@ Timeline (Approx)
 │   └─ Verified KB data integrity
 │
 ├─ 01:00 - 01:30  Implementation
-│   ├─ Modified docker-compose.develop.yml
+│   ├─ Modified docker-compose.yml (profile: dev)
 │   ├─ Modified docker-compose.yml
 │   ├─ Committed changes (026e1cf)
 │   └─ Initiated Docker image pull
@@ -225,7 +225,7 @@ Timeline (Approx)
 - `docs/docker-integration-status.md` - Architecture documentation
 
 **Reference**:
-- `docker-compose.develop.yml` - Lines 54-72 (ChromaDB service)
+- `docker-compose.yml --profile dev` - Lines 54-72 (ChromaDB service)
 - `docker-compose.yml` - Lines 72-92 (Production config)
 - `.memory/blockers` - Current blockers (view with `memory_recall`)
 

@@ -74,12 +74,13 @@ services:
     container_name: la-toolkit-chromadb
     restart: always
     hostname: chromadb
-    # For production, expose on localhost only
+    # Production default: localhost only. Override with CHROMA_HOST=0.0.0.0 for dev.
     ports:
-      - "127.0.0.1:8000:8000"
+      - "${CHROMA_HOST:-127.0.0.1}:8000:8000"
     volumes:
       # KB data synced via: rsync -avz /path/to/kb-data /data/la-toolkit/
-      - /data/la-toolkit/kb-data:/chroma/chroma:ro
+      # Override with CHROMA_KB_PATH=./la_toolkit_backend/kb-data for dev.
+      - ${CHROMA_KB_PATH:-/data/la-toolkit/kb-data}:/chroma/chroma:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
       interval: 10s
@@ -88,7 +89,7 @@ services:
       start_period: 30s
     environment:
       - CHROMA_DB_IMPL=duckdb+parquet
-      - ALLOW_RESET=false
+      - ALLOW_RESET=${ALLOW_RESET:-false}
       - ANONYMIZED_TELEMETRY=false
 
   mongo:
@@ -142,23 +143,6 @@ services:
     volumes:
       - /data/la-toolkit/backups:/backup
 
-  # Optionally in production (because this will open your db to the outside):
-  # mongo-express:
-  #   image: mongo-express
-  #   container_name: la-toolkit-mongo-express
-  #   restart: always
-  #   depends_on:
-  #     mongo:
-  #       condition: service_healthy
-  #   ports:
-  #     - 9081:8081
-  #   environment:
-  #     - ME_CONFIG_MONGODB_SERVER=mongo
-  #     - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-  #     - ME_CONFIG_MONGODB_AUTHZ_DATABASE=admin
-  #     - ME_CONFIG_MONGODB_ADMINUSERNAME=la_toolkit_mongo_admin
-  #     - ME_CONFIG_MONGODB_ADMINPASSWORD=la_toolkit_changeme
-
   # 'watchtower' upgrades automatically all containers whenever a new Docker image is available.
   # See: https://containrrr.dev/watchtower/
 
@@ -172,3 +156,54 @@ services:
       - DOCKER_API_VERSION=1.41
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
+
+  # ── DEVELOPMENT ────────────────────────────────────────────────────────────
+  # Start with: docker compose --profile dev up -d
+  # Requires: cp .env.dev.example .env  (one-time setup)
+
+  la-toolkit-dev:
+    profiles: [dev]
+    image: livingatlases/la-toolkit:dev
+    container_name: la-toolkit-dev
+    restart: always
+    hostname: la-toolkit
+    build:
+      context: .
+      dockerfile: docker/u20/Dockerfile
+    ports:
+      - "20010:2010"
+      - "20011-20100:20011-20100"
+    depends_on:
+      chromadb:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    environment:
+      TZ: "Europe/Copenhagen"
+      DATABASE_URL: mongodb://la_toolkit_user:la_toolkit_changeme@mongo:27017/la_toolkit
+      TOOLKIT_PUBLIC_URL: "localhost:20010"
+      CHROMA_DB_PATH: "http://chromadb:8000"
+    volumes:
+      - /data/la-toolkit/config/:/home/ubuntu/ansible/la-inventories/:rw
+      - /data/la-toolkit/logs/:/home/ubuntu/ansible/logs/:rw
+      - /data/la-toolkit/ssh:/home/ubuntu/.ssh/:rw
+      - /home/ubuntu/.npm-packages
+      - ./build/web:/home/ubuntu/la-toolkit/assets/:rw
+      - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
+
+  mongo-express:
+    profiles: [dev]
+    image: mongo-express
+    container_name: la-toolkit-mongo-express
+    restart: always
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - 9081:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTHZ_DATABASE=admin
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=la_toolkit_mongo_admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=la_toolkit_changeme
