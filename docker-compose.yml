@@ -159,23 +159,16 @@ services:
   #     - ME_CONFIG_MONGODB_ADMINUSERNAME=la_toolkit_mongo_admin
   #     - ME_CONFIG_MONGODB_ADMINPASSWORD=la_toolkit_changeme
 
-  # 'shepherd' upgrade automatically the la-toolkit, whenever there is a new Docker image available,
-  # and restarts the container to apply the update.
-  # Shepherd is an actively maintained alternative to the now-archived Watchtower.
+  # 'watchtower' upgrades automatically all containers whenever a new Docker image is available.
+  # See: https://containrrr.dev/watchtower/
 
-  shepherd:
-    image: mazzolino/shepherd:latest
-    container_name: la-toolkit-shepherd
+  watchtower:
+    image: nickfedor/watchtower:latest
+    container_name: la-toolkit-watchtower
     restart: unless-stopped
     environment:
-      - SLEEP_TIME=1h # Check for updates every hour (same as watchtower's 3600s)
-      - IGNORELIST_SERVICES="" # Update all services (leave empty to update all)
-      - WITH_REGISTRY_AUTH=false
-      - FILTER_SERVICES=label=com.centurylinklabs.watchtower.enable=true
-      - VERBOSE=false
-      - RUN_ONCE_AND_EXIT=false
-      - APPRISE_SIDECAR_URL="" # Optional: add notification URL if needed
+      - WATCHTOWER_POLL_INTERVAL=3600
+      - WATCHTOWER_CLEANUP=true
+      - DOCKER_API_VERSION=1.41
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
-    # Additional shepherd configuration via environment variables
-    # See: https://github.com/djmaze/shepherd
