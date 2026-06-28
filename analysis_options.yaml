@@ -37,6 +37,9 @@ analyzer:
     - "dev/conductor/lib/proto/*"
     # Exclude generated files from linting - they have their own rules
     - "**/*.g.dart"
+    # Vendored verbatim from living-atlas-kb (github.com/living-atlases/kb);
+    # kept in sync with upstream, so not subject to this repo's stricter lints.
+    - "lib/ai/**"
 
 linter:
   rules:
