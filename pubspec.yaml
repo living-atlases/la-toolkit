@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # version: 1.0.0+1
-version: 1.6.9
+version: 1.7.0
 
 environment:
   sdk: ^3.8.0
@@ -156,7 +156,7 @@ dependencies:
   path_provider: ^2.1.5
   intl: ^0.17.0
   # AI Assistant - Chat UI with streaming support
-  flutter_gen_ai_chat_ui: ^2.7.0
+  flutter_gen_ai_chat_ui: ^2.11.0
 
 dependency_overrides:
 #intl: ^0.18.1

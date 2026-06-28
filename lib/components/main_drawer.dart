@@ -66,6 +66,13 @@ class _MainDrawerState extends State<MainDrawer> {
               BeamerCond.of(context, SshKeysLocation());
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.chat_outlined),
+            title: const Text('AI Assistant (beta)'),
+            onTap: () {
+              BeamerCond.of(context, AiAssistantLocation());
+            },
+          ),
           TermDialog.drawerItem(context),
           if (AppUtils.isDev())
             ListTile(
