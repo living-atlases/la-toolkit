@@ -11,8 +11,6 @@ services:
       # So don't do these kind of redirections:
       # - "3011-3100:2011-2100"
     depends_on:
-      chromadb:
-        condition: service_healthy
       mongo:
         condition: service_healthy
     environment:
@@ -22,8 +20,9 @@ services:
       # db user/pass (should match the same mongo vars LA_USER/LA_PASS)
       DATABASE_URL: mongodb://la_toolkit_user:la_toolkit_changeme@mongo:27017/la_toolkit
       NODE_ENV: production
-      # AI Assistant - ChromaDB configuration (via docker service)
-      CHROMA_DB_PATH: "http://chromadb:8000"
+      # AI Assistant KB endpoint (RAG chat). Defaults to https://kb.l-a.site.
+      # Override to point at a self-hosted KB instance:
+      # TOOLKIT_KB_URL: "https://kb.example.org"
       # TOOLKIT_SENTRY_DSN: "SOME_DSN"
       #
       # Advanced optional URLs (useful to enable https and use a proxy)
@@ -69,29 +68,6 @@ services:
       # code changes will be git stashed
       # - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
 
-  chromadb:
-    image: ghcr.io/chroma-core/chroma:0.3.21
-    container_name: la-toolkit-chromadb
-    restart: always
-    hostname: chromadb
-    # Production default: localhost only. Override with CHROMA_HOST=0.0.0.0 for dev.
-    ports:
-      - "${CHROMA_HOST:-127.0.0.1}:8000:8000"
-    volumes:
-      # KB data synced via: rsync -avz /path/to/kb-data /data/la-toolkit/
-      # Override with CHROMA_KB_PATH=./la_toolkit_backend/kb-data for dev.
-      - ${CHROMA_KB_PATH:-/data/la-toolkit/kb-data}:/chroma/chroma:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    environment:
-      - CHROMA_DB_IMPL=duckdb+parquet
-      - ALLOW_RESET=${ALLOW_RESET:-false}
-      - ANONYMIZED_TELEMETRY=false
-
   mongo:
     # Early versions used mongo:4. If you were using it, you'll need:
     # - Back up first (see mongo-db-backup) and upgrade progressively 4 -> 5 -> 6 -> 7 -> 8.
@@ -99,9 +75,10 @@ services:
     image: mongo:8.0.17
     restart: always
     container_name: la-toolkit-mongo
-    # Uncomment if mongo-express if you want to access mongo from the outside
-    # ports:
-    #  - 27017:27017
+    # Exposed on localhost so a natively-run backend (forever ./app.js) can reach it.
+    # Bound to 127.0.0.1 to avoid exposing mongo on the host network in production.
+    ports:
+      - "127.0.0.1:27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: la_toolkit_mongo_admin
       MONGO_INITDB_ROOT_PASSWORD: la_toolkit_changeme
@@ -159,7 +136,6 @@ services:
 
   # ── DEVELOPMENT ────────────────────────────────────────────────────────────
   # Start with: docker compose --profile dev up -d
-  # Requires: cp .env.dev.example .env  (one-time setup)
 
   la-toolkit-dev:
     profiles: [dev]
@@ -169,20 +145,17 @@ services:
     hostname: la-toolkit
     build:
       context: .
-      dockerfile: docker/u20/Dockerfile
+      dockerfile: docker/u22/Dockerfile
     ports:
       - "20010:2010"
       - "20011-20100:20011-20100"
     depends_on:
-      chromadb:
-        condition: service_healthy
       mongo:
         condition: service_healthy
     environment:
       TZ: "Europe/Copenhagen"
       DATABASE_URL: mongodb://la_toolkit_user:la_toolkit_changeme@mongo:27017/la_toolkit
       TOOLKIT_PUBLIC_URL: "localhost:20010"
-      CHROMA_DB_PATH: "http://chromadb:8000"
     volumes:
       - /data/la-toolkit/config/:/home/ubuntu/ansible/la-inventories/:rw
       - /data/la-toolkit/logs/:/home/ubuntu/ansible/logs/:rw

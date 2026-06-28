@@ -129,20 +129,19 @@ or just copy the [`docker-compose.yml`](https://github.com/living-atlases/la-too
 docker compose up -d
 ```
 
-This will start the containers (la-toolkit, la-toolkit-mongo, la-toolkit-chromadb and la-toolkit-watchtower). You can see it with `docker ps`. Verify that they start correctly.
+This will start the containers (la-toolkit, la-toolkit-mongo and la-toolkit-watchtower). You can see it with `docker ps`. Verify that they start correctly.
 
 Open the toolkit in http://localhost:2010/
 
 ### Development mode
 
-Copy the dev environment file and start with the `dev` profile:
+Start with the `dev` profile:
 
 ```
-cp .env.dev.example .env
 docker compose --profile dev up -d
 ```
 
-This starts the shared services (chromadb, mongo) plus the dev la-toolkit image on port 20010
+This starts the shared services (mongo) plus the dev la-toolkit image on port 20010
 and mongo-express on port 9081. To rebuild the dev image locally:
 
 ```
