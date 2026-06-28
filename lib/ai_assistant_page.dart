@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -18,7 +19,14 @@ class AiAssistantPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final String baseUrl = dotenv.env['KB_URL'] ?? _defaultKbUrl;
     return Scaffold(
-      appBar: AppBar(title: const Text('AI Assistant (beta)')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Close',
+          onPressed: () => Beamer.of(context).beamToNamed('/'),
+        ),
+        title: const Text('AI Assistant (beta)'),
+      ),
       body: KbChatWidget(
         config: KbConfig(baseUrl: baseUrl),
         title: 'LA Knowledge Base',
