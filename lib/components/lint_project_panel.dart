@@ -112,8 +112,6 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
             ? ' (${notAssigned.map((String s) => LAServiceDesc.get(s).name).toList().join(', ')})'
             : '';
         if (widget.showOthers) {
-          final bool useOidc =
-              project.getVariableValue('oidc_use') as bool? ?? false;
           final String? userDetailsVersion = project.getSwVersionOfService(
             userdetails,
           );
@@ -122,7 +120,6 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
           debugPrint(
             'ala-install $alaInstallVersion, generator: $generatorVersion',
           );
-          // debugPrint('useOidc: $useOidc userDetails version: $userDetailsVersion');
           lints.insertAll(0, <Widget>[
             if (vm.sshKeys.isEmpty)
               AlertCard(
@@ -283,11 +280,11 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 userDetailsVersion != null &&
                 VersionConstraint.parse(
                   '< 3.0.1',
-                ).allows(v(userDetailsVersion)) &&
-                // useOidc != null &&
-                useOidc)
+                ).allows(v(userDetailsVersion)))
               const AlertCard(
-                message: 'OIDC can be used with userdetails >= 3.0.1',
+                message:
+                    'OIDC is now required (CAS auth is deprecated) and needs '
+                    'userdetails >= 3.0.1. Please upgrade the userdetails service.',
               ),
           ]);
         }

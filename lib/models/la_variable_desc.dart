@@ -394,6 +394,9 @@ class LAVariableDesc {
       service: LAServiceName.cas,
       defValue: (_) => true,
       type: LAVariableType.bool,
+      // OIDC is no longer optional (CAS auth is deprecated): always true,
+      // so it's hidden from the Tune page but still emitted to the generator.
+      inTunePage: false,
     ),
     'jwt_in_use': LAVariableDesc(
       name: 'Use JWT for incoming requests?',
@@ -414,6 +417,9 @@ class LAVariableDesc {
       help:
           'https://github.com/AtlasOfLivingAustralia/ala-security-project/tree/develop/ala-ws-plugin#external-configuration-properties',
       type: LAVariableType.bool,
+      // Experimental (server-to-server JWT via OAuth2 client-credentials):
+      // only show under advanced tune, off by default.
+      advanced: true,
     ),
     'pac4j_cookie_signing_key': LAVariableDesc(
       name: 'CAS PAC4J Signing key',
