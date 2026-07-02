@@ -948,8 +948,17 @@ check results length: ${checkResults.length}''';
 
   Object? getVariableValue(String nameInt) {
     final LAVariable variable = getVariable(nameInt);
-    final bool isEmpty = variable.value == null;
     final LAVariableDesc desc = LAVariableDesc.get(nameInt);
+    // Forced variables (e.g. oidc_use, always-on) ignore any stored value and
+    // always use their defValue, overwriting a previously persisted value.
+    if (desc.forced && desc.defValue != null) {
+      final Object? forced = _callDefValue(desc.defValue, this);
+      if (forced != null && variable.value != forced) {
+        setVariable(desc, forced);
+      }
+      return forced;
+    }
+    final bool isEmpty = variable.value == null;
     final Object? value = variable.value ??= desc.defValue != null
         ? _callDefValue(desc.defValue, this)
         : null;

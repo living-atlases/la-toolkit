@@ -71,6 +71,7 @@ class LAVariableDesc {
     this.protected = false,
     this.onlyHub = false,
     this.allowEmpty = true,
+    this.forced = false,
     this.isVisible,
   });
 
@@ -92,6 +93,9 @@ class LAVariableDesc {
   bool protected;
   bool onlyHub;
   bool allowEmpty;
+  // When true, getVariableValue always returns defValue, ignoring (and
+  // overwriting) any stored value. Used for always-on variables like oidc_use.
+  bool forced;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
@@ -112,7 +116,8 @@ class LAVariableDesc {
           enabled == other.enabled &&
           isVisible == other.isVisible &&
           onlyHub == other.onlyHub &&
-          allowEmpty == other.allowEmpty;
+          allowEmpty == other.allowEmpty &&
+          forced == other.forced;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
@@ -130,7 +135,8 @@ class LAVariableDesc {
       enabled.hashCode ^
       isVisible.hashCode ^
       onlyHub.hashCode ^
-      allowEmpty.hashCode;
+      allowEmpty.hashCode ^
+      forced.hashCode;
 
   static final Map<String, LAVariableDesc> map = <String, LAVariableDesc>{
     'ansible_user': LAVariableDesc(
@@ -396,7 +402,10 @@ class LAVariableDesc {
       type: LAVariableType.bool,
       // OIDC is no longer optional (CAS auth is deprecated): always true,
       // so it's hidden from the Tune page but still emitted to the generator.
+      // forced ensures a previously stored `false` is overridden with the
+      // defValue (true) on existing/imported projects.
       inTunePage: false,
+      forced: true,
     ),
     'jwt_in_use': LAVariableDesc(
       name: 'Use JWT for incoming requests?',

@@ -12,6 +12,7 @@ import 'package:la_toolkit/models/la_service_constants.dart';
 import 'package:la_toolkit/models/la_service_deploy.dart';
 import 'package:la_toolkit/models/la_service_name.dart';
 import 'package:la_toolkit/models/la_variable.dart';
+import 'package:la_toolkit/models/la_variable_desc.dart';
 import 'package:la_toolkit/models/ssh_key.dart';
 import 'package:latlong2/latlong.dart';
 import 'check_services_helper.dart';
@@ -1674,6 +1675,22 @@ void main() {
 
     expect(testProject.getVariableValue('ansible_user'), equals('ubuntu'));
     expect(testProject.getVariable('ansible_user').value, equals('ubuntu'));
+  });
+
+  test('forced variable oidc_use is always true, even if stored false', () {
+    final LAProject testProject = LAProject();
+
+    // Simulate an existing/imported project with oidc_use persisted as false.
+    testProject.setVariable(LAVariableDesc.get('oidc_use'), false);
+    expect(testProject.getVariable('oidc_use').value, equals(false));
+
+    // Forced variables override the stored value with their defValue (true).
+    expect(testProject.getVariableValue('oidc_use'), equals(true));
+    expect(testProject.getVariable('oidc_use').value, equals(true));
+    expect(
+      testProject.toGeneratorJson()['LA_variable_oidc_use'],
+      equals(true),
+    );
   });
 
   test('Template import', () async {
