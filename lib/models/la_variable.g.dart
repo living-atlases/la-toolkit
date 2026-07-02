@@ -161,6 +161,7 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.spark: 'spark',
   LAServiceName.hadoop: 'hadoop',
   LAServiceName.pipelinesJenkins: 'pipelinesJenkins',
+  LAServiceName.airflow: 'airflow',
   LAServiceName.biocollect: 'biocollect',
   LAServiceName.pdfgen: 'pdfgen',
   LAServiceName.ecodata: 'ecodata',
@@ -171,7 +172,6 @@ const _$LAServiceNameEnumMap = {
   LAServiceName.docker_compose: 'docker_compose',
   LAServiceName.docker_common: 'docker_common',
   LAServiceName.gatus: 'gatus',
-  LAServiceName.portainer: 'portainer',
   LAServiceName.cassandra: 'cassandra',
 };
 

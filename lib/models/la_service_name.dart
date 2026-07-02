@@ -48,6 +48,7 @@ enum LAServiceName {
   spark,
   hadoop,
   pipelinesJenkins,
+  airflow,
   biocollect,
   pdfgen,
   ecodata,
@@ -61,7 +62,6 @@ enum LAServiceName {
   docker_compose,
   docker_common,
   gatus,
-  portainer,
   cassandra,
 }
 

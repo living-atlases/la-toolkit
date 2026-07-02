@@ -307,7 +307,7 @@ class LAServiceDesc {
       name: solr,
       nameInt: solr,
       group: 'solr7-server',
-      desc: 'species and/or biocache-store (legacy) indexing',
+      desc: 'species and/or biocache-store indexing (legacy, deprecated)',
       optional: true,
       icon: MdiIcons.weatherSunny,
       initUse: true,
@@ -586,7 +586,7 @@ class LAServiceDesc {
       name: 'biocache-store',
       nameInt: biocacheBackend,
       group: 'biocache-db',
-      desc: 'cassandra and biocache-store backend',
+      desc: 'cassandra and biocache-store backend (legacy, deprecated)',
       withoutUrl: true,
       optional: true,
       initUse: true,
@@ -612,7 +612,7 @@ class LAServiceDesc {
       name: events,
       nameInt: events,
       group: events,
-      desc: 'events extended-data-model',
+      desc: 'events extended-data-model (experimental)',
       depends: LAServiceName.pipelines,
       optional: true,
       icon: Icons.event,
@@ -669,6 +669,25 @@ class LAServiceDesc {
       icon: MdiIcons.accountMinusOutline,
       allowMultipleDeploys: true,
       depends: LAServiceName.pipelines,
+      path: '',
+    ),
+    airflow: LAServiceDesc(
+      name: airflow,
+      nameInt: airflow,
+      group: 'airflow',
+      desc:
+          'Apache Airflow orchestrator for pipelines (experimental docker-compose overlay)',
+      depends: LAServiceName.pipelines,
+      optional: true,
+      // Experimental → opt-in: deployed only when its `use` flag is on
+      // (initUse defaults to false).
+      // Apache Airflow logo is a pinwheel.
+      icon: MdiIcons.pinwheel,
+      // Exposes a web UI at a subdomain (airflow.<domain>) -> airflow_hostname.
+      forceSubdomain: true,
+      sample: 'https://airflow.l-a.site',
+      dockerSupport: true,
+      allowMultipleDeploys: true,
       path: '',
     ),
     solrcloud: LAServiceDesc(
@@ -774,18 +793,6 @@ class LAServiceDesc {
       dockerSupport: true,
       path: '',
     ),
-    portainer: LAServiceDesc(
-      name: portainer,
-      nameInt: portainer,
-      group: portainer,
-      optional: true,
-      allowMultipleDeploys: true,
-      desc: 'portainer docker management service',
-      depends: LAServiceName.docker_swarm,
-      icon: MdiIcons.crane,
-      dockerSupport: true,
-      path: '',
-    ),
     cassandra: LAServiceDesc(
       name: cassandra,
       nameInt: cassandra,
@@ -850,14 +857,54 @@ class LAServiceDesc {
   static List<LAServiceDesc>? _listRedundant;
 
   static List<LAServiceDesc> listNoSub(bool isHub) {
-    return isHub
-        ? listHubCapable
-        : (_listNoSub ??= _list
-              .where((LAServiceDesc s) => s.isSubService != true)
-              .toList());
+    return isHub ? listHubCapable : (_listNoSub ??= _orderedForProjectEdit());
   }
 
   static List<LAServiceDesc>? _listNoSub;
+
+  // Order + curation of the services shown in the Project Edit list only.
+  // Kept out of the raw _map (which drives core logic/serialization) so other
+  // consumers and existing projects are unaffected.
+  static List<LAServiceDesc> _orderedForProjectEdit() {
+    // Hidden from the edit list (kept in the model for backwards compat):
+    // webapi is deprecated; docker_common is implicit (rides with docker_swarm
+    // and is already bundled into docker_compose). portainer was removed.
+    final Set<String> hidden = <String>{webapi, dockerCommon};
+    // Legacy/deprecated services pushed to the very bottom, in this order.
+    final List<String> bottom = <String>[biocacheBackend, solr, dockerSwarm];
+
+    final List<LAServiceDesc> visible = _list
+        .where(
+          (LAServiceDesc s) =>
+              s.isSubService != true && !hidden.contains(s.nameInt),
+        )
+        .toList();
+
+    // airflow sits right below pipelines.
+    final LAServiceDesc? airflowDesc = visible.firstWhereOrNull(
+      (LAServiceDesc s) => s.nameInt == airflow,
+    );
+    if (airflowDesc != null) {
+      visible.remove(airflowDesc);
+      final int pipIdx = visible.indexWhere(
+        (LAServiceDesc s) => s.nameInt == pipelines,
+      );
+      visible.insert(pipIdx >= 0 ? pipIdx + 1 : visible.length, airflowDesc);
+    }
+
+    // Move legacy services to the bottom, preserving `bottom` order.
+    final List<LAServiceDesc> legacy = <LAServiceDesc>[];
+    for (final String n in bottom) {
+      final LAServiceDesc? d = visible.firstWhereOrNull(
+        (LAServiceDesc s) => s.nameInt == n,
+      );
+      if (d != null) {
+        visible.remove(d);
+        legacy.add(d);
+      }
+    }
+    return <LAServiceDesc>[...visible, ...legacy];
+  }
 
   static List<String> listS(bool isHub) {
     if (isHub) {
@@ -926,6 +973,7 @@ class LAServiceDesc {
     spark,
     hadoop,
     pipelinesJenkins,
+    airflow,
     nameindexer,
     biocacheCli,
   ];

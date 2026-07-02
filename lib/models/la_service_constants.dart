@@ -25,6 +25,7 @@ final String pipelines = LAServiceName.pipelines.toS();
 final String spark = LAServiceName.spark.toS();
 final String hadoop = LAServiceName.hadoop.toS();
 final String pipelinesJenkins = LAServiceName.pipelinesJenkins.toS();
+final String airflow = LAServiceName.airflow.toS();
 final String regions = LAServiceName.regions.toS();
 final String sds = LAServiceName.sds.toS();
 final String solr = LAServiceName.solr.toS();
@@ -51,7 +52,6 @@ final String dockerSwarm = LAServiceName.docker_swarm.toS();
 final String dockerCompose = LAServiceName.docker_compose.toS();
 final String dockerCommon = LAServiceName.docker_common.toS();
 final String gatus = LAServiceName.gatus.toS();
-final String portainer = LAServiceName.portainer.toS();
 final String cassandra = LAServiceName.cassandra.toS();
 
 const String mysql = 'mysql';

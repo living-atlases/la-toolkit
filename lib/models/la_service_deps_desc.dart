@@ -182,6 +182,10 @@ class LAServiceDepsDesc {
       nameInt: pipelinesJenkins,
       serviceDepends: <BasicService>[],
     ),
+    airflow: LAServiceDepsDesc(
+      nameInt: airflow,
+      serviceDepends: <BasicService>[],
+    ),
     biocollect: LAServiceDepsDesc(
       nameInt: biocollect,
       serviceDepends: <BasicService>[Nginx.def, Biocollect.def],
@@ -224,10 +228,6 @@ class LAServiceDepsDesc {
       serviceDepends: <BasicService>[],
     ),
     gatus: LAServiceDepsDesc(nameInt: gatus, serviceDepends: <BasicService>[]),
-    portainer: LAServiceDepsDesc(
-      nameInt: portainer,
-      serviceDepends: <BasicService>[],
-    ),
     cassandra: LAServiceDepsDesc(
       nameInt: cassandra,
       serviceDepends: <BasicService>[],

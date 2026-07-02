@@ -1482,6 +1482,7 @@ void main() {
     expect(p.domain, equals('gbif.es'));
     expect(p.useSSL, equals(true));
     checkServices(p, <String>[
+      airflow,
       sds,
       pipelines,
       spark,
@@ -1503,7 +1504,6 @@ void main() {
       dockerCommon,
       dockerCompose,
       gatus,
-      portainer,
       cassandra,
     ]);
     expect(p.getService(collectory).suburl, equals('colecciones'));
@@ -1523,6 +1523,7 @@ void main() {
     expect(p.useSSL, equals(true));
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
     checkServices(p, <String>[
+      airflow,
       webapi,
       doi,
       regions,
@@ -1556,7 +1557,6 @@ void main() {
       dockerCommon,
       dockerCompose,
       gatus,
-      portainer,
       cassandra,
     ]);
 
@@ -1573,6 +1573,7 @@ void main() {
     expect(p.useSSL, equals(true));
     expect(p.dirName != null && p.dirName!.isNotEmpty, equals(true));
     checkServices(p, <String>[
+      airflow,
       speciesLists,
       webapi,
       doi,
@@ -1598,7 +1599,6 @@ void main() {
       gatus,
       dockerCommon,
       dockerCompose,
-      portainer,
       cassandra,
     ]);
 

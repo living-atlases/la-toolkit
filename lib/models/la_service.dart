@@ -175,6 +175,7 @@ class LAService implements IsJsonSerializable<LAService> {
               nameInt != biocacheCli &&
               nameInt != spark &&
               nameInt != hadoop &&
+              nameInt != airflow &&
               nameInt != nameindexer,
         )
         .toList();
@@ -191,6 +192,7 @@ class LAService implements IsJsonSerializable<LAService> {
               nameInt != geoserver &&
               nameInt != spark &&
               nameInt != hadoop &&
+              nameInt != airflow &&
               nameInt != zookeeper,
         )
         .toList();

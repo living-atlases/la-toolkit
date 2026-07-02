@@ -281,6 +281,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
   factory LAProject.fromJson(Map<String, dynamic> json) {
     final LAProject project = _$LAProjectFromJson(json);
 
+    // Migration: strip services removed from the toolkit (e.g. portainer) from
+    // existing projects so they don't linger as "in use / not assigned".
+    _pruneObsoleteServices(project);
+
     // CRITICAL FIX: Rebuild clusterServices from serviceDeploys if it's empty
     // This can happen when loading from server if clusterServices wasn't persisted correctly
     _rebuildEmptyClusterServices(project);
@@ -298,6 +302,50 @@ class LAProject implements IsJsonSerializable<LAProject> {
     }
 
     return project;
+  }
+
+  // Services removed from the toolkit that must be stripped from existing
+  // projects on load. Explicit list to avoid pruning unexpected data.
+  static const Set<String> _obsoleteServiceNames = <String>{'portainer'};
+
+  /// Migration: remove obsolete services (and their assignments/deploys) from a
+  /// loaded project so they don't surface in the UI or the "not assigned" lint.
+  static void _pruneObsoleteServices(LAProject project) {
+    bool isObsolete(String nameInt) => _obsoleteServiceNames.contains(nameInt);
+    final Set<String> obsoleteIds = project.services
+        .where((LAService s) => isObsolete(s.nameInt))
+        .map((LAService s) => s.id)
+        .toSet();
+    final bool present =
+        obsoleteIds.isNotEmpty ||
+        project.serverServices.values.any(
+          (List<String> names) => names.any(isObsolete),
+        ) ||
+        project.clusterServices.values.any(
+          (List<String> names) => names.any(isObsolete),
+        );
+    if (!present) {
+      return;
+    }
+    project.services.removeWhere((LAService s) => isObsolete(s.nameInt));
+    for (final List<String> names in project.serverServices.values) {
+      names.removeWhere(isObsolete);
+    }
+    for (final List<String> names in project.clusterServices.values) {
+      names.removeWhere(isObsolete);
+    }
+    project.serviceDeploys.removeWhere(
+      (LAServiceDeploy sd) => obsoleteIds.contains(sd.serviceId),
+    );
+    project.selectedVersions.removeWhere(
+      (String nameInt, _) => isObsolete(nameInt),
+    );
+    if (kDebugMode) {
+      debugPrint(
+        'Migration: pruned obsolete services $_obsoleteServiceNames '
+        'from "${project.shortName}"',
+      );
+    }
   }
 
   /// Rebuilds clusterServices from serviceDeploys if empty clusters are found
@@ -1317,6 +1365,9 @@ check results length: ${checkResults.length}''';
     if (newServices.contains(pipelines)) {
       newServices.add(spark);
       newServices.add(hadoop);
+      // airflow overlay rides along with pipelines (docker-compose); its `use`
+      // flag (default false) gates whether it's actually deployed.
+      newServices.add(airflow);
       // namematching, and sensitive-data-service
     }
     return newServices;
