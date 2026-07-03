@@ -11,6 +11,7 @@ import 'models/la_service_desc.dart';
 import 'models/la_service_name.dart';
 import 'models/migration_notes.dart';
 import 'models/migration_notes_desc.dart';
+import 'models/nextgen_compat.dart';
 import 'models/version_utils.dart';
 
 class DependenciesManager {
@@ -179,6 +180,85 @@ class DependenciesManager {
       log('Verify exception $e');
       log(stacktrace.toString());
       return migrationNotesList.toList();
+    }
+  }
+
+  // reason key (from nextgen-compat.yaml) -> human explanation
+  static const Map<String, String> _nextgenReasonText = <String, String>{
+    'bootstrap5-branding':
+        'uses a new theme that the community branding does not support yet',
+  };
+
+  static void setNextgenCompat(String yamlStr, [bool debug = false]) {
+    final Map<String, NextgenCompatEntry> result =
+        <String, NextgenCompatEntry>{};
+    try {
+      final YamlMap y = loadYaml(yamlStr) as YamlMap;
+      final Map<String, dynamic> root = y.toMap();
+      final dynamic section = root['nextgen-compat'];
+      if (section is Map) {
+        section.forEach((dynamic swKey, dynamic entry) {
+          if (entry is Map) {
+            try {
+              final String sw = _normalize(swKey as String);
+              result[sw] = NextgenCompatEntry(
+                from: vc('${entry['from']}'),
+                lastSafe: '${entry['last-safe']}',
+                reason: '${entry['reason']}',
+              );
+              if (debug) {
+                log('nextgen-compat: $sw ${entry['from']} (${entry['reason']})');
+              }
+            } catch (e) {
+              log('🔴 ERROR parsing nextgen-compat entry "$swKey": $e');
+            }
+          }
+        });
+      }
+    } catch (e, stacktrace) {
+      log('setNextgenCompat exception $e');
+      log(stacktrace.toString());
+    }
+    NextgenCompat.map = result;
+  }
+
+  static List<String> verifyNextgen(Map<String, String> selectedVersions) {
+    final Set<String> lintErrors = <String>{};
+    try {
+      selectedVersions.forEach((String sw, String version) {
+        final NextgenCompatEntry? entry = NextgenCompat.map[sw];
+        if (entry == null) {
+          return;
+        }
+        if (version == 'custom' ||
+            version == 'upstream' ||
+            version == 'la-develop' ||
+            version == 'null' ||
+            version.isEmpty) {
+          return;
+        }
+        Version? versionP;
+        try {
+          versionP = v(version);
+        } catch (e) {
+          log('🔴 ERROR parsing version for $sw: version="$version" - $e');
+          return;
+        }
+        if (entry.from.allows(versionP)) {
+          final String human = LAServiceDesc.swNameWithAliasForHumans(sw);
+          final String reasonText =
+              _nextgenReasonText[entry.reason] ??
+              'is not supported by the community stack yet';
+          lintErrors.add(
+            '$human $version $reasonText — use ${entry.lastSafe} for now.',
+          );
+        }
+      });
+      return lintErrors.toList();
+    } catch (e, stacktrace) {
+      log('verifyNextgen exception $e');
+      log(stacktrace.toString());
+      return lintErrors.toList();
     }
   }
 

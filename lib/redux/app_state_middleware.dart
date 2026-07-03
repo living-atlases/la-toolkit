@@ -230,6 +230,13 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       final String deps = await Api.fetchDependencies();
       DependenciesManager.setDeps(deps);
 
+      // Nextgen compatibility guard (separate file; never breaks deps loading)
+      try {
+        DependenciesManager.setNextgenCompat(await Api.fetchNextgenCompat());
+      } catch (e) {
+        log('nextgen-compat fetch/parse failed: $e');
+      }
+
       if (!AppUtils.isDemo()) {
         // ALA other Releases
         if (!action.force &&

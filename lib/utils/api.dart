@@ -770,6 +770,21 @@ class Api {
     }
   }
 
+  static Future<String> fetchNextgenCompat() async {
+    final Response response = await http.get(
+      Uri.parse(
+        'https://raw.githubusercontent.com/living-atlases/la-toolkit-backend/master/assets/nextgen-compat.yaml',
+      ),
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception(
+        'Failed to retrieve nextgen-compat (${response.statusCode})',
+      );
+    }
+  }
+
   static Future<Map<String, dynamic>> solrQuery(
     String projectId,
     String solrHost,

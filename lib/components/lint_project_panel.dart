@@ -84,6 +84,11 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                     selectedVersions,
                   ),
           ),
+          LintErrorPanel(
+            vm.backendVersion == null
+                ? <String>[]
+                : DependenciesManager.verifyNextgen(selectedVersions),
+          ),
         ];
 
         if (basicDefined && widget.showLADeps) {
