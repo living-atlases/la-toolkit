@@ -207,6 +207,9 @@ void main() async {
     expect(StringUtils.semantize('1.0.0'), equals('1.0.0'));
     expect(StringUtils.semantize('1.0'), equals('1.0.0'));
     expect(StringUtils.semantize('v1.0.0'), equals('1.0.0'));
+    expect(StringUtils.semantize('v2.0'), equals('2.0.0'));
+    expect(StringUtils.semantize('v1.2.3'), equals('1.2.3'));
+    expect(StringUtils.semantize('v9'), equals('9.0.0'));
     expect(StringUtils.semantize('9.0'), equals('9.0.0'));
     expect(StringUtils.semantize('1.0-SNAPSHOT'), equals('1.0.0-SNAPSHOT'));
     expect(StringUtils.semantize('2.4.PRERELEASE'), equals('2.4.0-PRERELEASE'));

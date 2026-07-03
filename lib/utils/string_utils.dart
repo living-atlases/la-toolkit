@@ -38,6 +38,8 @@ class StringUtils {
       return '$semantized1 $semantized2';
     }
 
+    // strip leading 'v' from git-tag versions (v2.0, v1.2.3) so pub_semver parses them
+    version = version.replaceFirst(RegExp(r'^v(?=[0-9])'), '');
     // replace 1.0 with 1.0.0
     version = version.replaceAllMapped(
       RegExp(r'^([\^>=< ]+|)([0-9]+\.[0-9]+)$'),
@@ -52,11 +54,6 @@ class StringUtils {
     version = version.replaceAllMapped(
       RegExp(r'^([0-9]+\.[0-9]+)\.([A-Z]+)$'),
       (Match m) => '${m[1]}.0-${m[2]}',
-    );
-    // replace v1.0.0 with 1.0.0
-    version = version.replaceAllMapped(
-      RegExp(r'^v([0-9]+\.[0-9]+\.[0-9]+)$'),
-      (Match m) => '${m[1]}',
     );
     // replace 1.0.0.1 with 1.0.0-1
     version = version.replaceAllMapped(
