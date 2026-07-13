@@ -23,6 +23,7 @@ enum LAVariableSubcategory {
   pipelines,
   events,
   dockerCompose,
+  mail,
 }
 
 extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
@@ -48,6 +49,8 @@ extension LAVariableSucategoryTitleExtension on LAVariableSubcategory {
         return 'Pipelines configuration';
       case LAVariableSubcategory.dockerCompose:
         return 'Docker Compose variables';
+      case LAVariableSubcategory.mail:
+        return 'Email / Mail';
     }
   }
 }
@@ -175,6 +178,7 @@ class LAVariableDesc {
     'support_email': LAVariableDesc(
       name: 'Support email',
       nameInt: 'support_email',
+      subcategory: LAVariableSubcategory.mail,
       regExp: LARegExp.email,
       error: 'Invalid email',
       defValue: (LAProject project) => 'support@${project.domain}',
@@ -183,6 +187,7 @@ class LAVariableDesc {
     'orgEmail': LAVariableDesc(
       name: 'Contact email',
       nameInt: 'orgEmail',
+      subcategory: LAVariableSubcategory.mail,
       regExp: LARegExp.email,
       error: 'Invalid email',
       defValue: (LAProject project) => 'info@${project.domain}',
@@ -191,6 +196,7 @@ class LAVariableDesc {
     'email_sender': LAVariableDesc(
       name: 'Email sender',
       nameInt: 'email_sender',
+      subcategory: LAVariableSubcategory.mail,
       regExp: LARegExp.email,
       error: 'Invalid email',
       defValue: (LAProject project) => 'noreply@${project.domain}',
@@ -200,6 +206,7 @@ class LAVariableDesc {
     'email_sender_password': LAVariableDesc(
       name: 'Email password',
       nameInt: 'email_sender_password',
+      subcategory: LAVariableSubcategory.mail,
       regExp: LARegExp.anything,
       error: 'Invalid password',
       protected: true,
@@ -209,6 +216,7 @@ class LAVariableDesc {
     'email_sender_server': LAVariableDesc(
       name: 'Email server',
       nameInt: 'email_sender_server',
+      subcategory: LAVariableSubcategory.mail,
       regExp: LARegExp.domainRegexp,
       error: 'Invalid email server',
       // defValue: (project) => 'mailserver.${project.domain}',
@@ -218,6 +226,7 @@ class LAVariableDesc {
     'email_sender_server_port': LAVariableDesc(
       name: 'Email server port',
       nameInt: 'email_sender_server_port',
+      subcategory: LAVariableSubcategory.mail,
       regExp: LARegExp.int,
       error: 'Invalid email server port',
       defValue: (LAProject project) => '587',
@@ -226,6 +235,7 @@ class LAVariableDesc {
     'email_sender_server_tls': LAVariableDesc(
       name: 'The server use TLS?',
       nameInt: 'email_sender_server_tls',
+      subcategory: LAVariableSubcategory.mail,
       // regExp: LARegExp.int,
       // error: "Invalid email server port",
       defValue: (LAProject project) => true,
