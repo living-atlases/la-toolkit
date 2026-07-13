@@ -15,6 +15,8 @@ abstract class _$DeployCmdCWProxy {
 
   DeployCmd tags(List<String>? tags);
 
+  DeployCmd skipServices(List<String>? skipServices);
+
   DeployCmd advanced(bool advanced);
 
   DeployCmd onlyProperties(bool onlyProperties);
@@ -24,6 +26,8 @@ abstract class _$DeployCmdCWProxy {
   DeployCmd debug(bool debug);
 
   DeployCmd dryRun(bool dryRun);
+
+  DeployCmd dockerCompose(bool dockerCompose);
 
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `DeployCmd(...).copyWith.fieldName(value)`.
@@ -37,11 +41,13 @@ abstract class _$DeployCmdCWProxy {
     List<String>? limitToServers,
     List<String>? skipTags,
     List<String>? tags,
+    List<String>? skipServices,
     bool advanced,
     bool onlyProperties,
     bool continueEvenIfFails,
     bool debug,
     bool dryRun,
+    bool dockerCompose,
   });
 }
 
@@ -67,6 +73,10 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
   DeployCmd tags(List<String>? tags) => call(tags: tags);
 
   @override
+  DeployCmd skipServices(List<String>? skipServices) =>
+      call(skipServices: skipServices);
+
+  @override
   DeployCmd advanced(bool advanced) => call(advanced: advanced);
 
   @override
@@ -84,6 +94,10 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
   DeployCmd dryRun(bool dryRun) => call(dryRun: dryRun);
 
   @override
+  DeployCmd dockerCompose(bool dockerCompose) =>
+      call(dockerCompose: dockerCompose);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `DeployCmd(...).copyWith.fieldName(value)`.
   ///
@@ -96,11 +110,13 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
     Object? limitToServers = const $CopyWithPlaceholder(),
     Object? skipTags = const $CopyWithPlaceholder(),
     Object? tags = const $CopyWithPlaceholder(),
+    Object? skipServices = const $CopyWithPlaceholder(),
     Object? advanced = const $CopyWithPlaceholder(),
     Object? onlyProperties = const $CopyWithPlaceholder(),
     Object? continueEvenIfFails = const $CopyWithPlaceholder(),
     Object? debug = const $CopyWithPlaceholder(),
     Object? dryRun = const $CopyWithPlaceholder(),
+    Object? dockerCompose = const $CopyWithPlaceholder(),
   }) {
     return DeployCmd(
       deployServices: deployServices == const $CopyWithPlaceholder()
@@ -119,6 +135,10 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
           ? _value.tags
           // ignore: cast_nullable_to_non_nullable
           : tags as List<String>?,
+      skipServices: skipServices == const $CopyWithPlaceholder()
+          ? _value.skipServices
+          // ignore: cast_nullable_to_non_nullable
+          : skipServices as List<String>?,
       advanced: advanced == const $CopyWithPlaceholder() || advanced == null
           ? _value.advanced
           // ignore: cast_nullable_to_non_nullable
@@ -143,6 +163,11 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
           ? _value.dryRun
           // ignore: cast_nullable_to_non_nullable
           : dryRun as bool,
+      dockerCompose:
+          dockerCompose == const $CopyWithPlaceholder() || dockerCompose == null
+          ? _value.dockerCompose
+          // ignore: cast_nullable_to_non_nullable
+          : dockerCompose as bool,
     );
   }
 }
@@ -169,11 +194,15 @@ DeployCmd _$DeployCmdFromJson(Map<String, dynamic> json) => DeployCmd(
       ?.map((e) => e as String)
       .toList(),
   tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+  skipServices: (json['skipServices'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
   advanced: json['advanced'] as bool? ?? false,
   onlyProperties: json['onlyProperties'] as bool? ?? false,
   continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
   debug: json['debug'] as bool? ?? false,
   dryRun: json['dryRun'] as bool? ?? false,
+  dockerCompose: json['dockerCompose'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$DeployCmdToJson(DeployCmd instance) => <String, dynamic>{
@@ -181,9 +210,11 @@ Map<String, dynamic> _$DeployCmdToJson(DeployCmd instance) => <String, dynamic>{
   'limitToServers': instance.limitToServers,
   'skipTags': instance.skipTags,
   'tags': instance.tags,
+  'skipServices': instance.skipServices,
   'advanced': instance.advanced,
   'onlyProperties': instance.onlyProperties,
   'continueEvenIfFails': instance.continueEvenIfFails,
   'debug': instance.debug,
   'dryRun': instance.dryRun,
+  'dockerCompose': instance.dockerCompose,
 };

@@ -10,12 +10,17 @@ class ServicesChipPanel extends StatefulWidget {
     required this.services,
     required this.initialValue,
     required this.isHub,
+    this.withAll = true,
   });
 
   final Function(List<String>) onChange;
   final List<String> services;
   final List<String> initialValue;
   final bool isHub;
+
+  // When false the special 'all' chip (and its exclusive selection logic) is
+  // omitted — used for the docker-compose skip-services deny-list picker.
+  final bool withAll;
 
   @override
   State<ServicesChipPanel> createState() => _ServicesChipPanelState();
@@ -37,6 +42,9 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
   );
   late List<String> formValue; // LAServiceDesc.list[3].name];
   List<String> _selectAllOrElements(List<String> values) {
+    if (!widget.withAll) {
+      return values;
+    }
     final List<String> newVal = values.isNotEmpty
         ? values.last == 'all'
               ? <String>['all']
@@ -90,26 +98,27 @@ class _ServicesChipPanelState extends State<ServicesChipPanel> {
                         // return state.didChange(values);
                       },
                       runSpacing: -10,
-                      choiceItems:
-                          C2Choice.listFrom<String, LAServiceDesc>(
-                            source: LAServiceDesc.list(widget.isHub)
-                                .where(
-                                  (LAServiceDesc s) =>
-                                      widget.services.contains(s.nameInt),
-                                )
-                                .toList(),
-                            value: (int i, LAServiceDesc v) => v.nameInt,
-                            label: (int i, LAServiceDesc v) => v.name,
-                            tooltip: (int i, LAServiceDesc v) =>
-                                StringUtils.capitalize(v.desc),
-                            disabled: (int i, LAServiceDesc v) => false,
-                          )..add(
-                            C2Choice<String>(
-                              value: 'all',
-                              label: 'all',
-                              style: allStyle,
-                            ),
+                      choiceItems: <C2Choice<String>>[
+                        ...C2Choice.listFrom<String, LAServiceDesc>(
+                          source: LAServiceDesc.list(widget.isHub)
+                              .where(
+                                (LAServiceDesc s) =>
+                                    widget.services.contains(s.nameInt),
+                              )
+                              .toList(),
+                          value: (int i, LAServiceDesc v) => v.nameInt,
+                          label: (int i, LAServiceDesc v) => v.name,
+                          tooltip: (int i, LAServiceDesc v) =>
+                              StringUtils.capitalize(v.desc),
+                          disabled: (int i, LAServiceDesc v) => false,
+                        ),
+                        if (widget.withAll)
+                          C2Choice<String>(
+                            value: 'all',
+                            label: 'all',
+                            style: allStyle,
                           ),
+                      ],
                       choiceBuilder: (C2Choice<String> item, int i) {
                         if (item.value == 'all') {
                           return CustomChip(

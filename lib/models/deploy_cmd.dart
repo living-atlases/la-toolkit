@@ -17,15 +17,18 @@ class DeployCmd extends CommonCmd {
     List<String>? limitToServers,
     List<String>? skipTags,
     List<String>? tags,
+    List<String>? skipServices,
     this.advanced = false,
     this.onlyProperties = false,
     this.continueEvenIfFails = false,
     this.debug = false,
     this.dryRun = false,
+    this.dockerCompose = false,
   }) : deployServices = deployServices ?? <String>[],
        limitToServers = limitToServers ?? <String>[],
        skipTags = skipTags ?? <String>[],
-       tags = tags ?? <String>[];
+       tags = tags ?? <String>[],
+       skipServices = skipServices ?? <String>[];
 
   factory DeployCmd.fromJson(Map<String, dynamic> json) =>
       _$DeployCmdFromJson(json);
@@ -33,11 +36,20 @@ class DeployCmd extends CommonCmd {
   List<String> limitToServers;
   List<String> skipTags;
   List<String> tags;
+
+  // Docker-compose deploys are monolithic (site.yml against the docker_compose
+  // group). Granularity is expressed as a deny-list of inventory groups passed
+  // to the la-compose role as `skip_services`, not as an allow-list of services.
+  List<String> skipServices;
   bool advanced;
   bool onlyProperties;
   bool continueEvenIfFails;
   bool debug;
   bool dryRun;
+
+  // When true the backend targets la-docker-compose (--ladocker + site.yml,
+  // auto_deploy=true) instead of the per-service ala-install playbooks.
+  bool dockerCompose;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
@@ -55,11 +67,16 @@ class DeployCmd extends CommonCmd {
           ) &&
           const ListEquality<String>().equals(skipTags, other.skipTags) &&
           const ListEquality<String>().equals(tags, other.tags) &&
+          const ListEquality<String>().equals(
+            skipServices,
+            other.skipServices,
+          ) &&
           advanced == other.advanced &&
           onlyProperties == other.onlyProperties &&
           continueEvenIfFails == other.continueEvenIfFails &&
           debug == other.debug &&
-          dryRun == other.dryRun;
+          dryRun == other.dryRun &&
+          dockerCompose == other.dockerCompose;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
@@ -68,15 +85,17 @@ class DeployCmd extends CommonCmd {
       const ListEquality<String>().hash(limitToServers) ^
       const ListEquality<String>().hash(skipTags) ^
       const ListEquality<String>().hash(tags) ^
+      const ListEquality<String>().hash(skipServices) ^
       advanced.hashCode ^
       onlyProperties.hashCode ^
       continueEvenIfFails.hashCode ^
       debug.hashCode ^
-      dryRun.hashCode;
+      dryRun.hashCode ^
+      dockerCompose.hashCode;
 
   @override
   String toString() {
-    return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun}';
+    return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, skipServices: $skipServices, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun, dockerCompose: $dockerCompose}';
   }
 
   String get desc {

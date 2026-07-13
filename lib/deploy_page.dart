@@ -81,10 +81,17 @@ class _DeployPageState extends State<DeployPage> {
         } catch (e) {
           cmd = DeployCmd();
         }
-        // On pure docker-compose the first deploy is monolithic (all-in-one),
-        // so default the selection to 'all' instead of forcing a granular pick.
-        if (vm.project.isPureDockerCompose && cmd.deployServices.isEmpty) {
-          cmd = cmd.copyWith(deployServices: <String>['all']);
+        // On pure docker-compose the deploy is monolithic (site.yml against the
+        // docker_compose group): force the 'all' selection and flag the command
+        // so the backend targets la-docker-compose (--ladocker) instead of the
+        // per-service ala-install playbooks. Granularity is a skip-list.
+        if (vm.project.isPureDockerCompose) {
+          cmd = cmd.copyWith(
+            dockerCompose: true,
+            deployServices: cmd.deployServices.isEmpty
+                ? <String>['all']
+                : cmd.deployServices,
+          );
         }
         final VoidCallback? onTap = cmd.deployServices.isEmpty
             ? null
@@ -220,19 +227,28 @@ class _DeployPageState extends State<DeployPage> {
                             }),
                           ),
                         ),
-                        if (advanced && vm.project.isPureDockerCompose)
+                        if (advanced && vm.project.isPureDockerCompose) ...<Widget>[
+                          const ListTile(
+                            title: Text('Skip services (optional):'),
+                            subtitle: Text(
+                              'Selected services are excluded from the stack '
+                              '(passed as skip_services). Leave empty to deploy '
+                              'everything.',
+                            ),
+                          ),
                           ServicesChipPanel(
-                            initialValue: cmd.deployServices,
+                            withAll: false,
+                            initialValue: cmd.skipServices,
                             services: LAService.removeServicesDeployedTogether(
                               vm.project.getServicesAssigned(onlyDocker),
                             ),
                             isHub: vm.project.isHub,
                             onChange: (List<String> s) => setState(() {
-                              cmd = cmd.copyWith(deployServices: s);
+                              cmd = cmd.copyWith(skipServices: s);
                               vm.onSaveDeployCmd(cmd);
-                              _servicesToDeploy = s;
                             }),
                           ),
+                        ],
                         if (advanced && !vm.project.isPureDockerCompose)
                           ServerSelector(
                             selectorKey: GlobalKey<FormFieldState<dynamic>>(),
