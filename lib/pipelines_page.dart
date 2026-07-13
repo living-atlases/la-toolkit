@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import './models/app_state.dart';
 import './models/common_cmd.dart';
@@ -72,7 +73,11 @@ class _PipelinesPageState extends State<PipelinesPage> {
           },
           cmd: store.state.repeatCmd.runtimeType != PipelinesCmd
               ? PipelinesCmd(
-                  master: store.state.currentProject.getPipelinesMaster()!.name,
+                  // On docker-compose there is no pipelines master server
+                  // (orchestration is Airflow), so guard against null.
+                  master:
+                      store.state.currentProject.getPipelinesMaster()?.name ??
+                      '',
                   mode:
                       store.state.currentProject.inProduction &&
                           !AppUtils.isDev()
@@ -87,7 +92,9 @@ class _PipelinesPageState extends State<PipelinesPage> {
         PipelinesCmd cmd = vm.cmd;
         log('Building pipelines page for $cmd');
 
-        if (vm.project.getPipelinesMaster() != null) {
+        final bool pipelinesInDocker = vm.project.isPipelinesInDocker;
+
+        if (!pipelinesInDocker && vm.project.getPipelinesMaster() != null) {
           cmd.master = vm.project.masterPipelinesServer!.name;
         }
         final VoidCallback? onTap =
@@ -122,14 +129,30 @@ class _PipelinesPageState extends State<PipelinesPage> {
                     flex: 8, // 80%,
                     child: Column(
                       children: <Widget>[
-                        PipelinesTimeline(
-                          project: vm.project,
-                          cmd: vm.cmd,
-                          onChange: (PipelinesCmd changedCmd) {
-                            cmd = changedCmd;
-                            vm.onSaveCmd(cmd);
-                          },
-                        ),
+                        if (pipelinesInDocker) ...<Widget>[
+                          const SizedBox(height: 20),
+                          const AlertCard(
+                            message:
+                                'Pipelines run through Airflow on docker-compose deployments. Use the Airflow dashboard to trigger and monitor them.',
+                          ),
+                          const SizedBox(height: 20),
+                          LaunchBtn(
+                            onTap: () => launchUrl(
+                              Uri.parse(vm.project.airflowUrl),
+                              mode: LaunchMode.externalApplication,
+                            ),
+                            execBtn: 'Open Airflow',
+                            icon: MdiIcons.pipe,
+                          ),
+                        ] else ...<Widget>[
+                          PipelinesTimeline(
+                            project: vm.project,
+                            cmd: vm.cmd,
+                            onChange: (PipelinesCmd changedCmd) {
+                              cmd = changedCmd;
+                              vm.onSaveCmd(cmd);
+                            },
+                          ),
                         const SizedBox(height: 20),
                         Tooltip(
                           message:
@@ -177,6 +200,7 @@ class _PipelinesPageState extends State<PipelinesPage> {
                           execBtn: execBtn,
                           icon: MdiIcons.pipe,
                         ),
+                        ],
                       ],
                     ),
                   ),

@@ -7,6 +7,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:tuple/tuple.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'components/app_snack_bar.dart';
 import 'components/check_result_card.dart';
@@ -180,6 +181,22 @@ class _PortalStatusPageState extends State<PortalStatusPage> {
                       flex: 10, // 80%,
                       child: Column(
                         children: <Widget>[
+                          // On docker-compose, services are monitored by Gatus
+                          // rather than SSH checks; surface its dashboard.
+                          if (vm.project.isGatusInUse)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: OutlinedButton.icon(
+                                icon: Icon(MdiIcons.listStatus),
+                                label: const Text(
+                                  'Open Gatus monitoring dashboard',
+                                ),
+                                onPressed: () => launchUrl(
+                                  Uri.parse(vm.project.gatusUrl),
+                                  mode: LaunchMode.externalApplication,
+                                ),
+                              ),
+                            ),
                           // Show progress indicators if checks are running
                           if (vm.loading && vm.serviceCheckProgress.isNotEmpty)
                             Column(

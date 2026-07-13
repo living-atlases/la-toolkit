@@ -11,11 +11,11 @@ import 'components/alert_card.dart';
 import 'components/def_divider.dart';
 import 'components/deploy_btn.dart';
 import 'components/la_app_bar.dart';
+import 'components/manual_tags_input.dart';
 import 'components/project_drawer.dart';
 import 'components/scroll_panel.dart';
 import 'components/server_selector.dart';
 import 'components/services_chip_panel.dart';
-import 'components/tags_selector.dart';
 import 'components/terms_drawer.dart';
 import 'components/tips_card.dart';
 import 'dependencies_manager.dart';
@@ -27,7 +27,6 @@ import 'models/la_project.dart';
 import 'models/la_server.dart';
 import 'models/la_service.dart';
 import 'models/migration_notes_desc.dart';
-import 'models/tags_constants.dart';
 import 'redux/app_actions.dart';
 import 'routes.dart';
 import 'utils/debounce.dart';
@@ -81,6 +80,11 @@ class _DeployPageState extends State<DeployPage> {
           cmd = vm.cmd as DeployCmd;
         } catch (e) {
           cmd = DeployCmd();
+        }
+        // On pure docker-compose the first deploy is monolithic (all-in-one),
+        // so default the selection to 'all' instead of forcing a granular pick.
+        if (vm.project.isPureDockerCompose && cmd.deployServices.isEmpty) {
+          cmd = cmd.copyWith(deployServices: <String>['all']);
         }
         final VoidCallback? onTap = cmd.deployServices.isEmpty
             ? null
@@ -166,7 +170,8 @@ class _DeployPageState extends State<DeployPage> {
                             _servicesToDeploy = s;
                           }),
                         ),
-                        if (vm.project.isDockerClusterConfigured())
+                        if (vm.project.isDockerClusterConfigured() &&
+                            !vm.project.isPureDockerCompose)
                           ListTile(
                             title: const Text('Only deploy to docker cluster'),
                             trailing: Switch(
@@ -224,32 +229,22 @@ class _DeployPageState extends State<DeployPage> {
                                 }),
                           ),
                         if (advanced)
-                          TagsSelector(
+                          ManualTagsInput(
                             initialValue: cmd.tags,
-                            selectorKey: GlobalKey<FormFieldState<dynamic>>(),
-                            tags: TagsConstants.getTagsFor(
-                              vm.project.alaInstallRelease,
-                            ),
                             icon: MdiIcons.tagPlusOutline,
                             title: 'Tags:',
-                            placeHolder: 'All',
-                            modalTitle: 'Select the tags you want to limit to:',
+                            hint: 'Type an Ansible tag and press Enter',
                             onChange: (List<String> tags) => setState(() {
                               cmd = cmd.copyWith(tags: tags);
                               vm.onSaveDeployCmd(cmd);
                             }),
                           ),
                         if (advanced)
-                          TagsSelector(
+                          ManualTagsInput(
                             initialValue: cmd.skipTags,
-                            selectorKey: GlobalKey<FormFieldState<dynamic>>(),
-                            tags: TagsConstants.getTagsFor(
-                              vm.project.alaInstallRelease,
-                            ),
                             icon: MdiIcons.tagOffOutline,
                             title: 'Skip tags:',
-                            placeHolder: 'None',
-                            modalTitle: 'Select the tags you want to skip:',
+                            hint: 'Type a tag to skip and press Enter',
                             onChange: (List<String> skipTags) => setState(() {
                               cmd = cmd.copyWith(skipTags: skipTags);
                               vm.onSaveDeployCmd(cmd);

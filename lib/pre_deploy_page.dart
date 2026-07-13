@@ -135,7 +135,9 @@ class _PreDeployPageState extends State<PreDeployPage> {
                             vm.onSaveDeployCmd(cmd);
                           },
                         ),
-                        if (!vm.project.isHub)
+                        // Solr limits and extra host packages only make sense on
+                        // VM deployments; docker-compose hosts don't need them.
+                        if (!vm.project.isHub && vm.project.hasVmServices)
                           DeployTaskSwitch(
                             title:
                                 'Adjust solr limits (increase the number of files and process allowed to create)',
@@ -145,15 +147,16 @@ class _PreDeployPageState extends State<PreDeployPage> {
                             onChanged: (bool newValue) =>
                                 setState(() => cmd.solrLimits = newValue),
                           ),
-                        DeployTaskSwitch(
-                          title:
-                              'Add additional package utils for monitoring and troubleshooting',
-                          initialValue: cmd.addAdditionalDeps,
-                          onChanged: (bool newValue) {
-                            cmd.addAdditionalDeps = newValue;
-                            vm.onSaveDeployCmd(cmd);
-                          },
-                        ),
+                        if (vm.project.hasVmServices)
+                          DeployTaskSwitch(
+                            title:
+                                'Add additional package utils for monitoring and troubleshooting',
+                            initialValue: cmd.addAdditionalDeps,
+                            onChanged: (bool newValue) {
+                              cmd.addAdditionalDeps = newValue;
+                              vm.onSaveDeployCmd(cmd);
+                            },
+                          ),
                         DeployTaskSwitch(
                           title: "Try these tasks as 'root'",
                           initialValue: cmd.rootBecome,

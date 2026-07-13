@@ -268,12 +268,15 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             enabled: isCreatedAndAccessibleOrInProduction,
             action: () => vm.onPreDeployTasks(project),
           ),
-          Tool(
-            icon: const Icon(Icons.format_paint),
-            title: 'Branding Deploy',
-            enabled: isCreatedAndAccessibleOrInProduction,
-            action: () => vm.onDeployBranding(project),
-          ),
+          // Branding is only a separate deploy step on VM deployments; on
+          // docker-compose the branding is built into the stack image.
+          if (project.hasBrandingOnVm)
+            Tool(
+              icon: const Icon(Icons.format_paint),
+              title: 'Branding Deploy',
+              enabled: isCreatedAndAccessibleOrInProduction,
+              action: () => vm.onDeployBranding(project),
+            ),
           Tool(
             icon: const Icon(Icons.inventory),
             title: 'Generate Inventories',
@@ -299,7 +302,10 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
                 project.cmdHistoryEntries.isNotEmpty,
             action: () => vm.onViewLogs(project),
           ),
-          if (!project.isHub)
+          // Post-deploy only configures postfix, which is a VM-only mail relay;
+          // hide it unless mail-sending services run on a VM. Mail SMTP config
+          // itself now lives in Tune (available in all modes).
+          if (!project.isHub && project.hasMailServicesOnVm)
             Tool(
               icon: const Icon(Icons.house_siding),
               title: 'Post-Deploy Tasks',
