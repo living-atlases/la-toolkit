@@ -89,8 +89,13 @@ class _LogListState extends State<LogList> {
         // ignore: avoid_dynamic_calls
         j['cmd'] = j['cmd'][0];
         j['date'] = j['createdAt'];
-        final CmdHistoryEntry cmd = CmdHistoryEntry.fromJson(j);
-        newItems.add(cmd);
+        try {
+          final CmdHistoryEntry cmd = CmdHistoryEntry.fromJson(j);
+          newItems.add(cmd);
+        } catch (error, stack) {
+          // Skip a malformed history entry instead of failing the whole list.
+          log('Skipping unparseable log entry: $error', stackTrace: stack);
+        }
       }
       final bool isLastPage = newItems.length < _pageSize;
       if (isLastPage) {

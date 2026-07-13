@@ -240,14 +240,18 @@ PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) =>
         debug: json['debug'] as bool? ?? false,
         dryRun: json['dryRun'] as bool? ?? false,
       )
-      ..deployServices = (json['deployServices'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList()
-      ..skipServices = (json['skipServices'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList()
-      ..onlyProperties = json['onlyProperties'] as bool
-      ..dockerCompose = json['dockerCompose'] as bool;
+      ..deployServices =
+          (json['deployServices'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          []
+      ..skipServices =
+          (json['skipServices'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          []
+      ..onlyProperties = json['onlyProperties'] as bool? ?? false
+      ..dockerCompose = json['dockerCompose'] as bool? ?? false;
 
 Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) =>
     <String, dynamic>{

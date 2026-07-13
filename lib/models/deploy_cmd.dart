@@ -32,6 +32,12 @@ class DeployCmd extends CommonCmd {
 
   factory DeployCmd.fromJson(Map<String, dynamic> json) =>
       _$DeployCmdFromJson(json);
+  // deployServices, skipServices, onlyProperties and dockerCompose are hardcoded
+  // (or not exposed) in the PreDeployCmd/PostDeployCmd constructors, so
+  // json_serializable sets them via cascade with a non-nullable cast. defaultValue
+  // keeps that generated cast null-safe for old history entries that predate these
+  // fields (e.g. entries stored before skipServices/dockerCompose existed).
+  @JsonKey(defaultValue: <String>[])
   List<String> deployServices;
   List<String> limitToServers;
   List<String> skipTags;
@@ -40,8 +46,10 @@ class DeployCmd extends CommonCmd {
   // Docker-compose deploys are monolithic (site.yml against the docker_compose
   // group). Granularity is expressed as a deny-list of inventory groups passed
   // to the la-compose role as `skip_services`, not as an allow-list of services.
+  @JsonKey(defaultValue: <String>[])
   List<String> skipServices;
   bool advanced;
+  @JsonKey(defaultValue: false)
   bool onlyProperties;
   bool continueEvenIfFails;
   bool debug;
@@ -49,6 +57,7 @@ class DeployCmd extends CommonCmd {
 
   // When true the backend targets la-docker-compose (--ladocker + site.yml,
   // auto_deploy=true) instead of the per-service ala-install playbooks.
+  @JsonKey(defaultValue: false)
   bool dockerCompose;
 
   @override

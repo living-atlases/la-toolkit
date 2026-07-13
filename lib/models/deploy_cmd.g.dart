@@ -184,9 +184,11 @@ extension $DeployCmdCopyWith on DeployCmd {
 // **************************************************************************
 
 DeployCmd _$DeployCmdFromJson(Map<String, dynamic> json) => DeployCmd(
-  deployServices: (json['deployServices'] as List<dynamic>?)
-      ?.map((e) => e as String)
-      .toList(),
+  deployServices:
+      (json['deployServices'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      [],
   limitToServers: (json['limitToServers'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
@@ -194,9 +196,11 @@ DeployCmd _$DeployCmdFromJson(Map<String, dynamic> json) => DeployCmd(
       ?.map((e) => e as String)
       .toList(),
   tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-  skipServices: (json['skipServices'] as List<dynamic>?)
-      ?.map((e) => e as String)
-      .toList(),
+  skipServices:
+      (json['skipServices'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      [],
   advanced: json['advanced'] as bool? ?? false,
   onlyProperties: json['onlyProperties'] as bool? ?? false,
   continueEvenIfFails: json['continueEvenIfFails'] as bool? ?? false,
