@@ -107,6 +107,9 @@ RUN su - ubuntu -c 'cd /home/ubuntu/base-branding && npm install'
 # ala-install
 RUN su - ubuntu -c 'git clone --branch v2.4.1 https://github.com/AtlasOfLivingAustralia/ala-install.git /home/ubuntu/ansible/ala-install'
 
+# la-docker-compose (checked out/updated at deploy time by docker-compose-select)
+RUN su - ubuntu -c 'git clone --recurse-submodules https://github.com/living-atlases/la-docker-compose.git /home/ubuntu/ansible/la-docker-compose'
+
 # apt.gbif.es LA pipelines and deps
 RUN echo "deb [arch=amd64] https://apt.gbif.es/ bionic main" > /etc/apt/sources.list.d/ala.list && \
         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F697D8D2ADB9E24A
@@ -180,6 +183,7 @@ VOLUME ["/home/ubuntu/.ssh/"]
 VOLUME ["/home/ubuntu/ansible/logs/"]
 VOLUME ["/home/ubuntu/ansible/la-inventories/"]
 VOLUME ["/home/ubuntu/ansible/ala-install/"]
+VOLUME ["/home/ubuntu/ansible/la-docker-compose/"]
 
 # launch the backend
 CMD /usr/local/bin/la-toolkit-launch
