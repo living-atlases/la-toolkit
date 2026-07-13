@@ -693,25 +693,40 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             <String, String>{'result': result.toS()},
           );
         }
-        Api.termLogs(
-          cmd: action.cmdHistoryEntry,
-          onStart: (String cmd, int port, int ttydPid) {
-            lastCmdDet!.port = port;
-            lastCmdDet.pid = ttydPid;
-            store.dispatch(
-              ShowCmdResults(
-                action.cmdHistoryEntry,
-                action.fstRetrieved,
-                lastCmdDet,
-              ),
-            );
-            action.onReady();
-          },
-          onError: (int error) {
-            store.dispatch(OnShowCmdResultsFailed());
-            action.onFailed();
-          },
-        );
+        if (lastCmdDet.logsColorized.isEmpty) {
+          // No log file for this run (e.g. a dry-run/generator that produced no
+          // ansible log). Skip the ttyd `less` terminal: on a missing file it
+          // exits immediately and the client reconnects forever. Just show the
+          // results with a "no logs" placeholder.
+          store.dispatch(
+            ShowCmdResults(
+              action.cmdHistoryEntry,
+              action.fstRetrieved,
+              lastCmdDet,
+            ),
+          );
+          action.onReady();
+        } else {
+          Api.termLogs(
+            cmd: action.cmdHistoryEntry,
+            onStart: (String cmd, int port, int ttydPid) {
+              lastCmdDet!.port = port;
+              lastCmdDet.pid = ttydPid;
+              store.dispatch(
+                ShowCmdResults(
+                  action.cmdHistoryEntry,
+                  action.fstRetrieved,
+                  lastCmdDet,
+                ),
+              );
+              action.onReady();
+            },
+            onError: (int error) {
+              store.dispatch(OnShowCmdResultsFailed());
+              action.onFailed();
+            },
+          );
+        }
       } else {
         store.dispatch(OnShowCmdResultsFailed());
         action.onFailed();

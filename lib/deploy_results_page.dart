@@ -213,8 +213,10 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                               ),
                             ),
                           if (cmdHistoryDetails.port == null)
-                            const Text(
-                              "For some reason, we couldn't open a terminal with these logs. Possible fix: restart your la-toolkit container",
+                            Text(
+                              cmdHistoryDetails.logsColorized.isEmpty
+                                  ? 'No logs were produced for this run.'
+                                  : "For some reason, we couldn't open a terminal with these logs. Possible fix: restart your la-toolkit container",
                             ),
                           TipsCard(
                             text:
