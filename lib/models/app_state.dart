@@ -53,6 +53,7 @@ class AppState {
     LAProjectViewStatus? status,
     List<String>? alaInstallReleases,
     List<String>? generatorReleases,
+    List<String>? dockerComposeReleases,
     List<AppSnackBarMessage>? appSnackBarMessages,
     Map<String, LAReleases>? laReleases,
     CommonCmd? repeatCmd,
@@ -69,6 +70,7 @@ class AppState {
        currentProject = currentProject ?? LAProject(),
        alaInstallReleases = alaInstallReleases ?? <String>[],
        generatorReleases = generatorReleases ?? <String>[],
+       dockerComposeReleases = dockerComposeReleases ?? <String>[],
        repeatCmd = repeatCmd ?? CommonCmd(),
        laReleases = laReleases ?? <String, LAReleases>{},
        loading = loading ?? false,
@@ -89,6 +91,7 @@ class AppState {
   final List<LAProject> projects;
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
+  final List<String> dockerComposeReleases;
   final Map<String, LAReleases> laReleases;
   final List<SshKey> sshKeys;
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -129,6 +132,7 @@ class AppState {
           listEquals(projects, other.projects) &&
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
           listEquals(generatorReleases, other.generatorReleases) &&
+          listEquals(dockerComposeReleases, other.dockerComposeReleases) &&
           listEquals(appSnackBarMessages, other.appSnackBarMessages) &&
           const DeepCollectionEquality.unordered().equals(
             laReleases,
@@ -158,6 +162,7 @@ class AppState {
       const ListEquality<LAProject>().hash(projects) ^
       const ListEquality<String>().hash(alaInstallReleases) ^
       const ListEquality<String>().hash(generatorReleases) ^
+      const ListEquality<String>().hash(dockerComposeReleases) ^
       const DeepCollectionEquality.unordered().hash(laReleases) ^
       const DeepCollectionEquality.unordered().hash(serviceCheckProgress) ^
       const ListEquality<SshKey>().hash(sshKeys);

@@ -33,6 +33,8 @@ abstract class _$LAProjectCWProxy {
 
   LAProject generatorRelease(String? generatorRelease);
 
+  LAProject dockerComposeRelease(String? dockerComposeRelease);
+
   LAProject mapBoundsFstPoint(LALatLng? mapBoundsFstPoint);
 
   LAProject mapBoundsSndPoint(LALatLng? mapBoundsSndPoint);
@@ -98,6 +100,7 @@ abstract class _$LAProjectCWProxy {
     LAProjectStatus status,
     String? alaInstallRelease,
     String? generatorRelease,
+    String? dockerComposeRelease,
     LALatLng? mapBoundsFstPoint,
     LALatLng? mapBoundsSndPoint,
     String theme,
@@ -171,6 +174,10 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
   @override
   LAProject generatorRelease(String? generatorRelease) =>
       call(generatorRelease: generatorRelease);
+
+  @override
+  LAProject dockerComposeRelease(String? dockerComposeRelease) =>
+      call(dockerComposeRelease: dockerComposeRelease);
 
   @override
   LAProject mapBoundsFstPoint(LALatLng? mapBoundsFstPoint) =>
@@ -274,6 +281,7 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
     Object? status = const $CopyWithPlaceholder(),
     Object? alaInstallRelease = const $CopyWithPlaceholder(),
     Object? generatorRelease = const $CopyWithPlaceholder(),
+    Object? dockerComposeRelease = const $CopyWithPlaceholder(),
     Object? mapBoundsFstPoint = const $CopyWithPlaceholder(),
     Object? mapBoundsSndPoint = const $CopyWithPlaceholder(),
     Object? theme = const $CopyWithPlaceholder(),
@@ -352,6 +360,10 @@ class _$LAProjectCWProxyImpl implements _$LAProjectCWProxy {
           ? _value.generatorRelease
           // ignore: cast_nullable_to_non_nullable
           : generatorRelease as String?,
+      dockerComposeRelease: dockerComposeRelease == const $CopyWithPlaceholder()
+          ? _value.dockerComposeRelease
+          // ignore: cast_nullable_to_non_nullable
+          : dockerComposeRelease as String?,
       mapBoundsFstPoint: mapBoundsFstPoint == const $CopyWithPlaceholder()
           ? _value.mapBoundsFstPoint
           // ignore: cast_nullable_to_non_nullable
@@ -472,6 +484,7 @@ LAProject _$LAProjectFromJson(Map<String, dynamic> json) =>
             LAProjectStatus.created,
         alaInstallRelease: json['alaInstallRelease'] as String?,
         generatorRelease: json['generatorRelease'] as String?,
+        dockerComposeRelease: json['dockerComposeRelease'] as String?,
         mapBoundsFstPoint: json['mapBoundsFstPoint'] == null
             ? null
             : LALatLng.fromJson(
@@ -548,6 +561,7 @@ Map<String, dynamic> _$LAProjectToJson(LAProject instance) => <String, dynamic>{
   'createdAt': instance.createdAt,
   'alaInstallRelease': instance.alaInstallRelease,
   'generatorRelease': instance.generatorRelease,
+  'dockerComposeRelease': instance.dockerComposeRelease,
   'status': _$LAProjectStatusEnumMap[instance.status]!,
   'isCreated': instance.isCreated,
   'fstDeployed': instance.fstDeployed,

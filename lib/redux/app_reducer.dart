@@ -32,6 +32,12 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, OnFetchGeneratorReleasesFailed>(
     _onFetchGeneratorReleasesFailed,
   ),
+  TypedReducer<AppState, OnFetchDockerComposeReleases>(
+    _onFetchDockerComposeReleases,
+  ),
+  TypedReducer<AppState, OnFetchDockerComposeReleasesFailed>(
+    _onFetchDockerComposeReleasesFailed,
+  ),
   TypedReducer<AppState, Loading>(_loading),
   TypedReducer<AppState, OnRegenerateInventorySuccess>(
     _onRegenerateInventorySuccess,
@@ -142,6 +148,20 @@ AppState _onFetchBackendVersion(AppState state, OnFetchBackendVersion action) {
 AppState _onFetchGeneratorReleasesFailed(
   AppState state,
   OnFetchGeneratorReleasesFailed action,
+) {
+  return state;
+}
+
+AppState _onFetchDockerComposeReleases(
+  AppState state,
+  OnFetchDockerComposeReleases action,
+) {
+  return state.copyWith(dockerComposeReleases: action.releases);
+}
+
+AppState _onFetchDockerComposeReleasesFailed(
+  AppState state,
+  OnFetchDockerComposeReleasesFailed action,
 ) {
   return state;
 }

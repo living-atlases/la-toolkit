@@ -57,6 +57,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     this.status = LAProjectStatus.created,
     this.alaInstallRelease,
     this.generatorRelease,
+    this.dockerComposeRelease,
     LALatLng? mapBoundsFstPoint,
     LALatLng? mapBoundsSndPoint,
     this.theme = 'clean',
@@ -434,6 +435,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   // Software -----
   String? alaInstallRelease;
   String? generatorRelease;
+  String? dockerComposeRelease;
 
   // Status -----
   // @JsonKey(ignore: true)
@@ -528,7 +530,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
         LARegExp.projectNameRegexp.hasMatch(longName) &&
         LARegExp.shortNameRegexp.hasMatch(shortName) &&
         LARegExp.domainRegexp.hasMatch(domain) &&
-        alaInstallRelease != null &&
+        (alaInstallRelease != null || dockerComposeRelease != null) &&
         generatorRelease != null;
     if (valid) {
       tempStatus = LAProjectStatus.basicDefined;
@@ -2556,6 +2558,7 @@ check results length: ${checkResults.length}''';
           status == other.status &&
           alaInstallRelease == other.alaInstallRelease &&
           generatorRelease == other.generatorRelease &&
+          dockerComposeRelease == other.dockerComposeRelease &&
           mapBoundsFstPoint == other.mapBoundsFstPoint &&
           mapBoundsSndPoint == other.mapBoundsSndPoint &&
           lastCmdEntry == other.lastCmdEntry &&
@@ -2607,6 +2610,7 @@ check results length: ${checkResults.length}''';
       status.hashCode ^
       alaInstallRelease.hashCode ^
       generatorRelease.hashCode ^
+      dockerComposeRelease.hashCode ^
       mapBoundsFstPoint.hashCode ^
       mapBoundsSndPoint.hashCode ^
       lastCmdDetails.hashCode ^
@@ -2722,8 +2726,65 @@ check results length: ${checkResults.length}''';
     return !isPipelinesOnVM;
   }
 
+  // On docker-compose the pipelines orchestration is Airflow (not the Ansible
+  // spark runner), so the pipelines runner UI doesn't apply.
+  bool get isPipelinesInDocker =>
+      isPipelinesInUse && isServiceInDockerCompose(pipelines);
+
+  String get airflowUrl =>
+      serviceFullUrl(LAServiceDesc.get(airflow), getService(airflow));
+
+  bool get isGatusInUse => !isHub && getService(gatus).use;
+
+  String get gatusUrl =>
+      serviceFullUrl(LAServiceDesc.get(gatus), getService(gatus));
+
   bool get isDockerEnabled =>
       !isHub && (getService(dockerSwarm).use || getService(dockerCompose).use);
+
+  // --- Infra-derived helpers (VM vs docker-compose) -------------------------
+  // Docker infra "services" that don't count as real VM workloads.
+  List<String> get _vmAssignedServices {
+    final Set<String> assigned = <String>{};
+    serverServices.forEach(
+      (String id, List<String> names) => assigned.addAll(names),
+    );
+    assigned.removeWhere(
+      (String n) => n == dockerCompose || n == dockerSwarm || n == dockerCommon,
+    );
+    return assigned.toList();
+  }
+
+  bool get hasVmServices => _vmAssignedServices.isNotEmpty;
+
+  bool get hasDockerComposeServices =>
+      clusters.any((LACluster c) => c.type == DeploymentType.dockerCompose) &&
+      getServicesAssigned(true).isNotEmpty;
+
+  bool get isDockerComposeEnabled => !isHub && getService(dockerCompose).use;
+
+  bool get isPureDockerCompose => hasDockerComposeServices && !hasVmServices;
+
+  bool get isHybrid => hasDockerComposeServices && hasVmServices;
+
+  bool isServiceOnVm(String name) =>
+      getService(name).use &&
+      serverServices.values.any((List<String> l) => l.contains(name));
+
+  bool get hasBrandingOnVm =>
+      getService(branding).use && isServiceOnVm(branding);
+
+  // Services that send email (via postfix on localhost). Confirmed against the
+  // LA KB (Postfix-configuration): CAS, alerts, biocache-service, DOI, collectory.
+  static final List<String> mailServices = <String>[
+    cas,
+    alerts,
+    biocacheService,
+    doi,
+    collectory,
+  ];
+
+  bool get hasMailServicesOnVm => mailServices.any(isServiceOnVm);
 
   LAServer? getPipelinesMaster() {
     if (isPipelinesInUse && getVariableOrNull('pipelines_master') != null) {

@@ -25,6 +25,8 @@ abstract class _$AppStateCWProxy {
 
   AppState generatorReleases(List<String>? generatorReleases);
 
+  AppState dockerComposeReleases(List<String>? dockerComposeReleases);
+
   AppState appSnackBarMessages(List<AppSnackBarMessage>? appSnackBarMessages);
 
   AppState laReleases(Map<String, LAReleases>? laReleases);
@@ -64,6 +66,7 @@ abstract class _$AppStateCWProxy {
     LAProjectViewStatus? status,
     List<String>? alaInstallReleases,
     List<String>? generatorReleases,
+    List<String>? dockerComposeReleases,
     List<AppSnackBarMessage>? appSnackBarMessages,
     Map<String, LAReleases>? laReleases,
     CommonCmd? repeatCmd,
@@ -114,6 +117,10 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
   @override
   AppState generatorReleases(List<String>? generatorReleases) =>
       call(generatorReleases: generatorReleases);
+
+  @override
+  AppState dockerComposeReleases(List<String>? dockerComposeReleases) =>
+      call(dockerComposeReleases: dockerComposeReleases);
 
   @override
   AppState appSnackBarMessages(List<AppSnackBarMessage>? appSnackBarMessages) =>
@@ -168,6 +175,7 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
     Object? status = const $CopyWithPlaceholder(),
     Object? alaInstallReleases = const $CopyWithPlaceholder(),
     Object? generatorReleases = const $CopyWithPlaceholder(),
+    Object? dockerComposeReleases = const $CopyWithPlaceholder(),
     Object? appSnackBarMessages = const $CopyWithPlaceholder(),
     Object? laReleases = const $CopyWithPlaceholder(),
     Object? repeatCmd = const $CopyWithPlaceholder(),
@@ -221,6 +229,11 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
           ? _value.generatorReleases
           // ignore: cast_nullable_to_non_nullable
           : generatorReleases as List<String>?,
+      dockerComposeReleases:
+          dockerComposeReleases == const $CopyWithPlaceholder()
+          ? _value.dockerComposeReleases
+          // ignore: cast_nullable_to_non_nullable
+          : dockerComposeReleases as List<String>?,
       appSnackBarMessages: appSnackBarMessages == const $CopyWithPlaceholder()
           ? _value.appSnackBarMessages
           // ignore: cast_nullable_to_non_nullable
@@ -293,6 +306,9 @@ AppState _$AppStateFromJson(Map<String, dynamic> json) => AppState(
   generatorReleases: (json['generatorReleases'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
+  dockerComposeReleases: (json['dockerComposeReleases'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
   laReleases: (json['laReleases'] as Map<String, dynamic>?)?.map(
     (k, e) => MapEntry(k, LAReleases.fromJson(e as Map<String, dynamic>)),
   ),
@@ -313,6 +329,7 @@ Map<String, dynamic> _$AppStateToJson(AppState instance) => <String, dynamic>{
   'projects': instance.projects.map((e) => e.toJson()).toList(),
   'alaInstallReleases': instance.alaInstallReleases,
   'generatorReleases': instance.generatorReleases,
+  'dockerComposeReleases': instance.dockerComposeReleases,
   'laReleases': instance.laReleases.map((k, e) => MapEntry(k, e.toJson())),
   'sshKeys': instance.sshKeys.map((e) => e.toJson()).toList(),
   'lastSwCheck': instance.lastSwCheck?.toIso8601String(),

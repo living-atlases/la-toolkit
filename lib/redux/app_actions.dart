@@ -63,6 +63,14 @@ class OnFetchGeneratorReleases extends AppActions {
 
 class OnFetchGeneratorReleasesFailed extends AppActions {}
 
+class OnFetchDockerComposeReleases extends AppActions {
+  OnFetchDockerComposeReleases(this.releases);
+
+  List<String> releases;
+}
+
+class OnFetchDockerComposeReleasesFailed extends AppActions {}
+
 class Loading extends AppActions {}
 
 class CreateProject extends AppActions {

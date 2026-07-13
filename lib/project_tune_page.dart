@@ -18,6 +18,7 @@ import './models/la_variable_desc.dart';
 import './models/ssh_key.dart';
 import 'components/ala_install_selector.dart';
 import 'components/app_snack_bar.dart';
+import 'components/docker_compose_selector.dart';
 import 'components/generator_selector.dart';
 import 'components/generic_selector.dart';
 import 'components/generic_text_form_field.dart';
@@ -89,6 +90,7 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
           depsLoading: store.state.depsLoading,
           alaInstallReleases: store.state.alaInstallReleases,
           generatorReleases: store.state.generatorReleases,
+          dockerComposeReleases: store.state.dockerComposeReleases,
           backendVersion: store.state.backendVersion,
           sshKeys: store.state.sshKeys,
           onInitCasKeys: () {
@@ -367,18 +369,39 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                             /*                                      mainAxisAlignment:
                                           MainAxisAlignment.start,*/
                             children: <Widget>[
-                              SizedBox(
-                                width: 250,
-                                child: ALAInstallSelector(
-                                  onChange: (String? value) {
-                                    final String version =
-                                        value ?? vm.alaInstallReleases[0];
-                                    final LAProject newProject = project
-                                        .copyWith(alaInstallRelease: version);
-                                    vm.onUpdateProjectLocal(newProject);
-                                  },
+                              // ala-install only applies to VM deployments; hide
+                              // it on pure docker-compose projects.
+                              if (!project.isPureDockerCompose)
+                                SizedBox(
+                                  width: 250,
+                                  child: ALAInstallSelector(
+                                    onChange: (String? value) {
+                                      final String version =
+                                          value ?? vm.alaInstallReleases[0];
+                                      final LAProject newProject = project
+                                          .copyWith(alaInstallRelease: version);
+                                      vm.onUpdateProjectLocal(newProject);
+                                    },
+                                  ),
                                 ),
-                              ),
+                              if (project.isDockerComposeEnabled)
+                                SizedBox(
+                                  width: 250,
+                                  child: DockerComposeSelector(
+                                    onChange: (String? value) {
+                                      final String version =
+                                          value ??
+                                          (vm.dockerComposeReleases.isNotEmpty
+                                              ? vm.dockerComposeReleases[0]
+                                              : 'master');
+                                      final LAProject newProject =
+                                          project.copyWith(
+                                            dockerComposeRelease: version,
+                                          );
+                                      vm.onUpdateProjectLocal(newProject);
+                                    },
+                                  ),
+                                ),
                               SizedBox(
                                 width: 250,
                                 child: GeneratorSelector(
@@ -689,6 +712,7 @@ class _ProjectTuneViewModel {
     required this.refreshSWVersions,
     required this.alaInstallReleases,
     required this.generatorReleases,
+    required this.dockerComposeReleases,
     required this.backendVersion,
     required this.sshKeys,
   });
@@ -710,6 +734,7 @@ class _ProjectTuneViewModel {
 
   final List<String> alaInstallReleases;
   final List<String> generatorReleases;
+  final List<String> dockerComposeReleases;
   final String? backendVersion;
   final List<SshKey> sshKeys;
 
@@ -734,6 +759,10 @@ class _ProjectTuneViewModel {
             alaInstallReleases,
             other.alaInstallReleases,
           ) &&
+          const ListEquality<String>().equals(
+            dockerComposeReleases,
+            other.dockerComposeReleases,
+          ) &&
           const ListEquality<SshKey>().equals(sshKeys, other.sshKeys) &&
           status == other.status;
 
@@ -747,5 +776,6 @@ class _ProjectTuneViewModel {
       const ListEquality<SshKey>().hash(sshKeys) ^
       const ListEquality<String>().hash(generatorReleases) ^
       const ListEquality<String>().hash(alaInstallReleases) ^
+      const ListEquality<String>().hash(dockerComposeReleases) ^
       const DeepCollectionEquality.unordered().hash(laReleases);
 }

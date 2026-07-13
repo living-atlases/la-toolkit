@@ -246,6 +246,31 @@ class Api {
         });
   }
 
+  static Future<void> dockerComposeSelect(
+    String version,
+    Function(String) onError,
+  ) async {
+    const String userError = 'Error selecting that la-docker-compose version';
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    final Uri url = AppUtils.uri(
+      dotenv.env['BACKEND']!,
+      '/api/v1/docker-compose-select/$version',
+    );
+    await http
+        .get(url)
+        .then(
+          (http.Response response) => response.statusCode != 200
+              ? onError(userError)
+              : <String, dynamic>{},
+        )
+        .catchError((dynamic error) {
+          log('la-docker-compose select error $error');
+          onError(userError);
+        });
+  }
+
   static Future<void> generatorSelect(
     String version,
     Function(String) onError,

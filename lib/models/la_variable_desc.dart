@@ -202,7 +202,6 @@ class LAVariableDesc {
       nameInt: 'email_sender_password',
       regExp: LARegExp.anything,
       error: 'Invalid password',
-      inTunePage: false,
       protected: true,
       hint:
           'The email password of the previous email sender. This user/password should exist in that email server',
@@ -212,7 +211,6 @@ class LAVariableDesc {
       nameInt: 'email_sender_server',
       regExp: LARegExp.domainRegexp,
       error: 'Invalid email server',
-      inTunePage: false,
       // defValue: (project) => 'mailserver.${project.domain}',
       hint:
           'Used to send LA portal notifications. The previous account should exists in this server.',
@@ -222,7 +220,6 @@ class LAVariableDesc {
       nameInt: 'email_sender_server_port',
       regExp: LARegExp.int,
       error: 'Invalid email server port',
-      inTunePage: false,
       defValue: (LAProject project) => '587',
       hint: 'usually 25 or 587',
     ),
@@ -231,7 +228,6 @@ class LAVariableDesc {
       nameInt: 'email_sender_server_tls',
       // regExp: LARegExp.int,
       // error: "Invalid email server port",
-      inTunePage: false,
       defValue: (LAProject project) => true,
       type: LAVariableType.bool,
       hint: 'usually 25 or 587',
@@ -560,6 +556,9 @@ class LAVariableDesc {
       subcategory: LAVariableSubcategory.pipelines,
       depends: LAServiceName.pipelines,
       service: LAServiceName.pipelines,
+      // Jenkins pipelines are a VM-only concept; on docker-compose the
+      // orchestration is Airflow, so hide this toggle there.
+      isVisible: (LAProject project) => !project.isDockerComposeEnabled,
       defValue: (_) => false,
       type: LAVariableType.bool,
     ),

@@ -226,6 +226,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         }
       }
 
+      // LA-DOCKER-COMPOSE RELEASES
+      // For now we use git tags of the repo; will move to /releases later.
+      await _fetchDockerComposeReleases(store);
+
       // Dependencies
       final String deps = await Api.fetchDependencies();
       DependenciesManager.setDeps(deps);
@@ -594,10 +598,20 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
           if (action.deployCmd.runtimeType != PreDeployCmd &&
               action.deployCmd.runtimeType != PostDeployCmd) {
-            await Api.alaInstallSelect(
-              action.project.alaInstallRelease!,
-              action.onError,
-            ).then((_) => scanSshKeys(store, () {}));
+            // ala-install only applies to VM deployments; skip it on pure
+            // docker-compose projects (where alaInstallRelease is null).
+            if (action.project.alaInstallRelease != null) {
+              await Api.alaInstallSelect(
+                action.project.alaInstallRelease!,
+                action.onError,
+              ).then((_) => scanSshKeys(store, () {}));
+            }
+            if (action.project.dockerComposeRelease != null) {
+              await Api.dockerComposeSelect(
+                action.project.dockerComposeRelease!,
+                action.onError,
+              );
+            }
             await Api.generatorSelect(
               action.project.generatorRelease!,
               action.onError,
@@ -951,6 +965,43 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     // Generate SSH config if project has servers, regardless of isCreated status
     if (project.servers.isNotEmpty) {
       await Api.genSshConf(project, forceRoot);
+    }
+  }
+
+  // Fetch la-docker-compose versions. For now we use the repo git tags; this is
+  // isolated so it can be switched to GitHub /releases later without touching
+  // the rest of the flow.
+  Future<void> _fetchDockerComposeReleases(Store<AppState> store) async {
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    try {
+      final Uri dockerComposeTagsApiUrl = Uri.https(
+        'api.github.com',
+        '/repos/living-atlases/la-docker-compose/tags',
+      );
+      final Response response = await http.get(dockerComposeTagsApiUrl);
+      if (response.statusCode == 200) {
+        final List<dynamic> l = jsonDecode(response.body) as List<dynamic>;
+        final List<String> dockerComposeReleases = <String>[];
+        for (final dynamic element in l) {
+          final Map<String, dynamic> elementMap =
+              element as Map<String, dynamic>;
+          dockerComposeReleases.add(elementMap['name'] as String);
+        }
+        dockerComposeReleases.add('master');
+        if (!const ListEquality<String>().equals(
+          dockerComposeReleases,
+          store.state.dockerComposeReleases,
+        )) {
+          store.dispatch(OnFetchDockerComposeReleases(dockerComposeReleases));
+        }
+      } else {
+        store.dispatch(OnFetchDockerComposeReleasesFailed());
+      }
+    } catch (e) {
+      log('Failed to fetch la-docker-compose tags: $e');
+      store.dispatch(OnFetchDockerComposeReleasesFailed());
     }
   }
 
