@@ -193,7 +193,13 @@ class LAService implements IsJsonSerializable<LAService> {
               nameInt != spark &&
               nameInt != hadoop &&
               nameInt != airflow &&
-              nameInt != zookeeper,
+              nameInt != zookeeper &&
+              // Docker infra are inventory groups / deploy targets, not
+              // selectable workload services (site.yml runs against the
+              // docker_compose group as a whole).
+              nameInt != dockerCompose &&
+              nameInt != dockerCommon &&
+              nameInt != dockerSwarm,
         )
         .toList();
   }
