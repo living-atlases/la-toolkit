@@ -166,18 +166,24 @@ PostDeployCmd _$PostDeployCmdFromJson(Map<String, dynamic> json) =>
       ..deployServices = (json['deployServices'] as List<dynamic>)
           .map((e) => e as String)
           .toList()
-      ..onlyProperties = json['onlyProperties'] as bool;
+      ..skipServices = (json['skipServices'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList()
+      ..onlyProperties = json['onlyProperties'] as bool
+      ..dockerCompose = json['dockerCompose'] as bool;
 
 Map<String, dynamic> _$PostDeployCmdToJson(PostDeployCmd instance) =>
     <String, dynamic>{
       'deployServices': instance.deployServices,
       'limitToServers': instance.limitToServers,
       'skipTags': instance.skipTags,
+      'skipServices': instance.skipServices,
       'advanced': instance.advanced,
       'onlyProperties': instance.onlyProperties,
       'continueEvenIfFails': instance.continueEvenIfFails,
       'debug': instance.debug,
       'dryRun': instance.dryRun,
+      'dockerCompose': instance.dockerCompose,
       'configurePostfix': instance.configurePostfix,
       'tags': instance.tags,
     };
