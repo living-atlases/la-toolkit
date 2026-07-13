@@ -152,24 +152,37 @@ class _DeployPageState extends State<DeployPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         const SizedBox(height: 20),
-                        const ListTile(
-                          title: Text(
-                            'Select which services you want to deploy:',
-                            style: TextStyle(fontSize: 16),
+                        if (!vm.project.isPureDockerCompose) ...<Widget>[
+                          const ListTile(
+                            title: Text(
+                              'Select which services you want to deploy:',
+                              style: TextStyle(fontSize: 16),
+                            ),
                           ),
-                        ),
-                        ServicesChipPanel(
-                          initialValue: cmd.deployServices,
-                          services: LAService.removeServicesDeployedTogether(
-                            vm.project.getServicesAssigned(onlyDocker),
+                          ServicesChipPanel(
+                            initialValue: cmd.deployServices,
+                            services: LAService.removeServicesDeployedTogether(
+                              vm.project.getServicesAssigned(onlyDocker),
+                            ),
+                            isHub: vm.project.isHub,
+                            onChange: (List<String> s) => setState(() {
+                              cmd = cmd.copyWith(deployServices: s);
+                              vm.onSaveDeployCmd(cmd);
+                              _servicesToDeploy = s;
+                            }),
                           ),
-                          isHub: vm.project.isHub,
-                          onChange: (List<String> s) => setState(() {
-                            cmd = cmd.copyWith(deployServices: s);
-                            vm.onSaveDeployCmd(cmd);
-                            _servicesToDeploy = s;
-                          }),
-                        ),
+                        ] else
+                          const ListTile(
+                            leading: Icon(Icons.rocket_launch_outlined),
+                            title: Text(
+                              'Deploying the full stack (all services together)',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            subtitle: Text(
+                              'This is a docker-compose portal. Use Advanced '
+                              'options below to redeploy specific services.',
+                            ),
+                          ),
                         if (vm.project.isDockerClusterConfigured() &&
                             !vm.project.isPureDockerCompose)
                           ListTile(
@@ -207,7 +220,20 @@ class _DeployPageState extends State<DeployPage> {
                             }),
                           ),
                         ),
-                        if (advanced)
+                        if (advanced && vm.project.isPureDockerCompose)
+                          ServicesChipPanel(
+                            initialValue: cmd.deployServices,
+                            services: LAService.removeServicesDeployedTogether(
+                              vm.project.getServicesAssigned(onlyDocker),
+                            ),
+                            isHub: vm.project.isHub,
+                            onChange: (List<String> s) => setState(() {
+                              cmd = cmd.copyWith(deployServices: s);
+                              vm.onSaveDeployCmd(cmd);
+                              _servicesToDeploy = s;
+                            }),
+                          ),
+                        if (advanced && !vm.project.isPureDockerCompose)
                           ServerSelector(
                             selectorKey: GlobalKey<FormFieldState<dynamic>>(),
                             title: 'Deploy to servers:',
