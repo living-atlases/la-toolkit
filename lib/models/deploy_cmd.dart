@@ -117,6 +117,10 @@ class DeployCmd extends CommonCmd {
     final int serviceLength = deployServices.length;
     if (isAll) {
       services = 'full deploy';
+    } else if (serviceLength == 0 && dockerCompose) {
+      // Hybrid docker-only selection: no ala-install positional services,
+      // just the la-docker-compose leg.
+      services = 'deploy of the docker stack';
     } else if (serviceLength <= 5) {
       final List<String> servicesForHuman = deployServices
           .map(
@@ -135,6 +139,10 @@ class DeployCmd extends CommonCmd {
       services += ' service${serviceLength > 1 ? 's' : ''}';
     } else {
       services += ' some services';
+    }
+    if (dockerCompose && !isAll && serviceLength > 0) {
+      // Hybrid mixed selection: VM services plus the la-docker-compose leg.
+      services += ' and the docker stack';
     }
 
     final String servers = toStringServers();

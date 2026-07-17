@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -93,9 +92,16 @@ class _DeployPageState extends State<DeployPage> {
                 : cmd.deployServices,
           );
         }
+        // On hybrid portals the user selection is split at launch time into
+        // the VM leg (ala-install positional services) and the docker leg
+        // (dockerCompose flag + auto-computed skip_services). The saved cmd
+        // keeps the raw user selection.
         final VoidCallback? onTap = cmd.deployServices.isEmpty
             ? null
-            : () => vm.onDeployProject(vm.project, cmd);
+            : () => vm.onDeployProject(
+                vm.project,
+                vm.project.buildHybridDeployCmd(cmd),
+              );
         final bool advanced =
             cmd.advanced ||
             cmd.tags.isNotEmpty ||
@@ -104,15 +110,8 @@ class _DeployPageState extends State<DeployPage> {
             cmd.onlyProperties;
         final String pageTitle = '${vm.project.shortName} Deployment';
         final Map<String, String> selectedVersions = <String, String>{};
-        final List<String> dockerServers = vm.project.dockerServers();
-        final bool onlyDocker =
-            vm.project.isDockerClusterConfigured() &&
-            const ListEquality<String>().equals(
-              cmd.limitToServers,
-              dockerServers,
-            );
         selectedVersions.addAll(
-          vm.project.getServiceDeployReleases(onlyDocker),
+          vm.project.getServiceDeployReleases(vm.project.isPureDockerCompose),
         );
         final List<MigrationNotesDesc> migrationNotes =
             DependenciesManager.getMigrationNotes(
@@ -160,16 +159,24 @@ class _DeployPageState extends State<DeployPage> {
                       children: <Widget>[
                         const SizedBox(height: 20),
                         if (!vm.project.isPureDockerCompose) ...<Widget>[
-                          const ListTile(
-                            title: Text(
+                          ListTile(
+                            title: const Text(
                               'Select which services you want to deploy:',
                               style: TextStyle(fontSize: 16),
                             ),
+                            subtitle: vm.project.isHybrid
+                                ? const Text(
+                                    'This is a hybrid portal: VM services '
+                                    'deploy via ala-install and docker '
+                                    'services via la-docker-compose, in a '
+                                    'single ansible run.',
+                                  )
+                                : null,
                           ),
                           ServicesChipPanel(
                             initialValue: cmd.deployServices,
                             services: LAService.removeServicesDeployedTogether(
-                              vm.project.getServicesAssigned(onlyDocker),
+                              vm.project.getServicesAssigned(),
                             ),
                             isHub: vm.project.isHub,
                             onChange: (List<String> s) => setState(() {
@@ -190,33 +197,6 @@ class _DeployPageState extends State<DeployPage> {
                               'options below to redeploy specific services.',
                             ),
                           ),
-                        if (vm.project.isDockerClusterConfigured() &&
-                            !vm.project.isPureDockerCompose)
-                          ListTile(
-                            title: const Text('Only deploy to docker cluster'),
-                            trailing: Switch(
-                              value: onlyDocker,
-                              onChanged: (bool value) => setState(() {
-                                if (value) {
-                                  cmd = cmd.copyWith(
-                                    limitToServers: dockerServers,
-                                  );
-                                } else {
-                                  final List<String> newServers = cmd
-                                      .limitToServers
-                                      .where(
-                                        (String s) =>
-                                            !dockerServers.contains(s),
-                                      )
-                                      .toList();
-                                  cmd = cmd.copyWith(
-                                    limitToServers: newServers,
-                                  );
-                                }
-                                vm.onSaveDeployCmd(cmd);
-                              }),
-                            ),
-                          ),
                         ListTile(
                           title: const Text('Advanced options'),
                           trailing: Switch(
@@ -227,20 +207,24 @@ class _DeployPageState extends State<DeployPage> {
                             }),
                           ),
                         ),
-                        if (advanced && vm.project.isPureDockerCompose) ...<Widget>[
+                        if (advanced &&
+                            (vm.project.isPureDockerCompose ||
+                                vm.project.isHybrid)) ...<Widget>[
                           const ListTile(
                             title: Text('Skip services (optional):'),
                             subtitle: Text(
-                              'Selected services are excluded from the stack '
-                              '(passed as skip_services). Leave empty to deploy '
-                              'everything.',
+                              'Selected services are excluded from the docker '
+                              'stack (passed as skip_services). Leave empty to '
+                              'deploy everything.',
                             ),
                           ),
                           ServicesChipPanel(
                             withAll: false,
                             initialValue: cmd.skipServices,
                             services: LAService.removeServicesDeployedTogether(
-                              vm.project.getServicesAssigned(onlyDocker),
+                              vm.project.getServicesAssigned(
+                                vm.project.isHybrid,
+                              ),
                             ),
                             isHub: vm.project.isHub,
                             onChange: (List<String> s) => setState(() {

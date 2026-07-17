@@ -36,6 +36,7 @@ import './prod_service_desc.dart';
 import './version_utils.dart';
 import 'basic_service.dart';
 import 'cmd_history_details.dart';
+import 'deploy_cmd.dart';
 import 'la_service.dart';
 
 part 'la_project.g.dart';
@@ -530,7 +531,11 @@ class LAProject implements IsJsonSerializable<LAProject> {
         LARegExp.projectNameRegexp.hasMatch(longName) &&
         LARegExp.shortNameRegexp.hasMatch(shortName) &&
         LARegExp.domainRegexp.hasMatch(domain) &&
-        (alaInstallRelease != null || dockerComposeRelease != null) &&
+        // Hybrid portals deploy through both ala-install (VM leg) and
+        // la-docker-compose (docker leg), so both releases are required.
+        (isHybrid
+            ? (alaInstallRelease != null && dockerComposeRelease != null)
+            : (alaInstallRelease != null || dockerComposeRelease != null)) &&
         generatorRelease != null;
     if (valid) {
       tempStatus = LAProjectStatus.basicDefined;
@@ -2773,6 +2778,104 @@ check results length: ${checkResults.length}''';
 
   bool get hasBrandingOnVm =>
       getService(branding).use && isServiceOnVm(branding);
+
+  // Services assigned to docker-compose clusters (workloads only).
+  List<String> get dockerComposeAssignedServices {
+    final Set<String> assigned = <String>{};
+    for (final LACluster cluster in clusters.where(
+      (LACluster c) => c.type == DeploymentType.dockerCompose,
+    )) {
+      assigned.addAll(clusterServices[cluster.id] ?? <String>[]);
+    }
+    return assigned.toList();
+  }
+
+  // VM services that live on the same physical server as a docker-compose
+  // cluster. la-docker-compose derives its enabled services from the inventory
+  // groups of the compose host physical server, so these must always be passed
+  // in skip_services or they would be (wrongly) started in docker too.
+  List<String> get vmServicesOnComposeHosts {
+    final Set<String> result = <String>{};
+    for (final LACluster cluster in clusters.where(
+      (LACluster c) => c.type == DeploymentType.dockerCompose,
+    )) {
+      final List<String> onHost = serverServices[cluster.serverId] ?? <String>[];
+      result.addAll(
+        onHost.where(
+          (String n) =>
+              n != dockerCompose && n != dockerSwarm && n != dockerCommon,
+        ),
+      );
+    }
+    return result.toList();
+  }
+
+  // skip_services matches individual service keys, so skipping a parent (e.g.
+  // cas) must also skip its sub-services (userdetails, apikey, ...).
+  static Set<String> _expandWithSubServices(Iterable<String> names) {
+    final Set<String> expanded = <String>{...names};
+    for (final String name in names) {
+      expanded.addAll(
+        LAServiceDesc.list(false)
+            .where(
+              (LAServiceDesc desc) => desc.parentService?.toS() == name,
+            )
+            .map((LAServiceDesc desc) => desc.nameInt),
+      );
+    }
+    return expanded;
+  }
+
+  /// Transforms the user chip selection into the wire [DeployCmd] for hybrid
+  /// portals: ala-install positional services for the VM leg, and the
+  /// la-docker-compose leg (`dockerCompose` flag + `skipServices` deny-list)
+  /// for the services assigned to compose clusters. Non-hybrid projects get
+  /// the command back untouched.
+  DeployCmd buildHybridDeployCmd(DeployCmd userCmd) {
+    if (!isHybrid) {
+      return userCmd;
+    }
+    final List<String> selection = userCmd.deployServices;
+    final bool isAll = selection.contains('all');
+    final List<String> vmSelectable = LAService.removeServicesDeployedTogether(
+      _vmAssignedServices,
+    );
+    final List<String> dockerSelectable =
+        LAService.removeServicesDeployedTogether(
+          dockerComposeAssignedServices,
+        );
+
+    final List<String> vmSelected = isAll
+        ? vmSelectable
+        : selection.where(isServiceOnVm).toList();
+    final List<String> dockerSelected = isAll
+        ? dockerSelectable
+        : selection.where((String s) => !isServiceOnVm(s)).toList();
+    final bool dockerLeg = dockerSelected.isNotEmpty;
+
+    final Set<String> skips = <String>{};
+    if (dockerLeg) {
+      skips.addAll(
+        dockerSelectable.where((String s) => !dockerSelected.contains(s)),
+      );
+      skips.addAll(userCmd.skipServices);
+      skips.addAll(vmServicesOnComposeHosts);
+    }
+
+    // A manual --limit that leaves the compose hosts out would silently skip
+    // the site.yml plays, so keep them in when the docker leg is active.
+    List<String> limit = userCmd.limitToServers;
+    if (dockerLeg && limit.isNotEmpty) {
+      limit = <String>{...limit, ...dockerServers()}.toList();
+    }
+
+    return userCmd.copyWith(
+      deployServices: vmSelected,
+      dockerCompose: dockerLeg,
+      skipServices: _expandWithSubServices(skips).toList()..sort(),
+      limitToServers: limit,
+    );
+  }
 
   // Services that send email (via postfix on localhost). Confirmed against the
   // LA KB (Postfix-configuration): CAS, alerts, biocache-service, DOI, collectory.
