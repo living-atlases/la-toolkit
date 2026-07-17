@@ -2762,6 +2762,10 @@ check results length: ${checkResults.length}''';
 
   bool get hasVmServices => _vmAssignedServices.isNotEmpty;
 
+  // Public view of the VM-assigned workload services (see _vmAssignedServices),
+  // used by the deploy UI to preset a "VM only" selection.
+  List<String> get vmAssignedServices => _vmAssignedServices;
+
   bool get hasDockerComposeServices =>
       clusters.any((LACluster c) => c.type == DeploymentType.dockerCompose) &&
       getServicesAssigned(true).isNotEmpty;

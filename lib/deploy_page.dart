@@ -46,6 +46,24 @@ class _DeployPageState extends State<DeployPage> {
   final Debouncer debouncer = Debouncer(milliseconds: 300);
   late List<String> _servicesToDeploy = <String>[];
 
+  // Bumped when a preset button rewrites the selection, so the (stateful)
+  // ServicesChipPanel is rebuilt from scratch and reflects the new value.
+  int _chipPanelEpoch = 0;
+
+  // Overwrites the deploy selection from a hybrid "quick pick" button and
+  // forces the chip panel to re-render the new value.
+  void _presetSelection(
+    _DeployViewModel vm,
+    DeployCmd cmd,
+    List<String> services,
+  ) {
+    vm.onSaveDeployCmd(cmd.copyWith(deployServices: services));
+    setState(() {
+      _servicesToDeploy = services;
+      _chipPanelEpoch++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _DeployViewModel>(
@@ -173,7 +191,51 @@ class _DeployPageState extends State<DeployPage> {
                                   )
                                 : null,
                           ),
+                          if (vm.project.isHybrid)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 4,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: <Widget>[
+                                  const Text('Quick pick: '),
+                                  ActionChip(
+                                    avatar: const Icon(Icons.select_all),
+                                    label: const Text('All'),
+                                    onPressed: () => _presetSelection(
+                                      vm,
+                                      cmd,
+                                      <String>['all'],
+                                    ),
+                                  ),
+                                  ActionChip(
+                                    avatar: Icon(MdiIcons.docker),
+                                    label: const Text('Only docker-compose'),
+                                    onPressed: () => _presetSelection(
+                                      vm,
+                                      cmd,
+                                      LAService.removeServicesDeployedTogether(
+                                        vm.project.dockerComposeAssignedServices,
+                                      ),
+                                    ),
+                                  ),
+                                  ActionChip(
+                                    avatar: Icon(MdiIcons.server),
+                                    label: const Text('Only VMs'),
+                                    onPressed: () => _presetSelection(
+                                      vm,
+                                      cmd,
+                                      LAService.removeServicesDeployedTogether(
+                                        vm.project.vmAssignedServices,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ServicesChipPanel(
+                            key: ValueKey<int>(_chipPanelEpoch),
                             initialValue: cmd.deployServices,
                             services: LAService.removeServicesDeployedTogether(
                               vm.project.getServicesAssigned(),
