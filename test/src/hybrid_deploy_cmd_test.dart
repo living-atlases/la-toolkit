@@ -8,7 +8,9 @@ import 'package:la_toolkit/models/la_service_constants.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  LAProject hybridProject({List<String> vmServicesOnComposeHost = const <String>[]}) {
+  LAProject hybridProject({
+    List<String> vmServicesOnComposeHost = const <String>[],
+  }) {
     final LAProject p = LAProject(
       longName: 'Living Atlas of Wakanda',
       shortName: 'LAW',
@@ -58,114 +60,80 @@ void main() {
       p.dockerComposeAssignedServices,
       containsAll(<String>[alaHub, biocacheService, cas]),
     );
+    expect(p.vmAssignedServices, containsAll(<String>[collectory, branding]));
   });
 
-  test('Hybrid split: VM-only selection keeps ala-install-only deploy', () {
+  // --- VM leg (ala-install) -------------------------------------------------
+
+  test('VM leg: keeps the selected VM services, no --ladocker', () {
     final LAProject p = hybridProject();
-    final DeployCmd cmd = DeployCmd(deployServices: <String>[branding]);
-    final DeployCmd wire = p.buildHybridDeployCmd(cmd);
+    final DeployCmd wire = p.buildVmLegDeployCmd(
+      DeployCmd(deployServices: <String>[branding]),
+    );
     expect(wire.dockerCompose, equals(false));
     expect(wire.deployServices, equals(<String>[branding]));
+  });
+
+  test('VM leg: empty or "all" selection expands to every VM service', () {
+    final LAProject p = hybridProject();
+    for (final DeployCmd cmd in <DeployCmd>[
+      DeployCmd(),
+      DeployCmd(deployServices: <String>['all']),
+    ]) {
+      final DeployCmd wire = p.buildVmLegDeployCmd(cmd);
+      expect(wire.dockerCompose, equals(false));
+      expect(wire.deployServices, unorderedEquals(<String>[collectory, branding]));
+      // Never 'all' nor docker services, so ala-install can't look for the
+      // missing docker-compose.yml playbook.
+      expect(wire.deployServices, isNot(contains('all')));
+      expect(wire.deployServices, isNot(contains(alaHub)));
+    }
+  });
+
+  test('VM leg: docker services in the selection are dropped', () {
+    final LAProject p = hybridProject();
+    final DeployCmd wire = p.buildVmLegDeployCmd(
+      DeployCmd(deployServices: <String>[collectory, alaHub, cas]),
+    );
+    expect(wire.deployServices, equals(<String>[collectory]));
+  });
+
+  // --- Docker leg (la-docker-compose) ---------------------------------------
+
+  test('Docker leg: full compose stack with no skips', () {
+    final LAProject p = hybridProject();
+    final DeployCmd wire = p.buildDockerLegDeployCmd(DeployCmd());
+    expect(wire.dockerCompose, equals(true));
+    expect(wire.deployServices, equals(<String>['all']));
     expect(wire.skipServices, isEmpty);
   });
 
-  test('Hybrid split: docker-only selection deploys only the docker leg', () {
+  test('Docker leg: user skips are expanded to sub-services', () {
     final LAProject p = hybridProject();
-    final DeployCmd cmd = DeployCmd(deployServices: <String>[alaHub]);
-    final DeployCmd wire = p.buildHybridDeployCmd(cmd);
+    final DeployCmd wire = p.buildDockerLegDeployCmd(
+      DeployCmd(skipServices: <String>[cas]),
+    );
     expect(wire.dockerCompose, equals(true));
-    expect(wire.deployServices, isEmpty);
-    // Not selected docker services are skipped...
-    expect(wire.skipServices, contains(biocacheService));
+    expect(wire.deployServices, equals(<String>['all']));
     expect(wire.skipServices, contains(cas));
-    // ...including the sub-services of skipped parents (skip_services matches
-    // individual service keys)
+    // Skipping a parent skips its sub-services (skip_services matches
+    // individual service keys).
     expect(wire.skipServices, contains(userdetails));
     expect(wire.skipServices, contains(apikey));
     expect(wire.skipServices, contains(casManagement));
-    // But never the selected ones
-    expect(wire.skipServices, isNot(contains(alaHub)));
   });
 
-  test('Hybrid split: mixed selection runs both legs', () {
-    final LAProject p = hybridProject();
-    final DeployCmd cmd = DeployCmd(
-      deployServices: <String>[collectory, alaHub],
-    );
-    final DeployCmd wire = p.buildHybridDeployCmd(cmd);
-    expect(wire.dockerCompose, equals(true));
-    expect(wire.deployServices, equals(<String>[collectory]));
-    expect(wire.skipServices, contains(biocacheService));
-    expect(wire.skipServices, contains(cas));
-    expect(wire.skipServices, isNot(contains(alaHub)));
-    expect(wire.skipServices, isNot(contains(collectory)));
-  });
-
-  test("Hybrid split: 'all' expands the VM leg and deploys the full docker stack", () {
-    final LAProject p = hybridProject();
-    final DeployCmd cmd = DeployCmd(deployServices: <String>['all']);
-    final DeployCmd wire = p.buildHybridDeployCmd(cmd);
-    expect(wire.dockerCompose, equals(true));
-    // 'all' is expanded to the explicit VM services so ansiblew doesn't run
-    // the ala-install playbooks of the docker services
-    expect(
-      wire.deployServices,
-      unorderedEquals(<String>[collectory, branding]),
-    );
-    expect(wire.deployServices, isNot(contains('all')));
-    // No docker service is skipped: full stack
-    expect(wire.skipServices, isNot(contains(alaHub)));
-    expect(wire.skipServices, isNot(contains(biocacheService)));
-    expect(wire.skipServices, isNot(contains(cas)));
-  });
-
-  test('Hybrid split: VM services co-located on the compose host are skipped', () {
+  test('Docker leg: VM services co-located on the compose host are skipped', () {
     final LAProject p = hybridProject(
       vmServicesOnComposeHost: <String>[speciesLists],
     );
-    final DeployCmd cmd = DeployCmd(deployServices: <String>[alaHub]);
-    final DeployCmd wire = p.buildHybridDeployCmd(cmd);
-    expect(wire.dockerCompose, equals(true));
+    final DeployCmd wire = p.buildDockerLegDeployCmd(DeployCmd());
     // species_lists is a VM service on the compose physical server, so it must
-    // be skipped or la-docker-compose would enable it in docker too
+    // be skipped or la-docker-compose would enable it in docker too.
     expect(wire.skipServices, contains(speciesLists));
-    // And also with 'all'
-    final DeployCmd wireAll = p.buildHybridDeployCmd(
-      DeployCmd(deployServices: <String>['all']),
-    );
-    expect(wireAll.skipServices, contains(speciesLists));
-    expect(wireAll.deployServices, contains(speciesLists));
   });
 
-  test('Hybrid split: manual --limit keeps the compose hosts in', () {
-    final LAProject p = hybridProject();
-    final DeployCmd cmd = DeployCmd(
-      deployServices: <String>[collectory, alaHub],
-      limitToServers: <String>['vm1'],
-    );
-    final DeployCmd wire = p.buildHybridDeployCmd(cmd);
-    expect(wire.limitToServers, containsAll(<String>['vm1', 'vm2']));
-  });
-
-  test('Non-hybrid projects get the command back untouched', () {
-    final LAProject p = LAProject(
-      longName: 'Living Atlas of Wakanda',
-      shortName: 'LAW',
-      domain: 'l-a.site',
-      alaInstallRelease: '2.2.5',
-      generatorRelease: '1.8.33',
-    );
-    p.upsertServer(LAServer(name: 'vm1', ip: '10.0.0.1', projectId: p.id));
-    final LAServer vm1 = p.servers.first;
-    p.assignByType(vm1.id, DeploymentType.vm, <String>[collectory]);
-    p.getService(collectory).use = true;
-    final DeployCmd cmd = DeployCmd(
-      deployServices: <String>[collectory],
-      skipServices: <String>[branding],
-    );
-    final DeployCmd wire = p.buildHybridDeployCmd(cmd);
-    expect(wire, equals(cmd));
-  });
+  // --- desc -----------------------------------------------------------------
 
   test('Deploy cmd desc for the docker leg', () {
     final DeployCmd cmd = DeployCmd();

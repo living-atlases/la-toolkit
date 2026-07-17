@@ -2830,54 +2830,43 @@ check results length: ${checkResults.length}''';
     return expanded;
   }
 
-  /// Transforms the user chip selection into the wire [DeployCmd] for hybrid
-  /// portals: ala-install positional services for the VM leg, and the
-  /// la-docker-compose leg (`dockerCompose` flag + `skipServices` deny-list)
-  /// for the services assigned to compose clusters. Non-hybrid projects get
-  /// the command back untouched.
-  DeployCmd buildHybridDeployCmd(DeployCmd userCmd) {
-    if (!isHybrid) {
-      return userCmd;
-    }
-    final List<String> selection = userCmd.deployServices;
-    final bool isAll = selection.contains('all');
+  // Hybrid portals are deployed as two separate, self-contained runs (the user
+  // picks one at launch), because the ala-install `ansiblew` and the
+  // la-docker-compose leg don't mix in a single wrapper invocation:
+  //   - VM leg:     old-style ala-install, positional services, no --ladocker.
+  //   - Docker leg: la-docker-compose (--ladocker), compose is `all` by default.
+
+  /// VM leg of a hybrid deploy: the ala-install run for the VM-assigned
+  /// services (positional args, no `--ladocker`). Never emits `all`/docker
+  /// services so ala-install never looks for the missing docker-compose.yml.
+  DeployCmd buildVmLegDeployCmd(DeployCmd userCmd) {
     final List<String> vmSelectable = LAService.removeServicesDeployedTogether(
       _vmAssignedServices,
     );
-    final List<String> dockerSelectable =
-        LAService.removeServicesDeployedTogether(
-          dockerComposeAssignedServices,
-        );
-
-    final List<String> vmSelected = isAll
+    final List<String> selection = userCmd.deployServices;
+    final List<String> vmSelected =
+        (selection.isEmpty || selection.contains('all'))
         ? vmSelectable
-        : selection.where(isServiceOnVm).toList();
-    final List<String> dockerSelected = isAll
-        ? dockerSelectable
-        : selection.where((String s) => !isServiceOnVm(s)).toList();
-    final bool dockerLeg = dockerSelected.isNotEmpty;
-
-    final Set<String> skips = <String>{};
-    if (dockerLeg) {
-      skips.addAll(
-        dockerSelectable.where((String s) => !dockerSelected.contains(s)),
-      );
-      skips.addAll(userCmd.skipServices);
-      skips.addAll(vmServicesOnComposeHosts);
-    }
-
-    // A manual --limit that leaves the compose hosts out would silently skip
-    // the site.yml plays, so keep them in when the docker leg is active.
-    List<String> limit = userCmd.limitToServers;
-    if (dockerLeg && limit.isNotEmpty) {
-      limit = <String>{...limit, ...dockerServers()}.toList();
-    }
-
+        : selection.where(vmSelectable.contains).toList();
     return userCmd.copyWith(
+      dockerCompose: false,
       deployServices: vmSelected,
-      dockerCompose: dockerLeg,
+    );
+  }
+
+  /// Docker leg of a hybrid deploy: the la-docker-compose run. Compose is `all`
+  /// (site.yml covers every docker service); granularity is the skip-list. VM
+  /// services co-located on the compose host are always skipped so
+  /// la-docker-compose doesn't start them, plus the user's manual skips.
+  DeployCmd buildDockerLegDeployCmd(DeployCmd userCmd) {
+    final Set<String> skips = <String>{
+      ...userCmd.skipServices,
+      ...vmServicesOnComposeHosts,
+    };
+    return userCmd.copyWith(
+      dockerCompose: true,
+      deployServices: <String>['all'],
       skipServices: _expandWithSubServices(skips).toList()..sort(),
-      limitToServers: limit,
     );
   }
 

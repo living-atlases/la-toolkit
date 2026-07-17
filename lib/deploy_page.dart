@@ -46,23 +46,9 @@ class _DeployPageState extends State<DeployPage> {
   final Debouncer debouncer = Debouncer(milliseconds: 300);
   late List<String> _servicesToDeploy = <String>[];
 
-  // Bumped when a preset button rewrites the selection, so the (stateful)
-  // ServicesChipPanel is rebuilt from scratch and reflects the new value.
-  int _chipPanelEpoch = 0;
-
-  // Overwrites the deploy selection from a hybrid "quick pick" button and
-  // forces the chip panel to re-render the new value.
-  void _presetSelection(
-    _DeployViewModel vm,
-    DeployCmd cmd,
-    List<String> services,
-  ) {
-    vm.onSaveDeployCmd(cmd.copyWith(deployServices: services));
-    setState(() {
-      _servicesToDeploy = services;
-      _chipPanelEpoch++;
-    });
-  }
+  // Hybrid portals deploy as two separate runs; this picks which one:
+  // false = VM leg (ala-install), true = Docker leg (la-docker-compose).
+  bool _hybridDockerMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -110,16 +96,26 @@ class _DeployPageState extends State<DeployPage> {
                 : cmd.deployServices,
           );
         }
-        // On hybrid portals the user selection is split at launch time into
-        // the VM leg (ala-install positional services) and the docker leg
-        // (dockerCompose flag + auto-computed skip_services). The saved cmd
-        // keeps the raw user selection.
-        final VoidCallback? onTap = cmd.deployServices.isEmpty
+        // On hybrid portals the deploy is run as two separate commands; the
+        // user picks the VM leg (ala-install) or the Docker leg
+        // (la-docker-compose, compose 'all' by default) and we build the
+        // matching command at launch time.
+        DeployCmd resolveDeployCmd() {
+          if (vm.project.isHybrid) {
+            return _hybridDockerMode
+                ? vm.project.buildDockerLegDeployCmd(cmd)
+                : vm.project.buildVmLegDeployCmd(cmd);
+          }
+          return cmd;
+        }
+        // Docker leg is always deployable (compose 'all'); the VM leg / other
+        // deploys need at least one selected service.
+        final bool canDeploy =
+            (vm.project.isHybrid && _hybridDockerMode) ||
+            cmd.deployServices.isNotEmpty;
+        final VoidCallback? onTap = !canDeploy
             ? null
-            : () => vm.onDeployProject(
-                vm.project,
-                vm.project.buildHybridDeployCmd(cmd),
-              );
+            : () => vm.onDeployProject(vm.project, resolveDeployCmd());
         final bool advanced =
             cmd.advanced ||
             cmd.tags.isNotEmpty ||
@@ -176,66 +172,82 @@ class _DeployPageState extends State<DeployPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         const SizedBox(height: 20),
-                        if (!vm.project.isPureDockerCompose) ...<Widget>[
-                          ListTile(
-                            title: const Text(
+                        if (vm.project.isHybrid) ...<Widget>[
+                          const ListTile(
+                            title: Text(
+                              'Hybrid portal — choose what to deploy:',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            subtitle: Text(
+                              'VM services deploy via ala-install and docker '
+                              'services via la-docker-compose, as two separate '
+                              'runs.',
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                            child: SegmentedButton<bool>(
+                              segments: <ButtonSegment<bool>>[
+                                ButtonSegment<bool>(
+                                  value: false,
+                                  icon: Icon(MdiIcons.server),
+                                  label: const Text('VM deploy'),
+                                ),
+                                ButtonSegment<bool>(
+                                  value: true,
+                                  icon: Icon(MdiIcons.docker),
+                                  label: const Text('Docker deploy'),
+                                ),
+                              ],
+                              selected: <bool>{_hybridDockerMode},
+                              onSelectionChanged: (Set<bool> s) => setState(
+                                () => _hybridDockerMode = s.first,
+                              ),
+                            ),
+                          ),
+                          if (_hybridDockerMode)
+                            const ListTile(
+                              leading: Icon(Icons.rocket_launch_outlined),
+                              title: Text(
+                                'Deploying the full docker stack (all services)',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              subtitle: Text(
+                                'la-docker-compose deploys all its services. '
+                                'Use Advanced → Skip services to exclude some.',
+                              ),
+                            )
+                          else ...<Widget>[
+                            const ListTile(
+                              title: Text(
+                                'Select which VM services to deploy:',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            ServicesChipPanel(
+                              key: const ValueKey<String>('hybrid-vm'),
+                              withAll: false,
+                              initialValue: cmd.deployServices,
+                              services:
+                                  LAService.removeServicesDeployedTogether(
+                                    vm.project.vmAssignedServices,
+                                  ),
+                              isHub: vm.project.isHub,
+                              onChange: (List<String> s) => setState(() {
+                                cmd = cmd.copyWith(deployServices: s);
+                                vm.onSaveDeployCmd(cmd);
+                                _servicesToDeploy = s;
+                              }),
+                            ),
+                          ],
+                        ] else if (!vm.project.isPureDockerCompose) ...<Widget>[
+                          const ListTile(
+                            title: Text(
                               'Select which services you want to deploy:',
                               style: TextStyle(fontSize: 16),
                             ),
-                            subtitle: vm.project.isHybrid
-                                ? const Text(
-                                    'This is a hybrid portal: VM services '
-                                    'deploy via ala-install and docker '
-                                    'services via la-docker-compose, in a '
-                                    'single ansible run.',
-                                  )
-                                : null,
                           ),
-                          if (vm.project.isHybrid)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 4,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: <Widget>[
-                                  const Text('Quick pick: '),
-                                  ActionChip(
-                                    avatar: const Icon(Icons.select_all),
-                                    label: const Text('All'),
-                                    onPressed: () => _presetSelection(
-                                      vm,
-                                      cmd,
-                                      <String>['all'],
-                                    ),
-                                  ),
-                                  ActionChip(
-                                    avatar: Icon(MdiIcons.docker),
-                                    label: const Text('Only docker-compose'),
-                                    onPressed: () => _presetSelection(
-                                      vm,
-                                      cmd,
-                                      LAService.removeServicesDeployedTogether(
-                                        vm.project.dockerComposeAssignedServices,
-                                      ),
-                                    ),
-                                  ),
-                                  ActionChip(
-                                    avatar: Icon(MdiIcons.server),
-                                    label: const Text('Only VMs'),
-                                    onPressed: () => _presetSelection(
-                                      vm,
-                                      cmd,
-                                      LAService.removeServicesDeployedTogether(
-                                        vm.project.vmAssignedServices,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ServicesChipPanel(
-                            key: ValueKey<int>(_chipPanelEpoch),
                             initialValue: cmd.deployServices,
                             services: LAService.removeServicesDeployedTogether(
                               vm.project.getServicesAssigned(),
@@ -269,9 +281,12 @@ class _DeployPageState extends State<DeployPage> {
                             }),
                           ),
                         ),
+                        // Skip-services applies only to the docker leg (pure
+                        // compose or a hybrid Docker deploy).
                         if (advanced &&
                             (vm.project.isPureDockerCompose ||
-                                vm.project.isHybrid)) ...<Widget>[
+                                (vm.project.isHybrid &&
+                                    _hybridDockerMode))) ...<Widget>[
                           const ListTile(
                             title: Text('Skip services (optional):'),
                             subtitle: Text(
@@ -284,9 +299,7 @@ class _DeployPageState extends State<DeployPage> {
                             withAll: false,
                             initialValue: cmd.skipServices,
                             services: LAService.removeServicesDeployedTogether(
-                              vm.project.getServicesAssigned(
-                                vm.project.isHybrid,
-                              ),
+                              vm.project.getServicesAssigned(true),
                             ),
                             isHub: vm.project.isHub,
                             onChange: (List<String> s) => setState(() {
@@ -295,7 +308,11 @@ class _DeployPageState extends State<DeployPage> {
                             }),
                           ),
                         ],
-                        if (advanced && !vm.project.isPureDockerCompose)
+                        // Server limit doesn't apply to the docker leg (compose
+                        // runs on its own hosts).
+                        if (advanced &&
+                            !vm.project.isPureDockerCompose &&
+                            !(vm.project.isHybrid && _hybridDockerMode))
                           ServerSelector(
                             selectorKey: GlobalKey<FormFieldState<dynamic>>(),
                             title: 'Deploy to servers:',
