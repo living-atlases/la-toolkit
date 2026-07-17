@@ -728,6 +728,7 @@ class LAServiceDesc {
       sample: 'https://biocollect.ala.org.au/acsa',
       artifacts: 'biocollect',
       optional: true,
+      dockerSupport: true,
       path: '',
     ),
     pdfgen: LAServiceDesc(
@@ -739,6 +740,7 @@ class LAServiceDesc {
       depends: LAServiceName.biocollect,
       artifacts: 'pdfgen',
       optional: true,
+      dockerSupport: true,
       path: '',
     ),
     ecodata: LAServiceDesc(
@@ -751,6 +753,7 @@ class LAServiceDesc {
       artifacts: 'ecodata',
       desc: 'provides primarily data services for BioCollect applications',
       optional: true,
+      dockerSupport: true,
       path: '',
     ),
     ecodataReporting: LAServiceDesc(
@@ -785,7 +788,9 @@ class LAServiceDesc {
       nameInt: gatus,
       group: gatus,
       icon: MdiIcons.listStatus,
-      allowMultipleDeploys: true,
+      // Singleton: a single gatus instance monitors the whole deployment, so it
+      // must not be assignable to more than one host/cluster (too many checks).
+      // allowMultipleDeploys stays false (the default) on purpose.
       depends: LAServiceName.docker_swarm,
       desc: 'gatus monitoring service',
       optional: true,
