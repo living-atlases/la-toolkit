@@ -239,7 +239,7 @@ class ProjectCard extends StatelessWidget {
               child: Card(
                 elevation: 5,
                 child: Container(
-                  height: 220.0,
+                  height: 240.0,
                   margin: const EdgeInsets.fromLTRB(30, 12, 20, 30),
                   child: Column(
                     // crossAxisAlignment: CrossAxisAlignment.stretch,
