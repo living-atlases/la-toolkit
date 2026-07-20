@@ -83,6 +83,14 @@ class ProjectDrawer extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
+                      if ((vm.state.currentProject.dirName ?? '').isNotEmpty)
+                        Text(
+                          vm.state.currentProject.dirName!,
+                          style: const TextStyle(
+                            fontSize: 13.0,
+                            color: Colors.white70,
+                          ),
+                        ),
                     ],
                   ),
                 ),

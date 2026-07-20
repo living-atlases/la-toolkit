@@ -185,25 +185,34 @@ class LAProjectEditPage extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 10),
-                  if (project.isHub)
-                    GenericTextFormField(
-                      // DIR NAME
-                      label:
-                          'Directory Name to store the generated directories and files',
-                      hint: project.isHub
-                          ? "Similar to for e.g.: 'avh', 'nbn_scotland', ..."
-                          : "Similar to for e.g.: 'ala', 'gbif_es', 'nbn',...",
-                      wikipage: 'Glossary#Directory-name',
-                      error:
-                          'Directory name invalid. Should be start by lowercase and should contain only lowercase characters, numbers and/or underscores',
-                      initialValue: project.dirName,
-                      regexp: project.createdAt < permissiveDirNamesDate
-                          ? LARegExp.ansibleDirnameRegexpPermissive
-                          : LARegExp.ansibleDirnameRegexp,
-                      onChanged: (String value) {
-                        project.dirName = value;
-                        vm.onSaveCurrentProject(project);
-                      },
+                  GenericTextFormField(
+                    // DIR NAME
+                    label:
+                        'Directory Name to store the generated directories and files',
+                    hint: project.isHub
+                        ? "Similar to for e.g.: 'avh', 'nbn_scotland', ..."
+                        : "Similar to for e.g.: 'ala', 'gbif_es', 'nbn',...",
+                    wikipage: 'Glossary#Directory-name',
+                    error:
+                        'Directory name invalid. Should be start by lowercase and should contain only lowercase characters, numbers and/or underscores',
+                    initialValue: project.dirName,
+                    enabled: project.isHub,
+                    regexp: project.createdAt < permissiveDirNamesDate
+                        ? LARegExp.ansibleDirnameRegexpPermissive
+                        : LARegExp.ansibleDirnameRegexp,
+                    onChanged: (String value) {
+                      project.dirName = value;
+                      vm.onSaveCurrentProject(project);
+                    },
+                  ),
+                  if (!project.isHub)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Can only be set when duplicating a project, to '
+                        'avoid leaving orphaned config files on the server.',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
                     ),
                   Tooltip(
                     // SSL

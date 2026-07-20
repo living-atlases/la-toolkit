@@ -319,6 +319,16 @@ class ProjectCard extends StatelessWidget {
                         project.shortName,
                         style: const TextStyle(fontSize: 16),
                       ),
+                      if (project.dirName != null &&
+                          project.dirName!.isNotEmpty)
+                        Text(
+                          'dir: ${project.dirName}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       SelectableLinkify(
                         linkStyle: TextStyle(color: LAColorTheme.laPalette),
                         options: const LinkifyOptions(humanize: false),
