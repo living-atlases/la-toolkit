@@ -7,6 +7,7 @@ import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import './models/app_state.dart';
+import 'components/duplicate_project_dialog.dart';
 import 'components/formatted_title.dart';
 import 'components/la_project_timeline.dart';
 import 'components/scroll_panel.dart';
@@ -64,6 +65,27 @@ class _LAProjectsListState extends State<LAProjectsList> {
             //context.beamToNamed(LAProjectViewPage.routeName);
             BeamerCond.of(context, LAProjectViewLocation());
           },
+          onDuplicateProject:
+              (
+                LAProject project,
+                String shortName,
+                String longName,
+                String domain,
+                String dirName,
+              ) {
+                store.dispatch(
+                  DuplicateProject(
+                    project,
+                    LAProject.duplicate(
+                      project,
+                      newShortName: shortName,
+                      newLongName: longName,
+                      newDomain: domain,
+                      newDirName: dirName,
+                    ),
+                  ),
+                );
+              },
         );
       },
       builder: (BuildContext context, _ProjectsPageViewModel vm) {
@@ -111,6 +133,22 @@ class _LAProjectsListState extends State<LAProjectsList> {
                                                 () => vm.onDeleteProject(
                                                   pjs[index],
                                                 ),
+                                                (
+                                                  String shortName,
+                                                  String longName,
+                                                  String domain,
+                                                  String dirName,
+                                                ) => vm.onDuplicateProject(
+                                                  pjs[index],
+                                                  shortName,
+                                                  longName,
+                                                  domain,
+                                                  dirName,
+                                                ),
+                                                existingDirNames:
+                                                    _existingDirNames(
+                                                      vm.state.projects,
+                                                    ),
                                               ),
                                             ),
                                           ),
@@ -156,12 +194,37 @@ class _LAProjectsListState extends State<LAProjectsList> {
   }
 }
 
+/// Directory names already in use by existing projects (and their hubs), used
+/// to prevent a duplicate from colliding on disk.
+Set<String> _existingDirNames(List<LAProject> projects) {
+  return projects
+      .map((LAProject p) => p.dirName)
+      .whereType<String>()
+      .where((String d) => d.isNotEmpty)
+      .toSet();
+}
+
 class ProjectCard extends StatelessWidget {
-  const ProjectCard(this.project, this.onOpen, this.onDelete, {super.key});
+  const ProjectCard(
+    this.project,
+    this.onOpen,
+    this.onDelete,
+    this.onDuplicate, {
+    required this.existingDirNames,
+    super.key,
+  });
 
   final LAProject project;
+  final Set<String> existingDirNames;
   final void Function() onOpen;
   final void Function() onDelete;
+  final void Function(
+    String shortName,
+    String longName,
+    String domain,
+    String dirName,
+  )
+  onDuplicate;
 
   @override
   Widget build(BuildContext context) {
@@ -215,6 +278,24 @@ class ProjectCard extends StatelessWidget {
                                     );
                                   }
                                 },
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Tooltip(
+                              message: 'Duplicate this project',
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: const Icon(
+                                  Icons.copy,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () => DuplicateProjectDialog.show(
+                                  context,
+                                  sourceProject: project,
+                                  existingDirNames: existingDirNames,
+                                  onDuplicate: onDuplicate,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 20),
@@ -321,6 +402,7 @@ class _ProjectsPageViewModel {
     required this.onOpenProjectTools,
     required this.onCreateProject,
     required this.onDeleteProject,
+    required this.onDuplicateProject,
   });
 
   final AppState state;
@@ -328,4 +410,12 @@ class _ProjectsPageViewModel {
   final void Function(LAProject project) onOpenProjectTools;
   final void Function(LAProject project) onDeleteProject;
   final void Function() onCreateProject;
+  final void Function(
+    LAProject project,
+    String shortName,
+    String longName,
+    String domain,
+    String dirName,
+  )
+  onDuplicateProject;
 }

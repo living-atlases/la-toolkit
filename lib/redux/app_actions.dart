@@ -98,6 +98,13 @@ class AddProject extends AppActions {
   LAProject project;
 }
 
+class DuplicateProject extends AppActions {
+  DuplicateProject(this.source, this.clone);
+
+  LAProject source;
+  LAProject clone;
+}
+
 class OnDemoAddProjects extends AppActions {
   OnDemoAddProjects(this.projects);
 

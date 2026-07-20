@@ -277,9 +277,43 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         }
       }
     }
+    if (action is DuplicateProject) {
+      try {
+        final LAProject clone = action.clone;
+        if (!AppUtils.isDemo()) {
+          store.dispatch(Loading());
+          final List<LAProject> projects = <LAProject>[clone, ...clone.hubs];
+          final List<dynamic> addedProjects = await Api.addProjects(projects);
+          store.dispatch(OnProjectsAdded(addedProjects));
+          await genSshConf(clone);
+          // Copy the original's generated passwords and local customizations
+          // (local-extras, branding) into the clone's directory so the
+          // generator reuses them instead of creating fresh ones. Best-effort:
+          // if the source was never generated there is nothing to copy.
+          if (action.source.dirName != null &&
+              action.source.dirName!.isNotEmpty &&
+              clone.dirName != null &&
+              clone.dirName!.isNotEmpty) {
+            await Api.duplicateProjectFiles(
+              sourceDirName: action.source.dirName!,
+              destDirName: clone.dirName!,
+            );
+          }
+        } else {
+          store.dispatch(OnDemoAddProjects(<LAProject>[clone]));
+        }
+      } catch (e) {
+        store.dispatch(
+          ShowSnackBar(AppSnackBarMessage.ok('Failed to duplicate project ($e)')),
+        );
+      }
+    }
     if (action is AddProject) {
       try {
-        action.project.dirName = action.project.suggestDirName();
+        if (action.project.dirName == null ||
+            action.project.dirName!.isEmpty) {
+          action.project.dirName = action.project.suggestDirName();
+        }
         if (!AppUtils.isDemo()) {
           store.dispatch(Loading());
           final List<LAProject> projects = <LAProject>[

@@ -504,6 +504,37 @@ class Api {
     return null;
   }
 
+  /// Copies the generated passwords and local customizations (local-extras,
+  /// branding) from [sourceDirName] into [destDirName] on the backend, so a
+  /// duplicated project reuses them instead of generating fresh ones.
+  /// Best-effort: never throws to the caller (logs and returns on error).
+  static Future<void> duplicateProjectFiles({
+    required String sourceDirName,
+    required String destDirName,
+  }) async {
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    try {
+      final Uri url = AppUtils.uri(
+        dotenv.env['BACKEND']!,
+        '/api/v1/duplicate-project-files',
+      );
+      await http.post(
+        url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(
+          json.encode(<String, String>{
+            'sourceDirName': sourceDirName,
+            'destDirName': destDirName,
+          }),
+        ),
+      );
+    } catch (error) {
+      log('duplicateProjectFiles error $error');
+    }
+  }
+
   static Future<String?> getBackendVersion() async {
     if (AppUtils.isDemo()) {
       return null;

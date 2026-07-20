@@ -783,6 +783,171 @@ class LAProject implements IsJsonSerializable<LAProject> {
     return errors;
   }
 
+  /// Returns a full detached copy of [source] as a new independent project:
+  /// fresh ids for the project and every nested entity (servers, clusters,
+  /// services, serviceDeploys, variables, hubs) with all cross-references
+  /// remapped. The copy may reuse the original shortName, longName and domain
+  /// (they are what shows up in the portal); projects are told apart by their
+  /// [newDirName]. Server names (and aliases) get a suffix derived from
+  /// [newDirName] because they are used as ssh host aliases in the global assh
+  /// config, so reusing them across projects would collide. IPs and ssh keys
+  /// are kept; per-machine state (connectivity, deploy status, cmd history) is
+  /// reset.
+  static LAProject duplicate(
+    LAProject source, {
+    required String newShortName,
+    required String newLongName,
+    required String newDomain,
+    required String newDirName,
+  }) {
+    final LAProject clone = LAProject.fromJson(
+      json.decode(json.encode(source.toJson())) as Map<String, dynamic>,
+    );
+    final String suffix = _sanitizeServerSuffix(newDirName);
+    _remapAsDuplicate(
+      clone,
+      newShortName: newShortName,
+      newLongName: newLongName,
+      newDomain: newDomain,
+      newDirName: newDirName,
+      serverSuffix: suffix,
+    );
+    for (final LAProject hub in clone.hubs) {
+      final String hubDomain = hub.domain.endsWith('.${source.domain}')
+          ? '${hub.domain.substring(0, hub.domain.length - source.domain.length - 1)}.$newDomain'
+          : hub.domain;
+      _remapAsDuplicate(
+        hub,
+        newShortName: '${hub.shortName}-$suffix',
+        newLongName: '${hub.longName} ($newShortName)',
+        newDomain: hubDomain,
+        serverSuffix: suffix,
+      );
+      // hub.dirName keeps its suggested value (derived from its shortName);
+      // hub inventories live inside the parent's config directory.
+      hub.parent = clone;
+    }
+    final List<String> integrityErrors = clone.validateDataIntegrity();
+    if (integrityErrors.isNotEmpty && kDebugMode) {
+      debugPrint(
+        '⚠️  Data integrity issues in duplicated project "$newShortName":',
+      );
+      for (final String error in integrityErrors) {
+        debugPrint('  - $error');
+      }
+    }
+    return clone;
+  }
+
+  /// Regenerates all ids of [p] and its nested entities in place, remapping
+  /// cross-references (gateways, cluster.serverId, serviceDeploys,
+  /// serverServices/clusterServices keys) and resetting non-portable state.
+  static void _remapAsDuplicate(
+    LAProject p, {
+    required String newShortName,
+    required String newLongName,
+    required String newDomain,
+    required String serverSuffix,
+    String? newDirName,
+  }) {
+    final Map<String, String> idMap = <String, String>{};
+
+    p.id = ObjectId().toString();
+    p.shortName = newShortName;
+    p.longName = newLongName;
+    p.domain = newDomain;
+    p.createdAt = DateTime.now().microsecondsSinceEpoch;
+    p.fstDeployed = false;
+    p.cmdHistoryEntries = <CmdHistoryEntry>[];
+    p.lastCmdEntry = null;
+    p.lastCmdDetails = null;
+    p.checkResults = <String, dynamic>{};
+    p.runningVersions = <String, String>{};
+    p.lastSwCheck = null;
+
+    for (final LAServer s in p.servers) {
+      idMap[s.id] = ObjectId().toString();
+    }
+    for (final LACluster c in p.clusters) {
+      idMap[c.id] = ObjectId().toString();
+    }
+    for (final LAService s in p.services) {
+      idMap[s.id] = ObjectId().toString();
+    }
+
+    for (final LAServer s in p.servers) {
+      s.id = idMap[s.id]!;
+      s.projectId = p.id;
+      // Server names and aliases are ssh host aliases in the merged assh
+      // config, shared by all projects: they must not collide with the source.
+      s.name = '${s.name}-$serverSuffix';
+      s.aliases = s.aliases
+          .map((String alias) => '$alias-$serverSuffix')
+          .toList();
+      s.gateways = s.gateways.map((String gwId) => idMap[gwId] ?? gwId).toList();
+      s.reachable = ServiceStatus.unknown;
+      s.sshReachable = ServiceStatus.unknown;
+      s.sudoEnabled = ServiceStatus.unknown;
+      s.osName = '';
+      s.osVersion = '';
+    }
+    for (final LACluster c in p.clusters) {
+      c.id = idMap[c.id]!;
+      c.projectId = p.id;
+      if (c.serverId != null) {
+        c.serverId = idMap[c.serverId!] ?? c.serverId;
+      }
+    }
+    for (final LAService s in p.services) {
+      s.id = idMap[s.id]!;
+      s.projectId = p.id;
+    }
+    for (final LAVariable v in p.variables) {
+      v.id = ObjectId().toString();
+      v.projectId = p.id;
+    }
+    for (final LAServiceDeploy sd in p.serviceDeploys) {
+      sd.id = ObjectId().toString();
+      sd.projectId = p.id;
+      sd.serviceId = idMap[sd.serviceId] ?? sd.serviceId;
+      if (sd.serverId != null) {
+        sd.serverId = idMap[sd.serverId!] ?? sd.serverId;
+      }
+      if (sd.clusterId != null) {
+        sd.clusterId = idMap[sd.clusterId!] ?? sd.clusterId;
+      }
+      sd.status = ServiceStatus.unknown;
+      sd.checkedAt = null;
+      sd.softwareVersions = <String, String>{};
+    }
+    p.serverServices = p.serverServices.map(
+      (String serverId, List<String> services) =>
+          MapEntry<String, List<String>>(idMap[serverId] ?? serverId, services),
+    );
+    p.clusterServices = p.clusterServices.map(
+      (String clusterId, List<String> services) => MapEntry<String, List<String>>(
+        idMap[clusterId] ?? clusterId,
+        services,
+      ),
+    );
+    p.dirName = newDirName ?? p.suggestDirName();
+  }
+
+  /// Converts a project short name into a suffix valid for server names
+  /// (LARegExp.hostnameRegexp).
+  static String _sanitizeServerSuffix(String shortName) {
+    String result = shortName
+        .toLowerCase()
+        .replaceAll(RegExp(r'\s+'), '-')
+        .replaceAll(RegExp(r'[^a-z0-9_.\-]'), '')
+        .replaceAll(RegExp(r'-+'), '-');
+    result = result.replaceAll(RegExp(r'^-+|-+$'), '');
+    if (result.isEmpty) {
+      result = 'copy';
+    }
+    return result.length > 20 ? result.substring(0, 20) : result;
+  }
+
   List<String> getServersNameList() {
     return servers.map((LAServer s) => s.name).toList();
   }
