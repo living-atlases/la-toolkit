@@ -114,9 +114,9 @@ class _DuplicateProjectDialogState extends State<DuplicateProjectDialog> {
                 validator: (String? value) {
                   final String v = value?.trim() ?? '';
                   if (v.isEmpty ||
-                      !LARegExp.ansibleDirnameRegexp.hasMatch(v)) {
+                      !LARegExp.ansibleDirnameRegexpPermissive.hasMatch(v)) {
                     return 'Invalid directory name (lowercase letters, '
-                        'numbers and underscores)';
+                        'numbers, hyphens and underscores)';
                   }
                   if (v == widget.sourceProject.dirName) {
                     return 'Should be different from the original directory name';
