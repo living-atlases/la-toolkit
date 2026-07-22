@@ -91,7 +91,11 @@ class DependenciesManager {
                       ? LAServiceDesc.swNameWithAliasForHumans(dependency)
                       : dependency;
                   if (versionOfDep == null) {
-                    if (serviceInUse.contains(dependency)) {
+                    // An 'any' constraint just requires the dependency to be
+                    // present; the service being in use already satisfies it,
+                    // so a missing version is not worth warning about.
+                    if (serviceInUse.contains(dependency) &&
+                        !constraint.isAny) {
                       lintErrors.add('$swForHumans depends on $depForHumans');
                     }
                   } else {

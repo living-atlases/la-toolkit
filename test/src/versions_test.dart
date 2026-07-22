@@ -201,6 +201,21 @@ void main() async {
       softwareVersions,
     );
     expect(lintErrors.length, equals(0));
+
+    // 'any' dependencies (pipelines, namematching-service) must NOT warn when the
+    // dependency is in use but has no selected version: being in use already
+    // satisfies an 'any' constraint. biocache-service >= 3.7.0 depends on
+    // pipelines: any, namematching-service: any, java: 17 and solr: >= 8.
+    final List<String> pipelinesInUse = <String>[
+      biocacheService,
+      pipelines,
+      namematchingService,
+    ];
+    lintErrors = DependenciesManager.verifyLAReleases(
+      pipelinesInUse,
+      <String, String>{biocacheService: '3.7.0'},
+    );
+    expect(lintErrors.length, equals(0));
   });
 
   test('LA versions should be parsable', () {
