@@ -249,6 +249,10 @@ class DeployUtils {
             pid: ttydPid,
             notify: true,
             title: 'Ansible console',
+            // The deploy runs detached: closing/dropping the console no longer
+            // cancels it. Offer an explicit Cancel deploy tied to this run's logs.
+            cancelPrefix: cmdEntry.logsPrefix,
+            cancelSuffix: cmdEntry.logsSuffix,
             onClose: () async {
               if (!deployCmd.dryRun) {
                 // Show the results

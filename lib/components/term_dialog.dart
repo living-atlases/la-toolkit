@@ -18,7 +18,13 @@ class TermDialog {
     required int pid,
     required bool notify,
     VoidCallback? onClose,
+    // When set, the console shows a "Cancel deploy" action. Closing the console
+    // only stops the viewer (the deploy runs detached and survives); this is the
+    // explicit way to abort the running deploy.
+    String? cancelPrefix,
+    String? cancelSuffix,
   }) async {
+    final bool cancellable = cancelPrefix != null && cancelSuffix != null;
     // debugPrint("${getInitialUrl(port)}");
     await showFloatingModalBottomSheet(
       // This can be added to the custom modal
@@ -39,8 +45,26 @@ class TermDialog {
               // style: const TextStyle(color: Colors.white),
             ),
             actions: <Widget>[
+              if (cancellable)
+                Tooltip(
+                  message: 'Cancel the running deploy',
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.cancel_outlined),
+                    label: const Text('Cancel deploy'),
+                    onPressed: () async {
+                      final bool confirmed = await _confirmCancel(context);
+                      if (!confirmed) {
+                        return;
+                      }
+                      await Api.deployCancel(
+                        logsPrefix: cancelPrefix,
+                        logsSuffix: cancelSuffix,
+                      );
+                    },
+                  ),
+                ),
               Tooltip(
-                message: 'Close the console',
+                message: 'Close the console (the deploy keeps running)',
                 child: TextButton(
                   child: const Icon(Icons.close),
                   //, color: Colors.white),
@@ -59,6 +83,31 @@ class TermDialog {
     if (onClose != null) {
       onClose();
     }
+  }
+
+  static Future<bool> _confirmCancel(BuildContext context) async {
+    final bool? res = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: const Text('Cancel deploy?'),
+        content: const Text(
+          'This stops the running deploy on the server and leaves it '
+          'incomplete. Closing the console instead keeps it running. '
+          'Are you sure you want to cancel?',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Keep running'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Cancel deploy'),
+          ),
+        ],
+      ),
+    );
+    return res ?? false;
   }
 
   static String getInitialUrl(int port) =>

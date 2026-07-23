@@ -742,6 +742,38 @@ class Api {
     return;
   }
 
+  /// Cancel a running (detached) deploy. Closing the console only stops the
+  /// viewer; this actually aborts the deploy by killing its process tree on the
+  /// backend, identified by the cmd's logsPrefix/logsSuffix.
+  static Future<bool> deployCancel({
+    required String logsPrefix,
+    required String logsSuffix,
+  }) async {
+    if (AppUtils.isDemo()) {
+      return false;
+    }
+    final Uri url = AppUtils.uri(
+      dotenv.env['BACKEND']!,
+      '/api/v1/deploy-cancel',
+    );
+    final Response response = await http.post(
+      url,
+      headers: <String, String>{'Content-type': 'application/json'},
+      body: utf8.encode(
+        json.encode(<String, String>{
+          'logsPrefix': logsPrefix,
+          'logsSuffix': logsSuffix,
+        }),
+      ),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> l =
+          json.decode(response.body) as Map<String, dynamic>;
+      return (l['killed'] as bool?) ?? false;
+    }
+    return false;
+  }
+
   static void deployBranding(BrandingDeploy action) {
     if (AppUtils.isDemo()) {
       return;
