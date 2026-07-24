@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../utils/api.dart';
 
@@ -86,25 +87,31 @@ class TermDialog {
   }
 
   static Future<bool> _confirmCancel(BuildContext context) async {
+    // Wrap in PointerInterceptor: the console is a ttyd <iframe> (HtmlElementView),
+    // which on web captures pointer events over its area, so a plain dialog drawn
+    // on top of it is not clickable. The interceptor inserts a transparent HTML
+    // layer that lets the dialog receive clicks.
     final bool? res = await showDialog<bool>(
       context: context,
-      builder: (BuildContext ctx) => AlertDialog(
-        title: const Text('Cancel deploy?'),
-        content: const Text(
-          'This stops the running deploy on the server and leaves it '
-          'incomplete. Closing the console instead keeps it running. '
-          'Are you sure you want to cancel?',
+      builder: (BuildContext ctx) => PointerInterceptor(
+        child: AlertDialog(
+          title: const Text('Cancel deploy?'),
+          content: const Text(
+            'This stops the running deploy on the server and leaves it '
+            'incomplete. Closing the console instead keeps it running. '
+            'Are you sure you want to cancel?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Keep running'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Cancel deploy'),
+            ),
+          ],
         ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Keep running'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Cancel deploy'),
-          ),
-        ],
       ),
     );
     return res ?? false;
