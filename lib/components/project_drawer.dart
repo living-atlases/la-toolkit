@@ -50,9 +50,12 @@ class ProjectDrawer extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: LAColorTheme.laPalette.shade300,
                   ),
-                  child: Column(
-                    children: <Widget>[
-                      if (vm.state.currentProject.getVariableValue(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        if (vm.state.currentProject.getVariableValue(
                                 'favicon_url',
                               ) !=
                               null &&

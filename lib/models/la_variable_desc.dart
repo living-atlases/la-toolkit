@@ -579,8 +579,10 @@ class LAVariableDesc {
       service: LAServiceName.docker_compose,
       depends: LAServiceName.docker_compose,
       regExp: LARegExp.anything,
-      defValue: (LAProject project) =>
-          '../${project.shortName.toLowerCase().replaceFirst('la ', '').replaceAll(' ', '-')}-branding',
+      // Use the sanitized dirName (dots -> dashes, spaces stripped) so the default
+      // matches LA_pkg_name and the generator's ${LA_pkg_name}-branding directory.
+      // shortName is unsanitized (e.g. "GBIF.ES" -> gbif.es-branding, a broken path).
+      defValue: (LAProject project) => '../${project.dirName}-branding',
       hint:
           'Can be a directory or a git address. By default ../<project-short-name>-branding/. If a git address is used, it will be cloned and built.',
     ),

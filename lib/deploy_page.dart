@@ -48,7 +48,9 @@ class _DeployPageState extends State<DeployPage> {
 
   // Hybrid portals deploy as two separate runs; this picks which one:
   // false = VM leg (ala-install), true = Docker leg (la-docker-compose).
-  bool _hybridDockerMode = false;
+  // Null until first build, then defaulted to the Docker leg when the project
+  // has docker-compose services so compose portals land on Docker by default.
+  bool? _hybridDockerMode;
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +98,17 @@ class _DeployPageState extends State<DeployPage> {
                 : cmd.deployServices,
           );
         }
+        // Default the hybrid leg selection on first build: land on the Docker
+        // leg when docker-compose is enabled, otherwise the VM leg.
+        _hybridDockerMode ??= vm.project.hasDockerComposeServices;
+        final bool hybridDockerMode = _hybridDockerMode!;
         // On hybrid portals the deploy is run as two separate commands; the
         // user picks the VM leg (ala-install) or the Docker leg
         // (la-docker-compose, compose 'all' by default) and we build the
         // matching command at launch time.
         DeployCmd resolveDeployCmd() {
           if (vm.project.isHybrid) {
-            return _hybridDockerMode
+            return hybridDockerMode
                 ? vm.project.buildDockerLegDeployCmd(cmd)
                 : vm.project.buildVmLegDeployCmd(cmd);
           }
@@ -111,7 +117,7 @@ class _DeployPageState extends State<DeployPage> {
         // Docker leg is always deployable (compose 'all'); the VM leg / other
         // deploys need at least one selected service.
         final bool canDeploy =
-            (vm.project.isHybrid && _hybridDockerMode) ||
+            (vm.project.isHybrid && hybridDockerMode) ||
             cmd.deployServices.isNotEmpty;
         final VoidCallback? onTap = !canDeploy
             ? null
@@ -199,13 +205,13 @@ class _DeployPageState extends State<DeployPage> {
                                   label: const Text('Docker deploy'),
                                 ),
                               ],
-                              selected: <bool>{_hybridDockerMode},
+                              selected: <bool>{hybridDockerMode},
                               onSelectionChanged: (Set<bool> s) => setState(
                                 () => _hybridDockerMode = s.first,
                               ),
                             ),
                           ),
-                          if (_hybridDockerMode)
+                          if (hybridDockerMode)
                             const ListTile(
                               leading: Icon(Icons.rocket_launch_outlined),
                               title: Text(
@@ -286,7 +292,7 @@ class _DeployPageState extends State<DeployPage> {
                         if (advanced &&
                             (vm.project.isPureDockerCompose ||
                                 (vm.project.isHybrid &&
-                                    _hybridDockerMode))) ...<Widget>[
+                                    hybridDockerMode))) ...<Widget>[
                           const ListTile(
                             title: Text('Skip services (optional):'),
                             subtitle: Text(
@@ -312,7 +318,7 @@ class _DeployPageState extends State<DeployPage> {
                         // runs on its own hosts).
                         if (advanced &&
                             !vm.project.isPureDockerCompose &&
-                            !(vm.project.isHybrid && _hybridDockerMode))
+                            !(vm.project.isHybrid && hybridDockerMode))
                           ServerSelector(
                             selectorKey: GlobalKey<FormFieldState<dynamic>>(),
                             title: 'Deploy to servers:',

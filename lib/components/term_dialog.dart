@@ -19,11 +19,14 @@ class TermDialog {
     required int pid,
     required bool notify,
     VoidCallback? onClose,
-    // When set, the console shows a "Cancel deploy" action. Closing the console
-    // only stops the viewer (the deploy runs detached and survives); this is the
-    // explicit way to abort the running deploy.
+    // When set, the console shows a "Cancel" action. Closing the console only
+    // stops the viewer (the job runs detached and survives); this is the
+    // explicit way to abort the running job.
     String? cancelPrefix,
     String? cancelSuffix,
+    // What is being cancelled, for the button and the confirmation wording
+    // ('deploy', 'branding deploy', 'pipelines run').
+    String cancelWhat = 'deploy',
   }) async {
     final bool cancellable = cancelPrefix != null && cancelSuffix != null;
     // debugPrint("${getInitialUrl(port)}");
@@ -48,24 +51,63 @@ class TermDialog {
             actions: <Widget>[
               if (cancellable)
                 Tooltip(
-                  message: 'Cancel the running deploy',
+                  message: 'Cancel the running $cancelWhat',
                   child: TextButton.icon(
                     icon: const Icon(Icons.cancel_outlined),
-                    label: const Text('Cancel deploy'),
+                    label: Text('Cancel $cancelWhat'),
                     onPressed: () async {
-                      final bool confirmed = await _confirmCancel(context);
+                      // Capture these before any await: on success we pop this
+                      // console, and its context is gone by then.
+                      final NavigatorState navigator = Navigator.of(context);
+                      final ScaffoldMessengerState messenger =
+                          ScaffoldMessenger.of(context);
+                      final bool confirmed = await _confirmCancel(
+                        context,
+                        cancelWhat,
+                      );
                       if (!confirmed) {
                         return;
                       }
-                      await Api.deployCancel(
+                      messenger.showSnackBar(
+                        SnackBar(content: Text('Cancelling the $cancelWhat…')),
+                      );
+                      final bool cancelled = await Api.deployCancel(
                         logsPrefix: cancelPrefix,
                         logsSuffix: cancelSuffix,
                       );
+                      messenger.hideCurrentSnackBar();
+                      if (!cancelled) {
+                        // Nothing was running, or the backend could not signal
+                        // it. Keep the console open so the log stays visible.
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Could not cancel the $cancelWhat: nothing '
+                              'running was found. Check the server logs.',
+                            ),
+                            action: SnackBarAction(
+                              label: 'OK',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('The $cancelWhat was cancelled'),
+                        ),
+                      );
+                      // Closing the console runs the usual teardown (term-close
+                      // + onClose), which loads the results of the aborted run.
+                      navigator.pop();
                     },
                   ),
                 ),
               Tooltip(
-                message: 'Close the console (the deploy keeps running)',
+                message: cancellable
+                    ? 'Close the console (the $cancelWhat keeps running)'
+                    : 'Close the console',
                 child: TextButton(
                   child: const Icon(Icons.close),
                   //, color: Colors.white),
@@ -86,7 +128,10 @@ class TermDialog {
     }
   }
 
-  static Future<bool> _confirmCancel(BuildContext context) async {
+  static Future<bool> _confirmCancel(
+    BuildContext context,
+    String cancelWhat,
+  ) async {
     // Wrap in PointerInterceptor: the console is a ttyd <iframe> (HtmlElementView),
     // which on web captures pointer events over its area, so a plain dialog drawn
     // on top of it is not clickable. The interceptor inserts a transparent HTML
@@ -95,9 +140,9 @@ class TermDialog {
       context: context,
       builder: (BuildContext ctx) => PointerInterceptor(
         child: AlertDialog(
-          title: const Text('Cancel deploy?'),
-          content: const Text(
-            'This stops the running deploy on the server and leaves it '
+          title: Text('Cancel $cancelWhat?'),
+          content: Text(
+            'This stops the running $cancelWhat on the server and leaves it '
             'incomplete. Closing the console instead keeps it running. '
             'Are you sure you want to cancel?',
           ),
@@ -108,7 +153,7 @@ class TermDialog {
             ),
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Cancel deploy'),
+              child: Text('Cancel $cancelWhat'),
             ),
           ],
         ),

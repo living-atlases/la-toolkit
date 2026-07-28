@@ -311,6 +311,11 @@ class DeployUtils {
             pid: ttydPid,
             // title: 'Console',
             notify: false,
+            // Runs detached like the ansible deploy: closing the console keeps
+            // it going, so offer an explicit cancel tied to this run's logs.
+            cancelPrefix: cmdEntry.logsPrefix,
+            cancelSuffix: cmdEntry.logsSuffix,
+            cancelWhat: 'branding deploy',
             onClose: () async {
               // Show the results
               store.dispatch(
@@ -364,6 +369,11 @@ class DeployUtils {
             pid: ttydPid,
             // title: 'Console',
             notify: true,
+            // Runs detached like the ansible deploy: closing the console keeps
+            // it going, so offer an explicit cancel tied to this run's logs.
+            cancelPrefix: cmdEntry.logsPrefix,
+            cancelSuffix: cmdEntry.logsSuffix,
+            cancelWhat: 'pipelines run',
             onClose: () async {
               // Show the results
               store.dispatch(

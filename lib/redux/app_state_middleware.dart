@@ -41,6 +41,20 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   final String key = 'laTool20210418';
   SharedPreferences? _pref;
 
+  // On Flutter web plain http.get goes through the browser HTTP cache, so a
+  // Refresh re-requests the same URL and gets the previous (stale) body. That
+  // makes the toolkit-dependency lists (ala-install / la-docker-compose /
+  // la-generator) never pick up new upstream releases. A unique query param
+  // per request gives a fresh URL that bypasses the cache. We must NOT add
+  // Cache-Control/Pragma request headers here: on the browser they turn the
+  // GET into a non-simple request that triggers a CORS preflight which
+  // api.github.com rejects ("Failed to fetch").
+  Map<String, String> _cacheBust([Map<String, String>? query]) =>
+      <String, String>{
+        ...?query,
+        '_': DateTime.now().millisecondsSinceEpoch.toString(),
+      };
+
   Future<void> _initPrefs() async {
     _pref ??= await SharedPreferences.getInstance();
   }
@@ -89,6 +103,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       final Uri alaInstallReleasesApiUrl = Uri.https(
         'api.github.com',
         '/repos/AtlasOfLivingAustralia/ala-install/releases',
+        _cacheBust(),
       );
 
       final Response alaInstallReleasesResponse = await http.get(
@@ -134,6 +149,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       final Uri laToolkitReleasesApiUrl = Uri.https(
         'api.github.com',
         '/repos/living-atlases/la-toolkit/releases',
+        _cacheBust(),
       );
       final Response laToolkitReleasesResponse = await http.get(
         laToolkitReleasesApiUrl,
@@ -200,10 +216,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         final Uri generatorReleasesApiUrl = AppUtils.uri(
           dotenv.env['BACKEND']!,
           '/api/v1/get-generator-versions',
+          _cacheBust(),
         );
         final Response generatorReleasesResponse = await http.get(
           generatorReleasesApiUrl,
-          //  headers: {'Accept': 'application/vnd.npm.install-v1+json'},
         );
         if (generatorReleasesResponse.statusCode == 200) {
           final Map<String, dynamic> l =
@@ -1028,6 +1044,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       final Uri dockerComposeTagsApiUrl = Uri.https(
         'api.github.com',
         '/repos/living-atlases/la-docker-compose/tags',
+        _cacheBust(),
       );
       final Response response = await http.get(dockerComposeTagsApiUrl);
       if (response.statusCode == 200) {
