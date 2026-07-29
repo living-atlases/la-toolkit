@@ -1339,12 +1339,30 @@ check results length: ${checkResults.length}''';
             laReleases,
           );
 
-          // First, try to get version from existing deploys of the same service (already persisted in BD)
+          // Weakest source first, so that later ones override it.
+          //
+          // The version read from the imported inventory used to win over everything,
+          // including a version picked in the UI. On a hybrid portal that silently
+          // reverted the docker leg to whatever the VM leg had in [all:vars]: gbif-es
+          // ended up deploying collectory 1.3.12 (no such Docker image) after the user
+          // had selected 6.0.0. It is a seed for a project that has never been tuned
+          // here, not a decision, so it goes first.
+          if (softwareVersions != null) {
+            final String? ansibleVar = LAServiceDesc.swToAnsibleVars[sN];
+            if (ansibleVar != null) {
+              final String? serviceVersion = softwareVersions[ansibleVar];
+              if (serviceVersion != null) {
+                versions[sN] = serviceVersion;
+              }
+            }
+          }
+
+          // Then what the same service already runs elsewhere in this project, a sticky
+          // default and NOT a manual override for the purpose of Docker vs VM switching.
           bool versionSetManually = false;
           final String? existingVersion = getServiceDeployRelease(sN);
           if (existingVersion != null && existingVersion.isNotEmpty) {
             versions[sN] = existingVersion;
-            // existingVersion is a sticky default, NOT a manual override for the purpose of Docker vs VM switching.
           } else if (selectedVersions.containsKey(sN)) {
             // Fallback to in-memory selected versions (for current session)
             versions[sN] = selectedVersions[sN]!;
@@ -1363,15 +1381,9 @@ check results length: ${checkResults.length}''';
             }
           }
 
-          // Ansible versions have the highest priority
-          if (softwareVersions != null) {
-            final String? ansibleVar = LAServiceDesc.swToAnsibleVars[sN];
-            if (ansibleVar != null) {
-              final String? serviceVersion = softwareVersions[ansibleVar];
-              if (serviceVersion != null) {
-                versions[sN] = serviceVersion;
-              }
-            }
+          // Highest priority: a version explicitly picked in the UI this session.
+          if (selectedVersions.containsKey(sN)) {
+            versions[sN] = selectedVersions[sN]!;
           }
           final LAServiceDeploy newSd = LAServiceDeploy(
             projectId: id,

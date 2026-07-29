@@ -175,4 +175,54 @@ void main() {
       );
     },
   );
+
+  // gbif-es, 2026-07-28: the docker leg deployed collectory 1.3.12 — a version with no
+  // Docker image — after 6.0.0 had been picked in the UI. The version read from the
+  // imported inventory (the VM leg's [all:vars]) was applied last and overrode it.
+  test('assignByType keeps the selected version over the imported inventory one', () {
+    final LAProject project = LAProject();
+    final LAServer server = LAServer(
+      name: 'test-server',
+      projectId: project.id,
+      ip: '127.0.0.1',
+    );
+    project.upsertServer(server);
+
+    final Map<String, LAReleases> mockReleases = <String, LAReleases>{
+      collectory: LAReleases(
+        name: collectory,
+        latest: '1.6.4',
+        versions: const <String>['1.3.12', '1.6.4'],
+        artifacts: 'collectory',
+      ),
+      '${collectory}_nexus': LAReleases(
+        name: '${collectory}_nexus',
+        latest: '5.1.1',
+        versions: const <String>['5.1.1', '6.0.0'],
+        artifacts: 'collectory',
+      ),
+    };
+
+    // What the legacy VM inventory carries, and what the user picked in the UI.
+    final Map<String, String> importedVersions = <String, String>{
+      'collectory_version': '1.3.12',
+    };
+    project.selectedVersions[collectory] = '6.0.0';
+
+    project.assignByType(
+      server.id,
+      DeploymentType.dockerCompose,
+      <String>[collectory],
+      importedVersions,
+      mockReleases,
+    );
+
+    final String collectoryId = project.getService(collectory).id;
+    final LAServiceDeploy deploy = project.serviceDeploys.firstWhere(
+      (LAServiceDeploy d) =>
+          d.serviceId == collectoryId && d.type == DeploymentType.dockerCompose,
+    );
+
+    expect(deploy.softwareVersions[collectory], equals('6.0.0'));
+  });
 }
