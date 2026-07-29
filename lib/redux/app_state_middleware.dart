@@ -1055,7 +1055,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               element as Map<String, dynamic>;
           dockerComposeReleases.add(elementMap['name'] as String);
         }
-        dockerComposeReleases.add('master');
+        // la-docker-compose's default branch is `main`, not `master`.
+        dockerComposeReleases.add('main');
         if (!const ListEquality<String>().equals(
           dockerComposeReleases,
           store.state.dockerComposeReleases,
