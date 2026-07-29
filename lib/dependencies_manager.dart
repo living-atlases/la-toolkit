@@ -272,6 +272,10 @@ class DependenciesManager {
     final Map<String, Map<VersionConstraint, Map<String, VersionConstraint>>>
     map = <String, Map<VersionConstraint, Map<String, VersionConstraint>>>{};
     for (final String module in depsYaml.keys) {
+      final String? moduleKey = _normalizeOrSkip(module);
+      if (moduleKey == null) {
+        continue;
+      }
       if (debug) {
         log('Module: $module');
       }
@@ -290,17 +294,34 @@ class DependenciesManager {
           // if (debug) log("    - $dep");
           final Map<String, dynamic> dep = depDyn as Map<String, dynamic>;
           for (final String sw in dep.keys) {
+            final String? depKey = _normalizeOrSkip(sw);
+            if (depKey == null) {
+              continue;
+            }
             if (debug) {
               log('    - $sw: ${dep[sw]}');
             }
-            depsMap.putIfAbsent(_normalize(sw), () => vc('${dep[sw]}'));
+            depsMap.putIfAbsent(depKey, () => vc('${dep[sw]}'));
           }
         }
         constraints.putIfAbsent(vc(constraintMatch), () => depsMap);
       }
-      map.putIfAbsent(_normalize(module), () => constraints);
+      map.putIfAbsent(moduleKey, () => constraints);
     }
     Dependencies.map = map;
+  }
+
+  /// Returns null (and logs) when the key is not a service this toolkit knows.
+  /// The dependency matrix lives in la-toolkit-backend master and can name
+  /// services newer than this build, so unknown keys are skipped instead of
+  /// aborting the whole load.
+  static String? _normalizeOrSkip(String sw) {
+    try {
+      return _normalize(sw);
+    } catch (e) {
+      log('⚠️ dependencies.yaml: skipping unknown software "$sw"');
+      return null;
+    }
   }
 
   static String _normalize(String sw) {

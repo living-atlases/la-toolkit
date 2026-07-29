@@ -28,12 +28,25 @@ import 'utils/utils.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Handle Flutter framework errors
+  // Handle Flutter framework errors.
+  // Log before presenting: presentError() is the structured-error path when
+  // devtools is attached, and it force-unwraps a null TextTreeConfiguration for
+  // DiagnosticsTreeStyle.none nodes. If it throws first, the real exception is
+  // lost and replaced by a bogus "Unexpected null value" from Flutter internals.
   FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.presentError(details);
     log('❌ Flutter Framework Error:');
     log(details.exception.toString());
     log(details.stack.toString());
+    try {
+      FlutterError.presentError(details);
+    } catch (e) {
+      log('⚠️ presentError() failed while reporting the error above: $e');
+      try {
+        FlutterError.dumpErrorToConsole(details);
+      } catch (_) {
+        // Nothing else we can do: the error above is already logged.
+      }
+    }
   };
 
   // Handle platform errors (asynchronous)
