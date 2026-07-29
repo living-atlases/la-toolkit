@@ -291,7 +291,20 @@ class LAProject implements IsJsonSerializable<LAProject> {
     // This can happen when loading from server if clusterServices wasn't persisted correctly
     _rebuildEmptyClusterServices(project);
 
-    final List<String> integrityErrors = project.validateDataIntegrity();
+    // `parent` is not persisted (see its JsonKey), so wire the back-reference
+    // for nested hubs here instead of relying on the UI's onOpenHub. Without
+    // this, any hub reached by another route hits the `parent!` unwraps in
+    // toGeneratorJson()/getServiceE()/Api.saveProject().
+    for (final LAProject hub in project.hubs) {
+      hub.parent = project;
+    }
+
+    // Skip the parent check while deserializing: a nested hub is built by its
+    // own fromJson *before* the enclosing project's, so at that point its
+    // parent is necessarily still null. The loop above is what satisfies it.
+    final List<String> integrityErrors = project.validateDataIntegrity(
+      checkParent: false,
+    );
     if (integrityErrors.isNotEmpty) {
       if (kDebugMode) {
         debugPrint(
@@ -706,7 +719,10 @@ class LAProject implements IsJsonSerializable<LAProject> {
   /// 2. Docker services (dockerSwarm, dockerCompose) should only be in serverServices, never in clusterServices
   /// 3. A VM cannot have multiple docker-compose or docker-swarm clusters of the same type
   /// Returns a list of validation errors (empty if all valid)
-  List<String> validateDataIntegrity() {
+  ///
+  /// [checkParent] disables check 4 for callers that run before hub parents
+  /// have been wired (see [LAProject.fromJson]).
+  List<String> validateDataIntegrity({bool checkParent = true}) {
     final List<String> errors = <String>[];
 
     // Check 1: No service duplication between serverServices and clusterServices for the same server
@@ -774,7 +790,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
     // Check 4: Hub projects must have a parent assigned at runtime
     // NOTE: parent is not persisted in JSON and is assigned post-deserialization,
     // so this cannot be an assert in the constructor.
-    if (isHub && parent == null) {
+    if (checkParent && isHub && parent == null) {
       errors.add(
         'Hub project "$shortName" has no parent assigned (parent is null)',
       );
