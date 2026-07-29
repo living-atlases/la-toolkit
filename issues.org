@@ -1,0 +1,215 @@
+#+#+title: #+COMMENT: Read-only for AI agents. Propose changes as diffs only. Ignore DONE tasks.
+* DONE Cuando desasigno spatial, su subservices no se eliminan (geoserver y spatial webservice)
+* DONE Cuando selecciono servicios en un servidor en #servers si lo hago muy rápido,
+creo que no los tiene en cuenta, pq se hace rápido, o no se salva bien. Quizá es que es una operación lenta
+* DONE En #tools en servers,
+poner iconos en los servidores parecidos a los de Define better your servers. Poner un icono también en docker swarm y composo en esa primera sección delante de "Docker Compose on ..." y "Docker Swarm on ..."
+* DONE Ahora quiero que en los servers card list de docker compose,
+si incluyo ciertos servicios, se vea que se va a añadir otros cuando arranque docker compose, en concreto dbs. Esto ayudará a agrupar servicios por uso de dbs. Esos chips de mysql mongo, elastic, pq, se añadirán solo y se quitaran solos, si hacer nada al pulsar en ellos. Tendrán otro color para differenciarlos de los de select/unselect. Como un background más oscuro.
+
+Aquí va otro fichero para que veas en docker compose que servicios activan que volumenes y así hacerlo tb en dart ---
+# Ensure external named volumes exist for databases with la_ prefix
+# This prevents accidental deletion of database data
+
+- name: "Database volumes: Set Docker socket path"
+  set_fact:
+    docker_socket: "{{ lookup('env', 'DOCKER_HOST') | default('unix:///var/run/docker.sock') }}"
+  tags:
+    - db-init
+    - docker-volumes
+
+- name: "Database volumes: Create MySQL external volume"
+  docker_volume:
+    name: la_mysql-data
+    driver: local
+    docker_host: "{{ docker_socket }}"
+    state: present
+  tags:
+    - db-init
+    - docker-volumes
+  run_once: true
+  when:
+    - "'cas-servers' in group_names"
+    - "'collectory' in group_names"
+    - "'species-list' in group_names"
+    - "'logger-service-service' in group_names"
+    - "'alerts-service' in group_names"
+
+- name: "Database volumes: Create PostgreSQL external volume"
+  docker_volume:
+    name: la_postgres-data
+    driver: local
+    docker_host: "{{ docker_socket }}"
+    state: present
+  tags:
+    - db-init
+    - docker-volumes
+  run_once: true
+  when:
+    - "'spatial' in group_names"
+    - "'image-services' in group_names"
+    - "'doi-service' in group_names"
+    - "'data_quality_filter_service' in group_names"
+
+- name: "Database volumes: Create MongoDB external volume"
+  docker_volume:
+    name: la_mongodb-data
+    driver: local
+    docker_host: "{{ docker_socket }}"
+    state: present
+  tags:
+    - db-init
+    - docker-volumes
+  run_once: true
+  when:
+    - "'cas-servers' in group_names"
+    # WARN: ecodata use host group all
+    - "'ecodata' in group_names"
+
+- name: "Database volumes: Create Gatus external volume"
+  docker_volume:
+    name: la_gatus-data
+    driver: local
+    docker_host: "{{ docker_socket }}"
+    state: present
+  tags:
+    - db-init
+    - docker-volumes
+  when:
+    - "'gatus' in group_names"
+  run_once: true
+
+- name: "Database volumes: Create Solr external volume"
+  docker_volume:
+    name: la_solr-data
+    driver: local
+    docker_host: "{{ docker_socket }}"
+    state: present
+  tags:
+    - db-init
+    - docker-volumes
+  when:
+    - "'solrcloud' in group_names"
+    - "'solr' in group_names"
+  run_once: true
+
+- name: "Database volumes: Create Cassandra external volume"
+  docker_volume:
+    name: la_cassandra-data
+    driver: local
+    docker_host: "{{ docker_socket }}"
+    state: present
+  tags:
+    - db-init
+    - docker-volumes
+  when:
+    - "'cassandra5' in group_names"
+  run_once: true
+
+- name: "Database volumes: Create Elasticsearch external volume"
+  docker_volume:
+    name: la_elasticsearch-data
+    driver: local
+    docker_host: "{{ docker_socket }}"
+    state: present
+  tags:
+    - db-init
+    - docker-volumes
+  when:
+    - "'image-services' in group_names"
+    - "'events' in group_names"
+    - "'doi-service' in group_names"
+    - "'ecodata' in group_names"
+  run_once: true
+
+- name: "Database volumes: Create SSL certificates external volume"
+  docker_volume:
+    name: la-site-certs
+    driver: local
+    docker_host: "{{ docker_socket }}"
+    state: present
+  when: use_la_site_certs | default(false)
+  tags:
+    - db-init
+    - docker-volumes
+  run_once: true
+* DONE Variables para docker-compose
+
+Antes con docker swarm teníamos una variable nginx_docker_internal_aliases que se usaba para todo el cluster, ya que nginx estaba en todos los hosts del cluster, pero ahora, docker compose  cada servicio puede estar en el docker compose de una VM u otra, entonces cada VM tiene que tener su lista de nginx_docker_internal_aliases
+
+También sucede que hay nuevas variables para docker compose si se selecciona que deben estar en el UI del toolkit, llegar al backend y terminar generandose en el generator. A saber (Indico mensaje de ayuda y urls):
+
+- Source para el branding, puede ser un directorio o una dirección. En este último caso usará git para descargar y construir el branding vía git, o en su defecto intentará hacer lo mismo usando el directorio local indicado (tipicamente ../short-project-name-branding), donde resida tu branding.
+branding_source=por defecto ../<project-short-name>-branding/ o una dirección de git.
+
+- use_la_site_certs = true
+Esto solo es útil para demos en las que se usa un subdominio del dominio de pruebas l-a.site. En este caso docker-compose descarga y usar certificados SSL para subdominios de l-a.site y auto-configura el portal con SSL. Más info en: https://github.com/AtlasOfLivingAustralia/documentation/wiki/Before-Start-Your-LA-Installation
+
+- docker_mail_development_mode=true y
+- docker_mail_development_url=mailhog.l-a.site (textfield)
+  Esto es util para usar y configurar un servidor de correo de pruebas en los que monitorizar si se están enviando bien los correos por parte de un portal de pruebas, que todavía no puede usar un servidor de correo real.
+
+Es probable que para que esto llegue a los inventarios, haya que tocar:
+la_toolkit_backend (ver api/libs/transform.js)
+generator-living-atlas
+* DONE Cuando se añade un servicio a un server/cluster, añadir un progress pequeño en el chip mientras se ejecuta la operación.
+* DONE En docker compose, esto no es correcto.
+quiero transladar el código del backend que genera el yo-rc.json en ficheros como api/libs/transform.js al cliente flutter de forma que en el servidor solo se escriba y se genere los inventarios y por otro lado pueda hacer pruebas extensivas mediante tests de que se está haciendo bien esa conversión proyecto->yo-rc-json y viceversa yo-rc-json->proyecto mediante tests independientes del backend y de la db.
+
+Por ejemplo ahora mismo si asignamos servicios a docker compose, no se generan bien los hosts de cada servicio con el servidor donde se han asignado.
+
+Hay que hacer test exahustivos para comprobar que tanto la asignaciónde servicios en vms y en docker compose, y la desasignación, generan ficheros validos.
+
+Por otro lado, también que no se generan variables de docker compose cuando docker-compose no está activado.
+
+
+
+Hay que añadir el host donde esté solr, no todos:
+"LA_docker_solr_hosts": [
+        "gbif-es-docker-cluster-2023-1",
+        "gbif-es-docker-cluster-2023-2",
+        "gbif-es-docker-cluster-2023-3"
+      ]
+
+Necesito que el proyecto se envie al servidor de forma
+* Esto está mal para docker compose en los inventarios:
+[cluster_master]
+gbif-es-docker-cluster-2023-1
+
+[cluster_nodes]
+gbif-es-docker-cluster-2023-2
+gbif-es-docker-cluster-2023-3
+
+* DONE Luego hay otra cosa, al igual que en los LA_nginx_docker_internal_aliases_by_host, ahora en docker-compose, tenemos que poder apuntar via etc hosts a los otros VMS
+* DONE Cuando borro un cluster con el cluster docker compose desplegado con el icono de la basura y confirmando, no borra la asignación docker-compose - servidor. Es un estado no valido
+* DONE Separa adecuadamente VMS y CLusters visualmente más allá del color azul, quizá separación física izq/dcha
+* DONE gatus? sensitive-data-service?
+* DONE Necesito en los deploys de docker compose una generación correcta de /etc/hosts parecida a la que se hace para vms con la salvedad que tenemos que configurar una nueva variable per host parecida a LA_nginx_docker_internal_aliases_by_host pero para las IPs de los otros dockers compose de otras vms de forma que resulevan a IPs locales de otros docker_compose. Es decir, por un lado tengo las aliases de nginx y por otro los extra hosts de otros servicios que no están en ese hosts o cluster docker
+
+-hosts: &common_hosts
+  - "servicio-a:192.168.1.10"
+  - "servicio-b:192.168.1.11"
+
+services:
+  app1:
+    image: tuimagen
+    extra_hosts: *common_hosts
+  app2:
+    image: tuimagen
+    extra_hosts: *common_hosts
+* Necesito crear en docker-compose, dockerfiles para los servicios namematching y data-sensitive-data service. EN desarrollo se usan estos Dockerfiles:
+https://github.com/AtlasOfLivingAustralia/ala-namematching-service/blob/master/server/docker/Dockerfile
+pero sin deb package se usa:
+https://github.com/AtlasOfLivingAustralia/ala-namematching-service/blob/master/server/docker/Dockerfile-test
+que no es del todo configurable.
+Y también:
+https://github.com/AtlasOfLivingAustralia/ala-sensitive-data-service/blob/master/ala-sensitive-data-server/docker/Dockerfile
+y
+https://github.com/AtlasOfLivingAustralia/ala-sensitive-data-service/blob/master/ala-sensitive-data-server/docker/Dockerfile-test
+
+estarian bien usar la variables de los roles relacionados para saber donde descargar los nameindex, y construir los servicios lo más genericos posibles que no funcionen solo para ALA y que se pudieran publicar imagenes estándar con si se usa la taxonomia de gbif (por defecto), ver inventarios (están en datos.gbif.es las urls).
+
+Los roles relacionados son:
+ansible/roles/namematching-service/
+ansible/roles/sensitive-data-service/
+estaría bien reusar lo que se pudiera de esas tareas

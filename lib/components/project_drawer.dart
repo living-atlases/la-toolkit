@@ -56,45 +56,46 @@ class ProjectDrawer extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         if (vm.state.currentProject.getVariableValue(
-                                'favicon_url',
-                              ) !=
-                              null &&
-                          !AppUtils.isDemo())
-                        ImageIcon(
-                          NetworkImage(
-                            AppUtils.proxyImg(
-                              vm.state.currentProject.getVariableValue(
-                                    'favicon_url',
-                                  )!
-                                  as String,
+                                  'favicon_url',
+                                ) !=
+                                null &&
+                            !AppUtils.isDemo())
+                          ImageIcon(
+                            NetworkImage(
+                              AppUtils.proxyImg(
+                                vm.state.currentProject.getVariableValue(
+                                      'favicon_url',
+                                    )!
+                                    as String,
+                              ),
+                            ),
+                            color: LAColorTheme.laPalette,
+                            size: 80,
+                          )
+                        else
+                          Image.asset(
+                            'assets/images/la-icon.png',
+                            fit: BoxFit.scaleDown,
+                            height: 80.0,
+                          ),
+                        const SizedBox(height: 10.0),
+                        Text(
+                          vm.state.currentProject.shortName,
+                          style: const TextStyle(
+                            fontSize: 24.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                        if ((vm.state.currentProject.dirName ?? '').isNotEmpty)
+                          Text(
+                            vm.state.currentProject.dirName!,
+                            style: const TextStyle(
+                              fontSize: 13.0,
+                              color: Colors.white70,
                             ),
                           ),
-                          color: LAColorTheme.laPalette,
-                          size: 80,
-                        )
-                      else
-                        Image.asset(
-                          'assets/images/la-icon.png',
-                          fit: BoxFit.scaleDown,
-                          height: 80.0,
-                        ),
-                      const SizedBox(height: 10.0),
-                      Text(
-                        vm.state.currentProject.shortName,
-                        style: const TextStyle(
-                          fontSize: 24.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                      if ((vm.state.currentProject.dirName ?? '').isNotEmpty)
-                        Text(
-                          vm.state.currentProject.dirName!,
-                          style: const TextStyle(
-                            fontSize: 13.0,
-                            color: Colors.white70,
-                          ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

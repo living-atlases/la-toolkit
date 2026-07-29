@@ -48,3 +48,10 @@ TODO.org
 la-toolkit-data
 la-toolkit-ssh
 TODO.org_archive
+
+# Local scratch: sibling repos symlinked in, generated graphs and release tarballs
+/generator-living-atlas
+/la_toolkit_backend
+/graphify-out/
+*.tgz
+*.orig
