@@ -454,6 +454,7 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
     return Stack(
       children: <Widget>[
         Container(
+          width: double.infinity,
           margin: const EdgeInsets.all(10),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -462,36 +463,28 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               Radius.circular(10.0), //                 <--- border radius here
             ),
           ),
-          child: ResponsiveGridRow(
-            children:
-                project.hubs
-                    .map(
-                      (LAProject hub) => ResponsiveGridCol(
-                        lg: 2,
-                        child: HubButton(
-                          text: hub.shortName,
-                          icon: Icons.data_saver_off,
-                          onPressed: () => vm.onOpenHub(project, hub),
-                          tooltip: 'Open this Hub',
-                          isActionBtn: false,
-                        ),
-                      ),
-                    )
-                    .toList() +
-                <ResponsiveGridCol>[
-                  ResponsiveGridCol(
-                    lg: 2,
-                    child: HubButton(
-                      text: 'Add a Data Hub',
-                      icon: Icons.data_saver_on,
-                      onPressed: () {
-                        showAlertDialog(context, vm);
-                      },
-                      tooltip: 'Add a new Data Hub to this portal',
-                      isActionBtn: true,
-                    ),
-                  ),
-                ],
+          child: Wrap(
+            spacing: 10.0,
+            runSpacing: 10.0,
+            children: <Widget>[
+              for (final LAProject hub in project.hubs)
+                HubButton(
+                  text: hub.shortName,
+                  icon: Icons.data_saver_off,
+                  onPressed: () => vm.onOpenHub(project, hub),
+                  tooltip: 'Open this Hub',
+                  isActionBtn: false,
+                ),
+              HubButton(
+                text: 'Add a Data Hub',
+                icon: Icons.data_saver_on,
+                onPressed: () {
+                  showAlertDialog(context, vm);
+                },
+                tooltip: 'Add a new Data Hub to this portal',
+                isActionBtn: true,
+              ),
+            ],
           ),
         ),
         Positioned(
