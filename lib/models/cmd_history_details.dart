@@ -176,6 +176,18 @@ class CmdHistoryDetails {
     return _details!;
   }
 
+  /// Nobody ever found out how this ended — 100 is the backend's sentinel for
+  /// it. Either the run was still going when we looked, or it finished with no
+  /// one around to record its exit code. Not a failure: an open question, and
+  /// storing it as a verdict is what froze still-running deploys as `aborted`.
+  bool get outcomeUnknown => code == 100;
+
+  /// Ansible writes its stats only when it reaches the play recap, so empty
+  /// results mean the run never got there — cancelled, killed, or still going.
+  /// There is nothing to summarise, which is not at all the same as a run in
+  /// which nothing happened, though an all-zero chart tells both stories.
+  bool get noSummary => results.isEmpty;
+
   bool get failed {
     return !(code == 0 && numFailures() == 0);
   }

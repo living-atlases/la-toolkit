@@ -123,9 +123,83 @@ class TermDialog {
       ),
     );
     Api.termClose(port: port, pid: pid);
-    if (onClose != null) {
-      onClose();
+    if (onClose == null) {
+      return;
     }
+    // Closing the console is not the job ending — the job is detached and keeps
+    // going. Loading its results now would read the missing exit code and the
+    // missing play recap as a failed run with an empty summary, which is how a
+    // deploy that was still working showed up as "didn't finish correctly" with
+    // every counter at zero. So ask the backend first, and only report on a run
+    // that has actually stopped.
+    //
+    // This runs after the sheet is gone on purpose: every way out of it (the X,
+    // a drag, the back gesture) lands here, and the page context that opened it
+    // is still mounted.
+    if (cancellable && context.mounted) {
+      final bool running = await Api.deployStatus(
+        logsPrefix: cancelPrefix,
+        logsSuffix: cancelSuffix,
+      );
+      if (running) {
+        if (!context.mounted) {
+          return;
+        }
+        final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+        final bool abort = await _confirmCloseWhileRunning(context, cancelWhat);
+        if (!abort) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text('The $cancelWhat keeps running in the background'),
+            ),
+          );
+          return;
+        }
+        messenger.showSnackBar(
+          SnackBar(content: Text('Cancelling the $cancelWhat…')),
+        );
+        await Api.deployCancel(
+          logsPrefix: cancelPrefix,
+          logsSuffix: cancelSuffix,
+        );
+        messenger.hideCurrentSnackBar();
+      }
+    }
+    onClose();
+  }
+
+  /// The console was closed while the job is still running. Closing it used to
+  /// mean the job was over; now it doesn't, so the two outcomes have to be told
+  /// apart explicitly — there are no results to show until one of them happens.
+  static Future<bool> _confirmCloseWhileRunning(
+    BuildContext context,
+    String cancelWhat,
+  ) async {
+    // Same PointerInterceptor reasoning as _confirmCancel below.
+    final bool? res = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) => PointerInterceptor(
+        child: AlertDialog(
+          title: Text('The $cancelWhat is still running'),
+          content: Text(
+            'There are no results yet: the $cancelWhat has not finished, so it '
+            'has produced no summary. You can abort it now and see how far it '
+            'got, or leave it running and check the results later.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Keep running'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Abort and show results'),
+            ),
+          ],
+        ),
+      ),
+    );
+    return res ?? false;
   }
 
   static Future<bool> _confirmCancel(
