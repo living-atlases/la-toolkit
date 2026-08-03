@@ -17,11 +17,15 @@ trap 'rm -f "$TMPFILE"' EXIT
 TMPFILE=$(mktemp)
 
 if [[ -n "${BASH_LOG_FILE_COLORIZED}" ]]; then
-  # unbuffer preserve colors with tee
+  # unbuffer preserve colors with tee. stdbuf -oL forces tee itself to flush
+  # line-by-line (defense in depth alongside PYTHONUNBUFFERED on the ansible
+  # side) so a killed/crashed command leaves as much of its output as possible
+  # in the log file instead of losing whatever was still sitting in a pipe
+  # buffer at the moment it died.
   ((
     unbuffer "$@" ;
     echo $? > $TMPFILE
-  ) 2>&1) | tee "${BASH_LOG_FILE_COLORIZED}"
+  ) 2>&1) | stdbuf -oL tee "${BASH_LOG_FILE_COLORIZED}"
   cat "${BASH_LOG_FILE_COLORIZED}" | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g" > "${BASH_LOG_FILE}"
 else
   "$@"
