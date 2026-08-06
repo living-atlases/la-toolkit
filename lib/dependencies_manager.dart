@@ -191,6 +191,8 @@ class DependenciesManager {
   static const Map<String, String> _nextgenReasonText = <String, String>{
     'bootstrap5-branding':
         'uses a new theme that the community branding does not support yet',
+    'no-community-image':
+        'has no published community container image',
   };
 
   static void setNextgenCompat(String yamlStr, [bool debug = false]) {
