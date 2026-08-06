@@ -152,5 +152,42 @@ void main() {
         expect(conf['LA_variable_branding_build_source'], equals('local'));
       },
     );
+
+    // See the branding_as_home comment in la_variable_desc.dart: this drives
+    // whether the Atlas claims the root domain (gbif.es incident, 2026-07-30).
+    test(
+      'branding_as_home defaults to true for projects without the variable',
+      () {
+        // 'variables' is empty here, as in any project saved before this
+        // variable existed.
+        final LAProject project = LAProject.fromJson(sampleProjectJson);
+        project.serviceInUse('docker_compose', true);
+
+        final Map<String, dynamic> conf = project.toGeneratorJson();
+
+        // The generator reads it as a top level key, not from LA_variable_*.
+        expect(conf['LA_branding_as_home'], isTrue);
+      },
+    );
+
+    test('branding_as_home is emitted as false when disabled', () {
+      final LAProject project = LAProject.fromJson(sampleProjectJson);
+      project.serviceInUse('docker_compose', true);
+      project.setVariable(LAVariableDesc.get('branding_as_home'), false);
+
+      final Map<String, dynamic> conf = project.toGeneratorJson();
+
+      expect(conf['LA_branding_as_home'], isFalse);
+    });
+
+    test('branding_as_home is emitted as true when enabled', () {
+      final LAProject project = LAProject.fromJson(sampleProjectJson);
+      project.serviceInUse('docker_compose', true);
+      project.setVariable(LAVariableDesc.get('branding_as_home'), true);
+
+      final Map<String, dynamic> conf = project.toGeneratorJson();
+
+      expect(conf['LA_branding_as_home'], isTrue);
+    });
   });
 }

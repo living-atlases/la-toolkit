@@ -639,7 +639,7 @@ class MessageItem implements ListItem {
               contentPadding: EdgeInsets.zero,
               value: initialValue as bool? ?? defValue as bool? ?? false,
               title: Text(
-                varDesc.name,
+                LAVariableDesc.resolve(varDesc.name, project),
                 style: TextStyle(color: Theme.of(context).hintColor),
               ),
               onChanged: (bool newValue) {
@@ -649,7 +649,7 @@ class MessageItem implements ListItem {
           : varDesc.type == LAVariableType.select
           ? Row(
               children: <Widget>[
-                Text('${varDesc.name}: '),
+                Text('${LAVariableDesc.resolve(varDesc.name, project)}: '),
                 const SizedBox(width: 20),
                 GenericSelector<String>(
                   values: selectValues ?? <String>[],
@@ -659,8 +659,8 @@ class MessageItem implements ListItem {
               ],
             )
           : GenericTextFormField(
-              label: varDesc.name,
-              hint: varDesc.hint,
+              label: LAVariableDesc.resolve(varDesc.name, project),
+              hint: LAVariableDesc.resolve(varDesc.hint, project),
               initialValue: initialValue as String? ?? defValue as String?,
               allowEmpty: varDesc.allowEmpty,
               obscureText: varDesc.protected,
@@ -684,7 +684,7 @@ class MessageItem implements ListItem {
       ? Padding(
           padding: const EdgeInsets.only(bottom: 15, left: 15, right: 15),
           child: Text(
-            varDesc.hint!,
+            LAVariableDesc.resolve(varDesc.hint, project),
             style: Theme.of(
               context,
             ).textTheme.bodySmall!.copyWith(color: Theme.of(context).hintColor),

@@ -599,6 +599,42 @@ class LAVariableDesc {
       hint:
           'Only useful for demos using a subdomain of l-a.site. Docker-compose will download and use SSL certificates automatically and auto-configure the portal with SSL.',
     ),
+    // Whether this Atlas also claims the root domain for its branding home page.
+    //
+    // Why this is a first-class, explicit setting instead of an Ansible default:
+    // the branding role creates the vhost for `branding_url` (e.g. datos.gbif.es)
+    // and, when this is true, a second one for `branding_home_url` (the bare
+    // domain). la-docker-compose additionally adds that bare domain to the nginx
+    // container network aliases, so *inside* the cluster it stops resolving via
+    // public DNS and lands on the Atlas nginx.
+    //
+    // That broke gbif.es in production (deploy of 2026-07-30): gbif.es is the
+    // institutional web on a different server with its own certificate, but the
+    // Atlas containers resolved it to their own nginx, which answers with the
+    // cluster certificate (CN=datos.gbif.es, no SAN for gbif.es) -> TLS
+    // validation failures for anything checking certs from inside. Until now the
+    // decision lived as an implicit `default(true)` buried in the role and had to
+    // be overridden by hand in the project extra variables, so a deployment that
+    // never wanted the root domain silently got a vhost over it.
+    'branding_as_home': LAVariableDesc(
+      name: 'Does this Atlas serve the home page of {domain}?',
+      nameInt: 'branding_as_home',
+      subcategory: LAVariableSubcategory.dockerCompose,
+      service: LAServiceName.docker_compose,
+      // Scoped to docker-compose: la-docker-compose is what honours this today.
+      // The ala-install branding role on the deployed branches creates a single
+      // vhost, so on VM deploys the variable would be inert and misleading.
+      depends: LAServiceName.docker_compose,
+      // Defaults to true to match the generator and the Ansible role defaults, so
+      // adding this setting does not change any existing deployment.
+      defValue: (_) => true,
+      type: LAVariableType.bool,
+      hint:
+          'Who serves the home page of {domain}: this Atlas branding, or an '
+          'external site (a WordPress, an institutional CMS) outside this Docker '
+          "cluster? If it's this Atlas, {domain} will also resolve to the cluster "
+          'nginx from inside the containers, so your certificate must cover it.',
+    ),
     'docker_mail_development_mode': LAVariableDesc(
       name: 'Enable mail development mode?',
       nameInt: 'docker_mail_development_mode',
@@ -629,4 +665,11 @@ class LAVariableDesc {
   static LAVariableDesc get(String nameInt) {
     return map[nameInt]!;
   }
+
+  // Names and hints are plain strings, but some questions only make sense when
+  // they name the actual domain the user is configuring ("does this Atlas serve
+  // the home page of gbif.es?"). Descriptors can use a {domain} placeholder and
+  // the UI resolves it against the project being edited.
+  static String resolve(String? text, LAProject project) =>
+      text == null ? '' : text.replaceAll('{domain}', project.domain);
 }

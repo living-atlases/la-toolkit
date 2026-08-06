@@ -1975,6 +1975,16 @@ check results length: ${checkResults.length}''';
       }
     }
 
+    // The generator reads this one as a top level key (it drives both the
+    // `branding_as_home` inventory setting and the `branding_home_url` line), not
+    // from the LA_variable_* namespace, hence the explicit mapping here.
+    // Emitted unconditionally, and not only when already stored: projects created
+    // before this variable existed have nothing in `variables`, and we want their
+    // generated inventory to state the decision explicitly instead of relying on
+    // the implicit `default(true)` of the Ansible role. getVariableValue() falls
+    // back to the descriptor default (true), so their behaviour does not change.
+    conf['LA_branding_as_home'] = getVariableValue('branding_as_home');
+
     if (isDockerClusterConfigured()) {
       final Object? brandingSource = getVariableValue('branding_source');
       if (brandingSource != null && brandingSource is String) {
