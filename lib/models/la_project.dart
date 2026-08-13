@@ -2286,19 +2286,23 @@ check results length: ${checkResults.length}''';
 
     // Release versions
     final Map<String, List<dynamic>> swVersions = <String, List<dynamic>>{};
+
+    // Single place that records a version, so the two sources below cannot drift
+    // apart on the collectory side-effect.
+    void recordSwVersion(String sw, String value) {
+      swVersions[sw] = <dynamic>[LAServiceDesc.swToAnsibleVars[sw], value];
+      if (sw == 'collectory') {
+        conf['LA_collectory_version_ge_3'] = vc('>= 3.0.0').allows(v(value));
+      }
+    }
+
     for (final LAServiceDeploy sd in serviceDeploys) {
       sd.softwareVersions.forEach((String sw, String value) {
         if (LAServiceDesc.swToAnsibleVars[sw] != null &&
             value.isNotEmpty &&
             value != 'null') {
           // LAServer server = servers.firstWhere((s) => s.id == sd.serverId);
-          swVersions[sw] = <dynamic>[LAServiceDesc.swToAnsibleVars[sw], value];
-
-          if (sw == 'collectory') {
-            conf['LA_collectory_version_ge_3'] = vc(
-              '>= 3.0.0',
-            ).allows(v(value));
-          }
+          recordSwVersion(sw, value);
         } else {
           debugPrint(
             'Not included $sw because value is not empty: ${value.isNotEmpty} and "${LAServiceDesc.swToAnsibleVars[sw]}" ${LAServiceDesc.swToAnsibleVars[sw] != null}',
@@ -2306,6 +2310,36 @@ check results length: ${checkResults.length}''';
         }
       });
     }
+
+    // Gap filler for a service in use whose version no serviceDeploy carries.
+    //
+    // Assigning a service to a server or cluster is what creates its serviceDeploy,
+    // so in the normal flow the loop above already covered everything and this is a
+    // no-op. It matters for a project whose serviceDeploys did not survive
+    // persistence: setServiceDeployRelease always writes selectedVersions, but can
+    // only write softwareVersions when a matching deploy exists, and nothing rebuilds
+    // that direction — _rebuildEmptyClusterServices goes the other way (deploys ->
+    // clusterServices) and only when the cluster is empty. The version was then
+    // dropped from the generated inventory without a word, which is how
+    // pipelines_version can go missing while every other *_version is emitted.
+    //
+    // Strictly a fallback: it skips anything already resolved above, so it can never
+    // override a version that came from a deploy or from the imported inventory.
+    selectedVersions.forEach((String sw, String value) {
+      if (swVersions.containsKey(sw) ||
+          LAServiceDesc.swToAnsibleVars[sw] == null ||
+          value.isEmpty ||
+          value == 'null') {
+        return;
+      }
+      // getService asserts in dev builds when the name is not part of this
+      // project's service list, so check membership before asking.
+      if (!LAServiceDesc.listS(isHub).contains(sw) || !getService(sw).use) {
+        return;
+      }
+      recordSwVersion(sw, value);
+    });
+
     final List<List<dynamic>> swVersionsList = swVersions.values.toList();
     swVersionsList.sort(
       (List<dynamic> a, List<dynamic> b) =>
