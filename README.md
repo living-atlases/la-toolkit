@@ -172,6 +172,15 @@ Currently we use a range of ports for the terms (2011-2100), so depending on the
 
 ## Upgrade the toolkit
 
+> **Coming from 1.6.9 or earlier? Read
+> [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md) first.**
+> 1.7.0 ships MongoDB 8, which will not start on MongoDB 4 data files, so the
+> commands below are not enough on their own. That page also explains how to
+> check whether the backup you are counting on is real — the backup sidecar
+> used until 1.6.9 has been found writing empty archives — and which restore
+> command matches your dump format, since restoring an older dump wholesale
+> replaces the MongoDB accounts on the server.
+
 Get the latest version of the la-toolkit with:
 
 ```
@@ -207,7 +216,24 @@ If you were using other generated inventories, you can import it using the (+) b
 You should:
 
 - copy [all your volumes](https://github.com/living-atlases/la-toolkit#data-directories) to the new server.
-- optionally, restore a recent [mongo db backup](https://github.com/living-atlases/la-toolkit/blob/b423827c384b456e4334eb541212c6507437c474/docker-compose.yml#L62). Something like `mongorestore --drop  -u your_la_toolkit_mongo_admin -p your_mongo_admin_pass your-backup-directory` should restore it.
+- optionally, restore a recent backup written by the `mongo-db-backup` sidecar (see
+  `docker-compose.yml`). The command depends on the dump format, and one of them needs a
+  filter — a dump taken without one also carries the `admin` database, and restoring that
+  replaces the MongoDB accounts on the destination server, leaving every service with
+  credentials that no longer work:
+
+  ```bash
+  # current sidecar: a gzipped archive holding only la_toolkit
+  mongorestore -u la_toolkit_mongo_admin -p '<pass>' --authenticationDatabase admin \
+    --gzip --archive=mongo_la_toolkit_mongo_<date>.archive.gz
+
+  # an older dump directory: restore the one database, not everything in it
+  mongorestore -u la_toolkit_mongo_admin -p '<pass>' --authenticationDatabase admin \
+    --nsInclude 'la_toolkit.*' <your-backup-directory>
+  ```
+
+  See [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md) for how to tell the
+  formats apart and how to verify a dump is not empty before relying on it.
 
 ## Logs and debugging
 
