@@ -586,6 +586,68 @@ void main() {
       },
     );
 
+    test(
+      'Test Case 10b: a FQDN the compose host serves itself is not shadowed by a legacy VM',
+      () {
+        // The migration case: the same service is still assigned to the old VM while
+        // the new docker-compose host already serves it. Mapping the FQDN to the old
+        // VM's IP puts it in the container's /etc/hosts, which is read before docker's
+        // embedded DNS — so the nginx network alias dies and every container on the new
+        // host talks to the decommissioned machine. Gatus reported the old VM's health
+        // as the new cluster's for months because of exactly this.
+        final LAProject project = LAProject(
+          longName: 'Migration In Flight',
+          shortName: 'migtest',
+          domain: 'migtest.org',
+          alaInstallRelease: '1.0.0',
+          generatorRelease: '1.0.0',
+        );
+
+        final LAServer legacy = LAServer(
+          id: 'sLegacy',
+          name: 'frontend-2021',
+          ip: '10.0.0.8',
+          projectId: project.id,
+        );
+        final LAServer compose = LAServer(
+          id: 'sCompose',
+          name: 'docker-prod',
+          ip: '10.0.0.207',
+          projectId: project.id,
+        );
+        project.upsertServer(legacy);
+        project.upsertServer(compose);
+
+        // ala_hub (records.migtest.org) lives on BOTH: still on the legacy VM, and
+        // already on the new compose host.
+        project.serviceInUse('ala_hub', true);
+        project.serviceInUse('docker_compose', true);
+        project.assign(legacy, <String>['ala_hub']);
+        project.assignByType(compose.id, DeploymentType.dockerCompose, <String>[
+          'ala_hub',
+          'docker_compose',
+        ]);
+
+        final Map<String, dynamic> json = project.toGeneratorJson();
+        final List<String> composeExtraHosts =
+            (json['LA_docker_extra_hosts_by_host']
+                    as Map<String, dynamic>)['docker-prod']
+                as List<String>;
+
+        expect(
+          composeExtraHosts,
+          isNot(contains('records.migtest.org:10.0.0.8')),
+          reason:
+              'the compose host serves records.migtest.org itself, so pointing it at '
+              'the legacy VM would shadow its own nginx alias',
+        );
+
+        // The physical hostname is still needed — it is not an nginx alias, and
+        // cross-host reachability depends on it.
+        expect(composeExtraHosts, contains('frontend-2021:10.0.0.8'));
+      },
+    );
+
     test('Test Case 11: Nginx Fast Mode Logic', () {
       final LAProject project = LAProject(
         longName: 'Fast Mode Test',

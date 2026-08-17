@@ -2242,6 +2242,23 @@ check results length: ${checkResults.length}''';
               c.serverId == server.id && c.type == DeploymentType.dockerCompose,
         );
         if (isCompose) {
+          // Hostnames this server's own nginx answers for. They must never reach
+          // extra_hosts: a container reads /etc/hosts before docker's embedded DNS,
+          // so an extra_hosts entry silently kills the network alias.
+          //
+          // The loop below walks every *other* server and maps its services' URLs to
+          // that server's IP — right for a genuine cross-host service, wrong when this
+          // stack already serves the same name. It bites in mixed VM + docker-compose
+          // projects, i.e. any migration still in flight: on gbif.es the retired 2021
+          // VM still held registros-ws.gbif.es and datos-sensibles.gbif.es, so every
+          // container on the new cluster resolved them to a decommissioned machine.
+          // Gatus then spent months reporting the old VM's health as the new cluster's.
+          //
+          // Local wins.
+          final Set<String> servedLocally = Set<String>.from(
+            (nginxDockerInternalAliasesByHost[server.name] as List<String>?) ??
+                const <String>[],
+          );
           final Set<String> extraHosts = <String>{};
           for (final LAProject current in projects) {
             for (final LAServer otherServer in current.servers) {
@@ -2299,7 +2316,7 @@ check results length: ${checkResults.length}''';
               }
 
               for (final String hn in hns) {
-                if (hn.isNotEmpty) {
+                if (hn.isNotEmpty && !servedLocally.contains(hn)) {
                   extraHosts.add('$hn:${otherServer.ip}');
                 }
               }
