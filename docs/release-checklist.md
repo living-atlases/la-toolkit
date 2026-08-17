@@ -87,3 +87,19 @@ docker compose logs la-toolkit | grep -i 'authentication failed'    # empty
 
 Not a running installation of your own — those have an initialized database and will
 hide exactly the class of failure that first-time users hit.
+
+### Do not read the backend's package.json as a version
+
+`la-toolkit-backend` never bumps its own version, so the backend inside the image
+reports whatever it last happened to be set to — it read `1.7.0` in the 1.7.1 image
+and will keep reading `1.7.0` in the ones after it. That discrepancy looks exactly
+like a stale cached layer, and it is not.
+
+What the file does tell you is that the clone is *fresh*, since a cached layer would
+carry an older tree. For "what does this running image actually contain", the commit
+is the honest answer — the `--depth 1` clone keeps enough history for it:
+
+```bash
+docker run --rm --entrypoint /bin/bash livingatlases/la-toolkit:X.Y.Z \
+  -c 'cd /home/ubuntu/la-toolkit && git log -1 --format="%H %cd %s"'
+```
