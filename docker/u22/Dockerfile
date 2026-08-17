@@ -151,14 +151,14 @@ RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
 # whatever the backend's default branch holds at build time. Docker would otherwise
 # reuse the cached layer and ship the PREVIOUS backend. Bump this on every release,
 # and whenever the image must pick up new backend commits.
-RUN echo "1.7.0-d1"
+RUN echo "1.7.1-d1"
 RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
-RUN echo "2026080601"
+RUN echo "2026081701"
 # la-toolkit frontend. The tarball is an asset of the GitHub release, so the release
 # must exist before this image can build: tag, run build.sh, upload, then build here.
-RUN curl -fL https://github.com/living-atlases/la-toolkit/releases/download/v1.7.0/flutter-web-1.7.0.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
+RUN curl -fL https://github.com/living-atlases/la-toolkit/releases/download/v1.7.1/flutter-web-1.7.1.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
 # RUN echo "2021032402"
 # COPY build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/env.production.txt  /home/ubuntu/la-toolkit/assets/assets/env.production.txt

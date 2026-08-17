@@ -5,7 +5,7 @@ services:
     # installation can be moved to a new major of the toolkit -- and of MongoDB --
     # without anyone asking. Bump this deliberately, after reading the release
     # notes: see docs/mongodb-4-to-8-upgrade.md before going from 1.6.x to 1.7.x.
-    image: livingatlases/la-toolkit:1.7.0
+    image: livingatlases/la-toolkit:1.7.1
     container_name: la-toolkit
     restart: always
     hostname: la-toolkit
