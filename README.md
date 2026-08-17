@@ -186,6 +186,26 @@ The `docker-compose.yml` pins the toolkit image to a version tag rather than usi
 commands below. Leaving it unpinned means the `watchtower` container can move you
 to a new major on its own, MongoDB included.
 
+> **`:latest` still points at 1.6.9, on purpose, for the whole 1.7.x series.**
+>
+> 1.7.x ships MongoDB 8 and existing installations are on MongoDB 4, which is a
+> migration only you can decide to run — see
+> [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md). Moving `latest`
+> would hand that decision to the `watchtower` container in this compose file,
+> which polls hourly: every unpinned 1.6.9 installation would be upgraded within
+> the hour, on its own, into a database that will not start.
+>
+> So `:latest` is frozen until the 1.6.x installations have had a chance to
+> migrate. **Pin the version you want.** Every 1.7.x image is published under both
+> spellings, `1.7.1` and `v1.7.1`, so either works.
+
+If you are on 1.7.0 and hit the install failures fixed in 1.7.1 — MongoDB init
+failing with `mongo: command not found`, or the toolkit looping on
+`Authentication failed` — note that `mongo-init.sh` and `docker-compose.yml` are
+files from this repository, not part of the image. Copying the current ones is
+enough for those two; only the fixes in the toolkit's own interface need the new
+image.
+
 Get the latest version of the la-toolkit with:
 
 ```
