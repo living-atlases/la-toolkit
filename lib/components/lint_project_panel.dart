@@ -116,6 +116,10 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
         final String notAssignedMessage = notAssigned.length < 5
             ? ' (${notAssigned.map((String s) => LAServiceDesc.get(s).name).toList().join(', ')})'
             : '';
+        final List<String> strandedServices = project.servicesWithNowhereToRun();
+        final String strandedMessage = strandedServices
+            .map((String s) => LAServiceDesc.get(s).name)
+            .join(', ');
         if (widget.showOthers) {
           final String? userDetailsVersion = project.getSwVersionOfService(
             userdetails,
@@ -152,6 +156,12 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               AlertCard(
                 message:
                     'Some services is not assigned to a server$notAssignedMessage',
+              ),
+            if (basicDefined && strandedServices.isNotEmpty)
+              AlertCard(
+                message:
+                    'These services cannot run on a Docker Compose deployment and should be disabled: $strandedMessage. '
+                    'They are the legacy biocache-store path; this stack indexes with pipelines and solrcloud instead.',
               ),
             if (basicDefined &&
                 project.servers.isNotEmpty &&

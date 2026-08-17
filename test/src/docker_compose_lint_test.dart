@@ -23,11 +23,11 @@ void main() {
         p.assign(vm1, <String>[dockerCompose, collectory]); // Assigned both to VM
 
         final List<String> warnings = p.getDockerComposeVMWarnings();
-        expect(warnings, isNotEmpty);
-        expect(
-          warnings[0],
-          contains('directly, but this VM is a Docker Compose host'),
-        );
+        // One warning for the server, naming the misplaced services -- not one
+        // warning per service, which used to bury the user in identical alerts.
+        expect(warnings, hasLength(1));
+        expect(warnings[0], contains('vm1 is a Docker Compose host'));
+        expect(warnings[0], contains('collections'));
       },
     );
 
@@ -68,6 +68,66 @@ void main() {
         expect(warnings, isEmpty);
       },
     );
+  });
+
+  group('Services with nowhere to run', () {
+    test('legacy solr is stranded when the only server is a compose host', () {
+      final LAProject p = LAProject();
+      final LAServer vm1 = LAServer(
+        id: 'vm1',
+        name: 'vm1',
+        ip: '10.0.0.1',
+        projectId: p.id,
+      );
+      p.upsertServer(vm1);
+      p.serviceInUse(dockerCompose, true);
+      p.serviceInUse(solr, true);
+      p.assign(vm1, <String>[dockerCompose]);
+
+      // solr has no docker support, so the compose cluster will not take it, and
+      // there is no plain VM left to host it either.
+      expect(p.servicesWithNowhereToRun(), contains(solr));
+      // It must not keep the project from validating: the user gets told what to
+      // disable instead of a dead end with no way forward.
+      expect(p.servicesNotAssigned(), isNot(contains(solr)));
+    });
+
+    test('nothing is stranded in a mixed project, a VM can still host it', () {
+      final LAProject p = LAProject();
+      final LAServer vm1 = LAServer(
+        id: 'vm1',
+        name: 'vm1',
+        ip: '10.0.0.1',
+        projectId: p.id,
+      );
+      final LAServer vm2 = LAServer(
+        id: 'vm2',
+        name: 'vm2',
+        ip: '10.0.0.2',
+        projectId: p.id,
+      );
+      p.upsertServer(vm1);
+      p.upsertServer(vm2);
+      p.serviceInUse(dockerCompose, true);
+      p.serviceInUse(solr, true);
+      p.assign(vm1, <String>[dockerCompose]);
+
+      expect(p.servicesWithNowhereToRun(), isEmpty);
+    });
+
+    test('nothing is stranded without docker compose at all', () {
+      final LAProject p = LAProject();
+      final LAServer vm1 = LAServer(
+        id: 'vm1',
+        name: 'vm1',
+        ip: '10.0.0.1',
+        projectId: p.id,
+      );
+      p.upsertServer(vm1);
+      p.serviceInUse(solr, true);
+
+      expect(p.servicesWithNowhereToRun(), isEmpty);
+    });
   });
 
   group('Assignment overlapping bug', () {
