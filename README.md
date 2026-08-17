@@ -181,6 +181,11 @@ Currently we use a range of ports for the terms (2011-2100), so depending on the
 > command matches your dump format, since restoring an older dump wholesale
 > replaces the MongoDB accounts on the server.
 
+The `docker-compose.yml` pins the toolkit image to a version tag rather than using
+`:latest`, so upgrading is a deliberate act: edit the `image:` line, then run the
+commands below. Leaving it unpinned means the `watchtower` container can move you
+to a new major on its own, MongoDB included.
+
 Get the latest version of the la-toolkit with:
 
 ```
@@ -260,6 +265,34 @@ If the `la-toolkit` restart continuosly durint development, it can be debugged w
 docker run -it --network=la-toolkit_default --entrypoint /bin/bash  livingatlases/la-toolkit:latest -s
 ```
 
+### A first start that failed has to be cleaned up before retrying
+
+If the very first `docker compose up` failed and `la-toolkit` keeps restarting with
+`MongoServerError: Authentication failed`, fixing the cause is not enough on its own.
+
+The mongo entrypoint runs the scripts in `/docker-entrypoint-initdb.d/` — which is
+where `mongo-init.sh` creates the toolkit's database user — **only against an empty
+data directory**. A single failed first start therefore leaves
+`/data/la-toolkit/mongo` initialized-but-userless, and every retry reuses it.
+
+Check whether the user is there:
+
+```bash
+docker compose exec mongo mongosh -u la_toolkit_user -p la_toolkit_changeme \
+  --authenticationDatabase la_toolkit --quiet --eval 'db.getName()'
+```
+
+If it fails to authenticate, wipe the directory and start again:
+
+```bash
+docker compose down && sudo rm -rf /data/la-toolkit/mongo/* && docker compose up -d
+```
+
+**This destroys the database.** It is only the right move on an installation that
+never came up in the first place. If you have projects in there, do not run it —
+take a dump and follow [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md)
+instead.
+
 In some cases the [browser devtools console](https://developer.chrome.com/docs/devtools/open/) can show some info about browser code errors. 
 
 Please [fill an issue](https://developer.chrome.com/docs/devtools/open/) with this information if you encounter some problem.
@@ -307,6 +340,10 @@ You will need to build the flutter web as described below prior to build a `la-t
 ```
 docker build . -f ./docker/u22/Dockerfile -t la-toolkit/u22 
 ```
+
+For an actual release — where the order of the steps matters, and where forgetting
+one has already shipped a broken combination to users — follow
+[Releasing la-toolkit](docs/release-checklist.md).
 
 ## Developed so far and Roadmap
 
