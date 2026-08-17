@@ -35,20 +35,23 @@ from an older major rather than upgrade them silently.
 
 ## One warning before anything else
 
-**Watchtower can start this upgrade for you.** The stock `docker-compose.yml` runs
+**Watchtower can start this upgrade for you.** Compose files up to 1.6.9 run
 `livingatlases/la-toolkit:latest` alongside a `watchtower` container that polls
-hourly and updates images on its own. When 1.7.0 is published to `latest`, an
-installation with watchtower running will pick it up within the hour, whether or
-not you were ready.
+hourly and updates images on its own. That combination — a new toolkit against your
+existing `mongo:4` — is not a tested one.
 
-That combination — the new toolkit against your existing `mongo:4` — is not a
-tested one. If you are not upgrading today, either stop watchtower or pin the
-toolkit to a version tag:
+`latest` is deliberately *not* being moved to 1.7.0 for this reason, and the current
+`docker-compose.yml` pins the image instead. But your own file is the one that
+decides. If it still says `:latest` and you are not upgrading today, either stop
+watchtower or pin it:
 
 ```yaml
   la-toolkit:
     image: livingatlases/la-toolkit:1.6.9   # instead of :latest
 ```
+
+Note the tag spelling: the 1.7.0 image is published as `1.7.0` **and** `v1.7.0`,
+while earlier releases carry only the `v` form (`v1.6.9`, `v1.6.8`, …).
 
 ---
 

@@ -636,11 +636,48 @@ class LAProject implements IsJsonSerializable<LAProject> {
   }
 
   List<String> servicesNotAssigned() {
+    final List<String> stranded = servicesWithNowhereToRun();
+    return _servicesNotAssignedRaw()
+        .where((String s) => !stranded.contains(s))
+        .toList();
+  }
+
+  List<String> _servicesNotAssignedRaw() {
     final List<String> difference = getServicesNameListInUse()
         .toSet()
         .difference(getServicesAssigned().toSet())
         .toList();
     return difference;
+  }
+
+  /// Services in use that no server of this project is able to host.
+  ///
+  /// A docker-compose host runs the services of its cluster, and a cluster only
+  /// takes services with docker support (see [getServerServicesAssignable]). So
+  /// when every server is a docker-compose host, anything without docker support
+  /// -- the legacy standalone solr and biocache-store path, which la-compose does
+  /// not implement, it indexes with pipelines + solrcloud -- has nowhere to go.
+  ///
+  /// Several of those are on by default (`initUse: true`), so a brand new project
+  /// used to dead-end here: they could not be assigned anywhere, and while they
+  /// stayed in use [allServicesAssigned] never became true. Reported as a warning
+  /// naming them instead, so the user knows what to turn off and why.
+  ///
+  /// Mixed projects are deliberately left alone: as long as one plain VM exists,
+  /// these services still have a home and nothing is stranded.
+  List<String> servicesWithNowhereToRun() {
+    if (isHub || !hasAnyServerWithDockerCompose()) {
+      return <String>[];
+    }
+    final bool someServerTakesVMServices = servers.any(
+      (LAServer s) => !getServerServices(serverId: s.id).contains(dockerCompose),
+    );
+    if (someServerTakesVMServices) {
+      return <String>[];
+    }
+    return _servicesNotAssignedRaw()
+        .where((String s) => !LAServiceDesc.listDockerCapableS.contains(s))
+        .toList();
   }
 
   List<LAServer> serversWithServices() {
@@ -3163,20 +3200,32 @@ check results length: ${checkResults.length}''';
     return allIncompatibilities;
   }
 
+  /// One warning per server, not one per service.
+  ///
+  /// Assigning services to a docker-compose host directly is the mistake a new
+  /// user makes by default, because nothing on the screen explains that the
+  /// cluster is a separate target. Emitting a line per service turned that into a
+  /// screenful of identical alerts with no hint of what to do about it.
   List<String> getDockerComposeVMWarnings() {
     final List<String> warnings = <String>[];
     serverServices.forEach((String serverId, List<String> services) {
       if (services.contains(dockerCompose)) {
         final LAServer? server = getServerById(serverId);
         if (server != null) {
-          for (final String serviceName in services) {
-            if (serviceName != dockerSwarm &&
-                serviceName != dockerCompose &&
-                serviceName != dockerCommon) {
-              warnings.add(
-                'Service ${LAServiceDesc.get(serviceName).name} is assigned to VM ${server.name} directly, but this VM is a Docker Compose host. Please assign it to the Docker Compose cluster or use a different VM.',
-              );
-            }
+          final List<String> misplaced = services
+              .where(
+                (String serviceName) =>
+                    serviceName != dockerSwarm &&
+                    serviceName != dockerCompose &&
+                    serviceName != dockerCommon,
+              )
+              .map((String serviceName) => LAServiceDesc.get(serviceName).name)
+              .toList();
+          if (misplaced.isNotEmpty) {
+            warnings.add(
+              '${server.name} is a Docker Compose host, so its services belong to its Docker Compose cluster and not to the VM itself. '
+              'Move ${misplaced.join(', ')} to the cluster, or use a different VM for them.',
+            );
           }
         }
       }

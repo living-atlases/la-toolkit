@@ -1,6 +1,11 @@
 services:
   la-toolkit:
-    image: livingatlases/la-toolkit:latest
+    # Pinned on purpose. ':latest' still resolves to 1.6.9, and even once it does
+    # not, an unpinned image plus the watchtower service below means an existing
+    # installation can be moved to a new major of the toolkit -- and of MongoDB --
+    # without anyone asking. Bump this deliberately, after reading the release
+    # notes: see docs/mongodb-4-to-8-upgrade.md before going from 1.6.x to 1.7.x.
+    image: livingatlases/la-toolkit:1.7.0
     container_name: la-toolkit
     restart: always
     hostname: la-toolkit
@@ -91,7 +96,13 @@ services:
       - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - /data/la-toolkit/mongo:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "-u", "la_toolkit_mongo_admin", "-p", "la_toolkit_changeme", "--authenticationDatabase", "admin", "--quiet"]
+      # Authenticate as LA_USER, the account mongo-init.sh is responsible for
+      # creating -- not as the root admin, which the entrypoint creates by itself
+      # before running the init scripts. Checking the root admin would report
+      # 'healthy' even when the init failed, and the only visible symptom would be
+      # the toolkit failing with 'Authentication failed', which reads like a
+      # credentials mistake rather than a broken init.
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "-u", "la_toolkit_user", "-p", "la_toolkit_changeme", "--authenticationDatabase", "la_toolkit", "--quiet"]
       interval: 10s
       timeout: 5s
       retries: 5
