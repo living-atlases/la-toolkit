@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:la_toolkit/dependencies_manager.dart';
 import 'package:la_toolkit/models/deployment_type.dart';
 import 'package:la_toolkit/models/la_project.dart';
+import 'package:la_toolkit/models/la_releases.dart';
 import 'package:la_toolkit/models/la_server.dart';
 import 'package:la_toolkit/models/la_service_constants.dart';
 
@@ -178,5 +183,108 @@ void main() {
         );
       },
     );
+  });
+
+  group('dependency lint on the shipped sample', () {
+    // Just the slice of the backend matrix this exercises, so the test does not
+    // need the network: pipelines wants a namematching >= 1.0.0, and 'any'
+    // dependencies never warn for a missing version.
+    const String depsYaml = '''
+pipelines:
+  any:
+    - namematching-service: '>= 1.0.0'
+    - solrcloud: '>= 8.9.0'
+biocache-service:
+  any:
+    - pipelines: any
+''';
+
+    List<Map<String, dynamic>> loadTemplates() {
+      final String content = File(
+        'assets/la-toolkit-templates.json',
+      ).readAsStringSync();
+      return (jsonDecode(content) as List<dynamic>)
+          .map((dynamic t) => t as Map<String, dynamic>)
+          .toList();
+    }
+
+    Map<String, dynamic> promptValues() =>
+        (loadTemplates()[0]['generator-living-atlas']
+                as Map<String, dynamic>)['promptValues']
+            as Map<String, dynamic>;
+
+    setUp(() => DependenciesManager.setDeps(depsYaml));
+
+    List<String> lintsFor(LAProject p) => DependenciesManager.verifyLAReleases(
+      p.getServicesNameListInUse(),
+      p.getServiceDeployReleases(),
+    );
+
+    test('warns, and says why, when namematching has no version', () {
+      final List<String> lints = lintsFor(
+        LAProject.fromObject(promptValues()),
+      );
+      expect(lints, hasLength(1));
+      expect(
+        lints[0],
+        'pipelines depends on namematching >=1.0.0 (no version selected yet)',
+      );
+    });
+
+    test('is quiet once the import seeds the version', () {
+      final LAProject p = LAProject.fromObject(
+        promptValues(),
+        laReleases: <String, LAReleases>{
+          '${namematchingService}_nexus': const LAReleases(
+            name: 'ala-namematching-service',
+            artifacts: 'ala-namematching-service',
+            latest: 'v2.0',
+            versions: <String>['v2.0'],
+          ),
+        },
+      );
+      expect(lintsFor(p), isEmpty);
+    });
+  });
+
+  group('la-docker-compose to la-generator constraint', () {
+    // The matrix key is 'docker-compose', matching LAServiceName.docker_compose;
+    // 'la-docker-compose' would normalize to nothing and be skipped in silence.
+    const String depsYaml = '''
+docker-compose:
+  '>= 1.4.0':
+    - la-generator: '>= 1.9.7'
+''';
+
+    setUp(() => DependenciesManager.setDeps(depsYaml));
+
+    List<String> lintsFor(String composeRelease, String generatorRelease) =>
+        DependenciesManager.verifyLAReleases(
+          <String>[dockerCompose, generator],
+          <String, String>{
+            dockerCompose: composeRelease,
+            generator: generatorRelease,
+          },
+        );
+
+    test('warns when the generator is older than 1.4.0 needs', () {
+      // The release comes from the git tags, so it arrives with the leading 'v'
+      // that StringUtils.semantize strips.
+      expect(lintsFor('v1.4.0', '1.9.5'), <String>[
+        'docker compose depends on la-generator >=1.9.7',
+      ]);
+    });
+
+    test('is quiet once the generator meets the constraint', () {
+      expect(lintsFor('v1.4.0', '1.9.7'), isEmpty);
+    });
+
+    test('does not apply to releases before 1.4.0', () {
+      expect(lintsFor('v1.3.1', '1.9.5'), isEmpty);
+    });
+
+    test('skips the upstream sentinel instead of failing to parse it', () {
+      expect(lintsFor('upstream', '1.9.5'), isEmpty);
+    });
   });
 }
