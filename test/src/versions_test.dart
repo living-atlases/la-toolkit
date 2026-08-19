@@ -120,7 +120,8 @@ void main() async {
     expect(
       lintErrors[0],
       equals(
-        'records-ws (biocache-service) depends on biocache-cli (biocache-store)',
+        'records-ws (biocache-service) depends on biocache-cli (biocache-store) '
+        '>=2.6.1 (no version selected yet)',
       ),
     );
     expect(lintErrors.length, equals(1));
@@ -170,7 +171,10 @@ void main() async {
       servicesInUse,
       softwareVersions,
     );
-    expect(lintErrors[0], equals('alerts depends on regions'));
+    expect(
+      lintErrors[0],
+      equals('alerts depends on regions >=3.3.5 (no version selected yet)'),
+    );
     expect(lintErrors.length, equals(1));
 
     softwareVersions[regions] = '1.0.0';

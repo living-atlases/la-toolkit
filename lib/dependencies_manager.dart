@@ -96,7 +96,14 @@ class DependenciesManager {
                     // so a missing version is not worth warning about.
                     if (serviceInUse.contains(dependency) &&
                         !constraint.isAny) {
-                      lintErrors.add('$swForHumans depends on $depForHumans');
+                      // Same wording as the mismatch case plus the reason, so
+                      // the user sees both the constraint and what to do about
+                      // it: 'pipelines depends on namematching' alone said
+                      // neither.
+                      lintErrors.add(
+                        '$swForHumans depends on $depForHumans $constraint '
+                        '(no version selected yet)',
+                      );
                     }
                   } else {
                     if (versionOfDep != 'custom' &&
