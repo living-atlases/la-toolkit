@@ -8,8 +8,9 @@ with `latest` still resolving to the 1.6.9 image, so every fresh install got a 1
 `Unsupported OP_QUERY command: listCollections`, and it took an external report to
 find out.
 
-Order matters: the image build downloads the frontend from the GitHub release, so
-the release has to exist before the image can be built.
+Order matters, in both directions: the image build downloads the frontend from the
+GitHub release, so the release has to exist first, and it clones the backend from
+master, so the backend's version bump has to be pushed first too.
 
 ## 1. Frontend
 
@@ -25,7 +26,25 @@ the release has to exist before the image can be built.
 The `curl` in the Dockerfile uses `-f`, so if the asset is missing the build fails
 instead of unpacking GitHub's error page into the assets directory. Do not remove it.
 
-## 3. Image
+## 3. Backend version
+
+Bump `version` in `la-toolkit-backend/package.json` to the same `X.Y.Z` and push it to
+master **before** building the image.
+
+This is a real check, not bookkeeping. The frontend asks the backend for its version
+(`GET /api/v1/get-backend-version`, which just returns `package.json`) and compares it
+against the newest GitHub release; when the backend reports something older it shows
+*"There is a new version the LA-Toolkit available"* to every user, forever. That is
+exactly what 1.7.1 shipped: the backend still said `1.7.0`, so every 1.7.1 install was
+told to upgrade to the version it was already running.
+
+The same number decides which `la-toolkit:` bucket of `assets/dependencies.yaml` the
+lint applies, so a stale one also recommends the wrong `la-generator` floor.
+
+Push first: the image clones the backend `--depth 1` from its default branch, so a
+commit that is not on master yet simply is not in the image.
+
+## 4. Image
 
 In `docker/u22/Dockerfile`:
 
@@ -46,7 +65,7 @@ docker push livingatlases/la-toolkit:X.Y.Z
 docker push livingatlases/la-toolkit:vX.Y.Z
 ```
 
-## 4. Decide about `latest` — do not do it on autopilot
+## 5. Decide about `latest` — do not do it on autopilot
 
 `docker-compose.yml` ships with a `watchtower` container that polls hourly and
 updates images by itself. Moving `latest` therefore upgrades every unpinned
@@ -61,13 +80,13 @@ unattended migration.
 So: if the release needs the operator to do anything by hand, leave `latest` where it
 is and say so in the release notes.
 
-## 5. Pin the compose file
+## 6. Pin the compose file
 
 Bump the `image:` tag in `docker-compose.yml` to the new version. This is what a
 first-time installer gets, and it is what keeps the compose file and the image in
 step regardless of what `latest` points at.
 
-## 6. Verify, from the outside
+## 7. Verify, from the outside
 
 Digests, not tag names:
 
@@ -88,16 +107,19 @@ docker compose logs la-toolkit | grep -i 'authentication failed'    # empty
 Not a running installation of your own — those have an initialized database and will
 hide exactly the class of failure that first-time users hit.
 
-### Do not read the backend's package.json as a version
+### Check the version the image reports
 
-`la-toolkit-backend` never bumps its own version, so the backend inside the image
-reports whatever it last happened to be set to — it read `1.7.0` in the 1.7.1 image
-and will keep reading `1.7.0` in the ones after it. That discrepancy looks exactly
-like a stale cached layer, and it is not.
+The backend's `package.json` is what the upgrade banner compares against (see step 3),
+so it is worth confirming on the built image rather than assuming the bump made it in:
 
-What the file does tell you is that the clone is *fresh*, since a cached layer would
-carry an older tree. For "what does this running image actually contain", the commit
-is the honest answer — the `--depth 1` clone keeps enough history for it:
+```bash
+docker run --rm --entrypoint /bin/bash livingatlases/la-toolkit:X.Y.Z \
+  -c 'cd /home/ubuntu/la-toolkit && npm pkg get version'
+```
+
+If it reports the previous release, the cache buster in the Dockerfile did not do its
+job or the backend commit was not on master when the image was built. The commit itself
+tells you which of the two it was, and the `--depth 1` clone keeps enough history to ask:
 
 ```bash
 docker run --rm --entrypoint /bin/bash livingatlases/la-toolkit:X.Y.Z \

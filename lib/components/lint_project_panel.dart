@@ -72,6 +72,14 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 (vm.generatorReleases.isNotEmpty
                     ? vm.generatorReleases[0]
                     : '1.4.3'),
+            // getServiceDeployReleases() does not carry this one: the
+            // la-docker-compose release is a project field, not a per-deploy
+            // software version. Without it here the docker-compose entries in
+            // the dependency matrix are never evaluated. The 'v' of the git tag
+            // and the 'upstream' sentinel are both handled downstream, by
+            // StringUtils.semantize and by verifyLAReleases respectively.
+            if (project.dockerComposeRelease != null)
+              dockerCompose: project.dockerComposeRelease!,
           });
         }
         final List<Widget> lints = <Widget>[
