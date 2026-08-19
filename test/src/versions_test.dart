@@ -136,24 +136,25 @@ void main() async {
       servicesInUse,
       softwareVersions,
     );
+    // biocache-service 3.1.0 no longer drags in biocache-cli: the 2.x block in
+    // dependencies.yaml is bounded now ('>= 2.7.0 < 3.0.0'), see
+    // living-atlases/la-toolkit-backend#6. Demanding biocache-cli here was the
+    // bug, since it forces solr < 8 and java 8 onto a 3.x stack that needs
+    // solr >= 8 and java 17.
     expect(
       lintErrors[0],
-      equals(
-        'records-ws (biocache-service) depends on biocache-cli (biocache-store) >=2.6.1',
-      ),
-    );
-    expect(
-      lintErrors[1],
       equals('alerts depends on records (biocache-hub) >=3.2.9'),
     );
-    expect(lintErrors[2], equals('alerts depends on species (bie) >=1.5.0'));
+    expect(lintErrors[1], equals('alerts depends on species (bie) >=1.5.0'));
+    // The reverse direction still holds: biocache-cli 2.5.0 declares
+    // biocache-service < 3.0.0, and 3.1.0 breaks it.
     expect(
-      lintErrors[3],
+      lintErrors[2],
       equals(
         'biocache-cli (biocache-store) depends on records-ws (biocache-service) <3.0.0',
       ),
     );
-    expect(lintErrors.length, equals(4));
+    expect(lintErrors.length, equals(3));
 
     softwareVersions[bie] = '1.6.0';
     softwareVersions[biocacheService] = '2.5.0';
