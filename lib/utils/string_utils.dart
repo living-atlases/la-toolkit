@@ -17,6 +17,23 @@ class StringUtils {
     return dirName.length <= 1 ? 'la_${id.substring(0, 8)}' : dirName;
   }
 
+  /// [candidate] itself when no project owns it, otherwise the first free
+  /// `candidate-1`, `candidate-2`, ... The `-N` shape matches what the backend
+  /// hands out in check-dir-name, so both ends agree on the same names.
+  static String uniqueDirName({
+    required String candidate,
+    required Set<String> taken,
+  }) {
+    if (!taken.contains(candidate)) {
+      return candidate;
+    }
+    int num = 1;
+    while (taken.contains('$candidate-$num')) {
+      num++;
+    }
+    return '$candidate-$num';
+  }
+
   static String removeLastSlash(String url) {
     return url.replaceAll(RegExp(r'[/]+$'), '');
   }

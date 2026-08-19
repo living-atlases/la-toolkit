@@ -1697,7 +1697,9 @@ void main() {
     final List<LAProject> templates = await LAProject.importTemplates(
       '../../assets/la-toolkit-templates.json',
     );
-    expect(templates.length, equals(10));
+    // One sample only: the single-host docker-compose topology CI deploys.
+    // See sample_template_test.dart for what it must import as.
+    expect(templates.length, equals(1));
     for (final LAProject p in templates) {
       expect(p.servers.isNotEmpty, equals(true));
       expect(p.services.isNotEmpty, equals(true));
@@ -1705,13 +1707,8 @@ void main() {
       expect(p.serviceDeploys.isNotEmpty, equals(true));
       expect(p.toString().isNotEmpty, equals(true));
       expect(p.variables.isNotEmpty, equals(true));
-      if (p.shortName != 'ALA' &&
-          p.shortName != 'AVH' &&
-          p.shortName != 'MDBA' &&
-          p.shortName != 'OZCAM') {
-        // The default value
-        expect(p.mapBoundsFstPoint.latitude, isNot(equals(-44)));
-      }
+      // The default value
+      expect(p.mapBoundsFstPoint.latitude, isNot(equals(-44)));
     }
   });
 

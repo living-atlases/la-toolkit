@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
           child: const Icon(Icons.copy_outlined),
           backgroundColor: LAColorTheme.laPalette,
           foregroundColor: Colors.white,
-          label: 'Add some sample LA projects',
+          label: 'Add a sample LA project (docker-compose)',
           labelStyle: const TextStyle(fontSize: 18.0),
           onTap: () async {
             vm.onAddTemplates();

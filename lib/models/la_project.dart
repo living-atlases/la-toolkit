@@ -115,6 +115,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
   factory LAProject.fromObject(
     Map<String, dynamic> yoRc, {
     bool debug = false,
+    Map<String, LAReleases>? laReleases,
   }) {
     dynamic a(String tag) => yoRc['LA_$tag'];
     final LAProject p = LAProject(
@@ -262,7 +263,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       final List<String> assigned = tempServerServices[server.id]!;
       final DeploymentType? dockerType = dockerHosts[server.name];
       if (dockerType == null) {
-        p.assign(server, assigned, swVersions);
+        p.assign(server, assigned, swVersions, laReleases);
         continue;
       }
       // docker_compose/docker_swarm themselves stay on the VM (invariant 2 of
@@ -286,8 +287,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
           .toList();
       // VM first: assignByType(vm) overwrites serverServices, the cluster branch
       // only writes clusterServices.
-      p.assign(server, vmServices, swVersions);
-      p.assignByType(server.id, dockerType, clusterCandidates, swVersions);
+      p.assign(server, vmServices, swVersions, laReleases);
+      p.assignByType(
+        server.id,
+        dockerType,
+        clusterCandidates,
+        swVersions,
+        laReleases,
+      );
     }
 
     // Other variables
@@ -1484,12 +1491,14 @@ check results length: ${checkResults.length}''';
           // ended up deploying collectory 1.3.12 (no such Docker image) after the user
           // had selected 6.0.0. It is a seed for a project that has never been tuned
           // here, not a decision, so it goes first.
+          bool versionFromInventory = false;
           if (softwareVersions != null) {
             final String? ansibleVar = LAServiceDesc.swToAnsibleVars[sN];
             if (ansibleVar != null) {
               final String? serviceVersion = softwareVersions[ansibleVar];
               if (serviceVersion != null) {
                 versions[sN] = serviceVersion;
+                versionFromInventory = true;
               }
             }
           }
@@ -1506,7 +1515,14 @@ check results length: ${checkResults.length}''';
             versionSetManually = true;
           }
 
+          // Docker deploys need a tag that exists in Nexus, since an apt
+          // version is not necessarily a published image: seed the newest one.
+          // Only where the inventory said nothing, though -- it pins tags the
+          // stack was tested with (the shipped sample keeps logger at the last
+          // version the community branding supports), and 'newest' would walk
+          // right past them.
           if (!versionSetManually &&
+              !versionFromInventory &&
               type == DeploymentType.dockerCompose &&
               laReleases != null) {
             final String nexusKey = '${service.nameInt}_nexus';
@@ -2856,22 +2872,39 @@ check results length: ${checkResults.length}''';
     assert(serviceInUse == getServicesNameListInUse().length);
   }
 
-  static List<LAProject> import({required String yoRcJson}) {
+  /// Directory names already in use by [projects] (and their hubs), used to
+  /// keep a new project from landing on a configuration directory that another
+  /// one already owns.
+  static Set<String> dirNamesOf(List<LAProject> projects) {
+    return projects
+        .map((LAProject p) => p.dirName)
+        .whereType<String>()
+        .where((String d) => d.isNotEmpty)
+        .toSet();
+  }
+
+  static List<LAProject> import({
+    required String yoRcJson,
+    Map<String, LAReleases>? laReleases,
+  }) {
     final List<LAProject> list = <LAProject>[];
     final Map<String, dynamic> yoRc =
         ((json.decode(yoRcJson)
                     as Map<String, dynamic>)['generator-living-atlas']
                 as Map<String, dynamic>)['promptValues']
             as Map<String, dynamic>;
-    final LAProject p = LAProject.fromObject(yoRc);
-    final List<LAProject> hubs = _importHubs(yoRc, p);
+    final LAProject p = LAProject.fromObject(yoRc, laReleases: laReleases);
+    final List<LAProject> hubs = _importHubs(yoRc, p, laReleases);
     p.hubs = hubs;
     list.add(p);
     list.addAll(hubs);
     return list;
   }
 
-  static Future<List<LAProject>> importTemplates(String file) async {
+  static Future<List<LAProject>> importTemplates(
+    String file, {
+    Map<String, LAReleases>? laReleases,
+  }) async {
     // https://flutter.dev/docs/development/ui/assets-and-images#loading-text-assets
 
     final List<LAProject> list = <LAProject>[];
@@ -2884,8 +2917,18 @@ check results length: ${checkResults.length}''';
                   as Map<String, dynamic>)['promptValues']
               as Map<String, dynamic>;
       pJson['LA_id'] = null;
-      final LAProject p = LAProject.fromObject(pJson);
-      final List<LAProject> hubs = _importHubs(pJson, p);
+      final LAProject p = LAProject.fromObject(pJson, laReleases: laReleases);
+      // The shipped sample shares its short name with any real portal called the
+      // same ('LADemo' suggests 'lademo'), so taking the directory from the short
+      // name lands it on top of that portal's configuration. The template already
+      // carries a distinct LA_pkg_name: honour it here (templates only, a manual
+      // yo-rc import keeps deriving it from the short name).
+      final String? pkgName = pJson['LA_pkg_name'] as String?;
+      if (pkgName != null &&
+          LARegExp.ansibleDirnameRegexpPermissive.hasMatch(pkgName)) {
+        p.dirName = pkgName;
+      }
+      final List<LAProject> hubs = _importHubs(pJson, p, laReleases);
       p.hubs = hubs;
       list.add(p);
       list.addAll(hubs);
@@ -2895,13 +2938,15 @@ check results length: ${checkResults.length}''';
 
   static List<LAProject> _importHubs(
     Map<String, dynamic> pJson,
-    LAProject parent,
-  ) {
+    LAProject parent, [
+    Map<String, LAReleases>? laReleases,
+  ]) {
     final List<LAProject> hubs = <LAProject>[];
     if (pJson['LA_hubs'] != null) {
       for (final dynamic hubJson in pJson['LA_hubs'] as List<dynamic>) {
         final LAProject hub = LAProject.fromObject(
           hubJson as Map<String, dynamic>,
+          laReleases: laReleases,
         );
         hub.isHub = true;
         hub.parent = parent;

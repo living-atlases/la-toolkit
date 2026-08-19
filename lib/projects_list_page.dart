@@ -146,7 +146,7 @@ class _LAProjectsListState extends State<LAProjectsList> {
                                                   dirName,
                                                 ),
                                                 existingDirNames:
-                                                    _existingDirNames(
+                                                    LAProject.dirNamesOf(
                                                       vm.state.projects,
                                                     ),
                                               ),
@@ -192,16 +192,6 @@ class _LAProjectsListState extends State<LAProjectsList> {
       },
     );
   }
-}
-
-/// Directory names already in use by existing projects (and their hubs), used
-/// to prevent a duplicate from colliding on disk.
-Set<String> _existingDirNames(List<LAProject> projects) {
-  return projects
-      .map((LAProject p) => p.dirName)
-      .whereType<String>()
-      .where((String d) => d.isNotEmpty)
-      .toSet();
 }
 
 class ProjectCard extends StatelessWidget {

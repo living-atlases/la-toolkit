@@ -32,6 +32,7 @@ import '../models/prod_service_desc.dart';
 import '../models/ssh_key.dart';
 import '../utils/api.dart';
 import '../utils/cas_utils.dart';
+import '../utils/string_utils.dart';
 import '../utils/utils.dart';
 import 'app_actions.dart';
 import 'entity_actions.dart';
@@ -326,10 +327,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     }
     if (action is AddProject) {
       try {
-        if (action.project.dirName == null ||
-            action.project.dirName!.isEmpty) {
-          action.project.dirName = action.project.suggestDirName();
-        }
+        await _assignFreeDirName(store, action.project);
         if (!AppUtils.isDemo()) {
           store.dispatch(Loading());
           final List<LAProject> projects = <LAProject>[
@@ -350,9 +348,30 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       }
     }
     if (action is AddTemplateProjects) {
+      // Without the releases the sample lands with no version for services the
+      // template does not pin (namematching among them), and the dependency
+      // lint fires on a project the user has not touched yet.
       final List<LAProject> projects = await LAProject.importTemplates(
         AssetsUtils.pathWorkaround('la-toolkit-templates.json'),
+        laReleases: store.state.laReleases,
       );
+      // The generated inventory says nothing about which la-docker-compose
+      // release built it, and without one the project is incomplete from the
+      // start (see the release check in LAProject.isCreated). Seed it with the
+      // same list the tune page offers, so the sample is usable as it lands.
+      final List<String> composeReleases = store.state.dockerComposeReleases;
+      final Set<String> batchDirNames = <String>{};
+      for (final LAProject project in projects) {
+        if (composeReleases.isNotEmpty &&
+            project.isPureDockerCompose &&
+            project.dockerComposeRelease == null) {
+          project.dockerComposeRelease = composeReleases.first;
+        }
+        await _assignFreeDirName(store, project, alsoTaken: batchDirNames);
+        if (project.dirName != null && project.dirName!.isNotEmpty) {
+          batchDirNames.add(project.dirName!);
+        }
+      }
       try {
         if (!AppUtils.isDemo()) {
           store.dispatch(Loading());
@@ -1071,6 +1090,44 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       log('Failed to fetch la-docker-compose tags: $e');
       store.dispatch(OnFetchDockerComposeReleasesFailed());
     }
+  }
+
+  /// Gives [project] a configuration directory nobody else owns, before it is
+  /// persisted. Two checks, because neither alone is enough: the store knows
+  /// about projects that were never generated (so have no directory yet), and
+  /// the backend knows about directories on disk that no current project
+  /// claims. Without this a second project called like an existing one (the
+  /// shipped sample is 'LADemo', so is any real demo portal) lands on the same
+  /// directory, and whichever of the two prepares a deploy first keeps it while
+  /// the other is renamed and orphans its configuration.
+  /// [alsoTaken] carries the names already handed out earlier in the same
+  /// batch, which are not in the store yet.
+  Future<void> _assignFreeDirName(
+    Store<AppState> store,
+    LAProject project, {
+    Set<String> alsoTaken = const <String>{},
+  }) async {
+    // Hub inventories live inside their parent's directory, exactly as
+    // PrepareDeployProject skips them in the same check.
+    if (project.isHub) {
+      return;
+    }
+    final String base = project.dirName != null && project.dirName!.isNotEmpty
+        ? project.dirName!
+        : project.suggestDirName();
+    final String free = StringUtils.uniqueDirName(
+      candidate: base,
+      taken: <String>{
+        ...LAProject.dirNamesOf(store.state.projects),
+        ...alsoTaken,
+      },
+    );
+    // Safe to call before the project exists: the update it does on its way out
+    // is a no-op for an unknown id, and it returns the free name either way.
+    final String? checked = AppUtils.isDemo()
+        ? null
+        : await Api.checkDirName(dirName: free, id: project.id);
+    project.dirName = checked ?? free;
   }
 
   Future<void> saveAppState(AppState state) async {

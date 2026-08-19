@@ -189,6 +189,7 @@ AppState _createProject(AppState state, CreateProject action) {
 AppState _importProject(AppState state, ImportProject action) {
   final List<LAProject> newProjectAndHubs = LAProject.import(
     yoRcJson: action.yoRcJson,
+    laReleases: state.laReleases,
   );
   final List<LAProject> projects = List<LAProject>.from(state.projects);
   return state.copyWith(
