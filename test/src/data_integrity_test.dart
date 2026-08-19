@@ -716,4 +716,80 @@ void main() {
       },
     );
   });
+
+  group('Data Integrity Tests - Docker clusters need a carrier host (gh-25)', () {
+    test('docker-compose cluster with null serverId is flagged', () {
+      final LAProject p = LAProject(
+        longName: 'Test Project',
+        shortName: 'TP',
+        domain: 'test.com',
+      );
+      final LACluster orphan = LACluster(
+        id: ObjectId().toString(),
+        projectId: p.id,
+        type: DeploymentType.dockerCompose,
+      );
+      p.clusters.add(orphan);
+
+      final List<String> errors = p.validateDataIntegrity();
+      expect(
+        errors.any((String e) => e.contains('no carrier host')),
+        isTrue,
+        reason: 'A docker-compose cluster without serverId must be reported',
+      );
+    });
+
+    test('docker-compose cluster pointing at a nonexistent server is flagged', () {
+      final LAProject p = LAProject(
+        longName: 'Test Project',
+        shortName: 'TP',
+        domain: 'test.com',
+      );
+      final LACluster dangling = LACluster(
+        id: ObjectId().toString(),
+        projectId: p.id,
+        serverId: ObjectId().toString(),
+        type: DeploymentType.dockerCompose,
+      );
+      p.clusters.add(dangling);
+
+      final List<String> errors = p.validateDataIntegrity();
+      expect(
+        errors.any((String e) => e.contains('does not exist')),
+        isTrue,
+        reason: 'A cluster referencing a missing server must be reported',
+      );
+    });
+
+    test('docker-compose cluster with a real carrier host passes', () {
+      final LAProject p = LAProject(
+        longName: 'Test Project',
+        shortName: 'TP',
+        domain: 'test.com',
+      );
+      final LAServer vm1 = LAServer(
+        name: 'vm1',
+        ip: '10.0.0.1',
+        projectId: p.id,
+      );
+      p.upsertServer(vm1);
+      final LACluster cluster = LACluster(
+        id: ObjectId().toString(),
+        projectId: p.id,
+        serverId: vm1.id,
+        type: DeploymentType.dockerCompose,
+      );
+      p.clusters.add(cluster);
+
+      final List<String> errors = p.validateDataIntegrity();
+      expect(
+        errors.where(
+          (String e) =>
+              e.contains('no carrier host') || e.contains('does not exist'),
+        ),
+        isEmpty,
+        reason: 'A properly hosted cluster must not be reported',
+      );
+    });
+  });
 }
