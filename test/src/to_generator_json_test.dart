@@ -190,4 +190,57 @@ void main() {
       expect(conf['LA_branding_as_home'], isTrue);
     });
   });
+
+  group('branding_source default with empty dirName (gh-26)', () {
+    // defValue is declared as an untyped Function, so bind it once with a real
+    // signature instead of making a dynamic call at every use site.
+    String brandingSourceDefault(LAProject project) {
+      final String Function(LAProject) defValue =
+          LAVariableDesc.get('branding_source').defValue!
+              as String Function(LAProject);
+      return defValue(project);
+    }
+
+    test(
+      'wizard-like construction (shortName typed after creation) does not yield ../-branding',
+      () {
+        // The creation wizard constructs the project before the short name is
+        // typed, so the constructor never derives dirName from shortName.
+        final LAProject project = LAProject();
+        expect(project.dirName ?? '', isEmpty);
+        project.shortName = 'NLPHH';
+
+        final String defValue =
+            brandingSourceDefault(project);
+
+        expect(defValue, isNot(equals('../-branding')));
+        expect(defValue, equals('../nlphh-branding'));
+      },
+    );
+
+    test('empty shortName still yields a usable default (la_<id> fallback)', () {
+      final LAProject project = LAProject();
+
+      final String defValue =
+          brandingSourceDefault(project);
+
+      expect(defValue, isNot(equals('../-branding')));
+      expect(defValue, startsWith('../la_'));
+      expect(defValue, endsWith('-branding'));
+    });
+
+    test('a project with dirName set keeps using it', () {
+      final LAProject project = LAProject(
+        longName: 'Test Project',
+        shortName: 'TP',
+        domain: 'test.com',
+        dirName: 'my-dir',
+      );
+
+      final String defValue =
+          brandingSourceDefault(project);
+
+      expect(defValue, equals('../my-dir-branding'));
+    });
+  });
 }

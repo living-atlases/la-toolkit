@@ -582,9 +582,14 @@ class LAVariableDesc {
       // Use the sanitized dirName (dots -> dashes, spaces stripped) so the default
       // matches LA_pkg_name and the generator's ${LA_pkg_name}-branding directory.
       // shortName is unsanitized (e.g. "GBIF.ES" -> gbif.es-branding, a broken path).
-      defValue: (LAProject project) => '../${project.dirName}-branding',
+      // dirName can still be empty here: the creation wizard constructs the
+      // project before the short name is typed, and the constructor only
+      // derives dirName when shortName is already set, so re-derive lazily
+      // (gh-26: the default rendered as '../-branding').
+      defValue: (LAProject project) =>
+          '../${project.dirName == null || project.dirName!.isEmpty ? project.suggestDirName() : project.dirName!}-branding',
       hint:
-          'Can be a directory or a git address. By default ../<project-short-name>-branding/. If a git address is used, it will be cloned and built.',
+          'Can be a directory or a git address. By default ../<project-dir-name>-branding/. If a git address is used, it will be cloned and built.',
     ),
     'use_la_site_certs': LAVariableDesc(
       name: 'Use l-a.site certificates?',
