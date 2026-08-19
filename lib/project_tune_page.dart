@@ -438,6 +438,18 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
                                     vm.onUpdateProjectLocal(newProject);
                                   }
                                 },
+                            // Persist in one update every version an untouched
+                            // dropdown is displaying, so what is shown is what
+                            // gets deployed (gh-22).
+                            onInitialVersionsPersist:
+                                (Map<String, String> versions) {
+                                  final LAProject newProject = project
+                                      .copyWith();
+                                  versions.forEach(
+                                    newProject.setServiceDeployRelease,
+                                  );
+                                  vm.onUpdateProjectLocal(newProject);
+                                },
                           ),
                       if (_tab == _softwareTab)
                         Padding(

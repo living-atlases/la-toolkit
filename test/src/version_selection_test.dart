@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:la_toolkit/la_releases_selectors.dart';
 import 'package:la_toolkit/models/deployment_type.dart';
 import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/models/la_releases.dart';
@@ -224,5 +225,136 @@ void main() {
     );
 
     expect(deploy.softwareVersions[collectory], equals('6.0.0'));
+  });
+
+  // gh-22 (NLPHH, 2026-08-16): a dropdown that already showed the desired
+  // version at first render deployed a different one, because the displayed
+  // default was never written to the model. The only workaround was flipping
+  // every dropdown to another value and back.
+  group('untouched dropdown: display == deploy (gh-22)', () {
+    test('the displayed version of an untouched dropdown, once persisted, '
+        'is what the generator emits', () {
+      final LAProject project = LAProject();
+      final LAServer server = LAServer(
+        name: 'test-server',
+        projectId: project.id,
+        ip: '127.0.0.1',
+      );
+      project.upsertServer(server);
+
+      // The service is assigned BEFORE laReleases has loaded (real startup
+      // order), so the seed misses the nexus branch and stores no version.
+      project.assignByType(
+        server.id,
+        DeploymentType.dockerCompose,
+        <String>[collectory],
+      );
+      expect(project.getServiceDeployRelease(collectory), isNull);
+
+      // What the dropdown displays once the (nexus) list has loaded.
+      final List<String> dropdownVersions = <String>['6.0.0', '5.1.1'];
+      final String displayed = LAReleasesSelectors.resolveDisplayedVersion(
+        project: project,
+        swName: collectory,
+        versions: dropdownVersions,
+      );
+      expect(displayed, equals('6.0.0'));
+
+      // What onInitialVersionsPersist does with it, without any user touch.
+      project.setServiceDeployRelease(collectory, displayed);
+
+      expect(project.getServiceDeployRelease(collectory), equals('6.0.0'));
+      // And from now on the dropdown keeps showing the stored value.
+      expect(
+        LAReleasesSelectors.resolveDisplayedVersion(
+          project: project,
+          swName: collectory,
+          versions: dropdownVersions,
+        ),
+        equals('6.0.0'),
+      );
+    });
+
+    test('resolution is the same whether laReleases had loaded or not when '
+        'the serviceDeploy was created', () {
+      final Map<String, LAReleases> mockReleases = <String, LAReleases>{
+        collectory: LAReleases(
+          name: collectory,
+          latest: '1.6.4',
+          versions: const <String>['1.3.12', '1.6.4'],
+          artifacts: 'collectory',
+        ),
+        '${collectory}_nexus': LAReleases(
+          name: '${collectory}_nexus',
+          latest: '6.0.0',
+          versions: const <String>['6.0.0', '5.1.1'],
+          artifacts: 'collectory',
+        ),
+      };
+      final List<String> dropdownVersions = <String>['6.0.0', '5.1.1'];
+
+      String resolveFor({required bool laReleasesLoaded}) {
+        final LAProject project = LAProject();
+        final LAServer server = LAServer(
+          name: 'test-server',
+          projectId: project.id,
+          ip: '127.0.0.1',
+        );
+        project.upsertServer(server);
+        project.assignByType(
+          server.id,
+          DeploymentType.dockerCompose,
+          <String>[collectory],
+          null,
+          laReleasesLoaded ? mockReleases : null,
+        );
+        final String displayed = LAReleasesSelectors.resolveDisplayedVersion(
+          project: project,
+          swName: collectory,
+          versions: dropdownVersions,
+        );
+        // The persist step that runs after first render.
+        if (project.getServiceDeployRelease(collectory) == null) {
+          project.setServiceDeployRelease(collectory, displayed);
+        }
+        return project.getServiceDeployRelease(collectory)!;
+      }
+
+      expect(
+        resolveFor(laReleasesLoaded: true),
+        equals(resolveFor(laReleasesLoaded: false)),
+        reason:
+            'The effective version must not depend on whether laReleases '
+            'had loaded when the serviceDeploy was created',
+      );
+    });
+
+    test('a session-selected version wins over the list default for an '
+        'unassigned service', () {
+      final LAProject project = LAProject();
+      project.selectedVersions[collectory] = '5.1.1';
+
+      final String displayed = LAReleasesSelectors.resolveDisplayedVersion(
+        project: project,
+        swName: collectory,
+        versions: <String>['6.0.0', '5.1.1'],
+      );
+
+      expect(displayed, equals('5.1.1'));
+    });
+
+    test('the running version is preferred over the newest when nothing is '
+        'stored or selected', () {
+      final LAProject project = LAProject();
+
+      final String displayed = LAReleasesSelectors.resolveDisplayedVersion(
+        project: project,
+        swName: collectory,
+        versions: <String>['6.0.0', '5.1.1'],
+        runningVersion: '5.1.1',
+      );
+
+      expect(displayed, equals('5.1.1'));
+    });
   });
 }

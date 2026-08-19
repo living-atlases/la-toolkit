@@ -18,9 +18,49 @@ import 'redux/app_actions.dart';
 import 'utils/debounce.dart';
 
 class LAReleasesSelectors extends StatefulWidget {
-  const LAReleasesSelectors({super.key, required this.onSoftwareSelected});
+  const LAReleasesSelectors({
+    super.key,
+    required this.onSoftwareSelected,
+    this.onInitialVersionsPersist,
+  });
 
   final Function(String, String, bool) onSoftwareSelected;
+
+  /// Called once per build cycle with every version the selectors are
+  /// displaying that the project model does not store yet, so the parent can
+  /// persist them in a single project update. Without this, an untouched
+  /// dropdown deployed whatever the model had seeded, not the value shown
+  /// (gh-22): the only workaround was flipping every dropdown back and forth.
+  final void Function(Map<String, String> versions)? onInitialVersionsPersist;
+
+  /// What the dropdown for [swName] shows. Single source of truth for the
+  /// displayed version, model-aligned: stored version first, then the
+  /// session-selected one, then the running version, then the newest
+  /// available. Whatever this returns for an untouched dropdown gets
+  /// persisted via [onInitialVersionsPersist], so display == deploy.
+  static String resolveDisplayedVersion({
+    required LAProject project,
+    required String swName,
+    required List<String> versions,
+    String? runningVersion,
+  }) {
+    final String? storedVersion = project.getServiceDeployRelease(swName);
+    if (storedVersion != null && storedVersion.isNotEmpty) {
+      return storedVersion;
+    }
+    assert(
+      versions.isNotEmpty,
+      'There is not releases for $swName for some reason',
+    );
+    final String? selected = project.selectedVersions[swName];
+    if (selected != null && versions.contains(selected)) {
+      return selected;
+    }
+    if (runningVersion != null && versions.contains(runningVersion)) {
+      return runningVersion;
+    }
+    return versions[0];
+  }
 
   @override
   State<LAReleasesSelectors> createState() => _LAReleasesSelectorsState();
@@ -28,6 +68,7 @@ class LAReleasesSelectors extends StatefulWidget {
 
 class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
   final Debouncer debouncer = Debouncer(milliseconds: 1000);
+  bool _persistScheduled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +91,9 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
           project.isHub,
         );
         final List<Widget> selectors = <Widget>[];
+        // Versions shown by an untouched dropdown that the model has not
+        // stored yet: persisted in one batch after this frame (gh-22).
+        final Map<String, String> unpersistedVersions = <String, String>{};
         for (final LAServiceDesc serviceDesc in services) {
           final String serviceNameInt = serviceDesc.nameInt;
           final LAReleases? releases = vm.laReleases[serviceNameInt];
@@ -95,12 +139,20 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
             final String? runningVersion = vm.runningVersionsRetrieved
                 ? project.runningVersions[serviceNameInt]
                 : null;
-            final String initialValue = _getInitialValue(
-              project,
+            final String initialValue =
+                LAReleasesSelectors.resolveDisplayedVersion(
+                  project: project,
+                  swName: serviceNameInt,
+                  versions: versions,
+                  runningVersion: runningVersion,
+                );
+            final String? storedVersion = project.getServiceDeployRelease(
               serviceNameInt,
-              versions,
-              runningVersion,
             );
+            if ((storedVersion == null || storedVersion.isEmpty) &&
+                project.selectedVersions[serviceNameInt] != initialValue) {
+              unpersistedVersions[serviceNameInt] = initialValue;
+            }
             if (vm.runningVersionsRetrieved) {
               for (final String version in versions) {
                 if (version == initialValue) {
@@ -147,6 +199,22 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
           }
         }
 
+        if (unpersistedVersions.isNotEmpty &&
+            widget.onInitialVersionsPersist != null &&
+            !_persistScheduled) {
+          // One post-frame batch (not one dispatch per service): each dispatch
+          // clones the same stale project, so the last one would win and drop
+          // the rest. After the update the versions come back as stored and
+          // this stays a no-op.
+          _persistScheduled = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _persistScheduled = false;
+            if (mounted) {
+              widget.onInitialVersionsPersist!(unpersistedVersions);
+            }
+          });
+        }
+
         return Column(
           children: <Widget>[
             const SizedBox(height: 10),
@@ -163,28 +231,6 @@ class _LAReleasesSelectorsState extends State<LAReleasesSelectors> {
     );
   }
 
-  String _getInitialValue(
-    LAProject project,
-    String swName,
-    List<String> finalVersions,
-    String? currentVersion,
-  ) {
-    final String? storedVersion = project.getServiceDeployRelease(swName);
-    if (storedVersion == null) {
-      assert(
-        finalVersions.isNotEmpty,
-        'There is not releases for $swName for some reason',
-      );
-      final bool setCurrentVersion =
-          currentVersion != null && finalVersions.contains(currentVersion);
-      final String defVersion = setCurrentVersion
-          ? currentVersion
-          : finalVersions[0];
-      return defVersion;
-    } else {
-      return storedVersion;
-    }
-  }
 }
 
 @immutable
