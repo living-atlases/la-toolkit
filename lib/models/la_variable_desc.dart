@@ -317,6 +317,13 @@ class LAVariableDesc {
       subcategory: LAVariableSubcategory.apikeys,
       hint: 'Like: AIzaBcDeFgHiJkLmNoPqRsTuVwXyZ',
     ),
+    'carto_api_key': LAVariableDesc(
+      name: 'CARTO Basemaps API Key',
+      nameInt: 'carto_api_key',
+      subcategory: LAVariableSubcategory.apikeys,
+      hint:
+          'CARTO key for the species and occurrence basemap tiles. Without it the maps show an "API KEY REQUIRED" watermark',
+    ),
     'caches_collections_enabled': LAVariableDesc(
       name: 'Enable Collections Cache',
       nameInt: 'caches_collections_enabled',
