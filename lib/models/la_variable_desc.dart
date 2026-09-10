@@ -322,7 +322,7 @@ class LAVariableDesc {
       nameInt: 'carto_api_key',
       subcategory: LAVariableSubcategory.apikeys,
       hint:
-          'CARTO key for the species and occurrence basemap tiles. Without it the maps show an "API KEY REQUIRED" watermark',
+          'CARTO key for the species and occurrence basemap tiles. Without it the maps show an "API KEY REQUIRED" watermark. Free for non-commercial use at https://carto.com/basemaps/apikey/',
     ),
     'caches_collections_enabled': LAVariableDesc(
       name: 'Enable Collections Cache',
