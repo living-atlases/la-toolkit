@@ -280,7 +280,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             }
             if (service.nameInt == namematchingService) {
               servicesAndSub['${namematchingService}_nexus'] =
-                  'ala-namematching-service';
+                  'ala-namematching-server';
             }
             if (service.nameInt == pipelines) {
               servicesAndSub['${pipelines}_nexus'] = 'pipelines';
@@ -957,7 +957,12 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
             releasesData['metadata'] as Map<String, dynamic>;
         final Map<String, dynamic> versioningData =
             metadataData['versioning'] as Map<String, dynamic>;
-        final String latest = (versioningData['latest'] as dynamic).toString();
+        // Not every artifact publishes <latest> (ala-namematching-server only
+        // has <release>), and reading the missing key gave the literal string
+        // 'null' as the newest version.
+        final dynamic latestData =
+            versioningData['latest'] ?? versioningData['release'];
+        final String latest = latestData.toString();
         versions.addAll(
           releasesVersions.reversed.toList().sublist(
             0,

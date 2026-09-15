@@ -548,7 +548,11 @@ class LAServiceDesc {
       desc: 'namematching webservice',
       optional: true,
       icon: MdiIcons.textSearch,
-      artifacts: 'ala-namematching-service',
+      // The published artifact and the docker image are both named
+      // ala-namematching-*server*: asking for -service returned nothing, so the
+      // version dropdown was empty and no version was ever stored, which is what
+      // made the dependency lint (pipelines needs namematching >= 1.0.0) fire.
+      artifacts: 'ala-namematching-server',
       sample: 'https://namematching-ws.ala.org.au/',
       allowMultipleDeploys: true,
       dockerSupport: true,
