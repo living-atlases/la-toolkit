@@ -342,6 +342,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
           store.dispatch(OnDemoAddProjects(<LAProject>[action.project]));
         }
       } catch (e) {
+        // Loading() was dispatched above and OnProjectsAdded never ran, so the
+        // overlay would stay up behind the snackbar.
+        store.dispatch(OnUpdateProjectFailed());
         store.dispatch(
           ShowSnackBar(AppSnackBarMessage.ok('Failed to save project ($e)')),
         );
@@ -488,8 +491,19 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       );
     }
     if (action is SaveCurrentProject) {
-      store.dispatch(Loading());
       final LAProject project = action.project;
+      // A project in `create` status has never been POSTed: PATCHing it makes
+      // the backend findOrCreate its services/variables while the project row
+      // itself does not exist, and the AddProject that finishes the wizard then
+      // collides on those ids ("Would violate uniqueness constraint"). Keep the
+      // edit in redux only; AddProject persists the whole thing at Finish.
+      if (store.state.status == LAProjectViewStatus.create) {
+        store.dispatch(UpdateProjectLocal(project));
+        // Skip next(action): _saveCurrentProject would set loading:true for a
+        // request that is never made, and nothing would ever clear it.
+        return;
+      }
+      store.dispatch(Loading());
       await _updateProject(project, store, true, false);
     }
     if (action is ProjectsLoad) {

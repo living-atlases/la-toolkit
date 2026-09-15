@@ -694,8 +694,12 @@ class Api {
   }
 
   static Map<String, dynamic> projectJsonWithGenConf(LAProject project) {
-    final Map<String, dynamic> projectJ = project.toJson();
+    // toGeneratorJson() materialises the defaulted variables onto the project
+    // (getVariableValue -> setVariable). Run it FIRST so toJson() sees them;
+    // otherwise a freshly created project is persisted without its defaults
+    // and they are re-created with new ids on the next save.
     final Map<String, dynamic> projectGenJson = project.toGeneratorJson();
+    final Map<String, dynamic> projectJ = project.toJson();
     projectJ['genConf'] = projectGenJson;
     projectJ['parent'] = project.parent?.id;
     return projectJ;
