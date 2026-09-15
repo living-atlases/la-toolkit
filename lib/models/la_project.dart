@@ -1771,8 +1771,8 @@ check results length: ${checkResults.length}''';
       );
 
   /// What la-docker-compose requires from a hub placed on the portal's
-  /// compose clusters, until living-atlases/la-docker-compose supports a hub
-  /// spread across hosts: every compose-placed service of the hub on ONE
+  /// compose clusters, until living-atlases/la-docker-compose#14 lands (a hub
+  /// spread across hosts): every compose-placed service of the hub on ONE
   /// cluster (setup-hub-facts.yml instantiates a hub only on the host where its
   /// records alias resolves), and that cluster must run the portal's records
   /// and the portal's copy of each service the hub places there (a hub alias
@@ -1801,7 +1801,7 @@ check results length: ${checkResults.length}''';
         'la-docker-compose deploys a data hub on a single host, the one that runs its records front-end: '
         'keep all the compose-placed services of $shortName on one cluster '
         '(now on ${placed.keys.map(clusterLabel).join(', ')}). '
-        'Spreading a hub across compose hosts is tracked in living-atlases/la-docker-compose.',
+        'Spreading a hub across compose hosts is tracked in living-atlases/la-docker-compose#14.',
       );
     }
     for (final MapEntry<String, List<String>> e in placed.entries) {
