@@ -55,7 +55,12 @@ void main() {
 
     await addSample(tester, store);
 
-    expect(store.state.projects.length, 1);
+    // Three: the portal plus the two data hubs the sample ships. A hub is a
+    // project of its own in the model (its own inventory, its own branding) but
+    // never a card on the projects page, which lists only non-hubs.
+    expect(store.state.projects.length, 3);
+    expect(store.state.projects.where((LAProject p) => !p.isHub).length, 1);
+    expect(store.state.projects.where((LAProject p) => p.isHub).length, 2);
     expect(
       find.text(store.state.projects[0].longName),
       findsWidgets,
@@ -96,11 +101,27 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tapAddSample(tester, store);
 
-    expect(store.state.projects.length, 2);
+    // Two portals and their four hubs. Only the portals compete for a directory:
+    // a hub's dirName names its inventory directory INSIDE its portal's
+    // configuration, so the two copies of a hub never collide, while two hubs of
+    // the same portal would -- which is why they keep the template's package
+    // names instead of deriving one from their short name.
+    expect(store.state.projects.length, 6);
     expect(
-      store.state.projects.map((LAProject p) => p.dirName).toSet(),
+      store.state.projects
+          .where((LAProject p) => !p.isHub)
+          .map((LAProject p) => p.dirName)
+          .toSet(),
       <String>{'lademo-docker', 'lademo-docker-1'},
     );
+    for (final LAProject portal
+        in store.state.projects.where((LAProject p) => !p.isHub)) {
+      final List<String?> hubDirs = portal.hubs
+          .map((LAProject h) => h.dirName)
+          .toList();
+      expect(hubDirs, <String>['lademo-docker-hub', 'lademo-docker-hub2']);
+      expect(hubDirs.toSet().length, hubDirs.length);
+    }
   });
 
   testWidgets('it is added even when no la-docker-compose release is known', (

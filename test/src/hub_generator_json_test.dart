@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/models/la_server.dart';
+import 'package:la_toolkit/models/la_service_desc.dart';
 import 'package:objectid/objectid.dart';
 
 void main() {
@@ -182,14 +183,31 @@ void main() {
       // Generate hub JSON
       final Map<String, dynamic> hubJson = hub.toGeneratorJson();
 
-      // Hub should have inherited all the path variables from parent
+      // Hub should have inherited the path variables of everything it does not
+      // run itself. What it does run (records, and species and regions unless
+      // turned off) is its own front-end, so those addresses are the hub's, not
+      // the portal's -- taking the portal's would publish the hub on the portal's
+      // own URLs.
       for (final String service in parentServices) {
         final String pathKey = 'LA_${service}_path';
         expect(
           hubJson.containsKey(pathKey),
           isTrue,
-          reason: 'Hub should have $pathKey inherited from parent',
+          reason: 'Hub should have $pathKey',
         );
+        final bool hubRunsIt =
+            LAServiceDesc.listHubCapable.any(
+              (LAServiceDesc d) => d.nameInt == service,
+            ) &&
+            hub.getService(service).use;
+        if (hubRunsIt) {
+          expect(
+            hubJson[pathKey],
+            equals('/${LAServiceDesc.get(service).name}'),
+            reason: 'the hub keeps its own $service path',
+          );
+          continue;
+        }
         expect(
           hubJson[pathKey],
           equals(parentJson[pathKey]),

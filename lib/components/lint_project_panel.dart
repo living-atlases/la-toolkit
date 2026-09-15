@@ -144,14 +144,21 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
                 actionText: 'SOLVE',
                 action: () => BeamerCond.of(context, SshKeysLocation()),
               ),
+            // A hub inherits its deployment mode and its machines from the
+            // portal; the carrier constraint is the portal's to satisfy. The
+            // old rule tested the docker_compose service's deploy rows, which
+            // a hub never has, so it fired on every compose hub.
             if (basicDefined &&
-                project.servers.isNotEmpty &&
-                project.hasDockerSupportedServicesInUse() &&
-                !project.hasAnyServerWithDockerCompose())
+                !project.isHub &&
+                project.isDockerComposeEnabled &&
+                !project.hasComposeCarrierHost())
               const AlertCard(
                 message:
-                    'You have Docker compose enabled. You should include at least one VM with docker-compose configured to use it',
+                    'Docker Compose is enabled but no VM carries the compose stack. '
+                    'Tick "docker compose" on one of your servers: the compose cluster needs a machine to run on.',
               ),
+            for (final String error in project.hubComposePlacementErrors())
+              AlertCard(message: error),
             if (project.allServersWithServicesReady() &&
                 !project.allServersWithSupportedOs('Ubuntu', '22.04'))
               const AlertCard(

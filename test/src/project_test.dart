@@ -1697,10 +1697,12 @@ void main() {
     final List<LAProject> templates = await LAProject.importTemplates(
       '../../assets/la-toolkit-templates.json',
     );
-    // One sample only: the single-host docker-compose topology CI deploys.
-    // See sample_template_test.dart for what it must import as.
-    expect(templates.length, equals(1));
-    for (final LAProject p in templates) {
+    // One sample portal plus the two data hubs it ships (importTemplates returns
+    // the portal first, then its hubs). See sample_template_test.dart for what
+    // they must import as.
+    expect(templates.length, equals(3));
+    expect(templates.where((LAProject p) => p.isHub).length, equals(2));
+    for (final LAProject p in templates.where((LAProject p) => !p.isHub)) {
       expect(p.servers.isNotEmpty, equals(true));
       expect(p.services.isNotEmpty, equals(true));
       expect(p.serverServices.isNotEmpty, equals(true));
@@ -1709,6 +1711,13 @@ void main() {
       expect(p.variables.isNotEmpty, equals(true));
       // The default value
       expect(p.mapBoundsFstPoint.latitude, isNot(equals(-44)));
+    }
+    // A hub declares only what makes it a hub; everything else (map bounds
+    // among them) comes from the portal it hangs from.
+    for (final LAProject h in templates.where((LAProject p) => p.isHub)) {
+      expect(h.parent, isNotNull);
+      expect(h.services.isNotEmpty, equals(true));
+      expect(h.variables.isNotEmpty, equals(true));
     }
   });
 

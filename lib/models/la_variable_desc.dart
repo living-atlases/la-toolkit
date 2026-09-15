@@ -579,12 +579,23 @@ class LAVariableDesc {
       defValue: (_) => false,
       type: LAVariableType.bool,
     ),
+    // Scoped to the branding service, not to docker_compose, so a DATA HUB can set
+    // it too: the Tune page drops any variable whose `depends` service is not
+    // hub-capable, and docker_compose is not. A hub is a portal of its own with its
+    // own look, so it needs the same three options the portal has: a git URL (cloned
+    // and built into the hub's own branding image), a local path, or empty, which
+    // means "build nothing and reuse the branding already served at my
+    // header_and_footer_baseurl" (typically the portal's).
     'branding_source': LAVariableDesc(
       name: 'Source for the branding',
       nameInt: 'branding_source',
       subcategory: LAVariableSubcategory.dockerCompose,
-      service: LAServiceName.docker_compose,
-      depends: LAServiceName.docker_compose,
+      service: LAServiceName.branding,
+      depends: LAServiceName.branding,
+      // Still a docker-compose-only knob: on VM deploys the branding is built and
+      // published out of band, so the variable would be inert and misleading. This
+      // predicate inherits from the parent for a hub.
+      isVisible: (LAProject project) => project.isDockerComposeEnabled,
       regExp: LARegExp.anything,
       // Use the sanitized dirName (dots -> dashes, spaces stripped) so the default
       // matches LA_pkg_name and the generator's ${LA_pkg_name}-branding directory.

@@ -52,17 +52,23 @@ class ServersCardList extends StatelessWidget {
             ),
         ];
 
-        // Build Cluster cards
+        // Build Cluster cards. Through `placement`: a data hub places its
+        // services on the portal's compose clusters, which it borrows here
+        // without owning them (no delete, no rename from this side).
         final List<Widget> clusterCards = <Widget>[
           if (dockerEnabled)
-            for (final LACluster cluster in project.clusters)
+            for (final LACluster cluster in project.placement.clusters)
               ServerServicesHoverCard(
                 key: ValueKey<String>('cluster-${cluster.id}'),
                 cluster: cluster,
                 project: project,
                 vm: vm,
+                borrowed: project.placement.isBorrowed(cluster),
               ),
         ];
+        final bool anyBorrowed =
+            dockerEnabled &&
+            project.placement.clusters.any(project.placement.isBorrowed);
 
         // Build the layout: VMs on top, Clusters below (if any)
         return Column(
@@ -110,6 +116,16 @@ class ServersCardList extends StatelessWidget {
                   ],
                 ),
               ),
+              if (anyBorrowed)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                  child: Text(
+                    'These clusters belong to the portal ${project.parent?.shortName}: '
+                    'the hub runs its containers inside that stack, on the same machines. '
+                    'The machines themselves are managed from the portal.',
+                    style: const TextStyle(color: LAColorTheme.inactive),
+                  ),
+                ),
               // Clusters cards
               Wrap(children: clusterCards),
             ],
@@ -123,6 +139,7 @@ class ServersCardList extends StatelessWidget {
 class ServerServicesHoverCard extends StatefulWidget {
   const ServerServicesHoverCard({
     super.key,
+    this.borrowed = false,
     this.server,
     this.cluster,
     required this.project,
@@ -133,6 +150,10 @@ class ServerServicesHoverCard extends StatefulWidget {
   final LACluster? cluster;
   final LAProject project;
   final ServersCardListViewModel vm;
+
+  /// The cluster is the parent portal's: a hub assigns services onto it but
+  /// never deletes or renames it from here.
+  final bool borrowed;
 
   @override
   State<ServerServicesHoverCard> createState() =>
@@ -155,7 +176,11 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
 
     final DeploymentType type = isAServer ? DeploymentType.vm : cluster!.type;
     final String sId = isAServer ? server!.id : cluster!.id;
-    final String name = isAServer ? server!.name : cluster!.name;
+    final String name = isAServer
+        ? server!.name
+        : widget.borrowed
+            ? '${cluster!.name} (portal ${widget.project.parent?.shortName})'
+            : cluster!.name;
     final Map<String, List<LAService>> servicesAssignable = widget.project
         .getServerServicesAssignable(type);
     return AnimatedSwitcher(
@@ -167,6 +192,7 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
               cluster: widget.cluster,
               type: type,
               isHub: widget.project.isHub,
+              borrowed: widget.borrowed,
               currentServerServices: isAServer
                   ? widget.project.getServerServices(serverId: server!.id)
                   : widget.project.getClusterServices(clusterId: cluster!.id),

@@ -370,7 +370,51 @@
         "LA_variable_enable_data_quality": false,
         "LA_variable_pipelines_jenkins_use": false,
         "LA_variable_enable_events": false,
-        "LA_nginx_vhost_fast_mode": true
+        "LA_nginx_vhost_fast_mode": true,
+        "LA_hubs": [
+          {
+            "LA_pkg_name": "lademo-docker-hub",
+            "LA_project_name": "LA Demo Hub",
+            "LA_project_shortname": "Hub",
+            "LA_domain": "l-a.site",
+            "LA_is_hub": true,
+            "LA_enable_ssl": true,
+            "LA_use_species": true,
+            "LA_use_regions": true,
+            "LA_variable_biocache_query_context": "data_hub_uid:dh1",
+            "LA_variable_branding_source": "https://github.com/living-atlases/base-branding",
+            "LA_variable_branding_build_source": "git",
+            "LA_ala_hub_hostname": "la-mh-1",
+            "LA_ala_hub_url": "records-hub.l-a.site",
+            "LA_ala_hub_path": "",
+            "LA_ala_bie_hostname": "la-mh-3",
+            "LA_ala_bie_url": "species-hub.l-a.site",
+            "LA_ala_bie_path": "",
+            "LA_regions_hostname": "la-mh-3",
+            "LA_regions_url": "regions-hub.l-a.site",
+            "LA_regions_path": "",
+            "LA_branding_hostname": "la-mh-1",
+            "LA_branding_url": "hub.l-a.site",
+            "LA_branding_path": "/",
+            "LA_use_branding": true
+          },
+          {
+            "LA_pkg_name": "lademo-docker-hub2",
+            "LA_project_name": "LA Demo Hub 2",
+            "LA_project_shortname": "Hub2",
+            "LA_domain": "l-a.site",
+            "LA_is_hub": true,
+            "LA_enable_ssl": true,
+            "LA_use_species": false,
+            "LA_use_regions": false,
+            "LA_variable_biocache_query_context": "data_hub_uid:dh2",
+            "LA_variable_branding_source": null,
+            "LA_ala_hub_hostname": "la-mh-1",
+            "LA_ala_hub_url": "records-hub2.l-a.site",
+            "LA_ala_hub_path": "",
+            "LA_use_branding": false
+          }
+        ]
       }
     }
   }

@@ -22,6 +22,7 @@ class ServerServicesEditCard extends StatefulWidget {
     required this.currentServerServices,
     required this.availableServicesForServer,
     required this.isHub,
+    this.borrowed = false,
     required this.allServices,
     required this.onAssigned,
     required this.onUnassigned,
@@ -38,6 +39,10 @@ class ServerServicesEditCard extends StatefulWidget {
   final List<String> currentServerServices;
   final List<LAService> availableServicesForServer;
   final bool isHub;
+
+  /// A cluster of the parent portal a hub places services on: no delete
+  /// button, the machine is the portal's to manage.
+  final bool borrowed;
   final List<LAService> allServices;
   final Function(List<String>) onAssigned;
   final Function(String) onUnassigned;
@@ -208,6 +213,8 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                               : Text(
                                   isAServer
                                       ? widget.server!.name
+                                      : widget.borrowed
+                                      ? '${widget.cluster?.name ?? 'Docker compose'} (portal)'
                                       : widget.cluster?.name ??
                                             'Docker compose',
                                   style: const TextStyle(
@@ -257,7 +264,7 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
                               },
                             ),
                           ),
-                        if (!isAServer)
+                        if (!isAServer && !widget.borrowed)
                           Tooltip(
                             message: 'Delete this',
                             child: IconButton(

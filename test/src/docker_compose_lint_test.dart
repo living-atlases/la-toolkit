@@ -11,6 +11,7 @@ import 'package:la_toolkit/models/la_service_constants.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  hasComposeCarrierHostTests();
 
   group('Docker Compose Lint Tests', () {
     test(
@@ -285,6 +286,48 @@ docker-compose:
 
     test('skips the upstream sentinel instead of failing to parse it', () {
       expect(lintsFor('upstream', '1.9.5'), isEmpty);
+    });
+  });
+}
+
+/// The compose lint of the panel: "compose is enabled but nothing carries it".
+/// Not hasAnyServerWithDockerCompose(), which reads the docker_compose
+/// service's deploy rows and is structurally false for a hub.
+void hasComposeCarrierHostTests() {
+  group('hasComposeCarrierHost', () {
+    test('is false for a compose portal with no VM', () {
+      final LAProject p = LAProject();
+      p.serviceInUse(dockerCompose, true);
+      expect(p.hasComposeCarrierHost(), isFalse);
+    });
+
+    test('is true once a VM carries the cluster', () {
+      final LAProject p = LAProject();
+      final LAServer vm1 = LAServer(
+        id: 'vm1',
+        name: 'vm1',
+        ip: '10.0.0.1',
+        projectId: p.id,
+      );
+      p.upsertServer(vm1);
+      p.serviceInUse(dockerCompose, true);
+      p.assign(vm1, <String>[dockerCompose]);
+      expect(p.hasComposeCarrierHost(), isTrue);
+    });
+
+    test('is false for a cluster whose serverId dangles', () {
+      final LAProject p = LAProject();
+      final LAServer vm1 = LAServer(
+        id: 'vm1',
+        name: 'vm1',
+        ip: '10.0.0.1',
+        projectId: p.id,
+      );
+      p.upsertServer(vm1);
+      p.serviceInUse(dockerCompose, true);
+      p.assign(vm1, <String>[dockerCompose]);
+      p.clusters.single.serverId = 'gone';
+      expect(p.hasComposeCarrierHost(), isFalse);
     });
   });
 }

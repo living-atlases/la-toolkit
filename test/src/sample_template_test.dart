@@ -106,6 +106,96 @@ void main() {
       expect(p.servicesWithNowhereToRun(), isEmpty);
     });
 
+    test('ships the two data hubs the CI deploys, in both branding modes', () {
+      // The sample mirrors topologies/base.lademo.yo-rc.json in la-docker-compose,
+      // whose CI deploys these same two hubs on every push: one complete hub with
+      // a branding of its own, one records-only hub with none, which is what
+      // exercises both halves of the branding contract.
+      final Map<String, dynamic> pv = _promptValues(_loadTemplates()[0]);
+      final List<dynamic> hubs = pv['LA_hubs'] as List<dynamic>;
+      expect(hubs.length, 2);
+
+      final Map<String, dynamic> full = hubs[0] as Map<String, dynamic>;
+      final Map<String, dynamic> recordsOnly = hubs[1] as Map<String, dynamic>;
+
+      expect(full['LA_use_species'], true);
+      expect(full['LA_use_regions'], true);
+      expect(full['LA_variable_branding_source'], isNotNull);
+      expect(full['LA_use_branding'], true);
+      expect(recordsOnly['LA_use_species'], false);
+      expect(recordsOnly['LA_use_regions'], false);
+      // Branding off: this hub consumes the branding its
+      // header_and_footer_baseurl already serves (the portal's, inherited), so
+      // it costs neither an image nor a volume. It declares no branding URL of
+      // its own for the same reason.
+      expect(recordsOnly['LA_use_branding'], false);
+      expect(recordsOnly.containsKey('LA_branding_url'), false);
+
+      for (final dynamic h in hubs) {
+        final Map<String, dynamic> hub = h as Map<String, dynamic>;
+        expect(hub['LA_is_hub'], true);
+        expect(hub['LA_domain'], pv['LA_domain']);
+        // Its own data subset is the whole point of a hub.
+        expect(hub['LA_variable_biocache_query_context'], isNotNull);
+        expect(hub.containsKey('LA_id'), false, reason: 'LA_id shipped');
+        // dirName == LA_pkg_name == the hub's inventory directory.
+        expect(
+          LARegExp.ansibleDirnameRegexpPermissive.hasMatch(
+            hub['LA_pkg_name'] as String,
+          ),
+          true,
+        );
+      }
+      expect(
+        hubs
+            .map((dynamic h) => (h as Map<String, dynamic>)['LA_pkg_name'])
+            .toSet()
+            .length,
+        2,
+        reason: 'two hubs of one portal cannot share an inventory directory',
+      );
+    });
+
+    test('a hub of the sample runs in the portal compose cluster', () {
+      final Map<String, dynamic> pv = _promptValues(_loadTemplates()[0]);
+      final LAProject portal = LAProject.fromObject(pv);
+      final Map<String, dynamic> hubJson =
+          (pv['LA_hubs'] as List<dynamic>)[0] as Map<String, dynamic>;
+
+      final LAProject hub = LAProject.fromObject(hubJson, isHub: true)
+        ..parent = portal
+        ..adoptParentComposePlacement();
+
+      // A hub owns no infrastructure: it deploys inside the portal's stack, so
+      // every docker predicate has to answer through the parent, and its
+      // placement references the portal's cluster instead of copying it.
+      expect(hub.isDockerComposeEnabled, true);
+      expect(hub.isPureDockerCompose, true);
+      expect(hub.clusters, isEmpty);
+      expect(hub.servers, isEmpty);
+      final List<LACluster> portalCompose = portal.clusters
+          .where((LACluster c) => c.type == DeploymentType.dockerCompose)
+          .toList();
+      expect(portalCompose, isNotEmpty);
+      for (final String clusterId in hub.clusterServices.keys) {
+        expect(portalCompose.map((LACluster c) => c.id), contains(clusterId));
+      }
+      expect(hub.getHostnames('ala_hub'), isNotEmpty);
+      expect(hub.servicesWithNowhereToRun(), isEmpty);
+
+      final Map<String, dynamic> conf = hub.toGeneratorJson();
+      expect(conf['LA_use_docker_compose'], true);
+      expect(
+        conf['LA_docker_compose_hostname'],
+        pv['LA_docker_compose_hostname'],
+      );
+      // Its own branding, not the portal's: the hub is the one that declares it.
+      expect(
+        conf['LA_variable_branding_source'],
+        hubJson['LA_variable_branding_source'],
+      );
+    });
+
     test('names a directory of its own, not the short name one', () {
       // 'LADemo' suggests 'lademo', which any real demo portal already owns, so
       // importTemplates takes the directory from LA_pkg_name instead. That the

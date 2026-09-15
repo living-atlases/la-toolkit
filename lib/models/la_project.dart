@@ -22,6 +22,7 @@ import './host_services_checks.dart';
 import './is_json_serializable.dart';
 import './la_cluster.dart';
 import './la_lat_lng.dart';
+import './la_placement.dart';
 import './la_project_status.dart';
 import './la_releases.dart';
 import './la_server.dart';
@@ -112,9 +113,15 @@ class LAProject implements IsJsonSerializable<LAProject> {
     validateCreation();
   }
 
+  /// [isHub] must be set when [yoRc] is one entry of a portal's `LA_hubs`: a hub
+  /// declares its front-ends and nothing else, so reading its map against the full
+  /// service list sees no spatial and no bie index and cascades regions and species
+  /// back off -- the very services that make the hub a hub. What they depend on
+  /// runs in the portal.
   factory LAProject.fromObject(
     Map<String, dynamic> yoRc, {
     bool debug = false,
+    bool isHub = false,
     Map<String, LAReleases>? laReleases,
   }) {
     dynamic a(String tag) => yoRc['LA_$tag'];
@@ -123,13 +130,14 @@ class LAProject implements IsJsonSerializable<LAProject> {
       shortName: yoRc['LA_project_shortname'] as String,
       domain: yoRc['LA_domain'] as String,
       useSSL: yoRc['LA_enable_ssl'] as bool,
+      isHub: isHub,
       services: const <LAService>[],
     );
     final String domain = p.domain;
     final Map<String, List<String>> tempServerServices =
         <String, List<String>>{};
 
-    for (final LAServiceDesc serviceDesc in LAServiceDesc.list(false)) {
+    for (final LAServiceDesc serviceDesc in LAServiceDesc.list(isHub)) {
       // The generator names a few `use` flags after something other than the
       // service (see the same mappings in toGeneratorJson and in the backend's
       // transform.js): biocache_backend is written as biocache_store. Reading
@@ -146,13 +154,27 @@ class LAProject implements IsJsonSerializable<LAProject> {
         biocacheBackend: 'biocache_store',
       };
       String n = useKeyAliases[serviceDesc.nameInt] ?? serviceDesc.nameInt;
+      // The ala_bie -> species mapping is skipped for portals for the reason
+      // above, but a hub's map is written by toGeneratorJson right here, which
+      // always emits LA_use_species: there, false really means false, and a
+      // records-only hub says so exactly like that.
+      if (isHub && serviceDesc.nameInt == bie) {
+        n = 'species';
+      }
       final bool? useFlag =
           a('use_$n') as bool? ?? a('use_${serviceDesc.nameInt}') as bool?;
+      // Branding is the one non-optional service a HUB may legitimately not
+      // have: with it off the hub reuses whatever its header_and_footer_baseurl
+      // serves (the portal's branding), costing no image and no volume. Every
+      // other non-optional service stays forced -- the records front-end above
+      // all, which is what makes it a hub.
+      final bool hubDropsBranding =
+          isHub && serviceDesc.nameInt == branding && useFlag == false;
       // ala_bie and images was not optional in the past
       final bool useIt =
-          !serviceDesc.optional ||
+          (!serviceDesc.optional && !hubDropsBranding) ||
           (useFlag ??
-              (serviceDesc.nameInt == 'ala_bie' ||
+              ((serviceDesc.nameInt == 'ala_bie' && !isHub) ||
                   serviceDesc.nameInt == 'images' ||
                   serviceDesc.nameInt == biocacheCli ||
                   serviceDesc.nameInt == biocacheBackend ||
@@ -324,29 +346,33 @@ class LAProject implements IsJsonSerializable<LAProject> {
       p.dirName = p.suggestDirName();
     }
 
-    if (p.getService(cas).use) {
-      p.serviceInUse(apikey, true);
-      p.serviceInUse(userdetails, true);
-      p.serviceInUse(casManagement, true);
-    }
-    if (p.getService(spatial).use) {
-      p.serviceInUse(spatialService, true);
-      p.serviceInUse(geoserver, true);
-    }
-    if (p.getService(pipelines).use) {
-      p.serviceInUse(spark, true);
-      p.serviceInUse(hadoop, true);
-    }
-    if (p.getService(events).use) {
-      p.serviceInUse(eventsElasticSearch, true);
-    }
-    final String? biocacheHostname = a('biocache_backend_hostname') as String?;
-    // Present but empty means "not deployed": the generator always writes the
-    // key. Treating that as "biocache-store is in use" turned pipelines off on
-    // every modern inventory, docker-compose ones included.
-    if (biocacheHostname != null && biocacheHostname.isNotEmpty) {
-      p.getService(biocacheBackend).use = true;
-      p.getService(pipelines).use = false;
+    // Back-ends and their sub-services belong to the portal: a hub's service list
+    // is the four hub-capable front-ends, and getService asserts on anything else.
+    if (!isHub) {
+      if (p.getService(cas).use) {
+        p.serviceInUse(apikey, true);
+        p.serviceInUse(userdetails, true);
+        p.serviceInUse(casManagement, true);
+      }
+      if (p.getService(spatial).use) {
+        p.serviceInUse(spatialService, true);
+        p.serviceInUse(geoserver, true);
+      }
+      if (p.getService(pipelines).use) {
+        p.serviceInUse(spark, true);
+        p.serviceInUse(hadoop, true);
+      }
+      if (p.getService(events).use) {
+        p.serviceInUse(eventsElasticSearch, true);
+      }
+      final String? biocacheHostname = a('biocache_backend_hostname') as String?;
+      // Present but empty means "not deployed": the generator always writes the
+      // key. Treating that as "biocache-store is in use" turned pipelines off on
+      // every modern inventory, docker-compose ones included.
+      if (biocacheHostname != null && biocacheHostname.isNotEmpty) {
+        p.getService(biocacheBackend).use = true;
+        p.getService(pipelines).use = false;
+      }
     }
     // TODO(vjrj): map zoom
     return p;
@@ -369,6 +395,11 @@ class LAProject implements IsJsonSerializable<LAProject> {
     // toGeneratorJson()/getServiceE()/Api.saveProject().
     for (final LAProject hub in project.hubs) {
       hub.parent = project;
+      // A hub may place services on the portal's compose clusters, which only
+      // resolve once `parent` is set: its own constructor could neither rebuild
+      // those assignments from serviceDeploys nor tell them from orphans.
+      _rebuildEmptyClusterServices(hub);
+      hub.validateCreation();
     }
 
     // Skip the parent check while deserializing: a nested hub is built by its
@@ -441,8 +472,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
   static void _rebuildEmptyClusterServices(LAProject project) {
     bool rebuilt = false;
 
-    // Find clusters that have no services assigned but have serviceDeploys
-    for (final LACluster cluster in project.clusters) {
+    // Find clusters that have no services assigned but have serviceDeploys.
+    // Through `placement`, so a hub's deploys on the portal's clusters count.
+    for (final LACluster cluster in project.placement.clusters) {
       // Skip if cluster.serverId is null (can't have duplicates if not linked to server)
       if (cluster.serverId == null) {
         continue;
@@ -579,12 +611,22 @@ class LAProject implements IsJsonSerializable<LAProject> {
   bool validateCreation({bool debug = true}) {
     bool valid = true;
     LAProjectStatus tempStatus = LAProjectStatus.created;
-    if (servers.length != serverServices.length ||
-        clusters.length != clusterServices.length) {
-      String msgErr =
-          'Servers in $longName ($id) are inconsistent (serverServices: ${serverServices.length} servers: ${servers.length})';
-      msgErr +=
-          ' or Clusters are inconsistent (clusterServices: ${clusterServices.length} clusters: ${clusters.length})';
+    // A nested hub is constructed by its own fromJson before the enclosing
+    // portal wires `parent`, and its clusterServices are keyed by the portal's
+    // clusters: sweeping them now would wipe the hub's placement on every
+    // load. The portal's fromJson re-validates each hub once linked.
+    final bool placementResolvable = !isHub || parent != null;
+    final bool serverOrphans = serverServices.keys.any(
+      (String serverId) => !servers.any((LAServer s) => s.id == serverId),
+    );
+    final bool clusterOrphans =
+        placementResolvable &&
+        clusterServices.keys.any(
+          (String clusterId) => placement.clusterById(clusterId) == null,
+        );
+    if (serverOrphans || clusterOrphans) {
+      final String msgErr =
+          'Assignments in $longName ($id) reference servers or clusters that do not exist (serverServices: ${serverServices.length} servers: ${servers.length}, clusterServices: ${clusterServices.length} clusters: ${clusters.length})';
       if (kDebugMode) {
         debugPrint(msgErr);
         debugPrint('servers (${servers.length}): $servers');
@@ -595,20 +637,16 @@ class LAProject implements IsJsonSerializable<LAProject> {
         debugPrint(
           'clusterServices (${clusterServices.length}): $clusterServices',
         );
+        debugPrint('Remove orphans');
       }
-      debugPrint(msgErr);
-      debugPrint('Remove orphans');
       // FIXME: In the backend, there are still inconsistencies
       serverServices.removeWhere(
         (String serverId, _) =>
             !servers.any((LAServer server) => server.id == serverId),
       );
       clusterServices.removeWhere(
-        (String clusterId, _) =>
-            !clusters.any((LACluster cluster) => cluster.id == clusterId),
+        (String clusterId, _) => placement.clusterById(clusterId) == null,
       );
-      // final Exception error = Exception(msgErr);
-      // throw error;
     }
 
     valid =
@@ -738,6 +776,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
   /// Mixed projects are deliberately left alone: as long as one plain VM exists,
   /// these services still have a home and nothing is stranded.
   List<String> servicesWithNowhereToRun() {
+    // A hub only ever runs the four hub-capable services, all of them docker-capable,
+    // so nothing of its own can be stranded; an orphan hub has no parent to inherit a
+    // placement from and is reported by validateCreation instead.
     if (isHub || !hasAnyServerWithDockerCompose()) {
       return <String>[];
     }
@@ -924,6 +965,20 @@ class LAProject implements IsJsonSerializable<LAProject> {
       }
     }
 
+    // Check 6: a hub's deploys may reference the portal's clusters; those
+    // must exist somewhere the hub can resolve them (here or in the parent).
+    if (!isHub || checkParent || parent != null) {
+      for (final LAServiceDeploy sd in serviceDeploys) {
+        if (sd.clusterId != null &&
+            sd.clusterId!.isNotEmpty &&
+            placement.clusterById(sd.clusterId) == null) {
+          errors.add(
+            'ServiceDeploy ${sd.id} references cluster ${sd.clusterId} which exists neither in this project nor in its parent',
+          );
+        }
+      }
+    }
+
     return errors;
   }
 
@@ -948,7 +1003,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       json.decode(json.encode(source.toJson())) as Map<String, dynamic>,
     );
     final String suffix = _sanitizeServerSuffix(newDirName);
-    _remapAsDuplicate(
+    final Map<String, String> portalIdMap = _remapAsDuplicate(
       clone,
       newShortName: newShortName,
       newLongName: newLongName,
@@ -960,12 +1015,16 @@ class LAProject implements IsJsonSerializable<LAProject> {
       final String hubDomain = hub.domain.endsWith('.${source.domain}')
           ? '${hub.domain.substring(0, hub.domain.length - source.domain.length - 1)}.$newDomain'
           : hub.domain;
+      // A hub placed on the portal's compose cluster references the portal's
+      // ids: they must follow the portal's remap, or the clone's hub would
+      // still point at the SOURCE portal's cluster.
       _remapAsDuplicate(
         hub,
         newShortName: '${hub.shortName}-$suffix',
         newLongName: '${hub.longName} ($newShortName)',
         newDomain: hubDomain,
         serverSuffix: suffix,
+        inheritedIdMap: portalIdMap,
       );
       // hub.dirName keeps its suggested value (derived from its shortName);
       // hub inventories live inside the parent's config directory.
@@ -986,15 +1045,16 @@ class LAProject implements IsJsonSerializable<LAProject> {
   /// Regenerates all ids of [p] and its nested entities in place, remapping
   /// cross-references (gateways, cluster.serverId, serviceDeploys,
   /// serverServices/clusterServices keys) and resetting non-portable state.
-  static void _remapAsDuplicate(
+  static Map<String, String> _remapAsDuplicate(
     LAProject p, {
     required String newShortName,
     required String newLongName,
     required String newDomain,
     required String serverSuffix,
     String? newDirName,
+    Map<String, String>? inheritedIdMap,
   }) {
-    final Map<String, String> idMap = <String, String>{};
+    final Map<String, String> idMap = <String, String>{...?inheritedIdMap};
 
     p.id = ObjectId().toString();
     p.shortName = newShortName;
@@ -1075,6 +1135,7 @@ class LAProject implements IsJsonSerializable<LAProject> {
       ),
     );
     p.dirName = newDirName ?? p.suggestDirName();
+    return idMap;
   }
 
   /// Converts a project short name into a suffix valid for server names
@@ -1404,9 +1465,9 @@ check results length: ${checkResults.length}''';
         }
         clusterId = cluster!.id;
       } else {
-        final LACluster? cluster = clusters.firstWhereOrNull(
-          (LACluster c) => c.id == sOrCId,
-        );
+        // Own or borrowed: a hub assigns onto one of the portal's clusters,
+        // which is never created here (only the server branch above creates).
+        final LACluster? cluster = placement.clusterById(sOrCId);
         if (cluster != null) {
           if (kDebugMode) {
             debugPrint('  🔍 Detected clusterId passed: ${cluster.name}');
@@ -1585,9 +1646,7 @@ check results length: ${checkResults.length}''';
         clusterId = cluster?.id;
         serverId = potentialServer.id;
       } else {
-        final LACluster? cluster = clusters.firstWhereOrNull(
-          (LACluster c) => c.id == sIdOrCid,
-        );
+        final LACluster? cluster = placement.clusterById(sIdOrCid);
         serverId = cluster?.serverId;
         clusterId = sIdOrCid;
       }
@@ -1665,13 +1724,117 @@ check results length: ${checkResults.length}''';
       );
       // Remove cluster services
       clusterServices.removeWhere(
-        (String key, List<String> value) =>
-            !clusters.any((LACluster c) => c.id == key),
+        (String key, List<String> value) => placement.clusterById(key) == null,
       );
     }
   }
 
+  /// Where each service of this project resolves to (own rows, plus the
+  /// portal's clusters and carriers for a hub). See [LAPlacement].
+  LAPlacement get placement => LAPlacement(this);
+
+  /// Places a hub that has no placement yet on the portal's compose cluster
+  /// that runs the portal's records front-end, with every hub-capable service
+  /// the hub uses. That is the only target la-docker-compose deploys a hub to
+  /// today (see [hubComposePlacementErrors]), so it is what a new hub gets by
+  /// default; a placement already made, on VMs or on a cluster, is kept.
+  void suggestHubPlacement([Map<String, LAReleases>? laReleases]) {
+    if (!isHub || parent == null || !parent!.isDockerComposeEnabled) {
+      return;
+    }
+    if (getServicesAssigned().isNotEmpty) {
+      return;
+    }
+    final LACluster? target = parent!.placement.composeClusters
+        .firstWhereOrNull(
+          (LACluster c) =>
+              parent!.clusterServices[c.id]?.contains(alaHub) ?? false,
+        );
+    if (target == null) {
+      return;
+    }
+    final List<String> toPlace = LAServiceDesc.listHubCapable
+        .map((LAServiceDesc d) => d.nameInt)
+        .where((String n) => getService(n).use)
+        .toList();
+    if (toPlace.isEmpty) {
+      return;
+    }
+    assignByType(target.id, DeploymentType.dockerCompose, toPlace, null, laReleases);
+  }
+
+  /// True when a docker-compose cluster exists AND a machine carries it.
+  /// Distinct from [hasAnyServerWithDockerCompose], which only looks at the
+  /// docker_compose service's serviceDeploys rows.
+  bool hasComposeCarrierHost() => placement.composeClusters.any(
+        (LACluster c) => placement.carrierOf(c) != null,
+      );
+
+  /// What la-docker-compose requires from a hub placed on the portal's
+  /// compose clusters, until living-atlases/la-docker-compose supports a hub
+  /// spread across hosts: every compose-placed service of the hub on ONE
+  /// cluster (setup-hub-facts.yml instantiates a hub only on the host where its
+  /// records alias resolves), and that cluster must run the portal's records
+  /// and the portal's copy of each service the hub places there (a hub alias
+  /// on a host enables the portal's service key there, and a portal service
+  /// enabled without its own alias renders an unconfigured container).
+  /// Empty when the hub places nothing on compose.
+  List<String> hubComposePlacementErrors() {
+    if (!isHub || parent == null) {
+      return <String>[];
+    }
+    final List<String> errors = <String>[];
+    final Map<String, List<String>> placed = <String, List<String>>{};
+    for (final LACluster c in placement.composeClusters) {
+      final List<String> l = clusterServices[c.id] ?? <String>[];
+      if (l.isNotEmpty) {
+        placed[c.id] = l;
+      }
+    }
+    if (placed.isEmpty) {
+      return errors;
+    }
+    String clusterLabel(String id) =>
+        placement.clusterById(id)?.name ?? id;
+    if (placed.length > 1) {
+      errors.add(
+        'la-docker-compose deploys a data hub on a single host, the one that runs its records front-end: '
+        'keep all the compose-placed services of $shortName on one cluster '
+        '(now on ${placed.keys.map(clusterLabel).join(', ')}). '
+        'Spreading a hub across compose hosts is tracked in living-atlases/la-docker-compose.',
+      );
+    }
+    for (final MapEntry<String, List<String>> e in placed.entries) {
+      final List<String> portalHas =
+          parent!.clusterServices[e.key] ?? <String>[];
+      if (!portalHas.contains(alaHub)) {
+        errors.add(
+          "la-docker-compose deploys a data hub next to the portal's records front-end, "
+          'and ${clusterLabel(e.key)} does not run it: move $shortName there, or keep it on a VM.',
+        );
+      }
+      final List<String> missing = e.value
+          .where((String svc) => !portalHas.contains(svc))
+          .map((String svc) => LAServiceDesc.get(svc).name)
+          .toList();
+      if (missing.isNotEmpty) {
+        errors.add(
+          "la-docker-compose only deploys a hub service next to the portal's copy of it: "
+          '${clusterLabel(e.key)} does not run ${missing.join(', ')} for the portal. '
+          'Place ${missing.join(', ')} of $shortName on a VM, or move the '
+          "portal's to that cluster.",
+        );
+      }
+    }
+    return errors;
+  }
+
   bool isDockerClusterConfigured() {
+    // A hub owns no cluster and does not even list the docker_compose
+    // service: the portal's clusters are the ones it can be placed on.
+    if (isHub) {
+      return parent?.isDockerClusterConfigured() ?? false;
+    }
     return isDockerEnabled &&
         (getServiceDeploysForSomeService(dockerSwarm).isNotEmpty ||
             getServiceDeploysForSomeService(dockerCompose).isNotEmpty ||
@@ -1686,7 +1849,7 @@ check results length: ${checkResults.length}''';
     if (!getService(serviceNameInt).use) {
       return false;
     }
-    return clusters.any(
+    return placement.clusters.any(
       (LACluster c) =>
           c.type == DeploymentType.dockerCompose &&
           (clusterServices[c.id]?.contains(serviceNameInt) ?? false),
@@ -1793,10 +1956,10 @@ check results length: ${checkResults.length}''';
         .where((LAServiceDeploy sd) => sd.serverId != serverToDelete.id)
         .toList();
     servers = servers.where((LAServer s) => s.id != serverToDelete.id).toList();
-    // Remove serviceDeploy inconsistencies
+    // Remove serviceDeploy inconsistencies (a hub's compose deploys carry the
+    // portal's carrier host as serverId: those resolve through placement).
     serviceDeploys.removeWhere(
-      (LAServiceDeploy sd) =>
-          servers.firstWhereOrNull((LAServer s) => s.id == sd.serverId) == null,
+      (LAServiceDeploy sd) => placement.serverById(sd.serverId) == null,
     );
     // Remove server from others gateways
     final String deletedId = serverToDelete.id;
@@ -1828,6 +1991,22 @@ check results length: ${checkResults.length}''';
     for (final String sName in servicesInCluster) {
       unAssignByType(clusterToDelete.id, clusterType, sName);
     }
+    // A borrowed cluster is the portal's: the hub only steps off it.
+    if (placement.isBorrowed(clusterToDelete)) {
+      clusterServices.remove(clusterToDelete.id);
+      validateCreation();
+      return;
+    }
+    // The portal's own cluster may carry hub services; those hubs step off it.
+    for (final LAProject hub in hubs) {
+      final List<String> hubServices = List<String>.from(
+        hub.getClusterServices(clusterId: clusterToDelete.id),
+      );
+      for (final String sName in hubServices) {
+        hub.unAssignByType(clusterToDelete.id, clusterType, sName);
+      }
+      hub.clusterServices.remove(clusterToDelete.id);
+    }
 
     // 2. Unassign the managing docker service from the server
     if (clusterToDelete.serverId != null) {
@@ -1853,9 +2032,7 @@ check results length: ${checkResults.length}''';
     // Clean up any inconsistent service deploys
     serviceDeploys.removeWhere(
       (LAServiceDeploy sd) =>
-          sd.clusterId != null &&
-          clusters.firstWhereOrNull((LACluster c) => c.id == sd.clusterId) ==
-              null,
+          sd.clusterId != null && placement.clusterById(sd.clusterId) == null,
     );
 
     validateCreation();
@@ -1887,18 +2064,14 @@ check results length: ${checkResults.length}''';
       if (kDebugMode && serviceName == 'solr')
         debugPrint('Checking cluster $id services: $serviceNames');
       if (serviceNames.contains(serviceName)) {
-        final LACluster? cluster = clusters.firstWhereOrNull(
-          (LACluster c) => c.id == id,
-        );
+        final LACluster? cluster = placement.clusterById(id);
         if (cluster != null) {
           if (kDebugMode && serviceName == 'solr')
             debugPrint(
               'Cluster found: ${cluster.id}, type: ${cluster.type}, serverId: ${cluster.serverId}',
             );
           if (cluster.type == DeploymentType.dockerCompose) {
-            final LAServer? server = servers.firstWhereOrNull(
-              (LAServer s) => s.id == cluster.serverId,
-            );
+            final LAServer? server = placement.carrierOf(cluster);
             if (server != null) {
               if (kDebugMode && serviceName == 'solr')
                 debugPrint('Server found: ${server.name} (id: ${server.id})');
@@ -2080,7 +2253,10 @@ check results length: ${checkResults.length}''';
 
     // Default values (from api/libs/transform.js)
     conf['LA_use_git'] = true;
-    conf['LA_generate_branding'] = true;
+    // A hub that reuses the portal's branding must not have a branding workspace
+    // scaffolded for it: the generator would create <hub>-branding/ and the
+    // deploy would then be pointed at a source nobody maintains.
+    conf['LA_generate_branding'] = !isHub || getService(branding).use;
 
     // Variable Mappings (Mapping generic variables to specific keys expected by generator)
     // Inspect variables list if possible, or force known mappings based on potential presence in `conf`?
@@ -2185,31 +2361,39 @@ check results length: ${checkResults.length}''';
       final Map<String, dynamic> nginxDockerInternalAliasesByHost =
           <String, dynamic>{};
 
-      for (final LACluster cluster in clusters) {
-        if (cluster.type == DeploymentType.dockerSwarm ||
-            cluster.type == DeploymentType.dockerCompose) {
-          final LAServer? server = servers.firstWhereOrNull(
-            (LAServer s) => s.id == cluster.serverId,
-          );
-          if (server != null) {
-            final List<String> serviceNames =
-                clusterServices[cluster.id] ?? <String>[];
-            for (final String sN in serviceNames) {
-              final LAService service = getService(sN);
-              if (service.use) {
-                final LAServiceDesc desc = LAServiceDesc.get(sN);
-                if (!desc.withoutUrl && !desc.isSubService) {
-                  nginxDockerInternalAliasesByHost.putIfAbsent(
-                    server.name,
-                    () => <String>[],
-                  );
-                  final String url = service.url(domain);
-                  if (!(nginxDockerInternalAliasesByHost[server.name]!
-                          as List<String>)
-                      .contains(url)) {
-                    (nginxDockerInternalAliasesByHost[server.name]!
+      // The hubs' hostnames belong here too, exactly like the extra-hosts loop
+      // further down already does it. Left out, a hub hostname is not an nginx
+      // alias, so the hub's own JVM resolves it through public DNS from inside the
+      // stack and its wait-for-branding gate polls the public IP.
+      final LAProject aliasRoot = isHub ? parent! : this;
+      for (final LAProject current in <LAProject>[aliasRoot, ...aliasRoot.hubs]) {
+        // `current` stays the owner of the domain and the services; the
+        // cluster and its carrier resolve through its placement, which for a
+        // hub reaches the portal's clusters.
+        for (final LACluster cluster in current.placement.clusters) {
+          if (cluster.type == DeploymentType.dockerSwarm ||
+              cluster.type == DeploymentType.dockerCompose) {
+            final LAServer? server = current.placement.carrierOf(cluster);
+            if (server != null) {
+              final List<String> serviceNames =
+                  current.clusterServices[cluster.id] ?? <String>[];
+              for (final String sN in serviceNames) {
+                final LAService service = current.getService(sN);
+                if (service.use) {
+                  final LAServiceDesc desc = LAServiceDesc.get(sN);
+                  if (!desc.withoutUrl && !desc.isSubService) {
+                    nginxDockerInternalAliasesByHost.putIfAbsent(
+                      server.name,
+                      () => <String>[],
+                    );
+                    final String url = service.url(current.domain);
+                    if (!(nginxDockerInternalAliasesByHost[server.name]!
                             as List<String>)
-                        .add(url);
+                        .contains(url)) {
+                      (nginxDockerInternalAliasesByHost[server.name]!
+                              as List<String>)
+                          .add(url);
+                    }
                   }
                 }
               }
@@ -2227,9 +2411,7 @@ check results length: ${checkResults.length}''';
           for (final LAServiceDeploy sd in deploys) {
             if (sd.type == DeploymentType.dockerSwarm ||
                 sd.type == DeploymentType.dockerCompose) {
-              final LAServer? server = servers.firstWhereOrNull(
-                (LAServer s) => s.id == sd.serverId,
-              );
+              final LAServer? server = placement.serverById(sd.serverId);
               if (server != null) {
                 final LAServiceDesc desc = LAServiceDesc.get(service.nameInt);
                 if (!desc.withoutUrl && !desc.isSubService) {
@@ -2308,17 +2490,13 @@ check results length: ${checkResults.length}''';
       final List<String> composeHosts = <String>[];
       bool anyServiceInDockerCompose = false;
 
-      for (final LACluster cluster in clusters.where(
-        (LACluster c) => c.type == DeploymentType.dockerCompose,
-      )) {
+      for (final LACluster cluster in placement.composeClusters) {
         final List<String>? servicesInCluster = clusterServices[cluster.id];
         if (servicesInCluster != null && servicesInCluster.isNotEmpty) {
           anyServiceInDockerCompose = true;
-          if (cluster.serverId != null) {
-            final LAServer? s = getServerById(cluster.serverId!);
-            if (s != null) {
-              composeHosts.add(s.name);
-            }
+          final LAServer? s = placement.carrierOf(cluster);
+          if (s != null) {
+            composeHosts.add(s.name);
           }
         }
       }
@@ -2402,8 +2580,9 @@ check results length: ${checkResults.length}''';
                 ),
               );
 
-              // 2. Cluster Services (Docker Compose, Swarm, etc)
-              final List<LACluster> otherClusters = current.clusters
+              // 2. Cluster Services (Docker Compose, Swarm, etc), a hub's on
+              // the portal's clusters included.
+              final List<LACluster> otherClusters = current.placement.clusters
                   .where((LACluster c) => c.serverId == otherServer.id)
                   .toList();
               for (final LACluster cluster in otherClusters) {
@@ -2563,31 +2742,16 @@ check results length: ${checkResults.length}''';
 
         final bool hubUsesService = hubService != null;
 
-        // If hub uses service, check if it has been explicitly customized by user
-        // vs. using the automatic hub initialization value
-        bool hasCustomConfig = false;
-        if (hubUsesService) {
-          final LAServiceDesc desc = LAServiceDesc.get(serviceKey);
-          final String hubIniPath = hubService.iniPath;
-
-          // For hubs, getInitialServices() automatically sets iniPath = suburl (from descriptor)
-          // e.g., for ala_hub: descriptor.suburl = "records", so iniPath = "records"
-          // This is NOT a user customization, just initialization.
-          //
-          // A hub has custom config only if iniPath differs from descriptor's original name/suburl
-          final String descOriginalName =
-              desc.name; // e.g., "records" for ala_hub
-
-          if (hubIniPath != descOriginalName && hubIniPath.isNotEmpty) {
-            hasCustomConfig = true;
-          }
-        }
-
-        // Only inherit if:
-        // 1. Hub doesn't use the service at all, OR
-        // 2. Hub uses the service but hasn't explicitly customized it
-        if (hubUsesService && hasCustomConfig) {
-          continue; // Skip - hub has explicitly customized this service
+        // A hub-capable service the hub RUNS is the hub's own front-end: its
+        // address is the hub's, always. This used to be decided by comparing the
+        // hub's iniPath with the descriptor's name, on the theory that an
+        // untouched path meant "not customised" -- but a hub normally keeps the
+        // portal's paths and changes the SUBDOMAIN, so records-hub.l-a.site was
+        // overwritten with the portal's records.l-a.site and every hub answered
+        // on the portal's own URLs. Services the hub does not run are still
+        // inherited: that is what makes its pages link to the portal's.
+        if (hubUsesService && LAServiceDesc.get(serviceKey).hubCapable) {
+          continue;
         }
 
         final List<String> varTypes = <String>[
@@ -2626,8 +2790,33 @@ check results length: ${checkResults.length}''';
         }
         // species_lists remains species_lists for LA_use_species_lists
         final String useKey = 'LA_use_$actualKey';
-        if (parentConf.containsKey(useKey)) {
+        // ...except for the four services a hub can run itself. There, "not in
+        // use" is the hub's own statement -- a records-only hub says exactly
+        // that by not using ala_bie and regions -- so taking the portal's flag
+        // would render every hub with the portal's full set of front-ends, and
+        // a hub that reuses the portal's branding would build one of its own.
+        // Their ADDRESSES are still inherited above, which is what makes the
+        // hub's pages link to the portal's species and regions.
+        if (parentConf.containsKey(useKey) &&
+            !LAServiceDesc.get(serviceKey).hubCapable) {
           conf[useKey] = parentConf[useKey];
+        }
+      }
+
+      // Docker facts are portal-scoped: a hub owns no cluster, it runs inside the
+      // portal's stack. The generator needs them to decide, in the hub inventory,
+      // between host paths and container paths and to emit the hub's own aliases.
+      for (final String key in const <String>[
+        'LA_use_docker_compose',
+        'LA_use_docker_swarm',
+        'LA_docker_compose_hostname',
+        'LA_docker_swarm_hostname',
+        'LA_nginx_docker_internal_aliases_by_host',
+        'LA_docker_extra_hosts_by_host',
+        'LA_localhost_mode',
+      ]) {
+        if (parentConf.containsKey(key)) {
+          conf[key] = parentConf[key];
         }
       }
     }
@@ -2708,7 +2897,8 @@ check results length: ${checkResults.length}''';
             .toList();
       }
     } else {
-      for (final LACluster cluster in clusters) {
+      // Borrowed clusters included: a hub assigns onto the portal's.
+      for (final LACluster cluster in placement.clusters) {
         final List<String> currentClusterServicesIds = getServerServicesFull(
           id: cluster.id,
           type: type,
@@ -2815,9 +3005,7 @@ check results length: ${checkResults.length}''';
           full,
         );
         try {
-          final LAServer? server = servers.firstWhereOrNull(
-            (LAServer s) => s.id == sd.serverId,
-          );
+          final LAServer? server = placement.serverById(sd.serverId);
           if (server != null) {
             hostsChecks.add(
               sd,
@@ -2929,6 +3117,20 @@ check results length: ${checkResults.length}''';
         p.dirName = pkgName;
       }
       final List<LAProject> hubs = _importHubs(pJson, p, laReleases);
+      // Same reason as the portal above, and one more: a hub's dirName IS its
+      // LA_pkg_name, which names its inventory directory inside the portal's
+      // configuration, so two hubs of one portal must not derive the same
+      // directory from their short names.
+      final List<dynamic> hubsJson =
+          (pJson['LA_hubs'] as List<dynamic>?) ?? <dynamic>[];
+      for (int i = 0; i < hubs.length && i < hubsJson.length; i++) {
+        final String? hubPkg =
+            (hubsJson[i] as Map<String, dynamic>)['LA_pkg_name'] as String?;
+        if (hubPkg != null &&
+            LARegExp.ansibleDirnameRegexpPermissive.hasMatch(hubPkg)) {
+          hubs[i].dirName = hubPkg;
+        }
+      }
       p.hubs = hubs;
       list.add(p);
       list.addAll(hubs);
@@ -2946,14 +3148,76 @@ check results length: ${checkResults.length}''';
       for (final dynamic hubJson in pJson['LA_hubs'] as List<dynamic>) {
         final LAProject hub = LAProject.fromObject(
           hubJson as Map<String, dynamic>,
+          isHub: true,
           laReleases: laReleases,
         );
-        hub.isHub = true;
         hub.parent = parent;
+        hub.adoptParentComposePlacement();
         hubs.add(hub);
       }
     }
     return hubs;
+  }
+
+  /// An imported hub names the machine each of its services runs on, and
+  /// [fromObject] turns that into a server (and, on a compose host, a cluster)
+  /// OWNED by the hub. When the machine is one of the portal's compose hosts
+  /// the hub is really placed on the portal's cluster: reference it and drop
+  /// the hub's own copy, which would otherwise be persisted as a second server
+  /// row for the same machine. Machines the portal does not own stay the hub's.
+  void adoptParentComposePlacement() {
+    if (!isHub || parent == null) {
+      return;
+    }
+    for (final LAServer own in List<LAServer>.from(servers)) {
+      final LAServer? portalServer = parent!.servers.firstWhereOrNull(
+        (LAServer s) => s.name == own.name,
+      );
+      if (portalServer == null) {
+        continue;
+      }
+      final LACluster? portalCluster = parent!.clusters.firstWhereOrNull(
+        (LACluster c) =>
+            c.type == DeploymentType.dockerCompose &&
+            c.serverId == portalServer.id,
+      );
+      if (portalCluster == null) {
+        continue;
+      }
+      final Set<String> moved = <String>{};
+      final Map<String, String> versions = <String, String>{};
+      for (final LAServiceDeploy sd in serviceDeploys.where(
+        (LAServiceDeploy sd) => sd.serverId == own.id,
+      )) {
+        versions.addAll(sd.softwareVersions);
+      }
+      moved.addAll(
+        (serverServices[own.id] ?? <String>[]).where(
+          (String n) =>
+              n != dockerCompose && n != dockerSwarm && n != dockerCommon,
+        ),
+      );
+      for (final LACluster c in clusters.where(
+        (LACluster c) => c.serverId == own.id,
+      )) {
+        moved.addAll(clusterServices[c.id] ?? <String>[]);
+        clusterServices.remove(c.id);
+      }
+      clusters.removeWhere((LACluster c) => c.serverId == own.id);
+      serverServices.remove(own.id);
+      serviceDeploys.removeWhere(
+        (LAServiceDeploy sd) => sd.serverId == own.id,
+      );
+      servers.removeWhere((LAServer s) => s.id == own.id);
+      if (moved.isNotEmpty) {
+        assignByType(
+          portalCluster.id,
+          DeploymentType.dockerCompose,
+          moved.toList(),
+          versions,
+        );
+      }
+    }
   }
 
   bool get inProduction => status == LAProjectStatus.inProduction;
@@ -2974,6 +3238,13 @@ check results length: ${checkResults.length}''';
             serverServices,
             other.serverServices,
           ) &&
+          // Without these a change confined to a cluster assignment (a hub
+          // placed on the portal's cluster) did not repaint the servers page.
+          const DeepCollectionEquality.unordered().equals(
+            clusterServices,
+            other.clusterServices,
+          ) &&
+          const ListEquality<LACluster>().equals(clusters, other.clusters) &&
           additionalVariables == other.additionalVariables &&
           isCreated == other.isCreated &&
           isHub == other.isHub &&
@@ -3164,8 +3435,12 @@ check results length: ${checkResults.length}''';
   String get gatusUrl =>
       serviceFullUrl(LAServiceDesc.get(gatus), getService(gatus));
 
-  bool get isDockerEnabled =>
-      !isHub && (getService(dockerSwarm).use || getService(dockerCompose).use);
+  // A data hub owns no infrastructure: it runs inside its parent's stack, so its
+  // deployment mode is the parent's. Before this, every docker predicate answered
+  // "false" for a hub, which is why hubs could only ever be deployed on VMs.
+  bool get isDockerEnabled => isHub
+      ? (parent?.isDockerEnabled ?? false)
+      : (getService(dockerSwarm).use || getService(dockerCompose).use);
 
   // --- Infra-derived helpers (VM vs docker-compose) -------------------------
   // Docker infra "services" that don't count as real VM workloads.
@@ -3187,10 +3462,12 @@ check results length: ${checkResults.length}''';
   List<String> get vmAssignedServices => _vmAssignedServices;
 
   bool get hasDockerComposeServices =>
-      clusters.any((LACluster c) => c.type == DeploymentType.dockerCompose) &&
+      placement.composeClusters.isNotEmpty &&
       getServicesAssigned(true).isNotEmpty;
 
-  bool get isDockerComposeEnabled => !isHub && getService(dockerCompose).use;
+  bool get isDockerComposeEnabled => isHub
+      ? (parent?.isDockerComposeEnabled ?? false)
+      : getService(dockerCompose).use;
 
   bool get isPureDockerCompose => hasDockerComposeServices && !hasVmServices;
 
@@ -3206,9 +3483,7 @@ check results length: ${checkResults.length}''';
   // Services assigned to docker-compose clusters (workloads only).
   List<String> get dockerComposeAssignedServices {
     final Set<String> assigned = <String>{};
-    for (final LACluster cluster in clusters.where(
-      (LACluster c) => c.type == DeploymentType.dockerCompose,
-    )) {
+    for (final LACluster cluster in placement.composeClusters) {
       assigned.addAll(clusterServices[cluster.id] ?? <String>[]);
     }
     return assigned.toList();
