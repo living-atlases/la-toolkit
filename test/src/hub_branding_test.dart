@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/models/deployment_type.dart';
+import 'package:la_toolkit/models/la_cluster.dart';
 import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/models/la_server.dart';
 import 'package:la_toolkit/models/la_service_desc.dart';
@@ -60,7 +61,14 @@ void main() {
       hub.setVariable(LAVariableDesc.map['branding_source']!, brandingSource);
     }
     portal.hubs.add(hub);
-    hub.suggestHubPlacement();
+    final LACluster cluster = portal.clusters.firstWhere(
+      (LACluster c) => c.type == DeploymentType.dockerCompose,
+    );
+    hub.assignByType(
+      cluster.id,
+      DeploymentType.dockerCompose,
+      const <String>['ala_hub', 'branding'],
+    );
     return hub;
   }
 

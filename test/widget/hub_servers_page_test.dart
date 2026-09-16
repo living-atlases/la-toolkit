@@ -1,8 +1,10 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/components/servers_card_list.dart';
 import 'package:la_toolkit/models/app_state.dart';
 import 'package:la_toolkit/models/deployment_type.dart';
+import 'package:la_toolkit/models/la_cluster.dart';
 import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/models/la_server.dart';
 import 'package:la_toolkit/redux/app_actions.dart';
@@ -66,7 +68,16 @@ void main() {
       projectId: hub.id,
     );
     hub.upsertServer(own);
-    hub.suggestHubPlacement();
+    final LACluster? composeCluster = portal.clusters.firstWhereOrNull(
+      (LACluster c) => c.type == DeploymentType.dockerCompose,
+    );
+    if (composeCluster != null) {
+      hub.assignByType(
+        composeCluster.id,
+        DeploymentType.dockerCompose,
+        const <String>['ala_hub', 'branding'],
+      );
+    }
     return hub;
   }
 

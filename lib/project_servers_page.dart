@@ -104,9 +104,6 @@ class _LAProjectServersPageState extends State<LAProjectServersPage> {
       builder: (BuildContext context, _ProjectPageViewModel vm) {
         debugPrint('build project servers page');
         final LAProject project = vm.project;
-        // A new hub of a compose portal starts on the portal's records
-        // cluster; idempotent, a placement already made is kept.
-        project.suggestHubPlacement(vm.state.laReleases);
 
         debugPrint(
           'Building project servers currentStep: $_step key: $_scaffoldKey',

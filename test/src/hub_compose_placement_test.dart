@@ -47,6 +47,11 @@ void main() {
         (LACluster c) => c.type == DeploymentType.dockerCompose,
       );
 
+  // The toolkit no longer guesses a hub's placement (living-atlases/la-docker-compose#14
+  // lifted the single-cluster/co-location constraints, and the user now picks
+  // where each hub service runs exactly like on the portal itself). `suggest`
+  // just gives most tests here a ready-made fixture: every hub-capable service
+  // the hub uses, placed on the portal's one compose cluster.
   LAProject attachHub(
     LAProject portal, {
     bool species = true,
@@ -67,8 +72,18 @@ void main() {
     hub.serviceInUse('ala_bie', species);
     hub.serviceInUse('regions', regions);
     portal.hubs.add(hub);
-    if (suggest) {
-      hub.suggestHubPlacement();
+    if (suggest && portal.isDockerComposeEnabled) {
+      final List<String> toPlace = <String>[
+        'ala_hub',
+        'branding',
+        if (species) 'ala_bie',
+        if (regions) 'regions',
+      ];
+      hub.assignByType(
+        composeClusterOf(portal).id,
+        DeploymentType.dockerCompose,
+        toPlace,
+      );
     }
     return hub;
   }
@@ -104,26 +119,6 @@ void main() {
       final List<String> assigned = hub.getServicesAssigned(true)..sort();
       expect(assigned, equals(<String>['ala_hub', 'branding']));
       expect(hub.getHostnames('ala_bie'), isEmpty);
-    });
-
-    test('the suggestion is idempotent and never overrides a placement', () {
-      final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal);
-      final List<LAServiceDeploy> before = List<LAServiceDeploy>.from(
-        hub.serviceDeploys,
-      );
-
-      hub.suggestHubPlacement();
-      expect(hub.serviceDeploys, equals(before));
-
-      hub.unAssignByType(
-        composeClusterOf(portal).id,
-        DeploymentType.dockerCompose,
-        'regions',
-      );
-      hub.suggestHubPlacement();
-      expect(hub.getServicesAssigned(true), isNot(contains('regions')),
-          reason: 'a placement the user made is kept');
     });
 
     test('assigning onto the portal cluster creates no cluster of its own', () {
@@ -350,14 +345,14 @@ void main() {
     });
   });
 
-  group('la-docker-compose placement constraints', () {
+  group('la-docker-compose placement constraints (living-atlases/la-docker-compose#14)', () {
     test('a hub on the portal records cluster passes', () {
       final LAProject portal = buildComposePortal();
       final LAProject hub = attachHub(portal);
       expect(hub.hubComposePlacementErrors(), isEmpty);
     });
 
-    test('a hub spread over two clusters is rejected', () {
+    test("a hub spread over two of the portal's clusters is fine", () {
       final LAProject portal = buildComposePortal();
       final LAServer second = LAServer(
         id: ObjectId().toString(),
@@ -375,19 +370,40 @@ void main() {
       hub.unAssignByType(composeClusterOf(portal).id, DeploymentType.dockerCompose, 'ala_bie');
       hub.assignByType(secondCluster.id, DeploymentType.dockerCompose, <String>['ala_bie']);
 
-      final List<String> errors = hub.hubComposePlacementErrors();
-      expect(errors, isNotEmpty);
-      expect(errors.join(), contains('single host'));
+      expect(hub.hubComposePlacementErrors(), isEmpty);
+      expect(hub.getHostnames('ala_bie'), equals(<String>['la-mh-2']));
+      expect(hub.getHostnames('ala_hub'), equals(<String>['la-mh-1']));
     });
 
-    test('a hub service next to no portal copy is rejected', () {
+    test('a hub service on a cluster with no portal copy of it is fine', () {
+      // Each hub alias is now resolved independently (setup-facts.yml's
+      // hub_alias_hosts), so a hub service no longer needs the portal's own
+      // copy of it on the same host.
       final LAProject portal = buildComposePortal(hubCapable: <String>['ala_hub', 'branding']);
       portal.serviceInUse('ala_bie', true);
-      final LAProject hub = attachHub(portal, regions: false);
+      final LAProject hub = attachHub(portal, regions: false, suggest: false);
+      hub.assignByType(
+        composeClusterOf(portal).id,
+        DeploymentType.dockerCompose,
+        const <String>['ala_hub', 'branding', 'ala_bie'],
+      );
+
+      expect(hub.hubComposePlacementErrors(), isEmpty);
+    });
+
+    test('a hub placed on a cluster the portal no longer has is flagged', () {
+      final LAProject portal = buildComposePortal();
+      final LAProject hub = attachHub(portal);
+      final LACluster cluster = composeClusterOf(portal);
+      final String staleClusterId = cluster.id;
+
+      portal.deleteCluster(cluster);
+      // Simulate a desynced client still holding the stale reference.
+      hub.clusterServices[staleClusterId] = <String>['ala_hub'];
 
       final List<String> errors = hub.hubComposePlacementErrors();
-      expect(errors, hasLength(1));
-      expect(errors.single, contains('species'));
+      expect(errors, isNotEmpty);
+      expect(errors.single, contains('no longer has'));
     });
 
     test('a hub on VMs only has nothing to check', () {

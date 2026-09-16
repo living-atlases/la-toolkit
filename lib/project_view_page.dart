@@ -194,7 +194,6 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
           },
           onOpenHub: (LAProject project, LAProject hub) {
             hub.parent = project; // if not is null
-            hub.suggestHubPlacement();
             store.dispatch(OpenProjectTools(hub));
             BeamerCond.of(context, LAProjectViewLocation());
           },
@@ -221,6 +220,17 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             (project.isCreated && project.allServersWithServicesReady() ||
                 project.allServersWithSshReady()) ||
             project.inProduction;
+        // A hub with no server of its own (every service placed on the
+        // parent's docker-compose clusters) has no target of its own to
+        // deploy, test or check the status of: validateCreation() requires
+        // servers.isNotEmpty unconditionally, so isCreatedAndAccessibleOrInProduction
+        // can never become true for it, and its containers are deployed and
+        // monitored from the parent portal instead (see the lint banner in
+        // LintProjectPanel). A hybrid hub with its own VM keeps these tools.
+        final bool hubDeploysThroughParentOnly =
+            project.isHub &&
+            project.servers.isEmpty &&
+            project.isDockerComposeEnabled;
         final List<Tool> tools = <Tool>[
           Tool(
             icon: const Icon(Icons.edit),
@@ -250,25 +260,27 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
             enabled: vm.status.value >= LAProjectStatus.basicDefined.value,
             action: () => vm.onTuneProject(project),
           ),
-          Tool(
-            icon: const Icon(Icons.settings_ethernet),
-            tooltip: 'Test if your servers are reachable from here',
-            title: 'Test Connectivity',
-            enabled: project.isCreated || project.inProduction,
-            action: () {
-              /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                        "Ok! Testing the connectivity with your servers..."),
-                  )); */
-              vm.onTestConnProject(project, false);
-            },
-          ),
-          Tool(
-            icon: const Icon(Icons.foundation),
-            title: 'Pre-Deploy Tasks',
-            enabled: isCreatedAndAccessibleOrInProduction,
-            action: () => vm.onPreDeployTasks(project),
-          ),
+          if (!hubDeploysThroughParentOnly)
+            Tool(
+              icon: const Icon(Icons.settings_ethernet),
+              tooltip: 'Test if your servers are reachable from here',
+              title: 'Test Connectivity',
+              enabled: project.isCreated || project.inProduction,
+              action: () {
+                /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          "Ok! Testing the connectivity with your servers..."),
+                    )); */
+                vm.onTestConnProject(project, false);
+              },
+            ),
+          if (!hubDeploysThroughParentOnly)
+            Tool(
+              icon: const Icon(Icons.foundation),
+              title: 'Pre-Deploy Tasks',
+              enabled: isCreatedAndAccessibleOrInProduction,
+              action: () => vm.onPreDeployTasks(project),
+            ),
           // Branding is only a separate deploy step on VM deployments; on
           // docker-compose the branding is built into the stack image.
           if (project.hasBrandingOnVm)
@@ -278,31 +290,35 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               enabled: isCreatedAndAccessibleOrInProduction,
               action: () => vm.onDeployBranding(project),
             ),
-          Tool(
-            icon: const Icon(Icons.inventory),
-            title: 'Generate Inventories',
-            tooltip: 'Regenerate your inventory files without downloading them',
-            enabled: isCreatedAndAccessibleOrInProduction,
-            grid: 6,
-            action: () => vm.onRegenerateInventory(project),
-          ),
-          Tool(
-            icon: Icon(MdiIcons.rocketLaunch),
-            title: 'Deploy',
-            tooltip: 'Install/update your LA $Portal or some services',
-            grid: 6,
-            enabled: isCreatedAndAccessibleOrInProduction,
-            action: () => vm.onDeployProject(project),
-          ),
-          Tool(
-            icon: const Icon(Icons.receipt_long),
-            title: 'Logs History',
-            tooltip: 'Show deploy logs history',
-            enabled:
-                isCreatedAndAccessibleOrInProduction &&
-                project.cmdHistoryEntries.isNotEmpty,
-            action: () => vm.onViewLogs(project),
-          ),
+          if (!hubDeploysThroughParentOnly)
+            Tool(
+              icon: const Icon(Icons.inventory),
+              title: 'Generate Inventories',
+              tooltip:
+                  'Regenerate your inventory files without downloading them',
+              enabled: isCreatedAndAccessibleOrInProduction,
+              grid: 6,
+              action: () => vm.onRegenerateInventory(project),
+            ),
+          if (!hubDeploysThroughParentOnly)
+            Tool(
+              icon: Icon(MdiIcons.rocketLaunch),
+              title: 'Deploy',
+              tooltip: 'Install/update your LA $Portal or some services',
+              grid: 6,
+              enabled: isCreatedAndAccessibleOrInProduction,
+              action: () => vm.onDeployProject(project),
+            ),
+          if (!hubDeploysThroughParentOnly)
+            Tool(
+              icon: const Icon(Icons.receipt_long),
+              title: 'Logs History',
+              tooltip: 'Show deploy logs history',
+              enabled:
+                  isCreatedAndAccessibleOrInProduction &&
+                  project.cmdHistoryEntries.isNotEmpty,
+              action: () => vm.onViewLogs(project),
+            ),
           // Post-deploy only configures postfix, which is a VM-only mail relay;
           // hide it unless mail-sending services run on a VM. Mail SMTP config
           // itself now lives in Tune (available in all modes).
@@ -313,25 +329,27 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               enabled: isCreatedAndAccessibleOrInProduction,
               action: () => vm.onPostDeployTasks(project),
             ),
-          Tool(
-            icon: const Icon(Icons.fact_check),
-            title: '$Portal Status',
-            tooltip: 'Check your $portal servers and services status',
-            enabled: isCreatedAndAccessibleOrInProduction,
-            action: () => vm.onPortalStatus(vm.project),
-          ),
+          if (!hubDeploysThroughParentOnly)
+            Tool(
+              icon: const Icon(Icons.fact_check),
+              title: '$Portal Status',
+              tooltip: 'Check your $portal servers and services status',
+              enabled: isCreatedAndAccessibleOrInProduction,
+              action: () => vm.onPortalStatus(vm.project),
+            ),
           /* Tool(
                 icon: const Icon(Icons.pie_chart),
                 title: "Stats",
                 action: () => {}), */
-          Tool(
-            icon: const Icon(Icons.compare),
-            title: 'Compare',
-            tooltip:
-                'This tool allows you, for instance, to compare some records between your LA portal and your GBIF data',
-            enabled: isCreatedAndAccessibleOrInProduction,
-            action: () => vm.onDataCompare(vm.project),
-          ),
+          if (!hubDeploysThroughParentOnly)
+            Tool(
+              icon: const Icon(Icons.compare),
+              title: 'Compare',
+              tooltip:
+                  'This tool allows you, for instance, to compare some records between your LA portal and your GBIF data',
+              enabled: isCreatedAndAccessibleOrInProduction,
+              action: () => vm.onDataCompare(vm.project),
+            ),
           if (!project.isHub)
             Tool(
               icon: const Icon(Icons.file_download),

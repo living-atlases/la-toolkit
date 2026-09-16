@@ -14,6 +14,7 @@ import '../models/la_service_desc.dart';
 import '../models/la_service_name.dart';
 import '../models/ssh_key.dart';
 import '../models/version_utils.dart';
+import '../redux/app_actions.dart';
 import '../routes.dart';
 import 'alert_card.dart';
 import 'lint_error_panel.dart';
@@ -159,6 +160,25 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
               ),
             for (final String error in project.hubComposePlacementErrors())
               AlertCard(message: error),
+            // A hub with no server of its own has nothing to run its own
+            // Deploy against: validateCreation() requires servers.isNotEmpty
+            // unconditionally, so its Deploy/Test Connectivity cards never
+            // enable. Its containers are rendered as part of the parent's
+            // docker-compose stack (LA_hubs), so the parent is what to deploy.
+            if (project.isHub &&
+                project.parent != null &&
+                project.servers.isEmpty &&
+                project.isDockerComposeEnabled)
+              AlertCard(
+                message:
+                    '${project.shortName} has no server of its own: it deploys as part of '
+                    "${project.parent!.shortName}'s docker-compose stack. Deploy "
+                    '${project.parent!.shortName} to bring ${project.shortName} online.',
+                actionText: 'GO TO ${project.parent!.shortName.toUpperCase()}',
+                action: () => StoreProvider.of<AppState>(
+                  context,
+                ).dispatch(OpenProjectTools(project.parent!)),
+              ),
             if (project.allServersWithServicesReady() &&
                 !project.allServersWithSupportedOs('Ubuntu', '22.04'))
               const AlertCard(

@@ -1733,36 +1733,6 @@ check results length: ${checkResults.length}''';
   /// portal's clusters and carriers for a hub). See [LAPlacement].
   LAPlacement get placement => LAPlacement(this);
 
-  /// Places a hub that has no placement yet on the portal's compose cluster
-  /// that runs the portal's records front-end, with every hub-capable service
-  /// the hub uses. That is the only target la-docker-compose deploys a hub to
-  /// today (see [hubComposePlacementErrors]), so it is what a new hub gets by
-  /// default; a placement already made, on VMs or on a cluster, is kept.
-  void suggestHubPlacement([Map<String, LAReleases>? laReleases]) {
-    if (!isHub || parent == null || !parent!.isDockerComposeEnabled) {
-      return;
-    }
-    if (getServicesAssigned().isNotEmpty) {
-      return;
-    }
-    final LACluster? target = parent!.placement.composeClusters
-        .firstWhereOrNull(
-          (LACluster c) =>
-              parent!.clusterServices[c.id]?.contains(alaHub) ?? false,
-        );
-    if (target == null) {
-      return;
-    }
-    final List<String> toPlace = LAServiceDesc.listHubCapable
-        .map((LAServiceDesc d) => d.nameInt)
-        .where((String n) => getService(n).use)
-        .toList();
-    if (toPlace.isEmpty) {
-      return;
-    }
-    assignByType(target.id, DeploymentType.dockerCompose, toPlace, null, laReleases);
-  }
-
   /// True when a docker-compose cluster exists AND a machine carries it.
   /// Distinct from [hasAnyServerWithDockerCompose], which only looks at the
   /// docker_compose service's serviceDeploys rows.
@@ -1770,59 +1740,28 @@ check results length: ${checkResults.length}''';
         (LACluster c) => placement.carrierOf(c) != null,
       );
 
-  /// What la-docker-compose requires from a hub placed on the portal's
-  /// compose clusters, until living-atlases/la-docker-compose#14 lands (a hub
-  /// spread across hosts): every compose-placed service of the hub on ONE
-  /// cluster (setup-hub-facts.yml instantiates a hub only on the host where its
-  /// records alias resolves), and that cluster must run the portal's records
-  /// and the portal's copy of each service the hub places there (a hub alias
-  /// on a host enables the portal's service key there, and a portal service
-  /// enabled without its own alias renders an unconfigured container).
-  /// Empty when the hub places nothing on compose.
+  /// Defensive check for a hub's compose placement: living-atlases/la-docker-compose#14
+  /// lifted both fase-1 constraints (a hub may now spread its compose-placed
+  /// services across several of the portal's hosts, and a host does not need
+  /// to also run the portal's own copy of the service placed there), so the
+  /// user picks where each hub service runs exactly like on the portal
+  /// itself. What remains here just catches a placement pointing at a
+  /// cluster that isn't one of the portal's anymore (e.g. the portal deleted
+  /// it after the hub was placed on it) -- [assignByType] never creates such
+  /// a reference on its own. Empty when the hub places nothing on compose.
   List<String> hubComposePlacementErrors() {
     if (!isHub || parent == null) {
       return <String>[];
     }
     final List<String> errors = <String>[];
-    final Map<String, List<String>> placed = <String, List<String>>{};
-    for (final LACluster c in placement.composeClusters) {
-      final List<String> l = clusterServices[c.id] ?? <String>[];
-      if (l.isNotEmpty) {
-        placed[c.id] = l;
+    for (final MapEntry<String, List<String>> e in clusterServices.entries) {
+      if (e.value.isEmpty) {
+        continue;
       }
-    }
-    if (placed.isEmpty) {
-      return errors;
-    }
-    String clusterLabel(String id) =>
-        placement.clusterById(id)?.name ?? id;
-    if (placed.length > 1) {
-      errors.add(
-        'la-docker-compose deploys a data hub on a single host, the one that runs its records front-end: '
-        'keep all the compose-placed services of $shortName on one cluster '
-        '(now on ${placed.keys.map(clusterLabel).join(', ')}). '
-        'Spreading a hub across compose hosts is tracked in living-atlases/la-docker-compose#14.',
-      );
-    }
-    for (final MapEntry<String, List<String>> e in placed.entries) {
-      final List<String> portalHas =
-          parent!.clusterServices[e.key] ?? <String>[];
-      if (!portalHas.contains(alaHub)) {
+      if (placement.clusterById(e.key) == null) {
         errors.add(
-          "la-docker-compose deploys a data hub next to the portal's records front-end, "
-          'and ${clusterLabel(e.key)} does not run it: move $shortName there, or keep it on a VM.',
-        );
-      }
-      final List<String> missing = e.value
-          .where((String svc) => !portalHas.contains(svc))
-          .map((String svc) => LAServiceDesc.get(svc).name)
-          .toList();
-      if (missing.isNotEmpty) {
-        errors.add(
-          "la-docker-compose only deploys a hub service next to the portal's copy of it: "
-          '${clusterLabel(e.key)} does not run ${missing.join(', ')} for the portal. '
-          'Place ${missing.join(', ')} of $shortName on a VM, or move the '
-          "portal's to that cluster.",
+          '$shortName places services on a cluster the portal no longer has '
+          '(${e.value.join(', ')}): reassign them.',
         );
       }
     }

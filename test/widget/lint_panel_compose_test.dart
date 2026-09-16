@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/components/lint_project_panel.dart';
 import 'package:la_toolkit/models/app_state.dart';
@@ -67,7 +68,16 @@ void main() {
     hub.serviceInUse('branding', true);
     hub.serviceInUse('regions', false);
     portal.hubs.add(hub);
-    hub.suggestHubPlacement();
+    final LACluster? cluster = portal.clusters.firstWhereOrNull(
+      (LACluster c) => c.type == DeploymentType.dockerCompose,
+    );
+    if (cluster != null) {
+      hub.assignByType(
+        cluster.id,
+        DeploymentType.dockerCompose,
+        const <String>['ala_hub', 'ala_bie', 'branding'],
+      );
+    }
     hub.status = LAProjectStatus.basicDefined;
     return hub;
   }
@@ -100,8 +110,9 @@ void main() {
     expect(find.textContaining('Tick "docker compose"'), findsOneWidget);
   });
 
-  testWidgets('a hub spread over two compose clusters is rejected',
-      (WidgetTester tester) async {
+  testWidgets(
+      "a hub spread over two of the portal's compose clusters is fine "
+      '(living-atlases/la-docker-compose#14)', (WidgetTester tester) async {
     final LAProject portal = composePortal();
     final LAServer second = LAServer(
       id: ObjectId().toString(),
@@ -131,6 +142,48 @@ void main() {
     );
 
     await pumpPanel(tester, hub);
-    expect(find.textContaining('single host'), findsOneWidget);
+    expect(find.textContaining('single host'), findsNothing);
+    expect(find.textContaining(carrierMsg), findsNothing);
+  });
+
+  testWidgets(
+      'a hub with no server of its own is told to deploy the portal instead',
+      (WidgetTester tester) async {
+    final LAProject portal = composePortal();
+    final LAProject hub = hubOf(portal);
+    final Store<AppState> store = demoStore();
+    store.dispatch(OpenProjectTools(hub));
+    await tester.pumpWidget(wrapWithApp(store, const LintProjectPanel()));
+    await tester.pump();
+
+    expect(find.textContaining('deploys as part of'), findsOneWidget);
+    expect(find.text('GO TO PORTAL'), findsOneWidget);
+
+    await tester.tap(find.text('GO TO PORTAL'));
+    await tester.pump();
+    expect(store.state.currentProject.id, portal.id);
+  });
+
+  testWidgets(
+      'a hub with its own server is not told to deploy the portal instead',
+      (WidgetTester tester) async {
+    final LAProject portal = composePortal();
+    final LAProject hub = hubOf(portal);
+    final LAServer ownVm = LAServer(
+      id: ObjectId().toString(),
+      name: 'hub-gateway',
+      ip: '10.0.0.50',
+      projectId: hub.id,
+    );
+    hub.upsertServer(ownVm);
+
+    await pumpPanel(tester, hub);
+    expect(find.textContaining('deploys as part of'), findsNothing);
+  });
+
+  testWidgets('a non-hub compose portal is never told to deploy itself',
+      (WidgetTester tester) async {
+    await pumpPanel(tester, composePortal());
+    expect(find.textContaining('deploys as part of'), findsNothing);
   });
 }
