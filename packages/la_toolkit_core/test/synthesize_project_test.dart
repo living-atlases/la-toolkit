@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/lint/project_lint.dart';
-import 'package:la_toolkit_core/releases/deps_versions.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
+import 'package:la_toolkit_core/releases/deps_versions.dart';
 import 'package:la_toolkit_core/synth/synthesize_project.dart';
 import 'package:test/test.dart';
 
