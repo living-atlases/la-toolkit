@@ -1,5 +1,5 @@
-import 'package:la_toolkit/dependencies_manager.dart';
 import 'package:la_toolkit/utils/api.dart';
+import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:la_toolkit_core/models/version_utils.dart';
 import 'package:la_toolkit_core/utils/string_utils.dart';

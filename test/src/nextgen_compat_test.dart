@@ -1,4 +1,4 @@
-import 'package:la_toolkit/dependencies_manager.dart';
+import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:la_toolkit_core/models/nextgen_compat.dart';
 import 'package:test/test.dart';

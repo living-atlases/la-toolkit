@@ -1,18 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/lint/project_lint.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_project_status.dart';
-import 'package:la_toolkit_core/models/la_server.dart';
-import 'package:la_toolkit_core/models/la_service_constants.dart';
-import 'package:la_toolkit_core/models/la_service_desc.dart';
-import 'package:la_toolkit_core/models/la_service_name.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
-import 'package:la_toolkit_core/models/version_utils.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:redux/redux.dart';
 
-import '../dependencies_manager.dart';
 import '../models/app_state.dart';
 import '../redux/app_actions.dart';
 import '../routes.dart';
@@ -52,295 +46,76 @@ class _LintProjectPanelState extends State<LintProjectPanel> {
       },
       builder: (BuildContext context, _LintProjectPanelViewModel vm) {
         final LAProject project = vm.project;
-        final bool basicDefined =
-            vm.status.value >= LAProjectStatus.basicDefined.value;
-        final Map<String, String> selectedVersions = <String, String>{};
-        if (widget.showLADeps) {
-          selectedVersions.addAll(project.getServiceDeployReleases());
-        }
-        // we need also the toolkit deps
-        if ((widget.showToolkitDeps || widget.showLADeps) &&
-            vm.backendVersion != null) {
-          selectedVersions.addAll(<String, String>{
-            toolkit: vm.backendVersion!,
-            alaInstall:
-                project.alaInstallRelease ??
-                (vm.alaInstallReleases.isNotEmpty
-                    ? vm.alaInstallReleases[0]
-                    : '2.1.14'),
-            generator:
-                project.generatorRelease ??
-                (vm.generatorReleases.isNotEmpty
-                    ? vm.generatorReleases[0]
-                    : '1.4.3'),
-            // getServiceDeployReleases() does not carry this one: the
-            // la-docker-compose release is a project field, not a per-deploy
-            // software version. Without it here the docker-compose entries in
-            // the dependency matrix are never evaluated. The 'v' of the git tag
-            // and the 'upstream' sentinel are both handled downstream, by
-            // StringUtils.semantize and by verifyLAReleases respectively.
-            if (project.dockerComposeRelease != null)
-              dockerCompose: project.dockerComposeRelease!,
-          });
-        }
+        final Map<String, String> selectedVersions = lintSelectedVersions(
+          project,
+          backendVersion: vm.backendVersion,
+          alaInstallReleases: vm.alaInstallReleases,
+          generatorReleases: vm.generatorReleases,
+          laDeps: widget.showLADeps,
+          toolkitDeps: widget.showToolkitDeps,
+        );
         final List<Widget> lints = <Widget>[
-          LintErrorPanel(
-            vm.backendVersion ==
-                    null // AppUtils.isDemo()
-                ? <String>[]
-                : DependenciesManager.verifyLAReleases(
-                    project.getServicesNameListInUse() + laTools,
-                    selectedVersions,
-                  ),
-          ),
-          LintErrorPanel(
-            vm.backendVersion == null
-                ? <String>[]
-                : DependenciesManager.verifyNextgen(selectedVersions),
-          ),
+          for (final List<String> errors in lintDependencies(
+            project,
+            selectedVersions,
+            backendVersion: vm.backendVersion,
+            laDeps: widget.showLADeps,
+          ))
+            LintErrorPanel(errors),
         ];
-
-        if (basicDefined && widget.showLADeps) {
-          // Check java
-          for (final LAServer s in project.servers) {
-            final List<String> services = project.getServerServices(
-              serverId: s.id,
-            );
-            lints.add(
-              LintErrorPanel(
-                vm.backendVersion ==
-                        null // AppUtils.isDemo()
-                    ? <String>[]
-                    : DependenciesManager.verifySw(
-                        s,
-                        java,
-                        services,
-                        selectedVersions,
-                      ),
-              ),
-            );
-          }
-        }
-        final List<String> notAssigned = project.servicesNotAssigned();
-        final String notAssignedMessage = notAssigned.length < 5
-            ? ' (${notAssigned.map((String s) => LAServiceDesc.get(s).name).toList().join(', ')})'
-            : '';
-        final List<String> strandedServices = project.servicesWithNowhereToRun();
-        final String strandedMessage = strandedServices
-            .map((String s) => LAServiceDesc.get(s).name)
-            .join(', ');
         if (widget.showOthers) {
-          final String? userDetailsVersion = project.getSwVersionOfService(
-            userdetails,
-          );
-          final String? generatorVersion = project.generatorRelease;
-          final String? alaInstallVersion = project.alaInstallRelease;
           debugPrint(
-            'ala-install $alaInstallVersion, generator: $generatorVersion',
+            'ala-install ${project.alaInstallRelease}, generator: ${project.generatorRelease}',
           );
           lints.insertAll(0, <Widget>[
-            if (vm.sshKeys.isEmpty)
-              AlertCard(
-                message: "You don't have any SSH key",
-                actionText: 'SOLVE',
-                action: () => BeamerCond.of(context, SshKeysLocation()),
-              ),
-            // A hub inherits its deployment mode and its machines from the
-            // portal; the carrier constraint is the portal's to satisfy. The
-            // old rule tested the docker_compose service's deploy rows, which
-            // a hub never has, so it fired on every compose hub.
-            if (basicDefined &&
-                !project.isHub &&
-                project.isDockerComposeEnabled &&
-                !project.hasComposeCarrierHost())
-              const AlertCard(
-                message:
-                    'Docker Compose is enabled but no VM carries the compose stack. '
-                    'Tick "docker compose" on one of your servers: the compose cluster needs a machine to run on.',
-              ),
-            for (final String error in project.hubComposePlacementErrors())
-              AlertCard(message: error),
-            // A hub with no server of its own has nothing to run its own
-            // Deploy against: validateCreation() requires servers.isNotEmpty
-            // unconditionally, so its Deploy/Test Connectivity cards never
-            // enable. Its containers are rendered as part of the parent's
-            // docker-compose stack (LA_hubs), so the parent is what to deploy.
-            if (project.isHub &&
-                project.parent != null &&
-                project.servers.isEmpty &&
-                project.isDockerComposeEnabled)
-              AlertCard(
-                message:
-                    '${project.shortName} has no server of its own: it deploys as part of '
-                    "${project.parent!.shortName}'s docker-compose stack. Deploy "
-                    '${project.parent!.shortName} to bring ${project.shortName} online.',
-                actionText: 'GO TO ${project.parent!.shortName.toUpperCase()}',
-                action: () => StoreProvider.of<AppState>(
-                  context,
-                ).dispatch(OpenProjectTools(project.parent!)),
-              ),
-            if (project.allServersWithServicesReady() &&
-                !project.allServersWithSupportedOs('Ubuntu', '22.04'))
-              const AlertCard(
-                message:
-                    'The current supported OS version are Ubuntu 22.04 and 24.04 (under testing)',
-              ),
-            if (basicDefined &&
-                project.servers.isNotEmpty &&
-                !project.allServicesAssigned())
-              AlertCard(
-                message:
-                    'Some services is not assigned to a server$notAssignedMessage',
-              ),
-            if (basicDefined && strandedServices.isNotEmpty)
-              AlertCard(
-                message:
-                    'These services cannot run on a Docker Compose deployment and should be disabled: $strandedMessage. '
-                    'They are the legacy biocache-store path; this stack indexes with pipelines and solrcloud instead.',
-              ),
-            if (basicDefined &&
-                project.servers.isNotEmpty &&
-                project.getIncompatibilities().isNotEmpty)
-              for (final String i in project.getIncompatibilities())
-                AlertCard(message: i),
-            if (basicDefined && !project.allServersWithIPs())
-              const AlertCard(
-                message: 'All servers should have configured their IP address',
-              ),
-            if (basicDefined && !project.allServersWithSshKeys())
-              const AlertCard(
-                message: 'All servers should have configured their SSH keys',
-              ),
-            for (final String warning in project.getDockerComposeVMWarnings())
-              AlertCard(message: warning),
-            if (!project.servicesInDifferentServers(collectory, alaHub) &&
-                !project.hasAnyServerWithDockerCompose())
-              const AlertCard(
-                message:
-                    'The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled',
-              ),
-            if (!project.servicesInDifferentServers(ecodata, spatial))
-              const AlertCard(
-                message:
-                    'The ecodata and spatial services are in the same server. This can cause deploy problems',
-              ),
-            if (!project.servicesInDifferentServers(ecodataReporting, spatial))
-              const AlertCard(
-                message:
-                    'The ecodata reporting and spatial services are in the same server. This can cause deploy problems',
-              ),
-            if (!project.isHub &&
-                !project.isPipelinesInUse &&
-                !project.getServiceE(LAServiceName.biocache_backend).use)
-              const AlertCard(
-                message:
-                    'You should use biocache-store or the new pipelines as backend',
-              ),
-            if (!project.isHub &&
-                project.getService(biocacheBackend).use &&
-                !project.getService(solr).use &&
-                !project.hasAnyServerWithDockerCompose())
-              const AlertCard(
-                message:
-                    'You should use solr standalone for indexing biocache-store',
-              ),
-            if (!project.isHub &&
-                project.getService(bie).use &&
-                !project.getService(solr).use &&
-                !project.hasAnyServerWithDockerCompose())
-              const AlertCard(
-                message: 'You should use solr standalone for indexing species',
-              ),
-            if (!project.isHub &&
-                project.getService(pipelines).use &&
-                !project.getService(solrcloud).use)
-              const AlertCard(
-                message: 'You should use solrcloud for indexing pipelines',
-              ),
-            if (!project.isHub &&
-                project.getService(events).use &&
-                !project.getService(eventsElasticSearch).use)
-              const AlertCard(
-                message: 'You should use elasticsearch for events',
-              ),
-            if (!project.isHub &&
-                project.getService(pipelines).use &&
-                project.getService(solrcloud).use &&
-                !project.getService(zookeeper).use)
-              const AlertCard(
-                message: 'You should use zookeeper for solrcloud coordination',
-              ),
-            if (basicDefined &&
-                project.isPipelinesInUse &&
-                !project.isPipelinesOnlyInClusters &&
-                project.getPipelinesMaster() == null)
-              AlertCard(
-                message: 'You should select a master server for pipelines',
-                actionText: 'SOLVE',
-                action: () => BeamerCond.of(context, LAProjectTuneLocation()),
-              ),
-            if (basicDefined &&
-                project.isPipelinesInUse &&
-                !project.isPipelinesOnlyInClusters &&
-                project.getHostnames(pipelines).length < 3)
-              AlertCard(
-                message:
-                    'A pipelines cluster should have at least 3 servers (it have ${project.getHostnames(pipelines).length})',
-                actionText: 'SOLVE',
-                action: () => BeamerCond.of(context, LAProjectEditLocation()),
-              ),
-            if (basicDefined &&
-                project.isPipelinesInUse &&
-                !project.isPipelinesOnlyInClusters &&
-                project.getService(solrcloud).use &&
-                project.getHostnames(solrcloud).isNotEmpty &&
-                project.getHostnames(solrcloud).length.isEven)
-              AlertCard(
-                message:
-                    'A solrcloud cluster should have a odd number of servers (it have ${project.getHostnames(solrcloud).length})',
-                actionText: 'SOLVE',
-                action: () => BeamerCond.of(context, LAProjectEditLocation()),
-              ),
-            if (basicDefined &&
-                project.isPipelinesInUse &&
-                !project.isPipelinesOnlyInClusters &&
-                project.getService(zookeeper).use &&
-                project.getHostnames(zookeeper).isNotEmpty &&
-                project.getHostnames(zookeeper).length.isEven)
-              AlertCard(
-                message:
-                    'A zookeeper cluster should have a odd number of servers (it have ${project.getHostnames(zookeeper).length})',
-                actionText: 'SOLVE',
-                action: () => BeamerCond.of(context, LAProjectEditLocation()),
-              ),
-            if (project.isPipelinesInUse &&
-                !project.isPipelinesOnlyInClusters &&
-                project.getHostnames(pipelines).isNotEmpty &&
-                project.getHostnames(pipelines).join(' ').contains('_'))
-              AlertCard(
-                message:
-                    'Pipelines server names should not contain underscores',
-                actionText: 'SOLVE',
-                action: project.isCreated
-                    ? () => BeamerCond.of(context, LAProjectEditLocation())
-                    : null,
-              ),
-            if (!project.isHub &&
-                project.getService(cas).use &&
-                userDetailsVersion != null &&
-                VersionConstraint.parse(
-                  '< 3.0.1',
-                ).allows(v(userDetailsVersion)))
-              const AlertCard(
-                message:
-                    'OIDC is now required (CAS auth is deprecated) and needs '
-                    'userdetails >= 3.0.1. Please upgrade the userdetails service.',
-              ),
+            for (final LintFinding finding in lintProject(
+              project,
+              hasSshKeys: vm.sshKeys.isNotEmpty,
+            ))
+              _alertCard(context, project, finding),
           ]);
         }
         return Column(children: lints);
       },
     );
+  }
+
+  Widget _alertCard(
+    BuildContext context,
+    LAProject project,
+    LintFinding finding,
+  ) {
+    switch (finding.fix) {
+      case null:
+        return AlertCard(message: finding.message);
+      case LintFix.sshKeys:
+        return AlertCard(
+          message: finding.message,
+          actionText: 'SOLVE',
+          action: () => BeamerCond.of(context, SshKeysLocation()),
+        );
+      case LintFix.tuneProject:
+        return AlertCard(
+          message: finding.message,
+          actionText: 'SOLVE',
+          action: () => BeamerCond.of(context, LAProjectTuneLocation()),
+        );
+      case LintFix.editProject:
+        return AlertCard(
+          message: finding.message,
+          actionText: 'SOLVE',
+          action: () => BeamerCond.of(context, LAProjectEditLocation()),
+        );
+      case LintFix.openParent:
+        final LAProject parent = project.parent!;
+        return AlertCard(
+          message: finding.message,
+          actionText: 'GO TO ${parent.shortName.toUpperCase()}',
+          action: () => StoreProvider.of<AppState>(
+            context,
+          ).dispatch(OpenProjectTools(parent)),
+        );
+    }
   }
 }
 

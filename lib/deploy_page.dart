@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/common_cmd.dart';
 import 'package:la_toolkit_core/models/deploy_cmd.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
@@ -23,7 +24,6 @@ import 'components/server_selector.dart';
 import 'components/services_chip_panel.dart';
 import 'components/terms_drawer.dart';
 import 'components/tips_card.dart';
-import 'dependencies_manager.dart';
 import 'la_theme.dart';
 import 'models/app_state.dart';
 import 'redux/app_actions.dart';

@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/cmd_history_details.dart';
 import 'package:la_toolkit_core/models/cmd_history_entry.dart';
 import 'package:la_toolkit_core/models/host_services_checks.dart';
@@ -30,7 +31,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 
 import '../components/app_snack_bar_message.dart';
-import '../dependencies_manager.dart';
 import '../models/app_state.dart';
 import '../utils/api.dart';
 import '../utils/cas_utils.dart';

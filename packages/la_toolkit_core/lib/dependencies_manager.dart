@@ -1,17 +1,18 @@
 import 'dart:developer';
 
-import 'package:la_toolkit_core/models/dependencies.dart';
-import 'package:la_toolkit_core/models/la_server.dart';
-import 'package:la_toolkit_core/models/la_service_constants.dart';
-import 'package:la_toolkit_core/models/la_service_desc.dart';
-import 'package:la_toolkit_core/models/la_service_name.dart';
-import 'package:la_toolkit_core/models/migration_notes.dart';
-import 'package:la_toolkit_core/models/migration_notes_desc.dart';
-import 'package:la_toolkit_core/models/nextgen_compat.dart';
-import 'package:la_toolkit_core/models/version_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_extension/yaml_extension.dart';
+
+import 'models/dependencies.dart';
+import 'models/la_server.dart';
+import 'models/la_service_constants.dart';
+import 'models/la_service_desc.dart';
+import 'models/la_service_name.dart';
+import 'models/migration_notes.dart';
+import 'models/migration_notes_desc.dart';
+import 'models/nextgen_compat.dart';
+import 'models/version_utils.dart';
 
 class DependenciesManager {
   static List<String> verify(Map<String, String> combo) {
