@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
@@ -8,10 +7,9 @@ import 'package:la_toolkit_core/models/la_service.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:la_toolkit_core/models/la_service_deploy.dart';
 import 'package:objectid/objectid.dart';
+import 'package:test/test.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('Data Integrity Tests - Docker Compose on VMs', () {
     test('No duplicate services between serverServices and clusterServices', () {
       final LAProject p = LAProject();
@@ -173,7 +171,8 @@ void main() {
       ]);
 
       final LACluster? cluster = p.clusters.firstWhereOrNull(
-        (LACluster c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
+        (LACluster c) =>
+            c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
       );
       expect(cluster, isNotNull, reason: 'Cluster should be created');
 
@@ -469,7 +468,8 @@ void main() {
 
         // Find the restored cluster
         final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-          (LACluster c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
+          (LACluster c) =>
+              c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
         );
         expect(
           restoredCluster,
@@ -514,7 +514,8 @@ void main() {
       final LAProject restoredP = LAProject.fromJson(json);
 
       final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-        (LACluster c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
+        (LACluster c) =>
+            c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
       );
 
       final List<String> restoredServices =
@@ -566,7 +567,8 @@ void main() {
 
       // Find restored cluster
       final LACluster? restoredCluster = restoredP.clusters.firstWhereOrNull(
-        (LACluster c) => c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
+        (LACluster c) =>
+            c.serverId == vm1.id && c.type == DeploymentType.dockerCompose,
       );
 
       expect(restoredCluster, isNotNull);
@@ -596,7 +598,8 @@ void main() {
 
       // Get the cluster that was created
       final LACluster? cluster = p.clusters.firstWhereOrNull(
-        (LACluster c) => c.type == DeploymentType.dockerCompose && c.serverId == vm1.id,
+        (LACluster c) =>
+            c.type == DeploymentType.dockerCompose && c.serverId == vm1.id,
       );
       expect(cluster, isNotNull);
       expect(cluster!.serverId, equals(vm1.id));
@@ -717,79 +720,85 @@ void main() {
     );
   });
 
-  group('Data Integrity Tests - Docker clusters need a carrier host (gh-25)', () {
-    test('docker-compose cluster with null serverId is flagged', () {
-      final LAProject p = LAProject(
-        longName: 'Test Project',
-        shortName: 'TP',
-        domain: 'test.com',
-      );
-      final LACluster orphan = LACluster(
-        id: ObjectId().toString(),
-        projectId: p.id,
-        type: DeploymentType.dockerCompose,
-      );
-      p.clusters.add(orphan);
+  group(
+    'Data Integrity Tests - Docker clusters need a carrier host (gh-25)',
+    () {
+      test('docker-compose cluster with null serverId is flagged', () {
+        final LAProject p = LAProject(
+          longName: 'Test Project',
+          shortName: 'TP',
+          domain: 'test.com',
+        );
+        final LACluster orphan = LACluster(
+          id: ObjectId().toString(),
+          projectId: p.id,
+          type: DeploymentType.dockerCompose,
+        );
+        p.clusters.add(orphan);
 
-      final List<String> errors = p.validateDataIntegrity();
-      expect(
-        errors.any((String e) => e.contains('no carrier host')),
-        isTrue,
-        reason: 'A docker-compose cluster without serverId must be reported',
-      );
-    });
+        final List<String> errors = p.validateDataIntegrity();
+        expect(
+          errors.any((String e) => e.contains('no carrier host')),
+          isTrue,
+          reason: 'A docker-compose cluster without serverId must be reported',
+        );
+      });
 
-    test('docker-compose cluster pointing at a nonexistent server is flagged', () {
-      final LAProject p = LAProject(
-        longName: 'Test Project',
-        shortName: 'TP',
-        domain: 'test.com',
-      );
-      final LACluster dangling = LACluster(
-        id: ObjectId().toString(),
-        projectId: p.id,
-        serverId: ObjectId().toString(),
-        type: DeploymentType.dockerCompose,
-      );
-      p.clusters.add(dangling);
+      test(
+        'docker-compose cluster pointing at a nonexistent server is flagged',
+        () {
+          final LAProject p = LAProject(
+            longName: 'Test Project',
+            shortName: 'TP',
+            domain: 'test.com',
+          );
+          final LACluster dangling = LACluster(
+            id: ObjectId().toString(),
+            projectId: p.id,
+            serverId: ObjectId().toString(),
+            type: DeploymentType.dockerCompose,
+          );
+          p.clusters.add(dangling);
 
-      final List<String> errors = p.validateDataIntegrity();
-      expect(
-        errors.any((String e) => e.contains('does not exist')),
-        isTrue,
-        reason: 'A cluster referencing a missing server must be reported',
+          final List<String> errors = p.validateDataIntegrity();
+          expect(
+            errors.any((String e) => e.contains('does not exist')),
+            isTrue,
+            reason: 'A cluster referencing a missing server must be reported',
+          );
+        },
       );
-    });
 
-    test('docker-compose cluster with a real carrier host passes', () {
-      final LAProject p = LAProject(
-        longName: 'Test Project',
-        shortName: 'TP',
-        domain: 'test.com',
-      );
-      final LAServer vm1 = LAServer(
-        name: 'vm1',
-        ip: '10.0.0.1',
-        projectId: p.id,
-      );
-      p.upsertServer(vm1);
-      final LACluster cluster = LACluster(
-        id: ObjectId().toString(),
-        projectId: p.id,
-        serverId: vm1.id,
-        type: DeploymentType.dockerCompose,
-      );
-      p.clusters.add(cluster);
+      test('docker-compose cluster with a real carrier host passes', () {
+        final LAProject p = LAProject(
+          longName: 'Test Project',
+          shortName: 'TP',
+          domain: 'test.com',
+        );
+        final LAServer vm1 = LAServer(
+          name: 'vm1',
+          ip: '10.0.0.1',
+          projectId: p.id,
+        );
+        p.upsertServer(vm1);
+        final LACluster cluster = LACluster(
+          id: ObjectId().toString(),
+          projectId: p.id,
+          serverId: vm1.id,
+          type: DeploymentType.dockerCompose,
+        );
+        p.clusters.add(cluster);
 
-      final List<String> errors = p.validateDataIntegrity();
-      expect(
-        errors.where(
-          (String e) =>
-              e.contains('no carrier host') || e.contains('does not exist'),
-        ),
-        isEmpty,
-        reason: 'A properly hosted cluster must not be reported',
-      );
-    });
-  });
+        final List<String> errors = p.validateDataIntegrity();
+        expect(
+          errors.where(
+            (String e) =>
+                e.contains('no carrier host') || e.contains('does not exist'),
+          ),
+          isEmpty,
+          reason: 'A properly hosted cluster must not be reported',
+        );
+      });
+    },
+  );
 }

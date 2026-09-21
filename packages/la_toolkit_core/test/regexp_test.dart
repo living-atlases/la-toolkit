@@ -1,6 +1,5 @@
 import 'package:la_toolkit_core/utils/regexp.dart';
 import 'package:la_toolkit_core/utils/string_utils.dart';
-
 import 'package:test/test.dart';
 
 void main() {

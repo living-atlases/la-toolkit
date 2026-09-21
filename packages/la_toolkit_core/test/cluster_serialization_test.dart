@@ -1,12 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:test/test.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('LACluster Serialization Tests', () {
     test('LACluster with serverId serializes correctly', () {
       // Create a simple cluster with serverId
@@ -185,8 +183,14 @@ void main() {
         'advancedTune': false,
         'additionalVariables': '',
         'createdAt': 1643587200,
-        'mapBoundsFstPoint': <String, double>{'latitude': -44.0, 'longitude': 112.0},
-        'mapBoundsSndPoint': <String, double>{'latitude': -9.0, 'longitude': 154.0},
+        'mapBoundsFstPoint': <String, double>{
+          'latitude': -44.0,
+          'longitude': 112.0,
+        },
+        'mapBoundsSndPoint': <String, double>{
+          'latitude': -9.0,
+          'longitude': 154.0,
+        },
         'mapZoom': 5.0,
         'servers': <dynamic>[],
         'clusters': <dynamic>[

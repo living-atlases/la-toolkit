@@ -1,12 +1,12 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service_name.dart';
 import 'package:la_toolkit_core/models/la_variable.dart';
+import 'package:la_toolkit_core/utils/foundation.dart';
 import 'package:objectid/objectid.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('LAProject Conversion Tests', () {

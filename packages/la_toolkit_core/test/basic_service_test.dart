@@ -2,7 +2,6 @@ import 'package:la_toolkit_core/models/basic_service.dart';
 import 'package:la_toolkit_core/models/la_service_desc.dart';
 import 'package:la_toolkit_core/models/la_service_name.dart';
 import 'package:la_toolkit_core/models/la_variable_desc.dart';
-
 import 'package:test/test.dart';
 
 void main() {

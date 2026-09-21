@@ -1,4 +1,3 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
@@ -6,13 +5,12 @@ import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service_desc.dart';
 import 'package:la_toolkit_core/models/la_variable_desc.dart';
 import 'package:objectid/objectid.dart';
+import 'package:test/test.dart';
 
 /// A data hub is a portal of its own and needs the same branding choice the portal
 /// has: a git URL (built into its own image), a local path, or nothing at all,
 /// which means "reuse the branding already served at my header_and_footer_baseurl".
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   LAProject buildComposePortal() {
     final LAProject portal = LAProject(
       longName: 'Portal',
@@ -64,37 +62,39 @@ void main() {
     final LACluster cluster = portal.clusters.firstWhere(
       (LACluster c) => c.type == DeploymentType.dockerCompose,
     );
-    hub.assignByType(
-      cluster.id,
-      DeploymentType.dockerCompose,
-      const <String>['ala_hub', 'branding'],
-    );
+    hub.assignByType(cluster.id, DeploymentType.dockerCompose, const <String>[
+      'ala_hub',
+      'branding',
+    ]);
     return hub;
   }
 
   group('hub branding', () {
-    test('the branding source is offered on a hub, unlike other compose vars',
-        () {
-      final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal);
+    test(
+      'the branding source is offered on a hub, unlike other compose vars',
+      () {
+        final LAProject portal = buildComposePortal();
+        final LAProject hub = attachHub(portal);
 
-      final LAVariableDesc brandingSource =
-          LAVariableDesc.map['branding_source']!;
-      // Tune page filter: a variable is dropped on a hub when the service it
-      // depends on is not hub-capable. branding is; docker_compose is not.
-      expect(
-        LAServiceDesc.getE(brandingSource.depends!).hubCapable,
-        isTrue,
-        reason: 'else the field is invisible on every hub',
-      );
-      expect(brandingSource.isVisible!(hub), isTrue);
-      // branding_as_home stays the portal's business: it claims the root domain.
-      expect(
-        LAServiceDesc.getE(LAVariableDesc.map['branding_as_home']!.depends!)
-            .hubCapable,
-        isFalse,
-      );
-    });
+        final LAVariableDesc brandingSource =
+            LAVariableDesc.map['branding_source']!;
+        // Tune page filter: a variable is dropped on a hub when the service it
+        // depends on is not hub-capable. branding is; docker_compose is not.
+        expect(
+          LAServiceDesc.getE(brandingSource.depends!).hubCapable,
+          isTrue,
+          reason: 'else the field is invisible on every hub',
+        );
+        expect(brandingSource.isVisible!(hub), isTrue);
+        // branding_as_home stays the portal's business: it claims the root domain.
+        expect(
+          LAServiceDesc.getE(
+            LAVariableDesc.map['branding_as_home']!.depends!,
+          ).hubCapable,
+          isFalse,
+        );
+      },
+    );
 
     test('a hub keeps its own branding source instead of the parent one', () {
       final LAProject portal = buildComposePortal();
@@ -125,32 +125,36 @@ void main() {
       expect(conf['LA_variable_branding_source'], equals(''));
     });
 
-    test('the default points at the hub own branding dir, not the portal one',
-        () {
-      final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal);
+    test(
+      'the default points at the hub own branding dir, not the portal one',
+      () {
+        final LAProject portal = buildComposePortal();
+        final LAProject hub = attachHub(portal);
 
-      expect(
-        hub.getVariableValue('branding_source'),
-        equals('../${hub.dirName}-branding'),
-      );
-    });
+        expect(
+          hub.getVariableValue('branding_source'),
+          equals('../${hub.dirName}-branding'),
+        );
+      },
+    );
 
-    test('the hub branding source reaches the generator payload of the portal',
-        () {
-      final LAProject portal = buildComposePortal();
-      attachHub(
-        portal,
-        brandingSource: 'https://github.com/living-atlases/base-branding',
-      );
+    test(
+      'the hub branding source reaches the generator payload of the portal',
+      () {
+        final LAProject portal = buildComposePortal();
+        attachHub(
+          portal,
+          brandingSource: 'https://github.com/living-atlases/base-branding',
+        );
 
-      final List<dynamic> hubs =
-          portal.toGeneratorJson()['LA_hubs'] as List<dynamic>;
-      expect(hubs, hasLength(1));
-      expect(
-        (hubs.first as Map<String, dynamic>)['LA_variable_branding_source'],
-        equals('https://github.com/living-atlases/base-branding'),
-      );
-    });
+        final List<dynamic> hubs =
+            portal.toGeneratorJson()['LA_hubs'] as List<dynamic>;
+        expect(hubs, hasLength(1));
+        expect(
+          (hubs.first as Map<String, dynamic>)['LA_variable_branding_source'],
+          equals('https://github.com/living-atlases/base-branding'),
+        );
+      },
+    );
   });
 }

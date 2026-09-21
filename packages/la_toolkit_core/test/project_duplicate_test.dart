@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
@@ -12,6 +11,7 @@ import 'package:la_toolkit_core/models/la_variable.dart';
 import 'package:la_toolkit_core/models/la_variable_desc.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/utils/regexp.dart';
+import 'package:test/test.dart';
 
 LAProject buildSourceProject() {
   final LAProject p = LAProject(
@@ -40,8 +40,6 @@ LAProject buildSourceProject() {
 }
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   test('duplicate regenerates all ids and remaps references', () {
     final LAProject p = buildSourceProject();
     final String sourceJsonBefore = json.encode(p.toJson());
@@ -146,9 +144,11 @@ void main() {
     expect(clone.clusterServices.keys.toSet(), equals(cloneClusterIds));
     expect(
       clone.serverServices[cVm1.id],
-      equals(p.getServerServicesForTest()[p.servers
-          .firstWhere((LAServer s) => s.name == 'vm1')
-          .id]),
+      equals(
+        p.getServerServicesForTest()[p.servers
+            .firstWhere((LAServer s) => s.name == 'vm1')
+            .id],
+      ),
     );
     expect(clone.clusterServices.values.first, equals(<String>[gatus]));
 
@@ -210,56 +210,48 @@ void main() {
     );
   });
 
-  test(
-    'duplicate keeps portal identity, differing only by dirName, and '
-    'preserves passwords and local extras',
-    () {
-      final LAProject p = buildSourceProject();
-      // A secret-like variable and project-level local extras.
-      p.setVariable(
-        LAVariableDesc.get('email_sender_password'),
-        's3cr3t-pass',
-      );
-      p.additionalVariables = base64.encode(
-        utf8.encode('my_custom_var: 42\n'),
-      );
+  test('duplicate keeps portal identity, differing only by dirName, and '
+      'preserves passwords and local extras', () {
+    final LAProject p = buildSourceProject();
+    // A secret-like variable and project-level local extras.
+    p.setVariable(LAVariableDesc.get('email_sender_password'), 's3cr3t-pass');
+    p.additionalVariables = base64.encode(utf8.encode('my_custom_var: 42\n'));
 
-      // Same shortName, longName and domain: only the dirName differs.
-      final LAProject clone = LAProject.duplicate(
-        p,
-        newShortName: p.shortName,
-        newLongName: p.longName,
-        newDomain: p.domain,
-        newDirName: 'law_copy',
-      );
+    // Same shortName, longName and domain: only the dirName differs.
+    final LAProject clone = LAProject.duplicate(
+      p,
+      newShortName: p.shortName,
+      newLongName: p.longName,
+      newDomain: p.domain,
+      newDirName: 'law_copy',
+    );
 
-      expect(clone.shortName, equals(p.shortName));
-      expect(clone.longName, equals(p.longName));
-      expect(clone.domain, equals(p.domain));
-      expect(clone.dirName, equals('law_copy'));
-      expect(clone.dirName, isNot(equals(p.dirName)));
+    expect(clone.shortName, equals(p.shortName));
+    expect(clone.longName, equals(p.longName));
+    expect(clone.domain, equals(p.domain));
+    expect(clone.dirName, equals('law_copy'));
+    expect(clone.dirName, isNot(equals(p.dirName)));
 
-      // Server names are suffixed by the dirName (unique differentiator) and do
-      // not collide with the original's.
-      final Set<String> cloneNames = clone.servers
-          .map((LAServer s) => s.name)
-          .toSet();
-      final Set<String> sourceNames = p.servers
-          .map((LAServer s) => s.name)
-          .toSet();
-      expect(cloneNames.intersection(sourceNames), isEmpty);
-      for (final LAServer s in clone.servers) {
-        expect(s.name.endsWith('-law_copy'), equals(true));
-      }
+    // Server names are suffixed by the dirName (unique differentiator) and do
+    // not collide with the original's.
+    final Set<String> cloneNames = clone.servers
+        .map((LAServer s) => s.name)
+        .toSet();
+    final Set<String> sourceNames = p.servers
+        .map((LAServer s) => s.name)
+        .toSet();
+    expect(cloneNames.intersection(sourceNames), isEmpty);
+    for (final LAServer s in clone.servers) {
+      expect(s.name.endsWith('-law_copy'), equals(true));
+    }
 
-      // Passwords and local extras are preserved verbatim in the clone.
-      final LAVariable clonePass = clone.variables.firstWhere(
-        (LAVariable v) => v.nameInt == 'email_sender_password',
-      );
-      expect(clonePass.value, equals('s3cr3t-pass'));
-      expect(clone.additionalVariables, equals(p.additionalVariables));
+    // Passwords and local extras are preserved verbatim in the clone.
+    final LAVariable clonePass = clone.variables.firstWhere(
+      (LAVariable v) => v.nameInt == 'email_sender_password',
+    );
+    expect(clonePass.value, equals('s3cr3t-pass'));
+    expect(clone.additionalVariables, equals(p.additionalVariables));
 
-      expect(clone.validateDataIntegrity(), isEmpty);
-    },
-  );
+    expect(clone.validateDataIntegrity(), isEmpty);
+  });
 }

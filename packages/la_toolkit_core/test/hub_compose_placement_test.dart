@@ -1,10 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service_deploy.dart';
 import 'package:objectid/objectid.dart';
+import 'package:test/test.dart';
 
 /// A data hub owns no docker infrastructure: it PLACES its services on the
 /// portal's compose clusters (or on VMs of its own) and never copies the
@@ -12,14 +12,14 @@ import 'package:objectid/objectid.dart';
 /// carrier for the hub; what is persisted is the hub's own serviceDeploys
 /// referencing the portal's cluster id.
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  LAProject buildComposePortal({List<String> hubCapable = const <String>[
-    'ala_hub',
-    'ala_bie',
-    'regions',
-    'branding',
-  ]}) {
+  LAProject buildComposePortal({
+    List<String> hubCapable = const <String>[
+      'ala_hub',
+      'ala_bie',
+      'regions',
+      'branding',
+    ],
+  }) {
     final LAProject portal = LAProject(
       longName: 'Portal',
       shortName: 'portal',
@@ -44,8 +44,8 @@ void main() {
   }
 
   LACluster composeClusterOf(LAProject portal) => portal.clusters.firstWhere(
-        (LACluster c) => c.type == DeploymentType.dockerCompose,
-      );
+    (LACluster c) => c.type == DeploymentType.dockerCompose,
+  );
 
   // The toolkit no longer guesses a hub's placement (living-atlases/la-docker-compose#14
   // lifted the single-cluster/co-location constraints, and the user now picks
@@ -93,17 +93,26 @@ void main() {
       final LAProject portal = buildComposePortal();
       final LAProject hub = attachHub(portal);
 
-      expect(hub.isDockerComposeEnabled, isTrue,
-          reason: 'the mode is inherited from the parent');
+      expect(
+        hub.isDockerComposeEnabled,
+        isTrue,
+        reason: 'the mode is inherited from the parent',
+      );
       expect(hub.isDockerClusterConfigured(), isTrue);
       expect(hub.hasDockerComposeServices, isTrue);
-      expect(hub.isPureDockerCompose, isTrue,
-          reason: 'no VM-assigned services of its own');
+      expect(
+        hub.isPureDockerCompose,
+        isTrue,
+        reason: 'no VM-assigned services of its own',
+      );
       expect(hub.getHostnames('ala_hub'), equals(<String>['la-mh-1']));
 
       expect(hub.clusters, isEmpty, reason: "the cluster is the portal's");
       expect(hub.servers, isEmpty, reason: "the machine is the portal's");
-      expect(hub.clusterServices.keys, equals(<String>[composeClusterOf(portal).id]));
+      expect(
+        hub.clusterServices.keys,
+        equals(<String>[composeClusterOf(portal).id]),
+      );
       for (final LAServiceDeploy sd in hub.serviceDeploys) {
         expect(sd.projectId, hub.id);
         expect(sd.clusterId, composeClusterOf(portal).id);
@@ -190,7 +199,12 @@ void main() {
   group('hybrid hub', () {
     test('own VM for records, portal cluster for branding', () {
       final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal, species: false, regions: false, suggest: false);
+      final LAProject hub = attachHub(
+        portal,
+        species: false,
+        regions: false,
+        suggest: false,
+      );
       final LAServer hubVm = LAServer(
         id: ObjectId().toString(),
         name: 'hub-vm',
@@ -206,9 +220,11 @@ void main() {
       );
 
       expect(hub.isHybrid, isTrue);
-      expect(hub.serversWithServices().map((LAServer s) => s.name),
-          equals(<String>['hub-vm']),
-          reason: 'ownership never reaches the portal machines');
+      expect(
+        hub.serversWithServices().map((LAServer s) => s.name),
+        equals(<String>['hub-vm']),
+        reason: 'ownership never reaches the portal machines',
+      );
       expect(hub.getHostnames('ala_hub'), equals(<String>['hub-vm']));
       expect(hub.getHostnames('branding'), equals(<String>['la-mh-1']));
 
@@ -219,7 +235,12 @@ void main() {
 
     test('deleting the hub VM keeps the compose placement', () {
       final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal, species: false, regions: false, suggest: false);
+      final LAProject hub = attachHub(
+        portal,
+        species: false,
+        regions: false,
+        suggest: false,
+      );
       final LAServer hubVm = LAServer(
         id: ObjectId().toString(),
         name: 'hub-vm',
@@ -242,20 +263,26 @@ void main() {
   });
 
   group('persistence', () {
-    test('the hub payload references the portal cluster and carries no copy', () {
-      final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal);
+    test(
+      'the hub payload references the portal cluster and carries no copy',
+      () {
+        final LAProject portal = buildComposePortal();
+        final LAProject hub = attachHub(portal);
 
-      final Map<String, dynamic> json = hub.toJson();
-      expect(json['clusters'], isEmpty);
-      expect(json['servers'], isEmpty);
-      final List<dynamic> deploys = json['serviceDeploys'] as List<dynamic>;
-      expect(deploys, isNotEmpty);
-      for (final dynamic d in deploys) {
-        expect((d as Map<String, dynamic>)['clusterId'], composeClusterOf(portal).id);
-        expect(d['projectId'], hub.id);
-      }
-    });
+        final Map<String, dynamic> json = hub.toJson();
+        expect(json['clusters'], isEmpty);
+        expect(json['servers'], isEmpty);
+        final List<dynamic> deploys = json['serviceDeploys'] as List<dynamic>;
+        expect(deploys, isNotEmpty);
+        for (final dynamic d in deploys) {
+          expect(
+            (d as Map<String, dynamic>)['clusterId'],
+            composeClusterOf(portal).id,
+          );
+          expect(d['projectId'], hub.id);
+        }
+      },
+    );
 
     test('survives a toJson/fromJson round trip of the portal', () {
       final LAProject portal = buildComposePortal();
@@ -283,7 +310,10 @@ void main() {
       hubJson['clusterServices'] = <String, List<String>>{};
 
       final LAProject restored = LAProject.fromJson(json);
-      expect(restored.hubs.first.getHostnames('ala_hub'), equals(<String>['la-mh-1']));
+      expect(
+        restored.hubs.first.getHostnames('ala_hub'),
+        equals(<String>['la-mh-1']),
+      );
     });
 
     test('duplicating the portal re-points the hub at the clone cluster', () {
@@ -306,7 +336,10 @@ void main() {
         expect(sd.serverId, clone.servers.single.id);
       }
       expect(cloneHub.servers, isEmpty);
-      expect(cloneHub.getHostnames('ala_hub'), equals(<String>['la-mh-1-portal2']));
+      expect(
+        cloneHub.getHostnames('ala_hub'),
+        equals(<String>['la-mh-1-portal2']),
+      );
     });
   });
 
@@ -333,8 +366,8 @@ void main() {
       final Map<String, dynamic> aliases =
           conf['LA_nginx_docker_internal_aliases_by_host']
               as Map<String, dynamic>;
-      final List<String> forHost =
-          (aliases['la-mh-1'] as List<dynamic>).cast<String>();
+      final List<String> forHost = (aliases['la-mh-1'] as List<dynamic>)
+          .cast<String>();
       expect(
         forHost,
         contains(hub.getService('ala_hub').url(hub.domain)),
@@ -345,71 +378,88 @@ void main() {
     });
   });
 
-  group('la-docker-compose placement constraints (living-atlases/la-docker-compose#14)', () {
-    test('a hub on the portal records cluster passes', () {
-      final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal);
-      expect(hub.hubComposePlacementErrors(), isEmpty);
-    });
+  group(
+    'la-docker-compose placement constraints (living-atlases/la-docker-compose#14)',
+    () {
+      test('a hub on the portal records cluster passes', () {
+        final LAProject portal = buildComposePortal();
+        final LAProject hub = attachHub(portal);
+        expect(hub.hubComposePlacementErrors(), isEmpty);
+      });
 
-    test("a hub spread over two of the portal's clusters is fine", () {
-      final LAProject portal = buildComposePortal();
-      final LAServer second = LAServer(
-        id: ObjectId().toString(),
-        name: 'la-mh-2',
-        ip: '10.0.0.2',
-        projectId: portal.id,
-      );
-      portal.upsertServer(second);
-      portal.assign(second, const <String>['docker_compose']);
-      portal.assignByType(second.id, DeploymentType.dockerCompose, const <String>['ala_bie']);
-      final LAProject hub = attachHub(portal);
-      final LACluster secondCluster = portal.clusters.firstWhere(
-        (LACluster c) => c.serverId == second.id,
-      );
-      hub.unAssignByType(composeClusterOf(portal).id, DeploymentType.dockerCompose, 'ala_bie');
-      hub.assignByType(secondCluster.id, DeploymentType.dockerCompose, <String>['ala_bie']);
+      test("a hub spread over two of the portal's clusters is fine", () {
+        final LAProject portal = buildComposePortal();
+        final LAServer second = LAServer(
+          id: ObjectId().toString(),
+          name: 'la-mh-2',
+          ip: '10.0.0.2',
+          projectId: portal.id,
+        );
+        portal.upsertServer(second);
+        portal.assign(second, const <String>['docker_compose']);
+        portal.assignByType(
+          second.id,
+          DeploymentType.dockerCompose,
+          const <String>['ala_bie'],
+        );
+        final LAProject hub = attachHub(portal);
+        final LACluster secondCluster = portal.clusters.firstWhere(
+          (LACluster c) => c.serverId == second.id,
+        );
+        hub.unAssignByType(
+          composeClusterOf(portal).id,
+          DeploymentType.dockerCompose,
+          'ala_bie',
+        );
+        hub.assignByType(
+          secondCluster.id,
+          DeploymentType.dockerCompose,
+          <String>['ala_bie'],
+        );
 
-      expect(hub.hubComposePlacementErrors(), isEmpty);
-      expect(hub.getHostnames('ala_bie'), equals(<String>['la-mh-2']));
-      expect(hub.getHostnames('ala_hub'), equals(<String>['la-mh-1']));
-    });
+        expect(hub.hubComposePlacementErrors(), isEmpty);
+        expect(hub.getHostnames('ala_bie'), equals(<String>['la-mh-2']));
+        expect(hub.getHostnames('ala_hub'), equals(<String>['la-mh-1']));
+      });
 
-    test('a hub service on a cluster with no portal copy of it is fine', () {
-      // Each hub alias is now resolved independently (setup-facts.yml's
-      // hub_alias_hosts), so a hub service no longer needs the portal's own
-      // copy of it on the same host.
-      final LAProject portal = buildComposePortal(hubCapable: <String>['ala_hub', 'branding']);
-      portal.serviceInUse('ala_bie', true);
-      final LAProject hub = attachHub(portal, regions: false, suggest: false);
-      hub.assignByType(
-        composeClusterOf(portal).id,
-        DeploymentType.dockerCompose,
-        const <String>['ala_hub', 'branding', 'ala_bie'],
-      );
+      test('a hub service on a cluster with no portal copy of it is fine', () {
+        // Each hub alias is now resolved independently (setup-facts.yml's
+        // hub_alias_hosts), so a hub service no longer needs the portal's own
+        // copy of it on the same host.
+        final LAProject portal = buildComposePortal(
+          hubCapable: <String>['ala_hub', 'branding'],
+        );
+        portal.serviceInUse('ala_bie', true);
+        final LAProject hub = attachHub(portal, regions: false, suggest: false);
+        hub.assignByType(
+          composeClusterOf(portal).id,
+          DeploymentType.dockerCompose,
+          const <String>['ala_hub', 'branding', 'ala_bie'],
+        );
 
-      expect(hub.hubComposePlacementErrors(), isEmpty);
-    });
+        expect(hub.hubComposePlacementErrors(), isEmpty);
+      });
 
-    test('a hub placed on a cluster the portal no longer has is flagged', () {
-      final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal);
-      final LACluster cluster = composeClusterOf(portal);
-      final String staleClusterId = cluster.id;
+      test('a hub placed on a cluster the portal no longer has is flagged', () {
+        final LAProject portal = buildComposePortal();
+        final LAProject hub = attachHub(portal);
+        final LACluster cluster = composeClusterOf(portal);
+        final String staleClusterId = cluster.id;
 
-      portal.deleteCluster(cluster);
-      // Simulate a desynced client still holding the stale reference.
-      hub.clusterServices[staleClusterId] = <String>['ala_hub'];
+        portal.deleteCluster(cluster);
+        // Simulate a desynced client still holding the stale reference.
+        hub.clusterServices[staleClusterId] = <String>['ala_hub'];
 
-      final List<String> errors = hub.hubComposePlacementErrors();
-      expect(errors, isNotEmpty);
-      expect(errors.single, contains('no longer has'));
-    });
+        final List<String> errors = hub.hubComposePlacementErrors();
+        expect(errors, isNotEmpty);
+        expect(errors.single, contains('no longer has'));
+      });
 
-    test('a hub on VMs only has nothing to check', () {
-      final LAProject portal = buildComposePortal();
-      final LAProject hub = attachHub(portal, suggest: false);
-      expect(hub.hubComposePlacementErrors(), isEmpty);
-    });
-  });
+      test('a hub on VMs only has nothing to check', () {
+        final LAProject portal = buildComposePortal();
+        final LAProject hub = attachHub(portal, suggest: false);
+        expect(hub.hubComposePlacementErrors(), isEmpty);
+      });
+    },
+  );
 }

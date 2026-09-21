@@ -1,13 +1,11 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deploy_cmd.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:test/test.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   LAProject hybridProject({
     List<String> vmServicesOnComposeHost = const <String>[],
   }) {
@@ -82,7 +80,10 @@ void main() {
     ]) {
       final DeployCmd wire = p.buildVmLegDeployCmd(cmd);
       expect(wire.dockerCompose, equals(false));
-      expect(wire.deployServices, unorderedEquals(<String>[collectory, branding]));
+      expect(
+        wire.deployServices,
+        unorderedEquals(<String>[collectory, branding]),
+      );
       // Never 'all' nor docker services, so ala-install can't look for the
       // missing docker-compose.yml playbook.
       expect(wire.deployServices, isNot(contains('all')));

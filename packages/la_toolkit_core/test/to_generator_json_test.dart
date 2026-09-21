@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_variable_desc.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('toGeneratorJson Tests', () {
@@ -210,24 +210,25 @@ void main() {
         expect(project.dirName ?? '', isEmpty);
         project.shortName = 'NLPHH';
 
-        final String defValue =
-            brandingSourceDefault(project);
+        final String defValue = brandingSourceDefault(project);
 
         expect(defValue, isNot(equals('../-branding')));
         expect(defValue, equals('../nlphh-branding'));
       },
     );
 
-    test('empty shortName still yields a usable default (la_<id> fallback)', () {
-      final LAProject project = LAProject();
+    test(
+      'empty shortName still yields a usable default (la_<id> fallback)',
+      () {
+        final LAProject project = LAProject();
 
-      final String defValue =
-          brandingSourceDefault(project);
+        final String defValue = brandingSourceDefault(project);
 
-      expect(defValue, isNot(equals('../-branding')));
-      expect(defValue, startsWith('../la_'));
-      expect(defValue, endsWith('-branding'));
-    });
+        expect(defValue, isNot(equals('../-branding')));
+        expect(defValue, startsWith('../la_'));
+        expect(defValue, endsWith('-branding'));
+      },
+    );
 
     test('a project with dirName set keeps using it', () {
       final LAProject project = LAProject(
@@ -237,8 +238,7 @@ void main() {
         dirName: 'my-dir',
       );
 
-      final String defValue =
-          brandingSourceDefault(project);
+      final String defValue = brandingSourceDefault(project);
 
       expect(defValue, equals('../my-dir-branding'));
     });

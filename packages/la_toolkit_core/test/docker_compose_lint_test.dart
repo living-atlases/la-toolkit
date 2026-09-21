@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_releases.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:test/test.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
   hasComposeCarrierHostTests();
 
   group('Docker Compose Lint Tests', () {
@@ -26,7 +25,10 @@ void main() {
         );
         p.upsertServer(vm1);
         p.serviceInUse(dockerCompose, true);
-        p.assign(vm1, <String>[dockerCompose, collectory]); // Assigned both to VM
+        p.assign(vm1, <String>[
+          dockerCompose,
+          collectory,
+        ]); // Assigned both to VM
 
         final List<String> warnings = p.getDockerComposeVMWarnings();
         // One warning for the server, naming the misplaced services -- not one
@@ -50,7 +52,9 @@ void main() {
         p.upsertServer(vm1);
         p.serviceInUse(dockerCompose, true);
         p.assign(vm1, <String>[dockerCompose]);
-        p.assignByType(vm1.id, DeploymentType.dockerCompose, <String>[collectory]);
+        p.assignByType(vm1.id, DeploymentType.dockerCompose, <String>[
+          collectory,
+        ]);
 
         final List<String> warnings = p.getDockerComposeVMWarnings();
         expect(warnings, isEmpty);
@@ -152,7 +156,9 @@ void main() {
         p.assign(vm1, <String>[dockerCompose]);
 
         // 1. Assign to Docker Cluster
-        p.assignByType(vm1.id, DeploymentType.dockerCompose, <String>[collectory]);
+        p.assignByType(vm1.id, DeploymentType.dockerCompose, <String>[
+          collectory,
+        ]);
         expect(
           p.getClusterServices(clusterId: p.clusters.first.id),
           contains(collectory),
@@ -202,7 +208,7 @@ biocache-service:
 
     List<Map<String, dynamic>> loadTemplates() {
       final String content = File(
-        'assets/la-toolkit-templates.json',
+        '../../assets/la-toolkit-templates.json',
       ).readAsStringSync();
       return (jsonDecode(content) as List<dynamic>)
           .map((dynamic t) => t as Map<String, dynamic>)
@@ -222,9 +228,7 @@ biocache-service:
     );
 
     test('warns, and says why, when namematching has no version', () {
-      final List<String> lints = lintsFor(
-        LAProject.fromObject(promptValues()),
-      );
+      final List<String> lints = lintsFor(LAProject.fromObject(promptValues()));
       expect(lints, hasLength(1));
       expect(
         lints[0],

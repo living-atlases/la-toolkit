@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
@@ -12,6 +11,7 @@ import 'package:la_toolkit_core/models/la_service_desc.dart';
 import 'package:la_toolkit_core/models/la_service_name.dart';
 import 'package:la_toolkit_core/utils/regexp.dart';
 import 'package:la_toolkit_core/utils/string_utils.dart';
+import 'package:test/test.dart';
 
 /// The sample project shipped with the toolkit (the (+) menu adds it) is derived
 /// from `topologies/base.lademo.yo-rc.json` in la-docker-compose: the
@@ -25,7 +25,7 @@ import 'package:la_toolkit_core/utils/string_utils.dart';
 /// plain VM project that would deploy with ala-install.
 List<Map<String, dynamic>> _loadTemplates() {
   final String content = File(
-    'assets/la-toolkit-templates.json',
+    '../../assets/la-toolkit-templates.json',
   ).readAsStringSync();
   return (jsonDecode(content) as List<dynamic>)
       .map((dynamic t) => t as Map<String, dynamic>)

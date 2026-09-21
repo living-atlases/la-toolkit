@@ -1,8 +1,7 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_lat_lng.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
@@ -16,12 +15,11 @@ import 'package:la_toolkit_core/models/la_variable.dart';
 import 'package:la_toolkit_core/models/la_variable_desc.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:test/test.dart';
 
 import 'check_services_helper.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   test('Test step 0 of creation, longname', () {
     final LAProject testProject = LAProject();
     expect(testProject.isCreated, equals(false));
@@ -1689,16 +1687,13 @@ void main() {
     // Forced variables override the stored value with their defValue (true).
     expect(testProject.getVariableValue('oidc_use'), equals(true));
     expect(testProject.getVariable('oidc_use').value, equals(true));
-    expect(
-      testProject.toGeneratorJson()['LA_variable_oidc_use'],
-      equals(true),
-    );
+    expect(testProject.toGeneratorJson()['LA_variable_oidc_use'], equals(true));
   });
 
   test('Template import', () async {
     final List<LAProject> templates = await LAProject.importTemplates(
       '../../assets/la-toolkit-templates.json',
-      load: rootBundle.loadString,
+      load: (String path) => File(path).readAsString(),
     );
     // One sample portal plus the two data hubs it ships (importTemplates returns
     // the portal first, then its hubs). See sample_template_test.dart for what

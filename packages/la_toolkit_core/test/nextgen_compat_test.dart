@@ -53,8 +53,13 @@ void main() {
     });
 
     test('ignores non-tagged and empty versions', () {
-      for (final String v in <String>['custom', 'upstream', 'la-develop',
-        'null', '']) {
+      for (final String v in <String>[
+        'custom',
+        'upstream',
+        'la-develop',
+        'null',
+        '',
+      ]) {
         expect(
           DependenciesManager.verifyNextgen(<String, String>{logger: v}),
           isEmpty,
@@ -65,14 +70,17 @@ void main() {
 
     test('ignores services without an entry', () {
       expect(
-        DependenciesManager.verifyNextgen(<String, String>{collectory: '5.1.1'}),
+        DependenciesManager.verifyNextgen(<String, String>{
+          collectory: '5.1.1',
+        }),
         isEmpty,
       );
     });
 
     test('message mentions the app and the last-safe version', () {
-      final List<String> warnings =
-          DependenciesManager.verifyNextgen(<String, String>{logger: '4.7.0'});
+      final List<String> warnings = DependenciesManager.verifyNextgen(
+        <String, String>{logger: '4.7.0'},
+      );
       expect(warnings.single, contains('4.5.0'));
       expect(warnings.single, contains('theme'));
     });

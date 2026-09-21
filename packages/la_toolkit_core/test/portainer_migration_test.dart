@@ -1,9 +1,9 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:la_toolkit_core/models/la_service_deploy.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('migration prunes obsolete portainer service on load (fromJson)', () {
@@ -48,8 +48,9 @@ void main() {
     // Round-trip through fromJson, which runs the migration.
     final LAProject migrated = LAProject.fromJson(p.toJson());
 
-    final List<String> names =
-        migrated.services.map((LAService s) => s.nameInt).toList();
+    final List<String> names = migrated.services
+        .map((LAService s) => s.nameInt)
+        .toList();
     expect(names, isNot(contains('portainer')), reason: 'portainer pruned');
     expect(names, contains(collectory), reason: 'normal service kept');
     expect(

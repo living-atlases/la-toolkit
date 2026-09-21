@@ -1,14 +1,12 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:la_toolkit_core/models/la_service_deploy.dart';
+import 'package:test/test.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   test(
     'Deleting a docker-compose cluster via deleteCluster should remove the assignment from the server',
     () {
@@ -30,7 +28,9 @@ void main() {
       project.upsertServer(server);
 
       // 2. Assign docker-compose to the server (this creates the cluster automatically)
-      project.assignByType(server.id, DeploymentType.vm, <String>[dockerCompose]);
+      project.assignByType(server.id, DeploymentType.vm, <String>[
+        dockerCompose,
+      ]);
 
       // Verify it's assigned and cluster was created
       expect(
@@ -115,14 +115,18 @@ void main() {
       project.upsertServer(server);
 
       // 2. Assign docker-compose to the server
-      project.assignByType(server.id, DeploymentType.vm, <String>[dockerCompose]);
+      project.assignByType(server.id, DeploymentType.vm, <String>[
+        dockerCompose,
+      ]);
 
       // 3. Get the cluster and assign services to it
       final LACluster cluster = project.clusters.first;
 
       // Assign some services to the cluster (e.g., solr)
       project.getService(solr).use = true;
-      project.assignByType(cluster.id, DeploymentType.dockerCompose, <String>[solr]);
+      project.assignByType(cluster.id, DeploymentType.dockerCompose, <String>[
+        solr,
+      ]);
 
       // Verify services are assigned
       expect(
@@ -210,8 +214,12 @@ void main() {
       project.upsertServer(server2);
 
       // Assign docker-compose to both servers (each gets its own cluster)
-      project.assignByType(server1.id, DeploymentType.vm, <String>[dockerCompose]);
-      project.assignByType(server2.id, DeploymentType.vm, <String>[dockerCompose]);
+      project.assignByType(server1.id, DeploymentType.vm, <String>[
+        dockerCompose,
+      ]);
+      project.assignByType(server2.id, DeploymentType.vm, <String>[
+        dockerCompose,
+      ]);
 
       expect(project.clusters.length, equals(2));
 
