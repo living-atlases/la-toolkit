@@ -9,7 +9,7 @@ echo ""
 echo "📋 Ejecutando tests de integridad de datos..."
 cd "$(dirname "$0")"
 
-flutter test test/src/data_integrity_test.dart -v
+(cd packages/la_toolkit_core && dart test test/data_integrity_test.dart -r expanded)
 
 if [ $? -eq 0 ]; then
     echo ""
