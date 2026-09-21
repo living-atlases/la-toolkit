@@ -5,7 +5,9 @@ import 'dart:io';
 import 'package:dart_mcp/server.dart';
 import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_releases.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
+import 'package:la_toolkit_core/releases/deps_versions.dart';
 import 'package:la_toolkit_core/synth/synthesize_project.dart';
 
 import 'backend_client.dart';
@@ -525,6 +527,18 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       );
     }
 
+    // As the UI's template import: services the base pins no version for
+    // get the newest known one. Without it the dependency lint reports them.
+    Map<String, LAReleases>? laReleases;
+    String? releasesNote;
+    try {
+      final Map<String, String> query = depsVersionsQuery();
+      laReleases = parseDepsVersions(await backend.depsVersions(query), query);
+    } on Exception catch (e) {
+      releasesNote =
+          'Service releases unavailable ($e): unpinned services have no version.';
+    }
+
     final List<Json> portals = await backend.getProjects();
     final LAProject p;
     try {
@@ -538,6 +552,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         dockerComposeRelease: release,
         generatorRelease: generators.first,
         sshKey: SshKey.fromJson(key),
+        laReleases: laReleases,
       );
     } on SynthesisException catch (e) {
       throw InvalidRequest(e.message);
@@ -569,6 +584,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       'deployWithSkipServices': skip,
       'valid': valid,
       'lint': lint,
+      if (releasesNote != null) 'note': releasesNote,
     };
     if (!save) {
       return <String, dynamic>{...preview, 'saved': false};

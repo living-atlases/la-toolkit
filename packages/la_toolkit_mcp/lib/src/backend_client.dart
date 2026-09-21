@@ -87,6 +87,12 @@ class BackendClient {
         .toList();
   }
 
+  /// Releases of each service artifact, from the maven/nexus metadata (the
+  /// raw answer; `parseDepsVersions` in the core reads it).
+  Future<Map<String, dynamic>> depsVersions(Map<String, String> deps) async =>
+      await _send('POST', 'get-deps-versions', <String, Object?>{'deps': deps})
+          as Map<String, dynamic>;
+
   /// GET of an URL outside the backend (the dependency matrix, GitHub).
   Future<String> fetchText(Uri url) async {
     final http.Response r = await _client.get(url).timeout(_timeout);

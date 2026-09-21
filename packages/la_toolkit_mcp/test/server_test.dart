@@ -143,6 +143,13 @@ class _Backend {
             '1.8.33': <String, dynamic>{},
           },
         });
+      case 'get-deps-versions':
+        return http.Response(
+          File(
+            '../la_toolkit_core/test/fixtures/get-deps-versions.json',
+          ).readAsStringSync(),
+          200,
+        );
       case 'get-backend-version':
         return _json(<String, dynamic>{'version': '1.7.1'});
       case 'add-projects':

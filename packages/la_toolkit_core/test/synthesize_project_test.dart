@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/lint/project_lint.dart';
+import 'package:la_toolkit_core/releases/deps_versions.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/synth/synthesize_project.dart';
@@ -105,6 +107,42 @@ void main() {
     );
     expect(p.toGeneratorJson()['LA_variable_ansible_user'], 'debian');
     expect(p.servers.single.sshUser, 'debian');
+  });
+
+  test('with the known releases, unpinned services get a version', () {
+    DependenciesManager.setDeps('''
+pipelines:
+  any:
+    - namematching-service: '>= 1.0.0'
+''');
+    List<String> depErrors(LAProject p) => lintDependencies(
+      p,
+      lintSelectedVersions(
+        p,
+        backendVersion: '1.7.1',
+        alaInstallReleases: const <String>[],
+        generatorReleases: const <String>[],
+      ),
+      backendVersion: '1.7.1',
+    ).expand((List<String> g) => g).toList();
+
+    expect(depErrors(_synth()), contains(contains('no version selected')));
+    final LAProject withReleases = synthesizeProject(
+      _base(),
+      _intent,
+      takenDirNames: const <String>{},
+      dockerComposeRelease: 'v1.9.0',
+      generatorRelease: '1.8.33',
+      sshKey: SshKey(name: 'la-toolkit', desc: '', encrypted: false),
+      laReleases: parseDepsVersions(
+        json.decode(
+              File('test/fixtures/get-deps-versions.json').readAsStringSync(),
+            )
+            as Map<String, dynamic>,
+        depsVersionsQuery(),
+      ),
+    );
+    expect(depErrors(withReleases), isEmpty);
   });
 
   test('disabled services are off', () {

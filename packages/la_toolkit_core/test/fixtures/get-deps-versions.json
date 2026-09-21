@@ -1,0 +1,379 @@
+{
+    "collectory": {
+        "releases": {
+            "metadata": {
+                "groupId": "au.org.ala",
+                "artifactId": "ala-collectory",
+                "versioning": {
+                    "latest": "1.3.12",
+                    "release": "1.3.12",
+                    "versions": {
+                        "version": [
+                            "1.0",
+                            "1.1",
+                            "1.2",
+                            "1.3",
+                            "1.3.1",
+                            "1.3.2",
+                            "1.3.3",
+                            "1.3.4",
+                            "1.3.5",
+                            "1.3.6",
+                            "1.3.7",
+                            "1.3.8",
+                            "1.3.9",
+                            "1.3.10",
+                            "1.3.11",
+                            "1.3.12",
+                            "1.4",
+                            "1.4.1",
+                            "1.4.2",
+                            "1.5",
+                            "1.5.1",
+                            "1.5.2",
+                            "1.5.3",
+                            "1.5.4",
+                            "1.5.5",
+                            "1.5.6",
+                            "1.6.0",
+                            "1.6.1",
+                            "1.6.2",
+                            "1.6.3",
+                            "1.6.4",
+                            "1.6.5",
+                            "1.6.6",
+                            "1.1.3",
+                            "3.0",
+                            "3.0.1",
+                            "3.0.2",
+                            "3.0.3",
+                            "3.0.4",
+                            "3.0.5",
+                            "3.0.6",
+                            "3.0.7",
+                            "3.0.8",
+                            "3.0.9",
+                            "3.0.10",
+                            "3.1.0",
+                            "3.1.1",
+                            "3.1.2",
+                            "3.1.3",
+                            "3.2.0",
+                            "3.2.1",
+                            "3.2.2",
+                            "4.0.0",
+                            "5.0.0",
+                            "5.1.0",
+                            "5.1.1",
+                            "6.0.0"
+                        ]
+                    },
+                    "lastUpdated": "20210729155003"
+                }
+            }
+        },
+        "snapshots": {
+            "metadata": {
+                "groupId": "au.org.ala",
+                "artifactId": "ala-collectory",
+                "versioning": {
+                    "latest": "1.6.7-SNAPSHOT",
+                    "release": "",
+                    "versions": {
+                        "version": [
+                            "1.3.13-SNAPSHOT",
+                            "1.4.0-SNAPSHOT",
+                            "1.6.7-SNAPSHOT",
+                            "1.1.4-SNAPSHOT",
+                            "3.0.11-SNAPSHOT",
+                            "3.1.4-SNAPSHOT",
+                            "4.1.0-SNAPSHOT",
+                            "5.0.0-SNAPSHOT",
+                            "5.1.0-SNAPSHOT",
+                            "5.2.0-SNAPSHOT",
+                            "5.2.1-SNAPSHOT",
+                            "6.0.0-SNAPSHOT",
+                            "6.1.0-SNAPSHOT",
+                            "6.1.1-SNAPSHOT",
+                            "6.2.0-SNAPSHOT",
+                            "6.2.2-SNAPSHOT",
+                            "6.2.3-SNAPSHOT",
+                            "6.3.0-SNAPSHOT",
+                            "6.4.0-SNAPSHOT"
+                        ]
+                    },
+                    "lastUpdated": "20220227225454"
+                }
+            }
+        }
+    },
+    "namematching_service": {
+        "releases": {
+            "metadata": {
+                "groupId": "au.org.ala.names",
+                "artifactId": "ala-namematching-server",
+                "versioning": {
+                    "release": "1.8.3",
+                    "versions": {
+                        "version": [
+                            "1.1.1",
+                            "1.1.2",
+                            "1.3",
+                            "1.4",
+                            "1.5",
+                            "1.6",
+                            "1.7",
+                            "1.8",
+                            "1.8.1",
+                            "1.8.2",
+                            "1.8.3"
+                        ]
+                    },
+                    "lastUpdated": "20260827022039"
+                }
+            }
+        },
+        "snapshots": {
+            "metadata": {
+                "groupId": "au.org.ala.names",
+                "artifactId": "ala-namematching-server",
+                "versioning": {
+                    "latest": "1.9-SNAPSHOT",
+                    "release": "",
+                    "versions": {
+                        "version": [
+                            "1.1.3-SNAPSHOT",
+                            "1.2-SNAPSHOT",
+                            "1.9-SNAPSHOT"
+                        ]
+                    },
+                    "lastUpdated": "20230706014546"
+                }
+            }
+        }
+    },
+    "namematching_service_nexus": {
+        "releases": {
+            "metadata": {
+                "groupId": "au.org.ala.names",
+                "artifactId": "ala-namematching-server",
+                "versioning": {
+                    "release": "1.8.3",
+                    "versions": {
+                        "version": [
+                            "1.1.1",
+                            "1.1.2",
+                            "1.3",
+                            "1.4",
+                            "1.5",
+                            "1.6",
+                            "1.7",
+                            "1.8",
+                            "1.8.1",
+                            "1.8.2",
+                            "1.8.3"
+                        ]
+                    },
+                    "lastUpdated": "20260827022039"
+                }
+            }
+        },
+        "snapshots": {
+            "metadata": {
+                "groupId": "au.org.ala.names",
+                "artifactId": "ala-namematching-server",
+                "versioning": {
+                    "latest": "1.9-SNAPSHOT",
+                    "release": "",
+                    "versions": {
+                        "version": [
+                            "1.1.3-SNAPSHOT",
+                            "1.2-SNAPSHOT",
+                            "1.9-SNAPSHOT"
+                        ]
+                    },
+                    "lastUpdated": "20230706014546"
+                }
+            }
+        }
+    },
+    "pipelines": {
+        "releases": {
+            "metadata": {
+                "groupId": "au.org.ala",
+                "artifactId": "la-pipelines",
+                "versioning": {
+                    "versions": {
+                        "version": [
+                            "2.10.0-SNAPSHOT",
+                            "2.11.12.2~1.gbpcb93ad ",
+                            "2.12.0-SNAPSHOT",
+                            "2.12.9~1.gbp0afb33 ",
+                            "2.13.0-SNAPSHOT",
+                            "2.14.0-SNAPSHOT",
+                            "2.15.0-SNAPSHOT",
+                            "2.15.1~1.gbpe572d5 ",
+                            "2.16.0-SNAPSHOT",
+                            "2.17.0-SNAPSHOT",
+                            "2.18.0-SNAPSHOT",
+                            "2.19.0-SNAPSHOT",
+                            "3.2.11-SNAPSHOT",
+                            "3.2.24-ala1-SNAPSHOT"
+                        ]
+                    }
+                }
+            }
+        },
+        "snapshots": {
+            "metadata": {
+                "groupId": "au.org.ala",
+                "artifactId": "la-pipelines",
+                "versioning": {
+                    "versions": {
+                        "version": [
+                            "2.10.0-SNAPSHOT",
+                            "2.11.12.2~1.gbpcb93ad ",
+                            "2.12.0-SNAPSHOT",
+                            "2.12.9~1.gbp0afb33 ",
+                            "2.13.0-SNAPSHOT",
+                            "2.14.0-SNAPSHOT",
+                            "2.15.0-SNAPSHOT",
+                            "2.15.1~1.gbpe572d5 ",
+                            "2.16.0-SNAPSHOT",
+                            "2.17.0-SNAPSHOT",
+                            "2.18.0-SNAPSHOT",
+                            "2.19.0-SNAPSHOT",
+                            "3.2.11-SNAPSHOT",
+                            "3.2.24-ala1-SNAPSHOT"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "pipelines_nexus": {
+        "releases": {
+            "metadata": {
+                "versioning": {
+                    "latest": "v2.0",
+                    "versions": {
+                        "version": [
+                            "4.0.17",
+                            "4.0.18",
+                            "4.0.19",
+                            "4.0.20",
+                            "4.0.21",
+                            "4.0.22",
+                            "4.0.23",
+                            "4.0.24",
+                            "4.0.25",
+                            "4.0.26",
+                            "4.0.27",
+                            "4.0.28",
+                            "4.0.29",
+                            "4.0.30",
+                            "4.0.31",
+                            "4.0.32",
+                            "4.0.33",
+                            "4.0.34",
+                            "4.0.35",
+                            "4.0.36",
+                            "4.0.37",
+                            "4.0.38",
+                            "4.0.39",
+                            "4.0.40",
+                            "4.0.41",
+                            "4.0.42",
+                            "4.0.43",
+                            "4.0.44",
+                            "v1.2",
+                            "v2.0"
+                        ]
+                    }
+                }
+            }
+        },
+        "snapshots": {
+            "metadata": {
+                "versioning": {
+                    "latest": "v2.0",
+                    "versions": {
+                        "version": [
+                            "4.0.17",
+                            "4.0.18",
+                            "4.0.19",
+                            "4.0.20",
+                            "4.0.21",
+                            "4.0.22",
+                            "4.0.23",
+                            "4.0.24",
+                            "4.0.25",
+                            "4.0.26",
+                            "4.0.27",
+                            "4.0.28",
+                            "4.0.29",
+                            "4.0.30",
+                            "4.0.31",
+                            "4.0.32",
+                            "4.0.33",
+                            "4.0.34",
+                            "4.0.35",
+                            "4.0.36",
+                            "4.0.37",
+                            "4.0.38",
+                            "4.0.39",
+                            "4.0.40",
+                            "4.0.41",
+                            "4.0.42",
+                            "4.0.43",
+                            "4.0.44",
+                            "v1.2",
+                            "v2.0"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "events": {},
+    "excludeList": {
+        "collectory": [
+            "1.1.3"
+        ],
+        "ala_hub": [],
+        "biocache_service": [],
+        "ala_bie": [],
+        "bie_index": [],
+        "images": [],
+        "species_lists": [],
+        "regions": [],
+        "logger": [],
+        "cas": [],
+        "userdetails": [],
+        "apikey": [],
+        "cas_management": [],
+        "spatial": [
+            "1.0.0"
+        ],
+        "spatial_service": [
+            "1.0.0"
+        ],
+        "webapi": [],
+        "dashboard": [],
+        "sds": [],
+        "alerts": [],
+        "doi": [],
+        "biocache_cli": [],
+        "nameindexer": [
+            "4.0",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.3-SNAPSHOT"
+        ],
+        "namemaching_service": [],
+        "data_quality": [],
+        "solr": [],
+        "solrcloud": []
+    }
+}
