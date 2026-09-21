@@ -5,7 +5,8 @@ Claude Desktop, or any MCP client) operate an LA Toolkit: list portals, run a dr
 deploy, follow the run and explain why it failed.
 
 It adds no logic of its own to the toolkit. Every tool is a thin composition of the
-backend REST endpoints the Flutter app already calls, with the same payloads, so the
+backend REST endpoints the Flutter app already calls and of the app's own models and
+lint (`packages/la_toolkit_core`), with the same payloads, so the
 backend cannot tell an agent-driven deploy from one started in the UI, and every run
 shows up in the project history like any other.
 
@@ -15,6 +16,7 @@ shows up in the project history like any other.
 |---|---|---|
 | `la_list_projects` | Portals and hubs, with their deploy mode (docker-compose / vm / hybrid) | no |
 | `la_get_project` | Servers, releases, which services run where, recent runs | no |
+| `la_lint_project` | The warnings of the UI lint panel: placement, cluster sizes, services that need each other, releases the dependency matrix rejects. Never `clean` when the matrix could not be read | no |
 | `la_list_runs` | Command history, newest first | no |
 | `la_check_connectivity` | ping, ssh, sudo and OS of every server | read-only ssh on the servers; saves the results on the project, like the UI |
 | `la_check_preconditions` | Blockers before a deploy, for the servers that carry services: ssh key in the toolkit, ssh and sudo, Ubuntu >= 22.04, disk space (`/`, `/data`, `/var/lib/docker`), portal host names resolve | read-only ssh; saves connectivity results like the UI |
@@ -66,11 +68,11 @@ shows up in the project history like any other.
 
 - Hybrid projects (VM + docker-compose). The UI splits them into two legs; use it.
 - A docker-compose hub on its own: it deploys as part of its portal's stack.
-- Service health checks (`test-host-services`): which ports and URLs to probe on each
-  server comes from the service catalogue in the Flutter models (`BasicService.tcp`,
-  `ProdServiceDesc`, `LAProject.serverServicesToMonitor()`); rebuilding it here would
-  duplicate that catalogue. It comes with the shared core package.
-- Creating projects. Same reason: project validation lives in the Flutter app today.
+- Service health checks (`test-host-services`): the catalogue of ports and URLs is now
+  in the core (`BasicService.tcp`, `ProdServiceDesc`,
+  `LAProject.serverServicesToMonitor()`), the tool is not written yet.
+- Creating projects (planned: synthesize from a small intent, then validate with the
+  core).
 
 ## Setup
 

@@ -12,6 +12,8 @@ executables:
 dependencies:
   dart_mcp: ^0.5.2
   http: ^1.2.0
+  la_toolkit_core:
+    path: ../la_toolkit_core
   pub_semver: ^2.1.0
 
 dev_dependencies:

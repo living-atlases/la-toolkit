@@ -15,6 +15,22 @@ import 'models/nextgen_compat.dart';
 import 'models/version_utils.dart';
 
 class DependenciesManager {
+  /// Where the app and the MCP server read the dependency matrix from. The
+  /// running toolkit's own copy is not reachable from the browser, so both
+  /// read the published one.
+  static const String dependenciesUrl =
+      'https://raw.githubusercontent.com/living-atlases/la-toolkit-backend/master/assets/dependencies.yaml';
+
+  /// ala-install releases (GitHub API, newest first), the fallback when a
+  /// project pins none.
+  static const String alaInstallReleasesHost = 'api.github.com';
+  static const String alaInstallReleasesPath =
+      '/repos/AtlasOfLivingAustralia/ala-install/releases';
+
+  /// The nextgen (bootstrap5 branding) compatibility guard.
+  static const String nextgenCompatUrl =
+      'https://raw.githubusercontent.com/living-atlases/la-toolkit-backend/master/assets/nextgen-compat.yaml';
+
   static List<String> verify(Map<String, String> combo) {
     final String alaInstallS = combo[alaInstall]!;
     final bool skipAlaInstall = alaInstallIsNotTagged(alaInstallS);
@@ -198,8 +214,7 @@ class DependenciesManager {
   static const Map<String, String> _nextgenReasonText = <String, String>{
     'bootstrap5-branding':
         'uses a new theme that the community branding does not support yet',
-    'no-community-image':
-        'has no published community container image',
+    'no-community-image': 'has no published community container image',
   };
 
   static void setNextgenCompat(String yamlStr, [bool debug = false]) {
@@ -220,7 +235,9 @@ class DependenciesManager {
                 reason: '${entry['reason']}',
               );
               if (debug) {
-                log('nextgen-compat: $sw ${entry['from']} (${entry['reason']})');
+                log(
+                  'nextgen-compat: $sw ${entry['from']} (${entry['reason']})',
+                );
               }
             } catch (e) {
               log('🔴 ERROR parsing nextgen-compat entry "$swKey": $e');

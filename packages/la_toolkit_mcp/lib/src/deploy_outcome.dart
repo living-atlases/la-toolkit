@@ -173,8 +173,9 @@ Set<String> ignoredFailures(String log) {
       continue;
     }
     final RegExpMatch? f = _fatal.firstMatch(lines[i].trimLeft());
-    if (f != null && lines[i + 1].trim() == '...ignoring')
+    if (f != null && lines[i + 1].trim() == '...ignoring') {
       out.add('$task|${f.group(2)}');
+    }
   }
   return out;
 }

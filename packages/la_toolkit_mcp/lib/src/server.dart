@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_mcp/server.dart';
+import 'package:la_toolkit_core/dependencies_manager.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 
 import 'backend_client.dart';
 import 'deploy_outcome.dart';
 import 'deploy_request.dart';
+import 'lint.dart';
 import 'preconditions.dart';
 import 'projects.dart';
 
@@ -17,7 +20,9 @@ Typical flow to update a portal:
 1. la_list_projects, then la_get_project to see servers, placement and history.
    la_check_preconditions before a first or long-delayed deploy: it names
    what is missing (DNS, ssh key, ssh/sudo access, disk space) instead of
-   letting a multi-hour deploy fail on it.
+   letting a multi-hour deploy fail on it. la_lint_project gives the same
+   warnings the toolkit UI shows for the project (placement, cluster sizes,
+   release incompatibilities); report them to the user before deploying.
 2. la_deploy with dryRun: true (the default). It prints the exact ansible
    command and changes nothing. Show it to the user. If it reports exit 127,
    the inventories were never generated: retry with prepare: true, which
@@ -108,6 +113,20 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       ),
       readOnly: true,
       (Map<String, Object?> a) async => projectDetails(await _resolve(a)),
+    );
+
+    _tool(
+      'la_lint_project',
+      'The warnings the toolkit UI shows for a project: services without a '
+          'server, compose placement, cluster sizes, services that need each '
+          'other, and releases that the dependency matrix marks incompatible. '
+          'Touches no server. clean: true means nothing to report.',
+      Schema.object(
+        properties: <String, Schema>{'project': _projectArg},
+        required: <String>['project'],
+      ),
+      readOnly: true,
+      _lint,
     );
 
     _tool(
@@ -297,6 +316,82 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         return <String, dynamic>{'runId': entry['id'], 'killed': killed};
       },
     );
+  }
+
+  Future<Object?> _lint(Map<String, Object?> a) async {
+    final ProjectRef ref = await _resolve(a);
+    final LAProject project = projectModel(ref);
+    final bool hasSshKeys = (await backend.sshKeys()).isNotEmpty;
+    String? version;
+    try {
+      version = (await backend.backendVersion())['version'] as String?;
+    } on BackendException {
+      version = null;
+    }
+    final bool matrix = await (_matrix ??= _loadMatrix());
+    return lintReport(
+      project,
+      hasSshKeys: hasSshKeys,
+      backendVersion: version,
+      matrixLoaded: matrix,
+      alaInstallReleases: project.alaInstallRelease == null
+          ? await _orEmpty(_alaInstallReleases)
+          : const <String>[],
+      generatorReleases: project.generatorRelease == null
+          ? await _orEmpty(backend.generatorVersions)
+          : const <String>[],
+    );
+  }
+
+  /// The dependency matrix is global state in the core: loaded once per
+  /// server. A failed download is retried on the next call.
+  Future<bool>? _matrix;
+
+  Future<bool> _loadMatrix() async {
+    try {
+      DependenciesManager.setDeps(
+        await backend.fetchText(Uri.parse(DependenciesManager.dependenciesUrl)),
+      );
+    } catch (_) {
+      _matrix = null;
+      return false;
+    }
+    try {
+      DependenciesManager.setNextgenCompat(
+        await backend.fetchText(
+          Uri.parse(DependenciesManager.nextgenCompatUrl),
+        ),
+      );
+    } catch (_) {
+      // As in the app: the nextgen guard never blocks the main matrix.
+    }
+    return true;
+  }
+
+  Future<List<String>> _alaInstallReleases() async {
+    final List<dynamic> l =
+        json.decode(
+              await backend.fetchText(
+                Uri.https(
+                  DependenciesManager.alaInstallReleasesHost,
+                  DependenciesManager.alaInstallReleasesPath,
+                ),
+              ),
+            )
+            as List<dynamic>;
+    return <String>[
+      for (final dynamic r in l) (r as Json)['tag_name'] as String,
+    ];
+  }
+
+  static Future<List<String>> _orEmpty(
+    Future<List<String>> Function() f,
+  ) async {
+    try {
+      return await f();
+    } catch (_) {
+      return <String>[];
+    }
   }
 
   Future<Object?> _preconditions(Map<String, Object?> a) async {

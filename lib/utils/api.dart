@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart' show Response;
+import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/cmd_history_details.dart';
 import 'package:la_toolkit_core/models/cmd_history_entry.dart';
 import 'package:la_toolkit_core/models/deploy_cmd.dart';
@@ -849,9 +850,7 @@ class Api {
 
   static Future<String> fetchDependencies() async {
     final Response response = await http.get(
-      Uri.parse(
-        'https://raw.githubusercontent.com/living-atlases/la-toolkit-backend/master/assets/dependencies.yaml',
-      ),
+      Uri.parse(DependenciesManager.dependenciesUrl),
     );
     if (response.statusCode == 200) {
       return response.body;
@@ -864,9 +863,7 @@ class Api {
 
   static Future<String> fetchNextgenCompat() async {
     final Response response = await http.get(
-      Uri.parse(
-        'https://raw.githubusercontent.com/living-atlases/la-toolkit-backend/master/assets/nextgen-compat.yaml',
-      ),
+      Uri.parse(DependenciesManager.nextgenCompatUrl),
     );
     if (response.statusCode == 200) {
       return response.body;

@@ -103,8 +103,8 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     if (action is OnFetchSoftwareDepsState) {
       // ALA-INSTALL RELEASES
       final Uri alaInstallReleasesApiUrl = Uri.https(
-        'api.github.com',
-        '/repos/AtlasOfLivingAustralia/ala-install/releases',
+        DependenciesManager.alaInstallReleasesHost,
+        DependenciesManager.alaInstallReleasesPath,
         _cacheBust(),
       );
 

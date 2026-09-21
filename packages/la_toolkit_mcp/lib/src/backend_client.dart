@@ -76,6 +76,26 @@ class BackendClient {
   Future<Map<String, dynamic>> backendVersion() async =>
       await _get('get-backend-version') as Map<String, dynamic>;
 
+  /// Published generator-living-atlas versions, newest first (the backend
+  /// proxies npm, as for the UI).
+  Future<List<String>> generatorVersions() async {
+    final Map<String, dynamic> r =
+        await _get('get-generator-versions') as Map<String, dynamic>;
+    return (r['versions'] as Map<String, dynamic>).keys
+        .toList()
+        .reversed
+        .toList();
+  }
+
+  /// GET of an URL outside the backend (the dependency matrix, GitHub).
+  Future<String> fetchText(Uri url) async {
+    final http.Response r = await _client.get(url).timeout(_timeout);
+    if (r.statusCode != 200) {
+      throw BackendException(url.toString(), r.statusCode, r.body);
+    }
+    return r.body;
+  }
+
   Future<Map<String, dynamic>> testConnectivity(List<dynamic> servers) async =>
       await _send('POST', 'test-connectivity', <String, Object?>{
             'servers': servers,
