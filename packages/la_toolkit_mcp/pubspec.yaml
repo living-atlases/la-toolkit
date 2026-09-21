@@ -1,0 +1,19 @@
+name: la_toolkit_mcp
+description: MCP server that lets an AI agent drive the LA Toolkit backend (list projects, deploy, poll and summarise results).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+
+executables:
+  la_toolkit_mcp:
+
+dependencies:
+  dart_mcp: ^0.5.2
+  http: ^1.2.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  stream_channel: ^2.1.0
+  test: ^1.25.0
