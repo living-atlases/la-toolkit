@@ -23,12 +23,27 @@ Json project({
   'generatorRelease': '1.7.0',
   'dockerComposeRelease': compose ? 'v1.5.1' : null,
   'alaInstallRelease': vm ? 'v2.4.1' : null,
-  'genConf': <String, dynamic>{'LA_pkg_name': dirName, 'LA_variable_ansible_user': 'ubuntu'},
+  'genConf': <String, dynamic>{
+    'LA_pkg_name': dirName,
+    'LA_variable_ansible_user': 'ubuntu',
+  },
   'servers': <Json>[
-    <String, dynamic>{'id': 's1', 'name': 'la-1', 'ip': '10.0.0.5', 'osName': 'Ubuntu', 'osVersion': '22.04'},
+    <String, dynamic>{
+      'id': 's1',
+      'name': 'la-1',
+      'ip': '10.0.0.5',
+      'osName': 'Ubuntu',
+      'osVersion': '22.04',
+    },
   ],
   'clusters': <Json>[
-    if (compose) <String, dynamic>{'id': 'c1', 'name': 'Docker Compose on la-1', 'type': 'dockerCompose', 'serverId': 's1'},
+    if (compose)
+      <String, dynamic>{
+        'id': 'c1',
+        'name': 'Docker Compose on la-1',
+        'type': 'dockerCompose',
+        'serverId': 's1',
+      },
   ],
   'services': <Json>[
     <String, dynamic>{'id': 'sv1', 'nameInt': 'collectory', 'use': true},
@@ -45,12 +60,13 @@ Json project({
   'hubs': hubs,
 };
 
-Json run(String id, int createdAt, {String suffix = '2026-09-20_10:00:00'}) => <String, dynamic>{
-  'id': id,
-  'createdAt': createdAt,
-  'desc': 'Deploy $id',
-  'logsPrefix': 'demo',
-  'logsSuffix': suffix,
-  'result': 'unknown',
-  'rawCmd': './ansiblew --user ubuntu all',
-};
+Json run(String id, int createdAt, {String suffix = '2026-09-20_10:00:00'}) =>
+    <String, dynamic>{
+      'id': id,
+      'createdAt': createdAt,
+      'desc': 'Deploy $id',
+      'logsPrefix': 'demo',
+      'logsSuffix': suffix,
+      'result': 'unknown',
+      'rawCmd': './ansiblew --user ubuntu all',
+    };

@@ -12,26 +12,53 @@ void main() {
       final DeployRequest r = build(project(), <String, Object?>{});
       expect(r.dryRun, isTrue);
       expect(r.prepare, isFalse);
-      expect(build(project(), <String, Object?>{'prepare': true}).prepare, isTrue);
+      expect(
+        build(project(), <String, Object?>{'prepare': true}).prepare,
+        isTrue,
+      );
       expect(r.cmd['dryRun'], isTrue);
     });
 
     test('a real deploy needs confirm', () {
       expect(
         () => build(project(), <String, Object?>{'dryRun': false}),
-        throwsA(isA<InvalidRequest>().having((InvalidRequest e) => e.message, 'message', contains('confirm: true'))),
+        throwsA(
+          isA<InvalidRequest>().having(
+            (InvalidRequest e) => e.message,
+            'message',
+            contains('confirm: true'),
+          ),
+        ),
       );
-      final DeployRequest r = build(project(), <String, Object?>{'dryRun': false, 'confirm': true});
+      final DeployRequest r = build(project(), <String, Object?>{
+        'dryRun': false,
+        'confirm': true,
+      });
       expect(r.dryRun, isFalse);
       expect(r.prepare, isTrue);
     });
 
     // ansiblew runs the final line through `sh -c`, dry run included.
-    for (final String bad in <String>['a;rm -rf /', r'$(id)', 'x y', '`id`', "a'b", 'a|b', '-x']) {
+    for (final String bad in <String>[
+      'a;rm -rf /',
+      r'$(id)',
+      'x y',
+      '`id`',
+      "a'b",
+      'a|b',
+      '-x',
+    ]) {
       test('refuses shell-unsafe token "$bad"', () {
-        for (final String key in <String>['tags', 'skipTags', 'skipServices', 'limitToServers']) {
+        for (final String key in <String>[
+          'tags',
+          'skipTags',
+          'skipServices',
+          'limitToServers',
+        ]) {
           expect(
-            () => build(project(), <String, Object?>{key: <String>[bad]}),
+            () => build(project(), <String, Object?>{
+              key: <String>[bad],
+            }),
             throwsA(isA<InvalidRequest>()),
             reason: key,
           );
@@ -40,9 +67,20 @@ void main() {
     }
 
     test('refuses non-list and non-string entries', () {
-      expect(() => build(project(), <String, Object?>{'tags': 'nginx'}), throwsA(isA<InvalidRequest>()));
-      expect(() => build(project(), <String, Object?>{'tags': <Object>[1]}), throwsA(isA<InvalidRequest>()));
-      expect(() => build(project(), <String, Object?>{'dryRun': 'no'}), throwsA(isA<InvalidRequest>()));
+      expect(
+        () => build(project(), <String, Object?>{'tags': 'nginx'}),
+        throwsA(isA<InvalidRequest>()),
+      );
+      expect(
+        () => build(project(), <String, Object?>{
+          'tags': <Object>[1],
+        }),
+        throwsA(isA<InvalidRequest>()),
+      );
+      expect(
+        () => build(project(), <String, Object?>{'dryRun': 'no'}),
+        throwsA(isA<InvalidRequest>()),
+      );
     });
   });
 
@@ -59,17 +97,29 @@ void main() {
     });
 
     test('refuses a service allow-list', () {
-      expect(() => build(project(), <String, Object?>{'services': <String>['collectory']}), throwsA(isA<InvalidRequest>()));
+      expect(
+        () => build(project(), <String, Object?>{
+          'services': <String>['collectory'],
+        }),
+        throwsA(isA<InvalidRequest>()),
+      );
     });
 
     test('refuses a compose hub without servers and points at the portal', () {
       final Json portal = project();
-      final Json hub = project(id: 'h1', dirName: 'hub', compose: false, isHub: true)
-        ..['servers'] = <Json>[]
-        ..['serverServices'] = <String, dynamic>{};
+      final Json hub =
+          project(id: 'h1', dirName: 'hub', compose: false, isHub: true)
+            ..['servers'] = <Json>[]
+            ..['serverServices'] = <String, dynamic>{};
       expect(
         () => build(hub, <String, Object?>{}, parent: portal),
-        throwsA(isA<InvalidRequest>().having((InvalidRequest e) => e.message, 'message', contains('Deploy the portal'))),
+        throwsA(
+          isA<InvalidRequest>().having(
+            (InvalidRequest e) => e.message,
+            'message',
+            contains('Deploy the portal'),
+          ),
+        ),
       );
     });
   });
@@ -77,22 +127,45 @@ void main() {
   group('vm', () {
     test('remaps species-lists and rejects skipServices', () {
       final Json p = project(compose: false, vm: true);
-      final DeployRequest r = build(p, <String, Object?>{'services': <String>['species-lists', 'collectory']});
+      final DeployRequest r = build(p, <String, Object?>{
+        'services': <String>['species-lists', 'collectory'],
+      });
       expect(r.cmd['dockerCompose'], isFalse);
       expect(r.cmd['deployServices'], <String>['lists', 'collectory']);
-      expect(() => build(p, <String, Object?>{'skipServices': <String>['spatial']}), throwsA(isA<InvalidRequest>()));
+      expect(
+        () => build(p, <String, Object?>{
+          'skipServices': <String>['spatial'],
+        }),
+        throwsA(isA<InvalidRequest>()),
+      );
     });
   });
 
   test('refuses hybrid projects', () {
     expect(
       () => build(project(vm: true), <String, Object?>{}),
-      throwsA(isA<InvalidRequest>().having((InvalidRequest e) => e.message, 'message', contains('hybrid'))),
+      throwsA(
+        isA<InvalidRequest>().having(
+          (InvalidRequest e) => e.message,
+          'message',
+          contains('hybrid'),
+        ),
+      ),
     );
   });
 
   test('refuses unknown servers in limitToServers', () {
-    expect(() => build(project(), <String, Object?>{'limitToServers': <String>['nope']}), throwsA(isA<InvalidRequest>()));
-    expect(build(project(), <String, Object?>{'limitToServers': <String>['la-1']}).cmd['limitToServers'], <String>['la-1']);
+    expect(
+      () => build(project(), <String, Object?>{
+        'limitToServers': <String>['nope'],
+      }),
+      throwsA(isA<InvalidRequest>()),
+    );
+    expect(
+      build(project(), <String, Object?>{
+        'limitToServers': <String>['la-1'],
+      }).cmd['limitToServers'],
+      <String>['la-1'],
+    );
   });
 }

@@ -3,15 +3,31 @@ import 'package:test/test.dart';
 
 import 'fixtures.dart';
 
-Json conn(String name, {String ssh = 'success', String sudo = 'success', String os = 'Ubuntu', String v = '22.04'}) =>
-    <String, dynamic>{'name': name, 'sshReachable': ssh, 'sudoEnabled': sudo, 'osName': os, 'osVersion': v};
+Json conn(
+  String name, {
+  String ssh = 'success',
+  String sudo = 'success',
+  String os = 'Ubuntu',
+  String v = '22.04',
+}) => <String, dynamic>{
+  'name': name,
+  'sshReachable': ssh,
+  'sudoEnabled': sudo,
+  'osName': os,
+  'osVersion': v,
+};
 
 Json disk(String name, {bool low = false}) => <String, dynamic>{
   'name': name,
   'ok': true,
   'low': low,
   'filesystems': <Json>[
-    <String, dynamic>{'mount': '/', 'availableGB': low ? 4.6 : 40.0, 'usePct': low ? 77 : 20, 'low': low},
+    <String, dynamic>{
+      'mount': '/',
+      'availableGB': low ? 4.6 : 40.0,
+      'usePct': low ? 77 : 20,
+      'low': low,
+    },
   ],
 };
 
@@ -24,7 +40,12 @@ void main() {
       ];
     expect(serversWithServices(p).map((Json s) => s['name']), <String>['la-1']);
     // VM assignment counts too.
-    expect(serversWithServices(project(compose: false, vm: true)).map((Json s) => s['name']), <String>['la-1']);
+    expect(
+      serversWithServices(
+        project(compose: false, vm: true),
+      ).map((Json s) => s['name']),
+      <String>['la-1'],
+    );
   });
 
   test('public host names come from services in use, skipping junk', () {
@@ -41,7 +62,10 @@ void main() {
         'LA_apikey_url': 'API keys.example.com',
         'LA_spatial_url': 'spatial.example.com',
       };
-    expect(publicHostnames(p).hosts, <String>['collections.example.com', 'lists.example.com']);
+    expect(publicHostnames(p).hosts, <String>[
+      'collections.example.com',
+      'lists.example.com',
+    ]);
     expect(publicHostnames(p).authoritative, isFalse);
   });
 
@@ -54,7 +78,10 @@ void main() {
           'la-2': <String>['records.example.com'],
         },
       };
-    expect(publicHostnames(p).hosts, <String>['records.example.com', 'species.example.com']);
+    expect(publicHostnames(p).hosts, <String>[
+      'records.example.com',
+      'species.example.com',
+    ]);
     expect(publicHostnames(p).authoritative, isTrue);
   });
 
@@ -93,36 +120,58 @@ void main() {
   }) => evaluatePreconditions(
     project: project(),
     servers: <Json>[
-      server ?? <String, dynamic>{'id': 's1', 'name': 'la-1', 'ip': '10.0.0.5', 'sshKey': <String, dynamic>{'name': 'k1'}},
+      server ??
+          <String, dynamic>{
+            'id': 's1',
+            'name': 'la-1',
+            'ip': '10.0.0.5',
+            'sshKey': <String, dynamic>{'name': 'k1'},
+          },
     ],
     connectivity: connectivity ?? <Json>[conn('la-1')],
     disk: diskR ?? <Json>[disk('la-1')],
-    keys: keys ?? <Json>[<String, dynamic>{'name': 'k1', 'missing': false}],
-    dns: dns ?? <String, List<String>>{'collections.example.com': <String>['203.0.113.7']},
+    keys:
+        keys ??
+        <Json>[
+          <String, dynamic>{'name': 'k1', 'missing': false},
+        ],
+    dns:
+        dns ??
+        <String, List<String>>{
+          'collections.example.com': <String>['203.0.113.7'],
+        },
   );
 
   test('all good is ready, and DNS elsewhere is only informative', () {
     final PreconditionReport r = eval();
     expect(r.ready, isTrue, reason: r.blocking.join('\n'));
     expect(r.warnings, isEmpty);
-    expect((r.details['dns'] as List<dynamic>).single, containsPair('pointsToAProjectServer', false));
+    expect(
+      (r.details['dns'] as List<dynamic>).single,
+      containsPair('pointsToAProjectServer', false),
+    );
   });
 
   test('each missing piece is its own named blocker', () {
     final PreconditionReport r = eval(
       connectivity: <Json>[conn('la-1', sudo: 'failed')],
       diskR: <Json>[disk('la-1', low: true)],
-      keys: <Json>[<String, dynamic>{'name': 'k1', 'missing': true}],
+      keys: <Json>[
+        <String, dynamic>{'name': 'k1', 'missing': true},
+      ],
       dns: <String, List<String>>{'collections.example.com': <String>[]},
     );
     expect(r.ready, isFalse);
     expect(r.blocking, hasLength(4));
-    expect(r.blocking.join('\n'), allOf(
-      contains('ssh key "k1" is not in the toolkit'),
-      contains('sudo does not'),
-      contains('/ 4.6 GB free (77%)'),
-      contains('collections.example.com does not resolve'),
-    ));
+    expect(
+      r.blocking.join('\n'),
+      allOf(
+        contains('ssh key "k1" is not in the toolkit'),
+        contains('sudo does not'),
+        contains('/ 4.6 GB free (77%)'),
+        contains('collections.example.com does not resolve'),
+      ),
+    );
   });
 
   test('no key, no ssh, old OS', () {
@@ -130,7 +179,13 @@ void main() {
       server: <String, dynamic>{'id': 's1', 'name': 'la-1'},
       connectivity: <Json>[conn('la-1', ssh: 'failed', v: '20.04')],
     );
-    expect(r.blocking, containsAll(<String>['la-1: no ssh key assigned.', 'la-1: not reachable over ssh from the toolkit.']));
+    expect(
+      r.blocking,
+      containsAll(<String>[
+        'la-1: no ssh key assigned.',
+        'la-1: not reachable over ssh from the toolkit.',
+      ]),
+    );
     expect(r.warnings.single, contains('20.04'));
   });
 }

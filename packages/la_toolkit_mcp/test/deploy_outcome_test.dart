@@ -32,13 +32,22 @@ void main() {
 
     test('keeps real failures with their task, host and message', () {
       expect(f, hasLength(1));
-      expect(f.single['task'], 'la-compose : SSL Certificates: Fail with the reason nginx did not start');
+      expect(
+        f.single['task'],
+        'la-compose : SSL Certificates: Fail with the reason nginx did not start',
+      );
       expect(f.single['host'], 'la-1.docker_compose');
-      expect(f.single['detail'], 'la_nginx is not running after 60s.\ncert missing');
+      expect(
+        f.single['detail'],
+        'la_nginx is not running after 60s.\ncert missing',
+      );
     });
 
     test('lastTask reports the task in progress', () {
-      expect(lastTask(stripAnsi(_once)), 'la-compose : SSL Certificates: Fail with the reason nginx did not start');
+      expect(
+        lastTask(stripAnsi(_once)),
+        'la-compose : SSL Certificates: Fail with the reason nginx did not start',
+      );
     });
   });
 
@@ -50,19 +59,29 @@ void main() {
       'results': <dynamic>[
         <String, dynamic>{
           'stats': <String, dynamic>{
-            'la-1': <String, dynamic>{'ok': 10, 'failures': 1, 'unreachable': 0},
+            'la-1': <String, dynamic>{
+              'ok': 10,
+              'failures': 1,
+              'unreachable': 0,
+            },
           },
           'plays': <dynamic>[
             <String, dynamic>{
               'tasks': <dynamic>[
                 <String, dynamic>{
                   'task': <String, dynamic>{'name': 'role : ok task'},
-                  'hosts': <String, dynamic>{'la-1': <String, dynamic>{'failed': false}},
+                  'hosts': <String, dynamic>{
+                    'la-1': <String, dynamic>{'failed': false},
+                  },
                 },
                 <String, dynamic>{
                   'task': <String, dynamic>{'name': 'role : broken'},
                   'hosts': <String, dynamic>{
-                    'la-1': <String, dynamic>{'failed': true, 'msg': 'boom', 'stderr': 'trace'},
+                    'la-1': <String, dynamic>{
+                      'failed': true,
+                      'msg': 'boom',
+                      'stderr': 'trace',
+                    },
                   },
                 },
               ],
@@ -72,7 +91,11 @@ void main() {
       ],
     };
     expect(failedTasks(results), <Json>[
-      <String, dynamic>{'task': 'role : broken', 'host': 'la-1', 'detail': 'boom\ntrace'},
+      <String, dynamic>{
+        'task': 'role : broken',
+        'host': 'la-1',
+        'detail': 'boom\ntrace',
+      },
     ]);
     final Json s = summarizeRun(run('r1', 1), results);
     expect(s['verdict'], 'failed');
@@ -81,49 +104,60 @@ void main() {
     expect(s.containsKey('currentTask'), isFalse);
   });
 
-  test('drops ignored failures from the JSON too, and digs stdout for commands', () {
-    Json task(String name, Json r) => <String, dynamic>{
-      'task': <String, dynamic>{'name': name},
-      'hosts': <String, dynamic>{'la-1.docker_compose': r},
-    };
-    final Json results = <String, dynamic>{
-      'logs': b64(_once),
-      'results': <dynamic>[
+  test(
+    'drops ignored failures from the JSON too, and digs stdout for commands',
+    () {
+      Json task(String name, Json r) => <String, dynamic>{
+        'task': <String, dynamic>{'name': name},
+        'hosts': <String, dynamic>{'la-1.docker_compose': r},
+      };
+      final Json results = <String, dynamic>{
+        'logs': b64(_once),
+        'results': <dynamic>[
+          <String, dynamic>{
+            'stats': <String, dynamic>{},
+            'plays': <dynamic>[
+              <String, dynamic>{
+                'tasks': <dynamic>[
+                  task(
+                    'la-compose : Run biocache dependency validation',
+                    <String, dynamic>{'failed': true, 'msg': 'x'},
+                  ),
+                  task('la-compose : Run health check', <String, dynamic>{
+                    'failed': true,
+                    'rc': 1,
+                    'msg': 'non-zero return code',
+                    'stderr': '',
+                    'stdout': 'checking...\nla_nginx: unhealthy',
+                  }),
+                ],
+              },
+            ],
+          },
+        ],
+      };
+      expect(failedTasks(results), <Json>[
         <String, dynamic>{
-          'stats': <String, dynamic>{},
-          'plays': <dynamic>[
-            <String, dynamic>{
-              'tasks': <dynamic>[
-                task('la-compose : Run biocache dependency validation', <String, dynamic>{'failed': true, 'msg': 'x'}),
-                task('la-compose : Run health check', <String, dynamic>{
-                  'failed': true,
-                  'rc': 1,
-                  'msg': 'non-zero return code',
-                  'stderr': '',
-                  'stdout': 'checking...\nla_nginx: unhealthy',
-                }),
-              ],
-            },
-          ],
+          'task': 'la-compose : Run health check',
+          'host': 'la-1.docker_compose',
+          'rc': 1,
+          'detail': 'non-zero return code\nchecking...\nla_nginx: unhealthy',
         },
-      ],
-    };
-    expect(failedTasks(results), <Json>[
-      <String, dynamic>{
-        'task': 'la-compose : Run health check',
-        'host': 'la-1.docker_compose',
-        'rc': 1,
-        'detail': 'non-zero return code\nchecking...\nla_nginx: unhealthy',
-      },
-    ]);
-  });
+      ]);
+    },
+  );
 
   test('caps the number and size of failures', () {
     final String many = List<String>.generate(
       20,
-      (int i) => 'TASK [t$i] ***\nfatal: [h]: FAILED! => {"msg": "${'x' * 3000}"}\n',
+      (int i) =>
+          'TASK [t$i] ***\nfatal: [h]: FAILED! => {"msg": "${'x' * 3000}"}\n',
     ).join();
-    final List<Json> f = failedTasks(<String, dynamic>{'logs': b64(many)}, max: 3, maxChars: 100);
+    final List<Json> f = failedTasks(
+      <String, dynamic>{'logs': b64(many)},
+      max: 3,
+      maxChars: 100,
+    );
     expect(f.map((Json e) => e['task']), <String>['t17', 't18', 't19']);
     expect((f.first['detail'] as String).length, lessThan(150));
   });
@@ -132,18 +166,31 @@ void main() {
     test('success / failed / aborted / unknown', () {
       expect(verdict(code: 0, running: false, failures: 0), 'success');
       expect(verdict(code: 2, running: false, failures: 1), 'failed');
-      expect(verdict(code: unknownExitCode, running: false, failures: 0), 'aborted');
+      expect(
+        verdict(code: unknownExitCode, running: false, failures: 0),
+        'aborted',
+      );
       expect(verdict(code: 4, running: false, failures: 0), 'unknown');
     });
 
     test('plus running and cancelled', () {
-      expect(verdict(code: unknownExitCode, running: true, failures: 0), 'running');
-      expect(verdict(code: cancelledExitCode, running: false, failures: 0), 'cancelled');
+      expect(
+        verdict(code: unknownExitCode, running: true, failures: 0),
+        'running',
+      );
+      expect(
+        verdict(code: cancelledExitCode, running: false, failures: 0),
+        'cancelled',
+      );
     });
   });
 
   test('running runs report the current task and no exit code', () {
-    final Json s = summarizeRun(run('r1', 1), <String, dynamic>{'code': 100, 'running': true, 'logs': b64(_once)});
+    final Json s = summarizeRun(run('r1', 1), <String, dynamic>{
+      'code': 100,
+      'running': true,
+      'logs': b64(_once),
+    });
     expect(s['verdict'], 'running');
     expect(s.containsKey('exitCode'), isFalse);
     expect(s['currentTask'], isNotNull);

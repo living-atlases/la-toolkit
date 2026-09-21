@@ -9,12 +9,15 @@ List<Json> serversWithServices(Json p) {
   final Map<String, dynamic> ss =
       p['serverServices'] as Map<String, dynamic>? ?? const <String, dynamic>{};
   final Map<String, dynamic> cs =
-      p['clusterServices'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+      p['clusterServices'] as Map<String, dynamic>? ??
+      const <String, dynamic>{};
   final Set<String> ids = <String>{
     for (final MapEntry<String, dynamic> e in ss.entries)
       if ((e.value as List<dynamic>).isNotEmpty) e.key,
-    for (final Json c in (p['clusters'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>())
-      if (c['serverId'] is String && ((cs[c['id']] as List<dynamic>?)?.isNotEmpty ?? false))
+    for (final Json c
+        in (p['clusters'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>())
+      if (c['serverId'] is String &&
+          ((cs[c['id']] as List<dynamic>?)?.isNotEmpty ?? false))
         c['serverId'] as String,
   };
   return (p['servers'] as List<dynamic>? ?? const <dynamic>[])
@@ -100,13 +103,18 @@ PreconditionReport evaluatePreconditions({
   final PreconditionReport r = PreconditionReport();
 
   // SSH keys: the toolkit must hold the private key each server uses.
-  final Map<String, Json> byKey = <String, Json>{for (final Json k in keys) k['name'] as String: k};
+  final Map<String, Json> byKey = <String, Json>{
+    for (final Json k in keys) k['name'] as String: k,
+  };
   for (final Json s in servers) {
     final Json? key = s['sshKey'] as Json?;
     if (key == null) {
       r.blocking.add('${s['name']}: no ssh key assigned.');
-    } else if (byKey[key['name']] == null || byKey[key['name']]!['missing'] == true) {
-      r.blocking.add('${s['name']}: ssh key "${key['name']}" is not in the toolkit.');
+    } else if (byKey[key['name']] == null ||
+        byKey[key['name']]!['missing'] == true) {
+      r.blocking.add(
+        '${s['name']}: ssh key "${key['name']}" is not in the toolkit.',
+      );
     }
   }
 
@@ -121,8 +129,12 @@ PreconditionReport evaluatePreconditions({
     final Version? v = _ubuntuVersion(c['osVersion']);
     // Unreachable servers report no OS; they are already blocking above.
     final Object? os = c['osName'];
-    if (os is String && os.isNotEmpty && (os != 'Ubuntu' || (v != null && v < _minUbuntu))) {
-      r.warnings.add('$name: ${c['osName']} ${c['osVersion']}; LA deploys expect Ubuntu 22.04 or newer.');
+    if (os is String &&
+        os.isNotEmpty &&
+        (os != 'Ubuntu' || (v != null && v < _minUbuntu))) {
+      r.warnings.add(
+        '$name: ${c['osName']} ${c['osVersion']}; LA deploys expect Ubuntu 22.04 or newer.',
+      );
     }
   }
   r.details['servers'] = connectivity
@@ -142,7 +154,10 @@ PreconditionReport evaluatePreconditions({
       final String where = (d['filesystems'] as List<dynamic>)
           .cast<Json>()
           .where((Json f) => f['low'] == true)
-          .map((Json f) => '${f['mount']} ${f['availableGB']} GB free (${f['usePct']}%)')
+          .map(
+            (Json f) =>
+                '${f['mount']} ${f['availableGB']} GB free (${f['usePct']}%)',
+          )
           .join(', ');
       r.blocking.add('${d['name']}: low disk space: $where.');
     }
@@ -152,7 +167,8 @@ PreconditionReport evaluatePreconditions({
   // DNS, resolved from where this server runs (the toolkit host).
   final Set<String> serverIps = <String>{
     for (final Json s in servers)
-      if (s['ip'] is String && (s['ip'] as String).isNotEmpty) s['ip'] as String,
+      if (s['ip'] is String && (s['ip'] as String).isNotEmpty)
+        s['ip'] as String,
   };
   final List<Json> dnsOut = <Json>[];
   dns.forEach((String host, List<String> ips) {

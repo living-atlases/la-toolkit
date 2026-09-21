@@ -27,13 +27,18 @@ Map<String, Map<String, int>> recap(List<dynamic> results) {
 
 int _failures(Map<String, Map<String, int>> r) => r.values.fold(
   0,
-  (int acc, Map<String, int> s) => acc + (s['failures'] ?? 0) + (s['unreachable'] ?? 0),
+  (int acc, Map<String, int> s) =>
+      acc + (s['failures'] ?? 0) + (s['unreachable'] ?? 0),
 );
 
 /// Same verdict as `cmdResultFor` in the backend, so the agent and the UI's
 /// history badge cannot disagree about a run, plus the two states the badge
 /// has no word for: still running, and cancelled.
-String verdict({required int code, required bool running, required int failures}) {
+String verdict({
+  required int code,
+  required bool running,
+  required int failures,
+}) {
   if (running) return 'running';
   if (code == cancelledExitCode) return 'cancelled';
   if (code == 0 && failures == 0) return 'success';
@@ -95,8 +100,9 @@ String? lastTask(String log) {
   return null;
 }
 
-String _clip(String s, int max) =>
-    s.length <= max ? s : '${s.substring(0, max)}… [${s.length - max} more chars]';
+String _clip(String s, int max) => s.length <= max
+    ? s
+    : '${s.substring(0, max)}… [${s.length - max} more chars]';
 
 /// Failed tasks of a run, most recent last, capped so they fit in a context
 /// window whatever the size of the log.
@@ -109,9 +115,12 @@ List<Json> failedTasks(Json cmdResults, {int max = 8, int maxChars = 1500}) {
   final String log = stripAnsi(decodeLog(cmdResults['logs']));
   final Set<String> ignored = ignoredFailures(log);
   final List<Json> fromJson = <Json>[];
-  for (final dynamic play in cmdResults['results'] as List<dynamic>? ?? const <dynamic>[]) {
-    for (final dynamic p in (play as Json)['plays'] as List<dynamic>? ?? const <dynamic>[]) {
-      for (final dynamic t in (p as Json)['tasks'] as List<dynamic>? ?? const <dynamic>[]) {
+  for (final dynamic play
+      in cmdResults['results'] as List<dynamic>? ?? const <dynamic>[]) {
+    for (final dynamic p
+        in (play as Json)['plays'] as List<dynamic>? ?? const <dynamic>[]) {
+      for (final dynamic t
+          in (p as Json)['tasks'] as List<dynamic>? ?? const <dynamic>[]) {
         final Json task = t as Json;
         final String? name = (task['task'] as Json?)?['name'] as String?;
         final Json hosts = task['hosts'] as Json? ?? <String, dynamic>{};
@@ -164,12 +173,14 @@ Set<String> ignoredFailures(String log) {
       continue;
     }
     final RegExpMatch? f = _fatal.firstMatch(lines[i].trimLeft());
-    if (f != null && lines[i + 1].trim() == '...ignoring') out.add('$task|${f.group(2)}');
+    if (f != null && lines[i + 1].trim() == '...ignoring')
+      out.add('$task|${f.group(2)}');
   }
   return out;
 }
 
-List<Json> _last(List<Json> l, int max) => l.length <= max ? l : l.sublist(l.length - max);
+List<Json> _last(List<Json> l, int max) =>
+    l.length <= max ? l : l.sublist(l.length - max);
 
 final RegExp _fatal = RegExp(r'^(fatal|failed): \[([^\]]+)\](?:[^=]*)=> (.*)$');
 
@@ -200,7 +211,11 @@ List<Json> failedTasksFromLog(String log, {int maxChars = 1500}) {
     // The toolkit's log file can hold the same run twice (ansible's own log
     // and the echo-bash tee point at one path).
     if (!seen.add('$task|$host|$detail')) continue;
-    out.add(<String, dynamic>{'task': task, 'host': host, 'detail': _clip(detail, maxChars)});
+    out.add(<String, dynamic>{
+      'task': task,
+      'host': host,
+      'detail': _clip(detail, maxChars),
+    });
   }
   return out;
 }
@@ -208,6 +223,8 @@ List<Json> failedTasksFromLog(String log, {int maxChars = 1500}) {
 /// The last [lines] lines of the log, for when a run failed without any
 /// failed task (a syntax error, a missing inventory, a killed process).
 String logTail(Json cmdResults, {int lines = 40}) {
-  final List<String> all = stripAnsi(decodeLog(cmdResults['logs'])).trimRight().split('\n');
+  final List<String> all = stripAnsi(
+    decodeLog(cmdResults['logs']),
+  ).trimRight().split('\n');
   return all.sublist(all.length > lines ? all.length - lines : 0).join('\n');
 }

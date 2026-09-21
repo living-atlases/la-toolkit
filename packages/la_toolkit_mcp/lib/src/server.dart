@@ -35,7 +35,8 @@ final Schema _projectArg = Schema.string(
 );
 
 final Schema _runIdArg = Schema.string(
-  description: 'Run id from la_deploy or la_list_runs. Defaults to the latest run.',
+  description:
+      'Run id from la_deploy or la_list_runs. Defaults to the latest run.',
 );
 
 Schema _tokenList(String description) =>
@@ -51,9 +52,9 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     Future<List<String>> Function(String host)? resolve,
   }) : resolve = resolve ?? _lookup,
        super.fromStreamChannel(
-        implementation: Implementation(name: 'la-toolkit', version: '0.1.0'),
-        instructions: _instructions,
-      ) {
+         implementation: Implementation(name: 'la-toolkit', version: '0.1.0'),
+         instructions: _instructions,
+       ) {
     _register();
   }
 
@@ -101,7 +102,10 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       'la_get_project',
       'Details of one project: servers and their last connectivity check, '
           'releases, which services run where, last service checks and recent runs.',
-      Schema.object(properties: <String, Schema>{'project': _projectArg}, required: <String>['project']),
+      Schema.object(
+        properties: <String, Schema>{'project': _projectArg},
+        required: <String>['project'],
+      ),
       readOnly: true,
       (Map<String, Object?> a) async => projectDetails(await _resolve(a)),
     );
@@ -126,7 +130,10 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       'Check every server of a project from the toolkit: ping, ssh, sudo and OS '
           'version. Runs read-only commands over ssh on the servers, and stores '
           'the results on the project, as the UI does.',
-      Schema.object(properties: <String, Schema>{'project': _projectArg}, required: <String>['project']),
+      Schema.object(
+        properties: <String, Schema>{'project': _projectArg},
+        required: <String>['project'],
+      ),
       // Not read-only: check-connectivity.js saves the statuses and OS facts.
       openWorld: true,
       (Map<String, Object?> a) async {
@@ -159,7 +166,10 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           'resolve. Answers ready: true or the list of blockers. Runs read-only '
           'commands over ssh; the connectivity results are saved on the project, '
           'as the UI does.',
-      Schema.object(properties: <String, Schema>{'project': _projectArg}, required: <String>['project']),
+      Schema.object(
+        properties: <String, Schema>{'project': _projectArg},
+        required: <String>['project'],
+      ),
       openWorld: true,
       _preconditions,
     );
@@ -173,9 +183,12 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       Schema.object(
         properties: <String, Schema>{
           'project': _projectArg,
-          'dryRun': Schema.bool(description: 'Only print the command (default true).'),
+          'dryRun': Schema.bool(
+            description: 'Only print the command (default true).',
+          ),
           'confirm': Schema.bool(
-            description: 'Required with dryRun: false. Set it only when the user agreed to this deploy.',
+            description:
+                'Required with dryRun: false. Set it only when the user agreed to this deploy.',
           ),
           'services': _tokenList(
             'VM deploys: services to deploy (default all). Not allowed for docker-compose.',
@@ -186,11 +199,14 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           'tags': _tokenList('Only run these ansible tags.'),
           'skipTags': _tokenList('Skip these ansible tags.'),
           'limitToServers': _tokenList('Only these servers (by name).'),
-          'onlyProperties': Schema.bool(description: 'Only regenerate service configuration.'),
+          'onlyProperties': Schema.bool(
+            description: 'Only regenerate service configuration.',
+          ),
           'continueEvenIfFails': Schema.bool(),
           'debug': Schema.bool(description: 'Verbose ansible output.'),
           'prepare': Schema.bool(
-            description: 'Check out the pinned releases and regenerate inventories and '
+            description:
+                'Check out the pinned releases and regenerate inventories and '
                 'ssh config first, like the UI does (default: true for real deploys, '
                 'false for dry runs). Changes the toolkit checkouts shared by every '
                 'project, never the servers.',
@@ -209,7 +225,10 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       'Status of a run: running / success / failed / aborted / cancelled, per-host '
           'recap and, while running, the current task. Poll every few minutes.',
       Schema.object(
-        properties: <String, Schema>{'project': _projectArg, 'runId': _runIdArg},
+        properties: <String, Schema>{
+          'project': _projectArg,
+          'runId': _runIdArg,
+        },
         required: <String>['project'],
       ),
       readOnly: true,
@@ -227,14 +246,19 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         properties: <String, Schema>{
           'project': _projectArg,
           'runId': _runIdArg,
-          'max': Schema.int(description: 'Max failed tasks to return (default 8, latest ones).'),
+          'max': Schema.int(
+            description: 'Max failed tasks to return (default 8, latest ones).',
+          ),
         },
         required: <String>['project'],
       ),
       readOnly: true,
       (Map<String, Object?> a) async {
         final (Json entry, Json results) = await _runResults(a);
-        final List<Json> failed = failedTasks(results, max: (a['max'] as int?) ?? 8);
+        final List<Json> failed = failedTasks(
+          results,
+          max: (a['max'] as int?) ?? 8,
+        );
         return <String, dynamic>{
           ...summarizeRun(entry, results),
           'failedTasks': failed,
@@ -250,14 +274,19 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         properties: <String, Schema>{
           'project': _projectArg,
           'runId': _runIdArg,
-          'confirm': Schema.bool(description: 'Must be true; set it only when the user asked to cancel.'),
+          'confirm': Schema.bool(
+            description:
+                'Must be true; set it only when the user asked to cancel.',
+          ),
         },
         required: <String>['project', 'confirm'],
       ),
       destructive: true,
       (Map<String, Object?> a) async {
         if (a['confirm'] != true) {
-          throw InvalidRequest('Cancelling needs confirm: true, set only when the user asked for it.');
+          throw InvalidRequest(
+            'Cancelling needs confirm: true, set only when the user asked for it.',
+          );
         }
         final ProjectRef ref = await _resolve(a);
         final Json entry = _entry(ref, a['runId'] as String?);
@@ -274,24 +303,38 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     final ProjectRef ref = await _resolve(a);
     // A hub without servers of its own runs on its portal's.
     final bool onParent =
-        ref.isHub && (ref.project['servers'] as List<dynamic>? ?? <dynamic>[]).isEmpty;
+        ref.isHub &&
+        (ref.project['servers'] as List<dynamic>? ?? <dynamic>[]).isEmpty;
     final Json target = onParent ? ref.parent! : ref.project;
     final List<Json> servers = serversWithServices(target);
     if (servers.isEmpty) {
-      throw InvalidRequest('"${target['dirName']}" has no servers with services assigned.');
+      throw InvalidRequest(
+        '"${target['dirName']}" has no servers with services assigned.',
+      );
     }
-    final List<String> names = servers.map((Json s) => s['name'] as String).toList();
-    final ({List<String> hosts, bool authoritative}) public = publicHostnames(ref.project);
+    final List<String> names = servers
+        .map((Json s) => s['name'] as String)
+        .toList();
+    final ({List<String> hosts, bool authoritative}) public = publicHostnames(
+      ref.project,
+    );
     final List<String> hosts = public.hosts;
 
-    final (Json conn, List<Json> disk, List<Json> keys, List<List<String>> ips) = await (
+    final (
+      Json conn,
+      List<Json> disk,
+      List<Json> keys,
+      List<List<String>> ips,
+    ) = await (
       backend.testConnectivity(servers),
       // Backends older than the disk-usage endpoint answer 404: report the
       // rest rather than failing the whole check.
-      backend.diskUsage(target['id'] as String, names: names).catchError(
-        (Object e) => <Json>[],
-        test: (Object e) => e is BackendException && e.statusCode == 404,
-      ),
+      backend
+          .diskUsage(target['id'] as String, names: names)
+          .catchError(
+            (Object e) => <Json>[],
+            test: (Object e) => e is BackendException && e.statusCode == 404,
+          ),
       backend.sshKeys(),
       Future.wait(hosts.map(resolve)),
     ).wait;
@@ -299,21 +342,31 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     final PreconditionReport r = evaluatePreconditions(
       project: target,
       servers: servers,
-      connectivity: (conn['servers'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>(),
+      connectivity: (conn['servers'] as List<dynamic>? ?? const <dynamic>[])
+          .cast<Json>(),
       disk: disk,
       keys: keys,
-      dns: <String, List<String>>{for (int i = 0; i < hosts.length; i++) hosts[i]: ips[i]},
+      dns: <String, List<String>>{
+        for (int i = 0; i < hosts.length; i++) hosts[i]: ips[i],
+      },
       dnsAuthoritative: public.authoritative,
     );
     if (disk.isEmpty) {
-      r.warnings.add('Disk space not checked: this backend has no disk-usage endpoint (update la_toolkit_backend).');
+      r.warnings.add(
+        'Disk space not checked: this backend has no disk-usage endpoint (update la_toolkit_backend).',
+      );
     }
-    final int ignored = (target['servers'] as List<dynamic>).length - servers.length;
+    final int ignored =
+        (target['servers'] as List<dynamic>).length - servers.length;
     return <String, dynamic>{
       'project': ref.dirName,
-      if (onParent) 'checkedOn': 'portal ${target['dirName']} (the hub has no servers of its own)',
+      if (onParent)
+        'checkedOn':
+            'portal ${target['dirName']} (the hub has no servers of its own)',
       ...r.toJson(),
-      if (ignored > 0) 'ignoredServers': '$ignored server(s) without services were not checked',
+      if (ignored > 0)
+        'ignoredServers':
+            '$ignored server(s) without services were not checked',
       'note': 'DNS is resolved from the toolkit host.',
     };
   }
@@ -343,8 +396,12 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       }
       // A hub's inventories live inside its portal's directory, so the
       // generation is addressed to the portal (Api.regenerateInv).
-      await backend.regenerateInventories(ref.isHub ? ref.parent!['id'] as String : ref.id, genConf);
-      final List<dynamic> servers = p['servers'] as List<dynamic>? ?? <dynamic>[];
+      await backend.regenerateInventories(
+        ref.isHub ? ref.parent!['id'] as String : ref.id,
+        genConf,
+      );
+      final List<dynamic> servers =
+          p['servers'] as List<dynamic>? ?? <dynamic>[];
       if (servers.isNotEmpty) {
         await backend.genSshConf(
           name: p['shortName'] as String,
@@ -355,14 +412,21 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       }
     }
 
-    final Json started = await backend.ansiblew(id: ref.id, desc: req.desc, cmd: req.cmd);
+    final Json started = await backend.ansiblew(
+      id: ref.id,
+      desc: req.desc,
+      cmd: req.cmd,
+    );
     final Json entry = started['cmdEntry'] as Json;
     // ansiblew also starts a ttyd viewer tailing the log, which the UI kills
     // when its console dialog closes. Nobody here will ever look at it, and
     // each one holds a port of the 2011-2100 pool until killed.
     if (started['port'] is int && started['ttydPid'] is int) {
       try {
-        await backend.termClose(started['port'] as int, started['ttydPid'] as int);
+        await backend.termClose(
+          started['port'] as int,
+          started['ttydPid'] as int,
+        );
       } catch (_) {
         // A leaked viewer is not worth failing a deploy that already started.
       }
@@ -376,12 +440,16 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     if (!req.dryRun) {
       return <String, dynamic>{
         ...out,
-        'next': 'Running detached. Poll la_deploy_status with this runId every few minutes.',
+        'next':
+            'Running detached. Poll la_deploy_status with this runId every few minutes.',
       };
     }
     // A dry run only echoes the ansible-playbook line; wait for it so the agent
     // can show the user exactly what a real run would execute.
-    final Json results = await _waitFinished(entry, dryRunWait ?? const Duration(seconds: 30));
+    final Json results = await _waitFinished(
+      entry,
+      dryRunWait ?? const Duration(seconds: 30),
+    );
     final Json summary = summarizeRun(entry, results);
     return <String, dynamic>{
       ...out,
@@ -399,7 +467,10 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
   Future<void> _refuseIfSomethingRuns(ProjectRef target) async {
     for (final ProjectRef r in allProjects(await backend.getProjects())) {
       for (final Json e in unfinishedRuns(r.project)) {
-        if (await backend.deployStatus(e['logsPrefix'] as String, e['logsSuffix'] as String)) {
+        if (await backend.deployStatus(
+          e['logsPrefix'] as String,
+          e['logsSuffix'] as String,
+        )) {
           throw InvalidRequest(
             'Run ${e['id']} ("${e['desc']}") of "${r.dirName}" is still running. '
             'Preparing "${target.dirName}" would check out the shared ala-install / '
@@ -435,7 +506,8 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       final List<String> names = <String>[
         for (final Json p in portals) ...<String>[
           p['dirName'] as String,
-          for (final Json h in (p['hubs'] as List<dynamic>).cast<Json>()) h['dirName'] as String,
+          for (final Json h in (p['hubs'] as List<dynamic>).cast<Json>())
+            h['dirName'] as String,
         ],
       ];
       throw InvalidRequest('No project "$ref". Known: ${names.join(', ')}.');
@@ -488,10 +560,14 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       ),
       (CallToolRequest request) async {
         try {
-          final Object? result = await body(request.arguments ?? <String, Object?>{});
+          final Object? result = await body(
+            request.arguments ?? <String, Object?>{},
+          );
           return CallToolResult(
             content: <Content>[
-              TextContent(text: const JsonEncoder.withIndent('  ').convert(result)),
+              TextContent(
+                text: const JsonEncoder.withIndent('  ').convert(result),
+              ),
             ],
           );
         } on InvalidRequest catch (e) {
@@ -499,7 +575,9 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         } on BackendException catch (e) {
           return _error(e.toString());
         } on TimeoutException {
-          return _error('The LA Toolkit backend at ${backend.baseUri} did not answer in time.');
+          return _error(
+            'The LA Toolkit backend at ${backend.baseUri} did not answer in time.',
+          );
         } catch (e) {
           return _error('${e.runtimeType}: $e');
         }
@@ -507,6 +585,8 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     );
   }
 
-  CallToolResult _error(String message) =>
-      CallToolResult(isError: true, content: <Content>[TextContent(text: message)]);
+  CallToolResult _error(String message) => CallToolResult(
+    isError: true,
+    content: <Content>[TextContent(text: message)],
+  );
 }

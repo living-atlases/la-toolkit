@@ -73,9 +73,8 @@ bool hasVmServices(Json p) {
   final Map<String, dynamic> ss =
       p['serverServices'] as Map<String, dynamic>? ?? const <String, dynamic>{};
   return ss.values.any(
-    (dynamic v) => (v as List<dynamic>).any(
-      (dynamic s) => !placementServices.contains(s),
-    ),
+    (dynamic v) =>
+        (v as List<dynamic>).any((dynamic s) => !placementServices.contains(s)),
   );
 }
 
@@ -111,21 +110,23 @@ Json projectSummary(ProjectRef ref) {
     if (ref.parent != null) 'parent': ref.parent!['dirName'],
     'deployMode': deployMode(p).name,
     'servers': _list(p, 'servers').map((Json s) => s['name']).toList(),
-    if (!ref.isHub)
-      'hubs': _hubs(p).map((Json h) => h['dirName']).toList(),
+    if (!ref.isHub) 'hubs': _hubs(p).map((Json h) => h['dirName']).toList(),
   };
 }
 
 Json projectDetails(ProjectRef ref) {
   final Json p = ref.project;
   final Map<String, String> clusterNames = <String, String>{
-    for (final Json c in _list(p, 'clusters')) c['id'] as String: c['name'] as String,
+    for (final Json c in _list(p, 'clusters'))
+      c['id'] as String: c['name'] as String,
   };
   final Map<String, String> serverNames = <String, String>{
-    for (final Json s in _list(p, 'servers')) s['id'] as String: s['name'] as String,
+    for (final Json s in _list(p, 'servers'))
+      s['id'] as String: s['name'] as String,
   };
   final Map<String, String> serviceNames = <String, String>{
-    for (final Json s in _list(p, 'services')) s['id'] as String: s['nameInt'] as String,
+    for (final Json s in _list(p, 'services'))
+      s['id'] as String: s['nameInt'] as String,
   };
   final Map<String, dynamic> cs =
       p['clusterServices'] as Map<String, dynamic>? ??
@@ -180,8 +181,9 @@ Json projectDetails(ProjectRef ref) {
 List<Json> runs(Json p, {int limit = 10}) {
   final List<Json> entries = List<Json>.of(_list(p, 'cmdHistoryEntries'))
     ..sort(
-      (Json a, Json b) =>
-          ((b['createdAt'] as num?) ?? 0).compareTo((a['createdAt'] as num?) ?? 0),
+      (Json a, Json b) => ((b['createdAt'] as num?) ?? 0).compareTo(
+        (a['createdAt'] as num?) ?? 0,
+      ),
     );
   return entries
       .take(limit)
@@ -211,16 +213,28 @@ Json? findRun(Json p, String? runId) {
   }
   return entries.reduce(
     (Json a, Json b) =>
-        ((a['createdAt'] as num?) ?? 0) >= ((b['createdAt'] as num?) ?? 0) ? a : b,
+        ((a['createdAt'] as num?) ?? 0) >= ((b['createdAt'] as num?) ?? 0)
+        ? a
+        : b,
   );
 }
 
 /// Recent history entries whose outcome nobody recorded yet: the only ones
 /// that can still be running. Old `unknown` entries are left alone: the
 /// backend checks liveness by pid, and a years-old pid may belong to anything.
-List<Json> unfinishedRuns(Json p, {DateTime? now, Duration within = const Duration(hours: 24)}) {
-  final int since = (now ?? DateTime.now()).subtract(within).millisecondsSinceEpoch;
+List<Json> unfinishedRuns(
+  Json p, {
+  DateTime? now,
+  Duration within = const Duration(hours: 24),
+}) {
+  final int since = (now ?? DateTime.now())
+      .subtract(within)
+      .millisecondsSinceEpoch;
   return _list(p, 'cmdHistoryEntries')
-      .where((Json e) => e['result'] == 'unknown' && ((e['createdAt'] as num?) ?? 0) >= since)
+      .where(
+        (Json e) =>
+            e['result'] == 'unknown' &&
+            ((e['createdAt'] as num?) ?? 0) >= since,
+      )
       .toList();
 }

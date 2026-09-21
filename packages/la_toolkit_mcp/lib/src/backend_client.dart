@@ -13,7 +13,9 @@ class BackendException implements Exception {
 
   @override
   String toString() {
-    final String shown = body.length > 500 ? '${body.substring(0, 500)}…' : body;
+    final String shown = body.length > 500
+        ? '${body.substring(0, 500)}…'
+        : body;
     return 'LA Toolkit backend answered $statusCode to $path: $shown';
   }
 }
@@ -66,7 +68,8 @@ class BackendClient {
 
   /// Every portal, fully populated, hubs nested under `hubs`.
   Future<List<Map<String, dynamic>>> getProjects() async {
-    final Map<String, dynamic> body = await _get('get-conf') as Map<String, dynamic>;
+    final Map<String, dynamic> body =
+        await _get('get-conf') as Map<String, dynamic>;
     return (body['projects'] as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
@@ -74,12 +77,17 @@ class BackendClient {
       await _get('get-backend-version') as Map<String, dynamic>;
 
   Future<Map<String, dynamic>> testConnectivity(List<dynamic> servers) async =>
-      await _send('POST', 'test-connectivity', <String, Object?>{'servers': servers})
+      await _send('POST', 'test-connectivity', <String, Object?>{
+            'servers': servers,
+          })
           as Map<String, dynamic>;
 
   /// `df` over ssh on the project's servers (optionally only [names]).
   /// Read-only; the backend takes the names from its database.
-  Future<List<Map<String, dynamic>>> diskUsage(String id, {List<String>? names}) async {
+  Future<List<Map<String, dynamic>>> diskUsage(
+    String id, {
+    List<String>? names,
+  }) async {
     final Map<String, dynamic> r =
         await _send('POST', 'disk-usage', <String, Object?>{
               'id': id,
@@ -91,7 +99,8 @@ class BackendClient {
 
   /// The ssh keys the toolkit holds (`{name, missing, ...}`).
   Future<List<Map<String, dynamic>>> sshKeys() async {
-    final Map<String, dynamic> r = await _get('ssh-key-scan') as Map<String, dynamic>;
+    final Map<String, dynamic> r =
+        await _get('ssh-key-scan') as Map<String, dynamic>;
     return (r['keys'] as List<dynamic>).cast<Map<String, dynamic>>();
   }
 

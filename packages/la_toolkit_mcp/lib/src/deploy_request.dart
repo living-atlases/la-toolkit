@@ -101,7 +101,9 @@ DeployRequest buildDeployRequest(ProjectRef ref, Map<String, Object?> args) {
       'which splits it into a docker leg and a VM leg.',
     );
   }
-  if (ref.isHub && mode == DeployMode.none && parentMode == DeployMode.dockerCompose) {
+  if (ref.isHub &&
+      mode == DeployMode.none &&
+      parentMode == DeployMode.dockerCompose) {
     throw InvalidRequest(
       'Hub "${ref.dirName}" has no servers of its own: it deploys as part of the '
       'docker-compose stack of its portal "${checked['dirName']}". Deploy the portal.',
@@ -118,7 +120,9 @@ DeployRequest buildDeployRequest(ProjectRef ref, Map<String, Object?> args) {
   List<String> services = _tokens(args, 'services');
   if (services.isEmpty) services = <String>['all'];
   // ansiblew knows species-lists as `lists` (Api.ansiblew does the same).
-  services = services.map((String s) => s == 'species-lists' ? 'lists' : s).toList();
+  services = services
+      .map((String s) => s == 'species-lists' ? 'lists' : s)
+      .toList();
   final List<String> skipServices = _tokens(args, 'skipServices');
   if (skipServices.isNotEmpty && !dockerCompose) {
     throw InvalidRequest(
@@ -136,12 +140,17 @@ DeployRequest buildDeployRequest(ProjectRef ref, Map<String, Object?> args) {
 
   final List<String> servers = _tokens(args, 'limitToServers');
   final Set<String> known = <String>{
-    for (final Json s in (checked['servers'] as List<dynamic>? ?? <dynamic>[]).cast<Json>())
+    for (final Json s
+        in (checked['servers'] as List<dynamic>? ?? <dynamic>[]).cast<Json>())
       s['name'] as String,
-    for (final Json s in (ref.project['servers'] as List<dynamic>? ?? <dynamic>[]).cast<Json>())
+    for (final Json s
+        in (ref.project['servers'] as List<dynamic>? ?? <dynamic>[])
+            .cast<Json>())
       s['name'] as String,
   };
-  final List<String> unknown = servers.where((String s) => !known.contains(s)).toList();
+  final List<String> unknown = servers
+      .where((String s) => !known.contains(s))
+      .toList();
   if (unknown.isNotEmpty) {
     throw InvalidRequest(
       'Unknown servers in `limitToServers`: ${unknown.join(', ')}. '
@@ -149,7 +158,8 @@ DeployRequest buildDeployRequest(ProjectRef ref, Map<String, Object?> args) {
     );
   }
 
-  final String desc = (args['desc'] is String && (args['desc']! as String).trim().isNotEmpty)
+  final String desc =
+      (args['desc'] is String && (args['desc']! as String).trim().isNotEmpty)
       ? (args['desc']! as String).trim()
       : '${dryRun ? 'Dry run' : 'Agent'} ${dockerCompose ? 'docker-compose ' : ''}deploy';
 
