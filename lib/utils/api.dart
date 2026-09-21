@@ -655,7 +655,7 @@ class Api {
       return <List<dynamic>>[project.toJson() as List<dynamic>];
     }
     final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/$op-project');
-    final Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
+    final Map<String, dynamic> projectJ = project.toApiJson();
     final Map<String, dynamic> body = <String, dynamic>{'project': projectJ};
     final Response response = await (op == 'add' ? http.post : http.patch)(
       url,
@@ -677,7 +677,7 @@ class Api {
 
     final List<dynamic> projectsJ = <dynamic>[];
     for (final LAProject project in projects) {
-      final Map<String, dynamic> projectJ = projectJsonWithGenConf(project);
+      final Map<String, dynamic> projectJ = project.toApiJson();
       projectsJ.add(projectJ);
     }
     final Map<String, dynamic> body = <String, dynamic>{'projects': projectsJ};
@@ -692,18 +692,6 @@ class Api {
     } else {
       throw Exception('Failed to add projects');
     }
-  }
-
-  static Map<String, dynamic> projectJsonWithGenConf(LAProject project) {
-    // toGeneratorJson() materialises the defaulted variables onto the project
-    // (getVariableValue -> setVariable). Run it FIRST so toJson() sees them;
-    // otherwise a freshly created project is persisted without its defaults
-    // and they are re-created with new ids on the next save.
-    final Map<String, dynamic> projectGenJson = project.toGeneratorJson();
-    final Map<String, dynamic> projectJ = project.toJson();
-    projectJ['genConf'] = projectGenJson;
-    projectJ['parent'] = project.parent?.id;
-    return projectJ;
   }
 
   static Future<List<dynamic>> deleteProject({

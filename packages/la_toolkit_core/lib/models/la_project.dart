@@ -1343,6 +1343,26 @@ check results length: ${checkResults.length}''';
     return value;
   }
 
+  /// The body the backend stores for this project (add-projects,
+  /// update-project): the model plus its generator map and its parent id.
+  Map<String, dynamic> toApiJson() {
+    // toGeneratorJson() materialises the defaulted variables onto the project
+    // (getVariableValue -> setVariable). Run it FIRST so toJson() sees them;
+    // otherwise a freshly created project is persisted without its defaults
+    // and they are re-created with new ids on the next save.
+    final Map<String, dynamic> projectGenJson = toGeneratorJson();
+    final Map<String, dynamic> projectJ = toJson();
+    projectJ['genConf'] = projectGenJson;
+    projectJ['parent'] = parent?.id;
+    return projectJ;
+  }
+
+  /// What [nameInt] defaults to for this project, whatever value it holds.
+  Object? variableDefault(String nameInt) {
+    final LAVariableDesc desc = LAVariableDesc.get(nameInt);
+    return desc.defValue == null ? null : _callDefValue(desc.defValue, this);
+  }
+
   Object? _callDefValue(dynamic defValue, LAProject project) {
     // ignore: avoid_dynamic_calls
     return defValue(project);
