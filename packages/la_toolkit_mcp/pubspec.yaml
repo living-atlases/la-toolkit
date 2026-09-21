@@ -12,6 +12,7 @@ executables:
 dependencies:
   dart_mcp: ^0.5.2
   http: ^1.2.0
+  pub_semver: ^2.1.0
 
 dev_dependencies:
   lints: ^5.0.0

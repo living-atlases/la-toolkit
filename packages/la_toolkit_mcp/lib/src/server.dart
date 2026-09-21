@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dart_mcp/server.dart';
 
 import 'backend_client.dart';
 import 'deploy_outcome.dart';
 import 'deploy_request.dart';
+import 'preconditions.dart';
 import 'projects.dart';
 
 const String _instructions = '''
@@ -13,6 +15,9 @@ Drives an LA Toolkit (Living Atlas deployment tool) through its backend API.
 
 Typical flow to update a portal:
 1. la_list_projects, then la_get_project to see servers, placement and history.
+   la_check_preconditions before a first or long-delayed deploy: it names
+   what is missing (DNS, ssh key, ssh/sudo access, disk space) instead of
+   letting a multi-hour deploy fail on it.
 2. la_deploy with dryRun: true (the default). It prints the exact ansible
    command and changes nothing. Show it to the user. If it reports exit 127,
    the inventories were never generated: retry with prepare: true, which
@@ -39,8 +44,13 @@ Schema _tokenList(String description) =>
 /// The MCP server. Every tool is a thin composition of [BackendClient] calls
 /// and the pure helpers in `projects.dart` / `deploy_*.dart`.
 base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
-  LaToolkitMcpServer(super.channel, {required this.backend, this.dryRunWait})
-    : super.fromStreamChannel(
+  LaToolkitMcpServer(
+    super.channel, {
+    required this.backend,
+    this.dryRunWait,
+    Future<List<String>> Function(String host)? resolve,
+  }) : resolve = resolve ?? _lookup,
+       super.fromStreamChannel(
         implementation: Implementation(name: 'la-toolkit', version: '0.1.0'),
         instructions: _instructions,
       ) {
@@ -48,6 +58,22 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
   }
 
   final BackendClient backend;
+
+  /// Resolves a host name to its addresses, empty when it does not resolve.
+  final Future<List<String>> Function(String host) resolve;
+
+  static Future<List<String>> _lookup(String host) async {
+    try {
+      final List<InternetAddress> a = await InternetAddress.lookup(
+        host,
+      ).timeout(const Duration(seconds: 5));
+      return a.map((InternetAddress i) => i.address).toSet().toList();
+    } on SocketException {
+      return <String>[];
+    } on TimeoutException {
+      return <String>[];
+    }
+  }
 
   /// How long la_deploy waits for a dry run to finish so it can return the
   /// echoed command. Null means the default (30 s); tests shorten it.
@@ -123,6 +149,19 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
             )
             .toList();
       },
+    );
+
+    _tool(
+      'la_check_preconditions',
+      'Everything a deploy needs before it starts, for the servers that carry '
+          'services: the toolkit holds their ssh keys, ssh and sudo work, the OS '
+          'is a supported Ubuntu, there is disk space, and the portal host names '
+          'resolve. Answers ready: true or the list of blockers. Runs read-only '
+          'commands over ssh; the connectivity results are saved on the project, '
+          'as the UI does.',
+      Schema.object(properties: <String, Schema>{'project': _projectArg}, required: <String>['project']),
+      openWorld: true,
+      _preconditions,
     );
 
     _tool(
@@ -229,6 +268,54 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         return <String, dynamic>{'runId': entry['id'], 'killed': killed};
       },
     );
+  }
+
+  Future<Object?> _preconditions(Map<String, Object?> a) async {
+    final ProjectRef ref = await _resolve(a);
+    // A hub without servers of its own runs on its portal's.
+    final bool onParent =
+        ref.isHub && (ref.project['servers'] as List<dynamic>? ?? <dynamic>[]).isEmpty;
+    final Json target = onParent ? ref.parent! : ref.project;
+    final List<Json> servers = serversWithServices(target);
+    if (servers.isEmpty) {
+      throw InvalidRequest('"${target['dirName']}" has no servers with services assigned.');
+    }
+    final List<String> names = servers.map((Json s) => s['name'] as String).toList();
+    final ({List<String> hosts, bool authoritative}) public = publicHostnames(ref.project);
+    final List<String> hosts = public.hosts;
+
+    final (Json conn, List<Json> disk, List<Json> keys, List<List<String>> ips) = await (
+      backend.testConnectivity(servers),
+      // Backends older than the disk-usage endpoint answer 404: report the
+      // rest rather than failing the whole check.
+      backend.diskUsage(target['id'] as String, names: names).catchError(
+        (Object e) => <Json>[],
+        test: (Object e) => e is BackendException && e.statusCode == 404,
+      ),
+      backend.sshKeys(),
+      Future.wait(hosts.map(resolve)),
+    ).wait;
+
+    final PreconditionReport r = evaluatePreconditions(
+      project: target,
+      servers: servers,
+      connectivity: (conn['servers'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>(),
+      disk: disk,
+      keys: keys,
+      dns: <String, List<String>>{for (int i = 0; i < hosts.length; i++) hosts[i]: ips[i]},
+      dnsAuthoritative: public.authoritative,
+    );
+    if (disk.isEmpty) {
+      r.warnings.add('Disk space not checked: this backend has no disk-usage endpoint (update la_toolkit_backend).');
+    }
+    final int ignored = (target['servers'] as List<dynamic>).length - servers.length;
+    return <String, dynamic>{
+      'project': ref.dirName,
+      if (onParent) 'checkedOn': 'portal ${target['dirName']} (the hub has no servers of its own)',
+      ...r.toJson(),
+      if (ignored > 0) 'ignoredServers': '$ignored server(s) without services were not checked',
+      'note': 'DNS is resolved from the toolkit host.',
+    };
   }
 
   Future<Object?> _deploy(Map<String, Object?> a) async {

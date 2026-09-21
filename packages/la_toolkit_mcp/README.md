@@ -17,6 +17,7 @@ shows up in the project history like any other.
 | `la_get_project` | Servers, releases, which services run where, recent runs | no |
 | `la_list_runs` | Command history, newest first | no |
 | `la_check_connectivity` | ping, ssh, sudo and OS of every server | read-only ssh on the servers; saves the results on the project, like the UI |
+| `la_check_preconditions` | Blockers before a deploy, for the servers that carry services: ssh key in the toolkit, ssh and sudo, Ubuntu >= 22.04, disk space (`/`, `/data`, `/var/lib/docker`), portal host names resolve | read-only ssh; saves connectivity results like the UI |
 | `la_deploy` | Dry run (default) or real deploy | see below |
 | `la_deploy_status` | running / success / failed / aborted / cancelled, per-host recap, current task | no |
 | `la_deploy_failures` | Failed tasks with their error, never the full log | no |
@@ -46,6 +47,20 @@ shows up in the project history like any other.
 - The ttyd viewer the backend starts for every run is closed right away. The deploy is
   detached and does not depend on it; left open, each one would hold a port of the
   2011-2100 pool.
+
+### Preconditions
+
+- Only servers with services assigned (directly, or as the carrier of a docker-compose
+  cluster) are checked; projects often keep retired VMs.
+- Disk needs the backend's `POST /api/v1/disk-usage` (la_toolkit_backend, added with this
+  tool). An older backend only yields a warning. Below 10 GB free or at 90% use a
+  filesystem blocks: pulling the compose images alone takes several GB.
+- DNS is resolved from the toolkit host. For docker-compose projects the host names are
+  the nginx vhosts the generator computed (`LA_nginx_docker_internal_aliases_by_host`),
+  and a name that does not resolve blocks. Other projects fall back to the URL of every
+  service in use, which also names internal services without a vhost, so there it is
+  only a warning. An address that is not one of the project's servers is fine (proxy,
+  NAT) and only reported.
 
 ### Not supported yet
 

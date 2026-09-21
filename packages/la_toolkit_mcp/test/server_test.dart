@@ -18,11 +18,26 @@ base class _Client extends MCPClient {
 class _Backend {
   final List<String> calls = <String>[];
   bool somethingRunning = false;
+  List<String>? diskNames;
+  bool noDiskEndpoint = false;
   final List<Json> ansiblewBodies = <Json>[];
   final Json entry = run('run1', DateTime.now().millisecondsSinceEpoch, suffix: '2026-09-21_09:00:00')
     ..['rawCmd'] = './ansiblew --ladocker=/x --extra="auto_deploy=true" --user ubuntu all';
 
-  late final List<Json> projects = <Json>[project(history: <Json>[entry])];
+  late final List<Json> projects = <Json>[
+    project(history: <Json>[entry])
+      ..['genConf'] = <String, dynamic>{
+        'LA_pkg_name': 'demo',
+        'LA_variable_ansible_user': 'ubuntu',
+        'LA_nginx_docker_internal_aliases_by_host': <String, dynamic>{
+          'la-1': <String>['collections.example.com'],
+        },
+      }
+      ..['servers'] = <Json>[
+        <String, dynamic>{'id': 's1', 'name': 'la-1', 'ip': '10.0.0.5', 'sshKey': <String, dynamic>{'name': 'k1'}},
+        <String, dynamic>{'id': 's2', 'name': 'retired', 'ip': '10.0.0.9'},
+      ],
+  ];
 
   http.Client get client => MockClient((http.Request r) async {
     final String path = r.url.path.replaceFirst('/api/v1/', '');
@@ -34,6 +49,30 @@ class _Backend {
       case 'ansiblew':
         ansiblewBodies.add(body()!);
         return _json(<String, dynamic>{'cmdEntry': entry, 'port': 2011, 'ttydPid': 1, 'deployPid': 2});
+      case 'test-connectivity':
+        return _json(<String, dynamic>{
+          'servers': (body()!['servers'] as List<dynamic>)
+              .map((dynamic s) => <String, dynamic>{
+                    ...(s as Json),
+                    'sshReachable': 'success',
+                    'sudoEnabled': 'success',
+                    'osName': 'Ubuntu',
+                    'osVersion': '24.04',
+                  })
+              .toList(),
+        });
+      case 'disk-usage':
+        if (noDiskEndpoint) return http.Response('Not Found', 404);
+        diskNames = (body()!['names'] as List<dynamic>).cast<String>();
+        return _json(<String, dynamic>{
+          'servers': <Json>[
+            <String, dynamic>{'name': 'la-1', 'ok': true, 'low': false, 'filesystems': <Json>[]},
+          ],
+        });
+      case 'ssh-key-scan':
+        return _json(<String, dynamic>{
+          'keys': <Json>[<String, dynamic>{'name': 'k1', 'missing': false}],
+        });
       case 'deploy-status':
         return _json(<String, dynamic>{'running': somethingRunning});
       case 'cmd-results':
@@ -64,6 +103,7 @@ void main() {
       StreamChannel<String>.withCloseGuarantee(toServer.stream, toClient.sink),
       backend: BackendClient(Uri.parse('http://toolkit:2010'), client: fake.client),
       dryRunWait: const Duration(seconds: 2),
+      resolve: (String host) async => host == 'collections.example.com' ? <String>['10.0.0.5'] : <String>[],
     );
     final _Client client = _Client();
     conn = client.connectServer(StreamChannel<String>.withCloseGuarantee(toClient.stream, toServer.sink));
@@ -157,6 +197,23 @@ void main() {
     final Json f = json.decode(text(await call('la_deploy_failures', <String, Object?>{'project': 'demo'}))) as Json;
     expect(f['failedTasks'], isEmpty);
     expect(f['logTail'], contains('ansible-playbook'));
+  });
+
+  test('preconditions check only servers with services and report ready', () async {
+    final CallToolResult r = await call('la_check_preconditions', <String, Object?>{'project': 'demo'});
+    expect(r.isError, isNot(true), reason: text(r));
+    final Json out = json.decode(text(r)) as Json;
+    expect(out['ready'], isTrue, reason: text(r));
+    expect(fake.diskNames, <String>['la-1']);
+    expect(out['ignoredServers'], contains('1 server'));
+    expect((out['dns'] as List<dynamic>).single, containsPair('pointsToAProjectServer', true));
+  });
+
+  test('an older backend without disk-usage only costs a warning', () async {
+    fake.noDiskEndpoint = true;
+    final Json out = json.decode(text(await call('la_check_preconditions', <String, Object?>{'project': 'demo'}))) as Json;
+    expect(out['ready'], isTrue);
+    expect((out['warnings'] as List<dynamic>).single, contains('disk-usage'));
   });
 
   test('unknown projects list the known ones', () async {

@@ -77,6 +77,24 @@ class BackendClient {
       await _send('POST', 'test-connectivity', <String, Object?>{'servers': servers})
           as Map<String, dynamic>;
 
+  /// `df` over ssh on the project's servers (optionally only [names]).
+  /// Read-only; the backend takes the names from its database.
+  Future<List<Map<String, dynamic>>> diskUsage(String id, {List<String>? names}) async {
+    final Map<String, dynamic> r =
+        await _send('POST', 'disk-usage', <String, Object?>{
+              'id': id,
+              if (names != null) 'names': names,
+            })
+            as Map<String, dynamic>;
+    return (r['servers'] as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  /// The ssh keys the toolkit holds (`{name, missing, ...}`).
+  Future<List<Map<String, dynamic>>> sshKeys() async {
+    final Map<String, dynamic> r = await _get('ssh-key-scan') as Map<String, dynamic>;
+    return (r['keys'] as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
   Future<void> alaInstallSelect(String version) =>
       _get('ala-install-select/${Uri.encodeComponent(version)}');
 
