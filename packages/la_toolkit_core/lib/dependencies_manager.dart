@@ -27,6 +27,10 @@ class DependenciesManager {
   static const String alaInstallReleasesPath =
       '/repos/AtlasOfLivingAustralia/ala-install/releases';
 
+  /// la-docker-compose releases are its git tags (GitHub API, newest first).
+  static const String dockerComposeTagsPath =
+      '/repos/living-atlases/la-docker-compose/tags';
+
   /// The nextgen (bootstrap5 branding) compatibility guard.
   static const String nextgenCompatUrl =
       'https://raw.githubusercontent.com/living-atlases/la-toolkit-backend/master/assets/nextgen-compat.yaml';

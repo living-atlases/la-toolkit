@@ -1083,7 +1083,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     try {
       final Uri dockerComposeTagsApiUrl = Uri.https(
         'api.github.com',
-        '/repos/living-atlases/la-docker-compose/tags',
+        DependenciesManager.dockerComposeTagsPath,
         _cacheBust(),
       );
       final Response response = await http.get(dockerComposeTagsApiUrl);

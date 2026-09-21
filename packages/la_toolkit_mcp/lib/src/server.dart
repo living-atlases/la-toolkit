@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:dart_mcp/server.dart';
 import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/ssh_key.dart';
+import 'package:la_toolkit_core/synth/synthesize_project.dart';
 
 import 'backend_client.dart';
 import 'deploy_outcome.dart';
@@ -23,6 +25,12 @@ Typical flow to update a portal:
    letting a multi-hour deploy fail on it. la_lint_project gives the same
    warnings the toolkit UI shows for the project (placement, cluster sizes,
    release incompatibilities); report them to the user before deploying.
+
+To set up a new single-host test portal: la_create_project previews it (it
+starts from la-docker-compose's CI-proven one-host configuration); show the
+preview, then la_create_project again with save: true and confirm: true once
+the user agrees. Then la_check_preconditions and la_deploy (dry run first,
+with the skipServices the preview recommends).
 2. la_deploy with dryRun: true (the default). It prints the exact ansible
    command and changes nothing. Show it to the user. If it reports exit 127,
    the inventories were never generated: retry with prepare: true, which
@@ -194,6 +202,63 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     );
 
     _tool(
+      'la_create_project',
+      'A new docker-compose portal on ONE host, from a few facts: domain, names, '
+          'the host (name, IP, ssh user) and the toolkit ssh key to reach it. It '
+          'starts from the one-host configuration la-docker-compose deploys in its '
+          'CI, so the placement and the versions are known to work together; only '
+          'the identity changes. By default it only previews (validation, lint, '
+          'public names, the skipServices to deploy with) and stores nothing. '
+          'save: true AND confirm: true store it in the toolkit, only after the '
+          'user agreed; that touches no server.',
+      Schema.object(
+        properties: <String, Schema>{
+          'domain': Schema.string(description: 'e.g. example.com'),
+          'name': Schema.string(
+            description: 'Long name, e.g. "Example Portal".',
+          ),
+          'shortName': Schema.string(description: 'e.g. "Example".'),
+          'hostName': Schema.string(
+            description:
+                'Server name as ssh and ansible will know it (not a public name).',
+          ),
+          'ip': Schema.string(
+            description: 'IPv4 the toolkit reaches the host at.',
+          ),
+          'sshUser': Schema.string(description: 'Default ubuntu.'),
+          'sshPort': Schema.int(description: 'Default 22.'),
+          'sshKey': Schema.string(
+            description: 'Name of a toolkit ssh key authorised on the host.',
+          ),
+          'ssl': Schema.bool(description: 'Default true.'),
+          'disableServices': _tokenList(
+            'Services to leave out entirely (service names, e.g. spatial, doi).',
+          ),
+          'dockerComposeRelease': Schema.string(
+            description: 'la-docker-compose tag to pin (default: the newest).',
+          ),
+          'save': Schema.bool(
+            description: 'Store the project (default false).',
+          ),
+          'confirm': Schema.bool(
+            description:
+                'Required with save: true. Set it only when the user agreed.',
+          ),
+        },
+        required: <String>[
+          'domain',
+          'name',
+          'shortName',
+          'hostName',
+          'ip',
+          'sshKey',
+        ],
+      ),
+      openWorld: true,
+      _createProject,
+    );
+
+    _tool(
       'la_deploy',
       'Deploy a project with ansible (docker-compose or VM, not hybrid). '
           'dryRun defaults to true and only prints the command. A real deploy '
@@ -320,8 +385,15 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
 
   Future<Object?> _lint(Map<String, Object?> a) async {
     final ProjectRef ref = await _resolve(a);
-    final LAProject project = projectModel(ref);
-    final bool hasSshKeys = (await backend.sshKeys()).isNotEmpty;
+    return _lintModel(
+      projectModel(ref),
+      hasSshKeys: (await backend.sshKeys()).isNotEmpty,
+    );
+  }
+
+  /// [lintReport] with what the UI would feed it: the backend version, the
+  /// matrix and, for releases the project does not pin, the newest ones.
+  Future<Json> _lintModel(LAProject project, {required bool hasSshKeys}) async {
     String? version;
     try {
       version = (await backend.backendVersion())['version'] as String?;
@@ -392,6 +464,146 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     } catch (_) {
       return <String>[];
     }
+  }
+
+  Future<Object?> _createProject(Map<String, Object?> a) async {
+    final bool save = a['save'] == true;
+    if (save && a['confirm'] != true) {
+      throw InvalidRequest(
+        'save: true stores a new project in the toolkit: pass confirm: true, '
+        'and only once the user agreed to it.',
+      );
+    }
+    final ProjectIntent intent = ProjectIntent.fromJson(<String, dynamic>{
+      ...a,
+    });
+    final List<String> problems = intent.problems();
+    if (problems.isNotEmpty) {
+      throw InvalidRequest(problems.join(' '));
+    }
+
+    final String keyName = a['sshKey'] as String;
+    final List<Json> keys = await backend.sshKeys();
+    final Json? key = keys.cast<Json?>().firstWhere(
+      (Json? k) => k!['name'] == keyName,
+      orElse: () => null,
+    );
+    if (key == null || key['missing'] == true) {
+      throw InvalidRequest(
+        'The toolkit has no usable ssh key "$keyName". Known: '
+        '${keys.where((Json k) => k['missing'] != true).map((Json k) => k['name']).join(', ')}.',
+      );
+    }
+
+    final String release =
+        a['dockerComposeRelease'] as String? ?? await _newestComposeRelease();
+    final Json base =
+        json.decode(
+              await backend.fetchText(
+                laDockerComposeFileUrl(release, oneHostYoRcPath),
+              ),
+            )
+            as Json;
+    List<String> skip = <String>[];
+    try {
+      final Json placement =
+          json.decode(
+                await backend.fetchText(
+                  laDockerComposeFileUrl(release, oneHostPlacementPath),
+                ),
+              )
+              as Json;
+      skip = (placement['skip_services'] as List<dynamic>? ?? <dynamic>[])
+          .cast<String>();
+    } on BackendException {
+      // An older release without the placement file: deploy everything.
+    }
+    final List<String> generators = await backend.generatorVersions();
+    if (generators.isEmpty) {
+      throw InvalidRequest(
+        'The backend lists no generator-living-atlas release.',
+      );
+    }
+
+    final List<Json> portals = await backend.getProjects();
+    final LAProject p;
+    try {
+      p = synthesizeProject(
+        base,
+        intent,
+        takenDirNames: <String>{
+          for (final ProjectRef r in allProjects(portals))
+            if (r.dirName.isNotEmpty) r.dirName,
+        },
+        dockerComposeRelease: release,
+        generatorRelease: generators.first,
+        sshKey: SshKey.fromJson(key),
+      );
+    } on SynthesisException catch (e) {
+      throw InvalidRequest(e.message);
+    }
+
+    final bool valid = p.validateCreation(debug: false);
+    final Json lint = await _lintModel(p, hasSshKeys: true);
+    // The names nginx will answer for: the ones that must resolve to the host.
+    final Map<String, dynamic> aliases =
+        p.toGeneratorJson()['LA_nginx_docker_internal_aliases_by_host']
+            as Map<String, dynamic>? ??
+        const <String, dynamic>{};
+    final Json preview = <String, dynamic>{
+      'dirName': p.dirName,
+      'domain': p.domain,
+      'host': <String, dynamic>{
+        'name': intent.hostName,
+        'ip': intent.ip,
+        'sshUser': intent.sshUser,
+        'sshKey': keyName,
+      },
+      'dockerComposeRelease': release,
+      'generatorRelease': p.generatorRelease,
+      'services': p.getServicesNameListInUse()..sort(),
+      'publicNames': <String>{
+        for (final dynamic names in aliases.values)
+          ...(names as List<dynamic>).cast<String>(),
+      }.toList()..sort(),
+      'deployWithSkipServices': skip,
+      'valid': valid,
+      'lint': lint,
+    };
+    if (!save) {
+      return <String, dynamic>{...preview, 'saved': false};
+    }
+    if (!valid || (lint['findings'] as List<dynamic>).isNotEmpty) {
+      throw InvalidRequest(
+        'Not saved: the project is not valid or has lint findings. '
+        '${json.encode(lint['findings'])}',
+      );
+    }
+    await backend.addProjects(<Json>[p.toApiJson()]);
+    await backend.genSshConf(
+      name: p.shortName,
+      id: p.id,
+      servers: p.toJson()['servers'] as List<dynamic>,
+      user: p.getVariableValue('ansible_user')?.toString() ?? intent.sshUser,
+    );
+    return <String, dynamic>{...preview, 'saved': true, 'id': p.id};
+  }
+
+  Future<String> _newestComposeRelease() async {
+    final List<dynamic> tags =
+        json.decode(
+              await backend.fetchText(
+                Uri.https(
+                  'api.github.com',
+                  DependenciesManager.dockerComposeTagsPath,
+                ),
+              ),
+            )
+            as List<dynamic>;
+    if (tags.isEmpty) {
+      throw InvalidRequest('la-docker-compose has no release tags.');
+    }
+    return (tags.first as Json)['name'] as String;
   }
 
   Future<Object?> _preconditions(Map<String, Object?> a) async {

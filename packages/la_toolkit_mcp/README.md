@@ -17,6 +17,7 @@ shows up in the project history like any other.
 | `la_list_projects` | Portals and hubs, with their deploy mode (docker-compose / vm / hybrid) | no |
 | `la_get_project` | Servers, releases, which services run where, recent runs | no |
 | `la_lint_project` | The warnings of the UI lint panel: placement, cluster sizes, services that need each other, releases the dependency matrix rejects. Never `clean` when the matrix could not be read | no |
+| `la_create_project` | A new docker-compose portal on one host from domain, names, host, IP and ssh key, built on la-docker-compose's CI `1host` configuration. Previews by default (validation, lint, public names, the `skipServices` to deploy with); `save` + `confirm` store it | only with `save` + `confirm`: adds the project to the toolkit, touches no server |
 | `la_list_runs` | Command history, newest first | no |
 | `la_check_connectivity` | ping, ssh, sudo and OS of every server | read-only ssh on the servers; saves the results on the project, like the UI |
 | `la_check_preconditions` | Blockers before a deploy, for the servers that carry services: ssh key in the toolkit, ssh and sudo, Ubuntu >= 22.04, disk space (`/`, `/data`, `/var/lib/docker`), portal host names resolve | read-only ssh; saves connectivity results like the UI |
@@ -71,8 +72,7 @@ shows up in the project history like any other.
 - Service health checks (`test-host-services`): the catalogue of ports and URLs is now
   in the core (`BasicService.tcp`, `ProdServiceDesc`,
   `LAProject.serverServicesToMonitor()`), the tool is not written yet.
-- Creating projects (planned: synthesize from a small intent, then validate with the
-  core).
+- Creating multi-host projects or hubs (`la_create_project` is single-host).
 
 ## Setup
 

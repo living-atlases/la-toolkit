@@ -92,6 +92,21 @@ void main() {
     expect(p.dirName, startsWith('example'));
   });
 
+  test('ansible logs in as the ssh user of the intent', () {
+    final LAProject p = _synth(
+      intent: const ProjectIntent(
+        domain: 'example.com',
+        longName: 'Example Portal',
+        shortName: 'Example',
+        hostName: 'ex-1',
+        ip: '10.0.0.5',
+        sshUser: 'debian',
+      ),
+    );
+    expect(p.toGeneratorJson()['LA_variable_ansible_user'], 'debian');
+    expect(p.servers.single.sshUser, 'debian');
+  });
+
   test('disabled services are off', () {
     final LAProject p = _synth(
       intent: const ProjectIntent(

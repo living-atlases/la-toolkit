@@ -124,6 +124,18 @@ class BackendClient {
     return (r['keys'] as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
+  /// Stores new projects ([LAProject.toApiJson] bodies). Answers the whole
+  /// project list, as get-conf does.
+  Future<List<Map<String, dynamic>>> addProjects(
+    List<Map<String, dynamic>> projects,
+  ) async {
+    final Object? r = await _send('POST', 'add-projects', <String, Object?>{
+      'projects': projects,
+    });
+    final Object? list = r is Map<String, dynamic> ? r['projects'] : r;
+    return (list as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
   Future<void> alaInstallSelect(String version) =>
       _get('ala-install-select/${Uri.encodeComponent(version)}');
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dart_mcp/client.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +22,36 @@ class _Backend {
   List<String>? diskNames;
   bool noDiskEndpoint = false;
   final List<Json> ansiblewBodies = <Json>[];
+  final List<Json> addedProjects = <Json>[];
+  Json? sshConfBody;
+
+  /// GitHub: la-docker-compose tags and files, the dependency matrix (404, so
+  /// the lint reports it as unchecked).
+  http.Response? external(Uri url) {
+    if (url.host == 'api.github.com') {
+      return _json(<Json>[
+        <String, dynamic>{'name': 'v1.9.0'},
+        <String, dynamic>{'name': 'v1.8.0'},
+      ]);
+    }
+    if (url.host != 'raw.githubusercontent.com') return null;
+    calls.add('GET ${url.path}');
+    if (url.path.endsWith('1host/.yo-rc.json')) {
+      return http.Response(
+        File(
+          '../la_toolkit_core/test/fixtures/la-docker-compose-1host.yo-rc.json',
+        ).readAsStringSync(),
+        200,
+      );
+    }
+    if (url.path.endsWith('1host.placement.json')) {
+      return _json(<String, dynamic>{
+        'skip_services': <String>['spatial', 'pipelines'],
+      });
+    }
+    return http.Response('Not Found', 404);
+  }
+
   final Json entry =
       run(
           'run1',
@@ -51,6 +82,8 @@ class _Backend {
   ];
 
   http.Client get client => MockClient((http.Request r) async {
+    final http.Response? ext = external(r.url);
+    if (ext != null) return ext;
     final String path = r.url.path.replaceFirst('/api/v1/', '');
     calls.add('${r.method} $path');
     Json? body() => r.body.isEmpty ? null : json.decode(r.body) as Json;
@@ -95,9 +128,31 @@ class _Backend {
       case 'ssh-key-scan':
         return _json(<String, dynamic>{
           'keys': <Json>[
-            <String, dynamic>{'name': 'k1', 'missing': false},
+            <String, dynamic>{
+              'name': 'k1',
+              'missing': false,
+              'desc': 'k1',
+              'encrypted': false,
+            },
           ],
         });
+      case 'get-generator-versions':
+        return _json(<String, dynamic>{
+          'versions': <String, dynamic>{
+            '1.8.32': <String, dynamic>{},
+            '1.8.33': <String, dynamic>{},
+          },
+        });
+      case 'get-backend-version':
+        return _json(<String, dynamic>{'version': '1.7.1'});
+      case 'add-projects':
+        addedProjects.addAll(
+          (body()!['projects'] as List<dynamic>).cast<Json>(),
+        );
+        return _json(<String, dynamic>{'projects': projects});
+      case 'gen-ssh-conf':
+        sshConfBody = body();
+        return http.Response('', 200);
       case 'deploy-status':
         return _json(<String, dynamic>{'running': somethingRunning});
       case 'cmd-results':
@@ -355,4 +410,86 @@ void main() {
       expect(r.isError, isTrue);
     },
   );
+
+  group('la_create_project', () {
+    final Map<String, Object?> intent = <String, Object?>{
+      'domain': 'example.com',
+      'name': 'Example Portal',
+      'shortName': 'Demo',
+      'hostName': 'ex-1',
+      'ip': '10.0.0.5',
+      'sshKey': 'k1',
+    };
+
+    test('previews by default and stores nothing', () async {
+      final CallToolResult r = await call('la_create_project', intent);
+      expect(r.isError, isNot(true), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['saved'], isFalse);
+      expect(out['valid'], isTrue);
+      expect(out['dockerComposeRelease'], 'v1.9.0');
+      expect(out['generatorRelease'], '1.8.33');
+      expect(out['deployWithSkipServices'], <String>['spatial', 'pipelines']);
+      expect(out['publicNames'], contains('collections.example.com'));
+      // "demo" is taken by the existing project.
+      expect(out['dirName'], isNot('demo'));
+      expect((out['lint'] as Json)['findings'], isEmpty);
+      expect(fake.calls, isNot(contains('POST add-projects')));
+      expect(
+        fake.calls,
+        contains(
+          'GET /living-atlases/la-docker-compose/v1.9.0/inventories/testing/topologies/1host/.yo-rc.json',
+        ),
+      );
+    });
+
+    test('save needs confirm', () async {
+      final CallToolResult r = await call(
+        'la_create_project',
+        <String, Object?>{...intent, 'save': true},
+      );
+      expect(r.isError, isTrue);
+      expect(text(r), contains('confirm: true'));
+      expect(fake.calls, isNot(contains('POST add-projects')));
+    });
+
+    test('an unknown ssh key is refused', () async {
+      final CallToolResult r = await call(
+        'la_create_project',
+        <String, Object?>{...intent, 'sshKey': 'nope'},
+      );
+      expect(r.isError, isTrue);
+      expect(text(r), contains('Known: k1'));
+    });
+
+    test('a bad intent is refused before anything is fetched', () async {
+      final CallToolResult r = await call(
+        'la_create_project',
+        <String, Object?>{...intent, 'ip': '10.0.0'},
+      );
+      expect(r.isError, isTrue);
+      expect(text(r), contains('IPv4'));
+      expect(fake.calls, isEmpty);
+    });
+
+    test(
+      'save + confirm stores it with its genConf and its ssh config',
+      () async {
+        final CallToolResult r = await call(
+          'la_create_project',
+          <String, Object?>{...intent, 'save': true, 'confirm': true},
+        );
+        expect(r.isError, isNot(true), reason: text(r));
+        final Json out = json.decode(text(r)) as Json;
+        expect(out['saved'], isTrue);
+        final Json stored = fake.addedProjects.single;
+        expect(stored['id'], out['id']);
+        expect((stored['genConf'] as Json)['LA_domain'], 'example.com');
+        expect((stored['genConf'] as Json)['LA_hostnames'], 'ex-1');
+        expect(stored['dockerComposeRelease'], 'v1.9.0');
+        expect(fake.sshConfBody!['id'], out['id']);
+        expect(fake.sshConfBody!['user'], 'ubuntu');
+      },
+    );
+  });
 }

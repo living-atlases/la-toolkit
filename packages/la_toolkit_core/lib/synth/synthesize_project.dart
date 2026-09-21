@@ -12,6 +12,7 @@ import '../models/la_releases.dart';
 import '../models/la_server.dart';
 import '../models/la_service_desc.dart';
 import '../models/la_variable.dart';
+import '../models/la_variable_desc.dart';
 import '../models/ssh_key.dart';
 import '../utils/regexp.dart';
 import '../utils/string_utils.dart';
@@ -22,6 +23,13 @@ const String oneHostYoRcPath =
 
 /// The runtime skip list of that topology, in the same release.
 const String oneHostPlacementPath = 'topologies/1host.placement.json';
+
+/// [path] of la-docker-compose at [release] (a tag, or 'upstream' for the
+/// default branch, as the release selector offers it).
+Uri laDockerComposeFileUrl(String release, String path) => Uri.https(
+  'raw.githubusercontent.com',
+  '/living-atlases/la-docker-compose/${release == 'upstream' ? 'main' : release}/$path',
+);
 
 class ProjectIntent {
   const ProjectIntent({
@@ -200,6 +208,9 @@ LAProject synthesizeProject(
       }
     }
   }
+
+  // Ansible logs in as the ssh user the intent names.
+  p.setVariable(LAVariableDesc.get('ansible_user'), intent.sshUser);
 
   final LAServer server = p.servers.single;
   server
