@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:la_toolkit_core/models/deployment_type.dart';
+import 'package:la_toolkit_core/models/docker_compose_dependencies.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/la_service_desc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../la_theme.dart';
-import '../models/deployment_type.dart';
-import '../models/docker_compose_dependencies.dart';
-import '../models/la_cluster.dart';
-import '../models/la_server.dart';
-import '../models/la_service.dart';
-import '../models/la_service_constants.dart';
-import '../models/la_service_desc.dart';
+import '../ui/model_presentation.dart';
 import '../utils/card_constants.dart';
 import '../utils/utils.dart';
 import 'rename_server_icon.dart';
@@ -131,7 +132,6 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
             desc: 'Implicit $implicitService service',
             optional: true,
             path: '',
-            icon: icon,
           );
 
           final List<String> dependentServices =
@@ -146,6 +146,7 @@ class _ServerServicesEditCardState extends State<ServerServicesEditCard> {
           chips.add(
             _ServiceChip(
               service: serviceDesc,
+              icon: icon,
               isSelected: true,
               isImplicit: true,
               tooltip: tooltip,
@@ -321,9 +322,13 @@ class _ServiceChip extends StatelessWidget {
     this.isImplicit = false,
     this.tooltip,
     this.isLoading = false,
+    this.icon,
   });
 
   final bool isSelected;
+
+  /// Overrides the service's own icon (implicit compose databases).
+  final IconData? icon;
   final bool isImplicit;
   final bool isLoading;
   final String? tooltip;
@@ -345,7 +350,7 @@ class _ServiceChip extends StatelessWidget {
                 color: Colors.grey,
               ),
             )
-          : Icon(service.icon),
+          : Icon(icon ?? service.icon),
       showCheckmark: false,
       label: Text(
         service.nameInt == dockerSwarm

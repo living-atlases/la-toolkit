@@ -1,6 +1,6 @@
 import 'package:la_toolkit/dependencies_manager.dart';
-import 'package:la_toolkit/models/la_service_constants.dart';
-import 'package:la_toolkit/models/nextgen_compat.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/nextgen_compat.dart';
 import 'package:test/test.dart';
 
 const String _fixture = '''

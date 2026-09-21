@@ -1,8 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:redux/redux.dart';
+
 import '../models/app_state.dart';
-import '../models/la_project.dart';
 import 'software_selector.dart';
 
 class DockerComposeSelector extends StatefulWidget {

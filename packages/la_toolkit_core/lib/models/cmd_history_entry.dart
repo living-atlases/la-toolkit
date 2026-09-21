@@ -1,9 +1,7 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
-import '../utils/result_types.dart';
 import './branding_deploy_cmd.dart';
 import './deploy_cmd.dart';
 import './is_json_serializable.dart';
@@ -19,21 +17,6 @@ enum CmdResult { unknown, aborted, success, failed }
 extension CmdResultToString on CmdResult {
   String toS() {
     return toString().split('.').last;
-  }
-}
-
-extension CmdResultToIconData on CmdResult {
-  Color get iconColor {
-    switch (this) {
-      case CmdResult.unknown:
-        return Colors.grey;
-      case CmdResult.aborted:
-        return Colors.black12;
-      case CmdResult.success:
-        return ResultType.ok.color;
-      case CmdResult.failed:
-        return ResultType.failures.color;
-    }
   }
 }
 

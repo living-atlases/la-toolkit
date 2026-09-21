@@ -28,6 +28,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Domain model, validation and generator config, shared with the CLI and
+  # the MCP server (packages/la_toolkit_mcp).
+  la_toolkit_core:
+    path: packages/la_toolkit_core
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^1.0.1

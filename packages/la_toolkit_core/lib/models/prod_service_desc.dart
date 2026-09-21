@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/widgets.dart';
 
+import '../utils/foundation.dart';
 import './la_service_deploy.dart';
 import 'basic_service.dart';
 import 'la_service.dart';
@@ -8,7 +8,6 @@ import 'la_service.dart';
 @immutable
 class ProdServiceDesc {
   ProdServiceDesc({
-    required this.icon,
     required this.name,
     required this.nameInt,
     required this.tooltip,
@@ -34,7 +33,6 @@ class ProdServiceDesc {
     }
   }
 
-  final IconData icon;
   final String name;
   final String nameInt;
   final String tooltip;
@@ -54,7 +52,6 @@ class ProdServiceDesc {
       identical(this, other) ||
       other is ProdServiceDesc &&
           runtimeType == other.runtimeType &&
-          icon == other.icon &&
           name == other.name &&
           nameInt == other.nameInt &&
           tooltip == other.tooltip &&
@@ -74,7 +71,6 @@ class ProdServiceDesc {
 
   @override
   int get hashCode =>
-      icon.hashCode ^
       name.hashCode ^
       nameInt.hashCode ^
       tooltip.hashCode ^

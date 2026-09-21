@@ -1,13 +1,14 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/ssh_key.dart';
+import 'package:la_toolkit_core/utils/regexp.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import './models/app_state.dart';
-import './models/ssh_key.dart';
 import 'components/app_snack_bar.dart';
 import 'components/generic_text_form_field.dart';
 import 'components/la_app_bar.dart';
@@ -16,7 +17,6 @@ import 'components/text_with_help.dart';
 import 'la_theme.dart';
 import 'not_in_demo.dart';
 import 'redux/actions.dart';
-import 'utils/regexp.dart';
 import 'utils/utils.dart';
 
 class SshKeyPage extends StatelessWidget {

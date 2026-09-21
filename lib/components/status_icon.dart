@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/cmd_history_entry.dart';
+import 'package:la_toolkit_core/models/cmd_history_entry.dart';
 
+import '../ui/model_presentation.dart';
 import 'shadow_icon.dart';
 
 class StatusIcon extends StatelessWidget {

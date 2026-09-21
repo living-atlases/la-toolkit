@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/models/deployment_type.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/la_server.dart';
+import 'package:la_toolkit_core/models/deployment_type.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:objectid/objectid.dart';
 
 void main() {

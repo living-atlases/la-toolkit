@@ -4,9 +4,9 @@ import 'dart:developer';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart' show Response;
+import 'package:la_toolkit_core/models/is_json_serializable.dart';
 import 'package:tuple/tuple.dart';
 
-import '../models/is_json_serializable.dart';
 import '../utils/utils.dart';
 
 class EntityApi<T extends IsJsonSerializable<T>> {

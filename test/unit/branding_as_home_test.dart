@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/la_variable_desc.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_variable_desc.dart';
 
 void main() {
   test('branding_as_home defaults to true so old projects do not change', () {

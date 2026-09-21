@@ -1,11 +1,13 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/cmd_history_details.dart';
+import 'package:la_toolkit_core/models/cmd_history_entry.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 
 import './models/app_state.dart';
-import './models/cmd_history_entry.dart';
 import 'components/la_app_bar.dart';
 import 'components/project_drawer.dart';
 import 'components/results_pie_chart.dart';
@@ -15,8 +17,7 @@ import 'components/term_dialog.dart';
 import 'components/terms_drawer.dart';
 import 'components/tips_card.dart';
 import 'la_theme.dart';
-import 'models/cmd_history_details.dart';
-import 'models/la_project.dart';
+import 'ui/model_presentation.dart';
 import 'utils/api.dart';
 import 'utils/utils.dart';
 

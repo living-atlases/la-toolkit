@@ -1,9 +1,7 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
-import '../utils/result_types.dart';
 import '../utils/string_utils.dart';
 import './is_json_serializable.dart';
 import './la_service_constants.dart';
@@ -26,39 +24,6 @@ extension ParseToString on ServiceStatus {
         return 'checking';
       case ServiceStatus.success:
         return 'No issues detected';
-    }
-  }
-
-  Color get color {
-    switch (this) {
-      case ServiceStatus.failed:
-        return ResultType.failures.color;
-      case ServiceStatus.unknown:
-        return ResultType.ignored.color;
-      case ServiceStatus.success:
-        return ResultType.ok.color;
-    }
-  }
-
-  Color get backColor {
-    switch (this) {
-      case ServiceStatus.failed:
-        return Colors.red.shade100;
-      case ServiceStatus.unknown:
-        return Colors.grey.shade100;
-      case ServiceStatus.success:
-        return Colors.green.shade100;
-    }
-  }
-
-  IconData get icon {
-    switch (this) {
-      case ServiceStatus.failed:
-        return Icons.warning_amber_outlined;
-      case ServiceStatus.unknown:
-        return Icons.check;
-      case ServiceStatus.success:
-        return Icons.check;
     }
   }
 }

@@ -4,13 +4,13 @@ import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:la_toolkit_core/models/common_cmd.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_releases.dart';
+import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../components/app_snack_bar_message.dart';
-import './common_cmd.dart';
-import './la_releases.dart';
-import './ssh_key.dart';
-import 'la_project.dart';
 
 part 'app_state.g.dart';
 

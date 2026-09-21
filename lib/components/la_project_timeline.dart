@@ -2,13 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_project_status.dart';
 import 'package:redux/redux.dart';
 import 'package:timelines_plus/timelines_plus.dart';
 
 import '../la_theme.dart';
 import '../models/app_state.dart';
-import '../models/la_project.dart';
-import '../models/la_project_status.dart';
+import '../ui/model_presentation.dart';
 
 Color completeColor = LAColorTheme.laPalette.shade400;
 Color inProgressColor = LAColorTheme.laPalette.shade900;

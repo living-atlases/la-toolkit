@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 enum LAProjectStatus {
   created,
@@ -25,25 +23,6 @@ extension LAProjectStatusExtension on LAProjectStatus {
         return '1st Deploy';
       case LAProjectStatus.inProduction:
         return 'In Production';
-    }
-  }
-}
-
-extension LAProjectStatusIconExtension on LAProjectStatus {
-  IconData get icon {
-    switch (this) {
-      case LAProjectStatus.created:
-        return Icons.create;
-      case LAProjectStatus.basicDefined:
-        return Icons.dns;
-      case LAProjectStatus.advancedDefined:
-        return Icons.playlist_add_check;
-      case LAProjectStatus.reachable:
-        return Icons.settings_ethernet;
-      case LAProjectStatus.firstDeploy:
-        return MdiIcons.rocketLaunch;
-      case LAProjectStatus.inProduction:
-        return Icons.cached;
     }
   }
 }

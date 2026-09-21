@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../utils/foundation.dart';
 import './la_service_constants.dart';
 import './la_service_deps_desc.dart';
 import './la_service_name.dart';
@@ -26,7 +25,6 @@ class LAServiceDesc {
     // Used only when creating the service (useful for /cas).
     this.iniPath,
     this.depends,
-    required this.icon,
     this.isSubService = false,
     this.admin = false,
     this.alaAdmin = false,
@@ -45,7 +43,6 @@ class LAServiceDesc {
   String group;
   String? alias;
   String desc;
-  IconData icon;
   bool optional;
   bool withoutUrl;
   LAServiceName? depends;
@@ -78,7 +75,6 @@ class LAServiceDesc {
           nameInt == other.nameInt &&
           group == other.group &&
           desc == other.desc &&
-          icon == other.icon &&
           optional == other.optional &&
           withoutUrl == other.withoutUrl &&
           depends == other.depends &&
@@ -105,7 +101,6 @@ class LAServiceDesc {
       nameInt.hashCode ^
       group.hashCode ^
       desc.hashCode ^
-      icon.hashCode ^
       optional.hashCode ^
       withoutUrl.hashCode ^
       depends.hashCode ^
@@ -130,7 +125,6 @@ class LAServiceDesc {
       name: 'docker swarm',
       nameInt: dockerSwarm,
       group: dockerSwarm,
-      icon: MdiIcons.ferry,
       withoutUrl: true,
       allowMultipleDeploys: true,
       desc: 'docker swarm deployment support (deprecated)',
@@ -141,7 +135,6 @@ class LAServiceDesc {
       name: 'docker compose',
       nameInt: dockerCompose,
       group: dockerCompose,
-      icon: MdiIcons.docker,
       withoutUrl: true,
       allowMultipleDeploys: true,
       desc: 'docker compose deployment support',
@@ -155,7 +148,6 @@ class LAServiceDesc {
       desc: 'biodiversity collections',
       optional: false,
       sample: 'https://collections.ala.org.au',
-      icon: MdiIcons.formatListBulletedType,
       admin: true,
       alaAdmin: true,
       // multiple with last with precedence
@@ -173,7 +165,6 @@ class LAServiceDesc {
       optional: false,
       hint: "Typically 'records' or similar",
       sample: 'https://biocache.ala.org.au',
-      icon: Icons.web,
       admin: true,
       alaAdmin: true,
       hubCapable: true,
@@ -190,7 +181,6 @@ class LAServiceDesc {
       group: 'biocache-service-clusterdb',
       desc: 'occurrences web service (aka biocache-service)',
       optional: false,
-      icon: MdiIcons.databaseSearchOutline,
       sample: 'https://biocache.ala.org.au/ws',
       artifacts: 'biocache-service',
       allowMultipleDeploys: true,
@@ -206,7 +196,6 @@ class LAServiceDesc {
       desc: 'species search frontend',
       optional: true,
       initUse: true,
-      icon: MdiIcons.beeFlower,
       sample: 'https://bie.ala.org.au',
       alaAdmin: true,
       hubCapable: true,
@@ -223,7 +212,6 @@ class LAServiceDesc {
       group: 'bie-index',
       desc: 'species web service',
       depends: LAServiceName.ala_bie,
-      icon: MdiIcons.familyTree,
       optional: false,
       sample: 'https://bie.ala.org.au/ws',
       admin: true,
@@ -243,7 +231,6 @@ class LAServiceDesc {
       initUse: true,
       alaAdmin: true,
       sample: 'https://images.ala.org.au',
-      icon: MdiIcons.imageMultipleOutline,
       admin: true,
       artifacts: 'image-service',
       repository: 'https://github.com/AtlasOfLivingAustralia/image-service',
@@ -259,7 +246,6 @@ class LAServiceDesc {
       optional: true,
       alaAdmin: true,
       initUse: true,
-      icon: Icons.playlist_add_outlined,
       sample: 'https://lists.ala.org.au',
       admin: true,
       artifacts: 'specieslist-webapp',
@@ -277,7 +263,6 @@ class LAServiceDesc {
       optional: true,
       initUse: true,
       // icon: MdiIcons.mapSearchOutline,
-      icon: MdiIcons.foodSteak,
       sample: 'https://regions.ala.org.au',
       alaAdmin: true,
       hubCapable: true,
@@ -294,7 +279,6 @@ class LAServiceDesc {
       group: 'logger-service',
       desc: 'event logging (downloads stats, etc)',
       optional: false,
-      icon: MdiIcons.mathLog,
       sample: 'https://logger.ala.org.au',
       admin: true,
       alaAdmin: true,
@@ -309,7 +293,6 @@ class LAServiceDesc {
       group: 'solr7-server',
       desc: 'species and/or biocache-store indexing (legacy, deprecated)',
       optional: true,
-      icon: MdiIcons.weatherSunny,
       initUse: true,
       artifacts: 'solr',
       path: '',
@@ -324,7 +307,6 @@ class LAServiceDesc {
       initUse: true,
       forceSubdomain: true,
       sample: 'https://auth.ala.org.au/cas/',
-      icon: MdiIcons.accountCheckOutline,
       artifacts: 'cas',
       recommended: true,
       // Issue https://github.com/living-atlases/la-toolkit/issues/8
@@ -341,7 +323,6 @@ class LAServiceDesc {
       optional: true,
       initUse: true,
       desc: '',
-      icon: MdiIcons.accountGroup,
       artifacts: 'userdetails',
       admin: true,
       alaAdmin: true,
@@ -354,7 +335,6 @@ class LAServiceDesc {
       nameInt: apikey,
       name: 'API keys',
       path: '/apikey',
-      icon: MdiIcons.api,
       group: 'cas-servers',
       optional: true,
       initUse: true,
@@ -375,7 +355,6 @@ class LAServiceDesc {
       initUse: true,
       desc: '',
       parentService: LAServiceName.cas,
-      icon: MdiIcons.accountNetwork,
       repository:
           'https://github.com/AtlasOfLivingAustralia/ala-cas-5-services',
       dockerSupport: true,
@@ -389,7 +368,6 @@ class LAServiceDesc {
       optional: true,
       initUse: true,
       forceSubdomain: true,
-      icon: MdiIcons.layers,
       dockerSupport: true,
       sample: 'https://spatial.ala.org.au',
       artifacts: 'spatial-hub',
@@ -401,7 +379,6 @@ class LAServiceDesc {
       nameInt: spatialService,
       path: '/ws',
       artifacts: 'spatial-service',
-      icon: MdiIcons.layersPlus,
       alaAdmin: true,
       isSubService: true,
       parentService: LAServiceName.spatial,
@@ -423,7 +400,6 @@ class LAServiceDesc {
       initUse: true,
       dockerSupport: true,
       desc: '',
-      icon: MdiIcons.layersSearch,
     ),
     webapi: LAServiceDesc(
       name: 'webapi',
@@ -432,7 +408,6 @@ class LAServiceDesc {
       desc: 'API documentation service (deprecated)',
       optional: true,
       //  sample: "https://api.ala.org.au",
-      icon: Icons.integration_instructions_outlined,
       admin: true,
       artifacts: 'webapi',
       path: '',
@@ -444,7 +419,6 @@ class LAServiceDesc {
       desc: 'Dashboard with portal stats',
       optional: true,
       sample: 'https://dashboard.ala.org.au',
-      icon: MdiIcons.tabletDashboard,
       alaAdmin: true,
       artifacts: 'dashboard',
       repository: 'https://github.com/AtlasOfLivingAustralia/dashboard',
@@ -458,7 +432,6 @@ class LAServiceDesc {
       optional: true,
       sample: 'https://sds.ala.org.au',
       depends: LAServiceName.species_lists,
-      icon: Icons.blur_circular,
       alaAdmin: true,
       artifacts: 'sds-webapp2',
       dockerSupport: true,
@@ -474,7 +447,6 @@ class LAServiceDesc {
       optional: true,
       alaAdmin: true,
       sample: 'https://alerts.ala.org.au',
-      icon: Icons.notifications_active_outlined,
       admin: true,
       artifacts: 'alerts',
       dockerSupport: true,
@@ -489,7 +461,6 @@ class LAServiceDesc {
       optional: true,
       alaAdmin: true,
       sample: 'https://doi.ala.org.au',
-      icon: MdiIcons.link,
       admin: true,
       artifacts: 'doi-service',
       dockerSupport: true,
@@ -501,7 +472,6 @@ class LAServiceDesc {
       nameInt: 'branding',
       group: 'branding',
       desc: 'Web branding used by all services',
-      icon: Icons.format_paint,
       sample: 'Styling-the-web-app',
       optional: false,
       allowMultipleDeploys: true,
@@ -520,7 +490,6 @@ class LAServiceDesc {
       optional: true,
       withoutUrl: true,
       initUse: true,
-      icon: MdiIcons.powershell,
       artifacts: 'biocache-store',
       allowMultipleDeploys: true,
       repository: 'https://github.com/AtlasOfLivingAustralia/biocache-store',
@@ -535,7 +504,6 @@ class LAServiceDesc {
       optional: true,
       withoutUrl: true,
       initUse: true,
-      icon: MdiIcons.tournament,
       artifacts: 'ala-name-matching',
       parentService: LAServiceName.biocache_backend,
       allowMultipleDeploys: true,
@@ -547,7 +515,6 @@ class LAServiceDesc {
       group: 'namematching-service',
       desc: 'namematching webservice',
       optional: true,
-      icon: MdiIcons.textSearch,
       // The published artifact and the docker image are both named
       // ala-namematching-*server*: asking for -service returned nothing, so the
       // version dropdown was empty and no version was ever stored, which is what
@@ -564,7 +531,6 @@ class LAServiceDesc {
       group: 'sensitive-data-service',
       desc: 'Web services for sensitive data evaluation',
       optional: true,
-      icon: MdiIcons.blurLinear,
       artifacts: 'ala-sensitive-data-service',
       sample: 'https://sensitive-ws-test.ala.org.au',
       allowMultipleDeploys: true,
@@ -579,7 +545,6 @@ class LAServiceDesc {
       desc: 'Data Quality Filter Service',
       optional: true,
       // icon: MdiIcons.airFilter,
-      icon: MdiIcons.filterPlusOutline,
       artifacts: 'data-quality-filter-service',
       sample: 'https://data-quality-service.ala.org.au',
       alaAdmin: true,
@@ -594,7 +559,6 @@ class LAServiceDesc {
       withoutUrl: true,
       optional: true,
       initUse: true,
-      icon: MdiIcons.eyeOutline,
       path: '',
     ),
     pipelines: LAServiceDesc(
@@ -607,7 +571,6 @@ class LAServiceDesc {
       withoutUrl: true,
       // We use apt for check versions, but we set this to get the version
       artifacts: pipelines,
-      icon: MdiIcons.pipe,
       allowMultipleDeploys: true,
       dockerSupport: true,
       path: '',
@@ -619,7 +582,6 @@ class LAServiceDesc {
       desc: 'events extended-data-model (experimental)',
       depends: LAServiceName.pipelines,
       optional: true,
-      icon: Icons.event,
       sample: 'https://events.test.ala.org.au/',
       forceSubdomain: true,
       artifacts: 'atlasoflivingaustralia/es2vt',
@@ -632,7 +594,6 @@ class LAServiceDesc {
       desc: 'elasticsearch for events',
       depends: LAServiceName.events,
       optional: true,
-      icon: Icons.manage_search,
       withoutUrl: true,
       allowMultipleDeploys: true,
       // artifacts: "atlasoflivingaustralia/es2vt",
@@ -645,7 +606,6 @@ class LAServiceDesc {
       desc: 'Spark cluster for Pipelines',
       optional: true,
       withoutUrl: true,
-      icon: MdiIcons.shape,
       allowMultipleDeploys: true,
       parentService: LAServiceName.pipelines,
       path: '',
@@ -657,7 +617,6 @@ class LAServiceDesc {
       desc: 'Hadoop cluster for Pipelines',
       optional: true,
       withoutUrl: true,
-      icon: MdiIcons.elephant,
       allowMultipleDeploys: true,
       parentService: LAServiceName.pipelines,
       path: '',
@@ -670,7 +629,6 @@ class LAServiceDesc {
       optional: true,
       withoutUrl: true,
       // We use apt for check versions
-      icon: MdiIcons.accountMinusOutline,
       allowMultipleDeploys: true,
       depends: LAServiceName.pipelines,
       path: '',
@@ -686,7 +644,6 @@ class LAServiceDesc {
       // Experimental → opt-in: deployed only when its `use` flag is on
       // (initUse defaults to false).
       // Apache Airflow logo is a pinwheel.
-      icon: MdiIcons.pinwheel,
       // Exposes a web UI at a subdomain (airflow.<domain>) -> airflow_hostname.
       forceSubdomain: true,
       sample: 'https://airflow.l-a.site',
@@ -700,7 +657,6 @@ class LAServiceDesc {
       group: solrcloud,
       desc: 'pipelines indexing',
       optional: true,
-      icon: MdiIcons.weatherSunny,
       artifacts: solrcloud,
       allowMultipleDeploys: true,
       depends: LAServiceName.pipelines,
@@ -714,7 +670,6 @@ class LAServiceDesc {
       group: zookeeper,
       desc: 'zookeeper, for solrcloud coordination',
       optional: true,
-      icon: MdiIcons.shovel,
       // artifact: 'solr',
       depends: LAServiceName.pipelines,
       withoutUrl: true,
@@ -727,7 +682,6 @@ class LAServiceDesc {
       nameInt: biocollect,
       group: biocollect,
       forceSubdomain: true,
-      icon: Icons.compost,
       desc: 'advanced data collection tool for biodiversity science',
       sample: 'https://biocollect.ala.org.au/acsa',
       artifacts: 'biocollect',
@@ -740,7 +694,6 @@ class LAServiceDesc {
       nameInt: pdfgen,
       group: pdfgen,
       desc: 'Service for turning .docs into .pdfs (used by biocollect)',
-      icon: MdiIcons.filePdfBox,
       depends: LAServiceName.biocollect,
       artifacts: 'pdfgen',
       optional: true,
@@ -752,7 +705,6 @@ class LAServiceDesc {
       nameInt: ecodata,
       group: ecodata,
       forceSubdomain: true,
-      icon: Icons.playlist_add_circle,
       depends: LAServiceName.biocollect,
       artifacts: 'ecodata',
       desc: 'provides primarily data services for BioCollect applications',
@@ -765,7 +717,6 @@ class LAServiceDesc {
       nameInt: ecodataReporting,
       group: 'ecodata-reporting',
       forceSubdomain: true,
-      icon: Icons.playlist_add_check_circle,
       artifacts: 'ecodata',
       depends: LAServiceName.biocollect,
       desc: 'provides reporting service for ecodata',
@@ -777,7 +728,6 @@ class LAServiceDesc {
       name: 'docker common',
       nameInt: dockerCommon,
       group: dockerCommon,
-      icon: Icons.share,
       depends: LAServiceName.docker_swarm,
       dockerSupport: true,
       withoutUrl: true,
@@ -791,7 +741,6 @@ class LAServiceDesc {
       name: gatus,
       nameInt: gatus,
       group: gatus,
-      icon: MdiIcons.listStatus,
       // Singleton: a single gatus instance monitors the whole deployment, so it
       // must not be assignable to more than one host/cluster (too many checks).
       // allowMultipleDeploys stays false (the default) on purpose.
@@ -810,7 +759,6 @@ class LAServiceDesc {
       allowMultipleDeploys: true,
       desc: 'biocache cassandra DB for annotations, persistent queries',
       depends: LAServiceName.pipelines,
-      icon: MdiIcons.eyeOutline,
       dockerSupport: true,
       withoutUrl: true,
       path: '',
@@ -824,7 +772,6 @@ class LAServiceDesc {
           nameInt: nameInt,
           group: 'unknown',
           desc: 'Unknown service',
-          icon: Icons.help_outline,
           optional: true,
           path: '',
         );

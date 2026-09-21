@@ -1,7 +1,7 @@
 import 'package:la_toolkit/dependencies_manager.dart';
-import 'package:la_toolkit/models/dependencies.dart';
-import 'package:la_toolkit/models/la_service_constants.dart';
-import 'package:la_toolkit/models/version_utils.dart';
+import 'package:la_toolkit_core/models/dependencies.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/version_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 

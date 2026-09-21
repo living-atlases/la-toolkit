@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:redux/redux.dart';
 
 import '../models/app_state.dart';
-import '../models/la_project.dart';
-import '../models/la_server.dart';
-import '../models/ssh_key.dart';
 import '../redux/actions.dart';
 import 'server_details_card.dart';
 

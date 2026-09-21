@@ -3,10 +3,8 @@
 import 'dart:collection';
 
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../components/deploy_sub_result_widget.dart';
 import '../utils/result_types.dart';
 import './ansible_error.dart';
 import './cmd_history_entry.dart';
@@ -44,7 +42,7 @@ class CmdHistoryDetails {
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, num>? _resultsTotals;
   @JsonKey(includeToJson: false, includeFromJson: false)
-  List<Widget>? _details;
+  List<HostDeployResult>? _hostResults;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
@@ -92,9 +90,11 @@ class CmdHistoryDetails {
 
   bool get nothingDone => stepsExec == 0;
 
-  List<Widget> get detailsWidgetList {
-    if (_details == null) {
-      _details = <Widget>[];
+  /// Per host of every playbook run: its recap and the tasks that failed on
+  /// it. The app renders one card per entry.
+  List<HostDeployResult> get hostResults {
+    if (_hostResults == null) {
+      _hostResults = <HostDeployResult>[];
       for (final dynamic result in results) {
         final Map<String, List<AnsibleError>> errors =
             <String, List<AnsibleError>>{};
@@ -143,13 +143,14 @@ class CmdHistoryDetails {
           });
         });
         result['stats'].keys.forEach((String host) {
-          final DeploySubResultWidget subResult = DeploySubResultWidget(
-            host: host,
-            title: plays.join(', '),
-            results: result['stats'][host] as Map<String, dynamic>,
-            errors: errors[host]!,
+          _hostResults!.add(
+            HostDeployResult(
+              host: host,
+              title: plays.join(', '),
+              results: result['stats'][host] as Map<String, dynamic>,
+              errors: errors[host]!,
+            ),
           );
-          _details!.add(subResult);
         });
         /* "tasks": [ { "hosts": {
 -                        "ala-install-test-2": {
@@ -173,7 +174,7 @@ class CmdHistoryDetails {
 */
       }
     }
-    return _details!;
+    return _hostResults!;
   }
 
   bool get failed {

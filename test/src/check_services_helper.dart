@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/la_service_constants.dart';
-import 'package:la_toolkit/models/la_service_desc.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/la_service_desc.dart';
 
 void checkServices(LAProject p, List<String> notUsedServices) {
   for (final LAServiceDesc service in LAServiceDesc.list(p.isHub)) {

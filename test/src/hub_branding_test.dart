@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/models/deployment_type.dart';
-import 'package:la_toolkit/models/la_cluster.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/la_server.dart';
-import 'package:la_toolkit/models/la_service_desc.dart';
-import 'package:la_toolkit/models/la_variable_desc.dart';
+import 'package:la_toolkit_core/models/deployment_type.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service_desc.dart';
+import 'package:la_toolkit_core/models/la_variable_desc.dart';
 import 'package:objectid/objectid.dart';
 
 /// A data hub is a portal of its own and needs the same branding choice the portal

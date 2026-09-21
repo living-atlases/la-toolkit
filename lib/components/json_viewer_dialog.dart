@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 
 import '../la_theme.dart';
-import '../models/la_cluster.dart';
-import '../models/la_project.dart';
 
 class JsonViewerDialog extends StatelessWidget {
   const JsonViewerDialog({super.key, required this.project});

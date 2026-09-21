@@ -2,23 +2,23 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/common_cmd.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/pipelines_cmd.dart';
+import 'package:la_toolkit_core/models/pipelines_step_desc.dart';
+import 'package:la_toolkit_core/models/pipelines_step_name.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import './models/app_state.dart';
-import './models/common_cmd.dart';
-import './models/pipelines_cmd.dart';
-import './models/pipelines_step_desc.dart';
-import './models/pipelines_step_name.dart';
 import 'components/alert_card.dart';
 import 'components/deploy_btn.dart';
 import 'components/la_app_bar.dart';
 import 'components/pipelines_timeline.dart';
 import 'components/scroll_panel.dart';
 import 'la_theme.dart';
-import 'models/la_project.dart';
 import 'redux/app_actions.dart';
 import 'utils/utils.dart';
 

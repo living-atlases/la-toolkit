@@ -2,15 +2,17 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_project_status.dart';
+import 'package:la_toolkit_core/models/la_service_desc.dart';
+import 'package:la_toolkit_core/models/la_variable_desc.dart';
+import 'package:la_toolkit_core/utils/regexp.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:redux/redux.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
 
 import './models/app_state.dart';
-import './models/la_project_status.dart';
-import './models/la_service_desc.dart';
-import './models/la_variable_desc.dart';
 import 'components/app_snack_bar.dart';
 import 'components/branding_selector.dart';
 import 'components/generic_text_form_field.dart';
@@ -21,11 +23,9 @@ import 'components/scroll_panel.dart';
 import 'components/service_widget.dart';
 import 'la_theme.dart';
 import 'maps/map_area_selector.dart';
-import 'models/la_project.dart';
 import 'project_tune_page.dart';
 import 'redux/app_actions.dart';
 import 'routes.dart';
-import 'utils/regexp.dart';
 
 class LAProjectEditPage extends StatelessWidget {
   LAProjectEditPage({super.key});

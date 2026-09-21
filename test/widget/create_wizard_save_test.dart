@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/components/app_snack_bar_message.dart';
 import 'package:la_toolkit/models/app_state.dart';
-import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/redux/app_actions.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:redux/redux.dart';
 
 import 'pump_app.dart';

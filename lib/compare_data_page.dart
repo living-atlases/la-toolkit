@@ -14,6 +14,11 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/la_service_deploy.dart';
+import 'package:la_toolkit_core/utils/string_utils.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:path_provider/path_provider.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
@@ -31,14 +36,9 @@ import 'components/la_app_bar.dart';
 import 'components/scroll_panel.dart';
 import 'la_theme.dart';
 import 'models/app_state.dart';
-import 'models/la_project.dart';
-import 'models/la_server.dart';
-import 'models/la_service_constants.dart';
-import 'models/la_service_deploy.dart';
 import 'redux/actions.dart';
 import 'solr_compare_result.dart';
 import 'utils/query_utils.dart';
-import 'utils/string_utils.dart';
 
 class CompareDataPage extends StatefulWidget {
   const CompareDataPage({super.key});

@@ -1,7 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../utils/foundation.dart';
 
 part 'la_releases.g.dart';
 

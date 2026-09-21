@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/models/la_project.dart';
 import 'package:la_toolkit/utils/utils.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 
 import '../widget/pump_app.dart';
 
@@ -23,6 +24,7 @@ void main() {
   test('the shipped sample exports a .yo-rc a generator can replay', () async {
     final List<LAProject> projects = await LAProject.importTemplates(
       AssetsUtils.pathWorkaround('la-toolkit-templates.json'),
+      load: rootBundle.loadString,
     );
     final LAProject portal = projects.firstWhere((LAProject p) => !p.isHub);
     final Map<String, dynamic> conf = portal.toGeneratorJson();

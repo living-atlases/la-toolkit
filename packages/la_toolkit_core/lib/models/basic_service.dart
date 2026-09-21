@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import '../utils/foundation.dart';
 
 @immutable
 class BasicService {

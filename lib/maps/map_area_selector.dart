@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/la_lat_lng.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:redux/redux.dart';
 
 import '../la_theme.dart';
 import '../models/app_state.dart';
-import '../models/la_lat_lng.dart';
-import '../models/la_project.dart';
 import '../redux/actions.dart';
 import 'scale_layer_plugin_option.dart';
 import 'zoombuttons_plugin_option.dart';

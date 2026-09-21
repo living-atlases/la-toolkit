@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/deploy_cmd.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/pre_deploy_cmd.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:redux/redux.dart';
 
@@ -10,10 +14,6 @@ import 'components/la_app_bar.dart';
 import 'components/scroll_panel.dart';
 import 'components/server_selector.dart';
 import 'la_theme.dart';
-import 'models/deploy_cmd.dart';
-import 'models/la_project.dart';
-import 'models/la_server.dart';
-import 'models/pre_deploy_cmd.dart';
 import 'redux/app_actions.dart';
 import 'utils/utils.dart';
 

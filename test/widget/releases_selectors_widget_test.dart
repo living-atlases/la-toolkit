@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/la_releases_selectors.dart';
 import 'package:la_toolkit/models/app_state.dart';
-import 'package:la_toolkit/models/deployment_type.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/la_releases.dart';
-import 'package:la_toolkit/models/la_server.dart';
-import 'package:la_toolkit/models/la_service_constants.dart';
 import 'package:la_toolkit/redux/app_reducer.dart';
+import 'package:la_toolkit_core/models/deployment_type.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_releases.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:redux/redux.dart';
 
 import 'pump_app.dart';

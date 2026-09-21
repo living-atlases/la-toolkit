@@ -3,18 +3,16 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:objectid/objectid.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:tuple/tuple.dart';
 
+import '../utils/foundation.dart';
 import '../utils/map_utils.dart';
 import '../utils/regexp.dart';
 import '../utils/string_utils.dart';
-import '../utils/utils.dart';
 import './cmd_history_entry.dart';
 import './default_versions.dart';
 import './deployment_type.dart';
@@ -1274,7 +1272,7 @@ check results length: ${checkResults.length}''';
   }
 
   LAService getService(String nameInt) {
-    if (AppUtils.isDev()) {
+    if (!kReleaseMode) {
       assert(
         LAServiceDesc.listS(isHub).contains(nameInt) == true,
         'Trying to get $nameInt service while not present in service lists and hub=$isHub',
@@ -1292,7 +1290,7 @@ check results length: ${checkResults.length}''';
         return newService;
       },
     );
-    if (AppUtils.isDev()) {
+    if (!kReleaseMode) {
       assert(
         services.where((LAService s) => s.nameInt == nameInt).length == 1,
         'Warn, duplicate service $nameInt',
@@ -1842,7 +1840,7 @@ check results length: ${checkResults.length}''';
   void setServiceDeployRelease(String serviceName, String release) {
     final List<LAServiceDeploy> serviceDeploysForName =
         getServiceDeploysForSomeService(serviceName);
-    if (AppUtils.isDev()) {
+    if (!kReleaseMode) {
       if (kDebugMode) {
         debugPrint(
           'Setting ${serviceDeploysForName.length} service deploys for service $serviceName and release $release',
@@ -1915,7 +1913,7 @@ check results length: ${checkResults.length}''';
   }
 
   void deleteCluster(LACluster clusterToDelete) {
-    if (AppUtils.isDev()) {
+    if (!kReleaseMode) {
       debugPrint(
         '🗑️ Deleting cluster: ${clusterToDelete.name} (${clusterToDelete.id})',
       );
@@ -1953,7 +1951,7 @@ check results length: ${checkResults.length}''';
           ? dockerSwarm
           : dockerCompose;
 
-      if (AppUtils.isDev()) {
+      if (!kReleaseMode) {
         debugPrint('   ✓ Unassigning $dockerServiceName from server');
       }
 
@@ -2903,7 +2901,6 @@ check results length: ${checkResults.length}''';
           tooltip: tooltip,
           subtitle: hostnames.join(', '),
           serviceDeploys: sd,
-          icon: desc.icon,
           url: url,
           admin: desc.admin,
           alaAdmin: desc.alaAdmin,
@@ -3028,14 +3025,15 @@ check results length: ${checkResults.length}''';
     return list;
   }
 
+  /// [load] reads [file]: the app passes Flutter's `rootBundle.loadString`
+  /// (the templates ship as an asset), anything else a plain file read.
   static Future<List<LAProject>> importTemplates(
     String file, {
+    required Future<String> Function(String path) load,
     Map<String, LAReleases>? laReleases,
   }) async {
-    // https://flutter.dev/docs/development/ui/assets-and-images#loading-text-assets
-
     final List<LAProject> list = <LAProject>[];
-    final String templatesS = await rootBundle.loadString(file);
+    final String templatesS = await load(file);
     final List<dynamic> projectsJ = jsonDecode(templatesS) as List<dynamic>;
 
     for (final dynamic genJson in projectsJ) {

@@ -3,17 +3,17 @@ import 'dart:developer';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_releases.dart';
+import 'package:la_toolkit_core/models/la_service.dart';
+import 'package:la_toolkit_core/models/la_service_desc.dart';
+import 'package:la_toolkit_core/models/la_service_name.dart';
 import 'package:redux/redux.dart';
 
 import './models/app_state.dart';
-import './models/la_releases.dart';
-import './models/la_service_desc.dart';
-import './models/la_service_name.dart';
 import 'components/help_icon.dart';
 import 'components/software_selector.dart';
 import 'la_theme.dart';
-import 'models/la_project.dart';
-import 'models/la_service.dart';
 import 'redux/app_actions.dart';
 import 'utils/debounce.dart';
 

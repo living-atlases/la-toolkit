@@ -1,9 +1,9 @@
-import '../models/cmd_history_entry.dart';
-import '../models/la_project.dart';
-import '../models/la_server.dart';
-import '../models/la_service.dart';
-import '../models/la_service_deploy.dart';
-import '../models/la_variable.dart';
+import 'package:la_toolkit_core/models/cmd_history_entry.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service.dart';
+import 'package:la_toolkit_core/models/la_service_deploy.dart';
+import 'package:la_toolkit_core/models/la_variable.dart';
 import 'entity_api.dart';
 
 // While waiting to https://github.com/flutterdata/flutter_data

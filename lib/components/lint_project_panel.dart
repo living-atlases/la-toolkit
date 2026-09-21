@@ -1,19 +1,19 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_project_status.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/la_service_desc.dart';
+import 'package:la_toolkit_core/models/la_service_name.dart';
+import 'package:la_toolkit_core/models/ssh_key.dart';
+import 'package:la_toolkit_core/models/version_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:redux/redux.dart';
 
 import '../dependencies_manager.dart';
 import '../models/app_state.dart';
-import '../models/la_project.dart';
-import '../models/la_project_status.dart';
-import '../models/la_server.dart';
-import '../models/la_service_constants.dart';
-import '../models/la_service_desc.dart';
-import '../models/la_service_name.dart';
-import '../models/ssh_key.dart';
-import '../models/version_utils.dart';
 import '../redux/app_actions.dart';
 import '../routes.dart';
 import 'alert_card.dart';

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:la_toolkit_core/models/la_service.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/prod_service_desc.dart';
+import 'package:la_toolkit_core/utils/string_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../la_theme.dart';
-import '../models/la_service.dart';
-import '../models/la_service_constants.dart';
-import '../models/prod_service_desc.dart';
+import '../ui/model_presentation.dart';
 import '../utils/card_constants.dart';
-import '../utils/string_utils.dart';
 import 'admin_icon_button.dart';
 
 class ServiceStatusCard extends StatelessWidget {

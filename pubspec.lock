@@ -697,6 +697,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.13.1"
+  la_toolkit_core:
+    dependency: "direct main"
+    description:
+      path: "packages/la_toolkit_core"
+      relative: true
+    source: path
+    version: "0.1.0"
   latlong2:
     dependency: "direct main"
     description:

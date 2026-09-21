@@ -1,11 +1,11 @@
-import 'package:la_toolkit/models/cmd.dart';
-import 'package:la_toolkit/models/cmd_history_entry.dart';
-import 'package:la_toolkit/models/deploy_cmd.dart';
-import 'package:la_toolkit/models/la_service_constants.dart';
-import 'package:la_toolkit/models/la_service_name.dart';
-import 'package:la_toolkit/models/pipelines_cmd.dart';
-import 'package:la_toolkit/models/post_deploy_cmd.dart';
-import 'package:la_toolkit/models/pre_deploy_cmd.dart';
+import 'package:la_toolkit_core/models/cmd.dart';
+import 'package:la_toolkit_core/models/cmd_history_entry.dart';
+import 'package:la_toolkit_core/models/deploy_cmd.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/la_service_name.dart';
+import 'package:la_toolkit_core/models/pipelines_cmd.dart';
+import 'package:la_toolkit_core/models/post_deploy_cmd.dart';
+import 'package:la_toolkit_core/models/pre_deploy_cmd.dart';
 
 import 'package:test/test.dart';
 

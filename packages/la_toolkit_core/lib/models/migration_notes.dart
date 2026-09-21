@@ -1,4 +1,5 @@
 import 'package:pub_semver/pub_semver.dart';
+
 import './la_service_constants.dart';
 import './migration_notes_desc.dart';
 import './version_utils.dart';

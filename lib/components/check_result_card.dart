@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:la_toolkit_core/models/la_service.dart';
 
-import '../models/la_service.dart';
+import '../ui/model_presentation.dart';
 
 class CheckResultCard extends StatelessWidget {
   const CheckResultCard({

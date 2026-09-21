@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/utils/regexp.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../la_theme.dart';
-import '../models/la_server.dart';
-import '../utils/regexp.dart';
 import 'generic_text_form_field.dart';
 
 class RenameServerIcon extends StatelessWidget {

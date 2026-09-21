@@ -1,7 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:la_toolkit_core/utils/result_types.dart';
 
-import '../utils/result_types.dart';
+import '../ui/model_presentation.dart';
 import 'indicator.dart';
 
 class ResultsPieChart extends StatefulWidget {

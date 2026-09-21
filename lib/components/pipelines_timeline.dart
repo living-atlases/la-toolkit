@@ -1,16 +1,16 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_service_name.dart';
+import 'package:la_toolkit_core/models/pipelines_cmd.dart';
+import 'package:la_toolkit_core/models/pipelines_step_desc.dart';
+import 'package:la_toolkit_core/utils/regexp.dart';
+import 'package:la_toolkit_core/utils/string_utils.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 import '../la_theme.dart';
-import '../models/la_project.dart';
-import '../models/la_service_name.dart';
-import '../models/pipelines_cmd.dart';
-import '../models/pipelines_step_desc.dart';
-import '../utils/regexp.dart';
-import '../utils/string_utils.dart';
 import '../utils/utils.dart';
 import 'generic_text_form_field.dart';
 

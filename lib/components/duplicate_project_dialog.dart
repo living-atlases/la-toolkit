@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/la_project.dart';
-import '../utils/regexp.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/utils/regexp.dart';
 
 /// Dialog to collect the new names for a project duplicate. On confirm it
 /// invokes [onDuplicate] with the new shortName, longName, domain and dirName.

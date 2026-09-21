@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/home_page.dart';
 import 'package:la_toolkit/models/app_state.dart';
-import 'package:la_toolkit/models/deployment_type.dart';
-import 'package:la_toolkit/models/la_cluster.dart';
-import 'package:la_toolkit/models/la_project.dart';
+import 'package:la_toolkit_core/models/deployment_type.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:redux/redux.dart';
 
 import 'pump_app.dart';

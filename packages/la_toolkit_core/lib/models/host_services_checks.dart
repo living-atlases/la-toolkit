@@ -1,9 +1,9 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../utils/foundation.dart';
 import './la_server.dart';
 import './la_service_deploy.dart';
 import 'basic_service.dart';

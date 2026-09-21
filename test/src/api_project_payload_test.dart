@@ -1,8 +1,8 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/la_server.dart';
 import 'package:la_toolkit/utils/api.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:objectid/objectid.dart';
 
 /// What the toolkit POSTs/PATCHes for a project. toGeneratorJson() is what

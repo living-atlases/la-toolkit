@@ -3,17 +3,17 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_toolkit_core/models/basic_service.dart';
+import 'package:la_toolkit_core/models/cmd_history_entry.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service.dart';
+import 'package:la_toolkit_core/models/la_service_deps_desc.dart';
+import 'package:la_toolkit_core/utils/string_utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 
 import '../la_theme.dart';
-import '../models/basic_service.dart';
-import '../models/cmd_history_entry.dart';
-import '../models/la_server.dart';
-import '../models/la_service.dart';
-import '../models/la_service_deps_desc.dart';
 import '../utils/card_constants.dart';
-import '../utils/string_utils.dart';
 import 'service_status_card.dart';
 import 'status_icon.dart';
 

@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_toolkit_core/models/ansible_error.dart';
+import 'package:la_toolkit_core/utils/result_types.dart';
 
-import '../models/ansible_error.dart';
-import '../utils/result_types.dart';
+import '../ui/model_presentation.dart';
 
 class DeploySubResultWidget extends StatelessWidget {
   const DeploySubResultWidget({

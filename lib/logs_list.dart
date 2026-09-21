@@ -3,14 +3,15 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:la_toolkit_core/models/cmd_history_entry.dart';
+import 'package:la_toolkit_core/utils/result_types.dart';
 import 'package:tuple/tuple.dart';
 
-import './models/cmd_history_entry.dart';
 import 'components/status_icon.dart';
 import 'la_theme.dart';
 import 'log_search_input.dart';
 import 'redux/entity_api.dart';
-import 'utils/result_types.dart';
+import 'ui/model_presentation.dart';
 import 'utils/utils.dart';
 
 class LogList extends StatefulWidget {

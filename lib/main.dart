@@ -10,11 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:http/http.dart' as http;
+import 'package:la_toolkit_core/utils/foundation.dart' as core;
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:sails_io/sails_io.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
+
 import 'components/app_snack_bar_message.dart';
 import 'models/app_state.dart';
 import 'redux/app_actions.dart';
@@ -27,6 +29,9 @@ import 'utils/utils.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // The model's debug output goes through Flutter's throttled debugPrint, as
+  // it did before it moved to la_toolkit_core.
+  core.debugPrint = debugPrint;
 
   // Handle Flutter framework errors.
   // Log before presenting: presentError() is the structured-error path when

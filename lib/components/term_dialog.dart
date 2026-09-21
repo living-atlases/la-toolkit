@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit_core/utils/string_utils.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../utils/api.dart';
-
-import '../utils/string_utils.dart';
 import '../utils/utils.dart';
 import 'embed_web_view.dart';
 

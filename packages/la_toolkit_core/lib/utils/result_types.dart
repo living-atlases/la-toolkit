@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import 'string_utils.dart';
 
 /*
@@ -44,44 +42,6 @@ extension ParseToString on ResultType {
   String title() {
     final String toS = this.toS();
     return StringUtils.capitalize(toS == 'ok' ? 'success' : toS);
-  }
-
-  Color get color {
-    switch (this) {
-      case ResultType.changed:
-        return Colors.brown;
-      case ResultType.failures:
-        return Colors.redAccent;
-      case ResultType.ignored:
-        return Colors.grey;
-      case ResultType.ok:
-        return Colors.green;
-      case ResultType.rescued:
-        return Colors.blueGrey;
-      case ResultType.skipped:
-        return Colors.grey;
-      case ResultType.unreachable:
-        return Colors.deepOrange;
-    }
-  }
-
-  Color get textColor {
-    switch (this) {
-      case ResultType.changed:
-        return Colors.white;
-      case ResultType.failures:
-        return Colors.black;
-      case ResultType.ignored:
-        return Colors.black;
-      case ResultType.ok:
-        return Colors.white;
-      case ResultType.rescued:
-        return Colors.white;
-      case ResultType.skipped:
-        return Colors.black;
-      case ResultType.unreachable:
-        return Colors.black;
-    }
   }
 }
 

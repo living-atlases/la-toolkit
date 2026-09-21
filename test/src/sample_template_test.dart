@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/models/deployment_type.dart';
-import 'package:la_toolkit/models/la_cluster.dart';
-import 'package:la_toolkit/models/la_project.dart';
-import 'package:la_toolkit/models/la_releases.dart';
-import 'package:la_toolkit/models/la_server.dart';
-import 'package:la_toolkit/models/la_service_constants.dart';
-import 'package:la_toolkit/models/la_service_desc.dart';
-import 'package:la_toolkit/models/la_service_name.dart';
-import 'package:la_toolkit/utils/regexp.dart';
-import 'package:la_toolkit/utils/string_utils.dart';
+import 'package:la_toolkit_core/models/deployment_type.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_releases.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/la_service_desc.dart';
+import 'package:la_toolkit_core/models/la_service_name.dart';
+import 'package:la_toolkit_core/utils/regexp.dart';
+import 'package:la_toolkit_core/utils/string_utils.dart';
 
 /// The sample project shipped with the toolkit (the (+) menu adds it) is derived
 /// from `topologies/base.lademo.yo-rc.json` in la-docker-compose: the

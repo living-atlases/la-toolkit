@@ -1,8 +1,8 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:objectid/objectid.dart';
 
+import '../utils/foundation.dart';
 import '../utils/string_utils.dart';
 
 part 'cmd.g.dart';

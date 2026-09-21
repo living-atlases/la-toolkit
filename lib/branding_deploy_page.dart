@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:la_toolkit_core/models/branding_deploy_cmd.dart';
+import 'package:la_toolkit_core/models/deploy_cmd.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:redux/redux.dart';
 
 import './models/app_state.dart';
-import './models/branding_deploy_cmd.dart';
-import './models/deploy_cmd.dart';
 import 'components/deploy_btn.dart';
 import 'components/la_app_bar.dart';
 import 'components/scroll_panel.dart';
 import 'components/tips_card.dart';
 import 'la_theme.dart';
-import 'models/la_project.dart';
 import 'redux/app_actions.dart';
 import 'utils/utils.dart';
 
