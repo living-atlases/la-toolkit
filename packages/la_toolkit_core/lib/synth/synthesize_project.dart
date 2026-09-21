@@ -1,10 +1,10 @@
-// A new portal from a small intent ("a test node for example.com on this
-// host"), built on a known-good single-host configuration instead of being
-// assembled service by service. The base is the `.yo-rc.json` that
-// la-docker-compose generates and deploys in its CI for its `1host` topology
-// (inventories/testing/topologies/1host/), so the placement, the service set
-// and the software versions are the ones that repo already proves work
-// together on one VM. Only the identity changes: names, domain, host.
+// A new portal from a small intent ("a test node for example.com on these
+// hosts"), built on a known-good configuration instead of being assembled
+// service by service. The base is one of the `.yo-rc.json` that
+// la-docker-compose generates for its topologies and checks in CI
+// (inventories/testing/topologies/<topology>/), so the placement, the service
+// set and the software versions are the ones that repo already proves work
+// together. Only the identity changes: names, domain, hosts.
 import 'dart:convert';
 
 import '../models/la_project.dart';
@@ -17,12 +17,33 @@ import '../models/ssh_key.dart';
 import '../utils/regexp.dart';
 import '../utils/string_utils.dart';
 
-/// Where the base lives inside a la-docker-compose release.
-const String oneHostYoRcPath =
-    'inventories/testing/topologies/1host/.yo-rc.json';
+/// The generated configuration of [topology] inside a la-docker-compose
+/// release.
+String topologyYoRcPath(String topology) =>
+    'inventories/testing/topologies/$topology/.yo-rc.json';
 
-/// The runtime skip list of that topology, in the same release.
-const String oneHostPlacementPath = 'topologies/1host.placement.json';
+/// The placement of [topology] (its runtime skip list), same release.
+String topologyPlacementPath(String topology) =>
+    'topologies/$topology.placement.json';
+
+/// The topology used when the intent names none, by number of hosts.
+const Map<int, String> defaultTopologies = <int, String>{
+  1: '1host',
+  2: '2host',
+  3: 'default-3host',
+};
+
+/// One machine of the intent. Hosts map onto the base's hosts in order.
+class IntentHost {
+  const IntentHost({required this.name, required this.ip});
+
+  factory IntentHost.fromJson(Map<String, dynamic> j) =>
+      IntentHost(name: j['name'] as String, ip: j['ip'] as String);
+
+  /// The server name (inventory host), not a public name.
+  final String name;
+  final String ip;
+}
 
 /// [path] of la-docker-compose at [release] (a tag, or 'upstream' for the
 /// default branch, as the release selector offers it).
@@ -36,8 +57,7 @@ class ProjectIntent {
     required this.domain,
     required this.longName,
     required this.shortName,
-    required this.hostName,
-    required this.ip,
+    required this.hosts,
     this.sshUser = 'ubuntu',
     this.sshPort = 22,
     this.useSSL = true,
@@ -48,8 +68,15 @@ class ProjectIntent {
     domain: j['domain'] as String,
     longName: j['name'] as String,
     shortName: j['shortName'] as String,
-    hostName: j['hostName'] as String,
-    ip: j['ip'] as String,
+    // A single host may also be given flat, as hostName + ip.
+    hosts: j['hosts'] != null
+        ? <IntentHost>[
+            for (final dynamic h in j['hosts'] as List<dynamic>)
+              IntentHost.fromJson(h as Map<String, dynamic>),
+          ]
+        : <IntentHost>[
+            IntentHost(name: j['hostName'] as String, ip: j['ip'] as String),
+          ],
     sshUser: j['sshUser'] as String? ?? 'ubuntu',
     sshPort: j['sshPort'] as int? ?? 22,
     useSSL: j['ssl'] as bool? ?? true,
@@ -62,9 +89,7 @@ class ProjectIntent {
   final String longName;
   final String shortName;
 
-  /// The server name (inventory host), not a public name.
-  final String hostName;
-  final String ip;
+  final List<IntentHost> hosts;
   final String sshUser;
   final int sshPort;
   final bool useSSL;
@@ -80,9 +105,14 @@ class ProjectIntent {
       '"$longName" is not a valid project name.',
     if (!LARegExp.shortNameRegexp.hasMatch(shortName))
       '"$shortName" is not a valid short name.',
-    if (!LARegExp.hostnameRegexp.hasMatch(hostName))
-      '"$hostName" is not a valid server name.',
-    if (!LARegExp.ip.hasMatch(ip)) '"$ip" is not an IPv4 address.',
+    if (hosts.isEmpty) 'At least one host is needed.',
+    for (final IntentHost h in hosts) ...<String>[
+      if (!LARegExp.hostnameRegexp.hasMatch(h.name))
+        '"${h.name}" is not a valid server name.',
+      if (!LARegExp.ip.hasMatch(h.ip)) '"${h.ip}" is not an IPv4 address.',
+    ],
+    if (hosts.map((IntentHost h) => h.name).toSet().length != hosts.length)
+      'Host names must be different.',
     for (final String s in disableServices)
       if (!LAServiceDesc.listS(false).contains(s))
         '"$s" is not a service name.'
@@ -91,7 +121,7 @@ class ProjectIntent {
   ];
 }
 
-/// Thrown when the base is not a single-host configuration.
+/// Thrown when the intent is invalid or does not fit the base.
 class SynthesisException implements Exception {
   SynthesisException(this.message);
   final String message;
@@ -131,17 +161,34 @@ LAProject synthesizeProject(
       .split(RegExp(r'[, ]+'))
       .where((String h) => h.isNotEmpty)
       .toList();
-  if (baseHosts.length != 1) {
+  if (baseHosts.length != intent.hosts.length) {
     throw SynthesisException(
-      'The base configuration has ${baseHosts.length} hosts (${baseHosts.join(', ')}); '
-      'synthesis only starts from a single-host one.',
+      'The base configuration has ${baseHosts.length} hosts '
+      '(${baseHosts.join(', ')}) and the intent ${intent.hosts.length}.',
     );
   }
-  final String baseHost = baseHosts.single;
   final String baseDomain = pv['LA_domain'] as String;
 
-  // Every place the base names its host. The derived maps (aliases, extra
-  // hosts, /etc/hosts) are dropped: toGeneratorJson() recomputes them.
+  // Base host -> intent host, matched as whole tokens only ("la-mh-1" must
+  // not touch "la-mh-10").
+  final Map<String, String> hostMap = <String, String>{
+    for (int i = 0; i < baseHosts.length; i++)
+      baseHosts[i]: intent.hosts[i].name,
+  };
+  final RegExp hostToken = RegExp(
+    '(?<![\\w.-])(${baseHosts.map(RegExp.escape).join('|')})(?![\\w.-])',
+  );
+  Object? renameHosts(Object? v) => switch (v) {
+    final String s => s.replaceAllMapped(
+      hostToken,
+      (Match m) => hostMap[m.group(1)]!,
+    ),
+    final List<dynamic> l => l.map(renameHosts).toList(),
+    _ => v,
+  };
+
+  // The derived maps (aliases, extra hosts, /etc/hosts) are dropped:
+  // toGeneratorJson() recomputes them.
   pv
     ..['LA_id'] = null
     ..remove('LA_hubs')
@@ -149,17 +196,7 @@ LAProject synthesizeProject(
     ..remove('LA_nginx_docker_internal_aliases_by_host')
     ..remove('LA_docker_extra_hosts_by_host');
   for (final String key in pv.keys.toList()) {
-    final Object? v = pv[key];
-    if (key.endsWith('_hostname') || key == 'LA_hostnames') {
-      if (v is String && v.isNotEmpty) {
-        pv[key] = v.replaceAll(baseHost, intent.hostName);
-      }
-    } else if (key == 'LA_docker_solr_hosts' && v is List<dynamic>) {
-      pv[key] = <String>[
-        for (final dynamic h in v)
-          h == baseHost ? intent.hostName : h as String,
-      ];
-    }
+    pv[key] = renameHosts(pv[key]);
   }
 
   final LAProject p = LAProject.fromObject(pv, laReleases: laReleases);
@@ -212,13 +249,17 @@ LAProject synthesizeProject(
   // Ansible logs in as the ssh user the intent names.
   p.setVariable(LAVariableDesc.get('ansible_user'), intent.sshUser);
 
-  final LAServer server = p.servers.single;
-  server
-    ..ip = intent.ip
-    ..sshUser = intent.sshUser
-    ..sshPort = intent.sshPort
-    ..sshKey = sshKey;
-  p.upsertServer(server);
+  for (final IntentHost h in intent.hosts) {
+    final LAServer server = p.servers.firstWhere(
+      (LAServer s) => s.name == h.name,
+    );
+    server
+      ..ip = h.ip
+      ..sshUser = intent.sshUser
+      ..sshPort = intent.sshPort
+      ..sshKey = sshKey;
+    p.upsertServer(server);
+  }
 
   for (final String s in intent.disableServices) {
     p.serviceInUse(s, false);

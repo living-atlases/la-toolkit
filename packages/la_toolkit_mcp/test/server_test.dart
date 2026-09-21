@@ -36,13 +36,16 @@ class _Backend {
     }
     if (url.host != 'raw.githubusercontent.com') return null;
     calls.add('GET ${url.path}');
-    if (url.path.endsWith('1host/.yo-rc.json')) {
-      return http.Response(
-        File(
-          '../la_toolkit_core/test/fixtures/la-docker-compose-1host.yo-rc.json',
-        ).readAsStringSync(),
-        200,
+    final RegExpMatch? topo = RegExp(
+      r'/topologies/([a-z0-9-]+)/\.yo-rc\.json$',
+    ).firstMatch(url.path);
+    if (topo != null) {
+      final File f = File(
+        '../la_toolkit_core/test/fixtures/la-docker-compose-${topo.group(1)}.yo-rc.json',
       );
+      return f.existsSync()
+          ? http.Response(f.readAsStringSync(), 200)
+          : http.Response('404: Not Found', 404);
     }
     if (url.path.endsWith('1host.placement.json')) {
       return _json(<String, dynamic>{
@@ -448,6 +451,41 @@ void main() {
           'GET /living-atlases/la-docker-compose/v1.9.0/inventories/testing/topologies/1host/.yo-rc.json',
         ),
       );
+    });
+
+    test('two hosts take the 2host topology, in slot order', () async {
+      final CallToolResult r = await call(
+        'la_create_project',
+        <String, Object?>{
+          for (final MapEntry<String, Object?> e in intent.entries)
+            if (e.key != 'hostName' && e.key != 'ip') e.key: e.value,
+          'hosts': <Json>[
+            <String, dynamic>{'name': 'ex-1', 'ip': '10.0.0.5'},
+            <String, dynamic>{'name': 'ex-2', 'ip': '10.0.0.6'},
+          ],
+        },
+      );
+      expect(r.isError, isNot(true), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['topology'], '2host');
+      expect(out['valid'], isTrue);
+      final List<Json> hosts = (out['hosts'] as List<dynamic>).cast<Json>();
+      expect(hosts.map((Json h) => h['name']), <String>['ex-1', 'ex-2']);
+      expect(
+        hosts.every((Json h) => (h['publicNames'] as List<dynamic>).isNotEmpty),
+        isTrue,
+      );
+      // The placement file of 2host is not served: deploy everything.
+      expect(out['deployWithSkipServices'], isEmpty);
+    });
+
+    test('an unknown topology is named in the error', () async {
+      final CallToolResult r = await call(
+        'la_create_project',
+        <String, Object?>{...intent, 'topology': 'nope'},
+      );
+      expect(r.isError, isTrue);
+      expect(text(r), contains('no topology "nope"'));
     });
 
     test('save needs confirm', () async {

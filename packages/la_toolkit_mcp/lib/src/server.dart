@@ -28,8 +28,8 @@ Typical flow to update a portal:
    warnings the toolkit UI shows for the project (placement, cluster sizes,
    release incompatibilities); report them to the user before deploying.
 
-To set up a new single-host test portal: la_create_project previews it (it
-starts from la-docker-compose's CI-proven one-host configuration); show the
+To set up a new portal (1-3 hosts): la_create_project previews it (it starts
+from a la-docker-compose topology its CI proves); show the
 preview, then la_create_project again with save: true and confirm: true once
 the user agrees. Then la_check_preconditions and la_deploy (dry run first,
 with the skipServices the preview recommends).
@@ -205,14 +205,16 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
 
     _tool(
       'la_create_project',
-      'A new docker-compose portal on ONE host, from a few facts: domain, names, '
-          'the host (name, IP, ssh user) and the toolkit ssh key to reach it. It '
-          'starts from the one-host configuration la-docker-compose deploys in its '
-          'CI, so the placement and the versions are known to work together; only '
-          'the identity changes. By default it only previews (validation, lint, '
-          'public names, the skipServices to deploy with) and stores nothing. '
-          'save: true AND confirm: true store it in the toolkit, only after the '
-          'user agreed; that touches no server.',
+      'A new docker-compose portal on one to three hosts, from a few facts: '
+          'domain, names, the hosts (name, IP) and the toolkit ssh key to reach '
+          'them. It starts from a topology la-docker-compose checks in its CI '
+          '(1host, 2host, default-3host by host count, or the one named), so '
+          'the placement and the versions are known to work together; only the '
+          'identity changes, hosts taken in order for the topology slots. By '
+          'default it only previews (validation, lint, public names, the '
+          'skipServices to deploy with) and stores nothing. save: true AND '
+          'confirm: true store it in the toolkit, only after the user agreed; '
+          'that touches no server.',
       Schema.object(
         properties: <String, Schema>{
           'domain': Schema.string(description: 'e.g. example.com'),
@@ -220,17 +222,35 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
             description: 'Long name, e.g. "Example Portal".',
           ),
           'shortName': Schema.string(description: 'e.g. "Example".'),
-          'hostName': Schema.string(
-            description:
-                'Server name as ssh and ansible will know it (not a public name).',
+          'hosts': Schema.list(
+            description: 'The machines, in topology slot order.',
+            items: Schema.object(
+              properties: <String, Schema>{
+                'name': Schema.string(
+                  description:
+                      'Server name as ssh and ansible will know it (not a public name).',
+                ),
+                'ip': Schema.string(
+                  description: 'IPv4 the toolkit reaches it at.',
+                ),
+              },
+              required: <String>['name', 'ip'],
+            ),
           ),
-          'ip': Schema.string(
-            description: 'IPv4 the toolkit reaches the host at.',
+          'hostName': Schema.string(
+            description: 'Single host shorthand for hosts: [{name, ip}].',
+          ),
+          'ip': Schema.string(description: 'With hostName.'),
+          'topology': Schema.string(
+            description:
+                'la-docker-compose topology (default by host count: '
+                '1host, 2host, default-3host). Others: 3host-alt, '
+                'shared-hostname-2host, shared-hostname-3host.',
           ),
           'sshUser': Schema.string(description: 'Default ubuntu.'),
           'sshPort': Schema.int(description: 'Default 22.'),
           'sshKey': Schema.string(
-            description: 'Name of a toolkit ssh key authorised on the host.',
+            description: 'Name of a toolkit ssh key authorised on the hosts.',
           ),
           'ssl': Schema.bool(description: 'Default true.'),
           'disableServices': _tokenList(
@@ -247,14 +267,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
                 'Required with save: true. Set it only when the user agreed.',
           ),
         },
-        required: <String>[
-          'domain',
-          'name',
-          'shortName',
-          'hostName',
-          'ip',
-          'sshKey',
-        ],
+        required: <String>['domain', 'name', 'shortName', 'sshKey'],
       ),
       openWorld: true,
       _createProject,
@@ -476,9 +489,22 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         'and only once the user agreed to it.',
       );
     }
+    if (a['hosts'] == null && (a['hostName'] == null || a['ip'] == null)) {
+      throw InvalidRequest('Give hosts: [{name, ip}] (or hostName and ip).');
+    }
     final ProjectIntent intent = ProjectIntent.fromJson(<String, dynamic>{
       ...a,
     });
+    final String? topology =
+        a['topology'] as String? ?? defaultTopologies[intent.hosts.length];
+    if (topology == null) {
+      throw InvalidRequest(
+        'No default topology for ${intent.hosts.length} hosts; name one.',
+      );
+    }
+    if (!RegExp(r'^[a-z0-9][a-z0-9-]*$').hasMatch(topology)) {
+      throw InvalidRequest('"$topology" is not a topology name.');
+    }
     final List<String> problems = intent.problems();
     if (problems.isNotEmpty) {
       throw InvalidRequest(problems.join(' '));
@@ -499,19 +525,32 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
 
     final String release =
         a['dockerComposeRelease'] as String? ?? await _newestComposeRelease();
-    final Json base =
-        json.decode(
-              await backend.fetchText(
-                laDockerComposeFileUrl(release, oneHostYoRcPath),
-              ),
-            )
-            as Json;
+    final Json base;
+    try {
+      base =
+          json.decode(
+                await backend.fetchText(
+                  laDockerComposeFileUrl(release, topologyYoRcPath(topology)),
+                ),
+              )
+              as Json;
+    } on BackendException catch (e) {
+      if (e.statusCode == 404) {
+        throw InvalidRequest(
+          'la-docker-compose $release has no topology "$topology".',
+        );
+      }
+      rethrow;
+    }
     List<String> skip = <String>[];
     try {
       final Json placement =
           json.decode(
                 await backend.fetchText(
-                  laDockerComposeFileUrl(release, oneHostPlacementPath),
+                  laDockerComposeFileUrl(
+                    release,
+                    topologyPlacementPath(topology),
+                  ),
                 ),
               )
               as Json;
@@ -568,12 +607,19 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     final Json preview = <String, dynamic>{
       'dirName': p.dirName,
       'domain': p.domain,
-      'host': <String, dynamic>{
-        'name': intent.hostName,
-        'ip': intent.ip,
-        'sshUser': intent.sshUser,
-        'sshKey': keyName,
-      },
+      'topology': topology,
+      'hosts': <Json>[
+        for (final IntentHost h in intent.hosts)
+          <String, dynamic>{
+            'name': h.name,
+            'ip': h.ip,
+            // What nginx on this host answers for.
+            'publicNames': (aliases[h.name] as List<dynamic>? ?? <dynamic>[])
+                .cast<String>(),
+          },
+      ],
+      'sshUser': intent.sshUser,
+      'sshKey': keyName,
       'dockerComposeRelease': release,
       'generatorRelease': p.generatorRelease,
       'services': p.getServicesNameListInUse()..sort(),

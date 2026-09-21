@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/lint/project_lint.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/releases/deps_versions.dart';
 import 'package:la_toolkit_core/synth/synthesize_project.dart';
@@ -27,8 +28,7 @@ const ProjectIntent _intent = ProjectIntent(
   domain: 'example.com',
   longName: 'Example Portal',
   shortName: 'Example',
-  hostName: 'ex-1',
-  ip: '10.0.0.5',
+  hosts: <IntentHost>[IntentHost(name: 'ex-1', ip: '10.0.0.5')],
 );
 
 LAProject _synth({
@@ -100,8 +100,7 @@ void main() {
         domain: 'example.com',
         longName: 'Example Portal',
         shortName: 'Example',
-        hostName: 'ex-1',
-        ip: '10.0.0.5',
+        hosts: <IntentHost>[IntentHost(name: 'ex-1', ip: '10.0.0.5')],
         sshUser: 'debian',
       ),
     );
@@ -151,8 +150,7 @@ pipelines:
         domain: 'example.com',
         longName: 'Example Portal',
         shortName: 'Example',
-        hostName: 'ex-1',
-        ip: '10.0.0.5',
+        hosts: <IntentHost>[IntentHost(name: 'ex-1', ip: '10.0.0.5')],
         disableServices: <String>['spatial'],
       ),
     );
@@ -167,8 +165,7 @@ pipelines:
           domain: 'https://example.com',
           longName: 'Example Portal',
           shortName: 'Example',
-          hostName: 'ex 1',
-          ip: '10.0.0',
+          hosts: <IntentHost>[IntentHost(name: 'ex 1', ip: '10.0.0')],
           disableServices: <String>['nope'],
         ),
       ),
@@ -185,6 +182,89 @@ pipelines:
         ),
       ),
     );
+  });
+
+  group('multi-host topologies', () {
+    // la-docker-compose v1.9.0 (97fd50a) fixtures of the same directory.
+    for (final String topology in <String>[
+      '2host',
+      'default-3host',
+      'shared-hostname-2host',
+    ]) {
+      test(topology, () {
+        final Map<String, dynamic> base =
+            json.decode(
+                  File(
+                    'test/fixtures/la-docker-compose-$topology.yo-rc.json',
+                  ).readAsStringSync(),
+                )
+                as Map<String, dynamic>;
+        final List<String> baseHosts =
+            (_promptValues(base)['LA_hostnames'] as String).split(', ');
+        final List<IntentHost> hosts = <IntentHost>[
+          for (int i = 0; i < baseHosts.length; i++)
+            IntentHost(name: 'ex-${i + 1}', ip: '10.0.0.${i + 5}'),
+        ];
+        final LAProject p = synthesizeProject(
+          base,
+          ProjectIntent(
+            domain: 'example.com',
+            longName: 'Example Portal',
+            shortName: 'Example',
+            hosts: hosts,
+          ),
+          takenDirNames: const <String>{},
+          dockerComposeRelease: 'v1.9.0',
+          generatorRelease: '1.8.33',
+          sshKey: SshKey(name: 'la-toolkit', desc: '', encrypted: false),
+        );
+        expect(p.validateCreation(debug: false), isTrue);
+        expect(messages(lintProject(p, hasSshKeys: true)), isEmpty);
+        final Map<String, dynamic> conf = p.toGeneratorJson();
+        final String all = json.encode(conf);
+        expect(all, isNot(contains('la-mh-')));
+        expect(all, isNot(contains('l-a.site')));
+        expect(
+          p.servers.map((LAServer s) => '${s.name}=${s.ip}').toList()..sort(),
+          <String>[for (final IntentHost h in hosts) '${h.name}=${h.ip}'],
+        );
+        // Every service stays on the slot the topology put it on.
+        final Map<String, dynamic> basePv = _promptValues(base);
+        for (final String key in basePv.keys.where(
+          (String k) => k.endsWith('_hostname') && basePv[k] is String,
+        )) {
+          final String before = basePv[key] as String;
+          if (before.isEmpty || !conf.containsKey(key)) {
+            continue;
+          }
+          expect(
+            conf[key],
+            before.replaceAllMapped(
+              RegExp(r'la-mh-(\d)'),
+              (Match m) => 'ex-${m.group(1)}',
+            ),
+            reason: key,
+          );
+        }
+      });
+    }
+
+    test('the intent must bring as many hosts as the base has', () {
+      expect(
+        () => _synth(
+          intent: const ProjectIntent(
+            domain: 'example.com',
+            longName: 'Example Portal',
+            shortName: 'Example',
+            hosts: <IntentHost>[
+              IntentHost(name: 'ex-1', ip: '10.0.0.5'),
+              IntentHost(name: 'ex-2', ip: '10.0.0.6'),
+            ],
+          ),
+        ),
+        throwsA(isA<SynthesisException>()),
+      );
+    });
   });
 }
 
