@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_toolkit/components/lint_project_panel.dart';
 import 'package:la_toolkit/models/app_state.dart';
@@ -185,5 +186,21 @@ void main() {
       (WidgetTester tester) async {
     await pumpPanel(tester, composePortal());
     expect(find.textContaining('deploys as part of'), findsNothing);
+  });
+
+  testWidgets('a core finding with a fix renders as a SOLVE action',
+      (WidgetTester tester) async {
+    // The demo store holds no ssh key: lintProject reports it with
+    // LintFix.sshKeys, which the panel turns into a SOLVE button.
+    await pumpPanel(tester, composePortal());
+    final Finder card = find.ancestor(
+      of: find.text("You don't have any SSH key"),
+      matching: find.byType(ListTile),
+    );
+    expect(card, findsOneWidget);
+    expect(
+      find.descendant(of: card, matching: find.text('SOLVE')),
+      findsOneWidget,
+    );
   });
 }

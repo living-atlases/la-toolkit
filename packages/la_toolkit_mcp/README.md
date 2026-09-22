@@ -1,8 +1,9 @@
 # la_toolkit_mcp
 
 An [MCP](https://modelcontextprotocol.io) server that lets an AI agent (Claude Code,
-Claude Desktop, or any MCP client) operate an LA Toolkit: list portals, run a dry run,
-deploy, follow the run and explain why it failed.
+Claude Desktop, or any MCP client) operate an LA Toolkit: list portals, check what a
+deploy needs, create a new docker-compose portal, run a dry run, deploy, follow the run
+and explain why it failed.
 
 It adds no logic of its own to the toolkit. Every tool is a thin composition of the
 backend REST endpoints the Flutter app already calls and of the app's own models and
@@ -50,6 +51,31 @@ shows up in the project history like any other.
 - The ttyd viewer the backend starts for every run is closed right away. The deploy is
   detached and does not depend on it; left open, each one would hold a port of the
   2011-2100 pool.
+
+### Creating a portal
+
+A typical conversation, for "set up a test portal for example.com on 10.0.0.5":
+
+1. `la_create_project` with the domain, names, hosts and the name of a toolkit ssh key
+   already authorised on them. It previews and stores nothing.
+2. The agent shows the preview: the topology picked, which public names each host will
+   serve (they must resolve to it), the lint, and the `skipServices` the topology is
+   deployed with in la-docker-compose's CI (the single-host one skips the heavy services
+   so the stack fits one VM).
+3. Once the user agrees, `la_create_project` again with `save: true, confirm: true`. The
+   project appears in the UI like one created there.
+4. `la_check_preconditions`, then `la_deploy` (dry run, then real) with those
+   `skipServices`.
+
+How the project is built: the tool downloads, at the la-docker-compose release it pins
+(the newest tag unless given), the `.yo-rc.json` that repository generates for the
+topology (`inventories/testing/topologies/<topology>/`) and its placement file, and
+`synthesizeProject()` (in `la_toolkit_core`) maps the intent onto it. Hosts fill the
+topology slots in order; names, domain, e-mails, the directory (never one another
+project uses) and the ansible user change; everything else, services, placement and
+versions, is what the CI deploys. Services it pins no version for get the newest known
+one from the backend, as the UI's template import does. The base's data hubs are left
+out.
 
 ### Preconditions
 
@@ -103,6 +129,14 @@ dart analyze
 dart test
 ```
 
-`test/server_test.dart` drives the server over the MCP protocol against a fake backend;
-the other suites cover the pure helpers (argument validation, project lookup, failure
-extraction from the ansible JSON callback and from the log).
+| Suite | What it pins |
+|---|---|
+| `test/server_test.dart` | Every tool over the MCP protocol against a fake backend (and fake GitHub): refusals (`confirm`, whitelists, running runs), the payloads sent, create preview vs save. |
+| `test/stdio_test.dart` | The entry point the binary uses: model logging never reaches stdout, the protocol channel. |
+| `test/lint_test.dart` | The lint report: never `clean` without the matrix, hubs built under their portal. |
+| `test/preconditions_test.dart`, `deploy_request_test.dart`, `deploy_outcome_test.dart`, `projects_test.dart` | The pure helpers: precondition verdicts, argument validation, failure extraction from the ansible JSON callback and from the log, project lookup. |
+
+The project synthesis itself is tested in `la_toolkit_core` (`test/synthesize_project_test.dart`).
+Nothing here talks to a real backend or server; an end-to-end check needs a toolkit in
+dev mode (`--backend http://localhost:1337`) and, for anything past a dry run, a
+throwaway host.

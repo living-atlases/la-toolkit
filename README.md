@@ -15,12 +15,15 @@
    * [Running the la-toolkit in an external server.](#running-the-la-toolkit-in-an-external-server)
 * [Upgrade the toolkit](#upgrade-the-toolkit)
    * [Notes to upgrade to 1.1.X](#notes-to-upgrade-to-11x)
+* [Start from the sample project](#start-from-the-sample-project)
+* [Drive the toolkit from an AI agent (MCP)](#drive-the-toolkit-from-an-ai-agent-mcp)
 * [Migrate your old inventories to the toolkit](#migrate-your-old-inventories-to-the-toolkit)
 * [Migrate your la-toolkit to other location](#migrate-your-la-toolkit-to-other-location)
 * [Logs and debugging](#logs-and-debugging)
 * [Development](#development)
    * [Using flutter web](#using-flutter-web)
    * [Autogeneration of code](#autogeneration-of-code)
+   * [Tests](#tests)
    * [Backend during development](#backend-during-development)
    * [Flutter build](#flutter-build)
    * [Docker image build](#docker-image-build)
@@ -78,6 +81,14 @@ this demo is not functional because is only the UI frontend and does not configu
 ### How the code is organized 
 
 This repository is a the frontend of the LA Toolkit. It uses [this repo](https://github.com/living-atlases/la-toolkit-backend) as backend and both components are packaged together in a docker image with all the dependencies to deploy and maintain a LA Portal. It's also uses the [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/) and the [LA Ansible Inventories Generator](https://github.com/living-atlases/generator-living-atlas).
+
+Inside this repository:
+
+| Path | What |
+|---|---|
+| `lib/` | The Flutter web app (UI, redux state, calls to the backend). |
+| `packages/la_toolkit_core/` | The project model and its rules, in plain Dart (no Flutter): services, servers, clusters, validation, the lint the UI shows, generation of the `.yo-rc.json`, and the synthesis of new projects. The app, and the MCP server below, both use it, so they judge a project the same way. See its [README](packages/la_toolkit_core/README.md). |
+| `packages/la_toolkit_mcp/` | An MCP server to drive the toolkit from an AI agent. See [Drive the toolkit from an AI agent](#drive-the-toolkit-from-an-ai-agent-mcp). |
 
 ## Prerequisites
 
@@ -253,6 +264,34 @@ The sample lands in its own `lademo-docker` configuration directory, and gets a 
 `-2`... suffix if that one is taken, so it can never share a directory with a portal you
 already have.
 
+## Drive the toolkit from an AI agent (MCP)
+
+The toolkit can be operated from an AI agent (Claude Code, Claude Desktop or any
+[MCP](https://modelcontextprotocol.io) client) with requests such as "set up a test portal
+for example.com on these two servers" or "redeploy lademo and tell me what failed". The
+agent does not get a shell: it gets a fixed set of tools, served by
+[`packages/la_toolkit_mcp`](packages/la_toolkit_mcp/README.md), which call the same backend
+endpoints and the same project rules as the UI. Everything it does shows up in the UI and
+in the project history.
+
+What it can do:
+
+- List projects, show one, its runs and its lint warnings (the same ones the UI shows).
+- Check that a deploy can start: ssh keys, ssh and sudo, OS, disk space, and that the
+  portal names resolve to the servers.
+- Create a new docker-compose portal on 1 to 3 hosts. It starts from a
+  [la-docker-compose](https://github.com/living-atlases/la-docker-compose) topology that
+  its CI deploys, so placement and versions are known to work together; only names,
+  domain and hosts change. It previews first and only stores the project when asked.
+- Deploy (dry run by default), follow the run, summarise the failed tasks, cancel it.
+
+Safety, in short: a real deploy needs two explicit arguments (`dryRun: false` and
+`confirm: true`), the same goes for storing a new project, and the server only speaks
+stdio. The backend API has no authentication, so never expose it over HTTP. Provisioning
+machines and DNS stays out of scope: the agent checks them and says what is missing.
+
+Setup and the full list of tools: [packages/la_toolkit_mcp/README.md](packages/la_toolkit_mcp/README.md).
+
 ## Migrate your old inventories to the toolkit 
 
 If you were using other generated inventories, you can import it using the (+) button with some additional steps:
@@ -364,20 +403,35 @@ $ flutter upgrade
 
 ### Autogeneration of code
 
-There are some code (like the json serialization) that should be generated when some model changes. This is done with:
+There are some code (like the json serialization) that should be generated when some model changes. The models live in `packages/la_toolkit_core`, so run it there (and at the root for the app's own state):
 ```
+cd packages/la_toolkit_core && dart run build_runner build --delete-conflicting-outputs
 flutter pub run build_runner watch --delete-conflicting-outputs
-``` 
+```
+
+### Tests
+
+There are three suites, one per package:
+
+```
+cd packages/la_toolkit_core && dart test   # the model, lint and synthesis (most of the tests)
+cd packages/la_toolkit_mcp && dart test    # the MCP server, against a fake backend
+flutter test                               # the app: widgets and what needs its own code
+```
+
+Run the core ones from inside `packages/la_toolkit_core`: some fixtures are read with
+paths relative to it. `build.sh` and `deploy-demo.sh` run the core suite before
+`flutter test`.
 ### Backend during development
 
 During development you'll need to have running [the backend](https://github.com/living-atlases/la-toolkit-backend) and also a docker container of the la-toolkit (with this name).
  
 ### Flutter build
 
-We need to have the frontend build prior to build the docker image:
+We need to have the frontend build prior to build the docker image (`build.sh` does this, with the tests first):
 
 ```
-flutter test && flutter build web
+(cd packages/la_toolkit_core && dart test) && flutter test && flutter build web
 ```
 
 ### Docker image build
@@ -418,6 +472,7 @@ one has already shipped a broken combination to users — follow
 - [X] Post-deploy tasks
 - [X] Support additional hubs configuration
 - [X] Services redundancy
+- [X] Drive the toolkit from an AI agent (MCP), including creating new docker-compose portals
 - [X] Better ALA software versions control
 - [X] LA pipelines support
 - [X] Concurrent user support

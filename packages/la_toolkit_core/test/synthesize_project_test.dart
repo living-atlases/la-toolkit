@@ -88,6 +88,52 @@ void main() {
     expect(versions(conf), versions(base));
   });
 
+  test('emails and certificates follow the new domain', () {
+    final Map<String, dynamic> conf = _synth().toGeneratorJson();
+    expect(conf['LA_variable_support_email'], 'support@example.com');
+    expect(conf['LA_variable_orgEmail'], 'info@example.com');
+    expect(conf['LA_variable_email_sender'], 'noreply@example.com');
+    // The shared l-a.site certificates would not cover example.com.
+    expect(conf['LA_variable_use_la_site_certs'], isNot(true));
+  });
+
+  test('ssl follows the intent', () {
+    final LAProject p = _synth(
+      intent: const ProjectIntent(
+        domain: 'example.com',
+        longName: 'Example Portal',
+        shortName: 'Example',
+        hosts: <IntentHost>[IntentHost(name: 'ex-1', ip: '10.0.0.5')],
+        useSSL: false,
+      ),
+    );
+    expect(p.toGeneratorJson()['LA_enable_ssl'], isFalse);
+  });
+
+  test("the base's data hubs are left out", () {
+    expect(
+      _promptValues(_base())['LA_hubs'] as List<dynamic>,
+      isNotEmpty,
+      reason: 'the fixture has hubs, or this test proves nothing',
+    );
+    final LAProject p = _synth();
+    expect(p.hubs, isEmpty);
+    expect(p.toGeneratorJson()['LA_hubs'] ?? <dynamic>[], isEmpty);
+  });
+
+  test('the base is not modified', () {
+    final Map<String, dynamic> base = _base();
+    final String before = json.encode(base);
+    synthesizeProject(
+      base,
+      _intent,
+      takenDirNames: const <String>{},
+      dockerComposeRelease: 'v1.9.0',
+      generatorRelease: '1.8.33',
+    );
+    expect(json.encode(base), before);
+  });
+
   test('the directory never collides with an existing project', () {
     final LAProject p = _synth(taken: <String>{'example'});
     expect(p.dirName, isNot('example'));

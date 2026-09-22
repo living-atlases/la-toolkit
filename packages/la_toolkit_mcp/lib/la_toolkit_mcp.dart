@@ -7,3 +7,4 @@ export 'src/deploy_request.dart';
 export 'src/preconditions.dart';
 export 'src/projects.dart';
 export 'src/server.dart';
+export 'src/stdio.dart';

@@ -401,6 +401,73 @@ void main() {
     expect((out['warnings'] as List<dynamic>).single, contains('disk-usage'));
   });
 
+  test('la_list_projects flattens the hubs after their portal', () async {
+    fake.projects.add(
+      project(
+        id: 'p2',
+        dirName: 'portal2',
+        hubs: <Json>[project(id: 'h1', dirName: 'hub1', isHub: true)],
+      ),
+    );
+    final List<dynamic> out =
+        json.decode(text(await call('la_list_projects', <String, Object?>{})))
+            as List<dynamic>;
+    expect(out.map((dynamic p) => (p as Json)['dirName']), <String>[
+      'demo',
+      'portal2',
+      'hub1',
+    ]);
+  });
+
+  test('la_list_runs honours the limit', () async {
+    fake.projects.first['cmdHistoryEntries'] = <Json>[
+      for (int i = 0; i < 5; i++) run('r$i', 1000 + i),
+    ];
+    final List<dynamic> out =
+        json.decode(
+              text(
+                await call('la_list_runs', <String, Object?>{
+                  'project': 'demo',
+                  'limit': 2,
+                }),
+              ),
+            )
+            as List<dynamic>;
+    expect(out, hasLength(2));
+    expect((out.first as Json)['runId'], 'r4');
+  });
+
+  test('la_check_connectivity sends the servers and sums up each', () async {
+    final List<dynamic> out =
+        json.decode(
+              text(
+                await call('la_check_connectivity', <String, Object?>{
+                  'project': 'demo',
+                }),
+              ),
+            )
+            as List<dynamic>;
+    expect(fake.calls, contains('POST test-connectivity'));
+    expect(out.first, <String, dynamic>{
+      'name': 'la-1',
+      'reachable': null,
+      'sshReachable': 'success',
+      'sudoEnabled': 'success',
+      'os': 'Ubuntu 24.04',
+    });
+  });
+
+  test('la_check_connectivity refuses a project without servers', () async {
+    fake.projects.first['servers'] = <Json>[];
+    final CallToolResult r = await call(
+      'la_check_connectivity',
+      <String, Object?>{'project': 'demo'},
+    );
+    expect(r.isError, isTrue);
+    expect(text(r), contains('no servers'));
+    expect(fake.calls, isNot(contains('POST test-connectivity')));
+  });
+
   test('unknown projects list the known ones', () async {
     final CallToolResult r = await call('la_get_project', <String, Object?>{
       'project': 'nope',
