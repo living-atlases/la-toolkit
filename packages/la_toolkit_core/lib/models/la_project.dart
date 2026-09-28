@@ -2494,6 +2494,15 @@ check results length: ${checkResults.length}''';
             (nginxDockerInternalAliasesByHost[server.name] as List<String>?) ??
                 const <String>[],
           );
+          // Stack wins. A name another compose host of this stack serves is never
+          // mapped to a VM as well: docker keeps the first /etc/hosts line for a name,
+          // so with the VM listed too the container lands wherever the sort puts it.
+          // On gbif.es datos-sensibles.gbif.es runs in docker only on node 3, and
+          // nodes 1 and 2 sent it to one of six VMs still carrying the old SDS.
+          final Set<String> servedByStack = <String>{
+            for (final dynamic names in nginxDockerInternalAliasesByHost.values)
+              ...(names as List<String>),
+          };
           final Set<String> extraHosts = <String>{};
           for (final LAProject current in projects) {
             for (final LAServer otherServer in current.servers) {
@@ -2551,8 +2560,13 @@ check results length: ${checkResults.length}''';
                 );
               }
 
+              final bool otherIsStack = nginxDockerInternalAliasesByHost
+                  .containsKey(otherServer.name);
               for (final String hn in hns) {
-                if (hn.isNotEmpty && !servedLocally.contains(hn)) {
+                final bool shadowed =
+                    servedLocally.contains(hn) ||
+                    (!otherIsStack && servedByStack.contains(hn));
+                if (hn.isNotEmpty && !shadowed) {
                   extraHosts.add('$hn:${otherServer.ip}');
                 }
               }

@@ -648,6 +648,78 @@ void main() {
       },
     );
 
+    test(
+      'Test Case 10c: a FQDN another compose host serves is never sent to a VM',
+      () {
+        // The same migration, one step further: the service left the VM for ONE
+        // compose host, while other compose hosts of the stack still need it. They
+        // must reach the compose host, never the legacy VM: docker keeps the first
+        // /etc/hosts line for a name, so listing both is a coin toss (gbif.es:
+        // datos-sensibles on node 3, nodes 1 and 2 answered by an old SDS VM).
+        final LAProject project = LAProject(
+          longName: 'Migration In Flight',
+          shortName: 'migtest',
+          domain: 'migtest.org',
+          alaInstallRelease: '1.0.0',
+          generatorRelease: '1.0.0',
+        );
+        final LAServer legacy = LAServer(
+          id: 'sLegacy',
+          name: 'frontend-2021',
+          ip: '10.0.0.8',
+          projectId: project.id,
+        );
+        final LAServer node1 = LAServer(
+          id: 'sNode1',
+          name: 'docker-prod-1',
+          ip: '10.0.0.207',
+          projectId: project.id,
+        );
+        final LAServer node3 = LAServer(
+          id: 'sNode3',
+          name: 'docker-prod-3',
+          ip: '10.0.0.28',
+          projectId: project.id,
+        );
+        project.upsertServer(legacy);
+        project.upsertServer(node1);
+        project.upsertServer(node3);
+
+        project.serviceInUse('sensitive_data_service', true);
+        project.serviceInUse('collectory', true);
+        project.serviceInUse('docker_compose', true);
+        project.assign(legacy, <String>['sensitive_data_service']);
+        project.assignByType(node1.id, DeploymentType.dockerCompose, <String>[
+          'collectory',
+          'docker_compose',
+        ]);
+        project.assignByType(node3.id, DeploymentType.dockerCompose, <String>[
+          'sensitive_data_service',
+          'docker_compose',
+        ]);
+
+        final Map<String, dynamic> json = project.toGeneratorJson();
+        final String sds = project
+            .getService('sensitive_data_service')
+            .url(project.domain)
+            .split(' ')
+            .first;
+        final List<String> node1Extra =
+            (json['LA_docker_extra_hosts_by_host']
+                    as Map<String, dynamic>)['docker-prod-1']
+                as List<String>;
+
+        expect(
+          node1Extra.where((String e) => e.startsWith('$sds:')).toList(),
+          <String>['$sds:10.0.0.28'],
+          reason:
+              'the stack serves $sds on docker-prod-3; the VM must not compete',
+        );
+        // The VM stays reachable by its own name.
+        expect(node1Extra, contains('frontend-2021:10.0.0.8'));
+      },
+    );
+
     test('Test Case 11: Nginx Fast Mode Logic', () {
       final LAProject project = LAProject(
         longName: 'Fast Mode Test',
