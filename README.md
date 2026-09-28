@@ -1,114 +1,43 @@
 # Living Atlases Toolkit
 
-* [Introduction](#introduction)
-   * [How ?](#how-)
-   * [Demo](#demo)
-   * [How the code is organized](#how-the-code-is-organized)
-* [Prerequisites](#prerequisites)
-   * [Docker](#docker)
-   * [Docker compose](#docker-compose)
-   * [Data directories](#data-directories)
-* [Clone or just download docker-compose.yml](#clone-or-just-download-docker-composeyml)
-* [Running the la-toolkit](#running-the-la-toolkit)
-   * [Directly using docker-compose](#directly-using-docker-compose)
-   * [or using a docker-compose helper](#or-using-a-docker-compose-helper)
-   * [Running the la-toolkit in an external server.](#running-the-la-toolkit-in-an-external-server)
-* [Upgrade the toolkit](#upgrade-the-toolkit)
-   * [Notes to upgrade to 1.1.X](#notes-to-upgrade-to-11x)
-* [Start from the sample project](#start-from-the-sample-project)
-* [Drive the toolkit from an AI agent (MCP)](#drive-the-toolkit-from-an-ai-agent-mcp)
-* [Migrate your old inventories to the toolkit](#migrate-your-old-inventories-to-the-toolkit)
-* [Migrate your la-toolkit to other location](#migrate-your-la-toolkit-to-other-location)
-* [Logs and debugging](#logs-and-debugging)
-* [Development](#development)
-   * [Using flutter web](#using-flutter-web)
-   * [Autogeneration of code](#autogeneration-of-code)
-   * [Tests](#tests)
-   * [Backend during development](#backend-during-development)
-   * [Flutter build](#flutter-build)
-   * [Docker image build](#docker-image-build)
-* [Developed so far and Roadmap](#developed-so-far-and-roadmap)
-* [Screenshots](#screenshots)
-   * [Loading:](#loading)
-   * [Intro page:](#intro-page)
-   * [Intro continuation:](#intro-continuation)
-   * [List of created projects:](#list-of-created-projects)
-   * [Project Tools:](#project-tools)
-   * [Editing the project:](#editing-the-project)
-   * [Service definition:](#service-definition)
-   * [Theme selection:](#theme-selection)
-   * [Services in servers:](#services-in-servers)
-   * [Servers connectivity:](#servers-connectivity)
-   * [Project tunning:](#project-tunning)
-   * [Project drawer with links to each service and admin interfaces:](#project-drawer-with-links-to-each-service-and-admin-interfaces)
-   * [SSH keys administration:](#ssh-keys-administration)
-   * [SSH Gateways configuration:](#ssh-gateways-configuration)
-   * [Project configuration lint warnings](#project-configuration-lint-warnings)
-   * [Testing connectivity with the project servers:](#testing-connectivity-with-the-project-servers)
-   * [Deployment:](#deployment)
-   * [Deployment Ansible terminal:](#deployment-ansible-terminal)
-   * [Deployment results (success):](#deployment-results-success)
-   * [Deployment results (failed):](#deployment-results-failed)
-   * [History of deployments with repeat function](#history-of-deployments-with-repeat-function)
-   * [Software upgrade checks](#software-upgrade-checks)
-   * [Software releases selection](#software-releases-selection)
-   * [Console for the intrepids:](#console-for-the-intrepids)
-* [License](#license)
-   * [Others](#others)
+A web tool to install, maintain and monitor [Living Atlases](https://living-atlases.gbif.org)
+(LA) portals.
 
-## Introduction
+A Living Atlas is built from the [Atlas of Living Australia](https://ala.org.au/) (ALA)
+free and open source software. The toolkit puts together everything needed to deploy
+and maintain one, behind a user friendly interface:
 
-This tool facilitates the installation, maintenance and monitor of Living Atlases portals.
+- your portal's configuration (services, servers, versions, branding), checked with the
+  same rules before every deploy;
+- [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/), the official
+  [ansible](https://www.ansible.com/) code that deploys a portal on virtual machines,
+  and [la-docker-compose](https://github.com/living-atlases/la-docker-compose) for
+  portals run with docker compose;
+- the [LA Ansible Inventories Generator](https://github.com/living-atlases/generator-living-atlas),
+  and an up-to-date environment to run the deploys and the common maintenance tasks.
 
-### How ?
+There is a [demo of the interface](https://toolkit-demo.l-a.site/). It is only the UI
+frontend, with no backend: projects are stored in your browser and nothing is
+configured or deployed on any server. You can create and edit sample projects there to
+see how the tool works. It is published by hand with `./deploy-demo.sh`.
 
-A Living Atlas (LA) can be deployed and maintained using:
+## Quick start
 
-1) the [Atlas of Living Australia](https://ala.org.au/) (ALA) Free and Open Source Software, with
-2) the [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/), the official [ansible](https://www.ansible.com/) code that automatically deploy and maintain a Living Atlas (LA) portal
-3) some configuration that describes your LA portal that is used by ala-install
+### Prerequisites
 
-This LA Toolkit puts all these parts together with an user friendly interface, and an up-to-date environment to perform the common maintenance tasks of a LA portal.
-
-### Demo
-
-There is a non-functional demo of this tool in:
-
-http://toolkit-demo.l-a.site/
-
-this demo is not functional because is only the UI frontend and does not configure any server or portal. It's just for demostration purposes. You can have a look there and create some sample project to see how this tool works.
-
-### How the code is organized 
-
-This repository is a the frontend of the LA Toolkit. It uses [this repo](https://github.com/living-atlases/la-toolkit-backend) as backend and both components are packaged together in a docker image with all the dependencies to deploy and maintain a LA Portal. It's also uses the [ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/) and the [LA Ansible Inventories Generator](https://github.com/living-atlases/generator-living-atlas).
-
-Inside this repository:
-
-| Path | What |
-|---|---|
-| `lib/` | The Flutter web app (UI, redux state, calls to the backend). |
-| `packages/la_toolkit_core/` | The project model and its rules, in plain Dart (no Flutter): services, servers, clusters, validation, the lint the UI shows, generation of the `.yo-rc.json`, and the synthesis of new projects. The app, and the MCP server below, both use it, so they judge a project the same way. See its [README](packages/la_toolkit_core/README.md). |
-| `packages/la_toolkit_mcp/` | An MCP server to drive the toolkit from an AI agent. See [Drive the toolkit from an AI agent](#drive-the-toolkit-from-an-ai-agent-mcp). |
-
-## Prerequisites
-
-### Docker 
-
-To run the `la-toolkit` you need to [install docker](https://docs.docker.com/engine/install/) in the computer you want to use to deploy your LA Portal (like your laptop, or similar computer). Doublecheck that docker images runs in your common user (without root), for that follow [this post-install docker instructions](https://docs.docker.com/engine/install/linux-postinstall/).
-
-### Docker compose
-
-Optionally you'll need the [Docker Compose](https://docs.docker.com/compose/install/).
+- [Docker](https://docs.docker.com/engine/install/) on the computer you will deploy from
+  (your laptop or similar), usable by your normal user without root: follow the
+  [post-install steps](https://docs.docker.com/engine/install/linux-postinstall/).
+- [Docker Compose](https://docs.docker.com/compose/install/) (the `docker compose` plugin).
 
 ### Data directories
 
-Your will need also some directories to store your config, logs and ssh configuration. In GNU/Linux you can use:
+The toolkit stores its config, logs, ssh configuration, database and backups in
+directories on the host. On GNU/Linux:
 
-```
+```bash
 mkdir -p /data/la-toolkit/config/ /data/la-toolkit/logs/ /data/la-toolkit/ssh/ /data/la-toolkit/mongo /data/la-toolkit/backups
-      
-``` 
-or similar to create it.  Something like:
+```
 
 ```
 /data/la-toolkit
@@ -116,173 +45,100 @@ or similar to create it.  Something like:
          ├── logs
          ├── mongo
          ├── backups
-         └── ssh 
+         └── ssh
 ```
 
-If you use a different directory, you'll have to update the `docker-compose.yml` files accordinly.
+They must be writable by your user and by docker. If you use a different location,
+update the volumes in `docker-compose.yml` accordingly.
 
-This directories should be writable by your user and docker.
+### Get the compose files
 
-## Clone or just download docker-compose.yml
+Clone this repository:
 
-To continue you can git clone this repository:
 ```bash
 git clone https://github.com/living-atlases/la-toolkit.git
 cd la-toolkit
 ```
-or just copy the [`docker-compose.yml`](https://github.com/living-atlases/la-toolkit/blob/master/docker-compose.yml) and  [`mongo-init.sh`](https://github.com/living-atlases/la-toolkit/blob/master/mongo-init.sh) and adapt the first one to your needs (like changing the default passwords prior to start the toolkit via `docker-compose`) following the comments.
 
-## Running the la-toolkit
+or just copy [`docker-compose.yml`](docker-compose.yml) and [`mongo-init.sh`](mongo-init.sh).
+Either way, read the comments in `docker-compose.yml` and **change the default
+passwords before the first start**.
 
-### Directly using docker-compose
+### Start it
 
-```
+```bash
 docker compose up -d
 ```
 
-This will start the containers (la-toolkit, la-toolkit-mongo and la-toolkit-watchtower). You can see it with `docker ps`. Verify that they start correctly.
+This starts `la-toolkit`, `la-toolkit-mongo` and the helper containers; check with
+`docker ps` that they are running. Then open http://localhost:2010/.
 
-Open the toolkit in http://localhost:2010/
+The toolkit image is pinned to a version in `docker-compose.yml`, not to `:latest`;
+see [Upgrade the toolkit](#upgrade-the-toolkit).
 
-### Development mode
+### Running it on a remote server
 
-Start with the `dev` profile:
+You can run the toolkit on another server and forward its ports over ssh:
 
-```
-docker compose --profile dev up -d
-```
-
-This starts the shared services (mongo) plus the dev la-toolkit image on port 20010
-and mongo-express on port 9081. To rebuild the dev image locally:
-
-```
-docker compose --profile dev build && docker compose --profile dev up -d
+```bash
+ssh -L 2010:127.0.0.1:2010 -L 2011:127.0.0.1:2011 -L 2012:127.0.0.1:2012 yourUser@yourRemoteServer -N -f
 ```
 
-### or using a docker-compose helper
+Port 2010 is the interface; the deploy terminals use the range 2011-2100, so with
+several concurrent users you'll [need more forwarded ports](https://unix.stackexchange.com/a/589259).
 
-```
-./dockerTask.sh compose
-```
+## Using the toolkit
 
-Note that you'll need to have installed `xdg-utils` (`sudo apt install xgd-utils`).
-
-Run `./dockerTask.sh` for more options (like how to run a development environment).
-
-In Windows, try `dockerTask.ps1` (feedback welcome).
-
-### Running the la-toolkit in an external server.
-
-You can run the la-toolkit in another server and redirect the ports via ssh like:
-
-```
- ssh -L 2010:127.0.0.1:2010 -L 2011:127.0.0.1:2011 -L 2012:127.0.0.1:2012 yourUser@yourRemoteServer -N -f
-```
-
-Currently we use a range of ports for the terms (2011-2100), so depending on the number of users using this instance of the la-toolkit you'll [need more port redirections](https://unix.stackexchange.com/a/589259).
-
-## Upgrade the toolkit
-
-> **Coming from 1.6.9 or earlier? Read
-> [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md) first.**
-> 1.7.0 ships MongoDB 8, which will not start on MongoDB 4 data files, so the
-> commands below are not enough on their own. That page also explains how to
-> check whether the backup you are counting on is real — the backup sidecar
-> used until 1.6.9 has been found writing empty archives — and which restore
-> command matches your dump format, since restoring an older dump wholesale
-> replaces the MongoDB accounts on the server.
-
-The `docker-compose.yml` pins the toolkit image to a version tag rather than using
-`:latest`, so upgrading is a deliberate act: edit the `image:` line, then run the
-commands below. Leaving it unpinned means the `watchtower` container can move you
-to a new major on its own, MongoDB included.
-
-> **`:latest` still points at 1.6.9, on purpose, for the whole 1.7.x series.**
->
-> 1.7.x ships MongoDB 8 and existing installations are on MongoDB 4, which is a
-> migration only you can decide to run — see
-> [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md). Moving `latest`
-> would hand that decision to the `watchtower` container in this compose file,
-> which polls hourly: every unpinned 1.6.9 installation would be upgraded within
-> the hour, on its own, into a database that will not start.
->
-> So `:latest` is frozen until the 1.6.x installations have had a chance to
-> migrate. **Pin the version you want.** Every 1.7.x image is published under both
-> spellings, `1.7.1` and `v1.7.1`, so either works.
-
-If you are on 1.7.0 and hit the install failures fixed in 1.7.1 — MongoDB init
-failing with `mongo: command not found`, or the toolkit looping on
-`Authentication failed` — note that `mongo-init.sh` and `docker-compose.yml` are
-files from this repository, not part of the image. Copying the current ones is
-enough for those two; only the fixes in the toolkit's own interface need the new
-image.
-
-Get the latest version of the la-toolkit with:
-
-```
-./dockerTask.sh update
-```
-
-or:
-
-```
-docker compose kill
-docker compose rm -f
-docker compose pull
-docker compose up -d
-```
-
-TODO: Add the update task to the Windows script.
-
-### Notes to upgrade to 1.1.X
-
-- Copy the new `docker-compose.yml` as it includes new images and configurations
-- Move your data to `/data/la-toolkit` and create an additional `/data/la-toolkit/mongo/`. If you want to use a different directories edit your `docker-compose.yml` volumes accordingly. You can also use symlinks.
-- Change the mongo db user/passwords before start the container.
-- A migration of your projects json configuration to mongo should be done at startup. Please verify that the `la-toolkit` start correctly. If not see the "Logs and debugging" section above.
-
-## Start from the sample project
+### Start from the sample project
 
 The (+) button offers "Add a sample LA project (docker-compose)": a ready three-host
 portal (`la-mh-1`, `la-mh-2`, `la-mh-3`) you can open, tune and deploy, instead of
 guessing a topology from an empty project.
 
-It is the layout the la-docker-compose CI really deploys, the one its Jenkinsfile calls
-`TOPOLOGY=default` and runs on every push (the `1host` and `2host` variants are
-manual-only matrix runs that skip half the services). It is derived from
-`topologies/base.lademo.yo-rc.json` in that repository (identity, ssh keys, private
-addressing and CI-only secrets stripped) and shipped in
-`assets/la-toolkit-templates.json`. Refresh it by hand from that file when the CI
-topology changes; the tests in `test/src/sample_template_test.dart` say what it must
-still import as.
-
-Note what it has turned off: this stack does not deploy standalone solr nor
-biocache-store, it indexes with pipelines + solrcloud. That is the thing a new user has
-no way to guess.
+It is the layout the la-docker-compose CI deploys on every push, so its placement and
+versions are known to work together. Note what it has turned off: this stack does not
+deploy standalone solr nor biocache-store, it indexes with pipelines + solrcloud. That
+is the thing a new user has no way to guess.
 
 The sample lands in its own `lademo-docker` configuration directory, and gets a `-1`,
-`-2`... suffix if that one is taken, so it can never share a directory with a portal you
+`-2`... suffix if that one is taken, so it never shares a directory with a portal you
 already have.
 
-## Drive the toolkit from an AI agent (MCP)
+### Import existing inventories
+
+If you were using inventories generated elsewhere, import them with the (+) button,
+then:
+
+- Tune the imported project with the Edit and Tune tools: add your servers' IPs, etc.
+  Tune has an "Advanced" mode, where the text area at the bottom takes your inventory's
+  `local-extras`.
+- Entering the Deploy tool generates new inventories and a new passwords file. Replace
+  that generated `local-passwords` with your old one, so the portal keeps its current
+  passwords.
+
+Inventories generated by la-docker-compose keep their docker leg on import: hosts listed
+in `LA_docker_compose_hostname` come back as docker-compose hosts with their services in
+the cluster, not as plain VMs.
+
+### Drive the toolkit from an AI agent (MCP)
 
 The toolkit can be operated from an AI agent (Claude Code, Claude Desktop or any
-[MCP](https://modelcontextprotocol.io) client) with requests such as "set up a test portal
-for example.com on these two servers" or "redeploy lademo and tell me what failed". The
-agent does not get a shell: it gets a fixed set of tools, served by
-[`packages/la_toolkit_mcp`](packages/la_toolkit_mcp/README.md), which call the same backend
-endpoints and the same project rules as the UI. Everything it does shows up in the UI and
-in the project history.
+[MCP](https://modelcontextprotocol.io) client) with requests such as "set up a test
+portal for example.com on these two servers" or "redeploy lademo and tell me what
+failed". The agent does not get a shell: it gets a fixed set of tools, served by
+[`packages/la_toolkit_mcp`](packages/la_toolkit_mcp/README.md), which call the same
+backend endpoints and the same project rules as the UI. Everything it does shows up in
+the UI and in the project history.
 
 What it can do:
 
 - List projects, show one, its runs and its lint warnings (the same ones the UI shows).
 - Check that a deploy can start: ssh keys, ssh and sudo, OS, disk space, and that the
   portal names resolve to the servers.
-- Create a new docker-compose portal on 1 to 3 hosts. It starts from a
-  [la-docker-compose](https://github.com/living-atlases/la-docker-compose) topology that
-  its CI deploys, so placement and versions are known to work together; only names,
-  domain and hosts change. It previews first and only stores the project when asked.
+- Create a new docker-compose portal on 1 to 3 hosts, starting from a
+  [la-docker-compose](https://github.com/living-atlases/la-docker-compose) topology its
+  CI deploys; only names, domain and hosts change. It previews first and only stores
+  the project when asked.
 - Deploy (dry run by default), follow the run, summarise the failed tasks, cancel it.
 
 Safety, in short: a real deploy needs two explicit arguments (`dryRun: false` and
@@ -292,119 +148,89 @@ machines and DNS stays out of scope: the agent checks them and says what is miss
 
 Setup and the full list of tools: [packages/la_toolkit_mcp/README.md](packages/la_toolkit_mcp/README.md).
 
-## Migrate your old inventories to the toolkit 
+## Maintenance
 
-If you were using other generated inventories, you can import it using the (+) button with some additional steps:
-- Tune your imported project in the Edit and Tune tools. For instance, add your servers IPs, etc. See that there is a "Advanced" mode. There you can copy in the bottom text area your inventory local-extras.
-- After enter in the Deploy Tool, some new inventories will be generated (and also a new password file). Substitute that generated local-password with your old one that you are using, to restore your passwords and not using new ones.
+### Upgrade the toolkit
 
-Inventories generated by la-docker-compose keep their docker leg on import: hosts listed
-in `LA_docker_compose_hostname` come back as docker-compose hosts with their services in
-the cluster, not as plain VMs.
+> **Coming from 1.6.9 or earlier? Read [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md)
+> first.** 1.7.x ships MongoDB 8, which will not start on MongoDB 4 data files.
 
-## Migrate your la-toolkit to other location
-
-You should:
-
-- copy [all your volumes](https://github.com/living-atlases/la-toolkit#data-directories) to the new server.
-- optionally, restore a recent backup written by the `mongo-db-backup` sidecar (see
-  `docker-compose.yml`). The command depends on the dump format, and one of them needs a
-  filter — a dump taken without one also carries the `admin` database, and restoring that
-  replaces the MongoDB accounts on the destination server, leaving every service with
-  credentials that no longer work:
-
-  ```bash
-  # current sidecar: a gzipped archive holding only la_toolkit
-  mongorestore -u la_toolkit_mongo_admin -p '<pass>' --authenticationDatabase admin \
-    --gzip --archive=mongo_la_toolkit_mongo_<date>.archive.gz
-
-  # an older dump directory: restore the one database, not everything in it
-  mongorestore -u la_toolkit_mongo_admin -p '<pass>' --authenticationDatabase admin \
-    --nsInclude 'la_toolkit.*' <your-backup-directory>
-  ```
-
-  See [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md) for how to tell the
-  formats apart and how to verify a dump is not empty before relying on it.
-
-## Logs and debugging
-
-Startup errors can be debuged running `docker compose` without `-d`:
-
-```
-docker compose up
-```
-
-For the dev profile:
-
-```
-docker compose --profile dev up
-```
-
-Runtime server errors during the use of the la-toolkit can be debugged looking the logs with:
-
-```
-docker logs la-toolkit
-```
-
-If the `la-toolkit` restart continuosly durint development, it can be debugged with:
-```
-docker run -it --network=la-toolkit_default --entrypoint /bin/bash  livingatlases/la-toolkit:latest -s
-```
-
-### A first start that failed has to be cleaned up before retrying
-
-If the very first `docker compose up` failed and `la-toolkit` keeps restarting with
-`MongoServerError: Authentication failed`, fixing the cause is not enough on its own.
-
-The mongo entrypoint runs the scripts in `/docker-entrypoint-initdb.d/` — which is
-where `mongo-init.sh` creates the toolkit's database user — **only against an empty
-data directory**. A single failed first start therefore leaves
-`/data/la-toolkit/mongo` initialized-but-userless, and every retry reuses it.
-
-Check whether the user is there:
+`docker-compose.yml` pins the toolkit image to a version tag rather than `:latest`, so
+upgrading is a deliberate act: edit the `image:` line to the version you want, then:
 
 ```bash
-docker compose exec mongo mongosh -u la_toolkit_user -p la_toolkit_changeme \
-  --authenticationDatabase la_toolkit --quiet --eval 'db.getName()'
+docker compose pull
+docker compose up -d
 ```
 
-If it fails to authenticate, wipe the directory and start again:
+Leaving the image unpinned lets the `watchtower` container move you to a new major on
+its own, MongoDB included. Notes for specific versions, and why `:latest` is frozen at
+1.6.9, are in [Upgrading la-toolkit](docs/upgrading.md).
+
+### Move the toolkit to another server
+
+- Copy all your [data directories](#data-directories) to the new server.
+- Optionally, restore a recent backup written by the `mongo-db-backup` sidecar. The
+  command depends on the dump format, and the wrong one replaces the MongoDB accounts on
+  the destination: see [Restoring a backup](docs/upgrading.md#restoring-a-backup).
+
+### Logs and troubleshooting
 
 ```bash
-docker compose down && sudo rm -rf /data/la-toolkit/mongo/* && docker compose up -d
+docker compose up        # startup errors: run in the foreground, without -d
+docker logs la-toolkit   # errors while using the toolkit
 ```
 
-**This destroys the database.** It is only the right move on an installation that
-never came up in the first place. If you have projects in there, do not run it —
-take a dump and follow [Upgrading past MongoDB 4](docs/mongodb-4-to-8-upgrade.md)
-instead.
+Errors in the interface itself usually show up in the
+[browser devtools console](https://developer.chrome.com/docs/devtools/open/).
 
-In some cases the [browser devtools console](https://developer.chrome.com/docs/devtools/open/) can show some info about browser code errors. 
+If `la-toolkit` keeps restarting with `Authentication failed` after a first start that
+failed, see [Troubleshooting](docs/troubleshooting.md): the mongo data directory has to
+be cleaned up before retrying.
 
-Please [fill an issue](https://developer.chrome.com/docs/devtools/open/) with this information if you encounter some problem.
+Please [open an issue](https://github.com/living-atlases/la-toolkit/issues) with this
+information if you hit a problem.
 
 ## Development
 
-This frontend is developed using Flutter Web.
+### How the code is organized
 
-A few resources to get you started if your are new to Flutter:
+This repository is the frontend of the toolkit. It uses
+[la-toolkit-backend](https://github.com/living-atlases/la-toolkit-backend) as backend,
+and both are packaged together in a docker image with all the dependencies needed to
+deploy and maintain a portal.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-- [Flutter Web support](https://flutter.dev/web)
+| Path | What |
+|---|---|
+| `lib/` | The Flutter web app (UI, redux state, calls to the backend). |
+| `packages/la_toolkit_core/` | The project model and its rules, in plain Dart (no Flutter): services, servers, clusters, validation, the lint the UI shows, generation of the `.yo-rc.json`, and the synthesis of new projects. The app and the MCP server both use it, so they judge a project the same way. See its [README](packages/la_toolkit_core/README.md). |
+| `packages/la_toolkit_mcp/` | An MCP server to drive the toolkit from an AI agent. See [Drive the toolkit from an AI agent](#drive-the-toolkit-from-an-ai-agent-mcp). |
 
-### Using flutter web
+### Environment
 
-https://flutter.dev/docs/get-started/web
+The frontend is written in [Flutter](https://flutter.dev/web) (stable channel):
+
+```bash
+flutter channel stable
+flutter upgrade
 ```
-$ flutter channel stable
-$ flutter upgrade
+
+During development you also need [the backend](https://github.com/living-atlases/la-toolkit-backend)
+running, and a docker container of the toolkit named `la-toolkit`. The `dev` compose
+profile starts the dev image on port 20010 and mongo-express on port 9081:
+
+```bash
+docker compose --profile dev up -d
+docker compose --profile dev build && docker compose --profile dev up -d   # rebuild the dev image
 ```
 
-### Autogeneration of code
+### Code generation
 
-There are some code (like the json serialization) that should be generated when some model changes. The models live in `packages/la_toolkit_core`, so run it there (and at the root for the app's own state):
-```
+Some code (like the json serialization) has to be regenerated when a model changes. The
+models live in `packages/la_toolkit_core`, so run it there, and at the root for the
+app's own state:
+
+```bash
 cd packages/la_toolkit_core && dart run build_runner build --delete-conflicting-outputs
 flutter pub run build_runner watch --delete-conflicting-outputs
 ```
@@ -413,7 +239,7 @@ flutter pub run build_runner watch --delete-conflicting-outputs
 
 There are three suites, one per package:
 
-```
+```bash
 cd packages/la_toolkit_core && dart test   # the model, lint and synthesis (most of the tests)
 cd packages/la_toolkit_mcp && dart test    # the MCP server, against a fake backend
 flutter test                               # the app: widgets and what needs its own code
@@ -422,168 +248,57 @@ flutter test                               # the app: widgets and what needs its
 Run the core ones from inside `packages/la_toolkit_core`: some fixtures are read with
 paths relative to it. `build.sh` and `deploy-demo.sh` run the core suite before
 `flutter test`.
-### Backend during development
 
-During development you'll need to have running [the backend](https://github.com/living-atlases/la-toolkit-backend) and also a docker container of the la-toolkit (with this name).
- 
-### Flutter build
+### Build
 
-We need to have the frontend build prior to build the docker image (`build.sh` does this, with the tests first):
+The web build has to exist before building the docker image (`build.sh` does this, with
+the tests first):
 
-```
+```bash
 (cd packages/la_toolkit_core && dart test) && flutter test && flutter build web
+docker build . -f ./docker/u22/Dockerfile -t la-toolkit/u22
 ```
 
-### Docker image build
-
-You will need to build the flutter web as described below prior to build a `la-toolkit` image.
-
-```
-docker build . -f ./docker/u22/Dockerfile -t la-toolkit/u22 
-```
-
-For an actual release — where the order of the steps matters, and where forgetting
-one has already shipped a broken combination to users — follow
+For an actual release, where the order of the steps matters and forgetting one has
+already shipped a broken combination to users, follow
 [Releasing la-toolkit](docs/release-checklist.md).
 
-## Developed so far and Roadmap
+### Refreshing the sample project
 
-- [X] Basic configuration of LA Portals
-- [X] Tunning of LA configurations with advanced mode
-- [X] Software compatibility and other project checks and recommendations
-- [X] Branding theme selection
-- [X] Helper for configuration of ssh
-- [X] Connectivity and other servers checks
-- [X] Generation and update of inventories
-- [X] CAS additional tasks (like keys generation)
-- [X] Map helper to configure collections, spatial and regions homepages
-- [X] Ansible deployment of portals
-- [X] Inline help and descriptive commands that are executed for educational purposes
-- [X] Terminal with deployment environment
-- [X] Ansible use stats (number of tasks executed with success or failed,...)
-- [X] Import of previous inventories
-- [X] Template projects of existing LA Portals
-- [X] Logs store and replay previous deploy tasks
-- [X] Ansible task errors summary
-- [X] Software dependencies release checking and notification of available upgrades
-- [X] Pre-deploy tasks (wip)
-- [X] Portal status tool
-- [X] Branding deployment
-- [X] Post-deploy tasks
-- [X] Support additional hubs configuration
-- [X] Services redundancy
-- [X] Drive the toolkit from an AI agent (MCP), including creating new docker-compose portals
-- [X] Better ALA software versions control
-- [X] LA pipelines support
-- [X] Concurrent user support
-- [ ] SSL support via letsencrypt (work in progress)
-- [ ] Toolkit users management (work in progress)
-- [ ] Improve ssh keys management
-
+The [sample project](#start-from-the-sample-project) is the la-docker-compose CI's
+`TOPOLOGY=default` (the `1host` and `2host` variants are manual-only matrix runs that
+skip half the services). It is derived from `topologies/base.lademo.yo-rc.json` in that
+repository, with identity, ssh keys, private addressing and CI-only secrets stripped,
+and shipped in `assets/la-toolkit-templates.json`. Refresh it by hand from that file
+when the CI topology changes; `test/src/sample_template_test.dart` says what it must
+still import as.
 
 ## Screenshots
 
-### Loading:
+<details>
+<summary>Show screenshots</summary>
 
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s1.png)
+| | |
+|---|---|
+| Loading<br><img src="screenshots/s1.png" width="400"> | Intro page<br><img src="screenshots/s2.png" width="400"> |
+| Intro continuation<br><img src="screenshots/s3.png" width="400"> | List of projects<br><img src="screenshots/s4.png" width="400"> |
+| Project tools<br><img src="screenshots/s5.png" width="400"> | Editing the project<br><img src="screenshots/s6.png" width="400"> |
+| Service definition<br><img src="screenshots/s7.png" width="400"> | Theme selection<br><img src="screenshots/s15.png" width="400"> |
+| Services in servers<br><img src="screenshots/s8.png" width="400"> | Servers connectivity<br><img src="screenshots/s9.png" width="400"> |
+| Project tuning<br><img src="screenshots/s10.png" width="400"> | Drawer with links to each service and admin interface<br><img src="screenshots/s11.png" width="400"> |
+| SSH keys<br><img src="screenshots/s12.png" width="400"> | SSH gateways<br><img src="screenshots/s22.png" width="400"> |
+| Configuration lint warnings<br><img src="screenshots/s21.png" width="400"> | Testing connectivity with the servers<br><img src="screenshots/s13.png" width="400"> |
+| Deployment<br><img src="screenshots/s16.png" width="400"> | Deployment ansible terminal<br><img src="screenshots/s17.png" width="400"> |
+| Deployment results (success)<br><img src="screenshots/s19.png" width="400"> | Deployment results (failed)<br><img src="screenshots/s18.png" width="400"> |
+| Deployment history, with repeat<br><img src="screenshots/s20.png" width="400"> | Software upgrade checks<br><img src="screenshots/s23.png" width="400"> |
+| Software releases selection<br><img src="screenshots/s24.png" width="400"> | Console for the intrepid<br><img src="screenshots/s14.png" width="400"> |
 
-### Intro page:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s2.png)
-
-### Intro continuation:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s3.png)
-
-### List of created projects:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s4.png)
-
-### Project Tools:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s5.png)
-
-### Editing the project:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s6.png)
-
-### Service definition:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s7.png)
-
-### Theme selection:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s15.png)
-
-### Services in servers:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s8.png)
-
-### Servers connectivity:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s9.png)
-
-### Project tunning:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s10.png)
-
-### Project drawer with links to each service and admin interfaces:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s11.png)
-
-### SSH keys administration:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s12.png)
-
-### SSH Gateways configuration:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s22.png)
-
-### Project configuration lint warnings
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s12.png)
-
-### Testing connectivity with the project servers:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s13.png)
-
-### Deployment:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s16.png)
-
-### Deployment Ansible terminal:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s17.png)
-
-### Deployment results (success):
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s19.png)
-
-### Deployment results (failed):
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s18.png)
-
-### History of deployments with repeat function 
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s20.png)
-
-### Software upgrade checks
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s23.png)
-
-### Software releases selection
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s24.png)
-
-### Console for the intrepids:
-
-![](https://raw.github.com/living-atlases/la-toolkit/master/screenshots/s14.png)
-
+</details>
 
 ## License
 
 MPL © [Living Atlases](https://living-atlases.gbif.org)
 
-### Others
+Others:
 
 - `check_by_ssh` from https://github.com/nagios-plugins/nagios-plugins/ under GNU License
