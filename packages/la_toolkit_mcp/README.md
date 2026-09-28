@@ -19,10 +19,11 @@ shows up in the project history like any other.
 | `la_get_project` | Servers, releases, which services run where, recent runs | no |
 | `la_lint_project` | The warnings of the UI lint panel: placement, cluster sizes, services that need each other, releases the dependency matrix rejects. Never `clean` when the matrix could not be read | no |
 | `la_create_project` | A new docker-compose portal on 1-3 hosts from domain, names, hosts and ssh key, built on a la-docker-compose topology its CI checks (`1host`, `2host`, `default-3host` by host count, or the one named). Previews by default (validation, lint, public names, the `skipServices` to deploy with); `save` + `confirm` store it | only with `save` + `confirm`: adds the project to the toolkit, touches no server |
+| `la_set_releases` | Change the generator / la-docker-compose (tag or `upstream`) / ala-install releases a portal pins. Previews by default (before/after, generator configuration keys that change, hubs kept, lint); `save` + `confirm` back the project up to `~/.cache/la_toolkit_mcp/backups/` and store it | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_list_runs` | Command history, newest first | no |
 | `la_check_connectivity` | ping, ssh, sudo and OS of every server | read-only ssh on the servers; saves the results on the project, like the UI |
-| `la_check_preconditions` | Blockers before a deploy, for the servers that carry services: ssh key in the toolkit, ssh and sudo, Ubuntu >= 22.04, disk space (`/`, `/data`, `/var/lib/docker`), portal host names resolve | read-only ssh; saves connectivity results like the UI |
-| `la_deploy` | Dry run (default) or real deploy | see below |
+| `la_check_preconditions` | Blockers before a deploy, for the servers that carry services (or only `servers`, or one `leg` of a hybrid portal): ssh key in the toolkit, ssh and sudo, Ubuntu >= 22.04, disk space (`/`, `/data`, `/var/lib/docker`), portal host names resolve | read-only ssh; saves connectivity results like the UI |
+| `la_deploy` | Dry run (default) or real deploy; a hybrid portal needs `leg: "docker"` or `leg: "vm"` | see below |
 | `la_deploy_status` | running / success / failed / aborted / cancelled, per-host recap, current task | no |
 | `la_deploy_failures` | Failed tasks with their error, never the full log | no |
 | `la_deploy_cancel` | Stops a running deploy; needs `confirm: true` | yes |
@@ -48,6 +49,14 @@ shows up in the project history like any other.
   whose inventories were never generated ends with exit 127 and a hint to retry with
   `prepare: true`. Either way the tool refuses to prepare while any run of the last 24 h
   is still going.
+- **Hybrid portals deploy one leg at a time**, built by the core exactly as the UI builds
+  them (`buildDockerLegDeployCmd` / `buildVmLegDeployCmd`). The docker leg never reaches a
+  VM: `limitToServers` defaults to the hosts that carry a compose cluster and any other
+  server is refused, since on a hybrid portal the VMs are the ones serving. The limit is
+  sent as the inventory aliases `site.yml` plays (`<server>.docker_compose`): a bare server
+  name matches no host, and ansible then skips everything with exit 0.
+- A run in which no host matched (`skipping: no hosts matched`, no task run) is reported
+  as `failed` with a hint, never as a success.
 - The ttyd viewer the backend starts for every run is closed right away. The deploy is
   detached and does not depend on it; left open, each one would hold a port of the
   2011-2100 pool.
@@ -93,7 +102,6 @@ out.
 
 ### Not supported yet
 
-- Hybrid projects (VM + docker-compose). The UI splits them into two legs; use it.
 - A docker-compose hub on its own: it deploys as part of its portal's stack.
 - Service health checks (`test-host-services`): the catalogue of ports and URLs is now
   in the core (`BasicService.tcp`, `ProdServiceDesc`,

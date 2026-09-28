@@ -142,6 +142,11 @@ class BackendClient {
     return (list as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
+  /// Stores the changes of an existing project ([LAProject.toApiJson] body),
+  /// as `Api.updateProject` does. Answers the whole project list.
+  Future<void> updateProject(Map<String, dynamic> project) =>
+      _send('PATCH', 'update-project', <String, Object?>{'project': project});
+
   Future<void> alaInstallSelect(String version) =>
       _get('ala-install-select/${Uri.encodeComponent(version)}');
 

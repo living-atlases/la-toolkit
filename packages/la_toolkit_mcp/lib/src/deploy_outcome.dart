@@ -66,20 +66,34 @@ Json summarizeRun(Json entry, Json cmdResults) {
   final int code = (cmdResults['code'] as num?)?.toInt() ?? unknownExitCode;
   final bool running = cmdResults['running'] == true;
   final String log = stripAnsi(decodeLog(cmdResults['logs']));
+  // ansible exits 0 when --limit (or the play's group) matches no host: the
+  // run did nothing, which must never read as a successful deploy.
+  final bool nothingRan = !running && r.isEmpty && ranNoHost(log);
   return <String, dynamic>{
     'runId': entry['id'],
     'desc': entry['desc'],
     'started': entry['logsSuffix'],
-    'verdict': verdict(code: code, running: running, failures: _failures(r)),
+    'verdict': nothingRan
+        ? 'failed'
+        : verdict(code: code, running: running, failures: _failures(r)),
+    if (nothingRan)
+      'hint':
+          'No host matched: ansible skipped every play and changed nothing. '
+          'Check limitToServers against the inventory host names.',
     if (!running) 'exitCode': code,
     if (cmdResults['duration'] is num)
       'durationMin': ((cmdResults['duration'] as num) / 60000).round(),
     if (r.isNotEmpty) 'recap': r,
     if (running) 'currentTask': lastTask(log),
     if (!running && log.trim().isEmpty) 'hint': noOutputHint(code),
+
     'command': entry['rawCmd'],
   };
 }
+
+/// Whether ansible skipped plays for lack of hosts and ran no task at all.
+bool ranNoHost(String log) =>
+    log.contains('skipping: no hosts matched') && lastTask(log) == null;
 
 /// Why a finished run can have printed nothing at all.
 String noOutputHint(int code) => code == 127

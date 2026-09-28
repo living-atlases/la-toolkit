@@ -16,6 +16,7 @@ import 'deploy_request.dart';
 import 'lint.dart';
 import 'preconditions.dart';
 import 'projects.dart';
+import 'releases.dart';
 
 const String _instructions = '''
 Drives an LA Toolkit (Living Atlas deployment tool) through its backend API.
@@ -43,6 +44,11 @@ with the skipServices the preview recommends).
 4. Poll la_deploy_status (every few minutes, not seconds). When the verdict is
    failed, la_deploy_failures gives the failed tasks without the full log.
 
+Hybrid portals (services on VMs and on docker-compose) deploy one leg per
+run: la_deploy with leg: "docker" (compose hosts only) or leg: "vm".
+la_set_releases changes the releases a portal pins (preview, then save and
+confirm); the next la_deploy with prepare: true applies them.
+
 Never pass confirm: true without the user's explicit agreement for that run.''';
 
 final Schema _projectArg = Schema.string(
@@ -65,7 +71,14 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     required this.backend,
     this.dryRunWait,
     Future<List<String>> Function(String host)? resolve,
+    Directory? backupDir,
   }) : resolve = resolve ?? _lookup,
+       backupDir =
+           backupDir ??
+           Directory(
+             '${Platform.environment['HOME'] ?? Directory.systemTemp.path}'
+             '/.cache/la_toolkit_mcp/backups',
+           ),
        super.fromStreamChannel(
          implementation: Implementation(name: 'la-toolkit', version: '0.1.0'),
          instructions: _instructions,
@@ -74,6 +87,9 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
   }
 
   final BackendClient backend;
+
+  /// Where la_set_releases leaves the project as it was before saving.
+  final Directory backupDir;
 
   /// Resolves a host name to its addresses, empty when it does not resolve.
   final Future<List<String>> Function(String host) resolve;
@@ -196,7 +212,17 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           'commands over ssh; the connectivity results are saved on the project, '
           'as the UI does.',
       Schema.object(
-        properties: <String, Schema>{'project': _projectArg},
+        properties: <String, Schema>{
+          'project': _projectArg,
+          'servers': _tokenList(
+            'Only these servers (by name; default: every server with services).',
+          ),
+          'leg': Schema.string(
+            description:
+                'Hybrid portals: "docker" checks only the hosts that carry a '
+                'docker-compose cluster, "vm" only the others.',
+          ),
+        },
         required: <String>['project'],
       ),
       openWorld: true,
@@ -274,8 +300,43 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     );
 
     _tool(
+      'la_set_releases',
+      'Change the generator / la-docker-compose / ala-install releases a '
+          'portal pins, as the Tune page does. Previews by default: the '
+          'releases before and after, the generator configuration keys that '
+          'change, the hubs kept and the lint. save: true AND confirm: true '
+          'store it (after writing a backup of the project as it was); only '
+          'once the user agreed. Touches no server: the next la_deploy with '
+          'prepare: true checks the new releases out and regenerates.',
+      Schema.object(
+        properties: <String, Schema>{
+          'project': _projectArg,
+          'generatorRelease': Schema.string(
+            description: 'generator-living-atlas version, e.g. 1.9.11.',
+          ),
+          'dockerComposeRelease': Schema.string(
+            description:
+                'la-docker-compose tag, or "upstream" for its main branch.',
+          ),
+          'alaInstallRelease': Schema.string(
+            description: 'ala-install tag, or "upstream".',
+          ),
+          'save': Schema.bool(description: 'Store it (default false).'),
+          'confirm': Schema.bool(
+            description:
+                'Required with save: true. Set it only when the user agreed.',
+          ),
+        },
+        required: <String>['project'],
+      ),
+      openWorld: true,
+      _setReleases,
+    );
+
+    _tool(
       'la_deploy',
-      'Deploy a project with ansible (docker-compose or VM, not hybrid). '
+      'Deploy a project with ansible (docker-compose, VM, or one leg of a '
+          'hybrid portal). '
           'dryRun defaults to true and only prints the command. A real deploy '
           'needs dryRun: false AND confirm: true, and must only be requested after '
           'the user explicitly agreed. Returns a runId at once; poll la_deploy_status.',
@@ -288,6 +349,13 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           'confirm': Schema.bool(
             description:
                 'Required with dryRun: false. Set it only when the user agreed to this deploy.',
+          ),
+          'leg': Schema.string(
+            description:
+                'Hybrid portals only, required there: "docker" runs '
+                'la-docker-compose on the compose hosts only (never a VM; '
+                'limitToServers defaults to them), "vm" runs ala-install on '
+                'the VM services. Built as the UI builds each leg.',
           ),
           'services': _tokenList(
             'VM deploys: services to deploy (default all). Not allowed for docker-compose.',
@@ -652,6 +720,16 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
   }
 
   Future<String> _newestComposeRelease() async {
+    final List<String> tags = await _composeReleases();
+    if (tags.isEmpty) {
+      throw InvalidRequest('la-docker-compose has no release tags.');
+    }
+    return tags.first;
+  }
+
+  /// la-docker-compose tags, newest first. GitHub lists tags by name, so
+  /// v1.10.0 would come after v1.9.0: sort them as versions.
+  Future<List<String>> _composeReleases() async {
     final List<dynamic> tags =
         json.decode(
               await backend.fetchText(
@@ -662,10 +740,117 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
               ),
             )
             as List<dynamic>;
-    if (tags.isEmpty) {
-      throw InvalidRequest('la-docker-compose has no release tags.');
+    return sortReleases(<String>[
+      for (final dynamic t in tags) (t as Json)['name'] as String,
+    ]);
+  }
+
+  Future<Object?> _setReleases(Map<String, Object?> a) async {
+    final bool save = a['save'] == true;
+    if (save && a['confirm'] != true) {
+      throw InvalidRequest(
+        'save: true changes the releases the next deploy uses: pass '
+        'confirm: true, and only once the user agreed to it.',
+      );
     }
-    return (tags.first as Json)['name'] as String;
+    final ProjectRef ref = await _resolve(a);
+    if (ref.isHub) {
+      throw InvalidRequest(
+        '"${ref.dirName}" is a hub: its inventories are generated with its '
+        'portal "${ref.parent!['dirName']}". Change the portal releases.',
+      );
+    }
+    String? arg(String k) {
+      final Object? v = a[k];
+      if (v == null) return null;
+      if (v is! String || !safeToken.hasMatch(v)) {
+        throw InvalidRequest('`$k` "$v" is not a release name.');
+      }
+      return v;
+    }
+
+    final String? gen = arg('generatorRelease');
+    final String? compose = arg('dockerComposeRelease');
+    final String? alaInstall = arg('alaInstallRelease');
+    if (gen == null && compose == null && alaInstall == null) {
+      throw InvalidRequest(
+        'Give at least one of generatorRelease, dockerComposeRelease, '
+        'alaInstallRelease.',
+      );
+    }
+    Future<void> check(
+      String what,
+      String? v,
+      Future<List<String>> Function() known, {
+      bool upstream = false,
+    }) async {
+      if (v == null || (upstream && v == 'upstream')) return;
+      final List<String> list = await known();
+      if (!list.contains(v)) {
+        throw InvalidRequest(
+          'Unknown $what release "$v". Newest: ${list.take(5).join(', ')}'
+          '${upstream ? ', upstream' : ''}.',
+        );
+      }
+    }
+
+    await check('generator-living-atlas', gen, backend.generatorVersions);
+    await check('la-docker-compose', compose, _composeReleases, upstream: true);
+    await check('ala-install', alaInstall, _alaInstallReleases, upstream: true);
+
+    final LAProject p = projectModel(ref);
+    final Json before = <String, dynamic>{
+      'generator': p.generatorRelease,
+      'dockerCompose': p.dockerComposeRelease,
+      'alaInstall': p.alaInstallRelease,
+    };
+    if (gen != null) p.generatorRelease = gen;
+    if (compose != null) p.dockerComposeRelease = compose;
+    if (alaInstall != null) p.alaInstallRelease = alaInstall;
+    final Json body = p.toApiJson();
+    final Json lint = await _lintModel(
+      p,
+      hasSshKeys: (await backend.sshKeys()).isNotEmpty,
+    );
+    final Json preview = <String, dynamic>{
+      'project': ref.dirName,
+      'before': before,
+      'after': <String, dynamic>{
+        'generator': p.generatorRelease,
+        'dockerCompose': p.dockerComposeRelease,
+        'alaInstall': p.alaInstallRelease,
+      },
+      'genConfChanges': genConfDiff(
+        ref.project['genConf'] as Json? ?? const <String, dynamic>{},
+        body['genConf'] as Json,
+      ),
+      'hubs': <String>[
+        for (final LAProject h in p.hubs) h.dirName ?? h.shortName,
+      ],
+      'lint': lint,
+    };
+    if (!save) return <String, dynamic>{...preview, 'saved': false};
+
+    await backupDir.create(recursive: true);
+    final String stamp = DateTime.now().toUtc().toIso8601String().replaceAll(
+      RegExp(r'[:.]'),
+      '-',
+    );
+    final File backup = File(
+      '${backupDir.path}/${ref.dirName}-${ref.id}-$stamp.json',
+    );
+    await backup.writeAsString(
+      const JsonEncoder.withIndent('  ').convert(ref.project),
+    );
+    await backend.updateProject(body);
+    return <String, dynamic>{
+      ...preview,
+      'saved': true,
+      'backup': backup.path,
+      'next':
+          'la_deploy with prepare: true checks out these releases and '
+          'regenerates the inventories.',
+    };
   }
 
   Future<Object?> _preconditions(Map<String, Object?> a) async {
@@ -675,10 +860,35 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         ref.isHub &&
         (ref.project['servers'] as List<dynamic>? ?? <dynamic>[]).isEmpty;
     final Json target = onParent ? ref.parent! : ref.project;
-    final List<Json> servers = serversWithServices(target);
+    final List<Json> withServices = serversWithServices(target);
+    final Object? leg = a['leg'];
+    if (leg != null && leg != 'docker' && leg != 'vm') {
+      throw InvalidRequest('`leg` must be "docker" or "vm".');
+    }
+    final List<String> composeHosts = composeHostNames(target);
+    final List<String> only = a['servers'] == null
+        ? <String>[]
+        : (a['servers']! as List<dynamic>).cast<String>();
+    final List<String> unknown = only
+        .where((String n) => !withServices.any((Json s) => s['name'] == n))
+        .toList();
+    if (unknown.isNotEmpty) {
+      throw InvalidRequest(
+        'No server with services named ${unknown.join(', ')} in '
+        '"${target['dirName']}".',
+      );
+    }
+    final List<Json> servers = withServices.where((Json s) {
+      final String n = s['name'] as String;
+      if (only.isNotEmpty && !only.contains(n)) return false;
+      if (leg == 'docker') return composeHosts.contains(n);
+      if (leg == 'vm') return !composeHosts.contains(n);
+      return true;
+    }).toList();
     if (servers.isEmpty) {
       throw InvalidRequest(
-        '"${target['dirName']}" has no servers with services assigned.',
+        '"${target['dirName']}" has no servers with services assigned'
+        '${leg != null || only.isNotEmpty ? ' among the ones asked for' : ''}.',
       );
     }
     final List<String> names = servers

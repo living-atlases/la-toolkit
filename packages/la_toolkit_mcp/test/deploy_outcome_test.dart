@@ -195,4 +195,31 @@ void main() {
     expect(s.containsKey('exitCode'), isFalse);
     expect(s['currentTask'], isNotNull);
   });
+
+  test('a run whose limit matched no host is a failure, not a success', () {
+    const String log = '''
+PLAY [docker_compose] **********************************************************
+skipping: no hosts matched
+
+PLAY RECAP *********************************************************************
+''';
+    final Json s = summarizeRun(run('r', 1), <String, dynamic>{
+      'code': 0,
+      'running': false,
+      'results': <dynamic>[],
+      'logs': b64(log),
+    });
+    expect(s['verdict'], 'failed');
+    expect(s['hint'], contains('No host matched'));
+    // A run that did work keeps its verdict.
+    expect(
+      summarizeRun(run('r', 1), <String, dynamic>{
+        'code': 0,
+        'running': false,
+        'results': <dynamic>[],
+        'logs': b64('$log\nTASK [x] ***\nok: [la-1.docker_compose]\n'),
+      })['verdict'],
+      isNot('failed'),
+    );
+  });
 }

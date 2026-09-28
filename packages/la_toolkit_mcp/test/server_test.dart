@@ -23,6 +23,7 @@ class _Backend {
   bool noDiskEndpoint = false;
   final List<Json> ansiblewBodies = <Json>[];
   final List<Json> addedProjects = <Json>[];
+  final List<Json> updatedProjects = <Json>[];
   Json? sshConfBody;
 
   /// GitHub: la-docker-compose tags and files, the dependency matrix (404, so
@@ -160,6 +161,9 @@ class _Backend {
           (body()!['projects'] as List<dynamic>).cast<Json>(),
         );
         return _json(<String, dynamic>{'projects': projects});
+      case 'update-project':
+        updatedProjects.add(body()!['project'] as Json);
+        return _json(<String, dynamic>{'projects': projects});
       case 'gen-ssh-conf':
         sshConfBody = body();
         return http.Response('', 200);
@@ -191,9 +195,12 @@ class _Backend {
 void main() {
   late _Backend fake;
   late ServerConnection conn;
+  late Directory backups;
 
   setUp(() async {
     fake = _Backend();
+    backups = Directory.systemTemp.createTempSync('la_mcp_backups');
+    addTearDown(() => backups.deleteSync(recursive: true));
     final StreamController<String> toServer = StreamController<String>();
     final StreamController<String> toClient = StreamController<String>();
     final LaToolkitMcpServer server = LaToolkitMcpServer(
@@ -203,6 +210,7 @@ void main() {
         client: fake.client,
       ),
       dryRunWait: const Duration(seconds: 2),
+      backupDir: backups,
       resolve: (String host) async =>
           host == 'collections.example.com' ? <String>['10.0.0.5'] : <String>[],
     );
@@ -603,5 +611,116 @@ void main() {
         expect(fake.sshConfBody!['user'], 'ubuntu');
       },
     );
+  });
+
+  group('hybrid portal', () {
+    setUp(() => fake.projects.add(hybridPortal()));
+
+    test('la_deploy without a leg is refused before the backend', () async {
+      final CallToolResult r = await call('la_deploy', <String, Object?>{
+        'project': 'Hybrid',
+      });
+      expect(r.isError, isTrue);
+      expect(text(r), contains('leg'));
+      expect(fake.ansiblewBodies, isEmpty);
+    });
+
+    test('the docker leg only reaches the compose host', () async {
+      final CallToolResult r = await call('la_deploy', <String, Object?>{
+        'project': 'Hybrid',
+        'leg': 'docker',
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json cmd = fake.ansiblewBodies.single['cmd'] as Json;
+      expect(cmd['dockerCompose'], isTrue);
+      expect(cmd['limitToServers'], <String>['dc1.docker_compose']);
+    });
+
+    test(
+      'preconditions of the docker leg check only the compose host',
+      () async {
+        await call('la_check_preconditions', <String, Object?>{
+          'project': 'Hybrid',
+          'leg': 'docker',
+        });
+        expect(fake.diskNames, <String>['dc1']);
+        final CallToolResult bad = await call(
+          'la_check_preconditions',
+          <String, Object?>{
+            'project': 'Hybrid',
+            'servers': <String>['nope'],
+          },
+        );
+        expect(bad.isError, isTrue);
+      },
+    );
+  });
+
+  group('la_set_releases', () {
+    setUp(() => fake.projects.add(hybridPortal()));
+
+    test('previews by default and stores nothing', () async {
+      final CallToolResult r = await call('la_set_releases', <String, Object?>{
+        'project': 'Hybrid',
+        'generatorRelease': '1.8.33',
+        'dockerComposeRelease': 'upstream',
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['saved'], isFalse);
+      expect((out['before'] as Json)['generator'], '1.8.32');
+      expect((out['after'] as Json)['generator'], '1.8.33');
+      expect((out['after'] as Json)['dockerCompose'], 'upstream');
+      expect(out['genConfChanges'], contains('changed'));
+      expect(fake.updatedProjects, isEmpty);
+      expect(backups.listSync(), isEmpty);
+    });
+
+    test('save needs confirm', () async {
+      final CallToolResult r = await call('la_set_releases', <String, Object?>{
+        'project': 'Hybrid',
+        'generatorRelease': '1.8.33',
+        'save': true,
+      });
+      expect(r.isError, isTrue);
+      expect(text(r), contains('confirm'));
+      expect(fake.updatedProjects, isEmpty);
+    });
+
+    test('unknown releases are refused', () async {
+      for (final Map<String, Object?> bad in <Map<String, Object?>>[
+        <String, Object?>{'generatorRelease': '9.9.9'},
+        <String, Object?>{'dockerComposeRelease': 'v0.0.1'},
+        <String, Object?>{'generatorRelease': r'$(id)'},
+        <String, Object?>{},
+      ]) {
+        final CallToolResult r = await call(
+          'la_set_releases',
+          <String, Object?>{'project': 'Hybrid', ...bad},
+        );
+        expect(r.isError, isTrue, reason: '$bad');
+      }
+      expect(fake.updatedProjects, isEmpty);
+    });
+
+    test('save + confirm backs the project up, then stores it', () async {
+      final CallToolResult r = await call('la_set_releases', <String, Object?>{
+        'project': 'Hybrid',
+        'generatorRelease': '1.8.33',
+        'dockerComposeRelease': 'v1.9.0',
+        'save': true,
+        'confirm': true,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      final Json stored = fake.updatedProjects.single;
+      expect(stored['generatorRelease'], '1.8.33');
+      expect(stored['dockerComposeRelease'], 'v1.9.0');
+      expect(stored['genConf'], isA<Map<String, dynamic>>());
+      final File backup = File(out['backup'] as String);
+      final Json old = json.decode(backup.readAsStringSync()) as Json;
+      expect(old['generatorRelease'], '1.8.32');
+      expect(old['dockerComposeRelease'], 'v1.5.1');
+    });
   });
 }

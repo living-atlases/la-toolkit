@@ -141,17 +141,109 @@ void main() {
     });
   });
 
-  test('refuses hybrid projects', () {
-    expect(
-      () => build(project(vm: true), <String, Object?>{}),
-      throwsA(
-        isA<InvalidRequest>().having(
-          (InvalidRequest e) => e.message,
-          'message',
-          contains('hybrid'),
-        ),
+  group('hybrid', () {
+    Matcher refusal(String text) => throwsA(
+      isA<InvalidRequest>().having(
+        (InvalidRequest e) => e.message,
+        'message',
+        contains(text),
       ),
     );
+
+    test('needs a leg', () {
+      expect(
+        () => build(project(vm: true), <String, Object?>{}),
+        refusal('leg'),
+      );
+      expect(
+        () => build(hybridPortal(), <String, Object?>{'leg': 'both'}),
+        refusal('"docker" or "vm"'),
+      );
+    });
+
+    test('the docker leg is built as in the UI, on the compose hosts only', () {
+      final DeployRequest r = build(
+        hybridPortal(vmOnComposeHost: <String>['logger']),
+        <String, Object?>{
+          'leg': 'docker',
+          'skipServices': <String>['cas'],
+        },
+      );
+      expect(r.cmd['dockerCompose'], isTrue);
+      expect(r.cmd['deployServices'], <String>['all']);
+      // Never the VM: limitToServers defaults to the compose hosts.
+      expect(r.cmd['limitToServers'], <String>['dc1.docker_compose']);
+      // User skips expanded to their sub-services, plus the VM services that
+      // share the compose host (la-docker-compose enables them by group).
+      expect(
+        r.cmd['skipServices'],
+        containsAll(<String>['cas', 'userdetails', 'apikey', 'logger']),
+      );
+      expect(r.desc, contains('docker leg'));
+    });
+
+    test('the docker leg refuses a VM in limitToServers', () {
+      expect(
+        () => build(hybridPortal(), <String, Object?>{
+          'leg': 'docker',
+          'limitToServers': <String>['vm1'],
+        }),
+        refusal('compose hosts'),
+      );
+    });
+
+    test('the docker leg keeps its monolithic contract', () {
+      expect(
+        () => build(hybridPortal(), <String, Object?>{
+          'leg': 'docker',
+          'services': <String>['cas'],
+        }),
+        refusal('monolithic'),
+      );
+    });
+
+    test('the vm leg deploys only VM services, no skip list', () {
+      final DeployRequest r = build(hybridPortal(), <String, Object?>{
+        'leg': 'vm',
+      });
+      expect(r.cmd['dockerCompose'], isFalse);
+      expect(
+        r.cmd['deployServices'],
+        unorderedEquals(<String>['branding', 'collectory']),
+      );
+      expect(
+        () => build(hybridPortal(), <String, Object?>{
+          'leg': 'vm',
+          'skipServices': <String>['cas'],
+        }),
+        throwsA(isA<InvalidRequest>()),
+      );
+      expect(
+        () => build(hybridPortal(), <String, Object?>{
+          'leg': 'vm',
+          'services': <String>['cas'],
+        }),
+        refusal('nothing'),
+      );
+    });
+
+    test('a leg that does not match a non-hybrid project is refused', () {
+      expect(
+        () => build(project(), <String, Object?>{'leg': 'vm'}),
+        refusal('not hybrid'),
+      );
+      expect(
+        build(project(), <String, Object?>{
+          'leg': 'docker',
+        }).cmd['dockerCompose'],
+        isTrue,
+      );
+    });
+  });
+
+  test('composeHostNames names the servers carrying a compose cluster', () {
+    expect(composeHostNames(hybridPortal()), <String>['dc1']);
+    expect(composeHostNames(project(compose: false, vm: true)), isEmpty);
   });
 
   test('refuses unknown servers in limitToServers', () {

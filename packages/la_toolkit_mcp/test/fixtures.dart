@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:la_toolkit_core/models/deployment_type.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:la_toolkit_mcp/la_toolkit_mcp.dart';
 
 /// A project in the shape `get-conf` returns, with only the fields the MCP
@@ -70,3 +76,44 @@ Json run(String id, int createdAt, {String suffix = '2026-09-20_10:00:00'}) =>
       'result': 'unknown',
       'rawCmd': './ansiblew --user ubuntu all',
     };
+
+/// A real hybrid portal as `get-conf` returns it (a JSON round trip of the
+/// core model, genConf included): collectory and branding on the VM `vm1`,
+/// ala-hub, biocache-service and cas on the compose cluster of `dc1`, which
+/// also carries [vmOnComposeHost] as VM services.
+Json hybridPortal({List<String> vmOnComposeHost = const <String>[]}) {
+  final LAProject p = LAProject(
+    longName: 'Hybrid portal',
+    shortName: 'Hybrid',
+    domain: 'example.org',
+    alaInstallRelease: 'v2.4.2',
+    dockerComposeRelease: 'v1.5.1',
+    generatorRelease: '1.8.32',
+  );
+  p.upsertServer(LAServer(name: 'vm1', ip: '10.0.0.1', projectId: p.id));
+  p.upsertServer(LAServer(name: 'dc1', ip: '10.0.0.2', projectId: p.id));
+  final String vm1 = p.servers.firstWhere((LAServer s) => s.name == 'vm1').id;
+  final String dc1 = p.servers.firstWhere((LAServer s) => s.name == 'dc1').id;
+  p.assignByType(vm1, DeploymentType.vm, <String>[collectory, branding]);
+  p.assignByType(dc1, DeploymentType.vm, <String>[
+    dockerCompose,
+    ...vmOnComposeHost,
+  ]);
+  p.assignByType(dc1, DeploymentType.dockerCompose, <String>[
+    alaHub,
+    biocacheService,
+    cas,
+  ]);
+  for (final String s in <String>[
+    collectory,
+    branding,
+    alaHub,
+    biocacheService,
+    cas,
+    dockerCompose,
+    ...vmOnComposeHost,
+  ]) {
+    p.getService(s).use = true;
+  }
+  return json.decode(json.encode(p.toApiJson())) as Json;
+}
