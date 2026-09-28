@@ -652,7 +652,7 @@ class Api {
     String op,
   ) async {
     if (AppUtils.isDemo()) {
-      return <List<dynamic>>[project.toJson() as List<dynamic>];
+      return <dynamic>[project.toJson()];
     }
     final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/$op-project');
     final Map<String, dynamic> projectJ = project.toApiJson();

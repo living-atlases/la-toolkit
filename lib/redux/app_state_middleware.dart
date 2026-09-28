@@ -37,6 +37,22 @@ import 'app_actions.dart';
 import 'entity_actions.dart';
 import 'entity_apis.dart';
 
+/// Generator versions offered in the demo when GitHub is unreachable.
+const List<String> demoGeneratorReleasesFallback = <String>[
+  '1.9.11',
+  '1.9.10',
+  '1.9.9',
+  '1.9.8',
+];
+
+/// Generator versions (newest first, no `v` prefix) from the GitHub tags of
+/// generator-living-atlas, the demo's substitute for the backend npm proxy.
+List<String> demoGeneratorReleasesFromTags(List<dynamic> tags) => tags
+    .map((dynamic t) => (t as Map<String, dynamic>)['name'] as String)
+    .map((String name) => name.replaceFirst(RegExp('^v'), ''))
+    .where((String v) => RegExp(r'^\d+\.\d+\.\d+$').hasMatch(v))
+    .toList();
+
 class AppStateMiddleware implements MiddlewareClass<AppState> {
   final String key = 'laTool20210418';
   SharedPreferences? _pref;
@@ -54,6 +70,29 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         ...?query,
         '_': DateTime.now().millisecondsSinceEpoch.toString(),
       };
+
+  Future<List<String>> _fetchDemoGeneratorReleases() async {
+    try {
+      final Response response = await http.get(
+        Uri.https(
+          'api.github.com',
+          '/repos/living-atlases/generator-living-atlas/tags',
+          _cacheBust(),
+        ),
+      );
+      if (response.statusCode == 200) {
+        final List<String> releases = demoGeneratorReleasesFromTags(
+          jsonDecode(response.body) as List<dynamic>,
+        );
+        if (releases.isNotEmpty) {
+          return releases;
+        }
+      }
+    } catch (e) {
+      log('Failed to fetch generator tags: $e');
+    }
+    return demoGeneratorReleasesFallback;
+  }
 
   Future<void> _initPrefs() async {
     _pref ??= await SharedPreferences.getInstance();
@@ -201,13 +240,10 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
 
       // GENERATOR RELEASES
       if (AppUtils.isDemo()) {
+        // No backend proxy in the demo: read the generator tags from GitHub,
+        // which (unlike the npm registry) allows CORS.
         store.dispatch(
-          OnFetchGeneratorReleases(<String>[
-            '1.2.29',
-            '1.2.28',
-            '1.2.27',
-            '1.2.26',
-          ]),
+          OnFetchGeneratorReleases(await _fetchDemoGeneratorReleases()),
         );
       } else {
         // generatorReleasesApiUrl =
@@ -959,9 +995,6 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
   // isolated so it can be switched to GitHub /releases later without touching
   // the rest of the flow.
   Future<void> _fetchDockerComposeReleases(Store<AppState> store) async {
-    if (AppUtils.isDemo()) {
-      return;
-    }
     try {
       final Uri dockerComposeTagsApiUrl = Uri.https(
         'api.github.com',

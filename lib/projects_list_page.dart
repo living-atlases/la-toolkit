@@ -170,8 +170,9 @@ class _LAProjectsListState extends State<LAProjectsList> {
                     ButtonTheme(
                       child: ElevatedButton.icon(
                         onPressed: () => vm.onCreateProject(),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
                           minimumSize: const Size(100, 50),
                           // padding: const EdgeInsets.all(8.0),
                           shape: RoundedRectangleBorder(

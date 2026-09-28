@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:la_toolkit/components/app_snack_bar_message.dart';
 import 'package:la_toolkit/models/app_state.dart';
 import 'package:la_toolkit/redux/app_actions.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
@@ -13,9 +12,8 @@ import 'pump_app.dart';
 /// before the project row exists, and the AddProject that finishes the wizard
 /// then fails with "Would violate uniqueness constraint" on those ids.
 ///
-/// In demo mode Api.updateProject throws (it casts a Map to a List), and the
-/// middleware turns that into a "Failed to update project" snackbar: the
-/// snackbar is therefore the proof that the API path ran.
+/// The API path ends in an OnProjectUpdated, so the recorded actions tell
+/// which path the middleware took.
 void main() {
   setUp(setUpDemoEnv);
 
@@ -23,7 +21,8 @@ void main() {
 
   test('a save while the project is being created does not hit the backend',
       () async {
-    final Store<AppState> store = demoStore();
+    final List<dynamic> dispatched = <dynamic>[];
+    final Store<AppState> store = demoStore(dispatched: dispatched);
     store.dispatch(CreateProject());
     expect(store.state.status, LAProjectViewStatus.create);
     final LAProject project = store.state.currentProject;
@@ -32,8 +31,9 @@ void main() {
     store.dispatch(SaveCurrentProject(project));
     await settle();
 
-    expect(store.state.appSnackBarMessages, isEmpty,
-        reason: 'no API call, so no failure snackbar');
+    expect(dispatched.whereType<OnProjectUpdated>(), isEmpty,
+        reason: 'no API call');
+    expect(store.state.appSnackBarMessages, isEmpty);
     expect(store.state.status, LAProjectViewStatus.create);
     expect(store.state.currentProject.longName, 'Typing...',
         reason: 'the edit still lands in redux');
@@ -42,7 +42,8 @@ void main() {
   });
 
   test('a save on a persisted project still goes to the backend', () async {
-    final Store<AppState> store = demoStore();
+    final List<dynamic> dispatched = <dynamic>[];
+    final Store<AppState> store = demoStore(dispatched: dispatched);
     final LAProject project = LAProject(
       longName: 'Persisted',
       shortName: 'persisted',
@@ -54,10 +55,8 @@ void main() {
     store.dispatch(SaveCurrentProject(project));
     await settle();
 
-    expect(
-      store.state.appSnackBarMessages.map((AppSnackBarMessage m) => m.message),
-      contains(startsWith('Failed to update project')),
-      reason: 'demo-mode proxy for "the API path ran"',
-    );
+    expect(dispatched.whereType<OnProjectUpdated>(), hasLength(1),
+        reason: 'the API path ran');
+    expect(store.state.appSnackBarMessages, isEmpty);
   });
 }

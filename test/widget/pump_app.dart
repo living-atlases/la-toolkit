@@ -18,13 +18,26 @@ import 'package:redux/redux.dart';
 /// Runs the app in demo mode (`DEMO=true`), which is what keeps these tests
 /// offline: every Api call short-circuits and the middleware puts the projects
 /// straight in the store instead of POSTing them to the backend.
-Store<AppState> demoStore({List<String> dockerComposeReleases = const <String>[]}) {
+///
+/// Every dispatched action is appended to [dispatched], when given, so tests
+/// can tell which path the middleware took.
+Store<AppState> demoStore({
+  List<String> dockerComposeReleases = const <String>[],
+  List<dynamic>? dispatched,
+}) {
   return Store<AppState>(
     appReducer,
     initialState: AppState(
       dockerComposeReleases: List<String>.from(dockerComposeReleases),
     ),
-    middleware: <Middleware<AppState>>[AppStateMiddleware()],
+    middleware: <Middleware<AppState>>[
+      if (dispatched != null)
+        (Store<AppState> store, dynamic action, NextDispatcher next) {
+          dispatched.add(action);
+          next(action);
+        },
+      AppStateMiddleware(),
+    ],
   );
 }
 

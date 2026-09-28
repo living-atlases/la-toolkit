@@ -100,7 +100,7 @@ A Living Atlas (LA) can be deployed and maintained using:
               PageViewModel(
                 titleWidget: _buildTitle('Just a demo'),
                 body:
-                    'Right now this website is only a demo\nof our toolkit for demonstration purposes',
+                    'This website is only a demo of the toolkit: projects are kept\nin your browser and nothing is deployed to any server',
                 image: _buildImage('la-toolkit-intro-images-4.png', 150),
                 decoration: pageDecoration,
               ),
@@ -119,12 +119,15 @@ A Living Atlas (LA) can be deployed and maintained using:
               ),
               image: _buildImage('la-toolkit-intro-images-5.png', 150),
               decoration: pageDecoration,
-              footer: FloatingActionButton(
-                child: const Icon(Icons.add),
-                onPressed: () {
-                  vm.onIntroEnd();
-                  vm.onAddProject();
-                },
+              // introduction_screen stretches the footer to the page width.
+              footer: Center(
+                child: FloatingActionButton(
+                  child: const Icon(Icons.add),
+                  onPressed: () {
+                    vm.onIntroEnd();
+                    vm.onAddProject();
+                  },
+                ),
               ),
             ),
           ],
