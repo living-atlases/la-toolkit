@@ -109,7 +109,15 @@ services:
       start_period: 30s
 
   mongo-db-backup:
-    image: tiredofit/db-backup:latest
+    # Pinned on purpose. tiredofit/db-backup moved to nfrastack/db-backup, and on
+    # 2026-09-09 its ':latest' became an image that only prints a deprecation
+    # notice: watchtower pulled it and every unpinned installation silently
+    # stopped backing up while the container still showed as running. 4.9.2 is
+    # the continuation of the 4.x line this configuration is written for, and is
+    # tested with it; 5.x is a new major line that is not. A pinned tag is never
+    # moved by watchtower.
+    # After an upgrade, check that /data/la-toolkit/backups gets a new file.
+    image: nfrastack/db-backup:4.9.2
     container_name: la-toolkit-mongo-db-backup
     restart: always
     depends_on:
@@ -125,8 +133,10 @@ services:
       - CONTAINER_ENABLE_MONITORING=FALSE
       - DEFAULT_BACKUP_INTERVAL=1440
       - DEFAULT_CLEAN_UP_TIME=8640
-      - DEFAULT_CHECKSUM=TRUE
-      - DEFAULT_CHECKSUM_TYPE=MD5
+      # The algorithm itself (MD5, SHA1 or NONE): TRUE plus a separate
+      # DEFAULT_CHECKSUM_TYPE is not a 4.x setting and left an empty "*.gz." next
+      # to every backup.
+      - DEFAULT_CHECKSUM=MD5
       - TZ=Europe/Copenhagen
     volumes:
       - /data/la-toolkit/backups:/backup
