@@ -3,6 +3,7 @@ import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
+import 'package:la_toolkit_core/models/la_service_deploy.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/placement/placement_changes.dart';
 import 'package:la_toolkit_core/placement/server_changes.dart';
@@ -173,6 +174,73 @@ void main() {
       () => changeServers(p, remove: <String>['dc2']),
       refusal('services of hub hub'),
     );
+  });
+
+  // lademo has deploy rows pointing at clusters deleted long ago, and they
+  // still decide where names resolve. Removing a server or its compose host
+  // role must leave them alone; deleteCluster() drops them all.
+  group('orphan deploy rows survive', () {
+    LAProject withOrphan() {
+      final LAProject p = portal();
+      p.serviceDeploys.add(
+        LAServiceDeploy(
+          projectId: p.id,
+          serviceId: p.getService(alaHub).id,
+          serverId: p.getServerByName('dc1')!.id,
+          clusterId: '0123456789abcdef01234567',
+          type: DeploymentType.dockerCompose,
+          softwareVersions: <String, String>{alaHub: '1.0.0'},
+        ),
+      );
+      changePlacement(p, const <ServiceMove>[
+        ServiceMove(service: alaHubName, op: PlacementOp.unassign, from: 'dc2'),
+      ]);
+      return p;
+    }
+
+    bool hasOrphan(LAProject p) => p.serviceDeploys.any(
+      (LAServiceDeploy sd) => sd.clusterId == '0123456789abcdef01234567',
+    );
+
+    test('why: the UI cluster delete drops them', () {
+      final LAProject p = withOrphan();
+      p.deleteCluster(
+        p.clusters.firstWhere(
+          (LACluster c) => c.serverId == p.getServerByName('dc2')!.id,
+        ),
+      );
+      expect(hasOrphan(p), isFalse);
+    });
+
+    test('unassigning docker_compose', () {
+      final LAProject p = withOrphan();
+      final int rows = p.serviceDeploys.length;
+      changePlacement(p, const <ServiceMove>[
+        ServiceMove(
+          service: 'docker_compose',
+          op: PlacementOp.unassign,
+          from: 'dc2',
+        ),
+      ]);
+      expect(hasOrphan(p), isTrue);
+      // Only dc2's docker_compose row goes.
+      expect(p.serviceDeploys.length, rows - 1);
+      expect(
+        p.clusters.where(
+          (LACluster c) => c.serverId == p.getServerByName('dc2')!.id,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('removing the server', () {
+      final LAProject p = withOrphan();
+      final int rows = p.serviceDeploys.length;
+      changeServers(p, remove: <String>['dc2']);
+      expect(hasOrphan(p), isTrue);
+      expect(p.serviceDeploys.length, rows - 1);
+      expect(p.getServerByName('dc2'), isNull);
+    });
   });
 }
 

@@ -5,6 +5,7 @@
 // variable value (pipelines_master).
 import 'package:collection/collection.dart';
 
+import '../models/deployment_type.dart';
 import '../models/la_cluster.dart';
 import '../models/la_project.dart';
 import '../models/la_server.dart';
@@ -222,11 +223,18 @@ void _remove(LAProject p, String name, ServerChange c) {
       '$name is the pipelines master (pipelines_master): change it first.',
     );
   }
+  // Unticking docker_compose / docker_swarm on the server's card, which takes
+  // its (empty) clusters with it. Not deleteCluster(): that also drops every
+  // deploy row of the project pointing at a cluster that no longer exists.
   for (final LACluster cl
       in p.clusters
           .where((LACluster cl) => cl.serverId == server.id)
           .toList()) {
-    p.deleteCluster(cl);
+    p.unAssignByType(
+      server.id,
+      DeploymentType.vm,
+      cl.type == DeploymentType.dockerSwarm ? dockerSwarm : dockerCompose,
+    );
     c.notes.add('The empty ${cl.name} goes with $name.');
   }
   for (final LAServer other in p.servers) {

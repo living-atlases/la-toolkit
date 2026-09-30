@@ -1,3 +1,4 @@
+import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/placement/placement_changes.dart';
@@ -5,6 +6,8 @@ import 'package:la_toolkit_core/placement/server_changes.dart';
 import 'package:la_toolkit_mcp/la_toolkit_mcp.dart';
 import 'package:la_toolkit_mcp/src/placement.dart';
 import 'package:test/test.dart';
+
+import 'fixtures.dart';
 
 void main() {
   group('parseChanges', () {
@@ -302,5 +305,26 @@ void main() {
       ]);
       expect(serverJson(p, 'h1')['ip'], '10.0.0.1');
     });
+  });
+
+  test('collateralRemovals names rows dropped off untouched servers', () {
+    final Json portal = placementPortalWithOrphan();
+    final LAProject before = LAProject.fromJson(portal);
+    final LAProject after = LAProject.fromJson(portal);
+    final LAServer dc2 = after.getServerByName('dc2')!;
+    // What the UI cluster delete does: dc2's rows go, and the orphan too.
+    after.deleteCluster(
+      after.clusters.firstWhere((LACluster c) => c.serverId == dc2.id),
+    );
+    final List<Json> rows = collateralRemovals(before, after, <String>['dc2']);
+    expect(rows, <Json>[
+      <String, dynamic>{
+        'service': 'spatial_service',
+        'server': 'dc1',
+        'cluster': orphanCluster,
+        'clusterMissing': true,
+      },
+    ]);
+    expect(collateralRemovals(before, before, <String>[]), isEmpty);
   });
 }

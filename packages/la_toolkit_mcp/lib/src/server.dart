@@ -957,6 +957,12 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     };
     if (!save) return <String, dynamic>{...preview, 'saved': false};
 
+    if (preview.containsKey('collateralRemovals')) {
+      throw InvalidRequest(
+        'Not saved: the change drops deploy rows of servers it does not '
+        'touch: ${jsonEncode(preview['collateralRemovals'])}',
+      );
+    }
     final File backup = await _backup(ref);
     await backend.updateProject(body);
     return <String, dynamic>{
@@ -1094,7 +1100,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         if (change.notes.isNotEmpty) 'notes': change.notes,
         if (warnings.isNotEmpty) 'warnings': warnings,
       },
-      touched: change.updated.keys.toList(),
+      touched: <String>[...change.updated.keys, ...change.removed],
       removesComposeServices: false,
     );
     if (save && change.added.isNotEmpty) {
@@ -1155,6 +1161,16 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         ...(genConfChanges[k] as List<String>),
     ];
     final Json extraHosts = extraHostChanges(beforeConf, afterConf);
+    final List<Json> collateral = collateralRemovals(before, p, touched);
+    // What a save refreshes on its own: the stored genConf against the one
+    // the unchanged model computes (key names only, values may be secrets).
+    final Json stored =
+        ref.project['genConf'] as Json? ?? const <String, dynamic>{};
+    final Json storedDiff = genConfDiff(stored, beforeConf);
+    final List<String> refreshed = <String>[
+      for (final String k in <String>['added', 'removed', 'changed'])
+        ...(storedDiff[k] as List<String>),
+    ]..sort();
     final List<String> toDeploy = <String>{
       ...touched,
       ...servers.keys,
@@ -1179,7 +1195,24 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       'publicNames': publicNameChanges(beforeConf, afterConf),
       'extraHosts': extraHosts,
       'genConfChanges': genConfChanges,
+      if (refreshed.isNotEmpty)
+        'genConfRefreshedBySaving': <String, dynamic>{
+          'keys': refreshed,
+          'why':
+              'The stored generator configuration is older than what the '
+              'toolkit computes now: any save, from the UI too, rewrites these '
+              'keys, whatever the change.',
+        },
       'integrityErrors': newErrors,
+      if (collateral.isNotEmpty)
+        'collateralRemovals': <String, dynamic>{
+          'rows': collateral,
+          'why':
+              'The change drops deploy rows of servers it does not touch. '
+              'It will not be saved: report it as a bug of la_toolkit_mcp.',
+        },
+      if (integrityBefore.isNotEmpty)
+        'integrityErrorsAlreadyThere': integrityBefore.length,
       if (newlyUnassigned.isNotEmpty) 'newlyUnassigned': newlyUnassigned,
       'lint': lint,
       'deployNotes': <String>[
@@ -1219,6 +1252,12 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       throw InvalidRequest(
         'Not saved: the change breaks the project integrity: '
         '${errors.join(' ')}',
+      );
+    }
+    if (preview.containsKey('collateralRemovals')) {
+      throw InvalidRequest(
+        'Not saved: the change drops deploy rows of servers it does not '
+        'touch: ${jsonEncode(preview['collateralRemovals'])}',
       );
     }
     final File backup = await _backup(ref);

@@ -5,7 +5,10 @@ library;
 
 import 'package:collection/collection.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service.dart';
+import 'package:la_toolkit_core/models/la_service_deploy.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/placement/placement_changes.dart';
 import 'package:la_toolkit_core/placement/server_changes.dart';
@@ -316,4 +319,43 @@ Json lintDelta(Json before, Json after) {
     if (after['dependenciesNotChecked'] != null)
       'dependenciesNotChecked': after['dependenciesNotChecked'],
   };
+}
+
+/// Deploy rows [after] lost that belong to no server in [touched]: a
+/// change of one server must not drop rows elsewhere. Rows pointing at a
+/// cluster that no longer exists (older projects have them, and they still
+/// decide where names resolve) are the usual victims.
+List<Json> collateralRemovals(
+  LAProject before,
+  LAProject after,
+  List<String> touched,
+) {
+  final Set<String> kept = <String>{
+    for (final LAServiceDeploy sd in after.serviceDeploys) sd.id,
+  };
+  String? host(LAServiceDeploy sd) {
+    final String? serverId =
+        sd.serverId ??
+        before.clusters
+            .firstWhereOrNull((LACluster c) => c.id == sd.clusterId)
+            ?.serverId;
+    return serverId == null ? null : before.getServerById(serverId)?.name;
+  }
+
+  return <Json>[
+    for (final LAServiceDeploy sd in before.serviceDeploys)
+      if (!kept.contains(sd.id) && !touched.contains(host(sd)))
+        <String, dynamic>{
+          'service':
+              before.services
+                  .firstWhereOrNull((LAService s) => s.id == sd.serviceId)
+                  ?.nameInt ??
+              sd.serviceId,
+          'server': host(sd) ?? sd.serverId,
+          if (sd.clusterId != null) 'cluster': sd.clusterId,
+          if (sd.clusterId != null &&
+              !before.clusters.any((LACluster c) => c.id == sd.clusterId))
+            'clusterMissing': true,
+        },
+  ];
 }

@@ -155,3 +155,23 @@ Json placementPortal() {
   }
   return json.decode(json.encode(p.toApiJson())) as Json;
 }
+
+/// [placementPortal] with a deploy row on dc1 (spatial_service) pointing at a
+/// compose cluster deleted long ago, as older projects have (lademo had 32).
+const String orphanCluster = '0123456789abcdef01234567';
+Json placementPortalWithOrphan() {
+  final Json p = placementPortal();
+  final List<dynamic> rows = p['serviceDeploys'] as List<dynamic>;
+  final Json hub = (rows.cast<Json>()).firstWhere(
+    (Json sd) => sd['clusterId'] != null,
+  );
+  rows.add(<String, dynamic>{
+    ...hub,
+    'id': 'fedcba9876543210fedcba98',
+    'clusterId': orphanCluster,
+    'serverId': (p['servers'] as List<dynamic>).cast<Json>().firstWhere(
+      (Json s) => s['name'] == 'dc1',
+    )['id'],
+  });
+  return p;
+}

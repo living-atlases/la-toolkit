@@ -1114,4 +1114,68 @@ void main() {
       expect(server(old, 'dc1')['ip'], isNot('10.0.1.99'));
     });
   });
+
+  // The lademo rollback: unticking docker_compose went through
+  // deleteCluster(), which also dropped every row pointing at a missing
+  // cluster, on servers the change never touched.
+  group('orphan deploy rows', () {
+    setUp(() {
+      fake.projects.removeWhere((Json p) => p['shortName'] == 'Moving');
+      fake.projects.add(placementPortalWithOrphan());
+    });
+
+    bool keepsOrphan(Json p) => (p['serviceDeploys'] as List<dynamic>)
+        .cast<Json>()
+        .any((Json sd) => sd['clusterId'] == orphanCluster);
+
+    Future<Json> saved(String tool, Map<String, Object?> args) async {
+      final CallToolResult r = await call(tool, <String, Object?>{
+        'project': 'Moving',
+        ...args,
+        'save': true,
+        'confirm': true,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out, isNot(contains('collateralRemovals')));
+      return out;
+    }
+
+    test('survive unassigning docker_compose', () async {
+      await saved('la_set_placement', <String, Object?>{
+        'changes': <Object?>[
+          <String, Object?>{
+            'op': 'unassign',
+            'service': 'ala_hub',
+            'from': 'dc2',
+          },
+          <String, Object?>{
+            'op': 'unassign',
+            'service': 'docker_compose',
+            'from': 'dc2',
+          },
+        ],
+      });
+      expect(keepsOrphan(fake.updatedProjects.single), isTrue);
+    });
+
+    test('survive removing a server', () async {
+      await saved('la_set_placement', <String, Object?>{
+        'changes': <Object?>[
+          <String, Object?>{
+            'op': 'unassign',
+            'service': 'ala_hub',
+            'from': 'dc2',
+          },
+        ],
+      });
+      fake.projects
+        ..removeWhere((Json p) => p['shortName'] == 'Moving')
+        ..add(fake.updatedProjects.last);
+      await saved('la_set_servers', <String, Object?>{
+        'remove': <String>['dc2'],
+      });
+      expect(keepsOrphan(fake.updatedProjects.last), isTrue);
+    });
+  });
 }
