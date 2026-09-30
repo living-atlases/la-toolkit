@@ -10,6 +10,7 @@ void main() {
       'id': 'p1',
       'shortName': 'now',
       'dockerComposeRelease': 'v1.5.1',
+      'lastSwCheck': null,
       'genConf': <String, dynamic>{'LA_x': 'now'},
       'servers': <Json>[
         <String, dynamic>{'id': 's1', 'name': 'a', 'ip': '10.0.0.1'},

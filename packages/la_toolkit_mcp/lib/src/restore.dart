@@ -71,7 +71,8 @@ List<Json> _rows(Json p, String collection) =>
 /// The update-project body that stores [backup] again, in the shape the
 /// app sends ([api], the current project's toApiJson()): its keys, with the
 /// backup's values, rows and genConf verbatim. Keys the backup lacks (what
-/// get-conf does not return) keep their current value.
+/// get-conf does not return) keep their current value, and null ones stay
+/// out.
 Json restoreBody(Json backup, Json api) {
   Json only(Json row, Set<String>? keys) => keys == null
       ? <String, dynamic>{
@@ -91,8 +92,11 @@ Json restoreBody(Json backup, Json api) {
           ? null
           : <String>{for (final Json r in current) ...r.keys};
       body[k] = <Json>[for (final Json r in _rows(backup, k)) only(r, keys)];
-    } else {
-      body[k] = backup.containsKey(k) ? backup[k] : api[k];
+    } else if (backup.containsKey(k)) {
+      body[k] = backup[k];
+    } else if (api[k] != null) {
+      // A null here would store the key where the backup had none.
+      body[k] = api[k];
     }
   }
   return body;
