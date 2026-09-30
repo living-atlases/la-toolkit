@@ -20,6 +20,7 @@ import 'placement.dart';
 import 'preconditions.dart';
 import 'projects.dart';
 import 'releases.dart';
+import 'restore.dart';
 
 const String _instructions = '''
 Drives an LA Toolkit (Living Atlas deployment tool) through its backend API.
@@ -56,6 +57,8 @@ assigns or unassigns services on them (docker_compose included), both the same
 way (preview, then save and confirm); a later deploy of the servers involved
 applies it. A new compose host: la_set_servers add, then la_set_placement with
 {op: assign, service: docker_compose, to: <server>} before moving services.
+Each of these saves backs the project up first; la_restore_backup lists those
+backups and puts one back (preview, then save and confirm).
 
 Never pass confirm: true without the user's explicit agreement for that run.''';
 
@@ -457,6 +460,38 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       destructive: true,
       openWorld: true,
       _setServers,
+    );
+
+    _tool(
+      'la_restore_backup',
+      'Put a project back as one of the backups the toolkit MCP writes '
+          'before every save (la_set_servers, la_set_placement, '
+          'la_set_releases, and this tool). Without `backup` it lists them, '
+          'newest first. With it, previews what storing it changes: per '
+          'servers, clusters, services, deploy rows and variables the rows '
+          'it brings back, drops and changes, and the generator keys. save: '
+          'true AND confirm: true store it through the same update the app '
+          'uses, after a backup of the project as it is now; only once the '
+          'user agreed. Changes saved after that backup are lost. Touches no '
+          'server.',
+      Schema.object(
+        properties: <String, Schema>{
+          'project': _projectArg,
+          'backup': Schema.string(
+            description:
+                'File name of the backup, as the listing shows it (no path).',
+          ),
+          'save': Schema.bool(description: 'Store it (default false).'),
+          'confirm': Schema.bool(
+            description:
+                'Required with save: true. Set it only when the user agreed.',
+          ),
+        },
+        required: <String>['project'],
+      ),
+      destructive: true,
+      openWorld: true,
+      _restoreBackup,
     );
 
     _tool(
@@ -1109,6 +1144,81 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           'servers, then la_set_placement to give them services.';
     }
     return save ? _saveChange(ref, p, preview) : preview;
+  }
+
+  Future<Object?> _restoreBackup(Map<String, Object?> a) async {
+    final bool save = _saveArgs(a, 'overwrites the project with a backup');
+    final ProjectRef ref = await _resolve(a);
+    final List<File> all = backupsOf(backupDir, ref);
+    final Object? name = a['backup'];
+    if (name == null) {
+      if (save) throw InvalidRequest('Name the `backup` to restore.');
+      return <String, dynamic>{
+        'project': ref.dirName,
+        'backupDir': backupDir.path,
+        'backups': all.map(backupSummary).toList(),
+      };
+    }
+    if (name is! String) throw InvalidRequest('`backup` is a file name.');
+    final Json backup;
+    try {
+      backup = readBackup(backupDir, ref, name);
+    } on FormatException catch (e) {
+      throw InvalidRequest(e.message);
+    }
+    final Json changes = restoreDiff(ref.project, backup);
+    final List<String> newer = <String>[
+      for (final File f in all)
+        if (f.uri.pathSegments.last.compareTo(name) > 0)
+          f.uri.pathSegments.last,
+    ];
+    final Json preview = <String, dynamic>{
+      'project': ref.dirName,
+      'backup': name,
+      'changes': changes,
+      if (changes.isEmpty) 'note': 'The project already holds this backup.',
+      if (newer.isNotEmpty)
+        'newerBackups': <String, dynamic>{
+          'backups': newer,
+          'why':
+              'Later saves made these: what they changed is undone too. '
+              'Every change made from the app since is lost as well.',
+        },
+      'deployNotes': <String>[
+        'Nothing changed on the servers. Deploy the ones whose services '
+            'changed, with prepare: true, dry run first.',
+      ],
+      'saved': false,
+    };
+    if (!save) return preview;
+    if (changes.isEmpty) {
+      throw InvalidRequest('Not saved: ${ref.dirName} already holds $name.');
+    }
+    final File current = await _backup(ref);
+    await backend.updateProject(
+      restoreBody(backup, projectModel(ref).toApiJson()),
+    );
+    final ProjectRef after = await _resolve(<String, Object?>{
+      'project': ref.id,
+    });
+    final LAProject p = projectModel(after);
+    if (p.servers.isNotEmpty) {
+      await backend.genSshConf(
+        name: p.shortName,
+        id: p.id,
+        servers: p.toJson()['servers'] as List<dynamic>,
+        user: p.getVariableValue('ansible_user')?.toString() ?? 'ubuntu',
+      );
+    }
+    final Json check = restoreCheck(after.project, backup);
+    return <String, dynamic>{
+      ...preview,
+      'saved': true,
+      'backupOfWhatWasThere': current.path,
+      'rowsMatchTheBackup': check,
+      if (restoreDiff(after.project, backup).isNotEmpty)
+        'stillDifferent': restoreDiff(after.project, backup),
+    };
   }
 
   /// `save` needs `confirm`; answers whether to save.

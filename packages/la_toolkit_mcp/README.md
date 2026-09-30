@@ -22,6 +22,7 @@ shows up in the project history like any other.
 | `la_set_releases` | Change the generator / la-docker-compose (tag or `upstream`) / ala-install releases a portal pins. Previews by default (before/after, generator configuration keys that change, hubs kept, lint); `save` + `confirm` back the project up (see Setup for where) and store it | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_set_servers` | Add, change (ip, ssh user/port/key, aliases, gateways) or remove the servers of a project, as the servers page does. `remove` only takes servers that run nothing (an empty compose cluster goes with its server). Previews by default (servers, name clashes with other projects, missing ssh keys, what an IP change moves, integrity, lint delta, deploy notes); `save` + `confirm` back the project up and store it | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_set_placement` | Change where services run with an ordered list of `move` / `assign` / `unassign`, as the servers page does. `docker_compose` assigned to a server makes it a compose host; unassigned, it deletes the empty cluster. A sub-service goes with its parent (`spatial` takes `spatial_service` and `geoserver`) and a move keeps the versions. Previews by default (changes, servers that gain and lose services, public names and `extra_hosts` that change host, generator keys, new integrity errors, lint delta, deploy notes); `save` + `confirm` back the project up and store it | only with `save` + `confirm`: the project in the toolkit, no server |
+| `la_restore_backup` | Put a project back as one of the backups taken before every save. Without `backup`, lists them (newest first, servers, row counts); with it, previews the rows it brings back, drops and changes per servers / clusters / services / deploy rows / variables, the generator keys, and the later backups it undoes; `save` + `confirm` back the current project up and store the backup through `update-project` | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_list_runs` | Command history, newest first | no |
 | `la_check_connectivity` | ping, ssh, sudo and OS of every server | read-only ssh on the servers; saves the results on the project, like the UI |
 | `la_check_preconditions` | Blockers before a deploy, for the servers that carry services (or only `servers`, or one `leg` of a hybrid portal): ssh key in the toolkit, ssh and sudo, Ubuntu >= 22.04, disk space (`/`, `/data`, `/var/lib/docker`), portal host names resolve | read-only ssh; saves connectivity results like the UI |
@@ -151,6 +152,10 @@ Both tools:
 - Save as the UI does: `update-project` with the model's `toApiJson()`, then
   `gen-ssh-conf`, after a backup of the project as it was. Refused when the change adds a
   data integrity error.
+- A change that would drop deploy rows of servers it does not touch is refused
+  (`collateralRemovals` in the preview). Older projects keep rows that point at a
+  cluster deleted long ago, and they still decide where names resolve; the UI's
+  delete-cluster drops them all, these tools never do.
 - The preview lists, per compose host, the `extra_hosts` names that now resolve to
   another address (`extraHosts`): a new server, a new IP or a moved service changes them
   on hosts that did nothing else, and those need a deploy too. `deployNotes` names every
@@ -248,6 +253,7 @@ dart test
 |---|---|
 | `test/server_test.dart` | Every tool over the MCP protocol against a fake backend (and fake GitHub): refusals (`confirm`, whitelists, running runs, ambiguous moves), the payloads sent, create / releases / servers / placement preview vs save. |
 | `test/placement_test.dart` | The la_set_placement / la_set_servers helpers: argument whitelisting, ssh key lookup, name clashes, servers that gain and lose services, public names and `extra_hosts` that change host, lint delta. |
+| `test/restore_test.dart` | la_restore_backup helpers: the body in the app's shape (backup values, the app's keys), the per-collection diff, the id check. |
 | `test/stdio_test.dart` | The entry point the binary uses: model logging never reaches stdout, the protocol channel. |
 | `test/lint_test.dart` | The lint report: never `clean` without the matrix, hubs built under their portal. |
 | `test/preconditions_test.dart`, `deploy_request_test.dart`, `deploy_outcome_test.dart`, `projects_test.dart` | The pure helpers: precondition verdicts, argument validation, failure extraction from the ansible JSON callback and from the log, project lookup. |

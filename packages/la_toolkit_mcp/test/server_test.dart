@@ -26,6 +26,10 @@ class _Backend {
   final List<Json> updatedProjects = <Json>[];
   Json? sshConfBody;
 
+  /// Store update-project bodies as the backend does (they replace the
+  /// project's rows), for tools that read the project back.
+  bool applyUpdates = false;
+
   /// GitHub: la-docker-compose tags and files, the dependency matrix (404, so
   /// the lint reports it as unchecked).
   http.Response? external(Uri url) {
@@ -162,7 +166,14 @@ class _Backend {
         );
         return _json(<String, dynamic>{'projects': projects});
       case 'update-project':
-        updatedProjects.add(body()!['project'] as Json);
+        final Json updated = body()!['project'] as Json;
+        updatedProjects.add(updated);
+        if (applyUpdates) {
+          final int i = projects.indexWhere(
+            (Json p) => p['id'] == updated['id'],
+          );
+          projects[i] = <String, dynamic>{...projects[i], ...updated};
+        }
         return _json(<String, dynamic>{'projects': projects});
       case 'gen-ssh-conf':
         sshConfBody = body();
@@ -1176,6 +1187,176 @@ void main() {
         'remove': <String>['dc2'],
       });
       expect(keepsOrphan(fake.updatedProjects.last), isTrue);
+    });
+  });
+
+  // The lademo test: saves made through the tools, rows lost by a bug, and
+  // the backup taken before the first save put back.
+  group('la_restore_backup', () {
+    setUp(() {
+      fake.projects.removeWhere((Json p) => p['shortName'] == 'Moving');
+      fake.projects.add(placementPortalWithOrphan());
+      fake.applyUpdates = true;
+    });
+
+    Json moving() =>
+        fake.projects.firstWhere((Json p) => p['shortName'] == 'Moving');
+    List<Json> rows(Json p, String c) => (p[c] as List<dynamic>).cast<Json>();
+    Future<Json> ok(String tool, Map<String, Object?> args) async {
+      final CallToolResult r = await call(tool, <String, Object?>{
+        'project': 'Moving',
+        ...args,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      return json.decode(text(r)) as Json;
+    }
+
+    test('lists, previews and puts a backup back', () async {
+      expect(
+        (await ok('la_restore_backup', <String, Object?>{}))['backups'],
+        isEmpty,
+      );
+      final Json original = json.decode(json.encode(moving())) as Json;
+      await ok('la_set_servers', <String, Object?>{
+        'add': <Object?>[
+          <String, Object?>{'name': 'test1', 'ip': '10.0.1.200'},
+        ],
+        'save': true,
+        'confirm': true,
+      });
+      await ok('la_set_placement', <String, Object?>{
+        'changes': <Object?>[
+          <String, Object?>{
+            'op': 'assign',
+            'service': 'docker_compose',
+            'to': 'test1',
+          },
+        ],
+        'save': true,
+        'confirm': true,
+      });
+      // What the old unassign did on top: the orphan row gone.
+      rows(
+        moving(),
+        'serviceDeploys',
+      ).removeWhere((Json sd) => sd['clusterId'] == orphanCluster);
+
+      final List<dynamic> listed =
+          (await ok('la_restore_backup', <String, Object?>{}))['backups']
+              as List<dynamic>;
+      expect(listed, hasLength(2));
+      final String first = (listed.last as Json)['backup'] as String;
+      expect((listed.last as Json)['servers'], isNot(contains('test1')));
+
+      final int saves = fake.updatedProjects.length;
+      final Json preview = await ok('la_restore_backup', <String, Object?>{
+        'backup': first,
+      });
+      expect(preview['saved'], isFalse);
+      final Json changes = preview['changes'] as Json;
+      expect(
+        (changes['servers'] as Json)['dropped'].single,
+        startsWith('test1 ('),
+      );
+      expect(
+        (changes['serviceDeploys'] as Json)['back'].single,
+        startsWith('spatial_service on dc1 ('),
+      );
+      expect(
+        (changes['serviceDeploys'] as Json)['dropped'].single,
+        startsWith('docker_compose on test1 ('),
+      );
+      expect((changes['clusters'] as Json)['dropped'], hasLength(1));
+      expect((preview['newerBackups'] as Json)['backups'], hasLength(1));
+      expect(fake.updatedProjects, hasLength(saves));
+
+      final Json out = await ok('la_restore_backup', <String, Object?>{
+        'backup': first,
+        'save': true,
+        'confirm': true,
+      });
+      expect(out['saved'], isTrue);
+      expect(out, isNot(contains('stillDifferent')));
+      expect((out['rowsMatchTheBackup'] as Json).values, everyElement(isTrue));
+      expect(File(out['backupOfWhatWasThere'] as String).existsSync(), isTrue);
+      final Json body = fake.updatedProjects.last;
+      expect(body.keys, isNot(contains('serversMap')));
+      expect(body['genConf'], original['genConf']);
+      for (final String c in <String>['servers', 'serviceDeploys']) {
+        expect(
+          rows(body, c).map((Json r) => r['id']),
+          unorderedEquals(rows(original, c).map((Json r) => r['id'])),
+        );
+      }
+      expect(
+        (fake.sshConfBody!['servers'] as List<dynamic>).cast<Json>().map(
+          (Json s) => s['name'],
+        ),
+        isNot(contains('test1')),
+      );
+
+      // Nothing left to restore.
+      final CallToolResult again = await call(
+        'la_restore_backup',
+        <String, Object?>{
+          'project': 'Moving',
+          'backup': first,
+          'save': true,
+          'confirm': true,
+        },
+      );
+      expect(again.isError, isTrue);
+      expect(text(again), contains('already holds'));
+    });
+
+    test('takes only a backup of that project, and confirm', () async {
+      await ok('la_set_servers', <String, Object?>{
+        'add': <Object?>[
+          <String, Object?>{'name': 'test1', 'ip': '10.0.1.200'},
+        ],
+        'save': true,
+        'confirm': true,
+      });
+      final String name = backups.listSync().single.uri.pathSegments.last;
+      final Json demo = fake.projects.firstWhere(
+        (Json p) => p['shortName'] != 'Moving',
+      );
+      for (final (Map<String, Object?> args, String why)
+          in <(Map<String, Object?>, String)>[
+            (<String, Object?>{'backup': name, 'save': true}, 'confirm'),
+            (<String, Object?>{'save': true, 'confirm': true}, 'Name the'),
+            (<String, Object?>{'backup': '../$name'}, 'not a backup of'),
+            (<String, Object?>{'backup': 7}, 'not of type'),
+            (
+              <String, Object?>{
+                'backup': name.replaceFirst(
+                  moving()['id'] as String,
+                  '0123456789abcdef01234567',
+                ),
+              },
+              'not a backup of',
+            ),
+            (
+              <String, Object?>{
+                'backup':
+                    '${moving()['dirName']}-${moving()['id']}-2020-01-01T00-00-00Z.json',
+              },
+              'No backup',
+            ),
+          ]) {
+        final CallToolResult r = await call(
+          'la_restore_backup',
+          <String, Object?>{'project': 'Moving', ...args},
+        );
+        expect(r.isError, isTrue, reason: why);
+        expect(text(r), contains(why));
+      }
+      final CallToolResult other = await call(
+        'la_restore_backup',
+        <String, Object?>{'project': demo['dirName'], 'backup': name},
+      );
+      expect(other.isError, isTrue);
+      expect(text(other), contains('not a backup of'));
     });
   });
 }
