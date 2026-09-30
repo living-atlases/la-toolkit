@@ -29,6 +29,23 @@ void main() {
     );
   });
 
+  test('backup dir from --backup-dir, then the environment, else default', () {
+    expect(
+      backupDirOf(
+        <String>['--backup-dir', '/b'],
+        <String, String>{'LA_TOOLKIT_MCP_BACKUP_DIR': '/e'},
+      )!.path,
+      '/b',
+    );
+    expect(
+      backupDirOf(<String>[], <String, String>{
+        'LA_TOOLKIT_MCP_BACKUP_DIR': '/e',
+      })!.path,
+      '/e',
+    );
+    expect(backupDirOf(<String>[], <String, String>{}), isNull);
+  });
+
   test(
     'model logging goes to the log, never to the protocol channel',
     () async {

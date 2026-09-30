@@ -139,8 +139,9 @@ What it can do:
   [la-docker-compose](https://github.com/living-atlases/la-docker-compose) topology its
   CI deploys; only names, domain and hosts change. It previews first and only stores
   the project when asked.
-- Change the releases a portal pins, and move services to other servers (the placement
-  of the servers page), with a preview first and a backup of the project before storing.
+- Change the releases a portal pins, add, edit or remove its servers, and move, assign or
+  unassign services on them (the servers page, docker-compose hosts included), with a
+  preview first and a backup of the project before storing.
 - Deploy (dry run by default), follow the run, summarise the failed tasks, cancel it.
 
 Safety, in short: a real deploy needs two explicit arguments (`dryRun: false` and
@@ -148,7 +149,14 @@ Safety, in short: a real deploy needs two explicit arguments (`dryRun: false` an
 stdio. The backend API has no authentication, so never expose it over HTTP. Provisioning
 machines and DNS stays out of scope: the agent checks them and says what is missing.
 
-Setup and the full list of tools: [packages/la_toolkit_mcp/README.md](packages/la_toolkit_mcp/README.md).
+The server ships in the toolkit image, so there is nothing to build. On the machine that
+runs the toolkit:
+
+```bash
+claude mcp add --scope user la-toolkit -- docker exec -i la-toolkit la_toolkit_mcp
+```
+
+Other setups and the full list of tools: [packages/la_toolkit_mcp/README.md](packages/la_toolkit_mcp/README.md).
 
 ## Maintenance
 
