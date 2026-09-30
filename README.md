@@ -139,10 +139,12 @@ What it can do:
   [la-docker-compose](https://github.com/living-atlases/la-docker-compose) topology its
   CI deploys; only names, domain and hosts change. It previews first and only stores
   the project when asked.
+- Change the releases a portal pins, and move services to other servers (the placement
+  of the servers page), with a preview first and a backup of the project before storing.
 - Deploy (dry run by default), follow the run, summarise the failed tasks, cancel it.
 
 Safety, in short: a real deploy needs two explicit arguments (`dryRun: false` and
-`confirm: true`), the same goes for storing a new project, and the server only speaks
+`confirm: true`), the same goes for storing or changing a project, and the server only speaks
 stdio. The backend API has no authentication, so never expose it over HTTP. Provisioning
 machines and DNS stays out of scope: the agent checks them and says what is missing.
 

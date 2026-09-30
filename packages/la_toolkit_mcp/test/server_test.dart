@@ -723,4 +723,218 @@ void main() {
       expect(old['dockerComposeRelease'], 'v1.5.1');
     });
   });
+
+  group('la_set_placement', () {
+    setUp(() => fake.projects.add(placementPortal()));
+
+    Json stored() => fake.updatedProjects.single;
+    String idOf(Json p, String server) =>
+        ((p['servers'] as List<dynamic>).cast<Json>().firstWhere(
+              (Json s) => s['name'] == server,
+            ))['id']
+            as String;
+    String clusterOf(Json p, String server) =>
+        ((p['clusters'] as List<dynamic>).cast<Json>().firstWhere(
+              (Json c) => c['serverId'] == idOf(p, server),
+            ))['id']
+            as String;
+    List<Json> rowsOf(Json p, String service) {
+      final String sid =
+          ((p['services'] as List<dynamic>).cast<Json>().firstWhere(
+                (Json s) => s['nameInt'] == service,
+              ))['id']
+              as String;
+      return (p['serviceDeploys'] as List<dynamic>)
+          .cast<Json>()
+          .where((Json d) => d['serviceId'] == sid)
+          .toList();
+    }
+
+    const Map<String, Object?> spatialToDc2 = <String, Object?>{
+      'project': 'Moving',
+      'moves': <Object?>[
+        <String, Object?>{'service': 'spatial-hub', 'to': 'dc2'},
+      ],
+    };
+
+    test('previews by default and stores nothing', () async {
+      final CallToolResult r = await call('la_set_placement', spatialToDc2);
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['saved'], isFalse);
+      final Json move = (out['moves'] as List<dynamic>).single as Json;
+      expect(move['service'], 'spatial');
+      expect(move['carries'], <String>['geoserver', 'spatial_service']);
+      expect(move['from'], 'dc1 (docker-compose)');
+      expect(move['to'], 'dc2 (docker-compose)');
+      expect((move['versions'] as Json)['spatial'], '1.0.0');
+      final Json servers = out['servers'] as Json;
+      expect((servers['dc1'] as Json)['loses'], contains('spatial (docker)'));
+      expect((servers['dc2'] as Json)['gains'], contains('spatial (docker)'));
+      expect(servers.keys, unorderedEquals(<String>['dc1', 'dc2']));
+      expect(out['integrityErrors'], isEmpty);
+      expect(out['lint'], contains('new'));
+      final List<String> notes = (out['deployNotes'] as List<dynamic>)
+          .cast<String>();
+      // The new host first, then the one it leaves.
+      expect(notes.first, contains('dc2, dc1'));
+      expect(notes.first, contains('leg: "docker"'));
+      expect(notes, anyElement(contains('allow_service_removal')));
+      expect(out['extraHosts'], isA<Map<String, dynamic>>());
+      expect(fake.updatedProjects, isEmpty);
+      expect(fake.sshConfBody, isNull);
+      expect(backups.listSync(), isEmpty);
+    });
+
+    test('save needs confirm', () async {
+      final CallToolResult r = await call('la_set_placement', <String, Object?>{
+        ...spatialToDc2,
+        'save': true,
+      });
+      expect(r.isError, isTrue);
+      expect(text(r), contains('confirm'));
+      expect(fake.updatedProjects, isEmpty);
+    });
+
+    test('refuses ambiguous, unknown and unsafe moves', () async {
+      for (final (Object? moves, String why) in <(Object?, String)>[
+        (
+          <Object?>[
+            <String, Object?>{'service': 'ala_hub', 'to': 'vm1'},
+          ],
+          'say which one with `from`',
+        ),
+        (
+          <Object?>[
+            <String, Object?>{'service': 'geoserver', 'to': 'dc2'},
+          ],
+          'moves with spatial',
+        ),
+        (
+          <Object?>[
+            <String, Object?>{'service': 'spatial', 'to': 'gbif-es-dc2'},
+          ],
+          'No server "gbif-es-dc2"',
+        ),
+        (
+          <Object?>[
+            <String, Object?>{'service': 'spatial', 'to': 'new1'},
+          ],
+          'createComposeClusters',
+        ),
+        (
+          <Object?>[
+            <String, Object?>{'service': r'$(id)', 'to': 'dc2'},
+          ],
+          'not a service or server name',
+        ),
+        (
+          <Object?>[
+            <String, Object?>{'service': 'spatial', 'to': '--nodryrun'},
+          ],
+          'not a service or server name',
+        ),
+        (
+          <Object?>[
+            <String, Object?>{
+              'service': 'spatial',
+              'to': 'dc2',
+              'toLeg': 'k8s',
+            },
+          ],
+          '"docker" or "vm"',
+        ),
+        (<Object?>[], 'Give moves'),
+      ]) {
+        final CallToolResult r = await call(
+          'la_set_placement',
+          <String, Object?>{
+            'project': 'Moving',
+            'moves': moves,
+            'save': true,
+            'confirm': true,
+          },
+        );
+        expect(r.isError, isTrue, reason: why);
+        expect(text(r), contains(why));
+      }
+      expect(fake.updatedProjects, isEmpty);
+      expect(backups.listSync(), isEmpty);
+    });
+
+    test(
+      'save + confirm backs up, stores what the UI would, keeps versions',
+      () async {
+        final CallToolResult r = await call(
+          'la_set_placement',
+          <String, Object?>{...spatialToDc2, 'save': true, 'confirm': true},
+        );
+        expect(r.isError, isNot(isTrue), reason: text(r));
+        final Json out = json.decode(text(r)) as Json;
+        expect(out['saved'], isTrue);
+        final Json p = stored();
+        final Json cs = p['clusterServices'] as Json;
+        expect(cs[clusterOf(p, 'dc1')], <String>['ala_hub']);
+        expect(
+          cs[clusterOf(p, 'dc2')],
+          containsAll(<String>[
+            'ala_hub',
+            'spatial',
+            'spatial_service',
+            'geoserver',
+          ]),
+        );
+        for (final String s in <String>[
+          'spatial',
+          'spatial_service',
+          'geoserver',
+        ]) {
+          final Json row = rowsOf(p, s).single;
+          expect(row['clusterId'], clusterOf(p, 'dc2'), reason: s);
+          expect((row['softwareVersions'] as Json)[s], '1.0.0', reason: s);
+        }
+        expect(p['genConf'], isA<Map<String, dynamic>>());
+        // As the app: the ssh config is regenerated after the save.
+        expect(fake.sshConfBody!['id'], p['id']);
+        expect(
+          fake.calls.indexOf('POST gen-ssh-conf'),
+          greaterThan(fake.calls.indexOf('PATCH update-project')),
+        );
+        final Json old =
+            json.decode(File(out['backup'] as String).readAsStringSync())
+                as Json;
+        expect(
+          (old['clusterServices'] as Json)[clusterOf(old, 'dc1')],
+          contains('spatial'),
+        );
+      },
+    );
+
+    test('a new compose host gets its cluster only on request', () async {
+      final CallToolResult r = await call('la_set_placement', <String, Object?>{
+        'project': 'Moving',
+        'moves': <Object?>[
+          <String, Object?>{'service': 'spatial', 'to': 'new1'},
+        ],
+        'createComposeClusters': true,
+        'save': true,
+        'confirm': true,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['composeClustersCreatedOn'], <String>['new1']);
+      final Json p = stored();
+      expect((p['serverServices'] as Json)[idOf(p, 'new1')], <String>[
+        'docker_compose',
+      ]);
+      expect(
+        (p['clusterServices'] as Json)[clusterOf(p, 'new1')],
+        containsAll(<String>['spatial', 'spatial_service', 'geoserver']),
+      );
+      expect(
+        (rowsOf(p, 'spatial').single['softwareVersions'] as Json)['spatial'],
+        '1.0.0',
+      );
+    });
+  });
 }

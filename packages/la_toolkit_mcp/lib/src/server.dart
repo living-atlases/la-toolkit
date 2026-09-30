@@ -7,6 +7,7 @@ import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_releases.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
+import 'package:la_toolkit_core/placement/move_services.dart';
 import 'package:la_toolkit_core/releases/deps_versions.dart';
 import 'package:la_toolkit_core/synth/synthesize_project.dart';
 
@@ -14,6 +15,7 @@ import 'backend_client.dart';
 import 'deploy_outcome.dart';
 import 'deploy_request.dart';
 import 'lint.dart';
+import 'placement.dart';
 import 'preconditions.dart';
 import 'projects.dart';
 import 'releases.dart';
@@ -48,6 +50,8 @@ Hybrid portals (services on VMs and on docker-compose) deploy one leg per
 run: la_deploy with leg: "docker" (compose hosts only) or leg: "vm".
 la_set_releases changes the releases a portal pins (preview, then save and
 confirm); the next la_deploy with prepare: true applies them.
+la_set_placement moves services to other servers the same way (preview,
+then save and confirm); a later deploy of the servers involved applies it.
 
 Never pass confirm: true without the user's explicit agreement for that run.''';
 
@@ -88,7 +92,8 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
 
   final BackendClient backend;
 
-  /// Where la_set_releases leaves the project as it was before saving.
+  /// Where la_set_releases and la_set_placement leave the project as it was
+  /// before saving.
   final Directory backupDir;
 
   /// Resolves a host name to its addresses, empty when it does not resolve.
@@ -331,6 +336,69 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       ),
       openWorld: true,
       _setReleases,
+    );
+
+    _tool(
+      'la_set_placement',
+      'Move services of a project to other servers, as the servers page of '
+          'the toolkit does: off a server or the docker-compose cluster it '
+          'carries, onto another. A service takes its sub-services along '
+          '(spatial: spatial_service, geoserver) and keeps its versions. '
+          'Previews by default: placement before and after, which servers '
+          'gain and lose services, the public names that move between compose '
+          'hosts, generator keys that change, new integrity errors and lint '
+          'findings. save: true AND confirm: true store it (after a backup of '
+          'the project); only once the user agreed. Touches no server: the '
+          'change reaches them with the next deploy of the servers involved.',
+      Schema.object(
+        properties: <String, Schema>{
+          'project': _projectArg,
+          'moves': Schema.list(
+            description: 'Applied in order.',
+            items: Schema.object(
+              properties: <String, Schema>{
+                'service': Schema.string(
+                  description:
+                      'Service name (spatial, ala_hub...) or its inventory '
+                      'group / artifact when unambiguous (spatial-hub).',
+                ),
+                'to': Schema.string(
+                  description:
+                      'Server name (exact; it must exist in the project).',
+                ),
+                'from': Schema.string(
+                  description:
+                      'Server it leaves; required when it runs on several.',
+                ),
+                'fromLeg': Schema.string(
+                  description:
+                      '"docker" or "vm", when `from` runs it both ways.',
+                ),
+                'toLeg': Schema.string(
+                  description:
+                      '"docker" (the compose cluster `to` carries) or "vm". '
+                      'Default: the leg it leaves.',
+                ),
+              },
+              required: <String>['service', 'to'],
+            ),
+          ),
+          'createComposeClusters': Schema.bool(
+            description:
+                'Let a docker move add docker_compose (and so a compose '
+                'cluster) to a target server that has none, as ticking it in '
+                'the UI does. Default false.',
+          ),
+          'save': Schema.bool(description: 'Store it (default false).'),
+          'confirm': Schema.bool(
+            description:
+                'Required with save: true. Set it only when the user agreed.',
+          ),
+        },
+        required: <String>['project', 'moves'],
+      ),
+      openWorld: true,
+      _setPlacement,
     );
 
     _tool(
@@ -831,6 +899,20 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     };
     if (!save) return <String, dynamic>{...preview, 'saved': false};
 
+    final File backup = await _backup(ref);
+    await backend.updateProject(body);
+    return <String, dynamic>{
+      ...preview,
+      'saved': true,
+      'backup': backup.path,
+      'next':
+          'la_deploy with prepare: true checks out these releases and '
+          'regenerates the inventories.',
+    };
+  }
+
+  /// The project as `get-conf` returned it, before a save changes it.
+  Future<File> _backup(ProjectRef ref) async {
     await backupDir.create(recursive: true);
     final String stamp = DateTime.now().toUtc().toIso8601String().replaceAll(
       RegExp(r'[:.]'),
@@ -842,15 +924,158 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     await backup.writeAsString(
       const JsonEncoder.withIndent('  ').convert(ref.project),
     );
-    await backend.updateProject(body);
-    return <String, dynamic>{
-      ...preview,
-      'saved': true,
-      'backup': backup.path,
-      'next':
-          'la_deploy with prepare: true checks out these releases and '
-          'regenerates the inventories.',
+    return backup;
+  }
+
+  Future<Object?> _setPlacement(Map<String, Object?> a) async {
+    final bool save = a['save'] == true;
+    if (save && a['confirm'] != true) {
+      throw InvalidRequest(
+        'save: true changes where services run on the next deploy: pass '
+        'confirm: true, and only once the user agreed to it.',
+      );
+    }
+    final List<ServiceMove> moves;
+    try {
+      moves = parseMoves(a['moves']);
+    } on FormatException catch (e) {
+      throw InvalidRequest(e.message);
+    }
+    final ProjectRef ref = await _resolve(a);
+
+    // Two models from the same stored JSON: whatever fromJson normalises
+    // shows up on both sides and is not reported as part of the move.
+    final LAProject before = projectModel(ref);
+    final LAProject p = projectModel(ref);
+    Map<String, LAReleases>? laReleases;
+    try {
+      final Map<String, String> query = depsVersionsQuery();
+      laReleases = parseDepsVersions(await backend.depsVersions(query), query);
+    } on Exception {
+      // Only seeds versions of services that were assigned nowhere.
+      laReleases = null;
+    }
+    final PlacementChange change;
+    try {
+      change = moveServices(
+        p,
+        moves,
+        createComposeClusters: a['createComposeClusters'] == true,
+        laReleases: laReleases,
+      );
+    } on PlacementException catch (e) {
+      throw InvalidRequest(e.message);
+    }
+
+    final Json beforeBody = before.toApiJson();
+    final Json body = p.toApiJson();
+    final List<String> integrityBefore = before.validateDataIntegrity();
+    final List<String> newErrors = p
+        .validateDataIntegrity()
+        .where((String e) => !integrityBefore.contains(e))
+        .toList();
+    final List<String> unassignedBefore = before.servicesNotAssigned();
+    final List<String> unassigned = p.servicesNotAssigned();
+    final bool hasKeys = (await backend.sshKeys()).isNotEmpty;
+    final Json lint = lintDelta(
+      await _lintModel(before, hasSshKeys: hasKeys),
+      await _lintModel(p, hasSshKeys: hasKeys),
+    );
+    final Json servers = serverChanges(
+      servicesByServer(before),
+      servicesByServer(p),
+    );
+    final Json genConfChanges = genConfDiff(
+      beforeBody['genConf'] as Json,
+      body['genConf'] as Json,
+    );
+    final List<String> genConf = <String>[
+      for (final String k in <String>['added', 'removed', 'changed'])
+        ...(genConfChanges[k] as List<String>),
+    ];
+    final Json extraHosts = extraHostChanges(
+      beforeBody['genConf'] as Json,
+      body['genConf'] as Json,
+    );
+    final List<String> toDeploy = <String>{
+      for (final MovedService m in change.moves) m.to.server.name,
+      for (final MovedService m in change.moves)
+        if (m.from != null) m.from!.server.name,
+      ...extraHosts.keys,
+    }.toList();
+    final Json preview = <String, dynamic>{
+      'project': ref.dirName,
+      'moves': change.moves.map(moveJson).toList(),
+      if (change.clustersCreated.isNotEmpty)
+        'composeClustersCreatedOn': change.clustersCreated,
+      'servers': servers,
+      'placement': <String, dynamic>{
+        'before': <String, dynamic>{
+          for (final MapEntry<String, Map<String, List<String>>> e
+              in servicesByServer(before).entries)
+            if (servers.containsKey(e.key)) e.key: e.value,
+        },
+        'after': <String, dynamic>{
+          for (final MapEntry<String, Map<String, List<String>>> e
+              in servicesByServer(p).entries)
+            if (servers.containsKey(e.key)) e.key: e.value,
+        },
+      },
+      'publicNames': publicNameChanges(
+        beforeBody['genConf'] as Json,
+        body['genConf'] as Json,
+      ),
+      'genConfChanges': genConfChanges,
+      'integrityErrors': newErrors,
+      if (unassigned.any((String s) => !unassignedBefore.contains(s)))
+        'newlyUnassigned': unassigned
+            .where((String s) => !unassignedBefore.contains(s))
+            .toList(),
+      'lint': lint,
+      'extraHosts': extraHosts,
+      'deployNotes': <String>[
+        'Nothing changed on the servers yet. Deploy, new host first: '
+            '${toDeploy.join(', ')}'
+            '${p.isHybrid ? ' (hybrid portal: la_deploy with leg: "docker"; limitToServers for these)' : ''}'
+            ', with prepare: true, dry run first.',
+        if (extraHosts.isNotEmpty)
+          'Compose hosts listed in extraHosts resolve a moved name to its old '
+              'address until they are deployed again.',
+        if (genConf.contains('LA_hubs') ||
+            genConf.any((String k) => k.endsWith('_hostname')))
+          'Hosts outside the compose stack (VMs, VM hubs) get the new addresses '
+              'in /etc/hosts only on their next deploy.',
+        if (change.moves.any(
+          (MovedService m) => m.from?.leg == PlacementLeg.docker,
+        ))
+          'A compose host that loses services stops its next deploy at '
+              "la-docker-compose's safety gate (validate-service-consistency) "
+              'until it is run with -e allow_service_removal=true, which '
+              'la_deploy does not pass: until then the old containers keep '
+              'running there.',
+      ],
     };
+    if (!save) return <String, dynamic>{...preview, 'saved': false};
+    if (newErrors.isNotEmpty) {
+      throw InvalidRequest(
+        'Not saved: the move breaks the project integrity: '
+        '${newErrors.join(' ')}',
+      );
+    }
+
+    final File backup = await _backup(ref);
+    // What the app does on every save (_updateProject): store, then
+    // regenerate the toolkit's ssh config for the project's servers.
+    await backend.updateProject(body);
+    if (p.servers.isNotEmpty) {
+      await backend.genSshConf(
+        name: p.shortName,
+        id: p.id,
+        servers: p.toJson()['servers'] as List<dynamic>,
+        user: p.getVariableValue('ansible_user')?.toString() ?? 'ubuntu',
+      );
+    }
+    return <String, dynamic>{...preview, 'saved': true, 'backup': backup.path};
   }
 
   Future<Object?> _preconditions(Map<String, Object?> a) async {

@@ -20,6 +20,7 @@ shows up in the project history like any other.
 | `la_lint_project` | The warnings of the UI lint panel: placement, cluster sizes, services that need each other, releases the dependency matrix rejects. Never `clean` when the matrix could not be read | no |
 | `la_create_project` | A new docker-compose portal on 1-3 hosts from domain, names, hosts and ssh key, built on a la-docker-compose topology its CI checks (`1host`, `2host`, `default-3host` by host count, or the one named). Previews by default (validation, lint, public names, the `skipServices` to deploy with); `save` + `confirm` store it | only with `save` + `confirm`: adds the project to the toolkit, touches no server |
 | `la_set_releases` | Change the generator / la-docker-compose (tag or `upstream`) / ala-install releases a portal pins. Previews by default (before/after, generator configuration keys that change, hubs kept, lint); `save` + `confirm` back the project up to `~/.cache/la_toolkit_mcp/backups/` and store it | only with `save` + `confirm`: the project in the toolkit, no server |
+| `la_set_placement` | Move services to other servers, as the servers page does: off a server or the compose cluster it carries, onto another (a sub-service goes with its parent: `spatial` takes `spatial_service` and `geoserver`), keeping their versions. Previews by default (moves, servers that gain and lose services, public names and `extra_hosts` that change host, generator keys that change, new integrity errors, lint delta, deploy notes); `save` + `confirm` back the project up and store it | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_list_runs` | Command history, newest first | no |
 | `la_check_connectivity` | ping, ssh, sudo and OS of every server | read-only ssh on the servers; saves the results on the project, like the UI |
 | `la_check_preconditions` | Blockers before a deploy, for the servers that carry services (or only `servers`, or one `leg` of a hybrid portal): ssh key in the toolkit, ssh and sudo, Ubuntu >= 22.04, disk space (`/`, `/data`, `/var/lib/docker`), portal host names resolve | read-only ssh; saves connectivity results like the UI |
@@ -86,6 +87,43 @@ versions, is what the CI deploys. Services it pins no version for get the newest
 one from the backend, as the UI's template import does. The base's data hubs are left
 out.
 
+### Moving services
+
+`la_set_placement` takes a list of moves, applied in order:
+
+```json
+{"project": "gbif-es",
+ "moves": [{"service": "spatial", "to": "gbif-es-espacial-2026"}],
+ "createComposeClusters": true}
+```
+
+- `service` is the toolkit name (`spatial`, `ala_hub`) or, when it names only one
+  service, its inventory group or artifact (`spatial-hub`). A sub-service
+  (`spatial_service`, `geoserver`, `userdetails`...) is refused: it moves with its parent,
+  as the UI never shows it on its own.
+- `to` and `from` are server names, matched exactly; the target must already be a server
+  of the project (add a new VM in the UI first). `from` is only needed when the service
+  runs in several places (ala_hub on three compose hosts and four VMs, for instance).
+- The service keeps its leg (compose cluster or VM) unless `toLeg` says otherwise; a
+  compose host that can take both needs `toLeg` when there is no source leg. A docker move
+  onto a server without a compose cluster is refused unless `createComposeClusters: true`,
+  which ticks `docker_compose` on it as the UI does (the cluster comes with it). A hub
+  moves between the portal's clusters or onto its own VMs, and never creates a cluster.
+- How it moves: `moveServices()` in `la_toolkit_core`, the UI's own
+  `unAssignByType` / `assignByType` calls, with the eligibility the servers page applies
+  to the chips it offers (docker support, services that allow a single deploy). The one
+  addition: the moved rows keep their software versions, where the UI would seed the
+  newest release for a service that runs nowhere else.
+- The save is the UI's: `update-project` with the model's `toApiJson()`, then
+  `gen-ssh-conf`. It is refused when the move adds a data integrity error.
+- The preview also lists, per compose host, the `extra_hosts` names that now resolve to
+  another address (`extraHosts`): hosts that did not move anything can be there, and they
+  need a deploy too. `deployNotes` names every host to deploy.
+- Nothing reaches the servers until they are deployed. A compose host that loses
+  services stops its next deploy at la-docker-compose's safety gate
+  (`validate-service-consistency.yml`) until it is run with
+  `-e allow_service_removal=true`, which `la_deploy` does not pass.
+
 ### Preconditions
 
 - Only servers with services assigned (directly, or as the carrier of a docker-compose
@@ -121,14 +159,23 @@ dart pub get
 dart compile exe bin/la_toolkit_mcp.dart -o la_toolkit_mcp
 ```
 
-Register it in Claude Code (use `http://localhost:1337` for a backend running natively
-in development; the production image listens on 2010):
+The binary (git-ignored) has no runtime dependencies; rebuild it after pulling changes.
+
+Register it in Claude Code with the backend URL of the toolkit it drives: the production
+image listens on 2010 inside its container (check the port your deployment publishes),
+and a backend running natively in development on 1337:
 
 ```bash
-claude mcp add la-toolkit -- /path/to/la_toolkit_mcp --backend http://localhost:2010
+claude mcp add --scope user la-toolkit -- "$PWD/la_toolkit_mcp" --backend http://localhost:2010
 ```
 
-Or point any MCP client at the command, with the backend in `LA_TOOLKIT_BACKEND`.
+`--scope user` makes it available in every project; leave it out to register it only for
+the current one. Then check it with `claude mcp list` (it should say `Connected`) and
+start a new Claude Code session, or run `/mcp`, to load the tools.
+
+Without compiling, `dart run bin/la_toolkit_mcp.dart --backend ...` works as the command
+too, only slower to start. Any other MCP client takes the same command, with the backend
+in `--backend` or `LA_TOOLKIT_BACKEND`.
 
 ## Development
 
@@ -139,12 +186,14 @@ dart test
 
 | Suite | What it pins |
 |---|---|
-| `test/server_test.dart` | Every tool over the MCP protocol against a fake backend (and fake GitHub): refusals (`confirm`, whitelists, running runs), the payloads sent, create preview vs save. |
+| `test/server_test.dart` | Every tool over the MCP protocol against a fake backend (and fake GitHub): refusals (`confirm`, whitelists, running runs, ambiguous moves), the payloads sent, create / releases / placement preview vs save. |
+| `test/placement_test.dart` | The la_set_placement preview helpers: argument whitelisting, servers that gain and lose services, public names and `extra_hosts` that change host, lint delta. |
 | `test/stdio_test.dart` | The entry point the binary uses: model logging never reaches stdout, the protocol channel. |
 | `test/lint_test.dart` | The lint report: never `clean` without the matrix, hubs built under their portal. |
 | `test/preconditions_test.dart`, `deploy_request_test.dart`, `deploy_outcome_test.dart`, `projects_test.dart` | The pure helpers: precondition verdicts, argument validation, failure extraction from the ansible JSON callback and from the log, project lookup. |
 
-The project synthesis itself is tested in `la_toolkit_core` (`test/synthesize_project_test.dart`).
+The project synthesis and the service moves themselves are tested in `la_toolkit_core`
+(`test/synthesize_project_test.dart`, `test/move_services_test.dart`).
 Nothing here talks to a real backend or server; an end-to-end check needs a toolkit in
 dev mode (`--backend http://localhost:1337`) and, for anything past a dry run, a
 throwaway host.
