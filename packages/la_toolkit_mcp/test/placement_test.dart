@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
@@ -326,5 +329,47 @@ void main() {
       },
     ]);
     expect(collateralRemovals(before, before, <String>[]), isEmpty);
+  });
+
+  test('collateralRemovals sees a hub move as its own', () {
+    final LAProject portal = LAProject.fromJson(placementPortal());
+    final LAProject hub = LAProject(
+      longName: 'Hub',
+      shortName: 'hub',
+      domain: 'hub.example.net',
+      alaInstallRelease: 'v2.4.2',
+      generatorRelease: '1.8.32',
+      isHub: true,
+      parent: portal,
+    );
+    hub.serviceInUse('ala_hub', true);
+    portal.hubs.add(hub);
+    hub.assignByType(
+      portal.clusters
+          .firstWhere(
+            (LACluster c) => c.serverId == portal.getServerByName('dc1')!.id,
+          )
+          .id,
+      DeploymentType.dockerCompose,
+      <String>['ala_hub'],
+    );
+    final Json stored = json.decode(json.encode(portal.toApiJson())) as Json;
+    LAProject hubOf(Json j) => LAProject.fromJson(j).hubs.single;
+    final LAProject before = hubOf(stored);
+    final LAProject after = hubOf(stored);
+    changePlacement(after, const <ServiceMove>[
+      ServiceMove(service: 'ala_hub', to: 'dc2'),
+    ]);
+    expect(
+      after.serviceDeploys.length,
+      before.serviceDeploys.length,
+      reason: 'a move replaces rows',
+    );
+    expect(collateralRemovals(before, after, <String>['dc1', 'dc2']), isEmpty);
+    // Named by the portal's server, not left unresolved.
+    expect(
+      collateralRemovals(before, after, <String>['dc2']),
+      allOf(isNotEmpty, everyElement(containsPair('server', 'dc1'))),
+    );
   });
 }

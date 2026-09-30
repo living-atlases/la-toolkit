@@ -5,7 +5,6 @@ library;
 
 import 'package:collection/collection.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
-import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service.dart';
 import 'package:la_toolkit_core/models/la_service_deploy.dart';
@@ -333,14 +332,12 @@ List<Json> collateralRemovals(
   final Set<String> kept = <String>{
     for (final LAServiceDeploy sd in after.serviceDeploys) sd.id,
   };
-  String? host(LAServiceDeploy sd) {
-    final String? serverId =
-        sd.serverId ??
-        before.clusters
-            .firstWhereOrNull((LACluster c) => c.id == sd.clusterId)
-            ?.serverId;
-    return serverId == null ? null : before.getServerById(serverId)?.name;
-  }
+  // A hub's rows sit on its portal's clusters and servers.
+  String? host(LAServiceDeploy sd) => before.placement
+      .serverById(
+        sd.serverId ?? before.placement.clusterById(sd.clusterId)?.serverId,
+      )
+      ?.name;
 
   return <Json>[
     for (final LAServiceDeploy sd in before.serviceDeploys)
@@ -354,7 +351,7 @@ List<Json> collateralRemovals(
           'server': host(sd) ?? sd.serverId,
           if (sd.clusterId != null) 'cluster': sd.clusterId,
           if (sd.clusterId != null &&
-              !before.clusters.any((LACluster c) => c.id == sd.clusterId))
+              before.placement.clusterById(sd.clusterId) == null)
             'clusterMissing': true,
         },
   ];
