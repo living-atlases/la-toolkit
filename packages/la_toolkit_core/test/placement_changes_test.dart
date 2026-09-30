@@ -7,7 +7,7 @@ import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:la_toolkit_core/models/la_service_deploy.dart';
-import 'package:la_toolkit_core/placement/move_services.dart';
+import 'package:la_toolkit_core/placement/placement_changes.dart';
 import 'package:test/test.dart';
 
 /// A hybrid portal as it is stored: collectory and dashboard on the VM
@@ -78,7 +78,7 @@ Matcher refusal(String text) => throwsA(
 void main() {
   test('moves spatial with its sub-services, keeping versions', () {
     final LAProject p = portal();
-    final PlacementChange c = moveServices(p, const <ServiceMove>[
+    final PlacementChange c = changePlacement(p, const <ServiceMove>[
       ServiceMove(service: 'spatial', to: 'dc2'),
     ]);
     expect(
@@ -123,19 +123,24 @@ void main() {
     expect(() => resolveServiceName('nope'), refusal('No service'));
   });
 
-  test('a compose cluster is only created on request, as the UI does', () {
+  test('a compose cluster comes with docker_compose, as in the UI', () {
     final LAProject p = portal();
     expect(
-      () => moveServices(p, const <ServiceMove>[
+      () => changePlacement(p, const <ServiceMove>[
         ServiceMove(service: 'spatial', to: 'new1'),
       ]),
-      refusal('createComposeClusters'),
+      refusal('assign docker_compose'),
     );
 
     final LAProject q = portal();
-    final PlacementChange c = moveServices(q, const <ServiceMove>[
+    final PlacementChange c = changePlacement(q, const <ServiceMove>[
+      ServiceMove(
+        service: 'docker_compose',
+        op: PlacementOp.assign,
+        to: 'new1',
+      ),
       ServiceMove(service: 'spatial', to: 'new1'),
-    ], createComposeClusters: true);
+    ]);
     expect(c.clustersCreated, <String>['new1']);
     final String new1 = q.getServerByName('new1')!.id;
     expect(q.getServerServices(serverId: new1), <String>[dockerCompose]);
@@ -144,19 +149,82 @@ void main() {
       q.getClusterServices(clusterId: clusterOn(q, 'new1').id),
       containsAll(<String>[spatial, spatialService, geoserver]),
     );
-    expect(c.moves.single.versions[spatial], '1.0.0');
+    expect(c.moves.last.versions[spatial], '1.0.0');
     expect(q.validateDataIntegrity(), isEmpty);
+  });
+
+  test('unassigning docker_compose deletes its cluster, only when empty', () {
+    final LAProject p = portal();
+    expect(
+      () => changePlacement(p, const <ServiceMove>[
+        ServiceMove(
+          service: 'docker_compose',
+          op: PlacementOp.unassign,
+          from: 'dc2',
+        ),
+      ]),
+      refusal('still runs ala_hub'),
+    );
+    final PlacementChange c = changePlacement(p, const <ServiceMove>[
+      ServiceMove(service: alaHubName, op: PlacementOp.unassign, from: 'dc2'),
+      ServiceMove(
+        service: 'docker_compose',
+        op: PlacementOp.unassign,
+        from: 'dc2',
+      ),
+    ]);
+    expect(c.clustersDeleted, <String>['dc2']);
+    final String dc2 = p.getServerByName('dc2')!.id;
+    expect(p.clusters.where((LACluster c) => c.serverId == dc2), isEmpty);
+    expect(p.getServerServices(serverId: dc2), isEmpty);
+    expect(serviceLocations(p, alaHub).map((PlacementSlot s) => '$s'), <String>[
+      'dc1 (docker-compose)',
+    ]);
+    expect(p.validateDataIntegrity(), isEmpty);
+  });
+
+  test('assign adds a place without taking the service off another', () {
+    final LAProject p = portal();
+    final PlacementChange c = changePlacement(p, const <ServiceMove>[
+      ServiceMove(
+        service: alaHubName,
+        op: PlacementOp.assign,
+        to: 'vm1',
+        toLeg: PlacementLeg.vm,
+      ),
+    ]);
+    expect(c.moves.single.from, isNull);
+    expect(serviceLocations(p, alaHub), hasLength(3));
+    // A single-deploy service is only offered where it does not run yet.
+    expect(
+      () => changePlacement(p, const <ServiceMove>[
+        ServiceMove(
+          service: 'spatial',
+          op: PlacementOp.assign,
+          to: 'dc2',
+          toLeg: PlacementLeg.docker,
+        ),
+      ]),
+      refusal('allows one deploy only'),
+    );
+    expect(
+      () => changePlacement(p, const <ServiceMove>[
+        ServiceMove(service: 'spatial', op: PlacementOp.unassign, to: 'dc2'),
+      ]),
+      refusal('unassign takes `from`'),
+    );
+    expect(p.validateDataIntegrity(), isEmpty);
   });
 
   test('a service on several places needs from', () {
     final LAProject p = portal();
     expect(
-      () => moveServices(p, const <ServiceMove>[
+      () => changePlacement(p, const <ServiceMove>[
         ServiceMove(service: alaHubName, to: 'vm1', toLeg: PlacementLeg.vm),
       ]),
       refusal('say which one with `from`'),
     );
-    final PlacementChange c = moveServices(p, const <ServiceMove>[
+    final PlacementChange c = changePlacement(p, const <ServiceMove>[
       ServiceMove(
         service: alaHubName,
         from: 'dc2',
@@ -187,6 +255,22 @@ void main() {
         const ServiceMove(service: 'docker_compose', to: 'dc2'),
         'not a workload',
       ),
+      (
+        const ServiceMove(
+          service: 'docker_swarm',
+          op: PlacementOp.assign,
+          to: 'dc2',
+        ),
+        'not a workload',
+      ),
+      (
+        const ServiceMove(
+          service: 'docker_compose',
+          op: PlacementOp.assign,
+          to: 'dc1',
+        ),
+        'already a docker-compose host',
+      ),
       (const ServiceMove(service: 'spatial', to: 'dc3'), 'No server "dc3"'),
       (const ServiceMove(service: 'spatial', to: 'dc1'), 'already on'),
       (
@@ -209,7 +293,7 @@ void main() {
     ]) {
       final LAProject p = portal();
       expect(
-        () => moveServices(p, <ServiceMove>[m]),
+        () => changePlacement(p, <ServiceMove>[m]),
         refusal(why),
         reason: why,
       );
@@ -220,12 +304,12 @@ void main() {
     final LAProject p = portal();
     p.serviceInUse('images', true);
     expect(
-      () => moveServices(p, const <ServiceMove>[
+      () => changePlacement(p, const <ServiceMove>[
         ServiceMove(service: 'images', to: 'dc1'),
       ]),
       refusal('pass toLeg'),
     );
-    moveServices(p, const <ServiceMove>[
+    changePlacement(p, const <ServiceMove>[
       ServiceMove(service: 'images', to: 'dc1', toLeg: PlacementLeg.docker),
     ]);
     expect(
@@ -254,18 +338,28 @@ void main() {
     );
 
     expect(
-      () => moveServices(hub, const <ServiceMove>[
+      () => changePlacement(hub, const <ServiceMove>[
         ServiceMove(service: alaHubName, to: 'new1'),
-      ], createComposeClusters: true),
+      ]),
       refusal('a hub never creates'),
     );
     expect(
-      () => moveServices(hub, const <ServiceMove>[
+      () => changePlacement(hub, const <ServiceMove>[
+        ServiceMove(
+          service: 'docker_compose',
+          op: PlacementOp.assign,
+          to: 'new1',
+        ),
+      ]),
+      refusal('A hub never creates'),
+    );
+    expect(
+      () => changePlacement(hub, const <ServiceMove>[
         ServiceMove(service: alaHubName, to: 'vm1', toLeg: PlacementLeg.vm),
       ]),
       refusal('server of the portal'),
     );
-    final PlacementChange c = moveServices(hub, const <ServiceMove>[
+    final PlacementChange c = changePlacement(hub, const <ServiceMove>[
       ServiceMove(service: alaHubName, to: 'dc2'),
     ]);
     expect(c.moves.single.to.toString(), 'dc2 (docker-compose)');

@@ -1,12 +1,15 @@
-import 'package:la_toolkit_core/placement/move_services.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/placement/placement_changes.dart';
+import 'package:la_toolkit_core/placement/server_changes.dart';
 import 'package:la_toolkit_mcp/la_toolkit_mcp.dart';
 import 'package:la_toolkit_mcp/src/placement.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('parseMoves', () {
+  group('parseChanges', () {
     test('reads names and legs', () {
-      final ServiceMove m = parseMoves(<Object?>[
+      final ServiceMove m = parseChanges(<Object?>[
         <String, dynamic>{
           'service': 'spatial',
           'to': 'dc2',
@@ -20,6 +23,17 @@ void main() {
       expect(m.from, 'dc1');
       expect(m.fromLeg, PlacementLeg.docker);
       expect(m.toLeg, PlacementLeg.vm);
+      expect(m.op, PlacementOp.move);
+      expect(
+        parseChanges(<Object?>[
+          <String, dynamic>{
+            'op': 'unassign',
+            'service': 'docker_compose',
+            'from': 'dc2',
+          },
+        ]).single.op,
+        PlacementOp.unassign,
+      );
     });
 
     test('refuses anything else', () {
@@ -32,7 +46,7 @@ void main() {
           <String, dynamic>{'to': 'dc2'},
         ],
         <Object?>[
-          <String, dynamic>{'service': 'spatial'},
+          <String, dynamic>{'service': 'spatial', 'op': 'copy'},
         ],
         <Object?>[
           <String, dynamic>{'service': 'spatial; id', 'to': 'dc2'},
@@ -51,7 +65,7 @@ void main() {
           },
         ],
       ]) {
-        expect(() => parseMoves(bad), throwsFormatException, reason: '$bad');
+        expect(() => parseChanges(bad), throwsFormatException, reason: '$bad');
       }
     });
   });
@@ -174,5 +188,119 @@ void main() {
     expect(d['resolved'], <String>['a']);
     expect(d['newDependencyErrors'], <String>['solr']);
     expect(d['unchanged'], 1);
+  });
+
+  group('la_set_servers arguments', () {
+    final List<Json> keys = <Json>[
+      <String, dynamic>{
+        'name': 'k1',
+        'missing': false,
+        'desc': 'k1',
+        'encrypted': false,
+      },
+      <String, dynamic>{
+        'name': 'gone',
+        'missing': true,
+        'desc': 'gone',
+        'encrypted': false,
+      },
+    ];
+
+    test('reads servers and resolves the ssh key', () {
+      final ({
+        List<ServerSpec> add,
+        List<ServerSpec> update,
+        List<String> remove,
+      })
+      c = parseServerChanges(<String, Object?>{
+        'add': <Object?>[
+          <String, dynamic>{
+            'name': 'a',
+            'ip': '10.0.0.1',
+            'sshPort': 2222,
+            'sshKey': 'k1',
+            'aliases': <String>['a.example.org'],
+          },
+        ],
+        'remove': <String>['b'],
+      }, keys);
+      expect(c.add.single.sshKey!.name, 'k1');
+      expect(c.add.single.sshPort, 2222);
+      expect(c.add.single.aliases, <String>['a.example.org']);
+      expect(c.update, isEmpty);
+      expect(c.remove, <String>['b']);
+    });
+
+    test('refuses anything else', () {
+      for (final Map<String, Object?> bad in <Map<String, Object?>>[
+        <String, Object?>{'add': 'a'},
+        <String, Object?>{
+          'add': <Object?>['a'],
+        },
+        <String, Object?>{
+          'add': <Object?>[
+            <String, dynamic>{'ip': '10.0.0.1'},
+          ],
+        },
+        <String, Object?>{
+          'add': <Object?>[
+            <String, dynamic>{'name': 'a', 'sshKey': 'gone'},
+          ],
+        },
+        <String, Object?>{
+          'add': <Object?>[
+            <String, dynamic>{'name': 'a', 'sshPort': '22'},
+          ],
+        },
+        <String, Object?>{
+          'add': <Object?>[
+            <String, dynamic>{
+              'name': 'a',
+              'aliases': <String>['x y'],
+            },
+          ],
+        },
+        <String, Object?>{'remove': 'a'},
+        <String, Object?>{
+          'remove': <String>['-a'],
+        },
+      ]) {
+        expect(
+          () => parseServerChanges(bad, keys),
+          throwsFormatException,
+          reason: '$bad',
+        );
+      }
+    });
+
+    test('serverNameClashes: same name elsewhere, other IP', () {
+      final LAProject p = LAProject(
+        longName: 'P',
+        shortName: 'P',
+        domain: 'example.org',
+      );
+      p.upsertServer(LAServer(name: 'h1', ip: '10.0.0.1', projectId: p.id));
+      p.upsertServer(LAServer(name: 'h2', ip: '10.0.0.2', projectId: p.id));
+      final ProjectRef self = ProjectRef(<String, dynamic>{
+        'id': p.id,
+        'dirName': 'p',
+      });
+      final List<ProjectRef> all = <ProjectRef>[
+        self,
+        ProjectRef(<String, dynamic>{
+          'id': 'o',
+          'dirName': 'other',
+          'servers': <Json>[
+            <String, dynamic>{'name': 'h1', 'ip': '10.0.0.1'},
+            <String, dynamic>{'name': 'h2', 'ip': '10.9.9.9'},
+          ],
+        }),
+      ];
+      expect(serverNameClashes(all, self, p, <String>['h1', 'h2']), <String>[
+        'Project other also has a server "h2", at 10.9.9.9: ssh to that name '
+            'may reach either.',
+      ]);
+      expect(serverJson(p, 'h1')['ip'], '10.0.0.1');
+    });
   });
 }

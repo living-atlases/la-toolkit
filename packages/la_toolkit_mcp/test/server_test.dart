@@ -752,7 +752,7 @@ void main() {
 
     const Map<String, Object?> spatialToDc2 = <String, Object?>{
       'project': 'Moving',
-      'moves': <Object?>[
+      'changes': <Object?>[
         <String, Object?>{'service': 'spatial-hub', 'to': 'dc2'},
       ],
     };
@@ -762,7 +762,8 @@ void main() {
       expect(r.isError, isNot(isTrue), reason: text(r));
       final Json out = json.decode(text(r)) as Json;
       expect(out['saved'], isFalse);
-      final Json move = (out['moves'] as List<dynamic>).single as Json;
+      final Json move = (out['changes'] as List<dynamic>).single as Json;
+      expect(move['op'], 'move');
       expect(move['service'], 'spatial');
       expect(move['carries'], <String>['geoserver', 'spatial_service']);
       expect(move['from'], 'dc1 (docker-compose)');
@@ -797,7 +798,7 @@ void main() {
     });
 
     test('refuses ambiguous, unknown and unsafe moves', () async {
-      for (final (Object? moves, String why) in <(Object?, String)>[
+      for (final (Object? changes, String why) in <(Object?, String)>[
         (
           <Object?>[
             <String, Object?>{'service': 'ala_hub', 'to': 'vm1'},
@@ -820,19 +821,19 @@ void main() {
           <Object?>[
             <String, Object?>{'service': 'spatial', 'to': 'new1'},
           ],
-          'createComposeClusters',
+          'assign docker_compose to it first',
         ),
         (
           <Object?>[
             <String, Object?>{'service': r'$(id)', 'to': 'dc2'},
           ],
-          'not a service or server name',
+          'is not a valid name',
         ),
         (
           <Object?>[
             <String, Object?>{'service': 'spatial', 'to': '--nodryrun'},
           ],
-          'not a service or server name',
+          'is not a valid name',
         ),
         (
           <Object?>[
@@ -842,15 +843,15 @@ void main() {
               'toLeg': 'k8s',
             },
           ],
-          '"docker" or "vm"',
+          '`toLeg` must be "vm" or "docker"',
         ),
-        (<Object?>[], 'Give moves'),
+        (<Object?>[], 'Give changes'),
       ]) {
         final CallToolResult r = await call(
           'la_set_placement',
           <String, Object?>{
             'project': 'Moving',
-            'moves': moves,
+            'changes': changes,
             'save': true,
             'confirm': true,
           },
@@ -910,31 +911,207 @@ void main() {
       },
     );
 
-    test('a new compose host gets its cluster only on request', () async {
-      final CallToolResult r = await call('la_set_placement', <String, Object?>{
+    test(
+      'docker_compose makes a compose host, then spatial moves in',
+      () async {
+        final CallToolResult r = await call(
+          'la_set_placement',
+          <String, Object?>{
+            'project': 'Moving',
+            'changes': <Object?>[
+              <String, Object?>{
+                'op': 'assign',
+                'service': 'docker_compose',
+                'to': 'new1',
+              },
+              <String, Object?>{'service': 'spatial', 'to': 'new1'},
+            ],
+            'save': true,
+            'confirm': true,
+          },
+        );
+        expect(r.isError, isNot(isTrue), reason: text(r));
+        final Json out = json.decode(text(r)) as Json;
+        expect(out['composeClustersCreatedOn'], <String>['new1']);
+        final Json p = stored();
+        expect((p['serverServices'] as Json)[idOf(p, 'new1')], <String>[
+          'docker_compose',
+        ]);
+        expect(
+          (p['clusterServices'] as Json)[clusterOf(p, 'new1')],
+          containsAll(<String>['spatial', 'spatial_service', 'geoserver']),
+        );
+        expect(
+          (rowsOf(p, 'spatial').single['softwareVersions'] as Json)['spatial'],
+          '1.0.0',
+        );
+      },
+    );
+  });
+
+  group('la_set_servers', () {
+    setUp(() => fake.projects.add(placementPortal()));
+
+    Json server(Json p, String name) => (p['servers'] as List<dynamic>)
+        .cast<Json>()
+        .firstWhere((Json s) => s['name'] == name);
+
+    test('previews an added server, warns on a name clash', () async {
+      final CallToolResult r = await call('la_set_servers', <String, Object?>{
         'project': 'Moving',
-        'moves': <Object?>[
-          <String, Object?>{'service': 'spatial', 'to': 'new1'},
+        'add': <Object?>[
+          <String, Object?>{
+            'name': 'la-1',
+            'ip': '10.0.1.77',
+            'sshKey': 'k1',
+            'gateways': <String>['vm1'],
+          },
         ],
-        'createComposeClusters': true,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['saved'], isFalse);
+      final Json added = (out['added'] as List<dynamic>).single as Json;
+      expect(added['ip'], '10.0.1.77');
+      expect(added['sshKey'], 'k1');
+      expect(added['gateways'], <String>['vm1']);
+      expect(
+        (out['warnings'] as List<dynamic>).single,
+        contains('Project demo also has a server "la-1", at 10.0.0.5'),
+      );
+      // Compose hosts list every server name in extra_hosts: they learn
+      // the new one on their next deploy.
+      expect(out['extraHosts'], contains('dc1'));
+      expect((out['deployNotes'] as List<dynamic>).first, contains('dc1, dc2'));
+      expect(fake.updatedProjects, isEmpty);
+      expect(backups.listSync(), isEmpty);
+    });
+
+    test('save needs confirm', () async {
+      final CallToolResult r = await call('la_set_servers', <String, Object?>{
+        'project': 'Moving',
+        'remove': <String>['new1'],
+        'save': true,
+      });
+      expect(r.isError, isTrue);
+      expect(text(r), contains('confirm'));
+      expect(fake.updatedProjects, isEmpty);
+    });
+
+    test('refuses bad values and busy servers', () async {
+      for (final (Map<String, Object?> args, String why)
+          in <(Map<String, Object?>, String)>[
+            (<String, Object?>{}, 'at least one of add, update, remove'),
+            (
+              <String, Object?>{
+                'add': <Object?>[
+                  <String, Object?>{'name': r'$(id)', 'ip': '10.0.1.9'},
+                ],
+              },
+              'is not a valid name',
+            ),
+            (
+              <String, Object?>{
+                'add': <Object?>[
+                  <String, Object?>{'name': 'x', 'ip': '10.0.1.9 ; id'},
+                ],
+              },
+              'is not an IP address',
+            ),
+            (
+              <String, Object?>{
+                'add': <Object?>[
+                  <String, Object?>{'name': 'x'},
+                ],
+              },
+              'Required property "ip"',
+            ),
+            (
+              <String, Object?>{
+                'add': <Object?>[
+                  <String, Object?>{
+                    'name': 'x',
+                    'ip': '10.0.1.9',
+                    'sshKey': 'k9',
+                  },
+                ],
+              },
+              'no usable ssh key "k9"',
+            ),
+            (
+              <String, Object?>{
+                'remove': <String>['vm1'],
+              },
+              'vm1 still runs collectory',
+            ),
+            (
+              <String, Object?>{
+                'remove': <String>['--all'],
+              },
+              'is not a valid name',
+            ),
+            (
+              <String, Object?>{
+                'update': <Object?>[
+                  <String, Object?>{'name': 'nope', 'ip': '10.0.1.9'},
+                ],
+              },
+              'No server "nope"',
+            ),
+          ]) {
+        final CallToolResult r = await call('la_set_servers', <String, Object?>{
+          'project': 'Moving',
+          ...args,
+          'save': true,
+          'confirm': true,
+        });
+        expect(r.isError, isTrue, reason: why);
+        expect(text(r), contains(why));
+      }
+      expect(fake.updatedProjects, isEmpty);
+      expect(backups.listSync(), isEmpty);
+    });
+
+    test('save + confirm adds, updates and removes as the UI would', () async {
+      final CallToolResult r = await call('la_set_servers', <String, Object?>{
+        'project': 'Moving',
+        'add': <Object?>[
+          <String, Object?>{'name': 'spatial-1', 'ip': '10.0.1.135'},
+        ],
+        'update': <Object?>[
+          <String, Object?>{'name': 'dc1', 'ip': '10.0.1.99'},
+        ],
+        'remove': <String>['new1'],
         'save': true,
         'confirm': true,
       });
       expect(r.isError, isNot(isTrue), reason: text(r));
       final Json out = json.decode(text(r)) as Json;
-      expect(out['composeClustersCreatedOn'], <String>['new1']);
-      final Json p = stored();
-      expect((p['serverServices'] as Json)[idOf(p, 'new1')], <String>[
-        'docker_compose',
+      expect(out['saved'], isTrue);
+      expect(out['removed'], <String>['new1']);
+      expect(out['warnings'], contains(startsWith('spatial-1 has no ssh key')));
+      expect(((out['updated'] as Json)['dc1'] as Json)['fields'], <String>[
+        'ip',
       ]);
+      // dc1's names now resolve elsewhere for dc2's containers.
+      expect(out['extraHosts'], contains('dc2'));
+      expect((out['deployNotes'] as List<dynamic>).first, contains('dc1'));
+      final Json p = fake.updatedProjects.single;
+      expect(server(p, 'spatial-1')['ip'], '10.0.1.135');
+      expect(server(p, 'dc1')['ip'], '10.0.1.99');
       expect(
-        (p['clusterServices'] as Json)[clusterOf(p, 'new1')],
-        containsAll(<String>['spatial', 'spatial_service', 'geoserver']),
+        (p['servers'] as List<dynamic>).cast<Json>().map((Json s) => s['name']),
+        isNot(contains('new1')),
       );
       expect(
-        (rowsOf(p, 'spatial').single['softwareVersions'] as Json)['spatial'],
-        '1.0.0',
+        (fake.sshConfBody!['servers'] as List<dynamic>).cast<Json>().map(
+          (Json s) => s['name'],
+        ),
+        contains('spatial-1'),
       );
+      final Json old =
+          json.decode(File(out['backup'] as String).readAsStringSync()) as Json;
+      expect(server(old, 'dc1')['ip'], isNot('10.0.1.99'));
     });
   });
 }

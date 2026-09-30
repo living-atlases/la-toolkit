@@ -1,61 +1,198 @@
-/// Arguments and preview of la_set_placement. The moves themselves are the
-/// core's (`moveServices`); this only parses and compares.
+/// Arguments and preview of la_set_placement and la_set_servers. The changes
+/// themselves are the core's (`changePlacement`, `changeServers`); this only
+/// parses and compares.
 library;
 
-import 'package:la_toolkit_core/placement/move_services.dart';
+import 'package:collection/collection.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/ssh_key.dart';
+import 'package:la_toolkit_core/placement/placement_changes.dart';
+import 'package:la_toolkit_core/placement/server_changes.dart';
 
 import 'deploy_request.dart';
 import 'projects.dart';
 
-/// The `moves` argument, every name whitelisted like the deploy arguments.
-List<ServiceMove> parseMoves(Object? raw) {
+String? _name(Json m, String k, {bool required = false, String? what}) {
+  final Object? v = m[k];
+  if (v == null) {
+    if (required) throw FormatException('Each ${what ?? 'item'} needs `$k`.');
+    return null;
+  }
+  if (v is! String || !safeToken.hasMatch(v)) {
+    throw FormatException('`$k` "$v" is not a valid name.');
+  }
+  return v;
+}
+
+List<String>? _names(Json m, String k) {
+  final Object? v = m[k];
+  if (v == null) return null;
+  if (v is! List) throw FormatException('`$k` is a list of names.');
+  return <String>[
+    for (final Object? x in v)
+      if (x is String && safeToken.hasMatch(x))
+        x
+      else
+        throw FormatException('`$k`: "$x" is not a valid name.'),
+  ];
+}
+
+T? _oneOf<T extends Enum>(Json m, String k, List<T> values) {
+  final Object? v = m[k];
+  if (v == null) return null;
+  for (final T x in values) {
+    if (x.name == v) return x;
+  }
+  throw FormatException(
+    '`$k` must be ${values.map((T x) => '"${x.name}"').join(' or ')}.',
+  );
+}
+
+/// The `changes` argument of la_set_placement, every name whitelisted like
+/// the deploy arguments.
+List<ServiceMove> parseChanges(Object? raw) {
   if (raw is! List || raw.isEmpty) {
     throw const FormatException(
-      'Give moves: [{service, to, from?, fromLeg?, toLeg?}].',
+      'Give changes: [{op?, service, to?, from?, fromLeg?, toLeg?}].',
     );
   }
-  String? name(Json m, String k, {bool required = false}) {
-    final Object? v = m[k];
-    if (v == null) {
-      if (required) throw FormatException('Each move needs `$k`.');
-      return null;
-    }
-    if (v is! String || !safeToken.hasMatch(v)) {
-      throw FormatException('`$k` "$v" is not a service or server name.');
-    }
-    return v;
-  }
-
-  PlacementLeg? leg(Json m, String k) {
-    final Object? v = m[k];
-    if (v == null) return null;
-    for (final PlacementLeg l in PlacementLeg.values) {
-      if (l.name == v) return l;
-    }
-    throw FormatException('`$k` must be "docker" or "vm".');
-  }
-
   return <ServiceMove>[
     for (final Object? m in raw)
       if (m is Map<String, dynamic>)
         ServiceMove(
-          service: name(m, 'service', required: true)!,
-          to: name(m, 'to', required: true)!,
-          from: name(m, 'from'),
-          fromLeg: leg(m, 'fromLeg'),
-          toLeg: leg(m, 'toLeg'),
+          op:
+              _oneOf<PlacementOp>(m, 'op', PlacementOp.values) ??
+              PlacementOp.move,
+          service: _name(m, 'service', required: true, what: 'change')!,
+          to: _name(m, 'to'),
+          from: _name(m, 'from'),
+          fromLeg: _oneOf<PlacementLeg>(m, 'fromLeg', PlacementLeg.values),
+          toLeg: _oneOf<PlacementLeg>(m, 'toLeg', PlacementLeg.values),
         )
       else
-        throw const FormatException('Each move is an object.'),
+        throw const FormatException('Each change is an object.'),
+  ];
+}
+
+/// The `add` / `update` / `remove` arguments of la_set_servers. Names are
+/// whitelisted here; ips, users and ports are checked by the core. An ssh
+/// key is named and must be one the toolkit has.
+({List<ServerSpec> add, List<ServerSpec> update, List<String> remove})
+parseServerChanges(Map<String, Object?> a, List<Json> keys) {
+  List<ServerSpec> specs(String k) {
+    final Object? raw = a[k];
+    if (raw == null) return <ServerSpec>[];
+    if (raw is! List) throw FormatException('`$k` is a list of servers.');
+    return <ServerSpec>[
+      for (final Object? m in raw)
+        if (m is Map<String, dynamic>)
+          _spec(m, keys)
+        else
+          throw FormatException('Each server in `$k` is an object.'),
+    ];
+  }
+
+  return (
+    add: specs('add'),
+    update: specs('update'),
+    remove:
+        _names(<String, dynamic>{'remove': a['remove']}, 'remove') ??
+        <String>[],
+  );
+}
+
+ServerSpec _spec(Json m, List<Json> keys) {
+  final Object? ip = m['ip'];
+  if (ip != null && ip is! String) {
+    throw const FormatException('`ip` is text.');
+  }
+  final Object? port = m['sshPort'];
+  if (port != null && port is! int) {
+    throw const FormatException('`sshPort` is a number.');
+  }
+  final String? keyName = _name(m, 'sshKey');
+  SshKey? key;
+  if (keyName != null) {
+    final Json? k = keys.firstWhereOrNull((Json k) => k['name'] == keyName);
+    if (k == null || k['missing'] == true) {
+      throw FormatException(
+        'The toolkit has no usable ssh key "$keyName". Known: '
+        '${keys.where((Json k) => k['missing'] != true).map((Json k) => k['name']).join(', ')}.',
+      );
+    }
+    key = SshKey.fromJson(k);
+  }
+  return ServerSpec(
+    name: _name(m, 'name', required: true, what: 'server')!,
+    ip: ip as String?,
+    sshUser: _name(m, 'sshUser'),
+    sshPort: port as int?,
+    sshKey: key,
+    aliases: _names(m, 'aliases'),
+    gateways: _names(m, 'gateways'),
+  );
+}
+
+/// A server as the preview shows it; never the key material.
+Json serverJson(LAProject p, String name) {
+  final LAServer? s = p.getServerByName(name);
+  if (s == null) return <String, dynamic>{'name': name};
+  return <String, dynamic>{
+    'name': s.name,
+    'ip': s.ip,
+    'sshUser': s.sshUser,
+    'sshPort': s.sshPort,
+    'sshKey': s.sshKey?.name,
+    'aliases': s.aliases,
+    'gateways': <String>[
+      for (final String id in s.gateways) p.getServerById(id)?.name ?? id,
+    ],
+  };
+}
+
+/// Server names are global ssh host aliases in the toolkit: the same name in
+/// another project with another IP makes `ssh <name>` ambiguous. Existing
+/// installations have such pairs, so this only warns.
+List<String> serverNameClashes(
+  List<ProjectRef> all,
+  ProjectRef self,
+  LAProject p,
+  List<String> names,
+) => <String>[
+  for (final String n in names)
+    for (final ProjectRef r in all)
+      if (r.id != self.id)
+        for (final Json s
+            in (r.project['servers'] as List<dynamic>? ?? const <dynamic>[])
+                .cast<Json>())
+          if (s['name'] == n && s['ip'] != p.getServerByName(n)?.ip)
+            'Project ${r.dirName} also has a server "$n", at ${s['ip']}: '
+                'ssh to that name may reach either.',
+];
+
+/// Added servers without an ssh key: the toolkit cannot reach them. Names
+/// the keys the other servers use.
+List<String> missingKeyWarnings(LAProject p, List<String> added) {
+  final List<String> used = <String>{
+    for (final LAServer s in p.servers)
+      if (s.sshKey != null) s.sshKey!.name,
+  }.toList()..sort();
+  return <String>[
+    for (final String n in added)
+      if (p.getServerByName(n)?.sshKey == null)
+        '$n has no ssh key: the toolkit cannot reach it until one is set '
+            '(sshKey)${used.isEmpty ? '' : '; the other servers use ${used.join(', ')}'}.',
   ];
 }
 
 Json moveJson(MovedService m) => <String, dynamic>{
+  'op': m.op.name,
   'service': m.service,
   if (m.carried.isNotEmpty) 'carries': m.carried,
-  'from': m.from?.toString(),
-  'to': m.to.toString(),
-  'versions': m.versions,
+  if (m.from != null) 'from': m.from.toString(),
+  if (m.to != null) 'to': m.to.toString(),
+  if (m.versions.isNotEmpty) 'versions': m.versions,
 };
 
 /// Per server, the services it gains and loses, as `name (docker|vm)`.

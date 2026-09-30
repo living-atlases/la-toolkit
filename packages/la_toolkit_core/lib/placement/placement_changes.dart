@@ -1,9 +1,10 @@
-// Moving services of an existing project to other servers, the way the
-// servers page of the app does it: unassign from the old card, assign on the
-// new one (LAProject.unAssignByType / assignByType), creating a compose
-// cluster only as the app does (ticking docker_compose on the server). What
-// this adds is the checks the UI does by only offering valid chips, turned
-// into refusals, plus keeping the moved services' versions.
+// Changing where the services of an existing project run, the way the
+// servers page of the app does it: a chip removed from one card
+// (LAProject.unAssignByType, then assignByType with what is left), a chip
+// added on another (assignByType). docker_compose on a server is what creates
+// its compose cluster, and removing it is the UI's cluster delete. What this
+// adds is the checks the UI does by only offering valid chips, turned into
+// refusals, plus keeping the versions of moved services.
 import 'package:collection/collection.dart';
 
 import '../models/deployment_type.dart';
@@ -21,6 +22,11 @@ import '../models/la_service_name.dart';
 /// cluster it carries.
 enum PlacementLeg { vm, docker }
 
+/// [PlacementOp.move] takes a service off one place and onto another;
+/// [PlacementOp.assign] adds a place (a second ala_hub, or docker_compose on
+/// a server); [PlacementOp.unassign] removes one.
+enum PlacementOp { move, assign, unassign }
+
 /// A move refused. The message says why and what to pass instead.
 class PlacementException implements Exception {
   PlacementException(this.message);
@@ -31,20 +37,23 @@ class PlacementException implements Exception {
   String toString() => message;
 }
 
-/// One service to move to server [to]. [from] (a server name) is needed when
-/// the service runs in more than one place; the legs only when a server could
-/// mean either (a compose host that also runs VM services).
+/// One change for [service]. [to] (a server name) is needed to move or
+/// assign, [from] to unassign and, for a move, when the service runs in more
+/// than one place; the legs only when a server could mean either (a compose
+/// host that also runs VM services).
 class ServiceMove {
   const ServiceMove({
     required this.service,
-    required this.to,
+    this.op = PlacementOp.move,
+    this.to,
     this.from,
     this.fromLeg,
     this.toLeg,
   });
 
   final String service;
-  final String to;
+  final PlacementOp op;
+  final String? to;
   final String? from;
   final PlacementLeg? fromLeg;
   final PlacementLeg? toLeg;
@@ -69,9 +78,10 @@ class PlacementSlot {
       leg == PlacementLeg.vm ? server.name : '${server.name} (docker-compose)';
 }
 
-/// What [moveServices] did for one move.
+/// What [changePlacement] did for one change.
 class MovedService {
   MovedService({
+    required this.op,
     required this.service,
     required this.carried,
     required this.from,
@@ -79,27 +89,33 @@ class MovedService {
     required this.versions,
   });
 
+  final PlacementOp op;
   final String service;
 
   /// The sub-services that went along (spatial takes spatial_service and
   /// geoserver).
   final List<String> carried;
 
-  /// Null when the service was in use but assigned nowhere.
+  /// Null for an assign, or a move of a service assigned nowhere.
   final PlacementSlot? from;
-  final PlacementSlot to;
 
-  /// Software versions of the moved rows, kept from the source.
+  /// Null for an unassign.
+  final PlacementSlot? to;
+
+  /// Software versions of the rows at [to] (a move keeps the source's).
   final Map<String, String> versions;
 }
 
 class PlacementChange {
-  PlacementChange(this.moves, this.clustersCreated);
+  PlacementChange(this.moves, this.clustersCreated, this.clustersDeleted);
 
   final List<MovedService> moves;
 
-  /// Servers that got a docker-compose cluster for this change.
+  /// Servers that got a docker-compose cluster (docker_compose assigned).
   final List<String> clustersCreated;
+
+  /// Servers whose (empty) docker-compose cluster went with docker_compose.
+  final List<String> clustersDeleted;
 }
 
 /// Services that say where things run rather than being a workload.
@@ -184,36 +200,46 @@ Map<String, Map<String, List<String>>> servicesByServer(LAProject p) {
 
 /// Applies [moves] to [p], one after the other. Throws [PlacementException]
 /// on the first one the UI would not allow; [p] may then be half changed, so
-/// work on a copy (a model freshly built from the stored JSON).
-///
-/// A docker target needs a compose cluster on that server: with
-/// [createComposeClusters] one is created as the UI does, by assigning
-/// docker_compose to the server; a hub never creates one. [laReleases] is
-/// what the UI passes to seed versions (only for services assigned nowhere
-/// before: moved ones keep theirs).
-PlacementChange moveServices(
+/// work on a copy (a model freshly built from the stored JSON). [laReleases]
+/// is what the UI passes to seed the versions of new rows (moved rows keep
+/// theirs).
+PlacementChange changePlacement(
   LAProject p,
   List<ServiceMove> moves, {
-  bool createComposeClusters = false,
   Map<String, LAReleases>? laReleases,
 }) {
   final List<MovedService> done = <MovedService>[];
   final List<String> created = <String>[];
+  final List<String> deleted = <String>[];
   for (final ServiceMove m in moves) {
     final String name = resolveServiceName(m.service);
+    if (name == dockerCompose && m.op != PlacementOp.move) {
+      done.add(
+        m.op == PlacementOp.assign
+            ? _assignCompose(p, m, created)
+            : _unassignCompose(p, m, deleted),
+      );
+      continue;
+    }
     _checkMovable(p, name);
-    final PlacementSlot? from = _source(p, name, m);
-    final PlacementSlot to = _target(
-      p,
-      name,
-      m,
-      from,
-      createComposeClusters: createComposeClusters,
-      created: created,
-    );
+    if (m.op != PlacementOp.unassign && m.to == null) {
+      throw PlacementException('To ${m.op.name} $name, say where: `to`.');
+    }
+    if (m.op == PlacementOp.unassign && m.to != null) {
+      throw PlacementException(
+        'unassign takes `from`, not `to` (use a move for $name).',
+      );
+    }
+    final PlacementSlot? from = m.op == PlacementOp.assign
+        ? null
+        : _source(p, name, m);
+    if (m.op == PlacementOp.unassign && from == null) {
+      throw PlacementException('$name is assigned nowhere.');
+    }
+    final PlacementSlot? to = m.op == PlacementOp.unassign
+        ? null
+        : _target(p, name, m, from);
 
-    // As the servers card does when a chip is removed: unassign, then assign
-    // what is left (see ServerServicesEditCard.onDeleted).
     List<String> carried = <String>[name];
     final Map<String, Map<String, String>> versions =
         <String, Map<String, String>>{};
@@ -225,58 +251,45 @@ PlacementChange moveServices(
           versions[n] = Map<String, String>.of(sd.softwareVersions);
         }
       }
+      // As the servers card does when a chip is removed: unassign, then
+      // assign what is left (see ServerServicesEditCard.onDeleted).
       p.unAssignByType(from.id, from.type, name);
       final List<String> left = List<String>.of(_servicesOf(p, from));
       p.assignByType(from.id, from.type, left, null, laReleases);
       carried = before.where((String s) => !left.contains(s)).toList();
     }
 
-    // The same eligibility the UI applies to the chips it offers.
-    final List<String> assignable =
-        (p.getServerServicesAssignable(to.type)[to.id] ?? <LAService>[])
-            .map((LAService s) => s.nameInt)
-            .toList();
-    if (!assignable.contains(name)) {
-      final bool noDocker =
-          to.leg == PlacementLeg.docker &&
-          !LAServiceDesc.listDockerCapableS.contains(name);
-      throw PlacementException(
-        noDocker
-            ? '$name has no docker-compose support: it cannot go to $to.'
-            : '$name cannot go to $to: the toolkit does not offer it there '
-                  '(it allows one deploy only and runs elsewhere).',
-      );
-    }
-    p.assignByType(
-      to.id,
-      to.type,
-      <String>[..._servicesOf(p, to), name],
-      null,
-      laReleases,
-    );
-
-    // assignByType seeds a new row from the rows left elsewhere, or the
-    // newest release when there are none: a move must not change versions.
-    for (final LAServiceDeploy sd in _rows(p, to)) {
-      final String? n = _serviceName(p, sd.serviceId);
-      if (n != null && carried.contains(n) && versions.containsKey(n)) {
-        sd.softwareVersions
-          ..clear()
-          ..addAll(versions[n]!);
-      }
-    }
     final Map<String, String> kept = <String, String>{};
-    for (final LAServiceDeploy sd in _rows(p, to)) {
-      final String? n = _serviceName(p, sd.serviceId);
-      if (n != null && carried.contains(n)) {
-        final String? v = sd.softwareVersions[n];
-        if (v != null) {
-          kept[n] = v;
+    if (to != null) {
+      _checkAssignable(p, name, to);
+      p.assignByType(
+        to.id,
+        to.type,
+        <String>[..._servicesOf(p, to), name],
+        null,
+        laReleases,
+      );
+      // assignByType seeds a new row from the rows left elsewhere, or the
+      // newest release when there are none: a move must not change versions.
+      for (final LAServiceDeploy sd in _rows(p, to)) {
+        final String? n = _serviceName(p, sd.serviceId);
+        if (n != null && carried.contains(n) && versions.containsKey(n)) {
+          sd.softwareVersions
+            ..clear()
+            ..addAll(versions[n]!);
+        }
+      }
+      for (final LAServiceDeploy sd in _rows(p, to)) {
+        final String? n = _serviceName(p, sd.serviceId);
+        final String? v = n == null ? null : sd.softwareVersions[n];
+        if (v != null && (carried.contains(n) || n == name)) {
+          kept[n!] = v;
         }
       }
     }
     done.add(
       MovedService(
+        op: m.op,
         service: name,
         carried: carried.where((String s) => s != name).toList()..sort(),
         from: from,
@@ -285,20 +298,144 @@ PlacementChange moveServices(
       ),
     );
   }
-  return PlacementChange(done, created);
+  return PlacementChange(done, created, deleted);
+}
+
+/// The same eligibility the UI applies to the chips it offers.
+void _checkAssignable(LAProject p, String name, PlacementSlot to) {
+  final List<String> assignable =
+      (p.getServerServicesAssignable(to.type)[to.id] ?? <LAService>[])
+          .map((LAService s) => s.nameInt)
+          .toList();
+  if (assignable.contains(name)) {
+    return;
+  }
+  final bool noDocker =
+      to.leg == PlacementLeg.docker &&
+      !LAServiceDesc.listDockerCapableS.contains(name);
+  throw PlacementException(
+    noDocker
+        ? '$name has no docker-compose support: it cannot go to $to.'
+        : '$name cannot go to $to: the toolkit does not offer it there '
+              '(it allows one deploy only and runs elsewhere).',
+  );
+}
+
+LAServer _server(LAProject p, String? name, {bool ownOnly = false}) {
+  final List<LAServer> servers = ownOnly ? p.servers : p.placement.servers;
+  final LAServer? s = servers.firstWhereOrNull((LAServer s) => s.name == name);
+  if (s == null) {
+    throw PlacementException(
+      'No server "$name" in ${p.shortName}. Servers: '
+      '${servers.map((LAServer s) => s.name).join(', ')}. '
+      'Add it first (la_set_servers, or the toolkit UI).',
+    );
+  }
+  return s;
+}
+
+LACluster? _composeClusterOn(LAProject p, LAServer s) => p
+    .placement
+    .composeClusters
+    .firstWhereOrNull((LACluster c) => c.serverId == s.id);
+
+/// Ticking docker_compose on a server's card: the server becomes a compose
+/// host and its cluster is created with it.
+MovedService _assignCompose(LAProject p, ServiceMove m, List<String> created) {
+  if (p.isHub) {
+    throw PlacementException(
+      'A hub never creates docker-compose clusters: it places services on '
+      "its portal's.",
+    );
+  }
+  if (m.to == null) {
+    throw PlacementException('To assign docker_compose, say where: `to`.');
+  }
+  final LAServer server = _server(p, m.to, ownOnly: true);
+  if (!p.getService(dockerCompose).use) {
+    throw PlacementException(
+      'docker_compose is not in use in ${p.shortName}: enable it in the '
+      'toolkit first.',
+    );
+  }
+  if (p.getServerServices(serverId: server.id).contains(dockerCompose) ||
+      _composeClusterOn(p, server) != null) {
+    throw PlacementException(
+      '${server.name} is already a docker-compose host.',
+    );
+  }
+  p.assignByType(server.id, DeploymentType.vm, <String>[
+    ...p.getServerServices(serverId: server.id),
+    dockerCompose,
+  ]);
+  created.add(server.name);
+  return MovedService(
+    op: PlacementOp.assign,
+    service: dockerCompose,
+    carried: const <String>[],
+    from: null,
+    to: PlacementSlot(server, PlacementLeg.vm),
+    versions: const <String, String>{},
+  );
+}
+
+/// Unticking docker_compose, which is deleting the server's cluster: only
+/// once nothing, of the portal or of a hub, runs on it any more.
+MovedService _unassignCompose(
+  LAProject p,
+  ServiceMove m,
+  List<String> deleted,
+) {
+  if (p.isHub) {
+    throw PlacementException(
+      "A hub has no docker-compose clusters of its own: the portal's are "
+      'changed from the portal.',
+    );
+  }
+  final LAServer server = _server(p, m.from ?? m.to, ownOnly: true);
+  final LACluster? cluster = _composeClusterOn(p, server);
+  if (cluster == null &&
+      !p.getServerServices(serverId: server.id).contains(dockerCompose)) {
+    throw PlacementException('${server.name} is not a docker-compose host.');
+  }
+  if (cluster != null) {
+    final List<String> own = p.getClusterServices(clusterId: cluster.id);
+    final List<String> hubs = <String>[
+      for (final LAProject h in p.hubs)
+        if (h.getClusterServices(clusterId: cluster.id).isNotEmpty) h.shortName,
+    ];
+    if (own.isNotEmpty || hubs.isNotEmpty) {
+      throw PlacementException(
+        'The docker-compose cluster on ${server.name} still runs '
+        '${<String>[...own, ...hubs.map((String h) => 'services of hub $h')].join(', ')}: '
+        'move them off first.',
+      );
+    }
+    p.deleteCluster(cluster);
+  } else {
+    p.unAssignByType(server.id, DeploymentType.vm, dockerCompose);
+  }
+  deleted.add(server.name);
+  return MovedService(
+    op: PlacementOp.unassign,
+    service: dockerCompose,
+    carried: const <String>[],
+    from: PlacementSlot(server, PlacementLeg.vm),
+    to: null,
+    versions: const <String, String>{},
+  );
 }
 
 void _checkMovable(LAProject p, String name) {
   if (_infraServices.contains(name)) {
     throw PlacementException(
-      '$name is not a workload: it marks a server as a docker host. Ask for '
-      'createComposeClusters on a move instead.',
+      '$name is not a workload${name == dockerCompose ? ': assign or unassign it (op) to make a server a docker-compose host or not' : ''}.',
     );
   }
   if (LAServiceDesc.subServices.contains(name)) {
     final String? parent = LAServiceDesc.get(name).parentService?.toS();
     throw PlacementException(
-      '$name moves with ${parent ?? 'its parent service'}: move '
+      '$name moves with ${parent ?? 'its parent service'}: change '
       '${parent ?? 'that'} instead.',
     );
   }
@@ -330,7 +467,7 @@ PlacementSlot? _source(LAProject p, String name, ServiceMove m) {
     return on.single;
   }
   if (on.isEmpty) {
-    // In use but assigned nowhere: only assigned, as in the UI.
+    // In use but assigned nowhere: a move only assigns it, as in the UI.
     if (all.isEmpty && m.from == null && m.fromLeg == null) {
       return null;
     }
@@ -353,25 +490,12 @@ PlacementSlot _target(
   LAProject p,
   String name,
   ServiceMove m,
-  PlacementSlot? from, {
-  required bool createComposeClusters,
-  required List<String> created,
-}) {
-  final LAServer? server = p.placement.servers.firstWhereOrNull(
-    (LAServer s) => s.name == m.to,
-  );
-  if (server == null) {
-    throw PlacementException(
-      'No server "${m.to}" in ${p.shortName}. Servers: '
-      '${p.placement.servers.map((LAServer s) => s.name).join(', ')}. '
-      'Add a new one in the toolkit first.',
-    );
-  }
-  LACluster? cluster() => p.placement.composeClusters.firstWhereOrNull(
-    (LACluster c) => c.serverId == server.id,
-  );
+  PlacementSlot? from,
+) {
+  final LAServer server = _server(p, m.to);
+  final LACluster? cluster = _composeClusterOn(p, server);
   final PlacementLeg? leg = m.toLeg ?? from?.leg;
-  if (leg == null && cluster() != null) {
+  if (leg == null && cluster != null) {
     throw PlacementException(
       '${m.to} carries a docker-compose cluster and can also run VM '
       'services: pass toLeg ("docker" or "vm") for $name.',
@@ -388,37 +512,18 @@ PlacementSlot _target(
     _checkNotThere(p, name, to, from);
     return to;
   }
-  if (cluster() == null) {
-    if (p.isHub) {
-      throw PlacementException(
-        '${m.to} carries no docker-compose cluster, and a hub never creates '
-        'one: add docker_compose to it in the portal first.',
-      );
-    }
-    if (!createComposeClusters) {
-      throw PlacementException(
-        '${m.to} carries no docker-compose cluster yet. Pass '
-        'createComposeClusters: true to add docker_compose to it (the '
-        'cluster comes with it, as in the UI), or toLeg: "vm".',
-      );
-    }
-    if (!p.getService(dockerCompose).use) {
-      throw PlacementException(
-        'docker_compose is not in use in ${p.shortName}: enable it in the '
-        'toolkit first.',
-      );
-    }
-    p.assignByType(server.id, DeploymentType.vm, <String>[
-      ...p.getServerServices(serverId: server.id),
-      dockerCompose,
-    ]);
-    created.add(server.name);
+  if (cluster == null) {
+    throw PlacementException(
+      p.isHub
+          ? '${m.to} carries no docker-compose cluster, and a hub never '
+                'creates one: make it a compose host in the portal first.'
+          : '${m.to} carries no docker-compose cluster yet: assign '
+                'docker_compose to it first (a change {op: "assign", service: '
+                '"docker_compose", to: "${m.to}"} before this one), or toLeg: '
+                '"vm".',
+    );
   }
-  final PlacementSlot to = PlacementSlot(
-    server,
-    PlacementLeg.docker,
-    cluster(),
-  );
+  final PlacementSlot to = PlacementSlot(server, PlacementLeg.docker, cluster);
   _checkNotThere(p, name, to, from);
   return to;
 }
