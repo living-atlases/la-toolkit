@@ -192,8 +192,9 @@ talks over stdio. Do not put it behind a public HTTP endpoint.
 
 ### With the toolkit image (nothing to build)
 
-The `livingatlases/la-toolkit` image ships the compiled server as
-`/usr/local/bin/la_toolkit_mcp`, from the same release as the toolkit. Its default
+From the first release after 1.7.1, the `livingatlases/la-toolkit` image ships the
+compiled server as `/usr/local/bin/la_toolkit_mcp`, from the same release as the toolkit
+(1.7.1 and older images do not have it: build it from a checkout, below). Its default
 backend, `localhost:2010`, is the container's own. Register it in Claude Code on the
 machine that runs the toolkit:
 
