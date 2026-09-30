@@ -83,6 +83,22 @@ void main() {
       ],
     };
     expect(MapUtils.areaKm2(world), equals(511207893.3958111));
+    // Values of the `area` package before it was replaced, to the last bit.
+    for (final (List<double> b, double km2) in <(List<double>, double)>[
+      (<double>[44.0, -10.0, 35.0, 5.0], 1666562.7843063814),
+      (<double>[-10.0, 110.0, -45.0, 155.0], 12849496.227190508),
+      (<double>[1.0, 1.0, 1.0, 1.0], 0.0),
+      (<double>[60.5, -170.25, -58.75, 179.5], 15077485.868030738),
+    ]) {
+      expect(
+        MapUtils.toInvVariables(
+          LatLng(b[0], b[1]),
+          LatLng(b[2], b[3]),
+        )['LA_spatial_map_areaSqKm'],
+        equals(km2),
+        reason: '$b',
+      );
+    }
   });
 
   test('dirName suggestions', () {

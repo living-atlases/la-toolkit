@@ -25,15 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  area:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "feature/migrate-to-null-safety-dart-2.12"
-      resolved-ref: "6a0ed1c5cfc2e6079bf8e3eeb4e8ebc1db256865"
-      url: "https://github.com/DirkoOdendaal/area.git"
-    source: git
-    version: "1.1.0"
   args:
     dependency: transitive
     description:
