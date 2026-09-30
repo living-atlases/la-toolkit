@@ -228,7 +228,9 @@ claude mcp add --scope user la-toolkit -- "$PWD/la_toolkit_mcp" --backend http:/
 ```
 
 A plain Dart SDK is enough (`la_toolkit_core` needs no Flutter). The binary is git-ignored
-and has no runtime dependencies; rebuild it after pulling changes. `dart run
+and has no runtime dependencies; rebuild it after pulling changes. While a client runs it
+the file is busy: compile to another name and `mv` it over (the running server keeps the
+old one until the client restarts it). `dart run
 bin/la_toolkit_mcp.dart ...` works as the command too, only slower to start.
 
 Options, each also an environment variable: `--backend <url>` (`LA_TOOLKIT_BACKEND`,
