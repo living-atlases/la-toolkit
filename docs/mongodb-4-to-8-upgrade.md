@@ -87,11 +87,11 @@ xz -dc /data/la-toolkit/backups/<one-of-them>.tar.xz | tar -tv
 
 Fix it before upgrading anything. Replace just the backup service in your
 `docker-compose.yml` with the current one — new image, and the two environment
-variables that were missing:
+variables that were missing (`DB_NAME`, `DB_AUTH`):
 
 ```yaml
   mongo-db-backup:
-    image: tiredofit/db-backup:latest
+    image: nfrastack/db-backup:4.9.2
     container_name: la-toolkit-mongo-db-backup
     restart: always
     depends_on:
@@ -105,9 +105,8 @@ variables that were missing:
       - DB_AUTH=admin
       - DB_NAME=la_toolkit
       - DEFAULT_BACKUP_INTERVAL=1440
-      - DEFAULT_CLEAN_UP_TIME=8640
-      - DEFAULT_CHECKSUM=TRUE
-      - DEFAULT_CHECKSUM_TYPE=MD5
+      - DEFAULT_CLEANUP_TIME=43200
+      - DEFAULT_CHECKSUM=MD5
     volumes:
       - /data/la-toolkit/backups:/backup
 ```

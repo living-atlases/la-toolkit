@@ -132,7 +132,12 @@ services:
       - DB_NAME=la_toolkit
       - CONTAINER_ENABLE_MONITORING=FALSE
       - DEFAULT_BACKUP_INTERVAL=1440
-      - DEFAULT_CLEAN_UP_TIME=8640
+      # Minutes: backups older than 30 days are deleted after each backup. It was
+      # spelled DEFAULT_CLEAN_UP_TIME until 1.7.1, which the image ignores, so
+      # nothing was ever deleted. Its first run removes every older
+      # mongo_la_toolkit_mongo_* file in /data/la-toolkit/backups, manual ones
+      # included: copy aside any you want to keep before updating.
+      - DEFAULT_CLEANUP_TIME=43200
       # The algorithm itself (MD5, SHA1 or NONE): TRUE plus a separate
       # DEFAULT_CHECKSUM_TYPE is not a 4.x setting and left an empty "*.gz." next
       # to every backup.

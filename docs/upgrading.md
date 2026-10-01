@@ -32,6 +32,21 @@ It takes a backup right away and then one a day. Test one with the
 file also fixes the checksum setting (`DEFAULT_CHECKSUM=MD5`), which used to leave an
 empty `*.gz.` file next to every backup.
 
+It also turns on the cleanup of old backups. Until 1.7.1 the setting was spelled
+`DEFAULT_CLEAN_UP_TIME`, which the image does not read, so no backup was ever deleted.
+It is now `DEFAULT_CLEANUP_TIME=43200` (30 days), and its first run, right after the
+first new backup, deletes every `mongo_la_toolkit_mongo_*` file older than that
+(manual dumps with that prefix too), years of them on an old installation. If you want any of them, move them out of
+`/data/la-toolkit/backups` first:
+
+```bash
+sudo mkdir -p /data/la-toolkit/backups-old
+sudo find /data/la-toolkit/backups -maxdepth 1 -name 'mongo_la_toolkit_*' -mtime +30 \
+  -exec mv -t /data/la-toolkit/backups-old {} +
+```
+
+Raise or lower the 30 days in your copy to taste; the value is in minutes.
+
 ## Coming from 1.6.9 or earlier
 
 Read [Upgrading past MongoDB 4](mongodb-4-to-8-upgrade.md) first. 1.7.0 ships
