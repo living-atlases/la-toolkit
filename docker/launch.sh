@@ -121,8 +121,13 @@ do
 done
 
 echo "✓ MongoDB connection successful!"
-# Run migrations, but don't exit if they fail so the UI can show the status
-cd /home/ubuntu/la-toolkit && npm run migrate || echo "WARNING: Migration failed. Proceeding to start app..."
+# Run migrations, but don't exit if they fail so the UI can show the status.
+# Run them a second time on failure: on a database from 1.6.x or earlier the bridge
+# migration ports db-migrate's history into migrate-mongo's changelog, but
+# migrate-mongo picked the pending list before it ran, so that first run re-runs
+# the old migrations and stops at one that needs a lifted sails app. The second
+# run sees the ported history and applies only the new ones (service deploy types).
+cd /home/ubuntu/la-toolkit && { npm run migrate || npm run migrate; } || echo "WARNING: Migration failed. Proceeding to start app..."
 # log more in cause of startup issues adding --verbose
 # -w needs to increase file opened limits
 cd /home/ubuntu/la-toolkit && forever app.js --prod --port 2010
