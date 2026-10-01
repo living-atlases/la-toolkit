@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:redux/redux.dart';
 import 'package:sails_io/sails_io.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
@@ -81,7 +82,30 @@ class LiveSync {
     });
 
     _store.onChange.listen(_announce);
-    _router.addListener(() => _announce(_store.state));
+    _router.addListener(_onRoute);
+    _onRoute();
+  }
+
+  void _onRoute() {
+    final LAProjectViewStatus? editing = editingStatusOf(modeOf(_path()));
+    if (editing != null && _store.state.status == LAProjectViewStatus.view) {
+      _store.dispatch(OnEditingRoute(editing));
+    }
+    _announce(_store.state);
+  }
+
+  /// The app status of an editing page, `null` for the others.
+  static LAProjectViewStatus? editingStatusOf(String? mode) {
+    switch (mode) {
+      case 'edit':
+        return LAProjectViewStatus.edit;
+      case 'servers':
+        return LAProjectViewStatus.servers;
+      case 'tune':
+        return LAProjectViewStatus.tune;
+      default:
+        return null;
+    }
   }
 
   /// What a page means for others: `null` outside a project.
@@ -107,14 +131,34 @@ class LiveSync {
     }
   }
 
+  // Whether the open project is one the backend has (not a project being
+  // created): isCreated is recomputed by validation and says otherwise for
+  // some stored projects.
+  static bool _stored(AppState state) {
+    final String id = state.currentProject.id;
+    return state.projects.any(
+      (LAProject p) => p.id == id || p.hubs.any((LAProject h) => h.id == id),
+    );
+  }
+
+  // `configuration`, not `currentConfiguration`: that one is null until the
+  // router reports its first route, and reading it has side effects.
+  String _path() {
+    try {
+      return _router.configuration.uri.path;
+    } catch (_) {
+      return '/';
+    }
+  }
+
   // Tells the backend which project this browser has open, and on which
   // page, whenever that changes.
   void _announce(AppState state) {
     if (_io.socket.disconnected) {
       return;
     }
-    final String? mode = modeOf(_router.currentConfiguration?.uri.path ?? '/');
-    final String? projectId = mode != null && state.currentProject.isCreated
+    final String? mode = modeOf(_path());
+    final String? projectId = mode != null && _stored(state)
         ? state.currentProject.id
         : null;
     if (projectId == _announcedProject && mode == _announcedMode) {

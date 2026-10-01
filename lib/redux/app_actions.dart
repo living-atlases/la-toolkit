@@ -14,6 +14,7 @@ import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../components/app_snack_bar_message.dart';
+import '../models/app_state.dart';
 import '../models/presence_session.dart';
 
 abstract class AppActions {}
@@ -185,6 +186,14 @@ class OnPresence extends AppActions {
   OnPresence(this.sessions);
 
   List<PresenceSession> sessions;
+}
+
+/// The page open is an editing one ([status]): a browser reloaded on it
+/// starts in view, and would take pushes over what is typed there.
+class OnEditingRoute extends AppActions {
+  OnEditingRoute(this.status);
+
+  LAProjectViewStatus status;
 }
 
 class OnDemoProjectsLoad extends AppActions {

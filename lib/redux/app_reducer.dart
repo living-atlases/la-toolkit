@@ -71,6 +71,7 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   ),
   TypedReducer<AppState, ReloadCurrentProject>(_reloadCurrentProject),
   TypedReducer<AppState, OnPresence>(_onPresence),
+  TypedReducer<AppState, OnEditingRoute>(_onEditingRoute),
   TypedReducer<AppState, OnDemoProjectsLoad>(_onDemoProjectsLoad),
   TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
   TypedReducer<AppState, TestServicesProject>(_testServicesProject),
@@ -442,6 +443,13 @@ AppState _reloadCurrentProject(AppState state, ReloadCurrentProject action) {
     projectChangedElsewhere: false,
     projectConflicts: <String>[],
   );
+}
+
+// Only from view: create and the other editing states are the app's own.
+AppState _onEditingRoute(AppState state, OnEditingRoute action) {
+  return state.status == LAProjectViewStatus.view
+      ? state.copyWith(status: action.status)
+      : state;
 }
 
 AppState _onPresence(AppState state, OnPresence action) {
