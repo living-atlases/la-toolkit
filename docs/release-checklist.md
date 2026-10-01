@@ -12,6 +12,18 @@ Order matters, in both directions: the image build downloads the frontend from t
 GitHub release, so the release has to exist first, and it clones the backend from
 master, so the backend's version bump has to be pushed first too.
 
+## 0. Release notes and changelog
+
+Write the notes in `docs/release-notes/next.md` while the release takes shape; it
+shows under "Unreleased" in `CHANGELOG.md`. At release time rename it to
+`docs/release-notes/vX.Y.Z.md`, paste it as the GitHub release body, and after
+tagging regenerate the changelog (it needs the backend checkout next to this one):
+
+```bash
+scripts/gen-changelog.py > CHANGELOG.md
+bash scripts/test-gen-changelog.sh
+```
+
 ## 1. Frontend
 
 - Bump `version:` in `pubspec.yaml`.
