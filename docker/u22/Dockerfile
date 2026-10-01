@@ -22,6 +22,18 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         rm -rf /var/lib/apt/lists/* && \
         apt-get clean
 
+# Docker CLI + buildx for the fast deploy (la-docker-compose scripts/bundle/render.sh renders
+# each docker-compose host in a throwaway container). It talks to the host's daemon through
+# /var/run/docker.sock, mounted in docker-compose.yml. No daemon in here.
+RUN install -m 0755 -d /etc/apt/keyrings && \
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu jammy stable" \
+          > /etc/apt/sources.list.d/docker.list && \
+        DEBIAN_FRONTEND=noninteractive apt-get update && \
+        DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y docker-ce-cli docker-buildx-plugin && \
+        rm -rf /var/lib/apt/lists/* && \
+        apt-get clean
+
 # Install ansible via PIP
 RUN python3 -m pip install --upgrade pip cffi
 RUN python3 -m pip install setuptools

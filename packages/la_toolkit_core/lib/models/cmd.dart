@@ -16,6 +16,9 @@ enum CmdType {
   postDeploy,
   laPipelines,
   bash,
+  // A docker-compose deploy through rendered bundles (la-docker-compose
+  // scripts/bundle/fast-deploy.sh): a DeployCmd, logged as a bash run.
+  fastDeploy,
 }
 
 extension ParseToString on CmdType {

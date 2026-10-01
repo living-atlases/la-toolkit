@@ -215,6 +215,7 @@ class DeployUtils {
     required Store<AppState> store,
     required LAProject project,
     required DeployCmd deployCmd,
+    bool fast = false,
   }) {
     context.loaderOverlay.show();
     if (deployCmd.runtimeType == PostDeployCmd) {
@@ -237,6 +238,7 @@ class DeployUtils {
       DeployProject(
         project: project,
         cmd: deployCmd,
+        fast: fast,
         onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
           if (context.mounted) {
             context.loaderOverlay.hide();
@@ -248,7 +250,7 @@ class DeployUtils {
             port: port,
             pid: ttydPid,
             notify: true,
-            title: 'Ansible console',
+            title: fast ? 'Fast deploy console' : 'Ansible console',
             // The deploy runs detached: closing/dropping the console no longer
             // cancels it. Offer an explicit Cancel deploy tied to this run's logs.
             cancelPrefix: cmdEntry.logsPrefix,

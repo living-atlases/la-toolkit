@@ -66,6 +66,8 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
         /* if (cmd.type == CmdType.deploy) { */
         parsedDeployCmd = DeployCmd.fromJson(cmd.properties);
       }
+    } else if (cmd.type == CmdType.fastDeploy) {
+      parsedDeployCmd = DeployCmd.fromJson(cmd.properties);
     } else if (cmd.type == CmdType.brandingDeploy) {
       parsedBrandingDeployCmd = BrandingDeployCmd.fromJson(cmd.properties);
     } else if (cmd.type == CmdType.laPipelines) {
@@ -147,6 +149,8 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
   String getTitle() {
     return isAnsibleDeploy()
         ? deployCmd!.getTitle()
+        : cmd.type == CmdType.fastDeploy
+        ? 'Fast deploy'
         : cmd.type == CmdType.brandingDeploy
         ? parsedBrandingDeployCmd!.getTitle()
         : cmd.type == CmdType.laPipelines
@@ -155,7 +159,7 @@ class CmdHistoryEntry implements IsJsonSerializable<CmdHistoryEntry> {
   }
 
   String getDesc() {
-    return isAnsibleDeploy()
+    return isAnsibleDeploy() || cmd.type == CmdType.fastDeploy
         ? deployCmd!.desc
         : cmd.type == CmdType.brandingDeploy
         ? parsedBrandingDeployCmd!.desc

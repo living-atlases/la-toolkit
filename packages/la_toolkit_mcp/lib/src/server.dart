@@ -550,6 +550,40 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     );
 
     _tool(
+      'la_fast_deploy',
+      'Fast deploy of a pure docker-compose portal: la-docker-compose renders '
+          "each server's config once (cached while inventories, versions and "
+          'branding do not change; a render takes ~25 min for 3 servers) and '
+          'applies it to every server in parallel without Ansible (~3 min). For '
+          'redeploys only: the first deploy, a new service or a rotated password '
+          'still need la_deploy. Always the whole portal (no tags or limits) and '
+          'no dry run: it needs confirm: true, only after the user explicitly '
+          'agreed. Returns a runId at once; poll la_deploy_status.',
+      Schema.object(
+        properties: <String, Schema>{
+          'project': _projectArg,
+          'confirm': Schema.bool(
+            description:
+                'Required. Set it only when the user agreed to this deploy.',
+          ),
+          'skipServices': _tokenList(
+            'Inventory groups to leave out (e.g. spatial, images).',
+          ),
+          'prepare': Schema.bool(
+            description:
+                'Check out the pinned releases and regenerate inventories and ssh '
+                'config first, like the UI does (default true).',
+          ),
+          'desc': Schema.string(description: 'Label for the run history.'),
+        },
+        required: <String>['project', 'confirm'],
+      ),
+      destructive: true,
+      openWorld: true,
+      _fastDeploy,
+    );
+
+    _tool(
       'la_deploy_status',
       'Status of a run: running / success / failed / aborted / cancelled, per-host '
           'recap and, while running, the current task. Poll every few minutes.',
@@ -1359,9 +1393,8 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
   /// what a browser changed meanwhile in other settings stays, and the
   /// same setting changed by both refuses the save instead of undoing it.
   Future<void> _storeChange(ProjectRef ref, LAProject p) async {
-    final Json base =
-        jsonDecode(jsonEncode(projectModel(ref).toJson())) as Json
-          ..['genConf'] = ref.project['genConf'];
+    final Json base = jsonDecode(jsonEncode(projectModel(ref).toJson())) as Json
+      ..['genConf'] = ref.project['genConf'];
     final Json patch = ProjectPatch.diff(base, p.toApiJson());
     if (ProjectPatch.isEmpty(patch)) return;
     try {
@@ -1509,10 +1542,45 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     };
   }
 
-  Future<Object?> _deploy(Map<String, Object?> a) async {
+  Future<Object?> _deploy(Map<String, Object?> a) => _runDeploy(a, fast: false);
+
+  /// la_fast_deploy: the same request as a confirmed la_deploy of a pure
+  /// docker-compose portal, sent to the backend's fast-deploy.
+  Future<Object?> _fastDeploy(Map<String, Object?> a) async {
+    for (final String k in <String>[
+      'dryRun',
+      'leg',
+      'services',
+      'tags',
+      'skipTags',
+      'limitToServers',
+      'onlyProperties',
+    ]) {
+      if (a.containsKey(k)) {
+        throw InvalidRequest(
+          'la_fast_deploy always deploys the whole portal: no `$k`.',
+        );
+      }
+    }
+    return _runDeploy(<String, Object?>{...a, 'dryRun': false}, fast: true);
+  }
+
+  Future<Object?> _runDeploy(
+    Map<String, Object?> a, {
+    required bool fast,
+  }) async {
     final ProjectRef ref = await _resolve(a);
     final DeployRequest req = buildDeployRequest(ref, a);
     final Json p = ref.project;
+    if (fast &&
+        (req.cmd['dockerCompose'] != true ||
+            (req.cmd['limitToServers'] as List<dynamic>? ?? <dynamic>[])
+                .isNotEmpty)) {
+      throw InvalidRequest(
+        '"${ref.dirName}" is not a pure docker-compose portal: fast deploy only '
+        'renders and applies docker-compose bundles. Use la_deploy.',
+      );
+    }
 
     if (req.prepare) {
       await _refuseIfSomethingRuns(ref);
@@ -1550,11 +1618,9 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       }
     }
 
-    final Json started = await backend.ansiblew(
-      id: ref.id,
-      desc: req.desc,
-      cmd: req.cmd,
-    );
+    final Json started = fast
+        ? await backend.fastDeploy(id: ref.id, desc: req.desc, cmd: req.cmd)
+        : await backend.ansiblew(id: ref.id, desc: req.desc, cmd: req.cmd);
     final Json entry = started['cmdEntry'] as Json;
     // ansiblew also starts a ttyd viewer tailing the log, which the UI kills
     // when its console dialog closes. Nobody here will ever look at it, and

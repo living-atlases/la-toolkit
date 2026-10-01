@@ -290,9 +290,13 @@ class DeployProject extends DeployAction {
     required super.project,
     required super.onStart,
     required super.onError,
+    this.fast = false,
   });
 
   DeployCmd cmd;
+  // Fast deploy (docker-compose): the same cmd, rendered into bundles and applied
+  // without Ansible by the backend's /api/v1/fast-deploy.
+  bool fast;
 }
 
 class BrandingDeploy extends DeployAction {

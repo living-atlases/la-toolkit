@@ -9,6 +9,10 @@ services:
     container_name: la-toolkit
     restart: always
     hostname: la-toolkit
+    # The gid of the host's docker group, so the container's 'ubuntu' user can use the socket
+    # below: DOCKER_GID=$(getent group docker | cut -d: -f3) docker compose up -d
+    group_add:
+      - "${DOCKER_GID:-999}"
     ports:
       - "2010:2010"
       - "2011-2100:2011-2100"
@@ -68,6 +72,11 @@ services:
       - /data/la-toolkit/logs/:/home/ubuntu/ansible/logs/:rw
       - /data/la-toolkit/ssh:/home/ubuntu/.ssh/:rw
       - /home/ubuntu/.npm-packages
+      # Fast deploy of docker-compose portals: the toolkit renders each host's deploy tree in
+      # a throwaway container on THIS machine's docker. The socket is root-equivalent on this
+      # host (the toolkit already holds the ssh keys of every server it manages). Remove these
+      # two entries to disable the fast deploy; the Ansible deploy does not need them.
+      - /var/run/docker.sock:/var/run/docker.sock:rw
       # For 'custom' ala-install
       # Take into account that if your change from 'custom' to other ala-install version
       # code changes will be git stashed
@@ -169,6 +178,8 @@ services:
     container_name: la-toolkit-dev
     restart: always
     hostname: la-toolkit
+    group_add:
+      - "${DOCKER_GID:-999}"
     build:
       context: .
       dockerfile: docker/u22/Dockerfile
@@ -189,6 +200,7 @@ services:
       - /home/ubuntu/.npm-packages
       - ./build/web:/home/ubuntu/la-toolkit/assets/:rw
       - /data/la-toolkit/ala-install:/home/ubuntu/ansible/ala-install/:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw
 
   mongo-express:
     profiles: [dev]

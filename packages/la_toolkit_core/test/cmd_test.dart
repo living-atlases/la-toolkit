@@ -185,4 +185,24 @@ void main() {
     cmd.allSteps = true;
     expect(cmd.desc, equals('Dry run of Pipelines data processing of all drs'));
   });
+
+  test('a fastDeploy history entry is a DeployCmd, not an ansible run', () {
+    final DeployCmd cmd = DeployCmd()
+      ..deployServices = <String>[LAServiceName.all.toS()]
+      ..dockerCompose = true;
+    final Map<String, dynamic> json = CmdHistoryEntry(
+      logsPrefix: 'demo',
+      logsSuffix: '2026-10-01_10:00:00',
+      desc: 'Fast deploy',
+      rawCmd: 'bash fast-deploy.sh',
+      cmd: Cmd(type: CmdType.fastDeploy, properties: cmd.toJson()),
+    ).toJson();
+    expect((json['cmd'] as Map<String, dynamic>)['type'], 'fastDeploy');
+    final CmdHistoryEntry back = CmdHistoryEntry.fromJson(json);
+    expect(back.cmd.type, CmdType.fastDeploy);
+    expect(back.isAnsibleDeploy(), isFalse);
+    expect(back.deployCmd!.dockerCompose, isTrue);
+    expect(back.getTitle(), 'Fast deploy');
+    expect(back.getDesc(), cmd.desc);
+  });
 }

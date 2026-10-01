@@ -72,6 +72,14 @@ class _DeployPageState extends State<DeployPage> {
                 project: project,
                 deployCmd: cmd,
               ),
+          onFastDeployProject: (LAProject project, DeployCmd cmd) =>
+              DeployUtils.deployActionLaunch(
+                context: context,
+                store: store,
+                project: project,
+                deployCmd: cmd,
+                fast: true,
+              ),
           onCancel: (LAProject project) {
             store.dispatch(OpenProjectTools(project));
             BeamerCond.of(context, LAProjectViewLocation());
@@ -114,6 +122,7 @@ class _DeployPageState extends State<DeployPage> {
           }
           return cmd;
         }
+
         // Docker leg is always deployable (compose 'all'); the VM leg / other
         // deploys need at least one selected service.
         final bool canDeploy =
@@ -122,6 +131,16 @@ class _DeployPageState extends State<DeployPage> {
         final VoidCallback? onTap = !canDeploy
             ? null
             : () => vm.onDeployProject(vm.project, resolveDeployCmd());
+        // Fast deploy (pure docker-compose redeploys): the bundles the last render left,
+        // applied without Ansible. Always the whole portal, never a dry run.
+        final bool canFastDeploy =
+            vm.project.isPureDockerCompose &&
+            cmd.deployServices.isNotEmpty &&
+            !cmd.dryRun &&
+            !cmd.onlyProperties &&
+            cmd.tags.isEmpty &&
+            cmd.skipTags.isEmpty &&
+            cmd.limitToServers.isEmpty;
         final bool advanced =
             cmd.advanced ||
             cmd.tags.isNotEmpty ||
@@ -206,9 +225,8 @@ class _DeployPageState extends State<DeployPage> {
                                 ),
                               ],
                               selected: <bool>{hybridDockerMode},
-                              onSelectionChanged: (Set<bool> s) => setState(
-                                () => _hybridDockerMode = s.first,
-                              ),
+                              onSelectionChanged: (Set<bool> s) =>
+                                  setState(() => _hybridDockerMode = s.first),
                             ),
                           ),
                           if (hybridDockerMode)
@@ -436,6 +454,27 @@ class _DeployPageState extends State<DeployPage> {
                               .toList(),
                         ),
                         LaunchBtn(onTap: onTap, execBtn: execBtn),
+                        if (vm.project.isPureDockerCompose) ...<Widget>[
+                          LaunchBtn(
+                            onTap: canFastDeploy
+                                ? () => vm.onFastDeployProject(vm.project, cmd)
+                                : null,
+                            execBtn: 'Fast deploy',
+                            icon: MdiIcons.flash,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            canFastDeploy
+                                ? 'Redeploys without Ansible: the config is rendered once (and reused while '
+                                      'inventories, versions and branding do not change), then applied to '
+                                      'every server in parallel. The first deploy, a new service or a password '
+                                      'change still need Deploy.'
+                                : 'Fast deploy always deploys the whole portal: no dry run, tags, '
+                                      'skipped tags, limits or properties-only.',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -461,6 +500,7 @@ class _DeployViewModel {
     required this.onCancel,
     required this.onSaveDeployCmd,
     required this.onDeployProject,
+    required this.onFastDeployProject,
   });
 
   final LAProject project;
@@ -468,6 +508,7 @@ class _DeployViewModel {
   final Function(LAProject) onCancel;
   final Function(DeployCmd) onSaveDeployCmd;
   final Function(LAProject, DeployCmd) onDeployProject;
+  final Function(LAProject, DeployCmd) onFastDeployProject;
 
   @override
   bool operator ==(Object other) =>
