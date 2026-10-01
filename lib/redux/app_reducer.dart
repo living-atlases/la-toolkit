@@ -63,6 +63,7 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
   TypedReducer<AppState, ProjectsLoad>(_projectsLoad),
   TypedReducer<AppState, OnProjectsLoad>(_onProjectsLoad),
+  TypedReducer<AppState, OnProjectsPushed>(_onProjectsPushed),
   TypedReducer<AppState, OnDemoProjectsLoad>(_onDemoProjectsLoad),
   TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
   TypedReducer<AppState, TestServicesProject>(_testServicesProject),
@@ -340,9 +341,9 @@ AppState _projectsLoad(AppState state, ProjectsLoad action) {
   return state.copyWith(loading: true);
 }
 
-AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
+List<LAProject> _parseProjects(List<dynamic> projectsJson) {
   final List<LAProject> ps = <LAProject>[];
-  for (final dynamic pJson in action.projectsJson) {
+  for (final dynamic pJson in projectsJson) {
     try {
       ps.add(LAProject.fromJson(pJson as Map<String, dynamic>));
     } catch (e, stackTrace) {
@@ -352,6 +353,11 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
       //  debugPrint(pJson.toString());
     }
   }
+  return ps;
+}
+
+AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
+  final List<LAProject> ps = _parseProjects(action.projectsJson);
   final LAProject currentProject = action.setCurrentProject
       ? ps.firstWhere(
           (LAProject p) => p.id == state.currentProject.id,
@@ -363,6 +369,36 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
     currentProject: currentProject,
     projects: ps,
     loading: false,
+  );
+}
+
+/// The project with [id] in a populated list, hubs included: the backend
+/// nests a portal's hubs inside it instead of listing them.
+LAProject? _findProject(List<LAProject> ps, String id) {
+  for (final LAProject p in ps) {
+    if (p.id == id) {
+      return p;
+    }
+    for (final LAProject hub in p.hubs) {
+      if (hub.id == id) {
+        return hub;
+      }
+    }
+  }
+  return null;
+}
+
+AppState _onProjectsPushed(AppState state, OnProjectsPushed action) {
+  final List<LAProject> ps = _parseProjects(action.projectsJson);
+  // Only a project being looked at is replaced: in the edit, servers, tune or
+  // create pages the in-memory copy may hold changes not saved yet. A project
+  // gone from the list (deleted elsewhere) is kept rather than switching the
+  // user to another one.
+  final LAProject? pushed = _findProject(ps, state.currentProject.id);
+  final bool apply = pushed != null && state.status == LAProjectViewStatus.view;
+  return state.copyWith(
+    currentProject: apply ? pushed : state.currentProject,
+    projects: ps,
   );
 }
 

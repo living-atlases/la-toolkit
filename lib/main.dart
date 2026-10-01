@@ -189,22 +189,20 @@ Future<void> main() async {
       ),
     );
 
+    // On every (re)connect: a socket loses its rooms when it drops (a backend
+    // restart), and would stop hearing about changes.
     io.socket.onConnect((_) {
-      // log('sails websocket: Connected to backend');
+      io.get(
+        url:
+            "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
+        cb: (dynamic body, JWR jwrResponse) {},
+      );
     });
 
     io.socket.onError((dynamic e) {
       log('sails websocket: Error connecting to backend');
       log(e.toString());
     });
-
-    io.get(
-      url: "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
-      cb: (dynamic body, JWR jwrResponse) {
-        // log(body);
-        // log(jwrResponse.toJson());
-      },
-    );
 
     // https://sailsjs.com/documentation/reference/web-sockets/socket-client/io-socket-on
     final Debouncer debouncer = Debouncer(milliseconds: 1000);
@@ -213,7 +211,7 @@ Future<void> main() async {
         if (kDebugMode) {
           log('sails websocket: projects subs call');
         }
-        store.dispatch(OnProjectsLoad(projects as List<dynamic>, false));
+        store.dispatch(OnProjectsPushed(projects as List<dynamic>));
       });
     });
   }

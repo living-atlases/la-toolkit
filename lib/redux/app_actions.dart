@@ -153,6 +153,14 @@ class OnProjectsLoad extends AppActions {
   bool setCurrentProject;
 }
 
+/// The backend pushed the whole project list (`projects-subs`): another
+/// browser, the MCP or a running deploy changed something.
+class OnProjectsPushed extends AppActions {
+  OnProjectsPushed(this.projectsJson);
+
+  List<dynamic> projectsJson;
+}
+
 class OnDemoProjectsLoad extends AppActions {
   OnDemoProjectsLoad();
 }
