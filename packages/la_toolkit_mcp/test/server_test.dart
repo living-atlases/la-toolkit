@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:dart_mcp/client.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:la_toolkit_core/models/project_patch.dart'
+    show MergeResult, ProjectPatch;
 import 'package:la_toolkit_mcp/la_toolkit_mcp.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
@@ -29,6 +31,75 @@ class _Backend {
   /// Store update-project bodies as the backend does (they replace the
   /// project's rows), for tools that read the project back.
   bool applyUpdates = false;
+
+  /// Changes the stored projects right before a patch-project is merged:
+  /// another session saving while the tool works.
+  void Function(List<Json> projects)? beforePatch;
+
+  final List<Json> patches = <Json>[];
+
+  /// serverServices / clusterServices from the deploy rows, as the backend's
+  /// populate-project builds them on every read.
+  static Json withDerivedMaps(Json p) {
+    final Map<String, String> names = <String, String>{
+      for (final dynamic s in p['services'] as List<dynamic>? ?? <dynamic>[])
+        (s as Json)['id'] as String: s['nameInt'] as String,
+    };
+    final List<Json> deploys =
+        (p['serviceDeploys'] as List<dynamic>? ?? <dynamic>[]).cast<Json>();
+    return <String, dynamic>{
+      ...p,
+      'serverServices': <String, dynamic>{
+        for (final dynamic s in p['servers'] as List<dynamic>? ?? <dynamic>[])
+          (s as Json)['id'] as String: <String>[
+            for (final Json sd in deploys)
+              if (sd['serverId'] == s['id'] &&
+                  sd['clusterId'] == null &&
+                  names[sd['serviceId']] != null)
+                names[sd['serviceId']]!,
+          ],
+      },
+      'clusterServices': <String, dynamic>{
+        for (final dynamic c in p['clusters'] as List<dynamic>? ?? <dynamic>[])
+          (c as Json)['id'] as String: <String>[],
+        for (final String cid
+            in deploys
+                .map((Json sd) => sd['clusterId'])
+                .whereType<String>()
+                .toSet())
+          cid: <String>[
+            for (final Json sd in deploys)
+              if (sd['clusterId'] == cid && names[sd['serviceId']] != null)
+                names[sd['serviceId']]!,
+          ],
+      },
+    };
+  }
+
+  /// The stored project [id], a hub looked up inside its portal.
+  Json? stored(String id) {
+    for (final Json p in projects) {
+      if (p['id'] == id) return p;
+      for (final dynamic h in p['hubs'] as List<dynamic>? ?? <dynamic>[]) {
+        if ((h as Json)['id'] == id) return h;
+      }
+    }
+    return null;
+  }
+
+  void replace(String id, Json next) {
+    for (int i = 0; i < projects.length; i++) {
+      if (projects[i]['id'] == id) {
+        projects[i] = next;
+        return;
+      }
+      final List<dynamic> hubs =
+          projects[i]['hubs'] as List<dynamic>? ?? <dynamic>[];
+      for (int j = 0; j < hubs.length; j++) {
+        if ((hubs[j] as Json)['id'] == id) hubs[j] = next;
+      }
+    }
+  }
 
   /// GitHub: la-docker-compose tags and files, the dependency matrix (404, so
   /// the lint reports it as unchecked).
@@ -174,6 +245,29 @@ class _Backend {
           );
           projects[i] = <String, dynamic>{...projects[i], ...updated};
         }
+        return _json(<String, dynamic>{'projects': projects});
+      case 'patch-project':
+        // The backend's merge (api/libs/project-patch.js), same rules.
+        final Json patch = body()!['patch'] as Json;
+        patches.add(patch);
+        beforePatch?.call(projects);
+        final String id = patch['projectId'] as String;
+        final Json current = stored(id)!;
+        final MergeResult m = ProjectPatch.merge(current, patch);
+        if (m.hasConflicts) {
+          return http.Response(
+            json.encode(<String, dynamic>{
+              'conflicts': m.conflicts,
+              'projects': projects,
+            }),
+            409,
+          );
+        }
+        final Json merged = withDerivedMaps(
+          ProjectPatch.applyWrites(current, m.writes),
+        );
+        updatedProjects.add(merged);
+        if (applyUpdates) replace(id, merged);
         return _json(<String, dynamic>{'projects': projects});
       case 'gen-ssh-conf':
         sshConfBody = body();
@@ -732,6 +826,45 @@ void main() {
       final Json old = json.decode(backup.readAsStringSync()) as Json;
       expect(old['generatorRelease'], '1.8.32');
       expect(old['dockerComposeRelease'], 'v1.5.1');
+    });
+  });
+
+  // Saves send what changed (patch-project), so a browser saving while the
+  // tool works is merged, unless it changed the same setting.
+  group('saving while another session saves', () {
+    setUp(() => fake.projects.add(hybridPortal()));
+
+    Json hybrid(List<Json> ps) =>
+        ps.firstWhere((Json p) => p['shortName'] == 'Hybrid');
+
+    Future<CallToolResult> setGenerator() =>
+        call('la_set_releases', <String, Object?>{
+          'project': 'Hybrid',
+          'generatorRelease': '1.8.33',
+          'save': true,
+          'confirm': true,
+        });
+
+    test('a change to other settings stays', () async {
+      fake.beforePatch = (List<Json> ps) =>
+          hybrid(ps)['longName'] = 'Renamed in a browser';
+      final CallToolResult r = await setGenerator();
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json stored = fake.updatedProjects.single;
+      expect(stored['generatorRelease'], '1.8.33');
+      expect(stored['longName'], 'Renamed in a browser');
+      final Json patch = fake.patches.single;
+      expect((patch['project'] as Json).keys, isNot(contains('longName')));
+    });
+
+    test('the same setting changed elsewhere refuses the save', () async {
+      fake.beforePatch = (List<Json> ps) =>
+          hybrid(ps)['generatorRelease'] = '1.8.31';
+      final CallToolResult r = await setGenerator();
+      expect(r.isError, isTrue);
+      expect(text(r), contains('another session'));
+      expect(text(r), contains('project.generatorRelease'));
+      expect(fake.updatedProjects, isEmpty);
     });
   });
 

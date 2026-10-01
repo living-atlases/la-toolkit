@@ -149,9 +149,11 @@ repeated with `save: true, confirm: true` once the user agrees):
 
 Both tools:
 
-- Save as the UI does: `update-project` with the model's `toApiJson()`, then
-  `gen-ssh-conf`, after a backup of the project as it was. Refused when the change adds a
-  data integrity error.
+- Save as the UI does: `patch-project` with what changed since the project was read
+  (`ProjectPatch.diff` of the model's `toApiJson()`), then `gen-ssh-conf`, after a backup
+  of the project as it was. What a browser changed meanwhile in other settings stays; if it
+  changed the same ones the save is refused and nothing is written (run the preview again).
+  Refused too when the change adds a data integrity error.
 - A change that would drop deploy rows of servers it does not touch is refused
   (`collateralRemovals` in the preview). Older projects keep rows that point at a
   cluster deleted long ago, and they still decide where names resolve; the UI's

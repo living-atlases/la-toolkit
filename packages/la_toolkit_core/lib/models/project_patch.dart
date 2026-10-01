@@ -236,6 +236,14 @@ class ProjectPatch {
       'project': project,
       if (derivedChanges.isNotEmpty) 'derived': derivedChanges,
       'rows': rows,
+      // The rows that point to others which this client had read: removing
+      // what one of them points to while keeping it is this client's call
+      // (orphans the MCP keeps for a restore), not a conflict.
+      if (rows.isNotEmpty)
+        'seen': <String, dynamic>{
+          for (final String c in refs.keys)
+            c: _rows(base, c, projectId).map((Json r) => r['id']).toList(),
+        },
     };
   }
 
@@ -432,8 +440,15 @@ class ProjectPatch {
             in ((w?['update'] as List<dynamic>?) ?? <dynamic>[]).cast<Json>())
           _id(u['id']): u['set'] as Json,
       };
+      final Set<String> seen =
+          ((((patch['seen'] as Json?) ?? <String, dynamic>{})[c]
+                      as List<dynamic>?) ??
+                  <dynamic>[])
+              .map(_id)
+              .toSet();
       for (final Json row in currentRows(c)) {
-        if (removed[c]!.contains(_id(row['id']))) {
+        if (removed[c]!.contains(_id(row['id'])) ||
+            seen.contains(_id(row['id']))) {
           continue;
         }
         final Json merged = <String, dynamic>{

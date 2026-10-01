@@ -6,6 +6,7 @@ import 'package:dart_mcp/server.dart';
 import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_releases.dart';
+import 'package:la_toolkit_core/models/project_patch.dart' show ProjectPatch;
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/placement/placement_changes.dart';
 import 'package:la_toolkit_core/placement/server_changes.dart';
@@ -999,7 +1000,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       );
     }
     final File backup = await _backup(ref);
-    await backend.updateProject(body);
+    await _storeChange(ref, p);
     return <String, dynamic>{
       ...preview,
       'saved': true,
@@ -1354,6 +1355,34 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     };
   }
 
+  /// Stores what [p] changes on [ref] as it was read, not the whole project:
+  /// what a browser changed meanwhile in other settings stays, and the
+  /// same setting changed by both refuses the save instead of undoing it.
+  Future<void> _storeChange(ProjectRef ref, LAProject p) async {
+    final Json base =
+        jsonDecode(jsonEncode(projectModel(ref).toJson())) as Json
+          ..['genConf'] = ref.project['genConf'];
+    final Json patch = ProjectPatch.diff(base, p.toApiJson());
+    if (ProjectPatch.isEmpty(patch)) return;
+    try {
+      await backend.patchProject(patch);
+    } on BackendException catch (e) {
+      if (e.statusCode != 409) rethrow;
+      Object? conflicts;
+      try {
+        conflicts = (jsonDecode(e.body) as Json)['conflicts'];
+      } on FormatException {
+        conflicts = e.body;
+      }
+      throw InvalidRequest(
+        'Not saved: another session (a browser, another agent) changed the '
+        'same settings of "${ref.dirName}" while this change was being made '
+        '(${jsonEncode(conflicts)}). Nothing was written; run the preview '
+        'again to see the project as it is now.',
+      );
+    }
+  }
+
   /// What the app does on every save (_updateProject), after a backup:
   /// store, then regenerate the toolkit's ssh config for the servers.
   Future<Json> _saveChange(ProjectRef ref, LAProject p, Json preview) async {
@@ -1371,7 +1400,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       );
     }
     final File backup = await _backup(ref);
-    await backend.updateProject(p.toApiJson());
+    await _storeChange(ref, p);
     if (p.servers.isNotEmpty) {
       await backend.genSshConf(
         name: p.shortName,
