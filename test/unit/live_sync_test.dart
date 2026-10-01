@@ -28,7 +28,7 @@ void main() {
   });
 
   AppState withStatus(LAProjectViewStatus s) => AppState(
-    projects: <LAProject>[],
+    projects: const <LAProject>[],
     currentProject: LAProject(longName: 'P', shortName: 'p', domain: 'p.org'),
     status: s,
   );
