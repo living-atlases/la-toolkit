@@ -149,6 +149,22 @@ class ProjectPatch {
     return a == b;
   }
 
+  /// Whether what is stored still is the `from` the client saw. A key the
+  /// stored object lacks, and stored sub-keys the client does not know (an
+  /// sshKey saved with an old `fingerprint`), are not changes made by anyone:
+  /// they would make every edit of that field conflict on old rows.
+  static bool matchesFrom(Object? stored, bool present, Object? from) {
+    if (!present) {
+      return true;
+    }
+    if (stored is Map && from is Map) {
+      return from.keys.every(
+        (Object? k) => matchesFrom(stored[k], stored.containsKey(k), from[k]),
+      );
+    }
+    return eq(stored, from);
+  }
+
   static String _id(Object? v) => v.toString();
 
   static List<Json> _rows(Json p, String c, String projectId) =>
@@ -268,7 +284,8 @@ class ProjectPatch {
       if (eq(cur, change['to'])) {
         continue;
       }
-      if (projectSoft.contains(e.key) || eq(cur, change['from'])) {
+      if (projectSoft.contains(e.key) ||
+          matchesFrom(cur, current.containsKey(e.key), change['from'])) {
         writesProject[e.key] = change['to'];
       } else {
         conflicts.add('project.${e.key}');
@@ -360,7 +377,8 @@ class ProjectPatch {
           if (eq(cur, change['to'])) {
             continue;
           }
-          if (rowSoft[c]!.contains(f) || eq(cur, change['from'])) {
+          if (rowSoft[c]!.contains(f) ||
+              matchesFrom(cur, existing.containsKey(f), change['from'])) {
             set[f] = change['to'];
           } else {
             conflicts.add('$c/$id.$f');
