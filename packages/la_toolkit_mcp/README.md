@@ -242,6 +242,40 @@ Options, each also an environment variable: `--backend <url>` (`LA_TOOLKIT_BACKE
 default `http://localhost:2010`) and `--backup-dir <dir>` (`LA_TOOLKIT_MCP_BACKUP_DIR`,
 default `~/.cache/la_toolkit_mcp/backups`).
 
+### Permissions in Claude Code (auto mode)
+
+Every tool declares MCP annotations (`readOnlyHint` on the ones marked "no" in the
+table above, `destructiveHint` on `la_set_servers`, `la_restore_backup`, `la_deploy` and
+`la_deploy_cancel`), but Claude Code's
+auto-mode classifier judges a call by the conversation, not by those hints. Once a real
+deploy is running against hosts with production-looking names, it can block even
+`la_deploy_status` or `la_deploy_failures` as "Production Deploy", and the agent is left
+unable to follow the run it launched.
+
+Permission allow rules skip the classifier. Allow the tools that only read, in
+`~/.claude/settings.json` (or a project's `.claude/settings.json`):
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "mcp__la-toolkit__la_list_projects",
+      "mcp__la-toolkit__la_get_project",
+      "mcp__la-toolkit__la_lint_project",
+      "mcp__la-toolkit__la_list_runs",
+      "mcp__la-toolkit__la_deploy_status",
+      "mcp__la-toolkit__la_deploy_failures"
+    ]
+  }
+}
+```
+
+Leave `la_deploy`, `la_deploy_cancel`, `la_set_*`, `la_create_project` and
+`la_restore_backup` out, so each of them still asks. The check tools
+(`la_check_connectivity`, `la_check_preconditions`) run ssh on the servers and save
+results on the project; allow them only if that is fine for you. The prefix is
+`mcp__<name>__`, with the name the server was registered under in `claude mcp add`.
+
 ## Development
 
 ```bash
