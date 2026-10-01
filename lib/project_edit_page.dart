@@ -19,6 +19,7 @@ import 'components/generic_text_form_field.dart';
 import 'components/help_icon.dart';
 import 'components/la_app_bar.dart';
 import 'components/lint_project_panel.dart';
+import 'components/project_live_banner.dart';
 import 'components/scroll_panel.dart';
 import 'components/service_widget.dart';
 import 'la_theme.dart';
@@ -418,30 +419,31 @@ If you are unsure type something like "server1, server2, server3".
                 ),
               ],
             ),
-            body: AppSnackBar(
-              ScrollPanel(
-                child: Column(
-                  children: <Widget>[
-                    Stepper(
-                      steps: steps,
-                      currentStep: step,
-                      // type: stepperType,
-                      onStepContinue: () {
-                        // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                        onStepContinue(vm, project);
-                      },
-                      onStepTapped: (int step) {
-                        vm.onGoto(step);
-                        vm.onSaveCurrentProject(project);
-                      },
-                      onStepCancel: () {
-                        onStepCancel(vm, project);
-                      },
-                      // https://github.com/flutter/flutter/issues/11133
-                      controlsBuilder:
-                          (BuildContext context, ControlsDetails details) {
-                            return const Row(
-                              /*  children: <Widget>[
+            body: ProjectLiveBanner.wrap(
+              AppSnackBar(
+                ScrollPanel(
+                  child: Column(
+                    children: <Widget>[
+                      Stepper(
+                        steps: steps,
+                        currentStep: step,
+                        // type: stepperType,
+                        onStepContinue: () {
+                          // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
+                          onStepContinue(vm, project);
+                        },
+                        onStepTapped: (int step) {
+                          vm.onGoto(step);
+                          vm.onSaveCurrentProject(project);
+                        },
+                        onStepCancel: () {
+                          onStepCancel(vm, project);
+                        },
+                        // https://github.com/flutter/flutter/issues/11133
+                        controlsBuilder:
+                            (BuildContext context, ControlsDetails details) {
+                              return const Row(
+                                /*  children: <Widget>[
                             // empty and custom in the AppBar
                             /* TextButton(
                               onPressed: details.onStepContinue,
@@ -452,15 +454,16 @@ If you are unsure type something like "server1, server2, server3".
                               child: const Text('CANCEL'),
                             ), */
                           ], */
-                            );
-                          },
-                    ),
-                    const LintProjectPanel(
-                      showOthers: false,
-                      showToolkitDeps: false,
-                      showLADeps: false,
-                    ),
-                  ],
+                              );
+                            },
+                      ),
+                      const LintProjectPanel(
+                        showOthers: false,
+                        showToolkitDeps: false,
+                        showLADeps: false,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

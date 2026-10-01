@@ -1,0 +1,90 @@
+{
+  "description": "Removing a server while keeping a deploy row on it the client had read (an orphan kept on purpose) is its call.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1",
+        "ip": "10.0.0.1",
+        "projectId": "p1"
+      }
+    ],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "collectory",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [
+      {
+        "id": "d1",
+        "serviceId": "sv1",
+        "serverId": "s1",
+        "clusterId": null,
+        "type": "vm",
+        "projectId": "p1"
+      }
+    ],
+    "variables": []
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "servers": {
+        "remove": [
+          "s1"
+        ]
+      }
+    },
+    "seen": {
+      "clusters": [],
+      "serviceDeploys": [
+        "d1"
+      ]
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "collectory",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [
+      {
+        "id": "d1",
+        "serviceId": "sv1",
+        "serverId": "s1",
+        "clusterId": null,
+        "type": "vm",
+        "projectId": "p1"
+      }
+    ],
+    "variables": []
+  }
+}

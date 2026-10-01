@@ -1,0 +1,133 @@
+{
+  "description": "Stored keys the client never sends (an old sshKey.fingerprint) and fields missing in old rows are not conflicts.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1",
+        "ip": "10.0.0.1",
+        "projectId": "p1",
+        "sshKey": {
+          "name": "k",
+          "publicKey": "ssh-rsa A",
+          "fingerprint": "aa:bb"
+        }
+      }
+    ],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "collectory",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [
+      {
+        "id": "d1",
+        "serviceId": "sv1",
+        "serverId": "s1",
+        "type": "vm",
+        "projectId": "p1"
+      }
+    ],
+    "variables": []
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "servers": {
+        "update": [
+          {
+            "id": "s1",
+            "set": {
+              "sshKey": {
+                "from": {
+                  "name": "k",
+                  "publicKey": "ssh-rsa A",
+                  "fingerdebugPrint": null
+                },
+                "to": {
+                  "name": "k2",
+                  "publicKey": "ssh-rsa B",
+                  "fingerdebugPrint": null
+                }
+              }
+            }
+          }
+        ]
+      },
+      "serviceDeploys": {
+        "update": [
+          {
+            "id": "d1",
+            "set": {
+              "softwareVersions": {
+                "from": {},
+                "to": {
+                  "collectory": "5.0"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1",
+        "ip": "10.0.0.1",
+        "projectId": "p1",
+        "sshKey": {
+          "name": "k2",
+          "publicKey": "ssh-rsa B",
+          "fingerdebugPrint": null
+        }
+      }
+    ],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "collectory",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [
+      {
+        "id": "d1",
+        "serviceId": "sv1",
+        "serverId": "s1",
+        "type": "vm",
+        "projectId": "p1",
+        "softwareVersions": {
+          "collectory": "5.0"
+        }
+      }
+    ],
+    "variables": []
+  }
+}

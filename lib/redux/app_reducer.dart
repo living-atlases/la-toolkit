@@ -63,6 +63,15 @@ List<Reducer<AppState>> basic = <Reducer<AppState>>[
   TypedReducer<AppState, OnProjectDeleted>(_onProjectDeleted),
   TypedReducer<AppState, ProjectsLoad>(_projectsLoad),
   TypedReducer<AppState, OnProjectsLoad>(_onProjectsLoad),
+  TypedReducer<AppState, OnProjectsPushed>(_onProjectsPushed),
+  TypedReducer<AppState, OnSaveSkipped>(_onSaveSkipped),
+  TypedReducer<AppState, OnProjectConflict>(_onProjectConflict),
+  TypedReducer<AppState, MarkProjectChangedElsewhere>(
+    _markProjectChangedElsewhere,
+  ),
+  TypedReducer<AppState, ReloadCurrentProject>(_reloadCurrentProject),
+  TypedReducer<AppState, OnPresence>(_onPresence),
+  TypedReducer<AppState, OnEditingRoute>(_onEditingRoute),
   TypedReducer<AppState, OnDemoProjectsLoad>(_onDemoProjectsLoad),
   TypedReducer<AppState, TestConnectivityProject>(_testConnectivityProject),
   TypedReducer<AppState, TestServicesProject>(_testServicesProject),
@@ -340,9 +349,9 @@ AppState _projectsLoad(AppState state, ProjectsLoad action) {
   return state.copyWith(loading: true);
 }
 
-AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
+List<LAProject> _parseProjects(List<dynamic> projectsJson) {
   final List<LAProject> ps = <LAProject>[];
-  for (final dynamic pJson in action.projectsJson) {
+  for (final dynamic pJson in projectsJson) {
     try {
       ps.add(LAProject.fromJson(pJson as Map<String, dynamic>));
     } catch (e, stackTrace) {
@@ -352,6 +361,11 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
       //  debugPrint(pJson.toString());
     }
   }
+  return ps;
+}
+
+AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
+  final List<LAProject> ps = _parseProjects(action.projectsJson);
   final LAProject currentProject = action.setCurrentProject
       ? ps.firstWhere(
           (LAProject p) => p.id == state.currentProject.id,
@@ -364,6 +378,82 @@ AppState _onProjectsLoad(AppState state, OnProjectsLoad action) {
     projects: ps,
     loading: false,
   );
+}
+
+/// The project with [id] in a populated list, hubs included: the backend
+/// nests a portal's hubs inside it instead of listing them.
+LAProject? _findProject(List<LAProject> ps, String id) {
+  for (final LAProject p in ps) {
+    if (p.id == id) {
+      return p;
+    }
+    for (final LAProject hub in p.hubs) {
+      if (hub.id == id) {
+        return hub;
+      }
+    }
+  }
+  return null;
+}
+
+AppState _onProjectsPushed(AppState state, OnProjectsPushed action) {
+  final List<LAProject> ps = _parseProjects(action.projectsJson);
+  // Only a project being looked at is replaced: in the edit, servers, tune or
+  // create pages the in-memory copy may hold changes not saved yet. A project
+  // gone from the list (deleted elsewhere) is kept rather than switching the
+  // user to another one.
+  final LAProject? pushed = _findProject(ps, state.currentProject.id);
+  final bool apply = pushed != null && state.status == LAProjectViewStatus.view;
+  return state.copyWith(
+    currentProject: apply ? pushed : state.currentProject,
+    projects: ps,
+    projectChangedElsewhere: !apply && state.projectChangedElsewhere,
+  );
+}
+
+AppState _onSaveSkipped(AppState state, OnSaveSkipped action) {
+  return state.copyWith(loading: false);
+}
+
+// The open copy is kept (it holds what the user typed); the banner offers
+// to reload it.
+AppState _onProjectConflict(AppState state, OnProjectConflict action) {
+  return state.copyWith(
+    projects: _parseProjects(action.projectsJson),
+    projectConflicts: action.conflicts,
+    projectChangedElsewhere: true,
+    loading: false,
+  );
+}
+
+AppState _markProjectChangedElsewhere(
+  AppState state,
+  MarkProjectChangedElsewhere action,
+) {
+  return state.copyWith(projectChangedElsewhere: true);
+}
+
+AppState _reloadCurrentProject(AppState state, ReloadCurrentProject action) {
+  final LAProject? stored = _findProject(
+    state.projects,
+    state.currentProject.id,
+  );
+  return state.copyWith(
+    currentProject: stored ?? state.currentProject,
+    projectChangedElsewhere: false,
+    projectConflicts: <String>[],
+  );
+}
+
+// Only from view: create and the other editing states are the app's own.
+AppState _onEditingRoute(AppState state, OnEditingRoute action) {
+  return state.status == LAProjectViewStatus.view
+      ? state.copyWith(status: action.status)
+      : state;
+}
+
+AppState _onPresence(AppState state, OnPresence action) {
+  return state.copyWith(presence: action.sessions);
 }
 
 AppState _onDemoProjectsLoad(AppState state, OnDemoProjectsLoad action) {
@@ -388,19 +478,21 @@ AppState _onProjectUpdated(AppState state, OnProjectUpdated action) {
     }
   }
   if (action.updateCurrentProject) {
-    nextProject = ps.firstWhere(
-      (LAProject p) => p.id == action.projectId,
-      // In the case of hubs
-      orElse: () => state.currentProject,
-    );
+    // Hubs are nested in their portal.
+    nextProject = _findProject(ps, action.projectId) ?? state.currentProject;
   } else {
     // If we update a parent project, stay in hub project
     nextProject = state.currentProject;
   }
   // debugPrint("Next project ${nextProject.shortName} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+  // A save that went through: the copy shown now is the stored one, which
+  // already merges what other sessions changed.
+  final bool sameProject = nextProject.id == action.projectId;
   return state.copyWith(
     currentProject: nextProject,
     projects: ps,
+    projectChangedElsewhere: !sameProject && state.projectChangedElsewhere,
+    projectConflicts: sameProject ? <String>[] : state.projectConflicts,
     loading: false,
   );
 }

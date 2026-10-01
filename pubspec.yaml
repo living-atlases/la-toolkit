@@ -130,11 +130,6 @@ dependencies:
 
   # map
   flutter_map: ^5.0.0
-  # https://github.com/porn/area/pull/2
-  area: # ^1.0.0
-    git:
-      url: https://github.com/DirkoOdendaal/area.git
-      ref: feature/migrate-to-null-safety-dart-2.12
   latlong2: ^0.9.0
   # universal_ui: ^0.0.8
   pointer_interceptor: ^0.10.1+2

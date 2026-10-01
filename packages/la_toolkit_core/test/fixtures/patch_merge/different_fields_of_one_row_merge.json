@@ -1,0 +1,67 @@
+{
+  "description": "Another session changed the ip, this one the name of the same server.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1",
+        "ip": "10.0.0.9",
+        "projectId": "p1"
+      }
+    ],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": []
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "servers": {
+        "update": [
+          {
+            "id": "s1",
+            "set": {
+              "name": {
+                "from": "vm1",
+                "to": "vm1-renamed"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1-renamed",
+        "ip": "10.0.0.9",
+        "projectId": "p1"
+      }
+    ],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": []
+  }
+}

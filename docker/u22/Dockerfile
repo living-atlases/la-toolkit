@@ -1,3 +1,14 @@
+# The MCP server (packages/la_toolkit_mcp) is built from this checkout, unlike
+# the backend (cloned) and the frontend (downloaded from the release): build the
+# image from the release tag. An AOT binary with no runtime dependencies.
+FROM dart:3.11.5 AS mcp
+WORKDIR /src
+COPY packages/la_toolkit_core packages/la_toolkit_core
+COPY packages/la_toolkit_mcp packages/la_toolkit_mcp
+WORKDIR /src/packages/la_toolkit_mcp
+RUN dart pub get --enforce-lockfile && \
+        dart compile exe bin/la_toolkit_mcp.dart -o /la_toolkit_mcp
+
 FROM ubuntu:22.04
 
 # Install some dependencies via APT
@@ -175,6 +186,11 @@ RUN chmod +x /usr/local/bin/check_by_ssh
 # server launch script
 COPY docker/launch.sh /usr/local/bin/la-toolkit-launch
 RUN chmod +x /usr/local/bin/la-toolkit-launch
+# Agents reach it with: docker exec -i la-toolkit la_toolkit_mcp
+# (stdio; its default backend, localhost:2010, is this container's). Backups of
+# the projects it changes go to the logs volume, so they outlive the container.
+COPY --from=mcp /la_toolkit_mcp /usr/local/bin/la_toolkit_mcp
+ENV LA_TOOLKIT_MCP_BACKUP_DIR=/home/ubuntu/ansible/logs/mcp-backups
 
 # The year of ALA Portal launch ;-)
 EXPOSE 2010

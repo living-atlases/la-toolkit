@@ -1,0 +1,92 @@
+{
+  "description": "A hub places a service on its portal's cluster; the portal's own rows in the body are ignored.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "ala_hub",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [],
+    "variables": [],
+    "isHub": true
+  },
+  "foreignIds": [
+    "c-portal",
+    "s-portal"
+  ],
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "serviceDeploys": {
+        "create": [
+          {
+            "id": "d5",
+            "serviceId": "sv1",
+            "serverId": null,
+            "clusterId": "c-portal",
+            "type": "vm",
+            "projectId": "p1"
+          }
+        ]
+      },
+      "clusters": {
+        "create": [
+          {
+            "id": "c-portal",
+            "name": "compose",
+            "type": "dockerCompose",
+            "serverId": "s-portal",
+            "projectId": "portal"
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "ala_hub",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [
+      {
+        "id": "d5",
+        "serviceId": "sv1",
+        "serverId": null,
+        "clusterId": "c-portal",
+        "type": "vm",
+        "projectId": "p1"
+      }
+    ],
+    "variables": [],
+    "isHub": true
+  }
+}

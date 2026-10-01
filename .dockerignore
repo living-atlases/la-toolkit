@@ -1,0 +1,9 @@
+# Only docker/, assets/env.production.txt and packages/ are copied into the
+# image; keep the rest (release tarballs, builds, tool caches) out of the
+# build context.
+.git
+build
+releases
+*.tgz
+**/.dart_tool
+packages/la_toolkit_mcp/la_toolkit_mcp

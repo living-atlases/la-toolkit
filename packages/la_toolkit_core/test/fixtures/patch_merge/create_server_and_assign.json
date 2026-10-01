@@ -1,0 +1,105 @@
+{
+  "description": "A new server and a deploy on it in the same patch.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1",
+        "ip": "10.0.0.1",
+        "projectId": "p1"
+      }
+    ],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "collectory",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [],
+    "variables": []
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "servers": {
+        "create": [
+          {
+            "id": "s2",
+            "name": "vm2",
+            "ip": "10.0.0.1",
+            "projectId": "p1"
+          }
+        ]
+      },
+      "serviceDeploys": {
+        "create": [
+          {
+            "id": "d3",
+            "serviceId": "sv1",
+            "serverId": "s2",
+            "clusterId": null,
+            "type": "vm",
+            "projectId": "p1"
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1",
+        "ip": "10.0.0.1",
+        "projectId": "p1"
+      },
+      {
+        "id": "s2",
+        "name": "vm2",
+        "ip": "10.0.0.1",
+        "projectId": "p1"
+      }
+    ],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "collectory",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [
+      {
+        "id": "d3",
+        "serviceId": "sv1",
+        "serverId": "s2",
+        "clusterId": null,
+        "type": "vm",
+        "projectId": "p1"
+      }
+    ],
+    "variables": []
+  }
+}

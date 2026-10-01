@@ -23,6 +23,7 @@ import 'components/la_project_timeline.dart';
 import 'components/lint_project_panel.dart';
 import 'components/loading_text_overlay.dart';
 import 'components/project_drawer.dart';
+import 'components/project_live_banner.dart';
 import 'components/scroll_panel.dart';
 import 'components/servers_status_panel.dart';
 import 'components/terms_drawer.dart';
@@ -418,44 +419,46 @@ class _LAProjectViewPageState extends State<LAProjectViewPage> {
               ],
               title: pageTitle,
             ),
-            body: ScrollPanel(
-              child: Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 80,
-                  vertical: 20,
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.only(top: 80, bottom: 50),
-                      child: LAProjectTimeline(project: project),
-                    ),
-                    // Disabled for now
-                    // ServicesChipPanel(),
-                    ResponsiveGridRow(
-                      // desiredItemWidth: 120,
-                      // minSpacing: 20,
-                      children: tools.map((Tool tool) {
-                        return ResponsiveGridCol(
-                          lg: tool.grid,
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            height: 120,
-                            alignment: Alignment.center,
-                            color: Colors.white,
-                            // color: LAColorTheme.laPalette.shade50,
-                            child: ToolShortcut(tool: tool),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 10),
-                    if (!project.isHub) createHubWidget(context, vm, project),
-                    LintProjectPanel(
-                      showLADeps: showSoftwareVersions,
-                      showToolkitDeps: showToolkitDeps,
-                    ),
-                  ],
+            body: ProjectLiveBanner.wrap(
+              ScrollPanel(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 80,
+                    vertical: 20,
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.only(top: 80, bottom: 50),
+                        child: LAProjectTimeline(project: project),
+                      ),
+                      // Disabled for now
+                      // ServicesChipPanel(),
+                      ResponsiveGridRow(
+                        // desiredItemWidth: 120,
+                        // minSpacing: 20,
+                        children: tools.map((Tool tool) {
+                          return ResponsiveGridCol(
+                            lg: tool.grid,
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              height: 120,
+                              alignment: Alignment.center,
+                              color: Colors.white,
+                              // color: LAColorTheme.laPalette.shade50,
+                              child: ToolShortcut(tool: tool),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 10),
+                      if (!project.isHub) createHubWidget(context, vm, project),
+                      LintProjectPanel(
+                        showLADeps: showSoftwareVersions,
+                        showToolkitDeps: showToolkitDeps,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

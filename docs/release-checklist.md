@@ -46,6 +46,11 @@ commit that is not on master yet simply is not in the image.
 
 ## 4. Image
 
+Build it from a checkout of the release tag. Unlike the backend (cloned) and the
+frontend (downloaded), the MCP server (`packages/la_toolkit_mcp`, with
+`la_toolkit_core`) is compiled from the local build context by the `mcp` stage of the
+Dockerfile, so whatever is checked out is what ships.
+
 In `docker/u22/Dockerfile`:
 
 - Bump the cache buster above the backend clone (`RUN echo "X.Y.Z-dN"`). This is

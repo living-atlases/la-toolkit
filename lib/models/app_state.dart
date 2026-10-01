@@ -11,6 +11,7 @@ import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../components/app_snack_bar_message.dart';
+import 'presence_session.dart';
 
 part 'app_state.g.dart';
 
@@ -64,7 +65,12 @@ class AppState {
     bool? depsLoading,
     List<SshKey>? sshKeys,
     Map<String, Map<String, dynamic>>? serviceCheckProgress,
+    this.projectChangedElsewhere = false,
+    List<String>? projectConflicts,
+    List<PresenceSession>? presence,
   }) : projects = projects ?? <LAProject>[],
+       projectConflicts = projectConflicts ?? <String>[],
+       presence = presence ?? <PresenceSession>[],
        sshKeys = sshKeys ?? <SshKey>[],
        status = status ?? LAProjectViewStatus.view,
        currentProject = currentProject ?? LAProject(),
@@ -110,6 +116,20 @@ class AppState {
   final Map<String, Map<String, dynamic>> serviceCheckProgress;
   final DateTime? lastSwCheck;
 
+  /// The open project changed in another session (a browser, the MCP) and
+  /// the copy shown here was kept because it may hold unsaved changes.
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  final bool projectChangedElsewhere;
+
+  /// What the last save could not apply because another session changed the
+  /// same fields (`project.<field>`, `<collection>/<id>[.<field>]`).
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  final List<String> projectConflicts;
+
+  /// Other browsers with a project open.
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  final List<PresenceSession> presence;
+
   Map<String, dynamic> toJson() => _$AppStateToJson(this);
 
   @override
@@ -129,6 +149,9 @@ class AppState {
           depsLoading == other.depsLoading &&
           backendVersion == other.backendVersion &&
           lastSwCheck == other.lastSwCheck &&
+          projectChangedElsewhere == other.projectChangedElsewhere &&
+          listEquals(projectConflicts, other.projectConflicts) &&
+          listEquals(presence, other.presence) &&
           listEquals(projects, other.projects) &&
           listEquals(alaInstallReleases, other.alaInstallReleases) &&
           listEquals(generatorReleases, other.generatorReleases) &&
@@ -158,6 +181,9 @@ class AppState {
       loading.hashCode ^
       depsLoading.hashCode ^
       lastSwCheck.hashCode ^
+      projectChangedElsewhere.hashCode ^
+      const ListEquality<String>().hash(projectConflicts) ^
+      const ListEquality<PresenceSession>().hash(presence) ^
       const ListEquality<AppSnackBarMessage>().hash(appSnackBarMessages) ^
       const ListEquality<LAProject>().hash(projects) ^
       const ListEquality<String>().hash(alaInstallReleases) ^

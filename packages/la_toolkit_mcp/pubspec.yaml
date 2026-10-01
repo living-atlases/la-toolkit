@@ -10,6 +10,7 @@ executables:
   la_toolkit_mcp:
 
 dependencies:
+  collection: ^1.17.1
   dart_mcp: ^0.5.2
   http: ^1.2.0
   la_toolkit_core:

@@ -1,6 +1,7 @@
 // See in the future
 // https://github.com/kb0/maps_toolkit
-import 'package:area/area.dart';
+import 'dart:math' show sin;
+
 import 'package:latlong2/latlong.dart';
 
 class MapUtils {
@@ -65,7 +66,55 @@ class MapUtils {
     };
   }
 
+  /// Area of a GeoJSON Polygon or MultiPolygon, in km2.
   static double areaKm2(Map<String, Object> geojson) {
-    return area(geojson) / 1000000;
+    final Object? coords = geojson['coordinates'];
+    double m2 = 0;
+    if (geojson['type'] == 'Polygon') {
+      m2 = _polygonArea(coords! as List<dynamic>);
+    } else if (geojson['type'] == 'MultiPolygon') {
+      for (final dynamic polygon in coords! as List<dynamic>) {
+        m2 += _polygonArea(polygon as List<dynamic>);
+      }
+    }
+    return m2 / 1000000;
+  }
+
+  static const int _wgs84Radius = 6378137;
+
+  static double _rad(num degrees) => degrees * pi / 180;
+
+  /// The outer ring minus the holes, in m2.
+  static double _polygonArea(List<dynamic> rings) {
+    if (rings.isEmpty) {
+      return 0;
+    }
+    double a = _ringArea(rings[0] as List<dynamic>).abs();
+    for (final dynamic hole in rings.skip(1)) {
+      a -= _ringArea(hole as List<dynamic>).abs();
+    }
+    return a;
+  }
+
+  /// Signed area of a ring projected on the sphere, in m2: R. G. Chamberlain
+  /// and W. H. Duquette, "Some Algorithms for Polygons on a Sphere", JPL
+  /// Publication 07-03 (2007). The same formula (and summation order) as the
+  /// `area` package this replaced, whose only fault was requiring Flutter.
+  static double _ringArea(List<dynamic> ring) {
+    final int n = ring.length;
+    if (n <= 2) {
+      return 0;
+    }
+    double a = 0;
+    for (int i = 0; i < n; i++) {
+      final List<dynamic> p1 =
+          ring[i == n - 1 ? n - 1 : (i == n - 2 ? n - 2 : i)] as List<dynamic>;
+      final List<dynamic> p2 =
+          ring[i == n - 1 ? 0 : (i == n - 2 ? n - 1 : i + 1)] as List<dynamic>;
+      final List<dynamic> p3 =
+          ring[i == n - 1 ? 1 : (i == n - 2 ? 0 : i + 2)] as List<dynamic>;
+      a += (_rad(p3[0] as num) - _rad(p1[0] as num)) * sin(_rad(p2[1] as num));
+    }
+    return a * _wgs84Radius * _wgs84Radius / 2;
   }
 }

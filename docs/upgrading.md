@@ -3,6 +3,35 @@
 The general procedure is in the [README](../README.md#upgrade-the-toolkit). This page
 holds the notes that only apply to some versions, and how to restore a backup.
 
+## Every installation: backups stopped on 2026-09-09
+
+The backup sidecar in `docker-compose.yml` used `tiredofit/db-backup:latest`. That
+project moved to `nfrastack/db-backup`, and on 2026-09-09 its `:latest` was replaced by
+an image that only prints a deprecation notice. The `watchtower` container pulled it
+within the hour, so on any installation with the shipped `docker-compose.yml` the
+`la-toolkit-mongo-db-backup` container still shows as running but has written nothing
+since. Check it:
+
+```bash
+docker inspect la-toolkit-mongo-db-backup --format '{{.Config.Image}}'
+sudo ls -lt /data/la-toolkit/backups | head -3   # the newest backup and its date
+```
+
+If the image is `tiredofit/db-backup:latest`, or the newest backup is older than a day,
+take the `mongo-db-backup` service from the current `docker-compose.yml` (pinned to
+`nfrastack/db-backup:4.9.2`, same variables) into yours, and recreate only that
+container:
+
+```bash
+docker compose up -d --no-deps mongo-db-backup
+docker logs la-toolkit-mongo-db-backup | grep -i 'completed successfully'
+```
+
+It takes a backup right away and then one a day. Test one with the
+[restore](#restoring-a-backup) into a scratch MongoDB before relying on it. The current
+file also fixes the checksum setting (`DEFAULT_CHECKSUM=MD5`), which used to leave an
+empty `*.gz.` file next to every backup.
+
 ## Coming from 1.6.9 or earlier
 
 Read [Upgrading past MongoDB 4](mongodb-4-to-8-upgrade.md) first. 1.7.0 ships

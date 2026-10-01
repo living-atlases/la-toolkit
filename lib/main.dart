@@ -14,8 +14,6 @@ import 'package:la_toolkit_core/utils/foundation.dart' as core;
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:redux/redux.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:sails_io/sails_io.dart';
-import 'package:socket_io_client/socket_io_client.dart' as socket_io_client;
 
 import 'components/app_snack_bar_message.dart';
 import 'models/app_state.dart';
@@ -24,7 +22,7 @@ import 'redux/app_reducer.dart';
 import 'redux/app_state_middleware.dart';
 import 'redux/logging_middleware.dart';
 import 'routes.dart';
-import 'utils/debounce.dart';
+import 'utils/live_sync.dart';
 import 'utils/utils.dart';
 
 Future<void> main() async {
@@ -180,42 +178,7 @@ Future<void> main() async {
   store.dispatch(OnFetchSoftwareDepsState());
 
   if (!AppUtils.isDemo()) {
-    final SailsIOClient io = SailsIOClient(
-      socket_io_client.io(
-        "${AppUtils.scheme}://${dotenv.env['BACKEND']}?__sails_io_sdk_version=0.11.0",
-        socket_io_client.OptionBuilder().setTransports(<String>[
-          'websocket',
-        ]).build(),
-      ),
-    );
-
-    io.socket.onConnect((_) {
-      // log('sails websocket: Connected to backend');
-    });
-
-    io.socket.onError((dynamic e) {
-      log('sails websocket: Error connecting to backend');
-      log(e.toString());
-    });
-
-    io.get(
-      url: "${AppUtils.scheme}://${dotenv.env['BACKEND']}/api/v1/projects-subs",
-      cb: (dynamic body, JWR jwrResponse) {
-        // log(body);
-        // log(jwrResponse.toJson());
-      },
-    );
-
-    // https://sailsjs.com/documentation/reference/web-sockets/socket-client/io-socket-on
-    final Debouncer debouncer = Debouncer(milliseconds: 1000);
-    io.socket.on('project', (dynamic projects) {
-      debouncer.run(() {
-        if (kDebugMode) {
-          log('sails websocket: projects subs call');
-        }
-        store.dispatch(OnProjectsLoad(projects as List<dynamic>, false));
-      });
-    });
+    LiveSync(store, Routes().routerDelegate).start();
   }
 
   final Cron cron = Cron();

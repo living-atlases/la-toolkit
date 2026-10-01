@@ -1,0 +1,46 @@
+{
+  "description": "This session assigns a service to vm1, deleted meanwhile elsewhere.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [
+      {
+        "id": "sv1",
+        "nameInt": "collectory",
+        "use": true,
+        "projectId": "p1"
+      }
+    ],
+    "serviceDeploys": [],
+    "variables": []
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "serviceDeploys": {
+        "create": [
+          {
+            "id": "d2",
+            "serviceId": "sv1",
+            "serverId": "s1",
+            "clusterId": null,
+            "type": "vm",
+            "projectId": "p1"
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [
+    "serviceDeploys/d2.serverId"
+  ]
+}

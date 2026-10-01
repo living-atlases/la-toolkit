@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service_deploy.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:la_toolkit_mcp/la_toolkit_mcp.dart';
 
@@ -116,4 +117,61 @@ Json hybridPortal({List<String> vmOnComposeHost = const <String>[]}) {
     p.getService(s).use = true;
   }
   return json.decode(json.encode(p.toApiJson())) as Json;
+}
+
+/// A portal to move services around in, as `get-conf` returns it: collectory
+/// on the VM `vm1`; compose clusters on `dc1` (ala_hub, spatial pinned to
+/// 1.0.0) and `dc2` (ala_hub); `new1` a server with nothing yet.
+Json placementPortal() {
+  final LAProject p = LAProject(
+    longName: 'Moving portal',
+    shortName: 'Moving',
+    domain: 'example.net',
+    alaInstallRelease: 'v2.4.2',
+    dockerComposeRelease: 'v1.5.1',
+    generatorRelease: '1.8.32',
+  );
+  for (final String n in <String>['vm1', 'dc1', 'dc2', 'new1']) {
+    p.upsertServer(
+      LAServer(name: n, ip: '10.0.1.${n.length}', projectId: p.id),
+    );
+  }
+  String id(String n) => p.servers.firstWhere((LAServer s) => s.name == n).id;
+  for (final String s in <String>[collectory, alaHub, spatial, dockerCompose]) {
+    p.getService(s).use = true;
+  }
+  p.assignByType(id('vm1'), DeploymentType.vm, <String>[collectory]);
+  p.assignByType(id('dc1'), DeploymentType.vm, <String>[dockerCompose]);
+  p.assignByType(id('dc2'), DeploymentType.vm, <String>[dockerCompose]);
+  p.assignByType(id('dc1'), DeploymentType.dockerCompose, <String>[
+    alaHub,
+    spatial,
+  ]);
+  p.assignByType(id('dc2'), DeploymentType.dockerCompose, <String>[alaHub]);
+  for (final LAServiceDeploy sd in p.serviceDeploys) {
+    for (final String k in sd.softwareVersions.keys.toList()) {
+      sd.softwareVersions[k] = '1.0.0';
+    }
+  }
+  return json.decode(json.encode(p.toApiJson())) as Json;
+}
+
+/// [placementPortal] with a deploy row on dc1 (spatial_service) pointing at a
+/// compose cluster deleted long ago, as older projects have (lademo had 32).
+const String orphanCluster = '0123456789abcdef01234567';
+Json placementPortalWithOrphan() {
+  final Json p = placementPortal();
+  final List<dynamic> rows = p['serviceDeploys'] as List<dynamic>;
+  final Json hub = (rows.cast<Json>()).firstWhere(
+    (Json sd) => sd['clusterId'] != null,
+  );
+  rows.add(<String, dynamic>{
+    ...hub,
+    'id': 'fedcba9876543210fedcba98',
+    'clusterId': orphanCluster,
+    'serverId': (p['servers'] as List<dynamic>).cast<Json>().firstWhere(
+      (Json s) => s['name'] == 'dc1',
+    )['id'],
+  });
+  return p;
 }

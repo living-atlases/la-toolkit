@@ -147,6 +147,14 @@ class BackendClient {
   Future<void> updateProject(Map<String, dynamic> project) =>
       _send('PATCH', 'update-project', <String, Object?>{'project': project});
 
+  /// Stores what changed since the copy read (`ProjectPatch.diff` in
+  /// la_toolkit_core): the backend merges it with what other sessions (a
+  /// browser, another agent) changed meanwhile. Throws a 409
+  /// [BackendException] when one changed the same settings; then nothing
+  /// was written.
+  Future<void> patchProject(Map<String, dynamic> patch) =>
+      _send('PATCH', 'patch-project', <String, Object?>{'patch': patch});
+
   Future<void> alaInstallSelect(String version) =>
       _get('ala-install-select/${Uri.encodeComponent(version)}');
 
