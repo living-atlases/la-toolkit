@@ -11,7 +11,7 @@ docs/release-notes/ instead.
 
 ## Unreleased
 
-Two people (or a person and an AI agent) can now work on the same project at the same time without undoing each other, the toolkit can be driven by an AI agent through an MCP server that ships in the image, and data hubs can live on their portal's docker-compose stack.
+Two people (or a person and an AI agent) can now work on the same project at the same time without undoing each other, the toolkit can be driven by an AI agent through an MCP server that ships in the image, and [data hubs](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub) can live on their portal's docker-compose stack.
 
 ### Action needed: backups
 
@@ -19,9 +19,9 @@ Two people (or a person and an AI agent) can now work on the same project at the
 
 `docker-compose.yml` is a file from this repository, not part of the image, so **pulling the new image does not fix this**. Copy the `mongo-db-backup` service from the current `docker-compose.yml` (pinned to `nfrastack/db-backup:4.9.2`, 30 days of retention) into yours. Its first run deletes every backup older than 30 days, years of them on an old installation, so move aside any you want to keep first. [Upgrading](https://github.com/living-atlases/la-toolkit/blob/master/docs/upgrading.md#every-installation-backups-stopped-on-2026-09-09) has the commands to check, move and restore.
 
-### `:latest` is still 1.6.9
+### `:latest` is still 1.6.9 on Docker Hub
 
-Unchanged from 1.7.x: `:latest` stays on 1.6.9 so that `watchtower` does not move an unpinned MongoDB 4 installation onto MongoDB 8 by itself. Pin the version you want; both `X.Y.Z` and `vX.Y.Z` are published.
+Unchanged from 1.7.x: [`livingatlases/la-toolkit:latest`](https://hub.docker.com/r/livingatlases/la-toolkit/tags) stays on 1.6.9 so that `watchtower` does not move an unpinned MongoDB 4 installation onto MongoDB 8 by itself. Pin the version you want; both `X.Y.Z` and `vX.Y.Z` are published.
 
 ### Working on a project together
 
@@ -59,10 +59,10 @@ After upgrading, reload any browser tab that was open on the old version: an old
 - The CARTO basemaps API key can be set in the Tune page.
 - The backend-less demo builds and saves again.
 
-### Commits (54)
+### Commits (55)
 
 <details>
-<summary>All 54 commits, by type</summary>
+<summary>All 55 commits, by type</summary>
 
 #### Features
 
@@ -116,6 +116,7 @@ After upgrading, reload any browser tab that was open on the old version: an old
 
 #### Documentation
 
+- **release**: CHANGELOG.md generated from tags, both repos, and release notes in docs/ ([4de843b](https://github.com/living-atlases/la-toolkit/commit/4de843bca92e7eca4bfb689cd6693738045d9539))
 - **mcp**: allow rules for the read-only tools in Claude Code auto mode ([b142787](https://github.com/living-atlases/la-toolkit/commit/b1427877b85d855d817626f22a5caea7650bb90c))
 - **mcp**: rebuild to another name while a client runs the binary ([d71d871](https://github.com/living-atlases/la-toolkit/commit/d71d87102cb17c4eb07352c017ef98e9996508a1))
 - **mcp**: the image ships the server from the release after 1.7.1 ([c5a3290](https://github.com/living-atlases/la-toolkit/commit/c5a329027adc466b2ebe7781a73483c76935d487))

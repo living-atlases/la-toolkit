@@ -1,4 +1,4 @@
-Two people (or a person and an AI agent) can now work on the same project at the same time without undoing each other, the toolkit can be driven by an AI agent through an MCP server that ships in the image, and data hubs can live on their portal's docker-compose stack.
+Two people (or a person and an AI agent) can now work on the same project at the same time without undoing each other, the toolkit can be driven by an AI agent through an MCP server that ships in the image, and [data hubs](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub) can live on their portal's docker-compose stack.
 
 ## Action needed: backups
 
@@ -6,9 +6,9 @@ Two people (or a person and an AI agent) can now work on the same project at the
 
 `docker-compose.yml` is a file from this repository, not part of the image, so **pulling the new image does not fix this**. Copy the `mongo-db-backup` service from the current `docker-compose.yml` (pinned to `nfrastack/db-backup:4.9.2`, 30 days of retention) into yours. Its first run deletes every backup older than 30 days, years of them on an old installation, so move aside any you want to keep first. [Upgrading](https://github.com/living-atlases/la-toolkit/blob/master/docs/upgrading.md#every-installation-backups-stopped-on-2026-09-09) has the commands to check, move and restore.
 
-## `:latest` is still 1.6.9
+## `:latest` is still 1.6.9 on Docker Hub
 
-Unchanged from 1.7.x: `:latest` stays on 1.6.9 so that `watchtower` does not move an unpinned MongoDB 4 installation onto MongoDB 8 by itself. Pin the version you want; both `X.Y.Z` and `vX.Y.Z` are published.
+Unchanged from 1.7.x: [`livingatlases/la-toolkit:latest`](https://hub.docker.com/r/livingatlases/la-toolkit/tags) stays on 1.6.9 so that `watchtower` does not move an unpinned MongoDB 4 installation onto MongoDB 8 by itself. Pin the version you want; both `X.Y.Z` and `vX.Y.Z` are published.
 
 ## Working on a project together
 
