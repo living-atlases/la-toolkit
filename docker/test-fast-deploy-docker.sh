@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # The la-toolkit image and docker-compose.yml give the fast deploy (TASK-31) a docker client:
 #   1. the Dockerfile installs docker-ce-cli and docker-buildx-plugin from Docker's apt repo;
-#   2. docker-compose.yml mounts /var/run/docker.sock and adds DOCKER_GID to la-toolkit and
-#      la-toolkit-dev, and nothing else gains the socket;
+#   2. docker-compose.yml: the socket is opt-in in la-toolkit (a commented volume, with how to
+#      enable it and the root warning), on in la-toolkit-dev; both get DOCKER_GID; nothing else
+#      gains the socket;
 #   3. with --install (needs docker): that Dockerfile RUN, run as is in ubuntu:22.04, leaves a
 #      working `docker` and `docker buildx` (the apt repo line and package names are right).
 # Usage: docker/test-fast-deploy-docker.sh [--install]
@@ -19,18 +20,23 @@ grep -q 'apt-get install --no-install-recommends -y docker-ce-cli docker-buildx-
 pass "the image installs the docker CLI and buildx"
 
 python3 - <<'PY' || fail "2: docker-compose.yml"
-import sys, yaml
-c = yaml.safe_load(open("docker-compose.yml"))
+import re, sys, yaml
+text = open("docker-compose.yml").read()
+c = yaml.safe_load(text)
 sock = "/var/run/docker.sock:/var/run/docker.sock:rw"
+assert sock not in c["services"]["la-toolkit"].get("volumes", []), "la-toolkit: the socket is on by default"
+assert re.search(r"\n +# - " + re.escape(sock) + "\n", text), "la-toolkit: no commented socket volume to uncomment"
+for needle in ("is root on this host", "has no login", "DOCKER_GID=$(getent group docker | cut -d: -f3)"):
+    assert needle in text, f"la-toolkit: the opt-in comment does not say {needle!r}"
+assert sock in c["services"]["la-toolkit-dev"].get("volumes", []), "la-toolkit-dev: no docker.sock"
 for name in ("la-toolkit", "la-toolkit-dev"):
     s = c["services"][name]
-    assert sock in s.get("volumes", []), f"{name}: no docker.sock"
     assert "${DOCKER_GID:-999}" in [str(g) for g in s.get("group_add", [])], f"{name}: no group_add DOCKER_GID"
 others = [n for n, s in c["services"].items()
           if n not in ("la-toolkit", "la-toolkit-dev", "watchtower") and sock in (s.get("volumes") or [])]
 assert not others, f"socket also in {others}"
 PY
-pass "la-toolkit and la-toolkit-dev get the socket and DOCKER_GID, nothing else does"
+pass "the socket is opt-in in la-toolkit (with how and the warning), on in la-toolkit-dev, nowhere else"
 
 if [ "${1:-}" = --install ]; then
   run=$(python3 - "$df" <<'PY'

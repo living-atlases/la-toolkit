@@ -216,7 +216,7 @@ class TermDialog {
         }
         TermDialog.show(context, port: port, pid: ttydPid, notify: notify);
       },
-      onError: (int error) {
+      onError: (int error, [String? message]) {
         if (context.mounted) {
           context.loaderOverlay.hide();
         }

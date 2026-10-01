@@ -451,7 +451,7 @@ class Api {
               l['ttydPid'] as int,
             );
           } else {
-            action.onError(response.statusCode);
+            action.onError(response.statusCode, response.body);
           }
         })
         .catchError((dynamic error) {

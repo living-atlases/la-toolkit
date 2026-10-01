@@ -400,7 +400,8 @@ class UpdateProjectLocal extends AppActions {
 class OnUpdateProjectFailed extends AppActions {}
 
 typedef VoidCallback = void Function();
-typedef ErrorCallback = void Function(int error);
+// message: what the backend said, when it said something (a 400 explains why it refused).
+typedef ErrorCallback = void Function(int error, [String? message]);
 
 class TestConnectivityProject extends AppActions {
   TestConnectivityProject(

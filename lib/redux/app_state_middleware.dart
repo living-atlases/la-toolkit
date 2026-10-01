@@ -836,7 +836,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               );
               action.onReady();
             },
-            onError: (int error) {
+            onError: (int error, [String? message]) {
               store.dispatch(OnShowCmdResultsFailed());
               action.onFailed();
             },

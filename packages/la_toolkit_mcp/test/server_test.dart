@@ -25,6 +25,9 @@ class _Backend {
   bool noDiskEndpoint = false;
   final List<Json> ansiblewBodies = <Json>[];
   final List<Json> fastDeployBodies = <Json>[];
+
+  /// The backend's 400 to a fast deploy it refuses (e.g. no docker socket).
+  String? fastDeployRefusal;
   final List<Json> addedProjects = <Json>[];
   final List<Json> updatedProjects = <Json>[];
   Json? sshConfBody;
@@ -180,6 +183,9 @@ class _Backend {
         });
       case 'fast-deploy':
         fastDeployBodies.add(body()!);
+        if (fastDeployRefusal != null) {
+          return http.Response(fastDeployRefusal!, 400);
+        }
         return _json(<String, dynamic>{
           'cmdEntry': entry,
           'port': 2012,
@@ -489,6 +495,23 @@ void main() {
     expect(fake.fastDeployBodies, isEmpty);
     expect(fake.ansiblewBodies, isEmpty);
   });
+
+  test(
+    'la_fast_deploy on a toolkit without the docker socket passes on how to enable it',
+    () async {
+      fake.fastDeployRefusal =
+          'fast deploy is not enabled in this toolkit: it needs the host\'s '
+          'docker socket. In the toolkit\'s docker-compose.yml, uncomment the '
+          '/var/run/docker.sock volume of la-toolkit';
+      final CallToolResult r = await call('la_fast_deploy', <String, Object?>{
+        'project': 'demo',
+        'confirm': true,
+      });
+      expect(r.isError, isTrue);
+      expect(text(r), contains('not enabled in this toolkit'));
+      expect(text(r), contains('uncomment the /var/run/docker.sock volume'));
+    },
+  );
 
   test(
     'a confirmed la_fast_deploy prepares like la_deploy, then starts the fast deploy',

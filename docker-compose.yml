@@ -9,8 +9,8 @@ services:
     container_name: la-toolkit
     restart: always
     hostname: la-toolkit
-    # The gid of the host's docker group, so the container's 'ubuntu' user can use the socket
-    # below: DOCKER_GID=$(getent group docker | cut -d: -f3) docker compose up -d
+    # The gid of the host's docker group, for the docker socket of the fast deploy (see the
+    # commented volume below). Without that socket this does nothing.
     group_add:
       - "${DOCKER_GID:-999}"
     ports:
@@ -72,11 +72,14 @@ services:
       - /data/la-toolkit/logs/:/home/ubuntu/ansible/logs/:rw
       - /data/la-toolkit/ssh:/home/ubuntu/.ssh/:rw
       - /home/ubuntu/.npm-packages
-      # Fast deploy of docker-compose portals: the toolkit renders each host's deploy tree in
-      # a throwaway container on THIS machine's docker. The socket is root-equivalent on this
-      # host (the toolkit already holds the ssh keys of every server it manages). Remove these
-      # two entries to disable the fast deploy; the Ansible deploy does not need them.
-      - /var/run/docker.sock:/var/run/docker.sock:rw
+      # Fast deploy of docker-compose portals (off by default): the toolkit renders each host's
+      # deploy tree in a throwaway container on THIS machine's docker, so it needs the socket.
+      # WARNING: the socket is root on this host, and the toolkit has no login: anyone who can
+      # reach port 2010 can then run anything here as root. Only on a toolkit that is not
+      # exposed. The Ansible deploy does not need it. To enable it, uncomment the next line and
+      # start with the host's docker gid:
+      #   DOCKER_GID=$(getent group docker | cut -d: -f3) docker compose up -d
+      # - /var/run/docker.sock:/var/run/docker.sock:rw
       # For 'custom' ala-install
       # Take into account that if your change from 'custom' to other ala-install version
       # code changes will be git stashed

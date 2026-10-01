@@ -268,12 +268,17 @@ class DeployUtils {
             },
           );
         },
-        onError: (int error) {
+        onError: (int error, [String? message]) {
           if (context.mounted) {
             context.loaderOverlay.hide();
           }
+          // A 400 is the backend refusing this deploy, and its body says why
+          // (e.g. fast deploy not enabled in this toolkit, and how to enable it).
+          final bool refused =
+              error == 400 && message != null && message.isNotEmpty;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+              duration: Duration(seconds: refused ? 30 : 4),
               action: SnackBarAction(
                 label: 'OK',
                 onPressed: () {
@@ -281,7 +286,9 @@ class DeployUtils {
                 },
               ),
               content: Text(
-                'Oooopss, some problem have arisen trying to start the deploy: $error',
+                refused
+                    ? message
+                    : 'Oooopss, some problem have arisen trying to start the deploy: $error',
               ),
             ),
           );
@@ -326,7 +333,7 @@ class DeployUtils {
             },
           );
         },
-        onError: (int error) {
+        onError: (int error, [String? message]) {
           if (context.mounted) {
             context.loaderOverlay.hide();
           }
@@ -384,7 +391,7 @@ class DeployUtils {
             },
           );
         },
-        onError: (int error) {
+        onError: (int error, [String? message]) {
           if (context.mounted) {
             context.loaderOverlay.hide();
           }
