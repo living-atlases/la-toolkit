@@ -49,6 +49,12 @@ abstract class _$AppStateCWProxy {
     Map<String, Map<String, dynamic>>? serviceCheckProgress,
   );
 
+  AppState projectChangedElsewhere(bool projectChangedElsewhere);
+
+  AppState projectConflicts(List<String>? projectConflicts);
+
+  AppState presence(List<PresenceSession>? presence);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `AppState(...).copyWith.fieldName(value)`.
   ///
@@ -77,6 +83,9 @@ abstract class _$AppStateCWProxy {
     bool? depsLoading,
     List<SshKey>? sshKeys,
     Map<String, Map<String, dynamic>>? serviceCheckProgress,
+    bool projectChangedElsewhere,
+    List<String>? projectConflicts,
+    List<PresenceSession>? presence,
   });
 }
 
@@ -158,6 +167,18 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
   ) => call(serviceCheckProgress: serviceCheckProgress);
 
   @override
+  AppState projectChangedElsewhere(bool projectChangedElsewhere) =>
+      call(projectChangedElsewhere: projectChangedElsewhere);
+
+  @override
+  AppState projectConflicts(List<String>? projectConflicts) =>
+      call(projectConflicts: projectConflicts);
+
+  @override
+  AppState presence(List<PresenceSession>? presence) =>
+      call(presence: presence);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `AppState(...).copyWith.fieldName(value)`.
   ///
@@ -186,6 +207,9 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
     Object? depsLoading = const $CopyWithPlaceholder(),
     Object? sshKeys = const $CopyWithPlaceholder(),
     Object? serviceCheckProgress = const $CopyWithPlaceholder(),
+    Object? projectChangedElsewhere = const $CopyWithPlaceholder(),
+    Object? projectConflicts = const $CopyWithPlaceholder(),
+    Object? presence = const $CopyWithPlaceholder(),
   }) {
     return AppState(
       projects: projects == const $CopyWithPlaceholder()
@@ -274,6 +298,20 @@ class _$AppStateCWProxyImpl implements _$AppStateCWProxy {
           ? _value.serviceCheckProgress
           // ignore: cast_nullable_to_non_nullable
           : serviceCheckProgress as Map<String, Map<String, dynamic>>?,
+      projectChangedElsewhere:
+          projectChangedElsewhere == const $CopyWithPlaceholder() ||
+              projectChangedElsewhere == null
+          ? _value.projectChangedElsewhere
+          // ignore: cast_nullable_to_non_nullable
+          : projectChangedElsewhere as bool,
+      projectConflicts: projectConflicts == const $CopyWithPlaceholder()
+          ? _value.projectConflicts
+          // ignore: cast_nullable_to_non_nullable
+          : projectConflicts as List<String>?,
+      presence: presence == const $CopyWithPlaceholder()
+          ? _value.presence
+          // ignore: cast_nullable_to_non_nullable
+          : presence as List<PresenceSession>?,
     );
   }
 }

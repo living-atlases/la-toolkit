@@ -647,6 +647,34 @@ class Api {
     return addOrUpdateProject(project, 'update');
   }
 
+  /// Sends what changed in a project since the copy last read
+  /// (`ProjectPatch.diff`). Answers the whole project list; throws
+  /// [ProjectConflictException] when another session changed the same
+  /// fields, in which case nothing was written.
+  static Future<List<dynamic>> patchProject(Map<String, dynamic> patch) async {
+    final Uri url = AppUtils.uri(
+      dotenv.env['BACKEND']!,
+      '/api/v1/patch-project',
+    );
+    final Response response = await http.patch(
+      url,
+      headers: <String, String>{'Content-type': 'application/json'},
+      body: utf8.encode(json.encode(<String, dynamic>{'patch': patch})),
+    );
+    if (response.statusCode == 200) {
+      return retrieveProjectList(response);
+    }
+    if (response.statusCode == 409) {
+      final Map<String, dynamic> body =
+          json.decode(response.body) as Map<String, dynamic>;
+      throw ProjectConflictException(
+        (body['conflicts'] as List<dynamic>).cast<String>(),
+        body['projects'] as List<dynamic>,
+      );
+    }
+    throw Exception('Failed to update project (${response.statusCode})');
+  }
+
   static Future<List<dynamic>> addOrUpdateProject(
     LAProject project,
     String op,
@@ -966,4 +994,17 @@ class Api {
       throw Exception('Failed to query mysql ($e)');
     }
   }
+}
+
+/// A save refused because another session changed the same fields.
+class ProjectConflictException implements Exception {
+  ProjectConflictException(this.conflicts, this.projectsJson);
+
+  final List<String> conflicts;
+
+  /// The project list as stored now.
+  final List<dynamic> projectsJson;
+
+  @override
+  String toString() => 'Changed in another session: ${conflicts.join(', ')}';
 }

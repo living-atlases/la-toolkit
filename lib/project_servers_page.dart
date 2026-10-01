@@ -14,6 +14,7 @@ import 'components/app_snack_bar.dart';
 import 'components/help_icon.dart';
 import 'components/la_app_bar.dart';
 import 'components/lint_project_panel.dart';
+import 'components/project_live_banner.dart';
 import 'components/scroll_panel.dart';
 import 'components/server_details_card_list.dart';
 import 'components/servers_card_list.dart';
@@ -251,33 +252,35 @@ If you have doubts or need to ask for some information, save this project and co
                 ),
               ],
             ),
-            body: AppSnackBar(
-              ScrollPanel(
-                child: Column(
-                  children: <Widget>[
-                    Stepper(
-                      steps: steps,
-                      currentStep: _step,
-                      onStepContinue: () {
-                        // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
-                        onStepContinue(vm, project);
-                      },
-                      onStepTapped: (int step) {
-                        setState(() {
-                          _step = step;
-                        });
-                      },
-                      onStepCancel: () {
-                        onStepCancel(vm, project);
-                      },
-                      // https://github.com/flutter/flutter/issues/11133
-                      controlsBuilder:
-                          (BuildContext context, ControlsDetails details) {
-                            return const Row();
-                          },
-                    ),
-                    const LintProjectPanel(showToolkitDeps: false),
-                  ],
+            body: ProjectLiveBanner.wrap(
+              AppSnackBar(
+                ScrollPanel(
+                  child: Column(
+                    children: <Widget>[
+                      Stepper(
+                        steps: steps,
+                        currentStep: _step,
+                        onStepContinue: () {
+                          // https://stackoverflow.com/questions/51231128/flutter-stepper-widget-validating-fields-in-individual-steps
+                          onStepContinue(vm, project);
+                        },
+                        onStepTapped: (int step) {
+                          setState(() {
+                            _step = step;
+                          });
+                        },
+                        onStepCancel: () {
+                          onStepCancel(vm, project);
+                        },
+                        // https://github.com/flutter/flutter/issues/11133
+                        controlsBuilder:
+                            (BuildContext context, ControlsDetails details) {
+                              return const Row();
+                            },
+                      ),
+                      const LintProjectPanel(showToolkitDeps: false),
+                    ],
+                  ),
                 ),
               ),
             ),

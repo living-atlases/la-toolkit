@@ -19,6 +19,7 @@ import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/post_deploy_cmd.dart';
 import 'package:la_toolkit_core/models/pre_deploy_cmd.dart';
 import 'package:la_toolkit_core/models/prod_service_desc.dart';
+import 'package:la_toolkit_core/models/project_patch.dart';
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/releases/deps_versions.dart';
 import 'package:la_toolkit_core/utils/string_utils.dart';
@@ -36,6 +37,7 @@ import '../utils/utils.dart';
 import 'app_actions.dart';
 import 'entity_actions.dart';
 import 'entity_apis.dart';
+import 'project_bases.dart';
 
 /// Generator versions offered in the demo when GitHub is unreachable.
 const List<String> demoGeneratorReleasesFallback = <String>[
@@ -56,6 +58,8 @@ List<String> demoGeneratorReleasesFromTags(List<dynamic> tags) => tags
 class AppStateMiddleware implements MiddlewareClass<AppState> {
   final String key = 'laTool20210418';
   SharedPreferences? _pref;
+  final ProjectBases _bases = ProjectBases();
+  final SaveQueue _saves = SaveQueue();
 
   // On Flutter web plain http.get goes through the browser HTTP cache, so a
   // Refresh re-requests the same URL and gets the previous (stale) body. That
@@ -137,6 +141,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     dynamic action,
     Function(dynamic) next,
   ) async {
+    _trackBases(store, action);
     if (action is OnFetchSoftwareDepsState) {
       // ALA-INSTALL RELEASES
       final Uri alaInstallReleasesApiUrl = Uri.https(
@@ -342,7 +347,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         }
       } catch (e) {
         store.dispatch(
-          ShowSnackBar(AppSnackBarMessage.ok('Failed to duplicate project ($e)')),
+          ShowSnackBar(
+            AppSnackBarMessage.ok('Failed to duplicate project ($e)'),
+          ),
         );
       }
     }
@@ -944,7 +951,67 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
     );
   }
 
+  // Every project list coming from the backend moves the copies the saves
+  // diff against (see ProjectBases). Not the base of a project open with
+  // possibly unsaved changes: it moves when the user saves or reloads, so a
+  // save never undoes what another session changed meanwhile.
+  void _trackBases(Store<AppState> store, dynamic action) {
+    if (AppUtils.isDemo()) {
+      return;
+    }
+    if (action is OnProjectsLoad) {
+      _bases.recordAll(action.projectsJson);
+    } else if (action is OnProjectUpdated) {
+      _bases.recordAll(action.projectsJson);
+    } else if (action is OnProjectsAdded) {
+      _bases.recordAll(action.projectsJson);
+    } else if (action is OnProjectDeleted) {
+      _bases.recordAll(action.projectsJson);
+    } else if (action is OnProjectConflict) {
+      _bases.recordAll(
+        action.projectsJson,
+        keepBase: <String>{action.projectId},
+      );
+    } else if (action is OnProjectsPushed) {
+      final String id = store.state.currentProject.id;
+      final bool kept = store.state.status != LAProjectViewStatus.view;
+      _bases.recordAll(
+        action.projectsJson,
+        keepBase: kept ? <String>{id} : <String>{},
+      );
+      if (kept && _bases.hasBase(id) && _bases.changedSinceBase(id)) {
+        store.dispatch(MarkProjectChangedElsewhere());
+      }
+    } else if (action is ReloadCurrentProject) {
+      _bases.adoptLatest(store.state.currentProject.id);
+    }
+  }
+
   Future<void> _updateProject(
+    LAProject project,
+    Store<AppState> store,
+    bool updateCurrentProject,
+    bool openProjectView,
+  ) async {
+    // Without a copy read from the backend (demo) there is nothing to diff
+    // against: the whole project goes.
+    if (!AppUtils.isDemo() && _bases.hasBase(project.id)) {
+      return _saves.run(
+        project.id,
+        () => _patchProject(
+          project,
+          store,
+          updateCurrentProject,
+          openProjectView,
+        ),
+      );
+    }
+    return _putProject(project, store, updateCurrentProject, openProjectView);
+  }
+
+  // The whole project, as update-project takes it (it deletes the rows the
+  // body does not carry).
+  Future<void> _putProject(
     LAProject project,
     Store<AppState> store,
     bool updateCurrentProject,
@@ -972,6 +1039,101 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
         );
       }
       store.dispatch(OnUpdateProjectFailed());
+    }
+  }
+
+  // Sends what changed since the copy read (ProjectPatch), so what another
+  // session changed meanwhile stays; a 409 means it changed the same fields.
+  Future<void> _patchProject(
+    LAProject project,
+    Store<AppState> store,
+    bool updateCurrentProject,
+    bool openProjectView,
+  ) async {
+    try {
+      final Map<String, dynamic>? base = _bases.clientBase(project.id);
+      if (base == null) {
+        // A hub its portal no longer lists: nothing to diff against.
+        return _putProject(
+          project,
+          store,
+          updateCurrentProject,
+          openProjectView,
+        );
+      }
+      final Map<String, dynamic> patch = ProjectPatch.diff(
+        base,
+        project.toApiJson(),
+      );
+      if (ProjectPatch.isEmpty(patch)) {
+        store.dispatch(OnSaveSkipped());
+      } else {
+        final List<dynamic> projects = await Api.patchProject(patch);
+        await genSshConf(project);
+        store.dispatch(
+          OnProjectUpdated(project.id, projects, updateCurrentProject),
+        );
+        await _reconcileGenConf(project.id, store, updateCurrentProject);
+      }
+      if (openProjectView) {
+        store.dispatch(OpenProjectTools(project));
+      }
+    } on ProjectConflictException catch (e) {
+      log('Update of ${project.id} refused: $e');
+      store.dispatch(
+        OnProjectConflict(project.id, e.conflicts, e.projectsJson),
+      );
+      store.dispatch(
+        ShowSnackBar(
+          AppSnackBarMessage.ok(
+            'Not saved: another session changed the same settings. Reload to see them.',
+          ),
+        ),
+      );
+    } catch (e, stacktrace) {
+      log('Failed to update project $e');
+      log(stacktrace.toString());
+      store.dispatch(
+        ShowSnackBar(
+          AppSnackBarMessage.ok(
+            AppUtils.isDev()
+                ? 'Failed to update project ($e)'
+                : 'Failed to update project',
+          ),
+        ),
+      );
+      store.dispatch(OnUpdateProjectFailed());
+    }
+  }
+
+  // genConf is computed by each client from the whole project and is
+  // last-write-wins: after a merge with another session's changes the stored
+  // one may miss them (a server the other session added), and a deploy
+  // generates its inventories from it. Recompute it from the merged project.
+  Future<void> _reconcileGenConf(
+    String projectId,
+    Store<AppState> store,
+    bool updateCurrentProject,
+  ) async {
+    final LAProject? merged = _bases.parseLatest(projectId);
+    final Map<String, dynamic>? stored = _bases.latestRaw(projectId);
+    if (merged == null || stored == null) {
+      return;
+    }
+    final Map<String, dynamic> genConf = merged.toGeneratorJson();
+    if (ProjectPatch.eq(genConf, stored['genConf'])) {
+      return;
+    }
+    try {
+      final List<dynamic> projects = await Api.patchProject(<String, dynamic>{
+        'projectId': projectId,
+        'derived': <String, dynamic>{'genConf': genConf},
+      });
+      store.dispatch(
+        OnProjectUpdated(projectId, projects, updateCurrentProject),
+      );
+    } catch (e) {
+      log('genConf of $projectId not reconciled: $e');
     }
   }
 

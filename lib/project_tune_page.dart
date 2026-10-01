@@ -29,6 +29,7 @@ import 'components/generic_text_form_field.dart';
 import 'components/help_icon.dart';
 import 'components/la_app_bar.dart';
 import 'components/lint_project_panel.dart';
+import 'components/project_live_banner.dart';
 import 'components/scroll_panel.dart';
 import 'la_releases_selectors.dart';
 import 'la_theme.dart';
@@ -284,263 +285,273 @@ class _LAProjectTunePageState extends State<LAProjectTunePage> {
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
-            body: AppSnackBar(
-              ScrollPanel(
-                withPadding: true,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      if (_tab == _moreInfoTab)
-                        ListTile(
-                          // contentPadding: EdgeInsets.zero,
-                          title: const Text('Advanced options'),
-                          trailing: Switch(
-                            value: project.advancedTune,
-                            onChanged: (bool value) {
-                              final LAProject newProject = project.copyWith(
-                                advancedTune: value,
+            body: ProjectLiveBanner.wrap(
+              AppSnackBar(
+                ScrollPanel(
+                  withPadding: true,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        if (_tab == _moreInfoTab)
+                          ListTile(
+                            // contentPadding: EdgeInsets.zero,
+                            title: const Text('Advanced options'),
+                            trailing: Switch(
+                              value: project.advancedTune,
+                              onChanged: (bool value) {
+                                final LAProject newProject = project.copyWith(
+                                  advancedTune: value,
+                                );
+                                vm.onUpdateProjectLocal(newProject);
+                              },
+                            ),
+                          ),
+                        if (_tab == _moreInfoTab &&
+                            !AppUtils.isDemo() &&
+                            project.advancedTune)
+                          const SizedBox(height: 20),
+                        if (_tab == _moreInfoTab &&
+                            !AppUtils.isDemo() &&
+                            project.advancedTune)
+                          ListTile(
+                            // contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              'This ${project.portalName} is in Production',
+                            ),
+                            trailing: Switch(
+                              value: vm.status == LAProjectStatus.inProduction,
+                              onChanged: (bool value) {
+                                final LAProject newProject = project.copyWith();
+                                if (value) {
+                                  newProject.isCreated = true;
+                                  newProject.fstDeployed = true;
+                                  newProject.status =
+                                      LAProjectStatus.inProduction;
+                                  newProject.validateCreation();
+                                } else {
+                                  newProject.status =
+                                      LAProjectStatus.firstDeploy;
+                                  newProject.validateCreation();
+                                }
+                                vm.onUpdateProjectLocal(newProject);
+                              },
+                            ),
+                          ),
+                        if (_tab == _moreInfoTab) const SizedBox(height: 20),
+                        if (_tab == _moreInfoTab)
+                          ListView.builder(
+                            // scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            // Let the ListView know how many items it needs to build.
+                            itemCount: items.length,
+                            // Provide a builder function. This is where the magic happens.
+                            // Convert each item into a widget based on the type of item it is.
+                            itemBuilder: (BuildContext context, int index) {
+                              final ListItem item = items[index];
+                              return ListTile(
+                                // contentPadding: EdgeInsets.zero,
+                                title: item.buildTitle(context),
+                                subtitle: item.buildSubtitle(context),
                               );
-                              vm.onUpdateProjectLocal(newProject);
                             },
                           ),
-                        ),
-                      if (_tab == _moreInfoTab &&
-                          !AppUtils.isDemo() &&
-                          project.advancedTune)
-                        const SizedBox(height: 20),
-                      if (_tab == _moreInfoTab &&
-                          !AppUtils.isDemo() &&
-                          project.advancedTune)
-                        ListTile(
-                          // contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            'This ${project.portalName} is in Production',
-                          ),
-                          trailing: Switch(
-                            value: vm.status == LAProjectStatus.inProduction,
-                            onChanged: (bool value) {
-                              final LAProject newProject = project.copyWith();
-                              if (value) {
-                                newProject.isCreated = true;
-                                newProject.fstDeployed = true;
-                                newProject.status =
-                                    LAProjectStatus.inProduction;
-                                newProject.validateCreation();
-                              } else {
-                                newProject.status = LAProjectStatus.firstDeploy;
-                                newProject.validateCreation();
-                              }
-                              vm.onUpdateProjectLocal(newProject);
-                            },
-                          ),
-                        ),
-                      if (_tab == _moreInfoTab) const SizedBox(height: 20),
-                      if (_tab == _moreInfoTab)
-                        ListView.builder(
-                          // scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          // Let the ListView know how many items it needs to build.
-                          itemCount: items.length,
-                          // Provide a builder function. This is where the magic happens.
-                          // Convert each item into a widget based on the type of item it is.
-                          itemBuilder: (BuildContext context, int index) {
-                            final ListItem item = items[index];
-                            return ListTile(
-                              // contentPadding: EdgeInsets.zero,
-                              title: item.buildTitle(context),
-                              subtitle: item.buildSubtitle(context),
-                            );
-                          },
-                        ),
-                      if (_tab == _softwareTab)
-                        if (showToolkitDeps) const SizedBox(height: 20),
-                      if (_tab == _softwareTab)
-                        if (showToolkitDeps)
-                          HeadingItem(
-                            'LA Toolkit dependencies',
-                          ).buildTitle(context),
-                      if (_tab == _softwareTab)
-                        if (showToolkitDeps) const SizedBox(height: 20),
-                      if (_tab == _softwareTab)
-                        if (showToolkitDeps)
-                          Row(
-                            /*                                      mainAxisAlignment:
+                        if (_tab == _softwareTab)
+                          if (showToolkitDeps) const SizedBox(height: 20),
+                        if (_tab == _softwareTab)
+                          if (showToolkitDeps)
+                            HeadingItem(
+                              'LA Toolkit dependencies',
+                            ).buildTitle(context),
+                        if (_tab == _softwareTab)
+                          if (showToolkitDeps) const SizedBox(height: 20),
+                        if (_tab == _softwareTab)
+                          if (showToolkitDeps)
+                            Row(
+                              /*                                      mainAxisAlignment:
                                           MainAxisAlignment.start,*/
-                            children: <Widget>[
-                              // ala-install only applies to VM deployments; hide
-                              // it on pure docker-compose projects.
-                              if (!project.isPureDockerCompose)
+                              children: <Widget>[
+                                // ala-install only applies to VM deployments; hide
+                                // it on pure docker-compose projects.
+                                if (!project.isPureDockerCompose)
+                                  SizedBox(
+                                    width: 250,
+                                    child: ALAInstallSelector(
+                                      onChange: (String? value) {
+                                        final String version =
+                                            value ?? vm.alaInstallReleases[0];
+                                        final LAProject newProject = project
+                                            .copyWith(
+                                              alaInstallRelease: version,
+                                            );
+                                        vm.onUpdateProjectLocal(newProject);
+                                      },
+                                    ),
+                                  ),
+                                if (project.isDockerComposeEnabled)
+                                  SizedBox(
+                                    width: 250,
+                                    child: DockerComposeSelector(
+                                      onChange: (String? value) {
+                                        final String version =
+                                            value ??
+                                            (vm.dockerComposeReleases.isNotEmpty
+                                                ? vm.dockerComposeReleases[0]
+                                                : 'master');
+                                        final LAProject newProject = project
+                                            .copyWith(
+                                              dockerComposeRelease: version,
+                                            );
+                                        vm.onUpdateProjectLocal(newProject);
+                                      },
+                                    ),
+                                  ),
                                 SizedBox(
                                   width: 250,
-                                  child: ALAInstallSelector(
+                                  child: GeneratorSelector(
                                     onChange: (String? value) {
                                       final String version =
-                                          value ?? vm.alaInstallReleases[0];
+                                          value ?? vm.generatorReleases[0];
                                       final LAProject newProject = project
-                                          .copyWith(alaInstallRelease: version);
+                                          .copyWith(generatorRelease: version);
                                       vm.onUpdateProjectLocal(newProject);
                                     },
                                   ),
                                 ),
-                              if (project.isDockerComposeEnabled)
-                                SizedBox(
-                                  width: 250,
-                                  child: DockerComposeSelector(
-                                    onChange: (String? value) {
-                                      final String version =
-                                          value ??
-                                          (vm.dockerComposeReleases.isNotEmpty
-                                              ? vm.dockerComposeReleases[0]
-                                              : 'master');
-                                      final LAProject newProject =
-                                          project.copyWith(
-                                            dockerComposeRelease: version,
-                                          );
+                              ],
+                            ),
+                        if (_tab == _softwareTab)
+                          if (showSoftwareVersions) const SizedBox(height: 20),
+                        if (_tab == _softwareTab)
+                          if (showSoftwareVersions)
+                            HeadingItem(
+                              'LA Component versions',
+                            ).buildTitle(context),
+                        if (_tab == _softwareTab)
+                          if (showSoftwareVersions)
+                            LAReleasesSelectors(
+                              onSoftwareSelected:
+                                  (String sw, String version, bool save) {
+                                    if (save) {
+                                      final LAProject newProject = project
+                                          .copyWith();
+                                      newProject.setServiceDeployRelease(
+                                        sw,
+                                        version,
+                                      );
                                       vm.onUpdateProjectLocal(newProject);
-                                    },
-                                  ),
-                                ),
-                              SizedBox(
-                                width: 250,
-                                child: GeneratorSelector(
-                                  onChange: (String? value) {
-                                    final String version =
-                                        value ?? vm.generatorReleases[0];
-                                    final LAProject newProject = project
-                                        .copyWith(generatorRelease: version);
-                                    vm.onUpdateProjectLocal(newProject);
+                                    }
                                   },
-                                ),
-                              ),
-                            ],
-                          ),
-                      if (_tab == _softwareTab)
-                        if (showSoftwareVersions) const SizedBox(height: 20),
-                      if (_tab == _softwareTab)
-                        if (showSoftwareVersions)
-                          HeadingItem(
-                            'LA Component versions',
-                          ).buildTitle(context),
-                      if (_tab == _softwareTab)
-                        if (showSoftwareVersions)
-                          LAReleasesSelectors(
-                            onSoftwareSelected:
-                                (String sw, String version, bool save) {
-                                  if (save) {
+                              // Persist in one update every version an untouched
+                              // dropdown is displaying, so what is shown is what
+                              // gets deployed (gh-22).
+                              onInitialVersionsPersist:
+                                  (Map<String, String> versions) {
                                     final LAProject newProject = project
                                         .copyWith();
-                                    newProject.setServiceDeployRelease(
-                                      sw,
-                                      version,
+                                    versions.forEach(
+                                      newProject.setServiceDeployRelease,
                                     );
                                     vm.onUpdateProjectLocal(newProject);
-                                  }
-                                },
-                            // Persist in one update every version an untouched
-                            // dropdown is displaying, so what is shown is what
-                            // gets deployed (gh-22).
-                            onInitialVersionsPersist:
-                                (Map<String, String> versions) {
-                                  final LAProject newProject = project
-                                      .copyWith();
-                                  versions.forEach(
-                                    newProject.setServiceDeployRelease,
-                                  );
-                                  vm.onUpdateProjectLocal(newProject);
-                                },
-                          ),
-                      if (_tab == _softwareTab)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                          child: Align(
-                            // alignment: Alignment.center,
-                            child: ElevatedButton.icon(
-                              onPressed: _loading ? null : () => _onPressed(vm),
-                              label: const Text('Refresh'),
-                              icon: const Icon(Icons.refresh),
+                                  },
+                            ),
+                        if (_tab == _softwareTab)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                            child: Align(
+                              // alignment: Alignment.center,
+                              child: ElevatedButton.icon(
+                                onPressed: _loading
+                                    ? null
+                                    : () => _onPressed(vm),
+                                label: const Text('Refresh'),
+                                icon: const Icon(Icons.refresh),
+                              ),
                             ),
                           ),
-                        ),
-                      if (_tab == _softwareTab)
-                        if (showSoftwareVersions || showToolkitDeps)
-                          LintProjectPanel(
-                            showLADeps: showSoftwareVersions,
-                            showToolkitDeps: showToolkitDeps,
-                            showOthers: false,
-                          ),
-                      if (_tab == _extraTab)
-                        if (project.advancedTune) const SizedBox(height: 20),
-                      if (_tab == _extraTab)
-                        if (project.advancedTune)
-                          HeadingItem('Other variables').buildTitle(context),
-                      if (_tab == _extraTab)
-                        if (project.advancedTune) const SizedBox(height: 30),
-                      if (_tab == _extraTab)
-                        if (project.advancedTune)
-                          const Text(
-                            'Write here other extra ansible variables that are not configurable in the previous forms:',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black54,
+                        if (_tab == _softwareTab)
+                          if (showSoftwareVersions || showToolkitDeps)
+                            LintProjectPanel(
+                              showLADeps: showSoftwareVersions,
+                              showToolkitDeps: showToolkitDeps,
+                              showOthers: false,
                             ),
-                          ),
-                      if (_tab == _extraTab)
-                        if (project.advancedTune) const SizedBox(height: 20),
-                      if (_tab == _extraTab)
-                        if (project.advancedTune)
-                          // This breaks the newline enter key:
-                          //ListTile(
-                          //                        title:
-                          GenericTextFormField(
-                            initialValue: project.additionalVariables.isNotEmpty
-                                ? utf8.decode(
-                                    base64.decode(project.additionalVariables),
-                                  )
-                                : _initialExtraAnsibleVariables(project),
-                            minLines: 100,
-                            maxLines: null,
-                            fillColor: Colors.grey[100],
-                            enabledBorder: true,
-                            allowEmpty: true,
-                            keyboardType: TextInputType.multiline,
-                            monoSpaceFont: true,
-                            error: '',
-                            selected: false,
-                            onChanged: (String value) {
-                              final LAProject newProject = project.copyWith(
-                                additionalVariables: base64.encode(
-                                  utf8.encode(value),
-                                ),
-                              );
-                              vm.onUpdateProjectLocal(newProject);
-                            },
-                          ),
-                      /* trailing: HelpIcon(
+                        if (_tab == _extraTab)
+                          if (project.advancedTune) const SizedBox(height: 20),
+                        if (_tab == _extraTab)
+                          if (project.advancedTune)
+                            HeadingItem('Other variables').buildTitle(context),
+                        if (_tab == _extraTab)
+                          if (project.advancedTune) const SizedBox(height: 30),
+                        if (_tab == _extraTab)
+                          if (project.advancedTune)
+                            const Text(
+                              'Write here other extra ansible variables that are not configurable in the previous forms:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black54,
+                              ),
+                            ),
+                        if (_tab == _extraTab)
+                          if (project.advancedTune) const SizedBox(height: 20),
+                        if (_tab == _extraTab)
+                          if (project.advancedTune)
+                            // This breaks the newline enter key:
+                            //ListTile(
+                            //                        title:
+                            GenericTextFormField(
+                              initialValue:
+                                  project.additionalVariables.isNotEmpty
+                                  ? utf8.decode(
+                                      base64.decode(
+                                        project.additionalVariables,
+                                      ),
+                                    )
+                                  : _initialExtraAnsibleVariables(project),
+                              minLines: 100,
+                              maxLines: null,
+                              fillColor: Colors.grey[100],
+                              enabledBorder: true,
+                              allowEmpty: true,
+                              keyboardType: TextInputType.multiline,
+                              monoSpaceFont: true,
+                              error: '',
+                              selected: false,
+                              onChanged: (String value) {
+                                final LAProject newProject = project.copyWith(
+                                  additionalVariables: base64.encode(
+                                    utf8.encode(value),
+                                  ),
+                                );
+                                vm.onUpdateProjectLocal(newProject);
+                              },
+                            ),
+                        /* trailing: HelpIcon(
                                     wikipage:
                                         "Version-control-of-your-configurations#about-maintaining-dataconfig")), */
-                      if (_tab == _extraTab) const SizedBox(height: 20),
-                      if (_tab == _extraTab)
-                        if (_endNoteEnabled)
-                          Row(
-                            children: <Widget>[
-                              const Text(
-                                'Note: the colors of the variables values indicate if these values are ',
-                              ),
-                              const Text(
-                                'already deployed',
-                                style: LAColorTheme.deployedTextStyle,
-                              ),
-                              const Text(' in your servers or '),
-                              Text(
-                                'they are not deployed yet',
-                                style: LAColorTheme.unDeployedTextStyle,
-                              ),
-                              const Text('.'),
-                            ],
-                          ),
-                    ],
+                        if (_tab == _extraTab) const SizedBox(height: 20),
+                        if (_tab == _extraTab)
+                          if (_endNoteEnabled)
+                            Row(
+                              children: <Widget>[
+                                const Text(
+                                  'Note: the colors of the variables values indicate if these values are ',
+                                ),
+                                const Text(
+                                  'already deployed',
+                                  style: LAColorTheme.deployedTextStyle,
+                                ),
+                                const Text(' in your servers or '),
+                                Text(
+                                  'they are not deployed yet',
+                                  style: LAColorTheme.unDeployedTextStyle,
+                                ),
+                                const Text('.'),
+                              ],
+                            ),
+                      ],
+                    ),
                   ),
                 ),
               ),

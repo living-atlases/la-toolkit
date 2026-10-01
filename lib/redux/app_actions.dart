@@ -14,6 +14,7 @@ import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../components/app_snack_bar_message.dart';
+import '../models/presence_session.dart';
 
 abstract class AppActions {}
 
@@ -159,6 +160,31 @@ class OnProjectsPushed extends AppActions {
   OnProjectsPushed(this.projectsJson);
 
   List<dynamic> projectsJson;
+}
+
+/// A save that changed nothing: no request was made.
+class OnSaveSkipped extends AppActions {}
+
+/// A save refused because another session changed the same fields.
+class OnProjectConflict extends AppActions {
+  OnProjectConflict(this.projectId, this.conflicts, this.projectsJson);
+
+  String projectId;
+  List<String> conflicts;
+  List<dynamic> projectsJson;
+}
+
+/// The open project changed in another session while it was being edited.
+class MarkProjectChangedElsewhere extends AppActions {}
+
+/// Drops the open copy for the one stored now (the banner's Reload).
+class ReloadCurrentProject extends AppActions {}
+
+/// Other browsers with a project open (backend `presence` event).
+class OnPresence extends AppActions {
+  OnPresence(this.sessions);
+
+  List<PresenceSession> sessions;
 }
 
 class OnDemoProjectsLoad extends AppActions {
