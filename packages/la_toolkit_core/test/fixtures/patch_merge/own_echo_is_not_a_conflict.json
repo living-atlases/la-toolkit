@@ -1,0 +1,69 @@
+{
+  "description": "The stored value already is the one sent (the push arrived before the response).",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": [
+      {
+        "id": "x1",
+        "nameInt": "x",
+        "service": "all",
+        "value": "b",
+        "projectId": "p1"
+      }
+    ]
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "variables": {
+        "update": [
+          {
+            "id": "x1",
+            "set": {
+              "value": {
+                "from": "a",
+                "to": "b"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": [
+      {
+        "id": "x1",
+        "nameInt": "x",
+        "service": "all",
+        "value": "b",
+        "projectId": "p1"
+      }
+    ]
+  }
+}

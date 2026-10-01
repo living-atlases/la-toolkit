@@ -1,0 +1,68 @@
+{
+  "description": "An old row without sshUser matches a client 'from' of null.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1",
+        "ip": "10.0.0.1",
+        "projectId": "p1"
+      }
+    ],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": []
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "servers": {
+        "update": [
+          {
+            "id": "s1",
+            "set": {
+              "sshUser": {
+                "from": null,
+                "to": "ubuntu"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [
+      {
+        "id": "s1",
+        "name": "vm1",
+        "ip": "10.0.0.1",
+        "projectId": "p1",
+        "sshUser": "ubuntu"
+      }
+    ],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": []
+  }
+}

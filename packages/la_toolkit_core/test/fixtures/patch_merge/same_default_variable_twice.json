@@ -1,0 +1,67 @@
+{
+  "description": "Two clients materialise the same defaulted variable with different ids: one row.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": [
+      {
+        "id": "v1",
+        "nameInt": "ansible_user",
+        "service": "all",
+        "value": "ubuntu",
+        "projectId": "p1"
+      }
+    ]
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "variables": {
+        "create": [
+          {
+            "id": "v2",
+            "nameInt": "ansible_user",
+            "service": "all",
+            "value": "ubuntu",
+            "projectId": "p1"
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": [
+      {
+        "id": "v1",
+        "nameInt": "ansible_user",
+        "service": "all",
+        "value": "ubuntu",
+        "projectId": "p1"
+      }
+    ]
+  }
+}

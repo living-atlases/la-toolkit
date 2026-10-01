@@ -1,0 +1,53 @@
+{
+  "description": "Only check results (soft fields) for a deleted server: nothing to do.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": []
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "servers": {
+        "update": [
+          {
+            "id": "s1",
+            "set": {
+              "reachable": {
+                "from": "unknown",
+                "to": "success"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": []
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "description": "Both sessions changed variable x from a: the second one conflicts.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "created",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": [
+      {
+        "id": "x1",
+        "nameInt": "x",
+        "service": "all",
+        "value": "c",
+        "projectId": "p1"
+      }
+    ]
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {},
+    "rows": {
+      "variables": {
+        "update": [
+          {
+            "id": "x1",
+            "set": {
+              "value": {
+                "from": "a",
+                "to": "b"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "conflicts": [
+    "variables/x1.value"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "description": "status is a progress flag: last write wins, even if it moved meanwhile.",
+  "current": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "p.org",
+    "status": "firstDeploy",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": []
+  },
+  "patch": {
+    "projectId": "p1",
+    "project": {
+      "status": {
+        "from": "created",
+        "to": "inProduction"
+      },
+      "domain": {
+        "from": "p.org",
+        "to": "new.org"
+      }
+    },
+    "rows": {}
+  },
+  "conflicts": [],
+  "result": {
+    "id": "p1",
+    "longName": "Portal",
+    "shortName": "portal",
+    "domain": "new.org",
+    "status": "inProduction",
+    "genConf": {
+      "LA_domain": "p.org"
+    },
+    "servers": [],
+    "clusters": [],
+    "services": [],
+    "serviceDeploys": [],
+    "variables": []
+  }
+}
