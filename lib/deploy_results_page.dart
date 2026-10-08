@@ -253,9 +253,20 @@ More info about [how to navigate in this log file](https://www.thegeekstuff.com/
             ),
           );
         } else {
+          final CmdHistoryEntry? entry = vm.project.lastCmdEntry;
+          if (entry == null) {
+            // Nothing to show, e.g. after reloading the browser on this page.
+            return const Scaffold(
+              body: Center(
+                child: Text(
+                  'No command selected: open one from the Logs history.',
+                ),
+              ),
+            );
+          }
           if (_loadCall == false) {
             _loadCall = true;
-            vm.onOpenDeployResults(vm.project.lastCmdEntry!);
+            vm.onOpenDeployResults(entry);
           }
           return const SizedBox();
         }

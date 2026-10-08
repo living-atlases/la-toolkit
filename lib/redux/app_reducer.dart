@@ -404,11 +404,33 @@ AppState _onProjectsPushed(AppState state, OnProjectsPushed action) {
   // user to another one.
   final LAProject? pushed = _findProject(ps, state.currentProject.id);
   final bool apply = pushed != null && state.status == LAProjectViewStatus.view;
+  if (apply) {
+    _keepLocalState(state.currentProject, pushed);
+  }
   return state.copyWith(
     currentProject: apply ? pushed : state.currentProject,
     projects: ps,
     projectChangedElsewhere: !apply && state.projectChangedElsewhere,
   );
+}
+
+/// What only this browser knows about the open project, which a copy from the
+/// backend does not carry: the command whose results are on screen and its
+/// details, the service checks and the running versions. Without it, a push
+/// at the end of a deploy left the results page with no command to show.
+/// Caches computed from the project itself are left to be recomputed.
+void _keepLocalState(LAProject from, LAProject to) {
+  final CmdHistoryEntry? last = from.lastCmdEntry;
+  // The pushed history has the fresher copy of that command (its status).
+  to.lastCmdEntry = last == null
+      ? null
+      : to.cmdHistoryEntries.firstWhere(
+          (CmdHistoryEntry e) => e.id == last.id,
+          orElse: () => last,
+        );
+  to.lastCmdDetails = from.lastCmdDetails;
+  to.checkResults = from.checkResults;
+  to.runningVersions = from.runningVersions;
 }
 
 AppState _onSaveSkipped(AppState state, OnSaveSkipped action) {
