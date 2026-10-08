@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'components/alert_card.dart';
 import 'components/def_divider.dart';
 import 'components/deploy_btn.dart';
+import 'components/fast_deploy_card.dart';
 import 'components/la_app_bar.dart';
 import 'components/manual_tags_input.dart';
 import 'components/project_drawer.dart';
@@ -454,27 +455,12 @@ class _DeployPageState extends State<DeployPage> {
                               .toList(),
                         ),
                         LaunchBtn(onTap: onTap, execBtn: execBtn),
-                        if (vm.project.isPureDockerCompose) ...<Widget>[
-                          LaunchBtn(
+                        if (vm.project.isPureDockerCompose)
+                          FastDeployCard(
                             onTap: canFastDeploy
                                 ? () => vm.onFastDeployProject(vm.project, cmd)
                                 : null,
-                            execBtn: 'Fast deploy',
-                            icon: MdiIcons.flash,
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            canFastDeploy
-                                ? 'Redeploys without Ansible: the config is rendered once (and reused while '
-                                      'inventories, versions and branding do not change), then applied to '
-                                      'every server in parallel. The first deploy, a new service or a password '
-                                      'change still need Deploy.'
-                                : 'Fast deploy always deploys the whole portal: no dry run, tags, '
-                                      'skipped tags, limits or properties-only.',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ],
                       ],
                     ),
                   ),
