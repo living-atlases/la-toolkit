@@ -11,7 +11,7 @@ class FastDeployCard extends StatelessWidget {
 
   static const String title = 'Fast deploy';
   static const String summary =
-      'Redeploys the whole portal in minutes, without Ansible.';
+      'Redeploys the whole portal much faster than Deploy.';
   static const String useIt =
       'Use it to redeploy a portal that has been deployed once with Deploy, '
       'for instance after changing versions, variables or branding.';
@@ -19,9 +19,11 @@ class FastDeployCard extends StatelessWidget {
       'Use Deploy instead for the first deploy, to add a service or to change '
       'a password.';
   static const String how =
-      'It prepares the configuration of every server on this toolkit (again '
-      'only when something changed since the last time) and applies it to all '
-      'the servers at once.';
+      'Ansible prepares the configuration of every server here, on this '
+      'toolkit, without touching the servers, and only again when something '
+      'changed since the last time. Then all the servers get it at once, '
+      'without running Ansible on them. The first time takes a while (about '
+      '25 minutes for 3 servers); after that, a few minutes.';
   static const String unavailable =
       'Not available with the advanced options above (Deploy to servers, Tags, '
       'Skip tags, only properties or dry run): fast deploy always deploys the '
