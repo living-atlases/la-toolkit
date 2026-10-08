@@ -101,4 +101,5 @@ const _$CmdTypeEnumMap = {
   CmdType.postDeploy: 'postDeploy',
   CmdType.laPipelines: 'laPipelines',
   CmdType.bash: 'bash',
+  CmdType.fastDeploy: 'fastDeploy',
 };

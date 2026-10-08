@@ -290,9 +290,13 @@ class DeployProject extends DeployAction {
     required super.project,
     required super.onStart,
     required super.onError,
+    this.fast = false,
   });
 
   DeployCmd cmd;
+  // Fast deploy (docker-compose): the same cmd, rendered into bundles and applied
+  // without Ansible by the backend's /api/v1/fast-deploy.
+  bool fast;
 }
 
 class BrandingDeploy extends DeployAction {
@@ -396,7 +400,8 @@ class UpdateProjectLocal extends AppActions {
 class OnUpdateProjectFailed extends AppActions {}
 
 typedef VoidCallback = void Function();
-typedef ErrorCallback = void Function(int error);
+// message: what the backend said, when it said something (a 400 explains why it refused).
+typedef ErrorCallback = void Function(int error, [String? message]);
 
 class TestConnectivityProject extends AppActions {
   TestConnectivityProject(

@@ -43,7 +43,9 @@ class LogsHistoryPage extends StatelessWidget {
                 context: context,
                 store: store,
                 project: project,
-                commonCmd: cmdHistory.isAnsibleDeploy()
+                commonCmd:
+                    cmdHistory.isAnsibleDeploy() ||
+                        cmdHistory.cmd.type == CmdType.fastDeploy
                     ? cmdHistory.deployCmd!
                     : cmdHistory.cmd.type == CmdType.laPipelines
                     ? cmdHistory.pipelinesCmd!

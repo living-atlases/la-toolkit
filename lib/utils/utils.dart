@@ -215,6 +215,7 @@ class DeployUtils {
     required Store<AppState> store,
     required LAProject project,
     required DeployCmd deployCmd,
+    bool fast = false,
   }) {
     context.loaderOverlay.show();
     if (deployCmd.runtimeType == PostDeployCmd) {
@@ -237,6 +238,7 @@ class DeployUtils {
       DeployProject(
         project: project,
         cmd: deployCmd,
+        fast: fast,
         onStart: (CmdHistoryEntry cmdEntry, int port, int ttydPid) {
           if (context.mounted) {
             context.loaderOverlay.hide();
@@ -248,7 +250,7 @@ class DeployUtils {
             port: port,
             pid: ttydPid,
             notify: true,
-            title: 'Ansible console',
+            title: fast ? 'Fast deploy console' : 'Ansible console',
             // The deploy runs detached: closing/dropping the console no longer
             // cancels it. Offer an explicit Cancel deploy tied to this run's logs.
             cancelPrefix: cmdEntry.logsPrefix,
@@ -266,12 +268,17 @@ class DeployUtils {
             },
           );
         },
-        onError: (int error) {
+        onError: (int error, [String? message]) {
           if (context.mounted) {
             context.loaderOverlay.hide();
           }
+          // A 400 is the backend refusing this deploy, and its body says why
+          // (e.g. fast deploy not enabled in this toolkit, and how to enable it).
+          final bool refused =
+              error == 400 && message != null && message.isNotEmpty;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+              duration: Duration(seconds: refused ? 30 : 4),
               action: SnackBarAction(
                 label: 'OK',
                 onPressed: () {
@@ -279,7 +286,9 @@ class DeployUtils {
                 },
               ),
               content: Text(
-                'Oooopss, some problem have arisen trying to start the deploy: $error',
+                refused
+                    ? message
+                    : 'Oooopss, some problem have arisen trying to start the deploy: $error',
               ),
             ),
           );
@@ -324,7 +333,7 @@ class DeployUtils {
             },
           );
         },
-        onError: (int error) {
+        onError: (int error, [String? message]) {
           if (context.mounted) {
             context.loaderOverlay.hide();
           }
@@ -382,7 +391,7 @@ class DeployUtils {
             },
           );
         },
-        onError: (int error) {
+        onError: (int error, [String? message]) {
           if (context.mounted) {
             context.loaderOverlay.hide();
           }

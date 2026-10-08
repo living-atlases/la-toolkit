@@ -764,6 +764,9 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       } else if (action.cmd.runtimeType == PostDeployCmd) {
         await genSshConf(action.project);
         Api.postDeploy(action);
+      } else if (action.fast) {
+        await genSshConf(action.project);
+        Api.fastDeploy(action);
       } else {
         await genSshConf(action.project);
         Api.ansiblew(action);
@@ -833,7 +836,7 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
               );
               action.onReady();
             },
-            onError: (int error) {
+            onError: (int error, [String? message]) {
               store.dispatch(OnShowCmdResultsFailed());
               action.onFailed();
             },

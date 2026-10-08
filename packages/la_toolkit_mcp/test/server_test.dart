@@ -24,6 +24,10 @@ class _Backend {
   List<String>? diskNames;
   bool noDiskEndpoint = false;
   final List<Json> ansiblewBodies = <Json>[];
+  final List<Json> fastDeployBodies = <Json>[];
+
+  /// The backend's 400 to a fast deploy it refuses (e.g. no docker socket).
+  String? fastDeployRefusal;
   final List<Json> addedProjects = <Json>[];
   final List<Json> updatedProjects = <Json>[];
   Json? sshConfBody;
@@ -176,6 +180,17 @@ class _Backend {
           'port': 2011,
           'ttydPid': 1,
           'deployPid': 2,
+        });
+      case 'fast-deploy':
+        fastDeployBodies.add(body()!);
+        if (fastDeployRefusal != null) {
+          return http.Response(fastDeployRefusal!, 400);
+        }
+        return _json(<String, dynamic>{
+          'cmdEntry': entry,
+          'port': 2012,
+          'ttydPid': 3,
+          'deployPid': 4,
         });
       case 'test-connectivity':
         return _json(<String, dynamic>{
@@ -455,6 +470,82 @@ void main() {
     },
   );
 
+  test(
+    'la_fast_deploy needs confirm and never reaches the backend without it',
+    () async {
+      final CallToolResult r = await call('la_fast_deploy', <String, Object?>{
+        'project': 'demo',
+      });
+      expect(r.isError, isTrue);
+      expect(text(r), contains('confirm'));
+      expect(fake.fastDeployBodies, isEmpty);
+    },
+  );
+
+  test('la_fast_deploy refuses a partial deploy', () async {
+    for (final String k in <String>['tags', 'limitToServers', 'dryRun']) {
+      final CallToolResult r = await call('la_fast_deploy', <String, Object?>{
+        'project': 'demo',
+        'confirm': true,
+        k: k == 'dryRun' ? true : <String>['x'],
+      });
+      expect(r.isError, isTrue, reason: k);
+      expect(text(r), contains('whole portal'));
+    }
+    expect(fake.fastDeployBodies, isEmpty);
+    expect(fake.ansiblewBodies, isEmpty);
+  });
+
+  test(
+    'la_fast_deploy on a toolkit without the docker socket passes on how to enable it',
+    () async {
+      fake.fastDeployRefusal =
+          'fast deploy is not enabled in this toolkit: it needs the host\'s '
+          'docker socket. In the toolkit\'s docker-compose.yml, uncomment the '
+          '/var/run/docker.sock volume of la-toolkit';
+      final CallToolResult r = await call('la_fast_deploy', <String, Object?>{
+        'project': 'demo',
+        'confirm': true,
+      });
+      expect(r.isError, isTrue);
+      expect(text(r), contains('not enabled in this toolkit'));
+      expect(text(r), contains('uncomment the /var/run/docker.sock volume'));
+    },
+  );
+
+  test(
+    'a confirmed la_fast_deploy prepares like la_deploy, then starts the fast deploy',
+    () async {
+      final CallToolResult r = await call('la_fast_deploy', <String, Object?>{
+        'project': 'demo',
+        'confirm': true,
+        'skipServices': <String>['spatial'],
+      });
+      expect(r.isError, isNot(true), reason: text(r));
+      expect(fake.calls, <String>[
+        'GET get-conf',
+        'GET get-conf',
+        'POST deploy-status',
+        'GET docker-compose-select/v1.5.1',
+        'GET generator-select/1.7.0',
+        'POST gen/p1/false',
+        'POST gen-ssh-conf',
+        'POST fast-deploy',
+        'POST term-close',
+      ]);
+      expect(fake.ansiblewBodies, isEmpty);
+      expect(
+        fake.fastDeployBodies.single['cmd'],
+        allOf(
+          containsPair('dockerCompose', true),
+          containsPair('dryRun', false),
+          containsPair('skipServices', <String>['spatial']),
+        ),
+      );
+      expect((json.decode(text(r)) as Json)['runId'], 'run1');
+    },
+  );
+
   test('status and failures default to the latest run', () async {
     final Json s =
         json.decode(
@@ -727,6 +818,16 @@ void main() {
       });
       expect(r.isError, isTrue);
       expect(text(r), contains('leg'));
+      expect(fake.ansiblewBodies, isEmpty);
+    });
+
+    test('la_fast_deploy refuses a hybrid portal', () async {
+      final CallToolResult r = await call('la_fast_deploy', <String, Object?>{
+        'project': 'Hybrid',
+        'confirm': true,
+      });
+      expect(r.isError, isTrue);
+      expect(fake.fastDeployBodies, isEmpty);
       expect(fake.ansiblewBodies, isEmpty);
     });
 

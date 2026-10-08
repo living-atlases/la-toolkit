@@ -394,11 +394,19 @@ class Api {
         });
   }
 
-  static Future<void> ansiblew(DeployProject action) async {
+  static Future<void> ansiblew(DeployProject action) =>
+      _deployCmd(action, '/api/v1/ansiblew');
+
+  // Same request as ansiblew; the backend renders the docker-compose bundles
+  // (cached) and applies them without Ansible.
+  static Future<void> fastDeploy(DeployProject action) =>
+      _deployCmd(action, '/api/v1/fast-deploy');
+
+  static Future<void> _deployCmd(DeployProject action, String path) async {
     if (AppUtils.isDemo()) {
       return;
     }
-    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, '/api/v1/ansiblew');
+    final Uri url = AppUtils.uri(dotenv.env['BACKEND']!, path);
     final String desc = action.cmd.desc;
     // use lists in ansiblew
     final DeployCmd cmdTr = action.cmd.copyWith();
@@ -443,7 +451,7 @@ class Api {
               l['ttydPid'] as int,
             );
           } else {
-            action.onError(response.statusCode);
+            action.onError(response.statusCode, response.body);
           }
         })
         .catchError((dynamic error) {

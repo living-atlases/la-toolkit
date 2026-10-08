@@ -194,6 +194,20 @@ class BackendClient {
           })
           as Map<String, dynamic>;
 
+  /// Starts a detached fast deploy (docker-compose bundles, applied without
+  /// Ansible). Same body and answer as [ansiblew].
+  Future<Map<String, dynamic>> fastDeploy({
+    required String id,
+    required String desc,
+    required Map<String, dynamic> cmd,
+  }) async =>
+      await _send('POST', 'fast-deploy', <String, Object?>{
+            'id': id,
+            'desc': desc,
+            'cmd': cmd,
+          })
+          as Map<String, dynamic>;
+
   /// Kills a ttyd viewer. Only the viewer: the deploy it was tailing runs
   /// detached and keeps going.
   Future<void> termClose(int port, int pid) =>
