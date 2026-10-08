@@ -292,6 +292,46 @@ docker-compose:
       expect(lintsFor('upstream', '1.9.5'), isEmpty);
     });
   });
+
+  group('la-toolkit to la-docker-compose constraint (fast deploy)', () {
+    // As in la-toolkit-backend's assets/dependencies.yaml: the fast deploy of
+    // 1.8.0 needs la-docker-compose 1.11.2, and only compose projects select
+    // a la-docker-compose release.
+    const String depsYaml = '''
+la-toolkit:
+  '>= 1.8.0':
+    - docker-compose: '>= 1.11.2'
+''';
+
+    setUp(() => DependenciesManager.setDeps(depsYaml));
+
+    List<String> lintsFor(String toolkitV, {String? composeRelease}) =>
+        DependenciesManager.verifyLAReleases(
+          <String>[toolkit, if (composeRelease != null) dockerCompose],
+          <String, String>{
+            toolkit: toolkitV,
+            if (composeRelease != null) dockerCompose: composeRelease,
+          },
+        );
+
+    test('warns on a compose project with an older la-docker-compose', () {
+      final List<String> lints = lintsFor('1.8.0', composeRelease: 'v1.11.1');
+      expect(lints, hasLength(1));
+      expect(lints.single, contains('>=1.11.2'));
+    });
+
+    test('is quiet once la-docker-compose meets it', () {
+      expect(lintsFor('1.8.0', composeRelease: 'v1.11.2'), isEmpty);
+    });
+
+    test('says nothing about a VM-only project', () {
+      expect(lintsFor('1.8.0'), isEmpty);
+    });
+
+    test('does not apply to toolkits before 1.8.0', () {
+      expect(lintsFor('1.7.1', composeRelease: 'v1.10.1'), isEmpty);
+    });
+  });
 }
 
 /// The compose lint of the panel: "compose is enabled but nothing carries it".

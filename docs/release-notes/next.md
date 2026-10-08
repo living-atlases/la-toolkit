@@ -1,4 +1,4 @@
-Two people (or a person and an AI agent) can now work on the same project at the same time without undoing each other, the toolkit can be driven by an AI agent through an MCP server that ships in the image, and [data hubs](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub) can live on their portal's docker-compose stack.
+A docker-compose portal can now be redeployed in minutes instead of hours, two people (or a person and an AI agent) can work on the same project at the same time without undoing each other, the toolkit can be driven by an AI agent through an MCP server that ships in the image, and [data hubs](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub) can live on their portal's docker-compose stack.
 
 ## Action needed: backups
 
@@ -9,6 +9,14 @@ Two people (or a person and an AI agent) can now work on the same project at the
 ## `:latest` is still 1.6.9 on Docker Hub
 
 Unchanged from 1.7.x: [`livingatlases/la-toolkit:latest`](https://hub.docker.com/r/livingatlases/la-toolkit/tags) stays on 1.6.9 so that `watchtower` does not move an unpinned MongoDB 4 installation onto MongoDB 8 by itself. Pin the version you want; both `X.Y.Z` and `vX.Y.Z` are published.
+
+## Fast deploy for docker-compose portals
+
+Docker-compose portals get a **Fast deploy** button on the deploy page, and the MCP a `la_fast_deploy` tool. The toolkit renders each server's configuration once with Ansible, in throwaway containers on the toolkit host and without touching the servers, then applies the result to every server in parallel, without Ansible. On a 3-server test portal the first render took 25 minutes and the apply 5, against more than an hour for an Ansible deploy. The render is cached while the inventories, the la-docker-compose and ala-install releases and the branding do not change, so a repeat only applies.
+
+- **It is for redeploys** of pure docker-compose portals already deployed once with the regular Deploy. The first deploy, hybrid portals (VMs and docker-compose) and data hubs (they deploy from their portal) still use the regular Deploy, and so does a deploy limited to some hosts or tags: the fast deploy always deploys the whole portal.
+- **It needs la-docker-compose 1.11.2 or later**, which the lint now asks for on docker-compose projects. 1.11.0 already has the fast deploy, but deploys from the toolkit left out `sds`.
+- **It needs the host's docker socket, which you turn on by hand.** Uncomment the `/var/run/docker.sock` volume of the `la-toolkit` service in the new `docker-compose.yml` and start it with `DOCKER_GID=$(getent group docker | cut -d: -f3) docker compose up -d`. The socket is root on the toolkit host and the toolkit has no login, so do it only on a toolkit that is not exposed. Without it, the fast deploy says how to enable it and runs nothing; the regular Deploy does not need it.
 
 ## Working on a project together
 
