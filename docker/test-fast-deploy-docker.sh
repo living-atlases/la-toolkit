@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The la-toolkit image and docker-compose.yml give the fast deploy (TASK-31) a docker client:
+# The la-toolkit image and docker-compose.yml give the fast deploy a docker client:
 #   1. the Dockerfile installs docker-ce-cli and docker-buildx-plugin from Docker's apt repo;
 #   2. docker-compose.yml: the socket is opt-in in la-toolkit (a commented volume, with how to
 #      enable it and the root warning), on in la-toolkit-dev; both get DOCKER_GID; nothing else
