@@ -224,8 +224,7 @@ void _remove(LAProject p, String name, ServerChange c) {
     );
   }
   // Unticking docker_compose / docker_swarm on the server's card, which takes
-  // its (empty) clusters with it. Not deleteCluster(): that also drops every
-  // deploy row of the project pointing at a cluster that no longer exists.
+  // its (empty) clusters with it, as the card does.
   for (final LACluster cl
       in p.clusters
           .where((LACluster cl) => cl.serverId == server.id)

@@ -1361,7 +1361,7 @@ void main() {
   });
 
   // The lademo rollback: unticking docker_compose went through
-  // deleteCluster(), which also dropped every row pointing at a missing
+  // deleteCluster(), which then also dropped every row pointing at a missing
   // cluster, on servers the change never touched.
   group('orphan deploy rows', () {
     setUp(() {

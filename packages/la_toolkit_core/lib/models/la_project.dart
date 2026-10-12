@@ -1986,10 +1986,11 @@ check results length: ${checkResults.length}''';
     clusterServices.remove(clusterToDelete.id);
     clusters.removeWhere((LACluster c) => c.id == clusterToDelete.id);
 
-    // Clean up any inconsistent service deploys
+    // Only this cluster's deploy rows. Older projects keep rows pointing at
+    // clusters deleted long ago, and they still decide where names resolve:
+    // they are not this cluster's to drop.
     serviceDeploys.removeWhere(
-      (LAServiceDeploy sd) =>
-          sd.clusterId != null && placement.clusterById(sd.clusterId) == null,
+      (LAServiceDeploy sd) => sd.clusterId == clusterToDelete.id,
     );
 
     validateCreation();

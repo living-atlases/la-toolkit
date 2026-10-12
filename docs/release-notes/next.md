@@ -43,6 +43,7 @@ After upgrading, reload any browser tab that was open on the old version: an old
 
 ## Fixes
 
+- **Deleting a docker-compose cluster from the Servers page also deleted deploy records of other servers**: every record pointing at a cluster deleted long ago, on any server. Older projects still have such records and they decide which host serves a name, so a portal could start resolving a service to the wrong machine. Now only the deleted cluster's records go.
 - **Terminals did not work on a fresh install** (`read_cb: EIO`): `~/.ssh/config` was only built after a connectivity check.
 - **Long deploys could hang forever** when an idle ssh connection was dropped by a NAT or firewall during a quiet task (a docker pull). ssh now sends keepalives.
 - **A version dropdown left untouched deployed a different version** than the one it showed.

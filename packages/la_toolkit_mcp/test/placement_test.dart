@@ -4,6 +4,7 @@ import 'package:la_toolkit_core/models/deployment_type.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
+import 'package:la_toolkit_core/models/la_service_deploy.dart';
 import 'package:la_toolkit_core/placement/placement_changes.dart';
 import 'package:la_toolkit_core/placement/server_changes.dart';
 import 'package:la_toolkit_mcp/la_toolkit_mcp.dart';
@@ -315,9 +316,12 @@ void main() {
     final LAProject before = LAProject.fromJson(portal);
     final LAProject after = LAProject.fromJson(portal);
     final LAServer dc2 = after.getServerByName('dc2')!;
-    // What the UI cluster delete does: dc2's rows go, and the orphan too.
+    // dc2's rows go, and the orphan too, as deleteCluster() used to do.
     after.deleteCluster(
       after.clusters.firstWhere((LACluster c) => c.serverId == dc2.id),
+    );
+    after.serviceDeploys.removeWhere(
+      (LAServiceDeploy sd) => sd.clusterId == orphanCluster,
     );
     final List<Json> rows = collateralRemovals(before, after, <String>['dc2']);
     expect(rows, <Json>[

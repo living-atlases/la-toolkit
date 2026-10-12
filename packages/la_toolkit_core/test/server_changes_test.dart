@@ -178,7 +178,7 @@ void main() {
 
   // lademo has deploy rows pointing at clusters deleted long ago, and they
   // still decide where names resolve. Removing a server or its compose host
-  // role must leave them alone; deleteCluster() drops them all.
+  // role must leave them alone, and so must deleting a cluster from the UI.
   group('orphan deploy rows survive', () {
     LAProject withOrphan() {
       final LAProject p = portal();
@@ -202,14 +202,18 @@ void main() {
       (LAServiceDeploy sd) => sd.clusterId == '0123456789abcdef01234567',
     );
 
-    test('why: the UI cluster delete drops them', () {
+    test('deleting a cluster from the UI', () {
       final LAProject p = withOrphan();
-      p.deleteCluster(
-        p.clusters.firstWhere(
-          (LACluster c) => c.serverId == p.getServerByName('dc2')!.id,
-        ),
+      final LACluster dc2 = p.clusters.firstWhere(
+        (LACluster c) => c.serverId == p.getServerByName('dc2')!.id,
       );
-      expect(hasOrphan(p), isFalse);
+      p.deleteCluster(dc2);
+      expect(hasOrphan(p), isTrue);
+      expect(
+        p.serviceDeploys.where((LAServiceDeploy sd) => sd.clusterId == dc2.id),
+        isEmpty,
+      );
+      expect(p.clusters.where((LACluster c) => c.id == dc2.id), isEmpty);
     });
 
     test('unassigning docker_compose', () {

@@ -413,9 +413,8 @@ MovedService _unassignCompose(
     }
   }
   // Unticking docker_compose on the server's card, which takes the server's
-  // compose cluster with it. Not deleteCluster(): its last step also drops
-  // every deploy row of the project that points at a cluster that no longer
-  // exists, rows that still decide where names resolve (lademo had 32).
+  // compose cluster with it. deleteCluster() also unassigns every service on
+  // the cluster, which a placement change must name one by one.
   p.unAssignByType(server.id, DeploymentType.vm, dockerCompose);
   deleted.add(server.name);
   return MovedService(
