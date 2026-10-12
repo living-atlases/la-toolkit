@@ -99,7 +99,7 @@ void main() {
       logsSuffix: 'fast',
       desc: 'Fast deploy',
       rawCmd: 'fast-deploy.sh',
-      cmd: Cmd(type: CmdType.fastDeploy, properties: <String, dynamic>{}),
+      cmd: Cmd(type: CmdType.fastDeploy, properties: const <String, dynamic>{}),
     );
     final CmdHistoryDetails details = CmdHistoryDetails(
       code: 0,
