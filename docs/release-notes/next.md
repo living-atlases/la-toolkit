@@ -41,6 +41,11 @@ After upgrading, reload any browser tab that was open on the old version: an old
 - A public name served by the compose stack is no longer mapped to a VM in another compose host's `/etc/hosts`.
 - The sample project is the docker-compose topology the la-docker-compose CI deploys.
 
+## The image
+
+- **Built and checked by CI.** Every push to master publishes `livingatlases/la-toolkit:dev` and every release tag its version, after the test suites and a cold start on an empty database. The image builds the web frontend itself and records the commits it was built from (`org.opencontainers.image.revision`, `la-toolkit.backend.revision`).
+- **Node.js 22** instead of 20, which reached its end of life in April 2026.
+
 ## Fixes
 
 - **Deleting a docker-compose cluster from the Servers page also deleted deploy records of other servers**: every record pointing at a cluster deleted long ago, on any server. Older projects still have such records and they decide which host serves a name, so a portal could start resolving a service to the wrong machine. Now only the deleted cluster's records go.

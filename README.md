@@ -261,16 +261,17 @@ paths relative to it. `build.sh` and `deploy-demo.sh` run the core suite before
 
 ### Build
 
-The web build has to exist before building the docker image (`build.sh` does this, with
-the tests first):
+The image builds the web frontend and the MCP server from the checkout, and clones the
+backend at `BACKEND_REF` (master by default):
 
 ```bash
-(cd packages/la_toolkit_core && dart test) && flutter test && flutter build web
 docker build . -f ./docker/u22/Dockerfile -t la-toolkit/u22
+docker build . -f ./docker/u22/Dockerfile --target web-test   # analyze + flutter test
+docker build . -f ./docker/u22/Dockerfile --target mcp-test   # core + MCP suites
 ```
 
-For an actual release, where the order of the steps matters and forgetting one has
-already shipped a broken combination to users, follow
+Jenkins builds and publishes it (`Jenkinsfile`): every push to master becomes
+`livingatlases/la-toolkit:dev`, and a `vX.Y.Z` tag a release. See
 [Releasing la-toolkit](docs/release-checklist.md).
 
 ### Refreshing the sample project

@@ -1,0 +1,40 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!--
+  The la-toolkit job: Pipeline from SCM running the repo's Jenkinsfile. It builds
+  master (-> :dev) and vX.Y.Z tags (-> releases). The poll itself is declared in
+  the Jenkinsfile (pollSCM), so it starts after the first manual build.
+  Create it with:  java -jar jenkins-cli.jar -s <jenkins> create-job la-toolkit < docker/ci/jenkins-job.xml
+  or paste the same settings in a new Pipeline job.
+-->
+<flow-definition>
+  <description>la-toolkit image: master builds :dev, a vX.Y.Z tag a release. See docs/release-checklist.md in the repo.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
+    <scm class="hudson.plugins.git.GitSCM">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <name>origin</name>
+          <refspec>+refs/heads/master:refs/remotes/origin/master +refs/tags/*:refs/tags/*</refspec>
+          <url>https://github.com/living-atlases/la-toolkit.git</url>
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        <hudson.plugins.git.BranchSpec>
+          <name>*/master</name>
+        </hudson.plugins.git.BranchSpec>
+        <hudson.plugins.git.BranchSpec>
+          <name>refs/tags/v*</name>
+        </hudson.plugins.git.BranchSpec>
+      </branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <submoduleCfg class="empty-list"/>
+      <extensions/>
+    </scm>
+    <scriptPath>Jenkinsfile</scriptPath>
+    <lightweight>false</lightweight>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

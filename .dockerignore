@@ -1,6 +1,6 @@
-# Only docker/, assets/env.production.txt and packages/ are copied into the
-# image; keep the rest (release tarballs, builds, tool caches) out of the
-# build context.
+# The image builds the frontend (lib/, web/, assets/, fonts/, test/ for its
+# test target) and the MCP server (packages/) from this checkout; keep release
+# tarballs, builds and tool caches out of the build context.
 .git
 build
 releases

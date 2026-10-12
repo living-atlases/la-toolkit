@@ -1,6 +1,9 @@
-# The MCP server (packages/la_toolkit_mcp) is built from this checkout, unlike
-# the backend (cloned) and the frontend (downloaded from the release): build the
-# image from the release tag. An AOT binary with no runtime dependencies.
+# The frontend and the MCP server are built from this checkout and the backend
+# is cloned at BACKEND_REF, so build the image from the commit or tag it is for.
+# Jenkinsfile builds it; the *-test targets run the suites in the same toolchains.
+
+# The MCP server (packages/la_toolkit_mcp): an AOT binary with no runtime
+# dependencies.
 FROM dart:3.11.5 AS mcp
 WORKDIR /src
 COPY packages/la_toolkit_core packages/la_toolkit_core
@@ -8,6 +11,33 @@ COPY packages/la_toolkit_mcp packages/la_toolkit_mcp
 WORKDIR /src/packages/la_toolkit_mcp
 RUN dart pub get --enforce-lockfile && \
         dart compile exe bin/la_toolkit_mcp.dart -o /la_toolkit_mcp
+
+FROM mcp AS mcp-test
+# The core suite reads the sample projects from the app's assets.
+COPY assets/la-toolkit-templates.json /src/assets/la-toolkit-templates.json
+WORKDIR /src/packages/la_toolkit_core
+RUN dart pub get --enforce-lockfile && dart analyze && dart test
+WORKDIR /src/packages/la_toolkit_mcp
+RUN dart analyze && dart test
+
+# The Flutter web frontend, served by the backend from its assets/ directory.
+FROM ghcr.io/cirruslabs/flutter:3.41.9 AS web
+WORKDIR /src
+COPY packages/la_toolkit_core packages/la_toolkit_core
+COPY pubspec.yaml pubspec.lock analysis_options.yaml ./
+RUN flutter pub get --enforce-lockfile
+COPY lib lib
+COPY web web
+COPY assets assets
+COPY fonts fonts
+COPY env.development.txt env.production.txt env.production-demo.txt ./
+RUN flutter build web --no-tree-shake-icons --release --source-maps
+
+FROM web AS web-test
+COPY test test
+# demo_mode_test checks the env file this script ships.
+COPY deploy-demo.sh ./
+RUN flutter analyze && flutter test
 
 FROM ubuntu:22.04
 
@@ -40,7 +70,7 @@ RUN python3 -m pip install setuptools
 RUN python3 -m pip install ansible==10.3.0 ansible-core==2.17.3
 
 # Install node via APT
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
         DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y nodejs && \
         rm -rf /var/lib/apt/lists/* && \
         apt-get clean
@@ -170,20 +200,21 @@ RUN sed -i '/^#.*\. \/etc\/bash_completion/s/^#//' /etc/bash.bashrc
 # la-toolkit backend
 RUN mkdir -p /home/ubuntu/la-toolkit
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit
-# Cache buster, and load-bearing: the clone below is not pinned to a tag, it takes
-# whatever the backend's default branch holds at build time. Docker would otherwise
-# reuse the cached layer and ship the PREVIOUS backend. Bump this on every release,
-# and whenever the image must pick up new backend commits.
-RUN echo "1.7.1-d1"
-RUN su - ubuntu -c 'git clone --depth 1 https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit'
+# BACKEND_REF is a branch or tag of la-toolkit-backend; BACKEND_SHA, when given,
+# is the commit it must resolve to. A new SHA also invalidates this layer, so an
+# image never ships a cached older backend.
+ARG BACKEND_REF=master
+ARG BACKEND_SHA=
+RUN sudo -u ubuntu -H git clone --depth 1 --branch "${BACKEND_REF}" \
+          https://github.com/living-atlases/la-toolkit-backend.git /home/ubuntu/la-toolkit && \
+        if [ -n "${BACKEND_SHA}" ]; then \
+          test "$(sudo -u ubuntu git -C /home/ubuntu/la-toolkit rev-parse HEAD)" = "${BACKEND_SHA}" || \
+            { echo "backend ${BACKEND_REF} is not at ${BACKEND_SHA}" >&2; exit 1; }; \
+        fi
 RUN su - ubuntu -c 'cd /home/ubuntu/la-toolkit && npm install'
 
-RUN echo "2026081701"
-# la-toolkit frontend. The tarball is an asset of the GitHub release, so the release
-# must exist before this image can build: tag, run build.sh, upload, then build here.
-RUN curl -fL https://github.com/living-atlases/la-toolkit/releases/download/v1.7.1/flutter-web-1.7.1.tgz | tar xfz - -C /home/ubuntu/la-toolkit/assets/ --strip-components=2
-# RUN echo "2021032402"
-# COPY build/web/ /home/ubuntu/la-toolkit/assets/
+# la-toolkit frontend
+COPY --from=web /src/build/web/ /home/ubuntu/la-toolkit/assets/
 COPY assets/env.production.txt  /home/ubuntu/la-toolkit/assets/assets/env.production.txt
 RUN chown -R ubuntu:ubuntu /home/ubuntu/la-toolkit/assets/
 

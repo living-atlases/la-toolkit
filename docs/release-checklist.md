@@ -1,144 +1,88 @@
 # Releasing la-toolkit
 
-The release is manual — there is no CI for it. That is workable, but it means every
-step below is a step that can be forgotten, and one of them has been: 1.7.0 shipped
-with `latest` still resolving to the 1.6.9 image, so every fresh install got a 1.7.0
-`docker-compose.yml` (mongo:8) driving a 1.6.x backend that still vendored
-`mongodb-core`. It restart-looped on
-`Unsupported OP_QUERY command: listCollections`, and it took an external report to
-find out.
+Jenkins builds, checks and publishes the image (`Jenkinsfile`, job `la-toolkit`, polling
+every 15 minutes):
 
-Order matters, in both directions: the image build downloads the frontend from the
-GitHub release, so the release has to exist first, and it clones the backend from
-master, so the backend's version bump has to be pushed first too.
+| Pushed               | Image                                         |
+|----------------------|-----------------------------------------------|
+| a commit on master   | `livingatlases/la-toolkit:dev`                |
+| a `vX.Y.Z` tag       | `livingatlases/la-toolkit:X.Y.Z` and `:vX.Y.Z` |
 
-## 0. Release notes and changelog
+Every build runs the core, MCP and Flutter suites (the `mcp-test` and `web-test` targets
+of `docker/u22/Dockerfile`), builds the image with the frontend and the MCP server from
+the checkout and the backend from its own repo, and then `docker/ci/smoke.sh`: the
+backend suite inside the image, a cold start on an empty `mongo:8` initialised as
+`docker-compose.yml` does, the version the backend reports, the docker client of the fast
+deploy and an MCP `initialize`. Nothing is pushed unless all of it passes, and the tags of
+one build are checked to be the same digest.
 
-Write the notes in `docs/release-notes/next.md` while the release takes shape; it
-shows under "Unreleased" in `CHANGELOG.md`. At release time rename it to
-`docs/release-notes/vX.Y.Z.md`, paste it as the GitHub release body, and after
-tagging regenerate the changelog (it needs the backend checkout next to this one):
+## 1. Prepare, on master
+
+- Release notes: rename `docs/release-notes/next.md` to `docs/release-notes/vX.Y.Z.md`.
+- `version:` in `pubspec.yaml` to `X.Y.Z`.
+- `version` in `la-toolkit-backend/package.json` to `X.Y.Z`.
+- The `image:` of the `la-toolkit` service in `docker-compose.yml` to `X.Y.Z`. That is
+  what a first-time installer gets, whatever `latest` points at.
+- Push both repos and wait for the `dev` build to go green: it is the same build the tag
+  will run.
+
+## 2. Tag both repos
+
+Tag the backend first, then the frontend, on the commits just pushed:
+
+```bash
+git -C ../la_toolkit_backend tag -a vX.Y.Z -m vX.Y.Z && git -C ../la_toolkit_backend push origin vX.Y.Z
+git tag -a vX.Y.Z -m vX.Y.Z && git push origin vX.Y.Z
+```
+
+The release build stops in its first stage (`docker/ci/resolve.sh`) unless the tag,
+`pubspec.yaml` and the backend's `package.json` at its own `vX.Y.Z` tag all say `X.Y.Z`,
+and it builds the image from that backend tag. This is not bookkeeping: the frontend asks
+the backend for its version (`GET /api/v1/get-backend-version`, which returns
+`package.json`) and compares it with the newest GitHub release. 1.7.1 shipped a backend
+still saying `1.7.0`, so every 1.7.1 install was told to upgrade to the version it was
+already running. The same number picks the `la-toolkit:` bucket of the backend's
+`assets/dependencies.yaml`, so a stale one also recommends the wrong generator.
+
+## 3. GitHub release and changelog
+
+Jenkins has no GitHub credentials, so this step is by hand. Create the release from the
+tag with the notes as its body (`gh release create vX.Y.Z -F docs/release-notes/vX.Y.Z.md`).
+Do not skip it: the upgrade banner compares against the newest GitHub release, not
+Docker Hub. The image no longer needs a release asset.
+
+Then regenerate the changelog (it needs the backend checkout next to this one) and push:
 
 ```bash
 scripts/gen-changelog.py > CHANGELOG.md
 bash scripts/test-gen-changelog.sh
 ```
 
-## 1. Frontend
+## 4. Decide about `latest`, never on autopilot
 
-- Bump `version:` in `pubspec.yaml`.
-- `./build.sh` — runs the tests, builds Flutter web, and writes
-  `flutter-web-<version>.tgz`.
-
-## 2. GitHub release
-
-- Tag `vX.Y.Z` and create the release.
-- Upload `flutter-web-X.Y.Z.tgz` as a release asset.
-
-The `curl` in the Dockerfile uses `-f`, so if the asset is missing the build fails
-instead of unpacking GitHub's error page into the assets directory. Do not remove it.
-
-## 3. Backend version
-
-Bump `version` in `la-toolkit-backend/package.json` to the same `X.Y.Z` and push it to
-master **before** building the image.
-
-This is a real check, not bookkeeping. The frontend asks the backend for its version
-(`GET /api/v1/get-backend-version`, which just returns `package.json`) and compares it
-against the newest GitHub release; when the backend reports something older it shows
-*"There is a new version the LA-Toolkit available"* to every user, forever. That is
-exactly what 1.7.1 shipped: the backend still said `1.7.0`, so every 1.7.1 install was
-told to upgrade to the version it was already running.
-
-The same number decides which `la-toolkit:` bucket of `assets/dependencies.yaml` the
-lint applies, so a stale one also recommends the wrong `la-generator` floor.
-
-Push first: the image clones the backend `--depth 1` from its default branch, so a
-commit that is not on master yet simply is not in the image.
-
-## 4. Image
-
-Build it from a checkout of the release tag. Unlike the backend (cloned) and the
-frontend (downloaded), the MCP server (`packages/la_toolkit_mcp`, with
-`la_toolkit_core`) is compiled from the local build context by the `mcp` stage of the
-Dockerfile, so whatever is checked out is what ships.
-
-In `docker/u22/Dockerfile`:
-
-- Bump the cache buster above the backend clone (`RUN echo "X.Y.Z-dN"`). This is
-  load-bearing, not decoration: the clone is `--depth 1` from the backend's default
-  branch and is not pinned to a tag, so without a bump Docker reuses the cached layer
-  and ships the *previous* backend.
-- Point the frontend `curl` at the release asset you just uploaded.
-
-Then build and push. Push **both** tag spellings — every release up to 1.6.9 used the
-`v` form, 1.7.0 was first published without it, and the pinning advice in
-`docs/mongodb-4-to-8-upgrade.md` leads people to write `:vX.Y.Z`:
-
-```bash
-docker build . -f ./docker/u22/Dockerfile -t livingatlases/la-toolkit:X.Y.Z
-docker tag livingatlases/la-toolkit:X.Y.Z livingatlases/la-toolkit:vX.Y.Z
-docker push livingatlases/la-toolkit:X.Y.Z
-docker push livingatlases/la-toolkit:vX.Y.Z
-```
-
-## 5. Decide about `latest` — do not do it on autopilot
-
-`docker-compose.yml` ships with a `watchtower` container that polls hourly and
-updates images by itself. Moving `latest` therefore upgrades every unpinned
-installation in the wild within the hour, without anyone deciding to.
+`docker-compose.yml` ships a `watchtower` container that polls hourly and updates images
+by itself. Moving `latest` therefore upgrades every unpinned installation in the wild
+within the hour, without anyone deciding to.
 
 For a release that only changes the toolkit, that is fine. For one that changes
-something underneath it, it is not: 1.7.0 also moved MongoDB from 4 to 8, and
-MongoDB 8 refuses to start on MongoDB 4 data files. `latest` was deliberately left on
-1.6.9 for that release rather than pushing every existing installation into an
-unattended migration.
+something underneath it, it is not: 1.7.0 also moved MongoDB from 4 to 8, and MongoDB 8
+refuses to start on MongoDB 4 data files. `latest` was deliberately left on 1.6.9 for
+that release rather than pushing every existing installation into an unattended
+migration.
 
-So: if the release needs the operator to do anything by hand, leave `latest` where it
-is and say so in the release notes.
+So CI never moves it by itself. To move it, rebuild the release tag in Jenkins with
+`PROMOTE_LATEST` ticked (refused on a dev build). If the release needs the operator to do
+anything by hand, leave `latest` where it is and say so in the release notes.
 
-## 6. Pin the compose file
+## 5. Check from the outside
 
-Bump the `image:` tag in `docker-compose.yml` to the new version. This is what a
-first-time installer gets, and it is what keeps the compose file and the image in
-step regardless of what `latest` points at.
-
-## 7. Verify, from the outside
-
-Digests, not tag names:
+The build log ends with the digest every pushed tag resolves to. From any machine:
 
 ```bash
-docker manifest inspect livingatlases/la-toolkit:X.Y.Z  | sha256sum
-docker manifest inspect livingatlases/la-toolkit:vX.Y.Z | sha256sum   # must match
-docker manifest inspect livingatlases/la-toolkit:latest | sha256sum   # is this what you intended?
+docker buildx imagetools inspect livingatlases/la-toolkit:X.Y.Z  --format '{{json .Manifest.Digest}}'
+docker buildx imagetools inspect livingatlases/la-toolkit:vX.Y.Z --format '{{json .Manifest.Digest}}'   # same
+docker buildx imagetools inspect livingatlases/la-toolkit:latest --format '{{json .Manifest.Digest}}'   # is this what you intended?
 ```
 
-Then a genuine cold start, on an empty data directory, which is the case that broke:
-
-```bash
-docker compose down && sudo rm -rf /data/la-toolkit/mongo/* && docker compose up -d
-docker compose ps                      # mongo healthy, la-toolkit up and not restarting
-docker compose logs la-toolkit | grep -i 'authentication failed'    # empty
-```
-
-Not a running installation of your own — those have an initialized database and will
-hide exactly the class of failure that first-time users hit.
-
-### Check the version the image reports
-
-The backend's `package.json` is what the upgrade banner compares against (see step 3),
-so it is worth confirming on the built image rather than assuming the bump made it in:
-
-```bash
-docker run --rm --entrypoint /bin/bash livingatlases/la-toolkit:X.Y.Z \
-  -c 'cd /home/ubuntu/la-toolkit && npm pkg get version'
-```
-
-If it reports the previous release, the cache buster in the Dockerfile did not do its
-job or the backend commit was not on master when the image was built. The commit itself
-tells you which of the two it was, and the `--depth 1` clone keeps enough history to ask:
-
-```bash
-docker run --rm --entrypoint /bin/bash livingatlases/la-toolkit:X.Y.Z \
-  -c 'cd /home/ubuntu/la-toolkit && git log -1 --format="%H %cd %s"'
-```
+The image's labels say what it was built from: `org.opencontainers.image.revision` (this
+repo) and `la-toolkit.backend.revision` (the backend).
