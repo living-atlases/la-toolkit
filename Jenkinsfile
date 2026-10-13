@@ -3,6 +3,7 @@
 //   a vX.Y.Z tag on master  -> :X.Y.Z and :vX.Y.Z (the tag, pubspec.yaml and the
 //                              backend's vX.Y.Z tag must agree, see docker/ci/resolve.sh),
 //                              then the GitHub release with docs/release-notes/vX.Y.Z.md
+//                              and the demo at toolkit-demo.l-a.site
 // :latest never moves on its own: build with PROMOTE_VERSION=X.Y.Z to point it at an
 // already published release, same digest, nothing rebuilt. Watchtower then upgrades
 // every unpinned installation to it within the hour.
@@ -76,6 +77,7 @@ pipeline {
                     sh 'git fetch --tags --force origin'
                     sh 'bash docker/ci/test-resolve.sh'
                     sh 'bash docker/ci/test-github-release.sh'
+                    sh 'bash docker/ci/test-publish-demo.sh'
                     def resolved = sh(returnStdout: true, script: 'docker/ci/resolve.sh').trim()
                     resolved.split('\n').each { line ->
                         def kv = line.split('=', 2)
@@ -176,6 +178,21 @@ pipeline {
                 withCredentials([string(credentialsId: env.GITHUB_RELEASE_CREDS, variable: 'GH_TOKEN')]) {
                     sh 'docker/ci/github-release.sh "$RELEASE_TAG"'
                 }
+            }
+        }
+
+        // The backend-less demo follows the releases. The agent's jenkins user
+        // reaches the demo host over ssh with its own key.
+        stage('Demo') {
+            when {
+                expression { params.PUSH && env.RELEASE_TAG && !params.PROMOTE_VERSION }
+            }
+            steps {
+                sh '''
+                    rm -rf build/demo
+                    docker build --target demo --output type=local,dest=build/demo -f "$DOCKERFILE" .
+                    docker/ci/publish-demo.sh build/demo
+                '''
             }
         }
     }

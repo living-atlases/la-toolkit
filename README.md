@@ -19,7 +19,7 @@ and maintain one, behind a user friendly interface:
 There is a [demo of the interface](https://toolkit-demo.l-a.site/). It is only the UI
 frontend, with no backend: projects are stored in your browser and nothing is
 configured or deployed on any server. You can create and edit sample projects there to
-see how the tool works. It is published by hand with `./deploy-demo.sh`.
+see how the tool works. Jenkins publishes it with every release (`./deploy-demo.sh` does the same by hand).
 
 ## Quick start
 
@@ -256,8 +256,8 @@ flutter test                               # the app: widgets and what needs its
 ```
 
 Run the core ones from inside `packages/la_toolkit_core`: some fixtures are read with
-paths relative to it. `build.sh` and `deploy-demo.sh` run the core suite before
-`flutter test`.
+paths relative to it. `build.sh` runs the core suite before `flutter test`, and the CI
+runs both in the `mcp-test` and `web-test` targets of the Dockerfile.
 
 ### Build
 

@@ -35,9 +35,22 @@ RUN flutter build web --no-tree-shake-icons --release --source-maps
 
 FROM web AS web-test
 COPY test test
-# demo_mode_test checks the env file this script ships.
-COPY deploy-demo.sh ./
+# demo_mode_test checks that the demo target below swaps in the demo env.
+COPY docker/u22/Dockerfile docker/u22/Dockerfile
 RUN flutter analyze && flutter test
+
+# The backend-less demo (toolkit-demo.l-a.site): the same web build with the
+# bundled env swapped for the demo one. main.dart loads env.production.txt in
+# release builds; the assets/ copy is swapped too so both bundled envs agree.
+# Export it with --output type=local (docker/ci/publish-demo.sh publishes it).
+FROM web AS demo-build
+RUN cp assets/env.production-demo.txt build/web/assets/env.production.txt && \
+        cp assets/env.production-demo.txt build/web/assets/assets/env.production.txt && \
+        grep -q '^DEMO=true' build/web/assets/env.production.txt && \
+        grep -q '^DEMO=true' build/web/assets/assets/env.production.txt
+
+FROM scratch AS demo
+COPY --from=demo-build /src/build/web/ /
 
 FROM ubuntu:22.04
 

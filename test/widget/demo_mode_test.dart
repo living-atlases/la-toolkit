@@ -12,7 +12,8 @@ import 'package:redux/redux.dart';
 
 import 'pump_app.dart';
 
-/// The backend-less demo published at toolkit-demo.l-a.site (deploy-demo.sh).
+/// The backend-less demo published at toolkit-demo.l-a.site (the demo target of
+/// docker/u22/Dockerfile, published by docker/ci/publish-demo.sh).
 void main() {
   group('demo env files', () {
     Map<String, String> envOf(String path) {
@@ -21,11 +22,11 @@ void main() {
       return env.env;
     }
 
-    test('deploy-demo.sh ships an env with DEMO=true', () {
-      final String script = File('deploy-demo.sh').readAsStringSync();
+    test('the demo build ships an env with DEMO=true', () {
+      final String dockerfile = File('docker/u22/Dockerfile').readAsStringSync();
       const String demoEnv = 'assets/env.production-demo.txt';
-      expect(script, contains(demoEnv),
-          reason: 'the script must copy a file that exists');
+      expect(dockerfile, contains(demoEnv),
+          reason: 'the demo target must copy a file that exists');
       expect(envOf(demoEnv)['DEMO'], 'true');
     });
 
