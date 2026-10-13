@@ -1,7 +1,8 @@
 // Builds, checks and publishes livingatlases/la-toolkit.
 //   master                  -> :dev
 //   a vX.Y.Z tag on master  -> :X.Y.Z and :vX.Y.Z (the tag, pubspec.yaml and the
-//                              backend's vX.Y.Z tag must agree, see docker/ci/resolve.sh)
+//                              backend's vX.Y.Z tag must agree, see docker/ci/resolve.sh),
+//                              then the GitHub release with docs/release-notes/vX.Y.Z.md
 // :latest moves only when PROMOTE_LATEST is ticked on a release build: watchtower
 // upgrades every unpinned installation to it within the hour.
 // Job: Pipeline from SCM, branches */master and refs/tags/v*, refspec
@@ -28,6 +29,7 @@ pipeline {
     environment {
         IMAGE = 'livingatlases/la-toolkit'
         DOCKER_REGISTRY_CREDS = 'docker-hub-la'
+        GITHUB_RELEASE_CREDS = 'github-la-toolkit-release'
         DOCKERFILE = 'docker/u22/Dockerfile'
         LOCAL_IMAGE = "la-toolkit-ci:${env.BUILD_NUMBER}"
     }
@@ -40,6 +42,7 @@ pipeline {
                     // fetches them too (refspec above).
                     sh 'git fetch --tags --force origin'
                     sh 'bash docker/ci/test-resolve.sh'
+                    sh 'bash docker/ci/test-github-release.sh'
                     def resolved = sh(returnStdout: true, script: 'docker/ci/resolve.sh').trim()
                     resolved.split('\n').each { line ->
                         def kv = line.split('=', 2)
@@ -50,6 +53,10 @@ pipeline {
                     echo "release tag: '${env.RELEASE_TAG}', app ${env.APP_VERSION}, backend ${env.BACKEND_REF} ${env.BACKEND_SHA} (${env.BACKEND_VERSION})"
                     if (params.PROMOTE_LATEST && !env.RELEASE_TAG) {
                         error('PROMOTE_LATEST is only for release builds (a vX.Y.Z tag on HEAD)')
+                    }
+                    // The GitHub release body; checked now, not after an hour of build.
+                    if (env.RELEASE_TAG && !fileExists("docs/release-notes/${env.RELEASE_TAG}.md")) {
+                        error("no docs/release-notes/${env.RELEASE_TAG}.md for the GitHub release")
                     }
                 }
             }
@@ -120,6 +127,18 @@ pipeline {
                         error("pushed tags ${tags} resolve to different digests: ${digests}")
                     }
                     echo "pushed ${tags.collect { "${env.IMAGE}:${it}" }.join(', ')} = ${digests[0]}"
+                }
+            }
+        }
+
+        // The app's upgrade banner compares against the newest GitHub release.
+        stage('GitHub release') {
+            when {
+                expression { params.PUSH && env.RELEASE_TAG }
+            }
+            steps {
+                withCredentials([string(credentialsId: env.GITHUB_RELEASE_CREDS, variable: 'GH_TOKEN')]) {
+                    sh 'docker/ci/github-release.sh "$RELEASE_TAG"'
                 }
             }
         }

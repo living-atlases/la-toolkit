@@ -46,10 +46,11 @@ already running. The same number picks the `la-toolkit:` bucket of the backend's
 
 ## 3. GitHub release and changelog
 
-Jenkins has no GitHub credentials, so this step is by hand. Create the release from the
-tag with the notes as its body (`gh release create vX.Y.Z -F docs/release-notes/vX.Y.Z.md`).
-Do not skip it: the upgrade banner compares against the newest GitHub release, not
-Docker Hub. The image no longer needs a release asset.
+After pushing the images, the release build creates the GitHub release of the tag with
+`docs/release-notes/vX.Y.Z.md` as its body (`docker/ci/github-release.sh`, credential
+`github-la-toolkit-release`: a token with Contents read and write on this repo), or
+updates it on a rebuild. A tag without that file fails in the first stage. The release
+matters: the upgrade banner compares against the newest GitHub release, not Docker Hub.
 
 Then regenerate the changelog (it needs the backend checkout next to this one) and push:
 
