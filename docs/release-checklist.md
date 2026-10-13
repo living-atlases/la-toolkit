@@ -14,7 +14,9 @@ the checkout and the backend from its own repo, and then `docker/ci/smoke.sh`: t
 backend suite inside the image, a cold start on an empty `mongo:8` initialised as
 `docker-compose.yml` does, the version the backend reports, the docker client of the fast
 deploy and an MCP `initialize`. Nothing is pushed unless all of it passes, and the tags of
-one build are checked to be the same digest.
+one build are checked to be the same digest. A release build then creates the GitHub
+release and publishes the backend-less demo at toolkit-demo.l-a.site (the `demo` target
+of the Dockerfile, `docker/ci/publish-demo.sh`), checking the version the site serves.
 
 ## 1. Prepare, on master
 
