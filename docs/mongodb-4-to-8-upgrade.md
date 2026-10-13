@@ -35,15 +35,16 @@ from an older major rather than upgrade them silently.
 
 ## One warning before anything else
 
-**Watchtower can start this upgrade for you.** Compose files up to 1.6.9 run
+**Watchtower upgrades the toolkit, not MongoDB.** Compose files up to 1.6.9 run
 `livingatlases/la-toolkit:latest` alongside a `watchtower` container that polls
-hourly and updates images on its own. That combination — a new toolkit against your
-existing `mongo:4` — is not a tested one.
+hourly and updates images on its own. `latest` is 1.8.0 since that release, so such
+an installation moves to 1.8.0 by itself, against its existing `mongo:4`. That
+combination was tested before moving `latest`: it starts, keeps its projects and saves
+changes. MongoDB itself stays on 4 until you follow this page.
 
-`latest` is deliberately *not* being moved to 1.7.0 for this reason, and the current
-`docker-compose.yml` pins the image instead. But your own file is the one that
-decides. If it still says `:latest` and you are not upgrading today, either stop
-watchtower or pin it:
+`latest` was not moved during 1.7.x, which was not tested that way, and the current
+`docker-compose.yml` pins the image instead. Your own file is the one that decides. To
+stay on a version, pin it:
 
 ```yaml
   la-toolkit:

@@ -71,9 +71,13 @@ refuses to start on MongoDB 4 data files. `latest` was deliberately left on 1.6.
 that release rather than pushing every existing installation into an unattended
 migration.
 
-So CI never moves it by itself. To move it, rebuild the release tag in Jenkins with
-`PROMOTE_LATEST` ticked (refused on a dev build). If the release needs the operator to do
-anything by hand, leave `latest` where it is and say so in the release notes.
+So CI never moves it by itself. To move it, run the job with `PROMOTE_VERSION=X.Y.Z`: it
+only points `latest` at that published release, the same digest, and checks they match;
+nothing is rebuilt. Before that, try the upgrade an unpinned installation will get: the
+oldest compose file still around (1.6.9, with `mongo:4`) recreated with the new image and
+its volumes must start, keep its projects and save a change. If the release needs the
+operator to do anything by hand, leave `latest` where it is and say so in the release
+notes.
 
 ## 5. Check from the outside
 

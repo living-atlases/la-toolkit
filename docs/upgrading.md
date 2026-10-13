@@ -56,19 +56,23 @@ counting on is real (the backup sidecar used until 1.6.9 has been found writing 
 archives), and which restore command matches your dump format, since restoring an
 older dump wholesale replaces the MongoDB accounts on the server.
 
-## Why `:latest` still points at 1.6.9
+## `:latest` follows the releases again
 
-`:latest` stays on 1.6.9, on purpose, for the whole 1.7.x series.
+`:latest` stayed on 1.6.9 for the whole 1.7.x series and moved to 1.8.0.
 
-1.7.x ships MongoDB 8 and existing installations are on MongoDB 4, which is a
-migration only you can decide to run. Moving `latest` would hand that decision to the
-`watchtower` container in `docker-compose.yml`, which polls hourly: every unpinned
-1.6.9 installation would be upgraded within the hour, on its own, into a database that
-will not start.
+The worry was the `watchtower` container in `docker-compose.yml`, which polls hourly
+and upgrades every unpinned installation by itself. But watchtower replaces images, not
+the compose file: an installation made with the 1.6.9 `docker-compose.yml` keeps its
+`mongo:4` service whatever toolkit image it runs. What does not start on MongoDB 4 data
+is MongoDB 8, which only comes with a newer compose file, a step you take by hand.
 
-So `:latest` is frozen until the 1.6.x installations have had a chance to migrate.
-**Pin the version you want.** Every 1.7.x image is published under both spellings,
-`1.7.1` and `v1.7.1`, so either works.
+1.8.0 was tested for exactly that case before moving `latest`: a 1.6.9 installation on
+MongoDB 4.4.29, recreated with the 1.8.0 image and its volumes, starts (the launcher
+ports the old migration history and applies the new migrations), keeps its projects and
+saves changes. Its own MongoDB 4 still needs the move described in
+[Upgrading past MongoDB 4](mongodb-4-to-8-upgrade.md) eventually.
+
+To stay on a version, pin it: every release is published as `X.Y.Z` and `vX.Y.Z`.
 
 ## 1.7.0 to 1.7.1
 

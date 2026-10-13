@@ -11,9 +11,11 @@ docs/release-notes/ instead.
 
 ## Unreleased
 
-### Commits (0)
+### Commits (1)
 
-None.
+#### Documentation
+
+- **changelog**: v1.8.0 ([5ebbc7e](https://github.com/living-atlases/la-toolkit/commit/5ebbc7e9ea7b4959861ef7ac96f15f894fbb980b))
 
 ### Backend commits (2)
 
@@ -37,9 +39,9 @@ A docker-compose portal can now be redeployed in minutes instead of hours, two p
 
 `docker-compose.yml` is a file from this repository, not part of the image, so **pulling the new image does not fix this**. Copy the `mongo-db-backup` service from the current `docker-compose.yml` (pinned to `nfrastack/db-backup:4.9.2`, 30 days of retention) into yours. Its first run deletes every backup older than 30 days, years of them on an old installation, so move aside any you want to keep first. [Upgrading](https://github.com/living-atlases/la-toolkit/blob/master/docs/upgrading.md#every-installation-backups-stopped-on-2026-09-09) has the commands to check, move and restore.
 
-### `:latest` is still 1.6.9 on Docker Hub
+### `:latest` is 1.8.0
 
-Unchanged from 1.7.x: [`livingatlases/la-toolkit:latest`](https://hub.docker.com/r/livingatlases/la-toolkit/tags) stays on 1.6.9 so that `watchtower` does not move an unpinned MongoDB 4 installation onto MongoDB 8 by itself. Pin the version you want; both `X.Y.Z` and `vX.Y.Z` are published.
+[`livingatlases/la-toolkit:latest`](https://hub.docker.com/r/livingatlases/la-toolkit/tags) moves from 1.6.9 to 1.8.0, so the `watchtower` of `docker-compose.yml` upgrades every unpinned installation within the hour. It replaces the toolkit image only, never the compose file: a 1.6.9 installation keeps its `mongo:4`, and 1.8.0 runs on it. Tested: a 1.6.9 installation on MongoDB 4.4.29, upgraded to the 1.8.0 image with its volumes, starts, keeps its projects and saves changes. Moving to MongoDB 8 stays a step you take by hand ([Upgrading past MongoDB 4](https://github.com/living-atlases/la-toolkit/blob/master/docs/mongodb-4-to-8-upgrade.md)), and the backups action above applies to every installation.
 
 ### Fast deploy for docker-compose portals
 

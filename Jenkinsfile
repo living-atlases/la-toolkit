@@ -3,8 +3,9 @@
 //   a vX.Y.Z tag on master  -> :X.Y.Z and :vX.Y.Z (the tag, pubspec.yaml and the
 //                              backend's vX.Y.Z tag must agree, see docker/ci/resolve.sh),
 //                              then the GitHub release with docs/release-notes/vX.Y.Z.md
-// :latest moves only when PROMOTE_LATEST is ticked on a release build: watchtower
-// upgrades every unpinned installation to it within the hour.
+// :latest never moves on its own: build with PROMOTE_VERSION=X.Y.Z to point it at an
+// already published release, same digest, nothing rebuilt. Watchtower then upgrades
+// every unpinned installation to it within the hour.
 // Job: Pipeline from SCM, branches */master and refs/tags/v*, refspec
 // +refs/heads/master:refs/remotes/origin/master +refs/tags/*:refs/tags/*
 pipeline {
@@ -22,8 +23,8 @@ pipeline {
     parameters {
         booleanParam(name: 'PUSH', defaultValue: true,
             description: 'Push the image to Docker Hub when every check passes.')
-        booleanParam(name: 'PROMOTE_LATEST', defaultValue: false,
-            description: 'Release builds only: also move :latest. Watchtower then upgrades every unpinned installation within the hour, so not for a release that needs the operator to do anything by hand (docs/release-checklist.md).')
+        string(name: 'PROMOTE_VERSION', defaultValue: '', trim: true,
+            description: 'X.Y.Z: only point :latest at that published release (same digest, nothing is built). Watchtower then upgrades every unpinned installation within the hour, so not for a release that needs the operator to do anything by hand (docs/release-checklist.md).')
     }
 
     environment {
@@ -35,7 +36,39 @@ pipeline {
     }
 
     stages {
+        stage('Promote') {
+            when {
+                expression { params.PROMOTE_VERSION }
+            }
+            steps {
+                script {
+                    if (!(params.PROMOTE_VERSION ==~ /[0-9]+\.[0-9]+\.[0-9]+/)) {
+                        error("PROMOTE_VERSION must be X.Y.Z, not '${params.PROMOTE_VERSION}'")
+                    }
+                    currentBuild.displayName = "#${env.BUILD_NUMBER} latest -> ${params.PROMOTE_VERSION}"
+                    withCredentials([usernamePassword(credentialsId: env.DOCKER_REGISTRY_CREDS, usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
+                        sh 'echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin'
+                        try {
+                            sh 'docker buildx imagetools create -t "$IMAGE:latest" "$IMAGE:$PROMOTE_VERSION"'
+                        } finally {
+                            sh 'docker logout'
+                        }
+                    }
+                    def digests = ['latest', params.PROMOTE_VERSION].collect { t ->
+                        sh(returnStdout: true, script: "docker buildx imagetools inspect \"\$IMAGE:${t}\" --format '{{json .Manifest.Digest}}'").trim()
+                    }.unique()
+                    if (digests.size() != 1) {
+                        error(":latest and :${params.PROMOTE_VERSION} differ: ${digests}")
+                    }
+                    echo "${env.IMAGE}:latest = ${env.IMAGE}:${params.PROMOTE_VERSION} = ${digests[0]}"
+                }
+            }
+        }
+
         stage('Resolve') {
+            when {
+                expression { !params.PROMOTE_VERSION }
+            }
             steps {
                 script {
                     // The tags on HEAD decide dev or release; a poll of master
@@ -51,9 +84,6 @@ pipeline {
                     env.APP_VERSION = sh(returnStdout: true, script: "sed -n 's/^version: *//p' pubspec.yaml | head -1").trim()
                     currentBuild.displayName = env.RELEASE_TAG ? "#${env.BUILD_NUMBER} ${env.RELEASE_TAG}" : "#${env.BUILD_NUMBER} dev"
                     echo "release tag: '${env.RELEASE_TAG}', app ${env.APP_VERSION}, backend ${env.BACKEND_REF} ${env.BACKEND_SHA} (${env.BACKEND_VERSION})"
-                    if (params.PROMOTE_LATEST && !env.RELEASE_TAG) {
-                        error('PROMOTE_LATEST is only for release builds (a vX.Y.Z tag on HEAD)')
-                    }
                     // The GitHub release body; checked now, not after an hour of build.
                     if (env.RELEASE_TAG && !fileExists("docs/release-notes/${env.RELEASE_TAG}.md")) {
                         error("no docs/release-notes/${env.RELEASE_TAG}.md for the GitHub release")
@@ -63,6 +93,9 @@ pipeline {
         }
 
         stage('Test') {
+            when {
+                expression { !params.PROMOTE_VERSION }
+            }
             parallel {
                 stage('core and MCP') {
                     steps {
@@ -78,6 +111,9 @@ pipeline {
         }
 
         stage('Build') {
+            when {
+                expression { !params.PROMOTE_VERSION }
+            }
             steps {
                 sh '''
                     docker build --pull -f "$DOCKERFILE" \
@@ -93,6 +129,9 @@ pipeline {
         }
 
         stage('Smoke') {
+            when {
+                expression { !params.PROMOTE_VERSION }
+            }
             steps {
                 sh 'docker/ci/smoke.sh "$LOCAL_IMAGE" "$BACKEND_VERSION"'
             }
@@ -100,14 +139,11 @@ pipeline {
 
         stage('Push') {
             when {
-                expression { params.PUSH }
+                expression { params.PUSH && !params.PROMOTE_VERSION }
             }
             steps {
                 script {
                     def tags = env.RELEASE_TAG ? [env.RELEASE_TAG.substring(1), env.RELEASE_TAG] : ['dev']
-                    if (params.PROMOTE_LATEST) {
-                        tags << 'latest'
-                    }
                     withCredentials([usernamePassword(credentialsId: env.DOCKER_REGISTRY_CREDS, usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
                         sh 'echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin'
                         try {
@@ -134,7 +170,7 @@ pipeline {
         // The app's upgrade banner compares against the newest GitHub release.
         stage('GitHub release') {
             when {
-                expression { params.PUSH && env.RELEASE_TAG }
+                expression { params.PUSH && env.RELEASE_TAG && !params.PROMOTE_VERSION }
             }
             steps {
                 withCredentials([string(credentialsId: env.GITHUB_RELEASE_CREDS, variable: 'GH_TOKEN')]) {

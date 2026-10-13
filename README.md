@@ -174,8 +174,8 @@ docker compose up -d
 ```
 
 Leaving the image unpinned lets the `watchtower` container move you to a new major on
-its own, MongoDB included. Notes for specific versions, and why `:latest` is frozen at
-1.6.9, are in [Upgrading la-toolkit](docs/upgrading.md).
+its own. Notes for specific versions, and what `:latest` means for an installation still
+on MongoDB 4, are in [Upgrading la-toolkit](docs/upgrading.md).
 
 ### Move the toolkit to another server
 
