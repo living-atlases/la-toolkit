@@ -149,7 +149,7 @@ Safety, in short: a real deploy needs two explicit arguments (`dryRun: false` an
 stdio. The backend API has no authentication, so never expose it over HTTP. Provisioning
 machines and DNS stays out of scope: the agent checks them and says what is missing.
 
-From the first release after 1.7.1 the server ships in the toolkit image, so there is
+From 1.8.0 the server ships in the toolkit image, so there is
 nothing to build. On the machine that runs the toolkit:
 
 ```bash
