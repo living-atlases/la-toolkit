@@ -11,6 +11,24 @@ docs/release-notes/ instead.
 
 ## Unreleased
 
+### Commits (0)
+
+None.
+
+### Backend commits (2)
+
+#### Tests and CI
+
+- **live-sync**: a 250 ms throttle window, so a burst stays one burst on a loaded agent ([552e649](https://github.com/living-atlases/la-toolkit-backend/commit/552e649816539e7753fa3db6673586f4fe9293dc))
+
+#### Maintenance
+
+- **release**: 1.8.0 ([f1c3728](https://github.com/living-atlases/la-toolkit-backend/commit/f1c3728e38488bcf42b4d7ecbd40c88ba1520467))
+
+<a name="v1.8.0"></a>
+
+## v1.8.0 - 2026-10-13
+
 A docker-compose portal can now be redeployed in minutes instead of hours, two people (or a person and an AI agent) can work on the same project at the same time without undoing each other, the toolkit can be driven by an AI agent through an MCP server that ships in the image, and [data hubs](https://github.com/AtlasOfLivingAustralia/documentation/wiki/Data-Hub) can live on their portal's docker-compose stack.
 
 ### Action needed: backups
@@ -25,10 +43,10 @@ Unchanged from 1.7.x: [`livingatlases/la-toolkit:latest`](https://hub.docker.com
 
 ### Fast deploy for docker-compose portals
 
-Docker-compose portals get a **Fast deploy** button on the deploy page, and the MCP a `la_fast_deploy` tool. The toolkit renders each server's configuration once with Ansible, in throwaway containers on the toolkit host and without touching the servers, then applies the result to every server in parallel, without Ansible. On a 3-server test portal the first render took 25 minutes and the apply 5, against more than an hour for an Ansible deploy. The render is cached while the inventories, the la-docker-compose and ala-install releases and the branding do not change, so a repeat only applies.
+Docker-compose portals get a **Fast deploy** card on the deploy page, which says when to use it and when to use the regular Deploy, and the MCP a `la_fast_deploy` tool. The toolkit renders each server's configuration once with Ansible, in throwaway containers on the toolkit host and without touching the servers, then applies the result to every server in parallel, without Ansible. On a 3-server test portal the first render took 25 minutes and the apply 5, against more than an hour for an Ansible deploy. The render is cached while the inventories, the la-docker-compose and ala-install releases and the branding do not change, so a repeat only applies: about 4 minutes on that portal, restarting only the services whose configuration changed.
 
 - **It is for redeploys** of pure docker-compose portals already deployed once with the regular Deploy. The first deploy, hybrid portals (VMs and docker-compose) and data hubs (they deploy from their portal) still use the regular Deploy, and so does a deploy limited to some hosts or tags: the fast deploy always deploys the whole portal.
-- **It needs la-docker-compose 1.11.2 or later**, which the lint now asks for on docker-compose projects. 1.11.0 already has the fast deploy, but deploys from the toolkit left out `sds`.
+- **It needs la-docker-compose 1.11.2 or later**, which the lint now asks for on docker-compose projects. 1.11.0 already has the fast deploy, but deploys from the toolkit left out `sds`. Prefer 1.11.3: its output ends with a plain "Fast deploy finished in N min N s." and gives the times in minutes.
 - **It needs the host's docker socket, which you turn on by hand.** Uncomment the `/var/run/docker.sock` volume of the `la-toolkit` service in the new `docker-compose.yml` and start it with `DOCKER_GID=$(getent group docker | cut -d: -f3) docker compose up -d`. The socket is root on the toolkit host and the toolkit has no login, so do it only on a toolkit that is not exposed. Without it, the fast deploy says how to enable it and runs nothing; the regular Deploy does not need it.
 
 ### Working on a project together
@@ -54,8 +72,14 @@ After upgrading, reload any browser tab that was open on the old version: an old
 - A public name served by the compose stack is no longer mapped to a VM in another compose host's `/etc/hosts`.
 - The sample project is the docker-compose topology the la-docker-compose CI deploys.
 
+### The image
+
+- **Built and checked by CI.** Every push to master publishes `livingatlases/la-toolkit:dev` and every release tag its version, after the test suites and a cold start on an empty database. The image builds the web frontend itself and records the commits it was built from (`org.opencontainers.image.revision`, `la-toolkit.backend.revision`).
+- **Node.js 22** instead of 20, which reached its end of life in April 2026.
+
 ### Fixes
 
+- **Deleting a docker-compose cluster from the Servers page also deleted deploy records of other servers**: every record pointing at a cluster deleted long ago, on any server. Older projects still have such records and they decide which host serves a name, so a portal could start resolving a service to the wrong machine. Now only the deleted cluster's records go.
 - **Terminals did not work on a fresh install** (`read_cb: EIO`): `~/.ssh/config` was only built after a connectivity check.
 - **Long deploys could hang forever** when an idle ssh connection was dropped by a NAT or firewall during a quiet task (a docker pull). ssh now sends keepalives.
 - **A version dropdown left untouched deployed a different version** than the one it showed.
@@ -67,13 +91,14 @@ After upgrading, reload any browser tab that was open on the old version: an old
 - The CARTO basemaps API key can be set in the Tune page.
 - The backend-less demo builds and saves again.
 
-### Commits (60)
+### Commits since v1.7.1 (71)
 
 <details>
-<summary>All 60 commits, by type</summary>
+<summary>All 71 commits, by type</summary>
 
 #### Features
 
+- **deploy**: fast deploy in its own card, saying when to use it and when Deploy ([b43d7f8](https://github.com/living-atlases/la-toolkit/commit/b43d7f85a7607507817f1abd5eedcd8be5fafa9e))
 - **fast-deploy**: docker socket opt-in in la-toolkit; deploy errors show the backend's reason ([4e1ad08](https://github.com/living-atlases/la-toolkit/commit/4e1ad0870952118e5827eff9056968571bed9103))
 - **deploy**: Fast deploy for docker-compose portals, in the UI and the MCP (TASK-31) ([2fad00f](https://github.com/living-atlases/la-toolkit/commit/2fad00fab55d000d26d4b4393f5444050e273f5d))
 - **mcp**: save what changed (patch-project), refuse on a real conflict ([0023c95](https://github.com/living-atlases/la-toolkit/commit/0023c956ca06b2328e75e0b58e75107a4bccd53e))
@@ -100,6 +125,9 @@ After upgrading, reload any browser tab that was open on the old version: an old
 
 #### Fixes
 
+- **core**: deleting a cluster keeps other servers' deploy rows ([3d6a2b8](https://github.com/living-atlases/la-toolkit/commit/3d6a2b87e523db60eedb71f871244a9c8a9644c7))
+- **live-sync**: a push keeps the command whose results are on screen ([5b2186b](https://github.com/living-atlases/la-toolkit/commit/5b2186bfbad0ac2c61a4ef5bf4b2f211d9cb3f06))
+- **deploy**: the fast deploy card does not claim it runs without Ansible ([b0e0a33](https://github.com/living-atlases/la-toolkit/commit/b0e0a338d3492ef444ead09d37ee374b1c813305))
 - **docker**: rerun migrations once, so a 1.6.x database gets the new ones on the first start ([bcd2f59](https://github.com/living-atlases/la-toolkit/commit/bcd2f592ce5a547f3beb963197cc12d52dadd1c4))
 - **backup**: DEFAULT_CLEANUP_TIME, so old backups are deleted at all ([3b31630](https://github.com/living-atlases/la-toolkit/commit/3b316303f54d668c6a516d90a24cea3d14c4f547))
 - **live-sync**: announce presence once routed, and treat a reloaded editing page as editing ([9a22281](https://github.com/living-atlases/la-toolkit/commit/9a2228149762efcba496ff85013db3ffa39b37ea))
@@ -119,6 +147,9 @@ After upgrading, reload any browser tab that was open on the old version: an old
 
 #### Tests and CI
 
+- a release build creates the GitHub release from its notes ([7789413](https://github.com/living-atlases/la-toolkit/commit/778941301d122955091920ab9ae820fa7659304c))
+- Jenkins builds, checks and publishes the image; master is :dev, a vX.Y.Z tag a release ([73a5603](https://github.com/living-atlases/la-toolkit/commit/73a5603179dc3e9b0ea3a02d65464851a3058409))
+- **live-sync**: const literal for the analyzer ([b68ac4d](https://github.com/living-atlases/la-toolkit/commit/b68ac4d58f393cf26fa50c095a3f8a26d0ca5ff4))
 - **docker**: the image and compose file give the fast deploy a docker client ([c8b74c0](https://github.com/living-atlases/la-toolkit/commit/c8b74c0ac81f4909d301b2c4915a30ff750dbd75))
 - **live-sync**: const literal for the analyzer ([0688302](https://github.com/living-atlases/la-toolkit/commit/06883027ab989e68401b311ae129747cd1cdacab))
 - document the MCP and the core, fill the test gaps ([d2ceea9](https://github.com/living-atlases/la-toolkit/commit/d2ceea9f85f49e32db7b8773350efdf51b3940b6))
@@ -128,6 +159,8 @@ After upgrading, reload any browser tab that was open on the old version: an old
 
 #### Documentation
 
+- **release-notes**: the fast deploy card, a cached repeat, prefer la-docker-compose 1.11.3 ([3e405f5](https://github.com/living-atlases/la-toolkit/commit/3e405f5d0ac25cd846257f17f4174eda81d1dbc5))
+- **release-notes**: fast deploy, and a lint test for la-toolkit needing a la-docker-compose release ([ebb3860](https://github.com/living-atlases/la-toolkit/commit/ebb38604707f05d2377002c1a911f681fb492b1d))
 - **release-notes**: link the Data Hub wiki page and the Docker Hub tags ([13f8228](https://github.com/living-atlases/la-toolkit/commit/13f822866f435a1235f5737cd8aa87923ec1d8cc))
 - **release**: CHANGELOG.md generated from tags, both repos, and release notes in docs/ ([4de843b](https://github.com/living-atlases/la-toolkit/commit/4de843bca92e7eca4bfb689cd6693738045d9539))
 - **mcp**: allow rules for the read-only tools in Claude Code auto mode ([b142787](https://github.com/living-atlases/la-toolkit/commit/b1427877b85d855d817626f22a5caea7650bb90c))
@@ -140,6 +173,8 @@ After upgrading, reload any browser tab that was open on the old version: an old
 
 #### Maintenance
 
+- **release**: 1.8.0 ([d09ef83](https://github.com/living-atlases/la-toolkit/commit/d09ef8379537708613a45fffe12b07acf57f1cd0))
+- no local backlog id in the fast deploy docker test ([b0b7bfc](https://github.com/living-atlases/la-toolkit/commit/b0b7bfce1d923711b69bb409e5eafae8c93a15b2))
 - **core**: drop the area package, compute polygon areas locally ([f373ca6](https://github.com/living-atlases/la-toolkit/commit/f373ca6b858577230c5d40123739206516f521c7))
 - **core**: sort imports ([50783b9](https://github.com/living-atlases/la-toolkit/commit/50783b9212ea139bbdb6fca8fe6c78fd8d9dcd8f))
 - **core**: get-deps-versions query and parser in the core ([075ab8f](https://github.com/living-atlases/la-toolkit/commit/075ab8f1e8d4c107c578ff1d006e93282a2ef212))
@@ -149,7 +184,7 @@ After upgrading, reload any browser tab that was open on the old version: an old
 
 </details>
 
-### Backend commits (20)
+### Backend commits (22)
 
 #### Features
 
@@ -178,7 +213,12 @@ After upgrading, reload any browser tab that was open on the old version: an old
 
 #### Tests and CI
 
+- LA_TOOLKIT_TEST_PRECMD lets the port pool test run ttyd directly ([4d40a81](https://github.com/living-atlases/la-toolkit-backend/commit/4d40a81777ad79d31afbd575c2773c122333e398))
 - **sockets**: a real socket.io client hears HTTP changes, also after reconnecting ([7a118f5](https://github.com/living-atlases/la-toolkit-backend/commit/7a118f54b343fbda0f536292ed4da0299ae10a59))
+
+#### Maintenance
+
+- no local backlog ids in the fast deploy controller ([17aeb85](https://github.com/living-atlases/la-toolkit-backend/commit/17aeb85cc2ac62ee77fd49d81ec76d99d668d85f))
 
 <a name="v1.7.1"></a>
 
