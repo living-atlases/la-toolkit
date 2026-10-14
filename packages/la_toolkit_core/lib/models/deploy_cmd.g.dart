@@ -29,6 +29,8 @@ abstract class _$DeployCmdCWProxy {
 
   DeployCmd dockerCompose(bool dockerCompose);
 
+  DeployCmd allowServiceRemoval(bool allowServiceRemoval);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `DeployCmd(...).copyWith.fieldName(value)`.
   ///
@@ -48,6 +50,7 @@ abstract class _$DeployCmdCWProxy {
     bool debug,
     bool dryRun,
     bool dockerCompose,
+    bool allowServiceRemoval,
   });
 }
 
@@ -98,6 +101,10 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
       call(dockerCompose: dockerCompose);
 
   @override
+  DeployCmd allowServiceRemoval(bool allowServiceRemoval) =>
+      call(allowServiceRemoval: allowServiceRemoval);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `DeployCmd(...).copyWith.fieldName(value)`.
   ///
@@ -117,6 +124,7 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
     Object? debug = const $CopyWithPlaceholder(),
     Object? dryRun = const $CopyWithPlaceholder(),
     Object? dockerCompose = const $CopyWithPlaceholder(),
+    Object? allowServiceRemoval = const $CopyWithPlaceholder(),
   }) {
     return DeployCmd(
       deployServices: deployServices == const $CopyWithPlaceholder()
@@ -168,6 +176,12 @@ class _$DeployCmdCWProxyImpl implements _$DeployCmdCWProxy {
           ? _value.dockerCompose
           // ignore: cast_nullable_to_non_nullable
           : dockerCompose as bool,
+      allowServiceRemoval:
+          allowServiceRemoval == const $CopyWithPlaceholder() ||
+              allowServiceRemoval == null
+          ? _value.allowServiceRemoval
+          // ignore: cast_nullable_to_non_nullable
+          : allowServiceRemoval as bool,
     );
   }
 }
@@ -207,6 +221,7 @@ DeployCmd _$DeployCmdFromJson(Map<String, dynamic> json) => DeployCmd(
   debug: json['debug'] as bool? ?? false,
   dryRun: json['dryRun'] as bool? ?? false,
   dockerCompose: json['dockerCompose'] as bool? ?? false,
+  allowServiceRemoval: json['allowServiceRemoval'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$DeployCmdToJson(DeployCmd instance) => <String, dynamic>{
@@ -221,4 +236,5 @@ Map<String, dynamic> _$DeployCmdToJson(DeployCmd instance) => <String, dynamic>{
   'debug': instance.debug,
   'dryRun': instance.dryRun,
   'dockerCompose': instance.dockerCompose,
+  'allowServiceRemoval': instance.allowServiceRemoval,
 };

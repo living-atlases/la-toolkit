@@ -24,6 +24,7 @@ class DeployCmd extends CommonCmd {
     this.debug = false,
     this.dryRun = false,
     this.dockerCompose = false,
+    this.allowServiceRemoval = false,
   }) : deployServices = deployServices ?? <String>[],
        limitToServers = limitToServers ?? <String>[],
        skipTags = skipTags ?? <String>[],
@@ -60,6 +61,12 @@ class DeployCmd extends CommonCmd {
   @JsonKey(defaultValue: false)
   bool dockerCompose;
 
+  // Docker-compose only: lets la-docker-compose remove the containers of
+  // services no longer placed on a host (allow_service_removal=true), which its
+  // safety gate otherwise refuses.
+  @JsonKey(defaultValue: false)
+  bool allowServiceRemoval;
+
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
@@ -85,7 +92,8 @@ class DeployCmd extends CommonCmd {
           continueEvenIfFails == other.continueEvenIfFails &&
           debug == other.debug &&
           dryRun == other.dryRun &&
-          dockerCompose == other.dockerCompose;
+          dockerCompose == other.dockerCompose &&
+          allowServiceRemoval == other.allowServiceRemoval;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
@@ -100,11 +108,12 @@ class DeployCmd extends CommonCmd {
       continueEvenIfFails.hashCode ^
       debug.hashCode ^
       dryRun.hashCode ^
-      dockerCompose.hashCode;
+      dockerCompose.hashCode ^
+      allowServiceRemoval.hashCode;
 
   @override
   String toString() {
-    return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, skipServices: $skipServices, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun, dockerCompose: $dockerCompose}';
+    return 'DeployCmd{deployServices: $deployServices, limitToServers: $limitToServers, skipTags: $skipTags, tags: $tags, skipServices: $skipServices, advanced: $advanced, onlyProperties: $onlyProperties, continueEvenIfFails: $continueEvenIfFails, debug: $debug, dryRun: $dryRun, dockerCompose: $dockerCompose, allowServiceRemoval: $allowServiceRemoval}';
   }
 
   String get desc {

@@ -251,7 +251,8 @@ PreDeployCmd _$PreDeployCmdFromJson(Map<String, dynamic> json) =>
               .toList() ??
           []
       ..onlyProperties = json['onlyProperties'] as bool? ?? false
-      ..dockerCompose = json['dockerCompose'] as bool? ?? false;
+      ..dockerCompose = json['dockerCompose'] as bool? ?? false
+      ..allowServiceRemoval = json['allowServiceRemoval'] as bool? ?? false;
 
 Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) =>
     <String, dynamic>{
@@ -265,6 +266,7 @@ Map<String, dynamic> _$PreDeployCmdToJson(PreDeployCmd instance) =>
       'debug': instance.debug,
       'dryRun': instance.dryRun,
       'dockerCompose': instance.dockerCompose,
+      'allowServiceRemoval': instance.allowServiceRemoval,
       'addAnsibleUser': instance.addAnsibleUser,
       'addSshKeys': instance.addSshKeys,
       'giveSudo': instance.giveSudo,

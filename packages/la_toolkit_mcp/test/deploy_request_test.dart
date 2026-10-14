@@ -207,6 +207,16 @@ void main() {
       expect(r.desc, contains('docker leg'));
     });
 
+    test('the docker leg keeps allowServiceRemoval', () {
+      // The leg goes through the core DeployCmd: a field it does not know is
+      // dropped there and the deploy stops at the safety gate.
+      final DeployRequest r = build(hybridPortal(), <String, Object?>{
+        'leg': 'docker',
+        'allowServiceRemoval': true,
+      });
+      expect(r.cmd['allowServiceRemoval'], isTrue);
+    });
+
     test('the docker leg refuses a VM in limitToServers', () {
       expect(
         () => build(hybridPortal(), <String, Object?>{
