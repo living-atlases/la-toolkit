@@ -5,6 +5,30 @@ Claude Desktop, or any MCP client) operate an LA Toolkit: list portals, check wh
 deploy needs, create a new docker-compose portal, run a dry run, deploy, follow the run
 and explain why it failed.
 
+## In plain words
+
+Instead of clicking through the toolkit, you ask an assistant in your own words and it
+does the clicking for you, through the same toolkit you already use:
+
+> "Is the gbif-es portal ready to deploy?" / "Update collectory on the production node"
+> / "The last deploy failed, why?" / "Move spatial to the new VM"
+
+The assistant answers with what it found or with a plan: the exact command it would run,
+which servers change, what the toolkit warns about. **Nothing changes until you say yes.**
+Edits to a project are previewed first and saved only after you agree, with a backup
+taken before every save; deploys start as a dry run. Everything it does appears in the
+toolkit's history and screens, as if someone had done it from the browser, and you can
+keep using the UI at the same time.
+
+To use it you need a running LA Toolkit and an MCP-capable assistant such as Claude Code
+or Claude Desktop, on the machine that runs the toolkit (or reaching it over ssh), since
+the toolkit's API has no login of its own; [Setup](#setup) has the one command that
+connects them. The rest of
+this page is the detail for those who want to know exactly what each tool does and how it
+stays safe.
+
+## How it works
+
 It adds no logic of its own to the toolkit. Every tool is a thin composition of the
 backend REST endpoints the Flutter app already calls and of the app's own models and
 lint (`packages/la_toolkit_core`), with the same payloads, so the
