@@ -4,6 +4,7 @@
 library;
 
 import 'package:collection/collection.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service.dart';
@@ -75,6 +76,58 @@ List<ServiceMove> parseChanges(Object? raw) {
       else
         throw const FormatException('Each change is an object.'),
   ];
+}
+
+/// The `stages` argument of la_set_placement: `[{server, stage}]`.
+List<({String server, ClusterStage stage})> parseStages(Object? raw) {
+  if (raw == null) return const <({String server, ClusterStage stage})>[];
+  if (raw is! List) {
+    throw const FormatException('Give stages: [{server, stage}].');
+  }
+  return <({String server, ClusterStage stage})>[
+    for (final Object? m in raw)
+      if (m is Map<String, dynamic>)
+        (
+          server: _name(m, 'server', required: true, what: 'stage')!,
+          stage:
+              _oneOf<ClusterStage>(m, 'stage', ClusterStage.values) ??
+              (throw const FormatException('Each stage needs `stage`.')),
+        )
+      else
+        throw const FormatException('Each stage is an object.'),
+  ];
+}
+
+/// Sets the stage of the compose cluster each server carries. Returns the
+/// ones that changed, as `{server, before, after}`.
+List<Json> applyStages(
+  LAProject p,
+  List<({String server, ClusterStage stage})> stages,
+) {
+  final List<Json> changed = <Json>[];
+  for (final ({String server, ClusterStage stage}) s in stages) {
+    final LAServer? server = p.getServerByName(s.server);
+    final LACluster? cluster = server == null
+        ? null
+        : p.placement.composeClusters.firstWhereOrNull(
+            (LACluster c) => c.serverId == server.id,
+          );
+    if (cluster == null) {
+      throw FormatException(
+        '${s.server} carries no docker-compose cluster: assign docker_compose '
+        'to it first.',
+      );
+    }
+    if (cluster.stage != s.stage) {
+      changed.add(<String, dynamic>{
+        'server': s.server,
+        'before': cluster.stage.name,
+        'after': s.stage.name,
+      });
+      cluster.stage = s.stage;
+    }
+  }
+  return changed;
 }
 
 /// The `add` / `update` / `remove` arguments of la_set_servers. Names are

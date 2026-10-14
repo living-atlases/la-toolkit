@@ -155,6 +155,8 @@ Json projectDetails(ProjectRef ref) {
         )
         .toList(),
     'servicesInUse': servicesInUse(p),
+    if (_composeStages(p, serverNames).isNotEmpty)
+      'composeStages': _composeStages(p, serverNames),
     'placement': <String, dynamic>{
       for (final MapEntry<String, dynamic> e in ss.entries)
         if ((e.value as List<dynamic>).isNotEmpty)
@@ -175,6 +177,18 @@ Json projectDetails(ProjectRef ref) {
         .toList(),
     'recentRuns': runs(p, limit: 5),
   };
+}
+
+/// Stage of each compose host (`{server: production|staging}`), only once a
+/// portal uses stages: without one every host is production.
+Map<String, String> _composeStages(Json p, Map<String, String> serverNames) {
+  final Map<String, String> out = <String, String>{
+    for (final Json c in _list(p, 'clusters'))
+      if (c['type'] == 'dockerCompose' && c['serverId'] != null)
+        serverNames[c['serverId']] ?? c['serverId'] as String:
+            c['stage'] as String? ?? 'production',
+  };
+  return out.containsValue('staging') ? out : <String, String>{};
 }
 
 /// Command history, newest first.

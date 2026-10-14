@@ -2619,7 +2619,8 @@ check results length: ${checkResults.length}''';
       // Only once a stage is in use, so a portal without one generates the same
       // configuration as before.
       if (composeStageByHost.values.contains(ClusterStage.staging)) {
-        final List<String> stageHosts = composeStageByHost.keys.toList()..sort();
+        final List<String> stageHosts = composeStageByHost.keys.toList()
+          ..sort();
         conf['LA_docker_stage_by_host'] = <String, String>{
           for (final String h in stageHosts) h: composeStageByHost[h]!.name,
         };

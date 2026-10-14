@@ -1194,6 +1194,106 @@ void main() {
     );
   });
 
+  group('la_set_placement stages', () {
+    setUp(() => fake.projects.add(placementPortal()));
+
+    Json clusterOn(Json p, String server) {
+      final String sid =
+          ((p['servers'] as List<dynamic>).cast<Json>().firstWhere(
+                (Json s) => s['name'] == server,
+              ))['id']
+              as String;
+      return (p['clusters'] as List<dynamic>).cast<Json>().firstWhere(
+        (Json c) => c['serverId'] == sid,
+      );
+    }
+
+    test('a stage alone needs no changes, and is stored on save', () async {
+      fake.applyUpdates = true;
+      final CallToolResult r = await call('la_set_placement', <String, Object?>{
+        'project': 'Moving',
+        'stages': <Object?>[
+          <String, Object?>{'server': 'dc2', 'stage': 'staging'},
+        ],
+        'save': true,
+        'confirm': true,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['stages'], <Json>[
+        <String, dynamic>{
+          'server': 'dc2',
+          'before': 'production',
+          'after': 'staging',
+        },
+      ]);
+      final Json p = fake.updatedProjects.single;
+      expect(clusterOn(p, 'dc2')['stage'], 'staging');
+      expect(clusterOn(p, 'dc1')['stage'], 'production');
+      expect(
+        (p['genConf'] as Json)['LA_docker_stage_by_host'],
+        <String, String>{'dc1': 'production', 'dc2': 'staging'},
+      );
+
+      final CallToolResult g = await call('la_get_project', <String, Object?>{
+        'project': 'Moving',
+      });
+      expect((json.decode(text(g)) as Json)['composeStages'], <String, dynamic>{
+        'dc1': 'production',
+        'dc2': 'staging',
+      });
+    });
+
+    test('a production host does not resolve what moved to staging', () async {
+      final CallToolResult r = await call('la_set_placement', <String, Object?>{
+        'project': 'Moving',
+        'changes': <Object?>[
+          <String, Object?>{'service': 'spatial', 'to': 'dc2'},
+        ],
+        'stages': <Object?>[
+          <String, Object?>{'server': 'dc2', 'stage': 'staging'},
+        ],
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      final Json dc1 =
+          (out['extraHosts'] as Json)['dc1'] as Json? ?? <String, dynamic>{};
+      expect(
+        dc1.values.where((dynamic v) => (v as Json)['after'] == '10.0.1.3'),
+        isEmpty,
+        reason: 'dc1 is production: nothing on it may point at staging dc2',
+      );
+      expect(fake.updatedProjects, isEmpty);
+    });
+
+    test(
+      'refuses a server without a compose cluster and unknown stages',
+      () async {
+        for (final (Object? stages, String why) in <(Object?, String)>[
+          (
+            <Object?>[
+              <String, Object?>{'server': 'vm1', 'stage': 'staging'},
+            ],
+            'vm1 carries no docker-compose cluster',
+          ),
+          (
+            <Object?>[
+              <String, Object?>{'server': 'dc2', 'stage': 'canary'},
+            ],
+            '`stage` must be "production" or "staging"',
+          ),
+        ]) {
+          final CallToolResult r = await call(
+            'la_set_placement',
+            <String, Object?>{'project': 'Moving', 'stages': stages},
+          );
+          expect(r.isError, isTrue, reason: why);
+          expect(text(r), contains(why));
+        }
+      },
+    );
+  });
+
   group('la_set_servers', () {
     setUp(() => fake.projects.add(placementPortal()));
 

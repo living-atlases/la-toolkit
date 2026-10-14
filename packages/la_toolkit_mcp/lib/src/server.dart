@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dart_mcp/server.dart';
 import 'package:la_toolkit_core/dependencies_manager.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_releases.dart';
 import 'package:la_toolkit_core/models/project_patch.dart' show ProjectPatch;
@@ -400,13 +401,30 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
               required: <String>['service'],
             ),
           ),
+          'stages': Schema.list(
+            description:
+                'Set the stage of the docker-compose cluster a server carries, '
+                'after the changes. "production" (default: real data) or '
+                '"staging" (services still empty or being tried). A '
+                'production host never resolves a name only staging serves, '
+                'and each stage runs its own databases.',
+            items: Schema.object(
+              properties: <String, Schema>{
+                'server': Schema.string(description: 'Compose host name.'),
+                'stage': Schema.string(
+                  description: '"production" or "staging".',
+                ),
+              },
+              required: <String>['server', 'stage'],
+            ),
+          ),
           'save': Schema.bool(description: 'Store it (default false).'),
           'confirm': Schema.bool(
             description:
                 'Required with save: true. Set it only when the user agreed.',
           ),
         },
-        required: <String>['project', 'changes'],
+        required: <String>['project'],
       ),
       openWorld: true,
       _setPlacement,
@@ -1064,8 +1082,12 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
   Future<Object?> _setPlacement(Map<String, Object?> a) async {
     final bool save = _saveArgs(a, 'changes where services run');
     final List<ServiceMove> changes;
+    final List<({String server, ClusterStage stage})> stages;
     try {
-      changes = parseChanges(a['changes']);
+      stages = parseStages(a['stages']);
+      changes = a['changes'] == null && stages.isNotEmpty
+          ? const <ServiceMove>[]
+          : parseChanges(a['changes']);
     } on FormatException catch (e) {
       throw InvalidRequest(e.message);
     }
@@ -1088,18 +1110,27 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     } on PlacementException catch (e) {
       throw InvalidRequest(e.message);
     }
+    // After the moves, so a compose host created by them can be staged too.
+    final List<Json> stageChanges;
+    try {
+      stageChanges = applyStages(p, stages);
+    } on FormatException catch (e) {
+      throw InvalidRequest(e.message);
+    }
     final Json preview = await _previewChange(
       ref,
       before,
       p,
       head: <String, dynamic>{
         'changes': change.moves.map(moveJson).toList(),
+        if (stageChanges.isNotEmpty) 'stages': stageChanges,
         if (change.clustersCreated.isNotEmpty)
           'composeClustersCreatedOn': change.clustersCreated,
         if (change.clustersDeleted.isNotEmpty)
           'composeClustersDeletedOn': change.clustersDeleted,
       },
       touched: <String>[
+        for (final Json st in stageChanges) st['server'] as String,
         for (final MovedService m in change.moves)
           if (m.to != null) m.to!.server.name,
         for (final MovedService m in change.moves)
