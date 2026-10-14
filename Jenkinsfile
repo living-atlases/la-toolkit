@@ -188,9 +188,13 @@ pipeline {
                 expression { params.PUSH && env.RELEASE_TAG && !params.PROMOTE_VERSION }
             }
             steps {
+                // A tar stream, not --output type=local: on this agent the local
+                // exporter dies with "failed to send stat <file>: EOF" (v1.8.1,
+                // builds #14 and #15, a different file each time).
                 sh '''
-                    rm -rf build/demo
-                    docker build --target demo --output type=local,dest=build/demo -f "$DOCKERFILE" .
+                    rm -rf build/demo build/demo.tar && mkdir -p build/demo
+                    docker build --target demo --output type=tar,dest=build/demo.tar -f "$DOCKERFILE" .
+                    tar -x -C build/demo -f build/demo.tar
                     docker/ci/publish-demo.sh build/demo
                 '''
             }
