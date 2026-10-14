@@ -258,6 +258,17 @@ class _ServerServicesHoverCardState extends State<ServerServicesHoverCard> {
               type: type,
               project: widget.project,
               vm: widget.vm,
+              cluster: cluster,
+              // A hub borrows its portal's clusters: their stage is the portal's.
+              onStageChanged: cluster == null || widget.borrowed
+                  ? null
+                  : (ClusterStage stage) {
+                      cluster.stage = stage;
+                      widget.vm.onUpdateProjectLocal(widget.project);
+                      _debouncer.run(
+                        () => widget.vm.onSaveCurrentProject(widget.project),
+                      );
+                    },
               onToggleExpand: () {
                 setState(() {
                   _expanded = !_expanded;
@@ -277,6 +288,8 @@ class ServerServicesViewCard extends StatelessWidget {
     required this.project,
     required this.vm,
     required this.onToggleExpand,
+    this.cluster,
+    this.onStageChanged,
   });
 
   final String id;
@@ -285,6 +298,12 @@ class ServerServicesViewCard extends StatelessWidget {
   final LAProject project;
   final ServersCardListViewModel vm;
   final VoidCallback onToggleExpand;
+
+  /// The compose cluster this card shows, if it is one.
+  final LACluster? cluster;
+
+  /// Switches the cluster between production and staging; null hides it.
+  final ValueChanged<ClusterStage>? onStageChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -333,6 +352,14 @@ class ServerServicesViewCard extends StatelessWidget {
                             )
                           : Text(name),
                     ),
+                    if (cluster != null &&
+                        cluster!.type == DeploymentType.dockerCompose &&
+                        onStageChanged != null)
+                      _StageChip(
+                        key: ValueKey<String>('${name}stage-chip'),
+                        stage: cluster!.stage,
+                        onChanged: onStageChanged!,
+                      ),
                   ],
                 ),
                 subtitle: Text(
@@ -348,6 +375,37 @@ class ServerServicesViewCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Production (real data) or staging (services still empty or being tried) of
+/// a compose cluster. A tap switches it.
+class _StageChip extends StatelessWidget {
+  const _StageChip({super.key, required this.stage, required this.onChanged});
+
+  final ClusterStage stage;
+  final ValueChanged<ClusterStage> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool staging = stage == ClusterStage.staging;
+    return Tooltip(
+      message:
+          'Production: real data. Staging: services still empty or being '
+          'tried; production hosts never resolve its names and it runs its '
+          'own databases. Tap to switch, then deploy.',
+      child: ActionChip(
+        visualDensity: VisualDensity.compact,
+        backgroundColor: staging ? Colors.orange.shade100 : null,
+        label: Text(
+          staging ? 'Staging' : 'Production',
+          style: const TextStyle(fontSize: 11),
+        ),
+        onPressed: () => onChanged(
+          staging ? ClusterStage.production : ClusterStage.staging,
         ),
       ),
     );

@@ -132,6 +132,31 @@ void main() {
     expect(find.byTooltip('Delete this'), findsOneWidget);
   });
 
+  testWidgets('the portal switches its cluster between production and staging',
+      (WidgetTester tester) async {
+    final LAProject portal = composePortal();
+    await pumpList(tester, portal);
+
+    final LACluster cluster = portal.placement.composeClusters.single;
+    expect(find.text('Production'), findsOneWidget);
+    await tester.tap(find.text('Production'));
+    await tester.pump();
+    expect(cluster.stage, ClusterStage.staging);
+    expect(find.text('Staging'), findsOneWidget);
+    // Let the debounced save run out before the test ends.
+    await tester.pump(const Duration(seconds: 3));
+  });
+
+  testWidgets('a hub cannot change the stage of the portal cluster', (
+    WidgetTester tester,
+  ) async {
+    final LAProject hub = hubWithOwnVm(composePortal());
+    await pumpList(tester, hub);
+
+    expect(find.text('Production'), findsNothing);
+    expect(find.text('Staging'), findsNothing);
+  });
+
   testWidgets('a hub of a VM portal sees only its own machines', (
     WidgetTester tester,
   ) async {
