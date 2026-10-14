@@ -11,13 +11,59 @@ docs/release-notes/ instead.
 
 ## Unreleased
 
-### Commits (1)
+### Commits (0)
+
+None.
+
+### Backend commits (0)
+
+None.
+
+<a name="v1.8.1"></a>
+
+## v1.8.1 - 2026-10-14
+
+A docker-compose cluster can now be marked **production** or **staging**, so a portal can move services from VMs to docker one at a time without its production hosts reaching services that are still empty or being tried.
+
+### Production and staging compose clusters
+
+Each docker-compose cluster card has a **Production** / **Staging** chip. Clusters are production unless you change it, so existing projects deploy exactly as before.
+
+- **A production host never resolves a name that only staging serves.** Its `extra_hosts` skip the staging hosts: the name falls back to the VM that serves it, or to public DNS. Before, every compose host resolved every name served anywhere in the compose stack, so a production service could read data from a staging one without any error.
+- **Each stage runs its own databases.** Production and staging hosts each get their own mysql, postgres and mongo instead of sharing one owner for the whole stack. This needs generator-living-atlas 1.9.14 or later (it writes `docker_stage` for each compose host) and la-docker-compose 1.11.5 or later (it picks one datastore owner per stage). With older releases the stage still changes `extra_hosts`, but the datastores stay shared.
+- **The lint warns** about services that run only on staging hosts: production hosts and the public DNS do not reach them.
+- **MCP:** `la_set_placement` takes `stages` (`[{server, stage}]`) and shows the change in its preview, including the `extra_hosts` it moves; `la_get_project` reports `composeStages` when a project has a staging cluster.
+
+Nothing to do when upgrading: a project without staging clusters generates the same configuration as with 1.8.0.
+
+### Commits since v1.8.0 (9)
+
+#### Features
+
+- **ui**: production/staging chip on the compose cluster card ([b126a6a](https://github.com/living-atlases/la-toolkit/commit/b126a6a879eb88d890a933fad2face121926cc0a))
+- **lint**: report services that run only on staging compose hosts ([4d71069](https://github.com/living-atlases/la-toolkit/commit/4d7106967bd5502980023d6f3111ab4dac9a0f14))
+- **mcp**: stages in la_set_placement and la_get_project ([014f3fe](https://github.com/living-atlases/la-toolkit/commit/014f3fe2eeddcca4f1b84b9e416bb886c9108b41))
+- **core**: production compose hosts never resolve names only staging serves ([02a83b6](https://github.com/living-atlases/la-toolkit/commit/02a83b6551bb25c212281660b64f4a0e0070a1a3))
+
+#### Tests and CI
+
+- release builds publish the demo at toolkit-demo.l-a.site ([2b8c89e](https://github.com/living-atlases/la-toolkit/commit/2b8c89e3e93910ea5660acc51cff1817f9ddc415))
 
 #### Documentation
 
+- **release**: the release build also publishes the demo ([eaa1247](https://github.com/living-atlases/la-toolkit/commit/eaa12477188b79b754e78f9915df3e0b8fb33d4e))
+- :latest is 1.8.0; ci: PROMOTE_VERSION moves it without rebuilding ([aa95950](https://github.com/living-atlases/la-toolkit/commit/aa95950a7cdea235766ab88972e3b3f1851e5f8a))
 - **changelog**: v1.8.0 ([5ebbc7e](https://github.com/living-atlases/la-toolkit/commit/5ebbc7e9ea7b4959861ef7ac96f15f894fbb980b))
 
-### Backend commits (2)
+#### Maintenance
+
+- **release**: 1.8.1 ([9471f1c](https://github.com/living-atlases/la-toolkit/commit/9471f1c406a83480c208d1cda9776378935f81c4))
+
+### Backend commits (4)
+
+#### Features
+
+- **cluster**: production/staging stage on compose clusters ([bb956cb](https://github.com/living-atlases/la-toolkit-backend/commit/bb956cb65ca44aacd7e89e328e065b36574b5549))
 
 #### Tests and CI
 
@@ -25,6 +71,7 @@ docs/release-notes/ instead.
 
 #### Maintenance
 
+- **release**: 1.8.1 ([781694f](https://github.com/living-atlases/la-toolkit-backend/commit/781694f4d4eefd16e9e6a68d9750ee9900f69856))
 - **release**: 1.8.0 ([f1c3728](https://github.com/living-atlases/la-toolkit-backend/commit/f1c3728e38488bcf42b4d7ecbd40c88ba1520467))
 
 <a name="v1.8.0"></a>
