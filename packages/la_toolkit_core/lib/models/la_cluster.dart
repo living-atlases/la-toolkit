@@ -7,6 +7,14 @@ import 'is_json_serializable.dart';
 
 part 'la_cluster.g.dart';
 
+/// Whether a docker-compose cluster already serves production traffic.
+///
+/// A hybrid portal migrates service by service, so for a while it has compose
+/// hosts with real data (production) next to compose hosts whose services are
+/// still empty or being tried (staging). A production host must never resolve a
+/// name only staging serves: it keeps reaching the VM that still holds the data.
+enum ClusterStage { production, staging }
+
 @JsonSerializable(explicitToJson: true)
 @CopyWith()
 class LACluster implements IsJsonSerializable<LACluster> {
@@ -16,6 +24,7 @@ class LACluster implements IsJsonSerializable<LACluster> {
     this.type = DeploymentType.dockerSwarm,
     required this.projectId,
     this.serverId,
+    this.stage = ClusterStage.production,
   }) : id = id ?? ObjectId().toString();
 
   factory LACluster.fromJson(Map<String, dynamic> json) =>
@@ -27,6 +36,8 @@ class LACluster implements IsJsonSerializable<LACluster> {
 
   // Facts
   DeploymentType type;
+  @JsonKey(unknownEnumValue: ClusterStage.production)
+  ClusterStage stage;
 
   // Relations
   String projectId;
@@ -45,7 +56,8 @@ class LACluster implements IsJsonSerializable<LACluster> {
           id == other.id &&
           type == other.type &&
           projectId == other.projectId &&
-          serverId == other.serverId;
+          serverId == other.serverId &&
+          stage == other.stage;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
@@ -54,7 +66,8 @@ class LACluster implements IsJsonSerializable<LACluster> {
       id.hashCode ^
       type.hashCode ^
       projectId.hashCode ^
-      serverId.hashCode;
+      serverId.hashCode ^
+      stage.hashCode;
 
   @override
   String toString() {

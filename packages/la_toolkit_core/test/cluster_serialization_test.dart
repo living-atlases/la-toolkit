@@ -93,6 +93,31 @@ void main() {
       expect(cluster.type, equals(DeploymentType.dockerCompose));
     });
 
+    test('LACluster stage defaults to production and round-trips', () {
+      // Rows stored before stages existed carry no `stage`: they are production.
+      final LACluster legacy = LACluster.fromJson(<String, dynamic>{
+        'id': 'c1',
+        'name': 'Docker Compose on n1',
+        'type': 'dockerCompose',
+        'projectId': 'p1',
+        'serverId': 's1',
+      });
+      expect(legacy.stage, ClusterStage.production);
+      // An unknown value from a newer client does not break an older one.
+      expect(
+        LACluster.fromJson(<String, dynamic>{
+          ...legacy.toJson(),
+          'stage': 'canary',
+        }).stage,
+        ClusterStage.production,
+      );
+
+      legacy.stage = ClusterStage.staging;
+      final Map<String, dynamic> json = legacy.toJson();
+      expect(json['stage'], 'staging');
+      expect(LACluster.fromJson(json), legacy);
+    });
+
     test('LACluster round-trip serialization preserves serverId', () {
       const String serverId = 'server_id_xyz';
       final LACluster originalCluster = LACluster(

@@ -720,6 +720,97 @@ void main() {
       },
     );
 
+    test(
+      'Test Case 10d: a production compose host never resolves a name only staging serves',
+      () {
+        // gbif.es: the production spatial host resolved colecciones and listas to the
+        // docker copies on the staging nodes, still empty, instead of the VMs holding
+        // the data. Staging may see production; production never sees staging.
+        final LAProject project = LAProject(
+          longName: 'Stages',
+          shortName: 'stagetest',
+          domain: 'stagetest.org',
+          alaInstallRelease: '1.0.0',
+          generatorRelease: '1.0.0',
+        );
+        final LAServer vm = LAServer(
+          id: 'sVm',
+          name: 'colecciones-vm',
+          ip: '10.0.0.154',
+          projectId: project.id,
+        );
+        final LAServer prod = LAServer(
+          id: 'sProd',
+          name: 'espacial',
+          ip: '10.0.0.135',
+          projectId: project.id,
+        );
+        final LAServer staging = LAServer(
+          id: 'sStaging',
+          name: 'docker-staging',
+          ip: '10.0.0.207',
+          projectId: project.id,
+        );
+        project.upsertServer(vm);
+        project.upsertServer(prod);
+        project.upsertServer(staging);
+
+        project.serviceInUse('collectory', true);
+        project.serviceInUse('spatial', true);
+        project.serviceInUse('docker_compose', true);
+        project.assign(vm, <String>['collectory']);
+        project.assignByType(prod.id, DeploymentType.dockerCompose, <String>[
+          'spatial',
+          'docker_compose',
+        ]);
+        project.assignByType(staging.id, DeploymentType.dockerCompose, <String>[
+          'collectory',
+          'docker_compose',
+        ]);
+
+        String urlOf(String service) =>
+            project.getService(service).url(project.domain).split(' ').first;
+        final String collections = urlOf('collectory');
+        final String spatial = urlOf('spatial');
+        List<String> extraOf(Map<String, dynamic> json, String host) =>
+            (json['LA_docker_extra_hosts_by_host']
+                    as Map<String, dynamic>)[host]
+                as List<String>;
+
+        // Without stages the stack wins, as before: the VM is shadowed.
+        final Map<String, dynamic> before = project.toGeneratorJson();
+        expect(
+          extraOf(before, 'espacial')
+              .where((String e) => e.startsWith('$collections:'))
+              .toList(),
+          <String>['$collections:10.0.0.207'],
+        );
+        expect(before.containsKey('LA_docker_stage_by_host'), isFalse);
+
+        project.placement.composeClusters
+                .firstWhere((LACluster c) => c.serverId == staging.id)
+                .stage =
+            ClusterStage.staging;
+        final Map<String, dynamic> json = project.toGeneratorJson();
+
+        expect(
+          extraOf(json, 'espacial')
+              .where((String e) => e.startsWith('$collections:'))
+              .toList(),
+          <String>['$collections:10.0.0.154'],
+          reason: 'production reaches the VM that holds the data, not staging',
+        );
+        // The staging host stays reachable by its own name.
+        expect(extraOf(json, 'espacial'), contains('docker-staging:10.0.0.207'));
+        // Staging still sees production.
+        expect(extraOf(json, 'docker-staging'), contains('$spatial:10.0.0.135'));
+        expect(json['LA_docker_stage_by_host'], <String, String>{
+          'docker-staging': 'staging',
+          'espacial': 'production',
+        });
+      },
+    );
+
     test('Test Case 11: Nginx Fast Mode Logic', () {
       final LAProject project = LAProject(
         longName: 'Fast Mode Test',

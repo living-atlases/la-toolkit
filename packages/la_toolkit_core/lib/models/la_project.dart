@@ -2472,6 +2472,17 @@ check results length: ${checkResults.length}''';
       final LAProject proj = isHub ? parent! : this;
       final List<LAProject> projects = <LAProject>[proj, ...proj.hubs];
 
+      // Stage of each compose host, by server name. A hub places its services on
+      // its portal's compose hosts, so the portal's placement answers for both.
+      final Map<String, ClusterStage> composeStageByHost =
+          <String, ClusterStage>{};
+      for (final LACluster c in proj.placement.composeClusters) {
+        final LAServer? carrier = proj.placement.carrierOf(c);
+        if (carrier != null) {
+          composeStageByHost[carrier.name] = c.stage;
+        }
+      }
+
       for (final LAServer server in servers) {
         final bool isCompose = clusters.any(
           (LACluster c) =>
@@ -2500,9 +2511,24 @@ check results length: ${checkResults.length}''';
           // so with the VM listed too the container lands wherever the sort puts it.
           // On gbif.es datos-sensibles.gbif.es runs in docker only on node 3, and
           // nodes 1 and 2 sent it to one of six VMs still carrying the old SDS.
+          //
+          // Stages split the stack. A production host must never reach a name only
+          // staging serves: staging holds services still empty or being tried, and
+          // the data stays on the VM until the cutover. On gbif.es the production
+          // spatial host resolved colecciones and listas to empty docker copies.
+          // Staging sees everything, as before, so it can be tried against prod.
+          final bool productionHost =
+              (composeStageByHost[server.name] ?? ClusterStage.production) ==
+              ClusterStage.production;
+          bool hiddenStage(ClusterStage stage) =>
+              productionHost && stage == ClusterStage.staging;
           final Set<String> servedByStack = <String>{
-            for (final dynamic names in nginxDockerInternalAliasesByHost.values)
-              ...(names as List<String>),
+            for (final MapEntry<String, dynamic> e
+                in nginxDockerInternalAliasesByHost.entries)
+              if (!hiddenStage(
+                composeStageByHost[e.key] ?? ClusterStage.production,
+              ))
+                ...(e.value as List<String>),
           };
           final Set<String> extraHosts = <String>{};
           for (final LAProject current in projects) {
@@ -2553,6 +2579,9 @@ check results length: ${checkResults.length}''';
                   .where((LACluster c) => c.serverId == otherServer.id)
                   .toList();
               for (final LACluster cluster in otherClusters) {
+                if (hiddenStage(cluster.stage)) {
+                  continue;
+                }
                 addUrlsForServices(
                   current.getServerServicesFull(
                     id: cluster.id,
@@ -2586,6 +2615,14 @@ check results length: ${checkResults.length}''';
           sortedExtraHosts[key] = dockerExtraHostsByHost[key];
         }
         conf['LA_docker_extra_hosts_by_host'] = sortedExtraHosts;
+      }
+      // Only once a stage is in use, so a portal without one generates the same
+      // configuration as before.
+      if (composeStageByHost.values.contains(ClusterStage.staging)) {
+        final List<String> stageHosts = composeStageByHost.keys.toList()..sort();
+        conf['LA_docker_stage_by_host'] = <String, String>{
+          for (final String h in stageHosts) h: composeStageByHost[h]!.name,
+        };
       }
     }
 
@@ -2785,6 +2822,7 @@ check results length: ${checkResults.length}''';
         'LA_docker_swarm_hostname',
         'LA_nginx_docker_internal_aliases_by_host',
         'LA_docker_extra_hosts_by_host',
+        'LA_docker_stage_by_host',
         'LA_localhost_mode',
       ]) {
         if (parentConf.containsKey(key)) {
