@@ -185,6 +185,13 @@ DeployRequest buildDeployRequest(
       'list the services to deploy in `services` instead.',
     );
   }
+  final bool allowServiceRemoval = _flag(args, 'allowServiceRemoval');
+  if (allowServiceRemoval && !dockerCompose) {
+    throw InvalidRequest(
+      '`allowServiceRemoval` only applies to docker-compose deploys: it lifts '
+      "la-docker-compose's safety gate for a host that lost services.",
+    );
+  }
   if (dockerCompose && !(services.length == 1 && services.first == 'all')) {
     throw InvalidRequest(
       'Docker-compose deploys are monolithic (site.yml over the whole stack). '
@@ -251,6 +258,7 @@ DeployRequest buildDeployRequest(
     'advanced': true,
     'onlyProperties': _flag(args, 'onlyProperties'),
     'continueEvenIfFails': _flag(args, 'continueEvenIfFails'),
+    'allowServiceRemoval': allowServiceRemoval,
     'debug': _flag(args, 'debug'),
     'dryRun': dryRun,
     'dockerCompose': dockerCompose,

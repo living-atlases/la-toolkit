@@ -550,6 +550,14 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
             description: 'Only regenerate service configuration.',
           ),
           'continueEvenIfFails': Schema.bool(),
+          'allowServiceRemoval': Schema.bool(
+            description:
+                'Docker-compose deploys: let la-docker-compose stop and remove '
+                'the containers of services no longer placed on the host '
+                '(allow_service_removal=true). Without it, a host that lost '
+                'services stops at the safety gate. Only after la_set_placement '
+                'moved them off and the user agreed to remove them.',
+          ),
           'debug': Schema.bool(description: 'Verbose ansible output.'),
           'prepare': Schema.bool(
             description:
@@ -1412,8 +1420,8 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         if (removesComposeServices)
           'A compose host that loses services stops its next deploy at '
               "la-docker-compose's safety gate (validate-service-consistency) "
-              'until it is run with -e allow_service_removal=true, which '
-              'la_deploy does not pass: until then the old containers keep '
+              'until it is run with allow_service_removal=true (la_deploy '
+              'allowServiceRemoval: true): until then the old containers keep '
               'running there.',
       ],
       'saved': false,

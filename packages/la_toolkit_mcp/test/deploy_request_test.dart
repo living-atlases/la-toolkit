@@ -96,6 +96,19 @@ void main() {
       expect(r.cmd['tags'], <String>['nginx']);
     });
 
+    test('passes allowServiceRemoval only when asked', () {
+      expect(
+        build(project(), <String, Object?>{}).cmd['allowServiceRemoval'],
+        isFalse,
+      );
+      expect(
+        build(project(), <String, Object?>{
+          'allowServiceRemoval': true,
+        }).cmd['allowServiceRemoval'],
+        isTrue,
+      );
+    });
+
     test('refuses a service allow-list', () {
       expect(
         () => build(project(), <String, Object?>{
@@ -139,6 +152,18 @@ void main() {
         throwsA(isA<InvalidRequest>()),
       );
     });
+
+    test(
+      'rejects allowServiceRemoval: only la-docker-compose has the gate',
+      () {
+        expect(
+          () => build(project(compose: false, vm: true), <String, Object?>{
+            'allowServiceRemoval': true,
+          }),
+          throwsA(isA<InvalidRequest>()),
+        );
+      },
+    );
   });
 
   group('hybrid', () {
