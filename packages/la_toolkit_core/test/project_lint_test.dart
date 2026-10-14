@@ -1,5 +1,8 @@
 import 'package:la_toolkit_core/lint/project_lint.dart';
+import 'package:la_toolkit_core/models/deployment_type.dart';
+import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
+import 'package:la_toolkit_core/models/la_project_status.dart';
 import 'package:la_toolkit_core/models/la_server.dart';
 import 'package:la_toolkit_core/models/la_service_constants.dart';
 import 'package:test/test.dart';
@@ -41,6 +44,51 @@ void main() {
         found.where((String m) => m.contains('vm1 is a Docker Compose host')),
         hasLength(1),
       );
+    });
+
+    test('a service only on staging compose hosts is reported', () {
+      final LAProject p = LAProject(domain: 'example.org');
+      final LAServer prod = LAServer(
+        id: 'prod',
+        name: 'prod',
+        ip: '10.0.0.1',
+        projectId: p.id,
+      );
+      final LAServer staging = LAServer(
+        id: 'staging',
+        name: 'staging',
+        ip: '10.0.0.2',
+        projectId: p.id,
+      );
+      p.upsertServer(prod);
+      p.upsertServer(staging);
+      p.serviceInUse(dockerCompose, true);
+      p.serviceInUse(collectory, true);
+      p.serviceInUse(alaHub, true);
+      p.assign(prod, <String>[dockerCompose]);
+      p.assign(staging, <String>[dockerCompose]);
+      p.assignByType(prod.id, DeploymentType.dockerCompose, <String>[alaHub]);
+      p.assignByType(staging.id, DeploymentType.dockerCompose, <String>[
+        collectory,
+        alaHub,
+      ]);
+      p.status = LAProjectStatus.basicDefined;
+      String? finding() => messages(lintProject(p, hasSshKeys: true))
+          .where((String m) => m.contains('only on staging'))
+          .firstOrNull;
+
+      // Without stages everything is production.
+      expect(p.servicesOnlyInStaging(), isEmpty);
+      expect(finding(), isNull);
+
+      p.placement.composeClusters
+              .firstWhere((LACluster c) => c.serverId == staging.id)
+              .stage =
+          ClusterStage.staging;
+      // ala_hub also runs on production: only collectory is staging-only.
+      expect(p.servicesOnlyInStaging(), <String>[collectory]);
+      expect(finding(), contains('collect'));
+      expect(finding(), isNot(contains('records')));
     });
 
     test('pipelines without solrcloud', () {

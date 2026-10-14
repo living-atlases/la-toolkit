@@ -791,6 +791,35 @@ class LAProject implements IsJsonSerializable<LAProject> {
         .toList();
   }
 
+  /// Services in use that run only on staging compose hosts: no VM and no
+  /// production cluster has them, so production hosts (and the public DNS,
+  /// which points at production) do not reach them. Expected while a service
+  /// is tried before its cutover; worth knowing before relying on it.
+  List<String> servicesOnlyInStaging() {
+    final List<String> result = <String>[];
+    for (final String name in getServicesNameListInUse()) {
+      final LAServiceDesc desc = LAServiceDesc.get(name);
+      if (name == dockerCompose || desc.isSubService) {
+        continue;
+      }
+      final List<LAServiceDeploy> deploys = getServiceDeploysForSomeService(
+        name,
+      );
+      if (deploys.isEmpty) {
+        continue;
+      }
+      final bool onlyStaging = deploys.every(
+        (LAServiceDeploy sd) =>
+            sd.clusterId != null &&
+            placement.clusterById(sd.clusterId)?.stage == ClusterStage.staging,
+      );
+      if (onlyStaging) {
+        result.add(name);
+      }
+    }
+    return result;
+  }
+
   List<LAServer> serversWithServices() {
     return servers.where((LAServer s) {
       final bool hasServerServices =

@@ -205,6 +205,15 @@ List<LintFinding> lintProject(LAProject project, {required bool hasSshKeys}) {
       const LintFinding('All servers should have configured their SSH keys'),
     for (final String warning in project.getDockerComposeVMWarnings())
       LintFinding(warning),
+    if (basicDefined && project.servicesOnlyInStaging().isNotEmpty)
+      LintFinding(
+        'These services run only on staging compose hosts, so production '
+        'hosts and the public DNS do not reach them: '
+        '${project.servicesOnlyInStaging().map((String s) => LAServiceDesc.get(s).name).join(', ')}. '
+        'Fine while they are being tried; move them to a production host, or '
+        'keep them on a VM, before relying on them.',
+        fix: LintFix.editProject,
+      ),
     if (!project.servicesInDifferentServers(collectory, alaHub) &&
         !project.hasAnyServerWithDockerCompose())
       const LintFinding(
