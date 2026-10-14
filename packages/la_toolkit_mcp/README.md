@@ -16,17 +16,18 @@ shows up in the project history like any other.
 | Tool | What it does | Changes anything? |
 |---|---|---|
 | `la_list_projects` | Portals and hubs, with their deploy mode (docker-compose / vm / hybrid) | no |
-| `la_get_project` | Servers, releases, which services run where, recent runs | no |
+| `la_get_project` | Servers, releases, which services run where, the stage of each compose cluster, recent runs | no |
 | `la_lint_project` | The warnings of the UI lint panel: placement, cluster sizes, services that need each other, releases the dependency matrix rejects. Never `clean` when the matrix could not be read | no |
 | `la_create_project` | A new docker-compose portal on 1-3 hosts from domain, names, hosts and ssh key, built on a la-docker-compose topology its CI checks (`1host`, `2host`, `default-3host` by host count, or the one named). Previews by default (validation, lint, public names, the `skipServices` to deploy with); `save` + `confirm` store it | only with `save` + `confirm`: adds the project to the toolkit, touches no server |
 | `la_set_releases` | Change the generator / la-docker-compose (tag or `upstream`) / ala-install releases a portal pins. Previews by default (before/after, generator configuration keys that change, hubs kept, lint); `save` + `confirm` back the project up (see Setup for where) and store it | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_set_servers` | Add, change (ip, ssh user/port/key, aliases, gateways) or remove the servers of a project, as the servers page does. `remove` only takes servers that run nothing (an empty compose cluster goes with its server). Previews by default (servers, name clashes with other projects, missing ssh keys, what an IP change moves, integrity, lint delta, deploy notes); `save` + `confirm` back the project up and store it | only with `save` + `confirm`: the project in the toolkit, no server |
-| `la_set_placement` | Change where services run with an ordered list of `move` / `assign` / `unassign`, as the servers page does. `docker_compose` assigned to a server makes it a compose host; unassigned, it deletes the empty cluster. A sub-service goes with its parent (`spatial` takes `spatial_service` and `geoserver`) and a move keeps the versions. Previews by default (changes, servers that gain and lose services, public names and `extra_hosts` that change host, generator keys, new integrity errors, lint delta, deploy notes); `save` + `confirm` back the project up and store it | only with `save` + `confirm`: the project in the toolkit, no server |
+| `la_set_placement` | Change where services run with an ordered list of `move` / `assign` / `unassign`, as the servers page does. `docker_compose` assigned to a server makes it a compose host; unassigned, it deletes the empty cluster. A sub-service goes with its parent (`spatial` takes `spatial_service` and `geoserver`) and a move keeps the versions. `stages` sets a compose cluster to `production` or `staging`. Previews by default (changes, servers that gain and lose services, public names and `extra_hosts` that change host, generator keys, new integrity errors, lint delta, deploy notes); `save` + `confirm` back the project up and store it | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_restore_backup` | Put a project back as one of the backups taken before every save. Without `backup`, lists them (newest first, servers, row counts); with it, previews the rows it brings back, drops and changes per servers / clusters / services / deploy rows / variables, the generator keys, and the later backups it undoes; `save` + `confirm` back the current project up and store the backup through `update-project` | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_list_runs` | Command history, newest first | no |
 | `la_check_connectivity` | ping, ssh, sudo and OS of every server | read-only ssh on the servers; saves the results on the project, like the UI |
 | `la_check_preconditions` | Blockers before a deploy, for the servers that carry services (or only `servers`, or one `leg` of a hybrid portal): ssh key in the toolkit, ssh and sudo, Ubuntu >= 22.04, disk space (`/`, `/data`, `/var/lib/docker`), portal host names resolve | read-only ssh; saves connectivity results like the UI |
 | `la_deploy` | Dry run (default) or real deploy; a hybrid portal needs `leg: "docker"` or `leg: "vm"` | see below |
+| `la_fast_deploy` | Redeploy of a pure docker-compose portal without Ansible: la-docker-compose renders each server's config once (cached while inventories, versions and branding do not change) and applies it to every server in parallel. The whole portal, no tags, limits or dry run; the first deploy, a new service or a rotated password still need `la_deploy` | yes; needs `confirm: true` |
 | `la_deploy_status` | running / success / failed / aborted / cancelled, per-host recap, current task | no |
 | `la_deploy_failures` | Failed tasks with their error, never the full log | no |
 | `la_deploy_cancel` | Stops a running deploy; needs `confirm: true` | yes |
@@ -58,6 +59,11 @@ shows up in the project history like any other.
   server is refused, since on a hybrid portal the VMs are the ones serving. The limit is
   sent as the inventory aliases `site.yml` plays (`<server>.docker_compose`): a bare server
   name matches no host, and ansible then skips everything with exit 0.
+- **Removing services is opt-in.** A compose host that lost services (moved off with
+  `la_set_placement`) stops at la-docker-compose's safety gate until the deploy carries
+  `allowServiceRemoval: true` (`allow_service_removal=true`), which stops and removes their
+  containers. Only for docker-compose deploys: a VM deploy with it is refused. The docker
+  leg of a hybrid portal keeps it, since `DeployCmd` in the core carries the field.
 - A run in which no host matched (`skipping: no hosts matched`, no task run) is reported
   as `failed` with a hint, never as a success.
 - The ttyd viewer the backend starts for every run is closed right away. The deploy is
@@ -141,6 +147,11 @@ repeated with `save: true, confirm: true` once the user agrees):
   the cluster, and is refused while anything, of the portal or of a hub, runs on it. A
   hub moves between the portal's clusters or onto its own VMs, and never creates or
   deletes a cluster.
+- `stages`, applied after the changes (so a compose host they create can be staged too),
+  sets the stage of the cluster a server carries: `production` (the default, real data)
+  or `staging` (services still empty or being tried). A production host never resolves a
+  name only staging serves, and each stage runs its own databases. The preview lists the
+  stage changes with the rest.
 - How: `changePlacement()` in `la_toolkit_core`, the UI's own `unAssignByType` /
   `assignByType` / `deleteCluster` calls, with the eligibility the servers page applies
   to the chips it offers (docker support, services that allow a single deploy). The one
@@ -247,8 +258,8 @@ default `~/.cache/la_toolkit_mcp/backups`).
 ### Permissions in Claude Code (auto mode)
 
 Every tool declares MCP annotations (`readOnlyHint` on the ones marked "no" in the
-table above, `destructiveHint` on `la_set_servers`, `la_restore_backup`, `la_deploy` and
-`la_deploy_cancel`), but Claude Code's
+table above, `destructiveHint` on `la_set_servers`, `la_restore_backup`, `la_deploy`,
+`la_fast_deploy` and `la_deploy_cancel`), but Claude Code's
 auto-mode classifier judges a call by the conversation, not by those hints. Once a real
 deploy is running against hosts with production-looking names, it can block even
 `la_deploy_status` or `la_deploy_failures` as "Production Deploy", and the agent is left
@@ -272,7 +283,7 @@ Permission allow rules skip the classifier. Allow the tools that only read, in
 }
 ```
 
-Leave `la_deploy`, `la_deploy_cancel`, `la_set_*`, `la_create_project` and
+Leave `la_deploy`, `la_fast_deploy`, `la_deploy_cancel`, `la_set_*`, `la_create_project` and
 `la_restore_backup` out, so each of them still asks. The check tools
 (`la_check_connectivity`, `la_check_preconditions`) run ssh on the servers and save
 results on the project; allow them only if that is fine for you. The prefix is
