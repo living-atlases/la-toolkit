@@ -13,6 +13,10 @@ nextgen-compat:
     from: '> 5.2.4'
     last-safe: '5.2.4'
     reason: bootstrap5-branding
+  collectory:
+    from: '> 6.2.2'
+    last-safe: '6.0.0'
+    reason: bootstrap5-branding
 ''';
 
 void main() {
@@ -39,6 +43,12 @@ void main() {
         DependenciesManager.verifyNextgen(<String, String>{alerts: '5.3.2'}),
         hasLength(1),
       );
+      expect(
+        DependenciesManager.verifyNextgen(<String, String>{
+          collectory: '6.3.0',
+        }),
+        hasLength(1),
+      );
     });
 
     test('does not warn on last-safe or older versions', () {
@@ -48,6 +58,12 @@ void main() {
       );
       expect(
         DependenciesManager.verifyNextgen(<String, String>{alerts: '5.2.4'}),
+        isEmpty,
+      );
+      expect(
+        DependenciesManager.verifyNextgen(<String, String>{
+          collectory: '6.0.0',
+        }),
         isEmpty,
       );
     });
@@ -70,19 +86,47 @@ void main() {
 
     test('ignores services without an entry', () {
       expect(
-        DependenciesManager.verifyNextgen(<String, String>{
-          collectory: '5.1.1',
-        }),
+        DependenciesManager.verifyNextgen(<String, String>{images: '1.1.7'}),
         isEmpty,
       );
     });
 
-    test('message mentions the app and the last-safe version', () {
+    test('bootstrap5 message asks for a Bootstrap 5 branding', () {
       final List<String> warnings = DependenciesManager.verifyNextgen(
         <String, String>{logger: '4.7.0'},
       );
+      expect(warnings.single, contains('4.7.0'));
+      expect(warnings.single, contains('Bootstrap 5'));
+      expect(warnings.single, contains('.mustache'));
       expect(warnings.single, contains('4.5.0'));
-      expect(warnings.single, contains('theme'));
+      expect(warnings.single, isNot(contains('not support')));
+      expect(warnings.single, isNot(contains('{last}')));
+    });
+
+    test('other reasons keep the last-safe suggestion', () {
+      DependenciesManager.setNextgenCompat('''
+nextgen-compat:
+  sds:
+    from: '< 1.6.4'
+    last-safe: '1.7.1'
+    reason: no-community-image
+  doi:
+    from: '< 3.0.2'
+    last-safe: '4.1.0'
+    reason: some-future-reason
+''');
+      expect(
+        DependenciesManager.verifyNextgen(<String, String>{
+          sds: '1.6.3',
+        }).single,
+        allOf(contains('container image'), contains('use 1.7.1 for now')),
+      );
+      expect(
+        DependenciesManager.verifyNextgen(<String, String>{
+          doi: '2.0.0',
+        }).single,
+        allOf(contains('not supported'), contains('use 4.1.0 for now')),
+      );
     });
   });
 

@@ -214,11 +214,15 @@ class DependenciesManager {
     }
   }
 
-  // reason key (from nextgen-compat.yaml) -> human explanation
+  // reason key (from nextgen-compat.yaml) -> human explanation; `{last}` is
+  // replaced by the entry's last-safe version
   static const Map<String, String> _nextgenReasonText = <String, String>{
     'bootstrap5-branding':
-        'uses a new theme that the community branding does not support yet',
-    'no-community-image': 'has no published community container image',
+        'needs a branding with a Bootstrap 5 build (header, footer, assets and '
+        'banner .mustache templates); with a Bootstrap 3 only branding use '
+        '{last}.',
+    'no-community-image':
+        'has no published community container image — use {last} for now.',
   };
 
   static void setNextgenCompat(String yamlStr, [bool debug = false]) {
@@ -281,11 +285,11 @@ class DependenciesManager {
         if (entry.from.allows(versionP)) {
           final String human = LAServiceDesc.swNameWithAliasForHumans(sw);
           final String reasonText =
-              _nextgenReasonText[entry.reason] ??
-              'is not supported by the community stack yet';
-          lintErrors.add(
-            '$human $version $reasonText — use ${entry.lastSafe} for now.',
-          );
+              (_nextgenReasonText[entry.reason] ??
+                      'is not supported by the community stack yet — use '
+                          '{last} for now.')
+                  .replaceAll('{last}', entry.lastSafe);
+          lintErrors.add('$human $version $reasonText');
         }
       });
       return lintErrors.toList();
