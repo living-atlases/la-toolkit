@@ -54,10 +54,12 @@ COPY --from=demo-build /src/build/web/ /
 
 FROM ubuntu:22.04
 
-# Install some dependencies via APT
+# Install some dependencies via APT. ca-certificates is listed so that a rebuild
+# after a CA distrust (eMudhra, 2026-10-17) always gets the fixed package; the
+# check at the end of this stage fails the build otherwise.
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        software-properties-common python3-docopt sudo curl byobu jq rsync \
+        ca-certificates software-properties-common python3-docopt sudo curl byobu jq rsync \
         python3-dev git python3-pip python3-minimal 'python2.*-minimal' \
         nagios-plugins iputils-ping openjdk-8-jre zip unzip \
         gnupg2 sshpass openssh-client openssh-server vim netcat expect less \
@@ -253,6 +255,11 @@ EXPOSE 2010
 
 # Used by ttyd
 EXPOSE 2011
+
+# No trust store in the image may keep a distrusted root (system bundle, Java
+# cacerts, certifi, Node).
+COPY docker/u22/ca-distrust-check.sh /usr/local/bin/ca-distrust-check
+RUN /usr/local/bin/ca-distrust-check
 
 USER ubuntu
 
