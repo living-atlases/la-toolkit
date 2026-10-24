@@ -19,6 +19,66 @@ None.
 
 None.
 
+<a name="v1.8.2"></a>
+
+## v1.8.2 - 2026-10-23
+
+A security release: the image no longer trusts the eMudhra CA roots distrusted after their compromise, and its build fails if any trust store in it still does.
+
+### eMudhra CA distrust
+
+On 2026-10-17 the private keys of eMudhra's emSign intermediates turned out to be derivable from their public certificates, so anyone can issue a certificate a client trusting those roots accepts. The distro fix removes **emSign ECC Root CA - G3** and **AAA Certificate Services**.
+
+- The image is rebuilt on an updated `ca-certificates`, `certifi` and Node.
+- **The build checks it:** `docker/u22/ca-distrust-check.sh` fails the image build if the system bundle, any Java `cacerts`, Python `certifi` or Node's built-in roots still hold one of those roots. Roots are matched by SHA-256, not by name: the other emSign roots stay.
+
+### Deploys
+
+- **MCP:** `la_deploy` takes `allowServiceRemoval`, for compose hosts that lost services in a placement change. The docker leg of a hybrid portal no longer drops it.
+- **Lint:** `bootstrap5-branding` names what a branding needs (a Bootstrap 5 build of header, footer, assets and banner templates) instead of calling versions like logger 4.7.0 or collectory 6.3.0 unsupported. collectory releases after 6.2.2 need it; 6.0.0 is the last one that runs with a Bootstrap 3 only branding.
+
+Nothing to do when upgrading.
+
+### Commits since v1.8.1 (9)
+
+#### Features
+
+- **mcp**: la_deploy allowServiceRemoval for compose hosts that lost services ([edf07fb](https://github.com/living-atlases/la-toolkit/commit/edf07fbef251f1bc4cd372480bb29c3358b7fcbb))
+
+#### Fixes
+
+- **lint**: bootstrap5-branding asks for a Bootstrap 5 branding ([d36f215](https://github.com/living-atlases/la-toolkit/commit/d36f215446057b6e7644d59f52f11172beeff098))
+- **core**: DeployCmd keeps allowServiceRemoval, the docker leg of a hybrid portal dropped it ([ff5b1e6](https://github.com/living-atlases/la-toolkit/commit/ff5b1e62ca94a3e48a4b0b2d0d3e9b8f0eb6abab))
+
+#### Tests and CI
+
+- export the demo as a tar, the local exporter fails on the agent ([cac1696](https://github.com/living-atlases/la-toolkit/commit/cac16964f22c22c437eb148c48bf3ac898521435))
+
+#### Documentation
+
+- **mcp**: plain-words introduction to the README ([cf2c926](https://github.com/living-atlases/la-toolkit/commit/cf2c926f5f6a9a2f46a4e4a26a530eeb6f5c3306))
+- **mcp**: la_fast_deploy, stages in la_set_placement and allowServiceRemoval in the README ([11ac222](https://github.com/living-atlases/la-toolkit/commit/11ac222270d28744e5a65d3490d0ae3ed046f819))
+- **changelog**: v1.8.1 ([3ed70df](https://github.com/living-atlases/la-toolkit/commit/3ed70dff67b47a5842d4dc86e1aabcd85158a88e))
+
+#### Maintenance
+
+- **release**: 1.8.2 ([be19dd4](https://github.com/living-atlases/la-toolkit/commit/be19dd43e8e27e21fce48eadd338de2a1c909ede))
+
+#### Other changes
+
+- fail the build if a distrusted CA root is still trusted (eMudhra) ([7fbb65b](https://github.com/living-atlases/la-toolkit/commit/7fbb65b504e7a3dee792087536f2dbdf4d50a678))
+
+### Backend commits (3)
+
+#### Features
+
+- **deps**: nextgen-compat collectory > 6.2.2, bootstrap5-branding means a Bootstrap 5 branding ([4b2859f](https://github.com/living-atlases/la-toolkit-backend/commit/4b2859f7e3111acfbbbb3bbcd2dcc197ee0d8596))
+- **deploy**: allowServiceRemoval passes allow_service_removal=true to docker-compose deploys ([5d193be](https://github.com/living-atlases/la-toolkit-backend/commit/5d193be2abcc13ac4d7d6d22db1187c4f3ebb026))
+
+#### Maintenance
+
+- **release**: 1.8.2 ([16767c2](https://github.com/living-atlases/la-toolkit-backend/commit/16767c2fcd5028d11b39780a6da2885e74d0ab19))
+
 <a name="v1.8.1"></a>
 
 ## v1.8.1 - 2026-10-14
