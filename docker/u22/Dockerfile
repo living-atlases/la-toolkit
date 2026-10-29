@@ -55,11 +55,12 @@ COPY --from=demo-build /src/build/web/ /
 FROM ubuntu:22.04
 
 # Install some dependencies via APT. ca-certificates is listed so that a rebuild
-# after a CA distrust (eMudhra, 2026-10-17) always gets the fixed package; the
-# check at the end of this stage fails the build otherwise.
+# after a CA distrust (eMudhra, 2026-10-17) always gets the fixed package, and
+# libbrotli1 for Broccoli2Shell (2026-10-28); the checks at the end of this stage
+# fail the build otherwise.
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        ca-certificates software-properties-common python3-docopt sudo curl byobu jq rsync \
+        ca-certificates libbrotli1 software-properties-common python3-docopt sudo curl byobu jq rsync \
         python3-dev git python3-pip python3-minimal 'python2.*-minimal' \
         nagios-plugins iputils-ping openjdk-8-jre zip unzip \
         gnupg2 sshpass openssh-client openssh-server vim netcat expect less \
@@ -260,6 +261,13 @@ EXPOSE 2011
 # cacerts, certifi, Node).
 COPY docker/u22/ca-distrust-check.sh /usr/local/bin/ca-distrust-check
 RUN /usr/local/bin/ca-distrust-check
+
+# libbrotli1 with the Broccoli2Shell fix (CVE-2026-111497, USN-8956-1): 1.8.2
+# shipped 1.0.9-2build6 from the base image. Listed in the apt install above so a
+# rebuild always takes the fixed package; this fails the build otherwise.
+RUN v=$(dpkg-query -W -f='${Version}' libbrotli1) && \
+        dpkg --compare-versions "$v" ge 1.0.9-2ubuntu0.1 || \
+        { echo "libbrotli1 $v < 1.0.9-2ubuntu0.1 (CVE-2026-111497)" >&2; exit 1; }
 
 USER ubuntu
 
