@@ -8,6 +8,8 @@ import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_releases.dart';
 import 'package:la_toolkit_core/models/la_service_desc.dart';
+import 'package:la_toolkit_core/models/la_variable.dart';
+import 'package:la_toolkit_core/models/la_variable_desc.dart';
 import 'package:la_toolkit_core/models/project_patch.dart' show ProjectPatch;
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/placement/placement_changes.dart';
@@ -24,6 +26,7 @@ import 'preconditions.dart';
 import 'projects.dart';
 import 'releases.dart';
 import 'restore.dart';
+import 'variables.dart';
 
 const String _instructions = '''
 Drives an LA Toolkit (Living Atlas deployment tool) through its backend API.
@@ -55,6 +58,8 @@ Hybrid portals (services on VMs and on docker-compose) deploy one leg per
 run: la_deploy with leg: "docker" (compose hosts only) or leg: "vm".
 la_set_releases changes the releases a portal pins (preview, then save and
 confirm); the next la_deploy with prepare: true applies them.
+la_set_variables changes the Tune page variables of a portal or hub (a hub's
+branding_source, for one), the same way.
 la_set_servers adds, changes or removes machines, and la_set_placement moves,
 assigns or unassigns services on them (docker_compose included), both the same
 way (preview, then save and confirm); a later deploy of the servers involved
@@ -321,7 +326,8 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           'releases before and after, the generator configuration keys that '
           'change, the hubs kept and the lint. serviceVersions pins the '
           'version of each service (the image tag on docker-compose), as the '
-          'Tune page version selectors do. save: true AND confirm: true '
+          'Tune page version selectors do; on a hub only serviceVersions '
+          'apply (its releases are its portal\'s). save: true AND confirm: true '
           'store it (after writing a backup of the project as it was); only '
           'once the user agreed. Touches no server: the next la_deploy with '
           'prepare: true checks the new releases out and regenerates.',
@@ -457,6 +463,36 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         ),
       },
       required: <String>['name', if (isNew) 'ip'],
+    );
+
+    _tool(
+      'la_set_variables',
+      'Change the variables of a portal or hub that its Tune page offers '
+          '(e.g. a hub\'s branding_source, map bounds, feature toggles). '
+          'Previews by default: each variable before and after (secrets '
+          'hidden), the generator keys that change and the lint. save: true '
+          'AND confirm: true store it (after a backup of the project); only '
+          'once the user agreed. Touches no server: the next la_deploy with '
+          'prepare: true regenerates the inventories with them.',
+      Schema.object(
+        properties: <String, Schema>{
+          'project': _projectArg,
+          'variables': Schema.object(
+            description:
+                'Variable (its internal name, e.g. branding_source) -> value: '
+                'a string, number or boolean as the variable takes, or null '
+                'to put its default back.',
+          ),
+          'save': Schema.bool(description: 'Store it (default false).'),
+          'confirm': Schema.bool(
+            description:
+                'Required with save: true. Set it only when the user agreed.',
+          ),
+        },
+        required: <String>['project', 'variables'],
+      ),
+      openWorld: true,
+      _setVariables,
     );
 
     _tool(
@@ -985,10 +1021,18 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       );
     }
     final ProjectRef ref = await _resolve(a);
-    if (ref.isHub) {
+    // A hub's own service versions go into its inventory; the releases that
+    // generate it are its portal's.
+    if (ref.isHub &&
+        <String>[
+          'generatorRelease',
+          'dockerComposeRelease',
+          'alaInstallRelease',
+        ].any(a.containsKey)) {
       throw InvalidRequest(
         '"${ref.dirName}" is a hub: its inventories are generated with its '
-        'portal "${ref.parent!['dirName']}". Change the portal releases.',
+        'portal "${ref.parent!['dirName']}". Change the portal releases; '
+        'only serviceVersions apply to a hub.',
       );
     }
     String? arg(String k) {
@@ -1114,6 +1158,54 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           'la_deploy with prepare: true checks out these releases and '
           'regenerates the inventories.',
     };
+  }
+
+  Future<Object?> _setVariables(Map<String, Object?> a) async {
+    final bool save = _saveArgs(a, 'changes the project variables');
+    final Object? raw = a['variables'];
+    if (raw is! Map || raw.isEmpty) {
+      throw InvalidRequest('`variables` must be a non-empty object.');
+    }
+    final ProjectRef ref = await _resolve(a);
+    final LAProject before = projectModel(ref);
+    final LAProject p = projectModel(ref);
+    final Json changes = <String, dynamic>{};
+    for (final MapEntry<Object?, Object?> e in raw.entries) {
+      final String name = e.key.toString();
+      final LAVariableDesc? d = LAVariableDesc.map[name];
+      if (d == null || !tunable(p, d)) {
+        throw InvalidRequest(
+          '"$name" is not a variable the Tune page of "${ref.dirName}" offers.',
+        );
+      }
+      final Object? was = before.getVariableValue(name);
+      final Object? value;
+      if (e.value == null) {
+        p.variables.removeWhere((LAVariable v) => v.nameInt == name);
+        value = p.getVariableValue(name);
+      } else {
+        try {
+          value = parseVariableValue(d, e.value);
+        } on FormatException catch (err) {
+          throw InvalidRequest(err.message);
+        }
+        p.setVariable(d, value);
+      }
+      String show(Object? v) => d.protected && v != null ? '(hidden)' : '$v';
+      changes[name] = <String, dynamic>{
+        'before': show(was),
+        'after': show(value),
+      };
+    }
+    final Json preview = await _previewChange(
+      ref,
+      before,
+      p,
+      head: <String, dynamic>{'variables': changes},
+      touched: const <String>[],
+      removesComposeServices: false,
+    );
+    return save ? _saveChange(ref, p, preview) : preview;
   }
 
   /// The project as `get-conf` returned it, before a save changes it.

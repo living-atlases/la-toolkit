@@ -268,7 +268,25 @@ class _Backend {
         beforePatch?.call(projects);
         final String id = patch['projectId'] as String;
         final Json current = stored(id)!;
-        final MergeResult m = ProjectPatch.merge(current, patch);
+        // A hub's rows may point to its portal's servers and clusters
+        // (api/controllers/patch-project.js passes them the same way).
+        final Json? portal = projects
+            .where(
+              (Json p) => (p['hubs'] as List<dynamic>? ?? <dynamic>[]).any(
+                (dynamic h) => (h as Json)['id'] == id,
+              ),
+            )
+            .firstOrNull;
+        final MergeResult m = ProjectPatch.merge(
+          current,
+          patch,
+          foreignIds: <String>[
+            for (final String c in <String>['servers', 'clusters', 'services'])
+              for (final dynamic r
+                  in portal?[c] as List<dynamic>? ?? <dynamic>[])
+                (r as Json)['id'] as String,
+          ],
+        );
         if (m.hasConflicts) {
           return http.Response(
             json.encode(<String, dynamic>{
@@ -991,6 +1009,131 @@ void main() {
       }
       expect(fake.updatedProjects, isEmpty);
     });
+  });
+
+  group('hubs', () {
+    setUp(() => fake.projects.add(portalWithHub()));
+
+    test(
+      'la_set_releases pins a hub service version, not its releases',
+      () async {
+        final CallToolResult r = await call(
+          'la_set_releases',
+          <String, Object?>{
+            'project': 'hub1',
+            'serviceVersions': <String, Object?>{'ala_hub': '8.3.0'},
+            'save': true,
+            'confirm': true,
+          },
+        );
+        expect(r.isError, isNot(isTrue), reason: text(r));
+        final Json out = json.decode(text(r)) as Json;
+        expect((out['serviceVersions'] as Json)['ala_hub'], <String, dynamic>{
+          'before': '4.0.12.4',
+          'after': '8.3.0',
+        });
+        final Json stored = fake.updatedProjects.single;
+        expect(stored['isHub'], isTrue);
+        final List<dynamic> sw =
+            (stored['genConf'] as Json)['LA_software_versions']
+                as List<dynamic>;
+        expect(
+          sw.map((dynamic e) => (e as List<dynamic>).join('=')),
+          contains('biocache_hub_version=8.3.0'),
+        );
+
+        final CallToolResult gen = await call(
+          'la_set_releases',
+          <String, Object?>{
+            'project': 'hub1',
+            'generatorRelease': '1.8.33',
+            'serviceVersions': <String, Object?>{'ala_hub': '8.3.0'},
+          },
+        );
+        expect(gen.isError, isTrue);
+        expect(text(gen), contains('only serviceVersions apply to a hub'));
+      },
+    );
+
+    test(
+      'la_set_variables previews a hub branding_source and stores nothing',
+      () async {
+        final CallToolResult r = await call(
+          'la_set_variables',
+          <String, Object?>{
+            'project': 'hub1',
+            'variables': <String, Object?>{
+              'branding_source': '../hub1-branding-vite',
+            },
+          },
+        );
+        expect(r.isError, isNot(isTrue), reason: text(r));
+        final Json out = json.decode(text(r)) as Json;
+        expect(out['saved'], isNot(isTrue));
+        expect(
+          ((out['variables'] as Json)['branding_source'] as Json)['after'],
+          '../hub1-branding-vite',
+        );
+        expect(
+          (out['genConfChanges'] as Json)['changed'],
+          contains('LA_variable_branding_source'),
+        );
+        expect(fake.patches, isEmpty);
+      },
+    );
+
+    test('la_set_variables saves it on the hub, after a backup', () async {
+      final CallToolResult r = await call('la_set_variables', <String, Object?>{
+        'project': 'hub1',
+        'variables': <String, Object?>{
+          'branding_source': '../hub1-branding-vite',
+        },
+        'save': true,
+        'confirm': true,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['saved'], isTrue);
+      expect(File(out['backup'] as String).existsSync(), isTrue);
+      final Json stored = fake.updatedProjects.single;
+      expect(stored['isHub'], isTrue);
+      expect(
+        (stored['genConf'] as Json)['LA_variable_branding_source'],
+        '../hub1-branding-vite',
+      );
+    });
+
+    test(
+      'la_set_variables refuses what the Tune page would not offer',
+      () async {
+        for (final Map<String, Object?> bad in <Map<String, Object?>>[
+          <String, Object?>{
+            'variables': <String, Object?>{'nope': 'x'},
+          },
+          // Not hub-capable (docker_compose): the hub's Tune page hides it.
+          <String, Object?>{
+            'variables': <String, Object?>{
+              'docker_mail_development_mode': true,
+            },
+          },
+          <String, Object?>{
+            'variables': <String, Object?>{'branding_source': 3},
+          },
+          <String, Object?>{'variables': <String, Object?>{}},
+          <String, Object?>{
+            'variables': <String, Object?>{'branding_source': '../x'},
+            'save': true,
+          },
+        ]) {
+          final CallToolResult r = await call(
+            'la_set_variables',
+            <String, Object?>{'project': 'hub1', ...bad},
+          );
+          expect(r.isError, isTrue, reason: '$bad');
+        }
+        expect(fake.patches, isEmpty);
+      },
+    );
   });
 
   // Saves send what changed (patch-project), so a browser saving while the

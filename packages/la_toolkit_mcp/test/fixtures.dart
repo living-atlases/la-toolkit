@@ -175,3 +175,40 @@ Json placementPortalWithOrphan() {
   });
   return p;
 }
+
+/// A compose portal (`dc1`: ala_hub, branding) with a data hub `hub1` whose
+/// ala_hub and branding run on the portal's cluster, pinned to an old
+/// ala_hub, as a hub moved off its VM keeps the VM's versions.
+Json portalWithHub() {
+  final LAProject p = LAProject(
+    longName: 'Hub portal',
+    shortName: 'HubPortal',
+    domain: 'example.org',
+    dockerComposeRelease: 'v1.5.1',
+    generatorRelease: '1.8.32',
+  );
+  p.upsertServer(LAServer(name: 'dc1', ip: '10.0.0.2', projectId: p.id));
+  final String dc1 = p.servers.single.id;
+  for (final String s in <String>[alaHub, branding, dockerCompose]) {
+    p.getService(s).use = true;
+  }
+  p.assignByType(dc1, DeploymentType.vm, <String>[dockerCompose]);
+  p.assignByType(dc1, DeploymentType.dockerCompose, <String>[alaHub, branding]);
+  final LAProject hub = LAProject(
+    longName: 'A hub',
+    shortName: 'hub1',
+    domain: 'hub.example.org',
+    generatorRelease: '1.8.32',
+    isHub: true,
+    parent: p,
+  );
+  hub.serviceInUse(alaHub, true);
+  hub.serviceInUse(branding, true);
+  p.hubs.add(hub);
+  hub.assignByType(p.clusters.single.id, DeploymentType.dockerCompose, <String>[
+    alaHub,
+    branding,
+  ]);
+  hub.setServiceDeployRelease(alaHub, '4.0.12.4');
+  return json.decode(json.encode(p.toApiJson())) as Json;
+}
