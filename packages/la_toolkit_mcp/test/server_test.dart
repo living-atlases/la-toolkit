@@ -928,6 +928,69 @@ void main() {
       expect(old['generatorRelease'], '1.8.32');
       expect(old['dockerComposeRelease'], 'v1.5.1');
     });
+
+    test('serviceVersions pins a service version in the preview', () async {
+      final CallToolResult r = await call('la_set_releases', <String, Object?>{
+        'project': 'Hybrid',
+        'serviceVersions': <String, Object?>{'ala_hub': '8.3.0'},
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['saved'], isFalse);
+      expect(
+        ((out['serviceVersions'] as Json)['ala_hub'] as Json)['after'],
+        '8.3.0',
+      );
+      expect(
+        (out['genConfChanges'] as Json)['changed'],
+        contains('LA_software_versions'),
+      );
+      expect(fake.updatedProjects, isEmpty);
+    });
+
+    test('serviceVersions saved reach the deploy rows and genConf', () async {
+      final CallToolResult r = await call('la_set_releases', <String, Object?>{
+        'project': 'Hybrid',
+        'serviceVersions': <String, Object?>{'ala_hub': '8.3.0'},
+        'save': true,
+        'confirm': true,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json stored = fake.updatedProjects.single;
+      final Json hubService = (stored['services'] as List<dynamic>)
+          .cast<Json>()
+          .firstWhere((Json s) => s['nameInt'] == 'ala_hub');
+      final List<Json> hubDeploys = (stored['serviceDeploys'] as List<dynamic>)
+          .cast<Json>()
+          .where((Json sd) => sd['serviceId'] == hubService['id'])
+          .toList();
+      expect(hubDeploys, isNotEmpty);
+      for (final Json sd in hubDeploys) {
+        expect((sd['softwareVersions'] as Json)['ala_hub'], '8.3.0');
+      }
+      final List<dynamic> sw =
+          (stored['genConf'] as Json)['LA_software_versions'] as List<dynamic>;
+      expect(
+        sw.map((dynamic e) => (e as List<dynamic>).join('=')),
+        contains('biocache_hub_version=8.3.0'),
+      );
+    });
+
+    test('serviceVersions refuses unused services and bad versions', () async {
+      for (final Map<String, Object?> bad in <Map<String, Object?>>[
+        <String, Object?>{'nope': '1.0'},
+        <String, Object?>{'spatial': '3.2.1'},
+        <String, Object?>{'ala_hub': r'$(id)'},
+        <String, Object?>{'ala_hub': 8},
+      ]) {
+        final CallToolResult r = await call(
+          'la_set_releases',
+          <String, Object?>{'project': 'Hybrid', 'serviceVersions': bad},
+        );
+        expect(r.isError, isTrue, reason: '$bad');
+      }
+      expect(fake.updatedProjects, isEmpty);
+    });
   });
 
   // Saves send what changed (patch-project), so a browser saving while the

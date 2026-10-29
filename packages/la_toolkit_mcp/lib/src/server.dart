@@ -7,6 +7,7 @@ import 'package:la_toolkit_core/dependencies_manager.dart';
 import 'package:la_toolkit_core/models/la_cluster.dart';
 import 'package:la_toolkit_core/models/la_project.dart';
 import 'package:la_toolkit_core/models/la_releases.dart';
+import 'package:la_toolkit_core/models/la_service_desc.dart';
 import 'package:la_toolkit_core/models/project_patch.dart' show ProjectPatch;
 import 'package:la_toolkit_core/models/ssh_key.dart';
 import 'package:la_toolkit_core/placement/placement_changes.dart';
@@ -318,7 +319,9 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       'Change the generator / la-docker-compose / ala-install releases a '
           'portal pins, as the Tune page does. Previews by default: the '
           'releases before and after, the generator configuration keys that '
-          'change, the hubs kept and the lint. save: true AND confirm: true '
+          'change, the hubs kept and the lint. serviceVersions pins the '
+          'version of each service (the image tag on docker-compose), as the '
+          'Tune page version selectors do. save: true AND confirm: true '
           'store it (after writing a backup of the project as it was); only '
           'once the user agreed. Touches no server: the next la_deploy with '
           'prepare: true checks the new releases out and regenerates.',
@@ -334,6 +337,12 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           ),
           'alaInstallRelease': Schema.string(
             description: 'ala-install tag, or "upstream".',
+          ),
+          'serviceVersions': Schema.object(
+            description:
+                'Service (toolkit name, e.g. ala_hub, bie_index) -> version, '
+                'e.g. {"ala_hub": "8.3.0"}. Only services in use.',
+            additionalProperties: Schema.string(),
           ),
           'save': Schema.bool(description: 'Store it (default false).'),
           'confirm': Schema.bool(
@@ -994,10 +1003,28 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     final String? gen = arg('generatorRelease');
     final String? compose = arg('dockerComposeRelease');
     final String? alaInstall = arg('alaInstallRelease');
-    if (gen == null && compose == null && alaInstall == null) {
+    final Object? rawVersions = a['serviceVersions'];
+    if (rawVersions != null && rawVersions is! Map) {
+      throw InvalidRequest('`serviceVersions` must be an object.');
+    }
+    final Map<String, String> versions = <String, String>{
+      for (final MapEntry<Object?, Object?> e
+          in (rawVersions as Map<Object?, Object?>? ?? const <String, String>{})
+              .entries)
+        e.key.toString():
+            e.value is String && safeToken.hasMatch(e.value! as String)
+            ? e.value! as String
+            : throw InvalidRequest(
+                '`serviceVersions.${e.key}` "${e.value}" is not a version.',
+              ),
+    };
+    if (gen == null &&
+        compose == null &&
+        alaInstall == null &&
+        versions.isEmpty) {
       throw InvalidRequest(
         'Give at least one of generatorRelease, dockerComposeRelease, '
-        'alaInstallRelease.',
+        'alaInstallRelease, serviceVersions.',
       );
     }
     Future<void> check(
@@ -1029,6 +1056,23 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     if (gen != null) p.generatorRelease = gen;
     if (compose != null) p.dockerComposeRelease = compose;
     if (alaInstall != null) p.alaInstallRelease = alaInstall;
+    final Json versionChanges = <String, dynamic>{};
+    versions.forEach((String service, String version) {
+      // The version lives on the service's deploy rows: a service that runs
+      // nowhere has none to carry it.
+      if (!LAServiceDesc.listS(false).contains(service) ||
+          !p.getService(service).use ||
+          p.getServiceDeploysForSomeService(service).isEmpty) {
+        throw InvalidRequest(
+          '"$service" is not a service in use and placed in "${ref.dirName}".',
+        );
+      }
+      versionChanges[service] = <String, dynamic>{
+        'before': p.getServiceDeployRelease(service),
+        'after': version,
+      };
+      p.setServiceDeployRelease(service, version);
+    });
     final Json body = p.toApiJson();
     final Json lint = await _lintModel(
       p,
@@ -1042,6 +1086,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         'dockerCompose': p.dockerComposeRelease,
         'alaInstall': p.alaInstallRelease,
       },
+      if (versionChanges.isNotEmpty) 'serviceVersions': versionChanges,
       'genConfChanges': genConfDiff(
         ref.project['genConf'] as Json? ?? const <String, dynamic>{},
         body['genConf'] as Json,
