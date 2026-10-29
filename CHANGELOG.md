@@ -19,6 +19,43 @@ None.
 
 None.
 
+<a name="v1.8.3"></a>
+
+## v1.8.3 - 2026-10-29
+
+A security release: the image is rebuilt with the fixed Brotli library, and its build fails if the vulnerable one is still there.
+
+### Broccoli2Shell (CVE-2026-111497)
+
+An out-of-bounds write in the Brotli decoder (libbrotli 1.0.3 to 1.2.0) can be triggered by any response compressed with `br`. 1.8.2 already ran Node 22.23.4, which carries its own fixed copy, but the system library in the image was still the vulnerable `1.0.9-2build6`.
+
+- The image now has `libbrotli1 1.0.9-2ubuntu0.1` (USN-8956-1).
+- **The build checks it:** the image build fails if `libbrotli1` is older than the fixed version.
+- The backend requires Node 22.23.4 or later (`engines` in its `package.json`).
+
+Nothing to do when upgrading.
+
+### Commits since v1.8.2 (3)
+
+#### Documentation
+
+- **changelog**: v1.8.2 ([160306f](https://github.com/living-atlases/la-toolkit/commit/160306fbce455fc82c2b1bc79c4c18cc088bdcff))
+
+#### Maintenance
+
+- **release**: 1.8.3 ([9baa887](https://github.com/living-atlases/la-toolkit/commit/9baa887365fff7c9e2a2974129f6463bc94568d0))
+
+#### Other changes
+
+- fail the build if libbrotli1 lacks the Broccoli2Shell fix (CVE-2026-111497) ([722d44a](https://github.com/living-atlases/la-toolkit/commit/722d44a4c951fdcd604c3b3972ea0097b2a1bac9))
+
+### Backend commits (2)
+
+#### Maintenance
+
+- **release**: 1.8.3 ([efe922b](https://github.com/living-atlases/la-toolkit-backend/commit/efe922bcd2f9855b37ae2716d720eef2a1628f60))
+- **engines**: require node >=22.23.4 (CVE-2026-111497, brotli) ([ec4727f](https://github.com/living-atlases/la-toolkit-backend/commit/ec4727fae00e5f8967c9a6bc276f7e195cdc728f))
+
 <a name="v1.8.2"></a>
 
 ## v1.8.2 - 2026-10-23
