@@ -1032,7 +1032,7 @@ void main() {
           'before': '4.0.12.4',
           'after': '8.3.0',
         });
-        final Json stored = fake.updatedProjects.single;
+        final Json stored = fake.updatedProjects.first;
         expect(stored['isHub'], isTrue);
         final List<dynamic> sw =
             (stored['genConf'] as Json)['LA_software_versions']
@@ -1095,12 +1095,22 @@ void main() {
       final Json out = json.decode(text(r)) as Json;
       expect(out['saved'], isTrue);
       expect(File(out['backup'] as String).existsSync(), isTrue);
-      final Json stored = fake.updatedProjects.single;
+      final Json stored = fake.updatedProjects.first;
       expect(stored['isHub'], isTrue);
       expect(
         (stored['genConf'] as Json)['LA_variable_branding_source'],
         '../hub1-branding-vite',
       );
+      // The portal's LA_hubs too: la_deploy prepare generates the hub from it.
+      final Json portal = fake.updatedProjects.last;
+      expect(portal['isHub'], isNot(isTrue));
+      final List<dynamic> hubsConf =
+          (portal['genConf'] as Json)['LA_hubs'] as List<dynamic>;
+      expect(
+        (hubsConf.single as Json)['LA_variable_branding_source'],
+        '../hub1-branding-vite',
+      );
+      expect(fake.patches.last['rows'], anyOf(isNull, isEmpty));
     });
 
     test(

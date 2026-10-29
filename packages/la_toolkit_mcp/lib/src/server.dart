@@ -1568,10 +1568,25 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
   /// Stores what [p] changes on [ref] as it was read, not the whole project:
   /// what a browser changed meanwhile in other settings stays, and the
   /// same setting changed by both refuses the save instead of undoing it.
+  ///
+  /// A hub's change is stored on its portal too: the portal's generator
+  /// configuration carries every hub's (LA_hubs), and that is what
+  /// la_deploy prepare regenerates the hub inventories from. The app does the
+  /// same, saving the parent after a hub.
   Future<void> _storeChange(ProjectRef ref, LAProject p) async {
     final Json base = jsonDecode(jsonEncode(projectModel(ref).toJson())) as Json
       ..['genConf'] = ref.project['genConf'];
-    final Json patch = ProjectPatch.diff(base, p.toApiJson());
+    await _patch(ref, ProjectPatch.diff(base, p.toApiJson()));
+    if (ref.isHub && p.parent != null) {
+      final Json parentBase =
+          jsonDecode(jsonEncode(LAProject.fromJson(ref.parent!).toJson()))
+                as Json
+            ..['genConf'] = ref.parent!['genConf'];
+      await _patch(ref, ProjectPatch.diff(parentBase, p.parent!.toApiJson()));
+    }
+  }
+
+  Future<void> _patch(ProjectRef ref, Json patch) async {
     if (ProjectPatch.isEmpty(patch)) return;
     try {
       await backend.patchProject(patch);
