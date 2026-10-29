@@ -1095,6 +1095,10 @@ void main() {
       final Json out = json.decode(text(r)) as Json;
       expect(out['saved'], isTrue);
       expect(File(out['backup'] as String).existsSync(), isTrue);
+      expect(
+        backups.listSync().map((FileSystemEntity f) => f.path.split('/').last),
+        contains(startsWith('hubportal-')),
+      );
       final Json stored = fake.updatedProjects.first;
       expect(stored['isHub'], isTrue);
       expect(

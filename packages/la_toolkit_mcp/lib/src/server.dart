@@ -1221,6 +1221,12 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     await backup.writeAsString(
       const JsonEncoder.withIndent('  ').convert(ref.project),
     );
+    // A hub's save stores its portal's LA_hubs too (_storeChange).
+    if (ref.isHub && ref.parent != null) {
+      await File(
+        '${backupDir.path}/${ref.parent!['dirName']}-${ref.parent!['id']}-$stamp.json',
+      ).writeAsString(const JsonEncoder.withIndent('  ').convert(ref.parent));
+    }
     return backup;
   }
 
