@@ -214,8 +214,9 @@ Give me this list once the topology is agreed. All of it is the sysadmin's job.
       runs `ssh -T <server> sudo hostname` with no terminal, so a sudo password fails it.
 - [ ] An ssh key in the toolkit UI, with its public part authorised on every machine. Tell me
       only the key's **name**. If it is wrong, `la_create_project` lists the names it knows.
-- [ ] The toolkit reaches each machine by ssh. Behind a bastion, I add it later with
-      `la_set_servers` `gateways`, because `la_create_project` does not take them.
+- [ ] The toolkit reaches each machine by ssh. If there is a bastion, tell me: `la_create_project`
+      does not take gateways, so you add it afterwards with `la_set_servers`, first as a server
+      (`add`) and then as the `gateways` of the others (`update`).
 - [ ] The machines reach each other on their private IPs, on database ports too. **Test
       it:** some clouds drop MySQL and PostgreSQL traffic between VMs at the network layer,
       with the firewalls open and nothing in their logs.
@@ -292,9 +293,9 @@ nothing beyond read-only commands.
 
 ## Phase 7: mixed portals, and moving services from VMs to containers
 
-Skip this for a containers-only portal. This is how a national node really moved 15 services
-off 5 ageing VMs into containers while the portal stayed public. The method matters more than
-the speed: each service went one at a time, proven first and reversible.
+Skip this for a containers-only portal. This is how a national node really moved its public
+services off ageing VMs into containers while the portal stayed online. The method matters more
+than the speed: each service went one at a time, proven first and reversible.
 
 ### How it works
 
@@ -346,7 +347,7 @@ the speed: each service went one at a time, proven first and reversible.
 
 1. `la_set_placement` with `{op: "assign", service: "<service>", to: "<host>", toLeg: "docker"}`
    adds the container while the VM keeps serving. Some services can only run in one place;
-   the preview refuses them, and they wait for the cutover below.
+   the preview refuses them, and they wait until after the promotion below.
 2. Read the preview, then **STOP** and save. Read `extraHosts` and `deployNotes` closely.
 3. `la_deploy` with `leg: "docker"`, `limitToServers`, and `dryRun: true`. Then **STOP**, and
    deploy for real. Staging hosts only: production hosts do not change yet.
@@ -363,7 +364,8 @@ the speed: each service went one at a time, proven first and reversible.
 ### Move the traffic, one service at a time
 
 Order that worked: low-traffic and stateless first (regions), then species, then records and
-its web services **together**, and services with their own database last.
+its web services **together**. Services with their own database come last, after the promotion
+below.
 
 1. **STOP.** I change one name on the proxy or DNS. Before I do, agree the rollback: for
    example, the same line reversed, in under two minutes. The VM stays up.
@@ -379,21 +381,6 @@ Records and downloads need extra care:
 - Deploy the host of the records web services **before** the hub. A hub that starts while they
   answer 502 loses the i18n race and serves errors while looking alive.
 
-### Services with their own database
-
-Use the la-docker-compose migration playbooks, described in its README under *Migrating an
-existing portal*. The sysadmin runs them; nothing in a normal deploy can trigger a restore.
-
-- **One database at a time, never the whole cluster.** A full dump carries users and passwords
-  and locks every service out of its database.
-- Back up first, and check that the copy is really somewhere else. Then restore, and compare
-  the service's API output with the old one.
-- Occurrence data is not migrated: it is re-ingested. File trees (images, uploads, downloads) are
-  not moved by the playbooks: use `rsync` and fix ownership.
-- A restored table may hold URLs of the old portal, and no restore rewrites them.
-- **A host with a PostgreSQL consumer runs its own PostgreSQL,** and cannot also use a remote one.
-  Check where the database will land before planning the move.
-
 ### Promote to production
 
 Do this a few days after the traffic moved, with everything green.
@@ -408,8 +395,30 @@ Do this a few days after the traffic moved, with everything green.
 3. **Redeploy every compose host, not only the ones that moved.** The `deployNotes` list them.
    Dry run, **STOP**, then real. This restarts services on each host, so warn users.
 4. Ask me to run `docker inspect <container> --format '{{json .HostConfig.ExtraHosts}}'` on all
-   compose hosts. **No public name may still point at a VM you plan to retire.** Then remove any
-   stale `docker_extra_hosts_override` and redeploy those hosts.
+   compose hosts. **No public name may still point at a VM you plan to retire.** If one does, ask
+   me to remove the stale `docker_extra_hosts_override` from Ansible Extras, then redeploy those hosts.
+
+### Services with their own database
+
+**Only onto a host already in the production stage.** Each stage has its own datastores, so data
+restored on a staging host stays behind when that host is promoted, and its applications switch
+to the production databases. The same goes for a service that can run in only one place: on a
+staging host, production can no longer reach it. The signs are a `null` in `extraHosts` for that
+name on production hosts, and a lint warning that the service runs only on staging. If you see
+them, stop.
+
+Use the la-docker-compose migration playbooks, described in its README under *Migrating an
+existing portal*. The sysadmin runs them; nothing in a normal deploy can trigger a restore.
+
+- **One database at a time, never the whole cluster.** A full dump carries users and passwords
+  and locks every service out of its database.
+- Back up first, and check that the copy is really somewhere else. Then restore, and compare
+  the service's API output with the old one.
+- Occurrence data is not migrated: it is re-ingested. File trees (images, uploads, downloads) are
+  not moved by the playbooks: use `rsync` and fix ownership.
+- A restored table may hold URLs of the old portal, and no restore rewrites them.
+- **A host with a PostgreSQL consumer runs its own PostgreSQL,** and cannot also use a remote one.
+  Check where the database will land before planning the move.
 
 ### Moving services between compose hosts
 
@@ -476,8 +485,9 @@ Most of this runs on the servers, so the sysadmin runs it. Prepare each step and
    index is a legitimate state: the deploy stays green with no data.
 3. **Species.** Occurrences and taxonomy are two separate imports, and **nothing fills the taxonomy
    index by itself.** Species search then returns 200 and zero results, which every status check
-   accepts. To import, on the host with `la_bie-index`, run `scripts/e2e-bie-import.sh --blocking`
-   from la-docker-compose. Set `FIXTURE_DIR` to an expanded Darwin Core Archive for a real checklist.
+   accepts. To import, get la-docker-compose at the pinned tag onto the host with `la_bie-index`,
+   and run `scripts/e2e-bie-import.sh --blocking` there. Set `FIXTURE_DIR` to an expanded Darwin
+   Core Archive for a real checklist.
    A national checklist takes hours.
 4. **Sensitive data.** The `sds` lookup answers 500 until at least one species list is flagged SDS.
 5. **Check it from the user's side.** Do a search, open a record, a species page and a map.
