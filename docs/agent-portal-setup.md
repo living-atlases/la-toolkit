@@ -25,6 +25,7 @@ you cannot do yourself.
 
 **The sysadmin (me):**
 - Creates the machines, gives SSH access and sudo, and prepares DNS, TLS and the mail relay.
+  For a test portal these last three can wait: see [Test mode](#test-mode-no-domain-yet).
 - Decides anything that costs money or carries risk.
 - Does everything marked "sysadmin" in this prompt, and pastes results back to you.
 
@@ -154,6 +155,7 @@ Ask these in small groups, and write the answers down. Do not recommend anything
 - **Languages.** Default language and others. Who reviews translations?
 - **Domain.** Which domain or subdomains? Who controls DNS? Is there a proxy in front? Does
   the portal serve the home page of the domain, or does an institutional website live there?
+  With no domain, certificate or mail relay yet, we can start in test mode (end of Phase 3).
 - **Resources.** How many machines, with what vCPU, RAM and disk? Is `/data` a separate
   disk? Are there public IPs? Which provider, and are there quotas? Can ports between
   machines be opened? Is there an SMTP relay? Where can backups go, off the machine?
@@ -206,6 +208,38 @@ Give me this list once the topology is agreed. All of it is the sysadmin's job.
       and download emails silently never arrive.
 
 DNS comes next: you get the exact names from the preview in Phase 4.
+
+### Test mode: no domain yet
+
+We can try the whole portal before having a domain, certificate or mail relay. Offer this when I
+lack any of them. A test portal is **throwaway**: when the real domain arrives, create a new project
+for it, instead of converting this one. Nothing here is for real users or real data.
+
+| Instead of | Use | How |
+|---|---|---|
+| Our own domain | The shared test domain `l-a.site` | Pass `domain: "l-a.site"` to `la_create_project` |
+| A TLS certificate | The test wildcard certificate | Automatic with that domain (`use_la_site_certs`). It downloads and renews with the `livingatlases/l-a-site-certs` image |
+| An SMTP relay | Mailhog, which catches every email and delivers none | `docker_mail_development_mode: true` with `la_set_variables`. Its web page is at `docker_mail_development_url`, by default `mail.<domain>` |
+| Real data | Small fixtures from la-docker-compose | `e2e/fixtures/dr-test` (8 records, `scripts/e2e-airflow-ingest.sh`) and `e2e/fixtures/bie-taxonomy` (41 taxa, `scripts/e2e-bie-import.sh`) |
+
+Be clear with me about the limits:
+
+- **`l-a.site` is shared.** Its public names, such as `records.l-a.site`, belong to a public demo.
+  So each person who tests adds the portal's names to the hosts file of their own computer, and of
+  the toolkit machine, pointing at my host. Give me that list from the preview, with the Mailhog
+  name. Without it, my browser opens the public demo and not my portal. `la_check_preconditions`
+  does not block on this: it reports the addresses as not being project servers.
+- **The certificate covers one level only** (`*.l-a.site`). A subdomain like
+  `mynode.l-a.site` is accepted by the toolkit, but `records.mynode.l-a.site` gives a certificate
+  error in the browser, and it would also need DNS records from whoever runs `l-a.site`.
+- **The certificate's private key is public,** inside a public image. Never use real passwords,
+  personal data or a public service on it.
+- **Mailhog has no login.** Anyone who reaches that name reads all the emails, password resets
+  included. It runs on the host with the login service. A real relay must replace it, with
+  `docker_mail_development_mode: false`, before real users come.
+- **One host cannot ingest data.** See Phase 2. The `dr-test` fixture needs the pipelines services.
+
+The Cypress suite in `e2e/` of la-docker-compose can also test a deployed portal in a real browser.
 
 ## Phase 4: create the project
 
@@ -549,6 +583,7 @@ Check this list at each **STOP**.
 | Followed a moving branch | Pin a tag, and read its release notes |
 | Treated a green deploy as a working portal | Fill the taxonomy index, ingest data, walk through it |
 | Relied on mail without a relay | Set up the relay, and test a real email |
+| Left test mode on | Before real users: real domain, certificate and relay, and Mailhog off |
 | Took a final copy without checking what it covered | Check the copy holds `/data` before you delete anything |
 | Assumed a run did something because it exited 0 | Read the recap; a run that matched no host counts as failed |
 
