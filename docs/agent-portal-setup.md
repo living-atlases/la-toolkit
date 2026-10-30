@@ -228,7 +228,7 @@ Be clear with me about the limits:
   `records.l-a.site`, belong to a public demo. Agree a suffix with me, usually the country code.
   The MCP cannot set these names: after saving the project, I change each service's subdomain in
   the toolkit's **Edit** page, from `records` to `records-uk` and so on. Give me the list. Then check
-  with `la_get_project` and repeat the `publicNames` check before the first deploy.
+  the `dns` list of `la_check_preconditions`, which shows the names the portal really uses.
 - **The certificate covers one level only** (`*.l-a.site`). So use `records-uk.l-a.site`, never
   `records.uk.l-a.site`, or a domain like `mynode.l-a.site`: the toolkit accepts them, but browsers
   give a certificate error.
