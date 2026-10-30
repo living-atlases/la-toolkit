@@ -219,18 +219,18 @@ for it, instead of converting this one. Nothing here is for real users or real d
 
 | Instead of | Use | How |
 |---|---|---|
-| Our own domain | The shared test domain `l-a.site`, with a suffix of our own on each name, such as `records-uk.l-a.site` and `collectory-uk.l-a.site` | Pass `domain: "l-a.site"` to `la_create_project`, then I set the names (see below) |
+| Our own domain | The shared test domain `l-a.site`, with a suffix of our own on each name, such as `records-uk.l-a.site` and `collectory-uk.l-a.site` | Pass `domain: "l-a.site"` and `nameSuffix: "uk"` to `la_create_project` |
 | A TLS certificate | The test wildcard certificate | Automatic with that domain (`use_la_site_certs`). It downloads and renews with the `livingatlases/l-a-site-certs` image |
-| An SMTP relay | Mailhog, which catches every email and delivers none | `docker_mail_development_mode: true` with `la_set_variables`. Its web page is at `docker_mail_development_url`, by default `mail.<domain>`: give it a name with our suffix too |
+| An SMTP relay | Mailhog, which catches every email and delivers none | `docker_mail_development_mode: true` with `la_set_variables`. Its web page is at `docker_mail_development_url` |
 | Real data | Small fixtures from la-docker-compose | `e2e/fixtures/dr-test` (8 records, `scripts/e2e-airflow-ingest.sh`) and `e2e/fixtures/bie-taxonomy` (41 taxa, `scripts/e2e-bie-import.sh`) |
 
 Be clear with me about the limits:
 
 - **`l-a.site` is shared, so each portal needs its own names.** The plain names, such as
   `records.l-a.site`, belong to a public demo. Agree a suffix with me, usually the country code.
-  The MCP cannot set these names: after saving the project, I change each service's subdomain in
-  the toolkit's **Edit** page, from `records` to `records-uk` and so on. Give me the list. Then check
-  the `dns` list of `la_check_preconditions`, which shows the names the portal really uses.
+  `nameSuffix` adds it to every public name and to the Mailhog name, and turns `branding_as_home`
+  off. If the preview still shows plain names, my toolkit is older than this option: stop, and
+  either update it or have me change each service's subdomain in the toolkit's **Edit** page.
 - **The certificate covers one level only** (`*.l-a.site`). So use `records-uk.l-a.site`, never
   `records.uk.l-a.site`, or a domain like `mynode.l-a.site`: the toolkit accepts them, but browsers
   give a certificate error.
@@ -569,6 +569,37 @@ Before you finish, write me a short runbook with these points, adapted to my por
 - **Something went wrong after a save?** `la_restore_backup` puts the project back. It does not touch
   servers, and it drops any changes saved after that backup.
 
+## Found a bug? Report it in the right repository
+
+When something fails and it is not my configuration, it is a bug worth reporting. Report it as an
+issue in the repository that owns the code, **not in Slack or in a chat**: a message scrolls away,
+and nobody can track it, fix it or find it the next time.
+
+| What failed | Where |
+|---|---|
+| Toolkit UI, its MCP server, its lint | [living-atlases/la-toolkit](https://github.com/living-atlases/la-toolkit/issues) |
+| Toolkit backend API | [living-atlases/la-toolkit-backend](https://github.com/living-atlases/la-toolkit-backend/issues) |
+| Generated inventories, `ansiblew` | [living-atlases/generator-living-atlas](https://github.com/living-atlases/generator-living-atlas/issues) |
+| Compose deploy, containers, Gatus, autoheal | [living-atlases/la-docker-compose](https://github.com/living-atlases/la-docker-compose/issues) |
+| Container images | [living-atlases/la-docker-images](https://github.com/living-atlases/la-docker-images/issues) |
+| VM deploy, Ansible roles | [AtlasOfLivingAustralia/ala-install](https://github.com/AtlasOfLivingAustralia/ala-install/issues) |
+| Branding | [living-atlases/base-branding](https://github.com/living-atlases/base-branding/issues) |
+| An application itself (collectory, biocache and so on) | That application's repository, usually under [AtlasOfLivingAustralia](https://github.com/AtlasOfLivingAustralia) |
+| A wrong or missing answer of the knowledge base | [living-atlases/kb](https://github.com/living-atlases/kb/issues) |
+
+How to do it:
+
+1. First rule out my own setup, and search the open issues, and the knowledge base with
+   `content_type: "issue"`. If it is already there, add what we saw to that issue.
+2. Draft the issue: what we did, what happened, what we expected, the versions (toolkit,
+   la-docker-compose tag, service), the topology, and the shortest error text.
+3. **Remove from it** hostnames, IPs, domains, paths, emails, tokens and anything personal.
+4. **STOP.** A public issue is hard to take back. Show me the draft and the repository. Post it
+   only with my agreement, or I post it myself.
+5. **A security problem never goes in a public issue,** not even a hint. Tell me, and use the
+   repository's private security reporting, or contact its maintainers directly.
+6. Note the issue link in our list of open points, and mention any workaround we applied.
+
 ## Mistakes real portals made
 
 Check this list at each **STOP**.
@@ -596,4 +627,5 @@ Check this list at each **STOP**.
 ## When you finish
 
 Give me: what is deployed and where, the versions pinned, what was checked and how, what was not
-checked, the decisions we took, what I still have to do, and the runbook from Phase 12.
+checked, the decisions we took, what I still have to do, the issues we reported, and the runbook
+from Phase 12.
