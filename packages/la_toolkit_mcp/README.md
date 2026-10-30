@@ -27,6 +27,9 @@ connects them. The rest of
 this page is the detail for those who want to know exactly what each tool does and how it
 stays safe.
 
+To set up a complete portal from scratch, give your agent the prompt in
+[Set up a Living Atlas portal with an AI agent](../../docs/agent-portal-setup.md).
+
 ## How it works
 
 It adds no logic of its own to the toolkit. Every tool is a thin composition of the
