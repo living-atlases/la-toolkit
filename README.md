@@ -161,6 +161,8 @@ With 1.7.1 or older images, build it from a checkout. That and the full list of 
 To set up a whole portal this way, with your sysadmin and your agent, paste the prompt in
 [Set up a Living Atlas portal with an AI agent](docs/agent-portal-setup.md) into the agent,
 once it is [connected to the toolkit and the knowledge base](docs/agent-mcp-setup.md).
+Both are also in one page, with a button to copy the prompt:
+[Living Atlas Portal Setup](https://claude.ai/artifact/1q65G5Bma2RYtU8TbwkBMY).
 It covers installing the MCP server, containers-only and mixed VM and container portals,
 hubs, first data, backups and daily operation.
 
