@@ -159,7 +159,8 @@ claude mcp add --scope user la-toolkit -- docker exec -i la-toolkit la_toolkit_m
 With 1.7.1 or older images, build it from a checkout. That and the full list of tools: [packages/la_toolkit_mcp/README.md](packages/la_toolkit_mcp/README.md).
 
 To set up a whole portal this way, with your sysadmin and your agent, paste the prompt in
-[Set up a Living Atlas portal with an AI agent](docs/agent-portal-setup.md) into the agent.
+[Set up a Living Atlas portal with an AI agent](docs/agent-portal-setup.md) into the agent,
+once it is [connected to the toolkit and the knowledge base](docs/agent-mcp-setup.md).
 It covers installing the MCP server, containers-only and mixed VM and container portals,
 hubs, first data, backups and daily operation.
 

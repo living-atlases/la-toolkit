@@ -28,7 +28,9 @@ this page is the detail for those who want to know exactly what each tool does a
 stays safe.
 
 To set up a complete portal from scratch, give your agent the prompt in
-[Set up a Living Atlas portal with an AI agent](../../docs/agent-portal-setup.md).
+[Set up a Living Atlas portal with an AI agent](../../docs/agent-portal-setup.md). To connect
+it to this server and to the Living Atlas knowledge base, see
+[the MCP setup guide](../../docs/agent-mcp-setup.md).
 
 ## How it works
 
