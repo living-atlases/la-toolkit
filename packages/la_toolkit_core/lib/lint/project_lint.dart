@@ -182,7 +182,7 @@ List<LintFinding> lintProject(LAProject project, {required bool hasSshKeys}) {
     if (project.allServersWithServicesReady() &&
         !project.allServersWithSupportedOs('Ubuntu', '22.04'))
       const LintFinding(
-        'The current supported OS version are Ubuntu 22.04 and 24.04 (under testing)',
+        'The supported OS versions are Ubuntu 22.04 and 24.04',
       ),
     if (basicDefined &&
         project.servers.isNotEmpty &&
