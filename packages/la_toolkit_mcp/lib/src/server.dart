@@ -291,7 +291,8 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
             description:
                 'la-docker-compose topology (default by host count: '
                 '1host, 2host, default-3host). Others: 3host-alt, '
-                'shared-hostname-2host, shared-hostname-3host.',
+                'shared-hostname-2host, shared-hostname-3host, '
+                'biocollect-4host.',
           ),
           'sshUser': Schema.string(description: 'Default ubuntu.'),
           'sshPort': Schema.int(description: 'Default 22.'),

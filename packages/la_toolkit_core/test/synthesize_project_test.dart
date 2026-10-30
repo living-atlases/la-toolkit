@@ -235,6 +235,7 @@ pipelines:
     for (final String topology in <String>[
       '2host',
       'default-3host',
+      'biocollect-4host',
       'shared-hostname-2host',
     ]) {
       test(topology, () {
