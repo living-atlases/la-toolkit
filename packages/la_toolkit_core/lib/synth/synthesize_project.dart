@@ -10,6 +10,7 @@ import 'dart:convert';
 import '../models/la_project.dart';
 import '../models/la_releases.dart';
 import '../models/la_server.dart';
+import '../models/la_service.dart';
 import '../models/la_service_desc.dart';
 import '../models/la_variable.dart';
 import '../models/la_variable_desc.dart';
@@ -62,6 +63,7 @@ class ProjectIntent {
     this.sshPort = 22,
     this.useSSL = true,
     this.disableServices = const <String>[],
+    this.nameSuffix,
   });
 
   factory ProjectIntent.fromJson(Map<String, dynamic> j) => ProjectIntent(
@@ -83,6 +85,7 @@ class ProjectIntent {
     disableServices:
         (j['disableServices'] as List<dynamic>? ?? const <dynamic>[])
             .cast<String>(),
+    nameSuffix: j['nameSuffix'] as String?,
   );
 
   final String domain;
@@ -96,6 +99,11 @@ class ProjectIntent {
 
   /// Service names (`nameInt`, e.g. `spatial`) to turn off entirely.
   final List<String> disableServices;
+
+  /// Added to every public name: `uk` turns records.l-a.site into
+  /// records-uk.l-a.site. For a domain several portals share, where one more
+  /// level (records.uk.l-a.site) would fall outside its wildcard certificate.
+  final String? nameSuffix;
 
   /// What is wrong with the intent itself, before touching any model.
   List<String> problems() => <String>[
@@ -118,7 +126,13 @@ class ProjectIntent {
         '"$s" is not a service name.'
       else if (!LAServiceDesc.get(s).optional)
         '"$s" cannot be disabled.',
+    if (nameSuffix != null && !_nameSuffix.hasMatch(nameSuffix!))
+      '"$nameSuffix" is not a name suffix: up to 20 lowercase letters and digits, with single dashes between them.',
   ];
+
+  static final RegExp _nameSuffix = RegExp(
+    r'^(?=.{1,20}$)[a-z0-9]+(-[a-z0-9]+)*$',
+  );
 }
 
 /// Thrown when the intent is invalid or does not fit the base.
@@ -259,6 +273,25 @@ LAProject synthesizeProject(
       ..sshPort = intent.sshPort
       ..sshKey = sshKey;
     p.upsertServer(server);
+  }
+
+  final String? suffix = intent.nameSuffix;
+  if (suffix != null) {
+    for (final LAService s in p.services) {
+      if (s.usesSubdomain &&
+          s.suburl.isNotEmpty &&
+          !LAServiceDesc.get(s.nameInt).withoutUrl) {
+        s.suburl = '${s.suburl}-$suffix';
+      }
+    }
+    // The bare domain is not this portal's when it shares it with others.
+    p.setVariable(LAVariableDesc.get('branding_as_home'), false);
+    final String mailUrl =
+        p.getVariableValue('docker_mail_development_url')! as String;
+    p.setVariable(
+      LAVariableDesc.get('docker_mail_development_url'),
+      mailUrl.replaceFirst('.', '-$suffix.'),
+    );
   }
 
   for (final String s in intent.disableServices) {

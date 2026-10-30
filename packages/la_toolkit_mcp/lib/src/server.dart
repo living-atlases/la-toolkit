@@ -299,6 +299,13 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
             description: 'Name of a toolkit ssh key authorised on the hosts.',
           ),
           'ssl': Schema.bool(description: 'Default true.'),
+          'nameSuffix': Schema.string(
+            description:
+                'Added to every public name, for a domain several portals '
+                'share: "uk" gives records-uk.l-a.site, not records.l-a.site. '
+                'One more level (records.uk.l-a.site) would fall outside the '
+                'wildcard certificate.',
+          ),
           'disableServices': _tokenList(
             'Services to leave out entirely (service names, e.g. spatial, doi).',
           ),

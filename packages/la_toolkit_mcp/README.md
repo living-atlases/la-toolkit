@@ -47,7 +47,7 @@ shows up in the project history like any other.
 | `la_list_projects` | Portals and hubs, with their deploy mode (docker-compose / vm / hybrid) | no |
 | `la_get_project` | Servers, releases, which services run where, the stage of each compose cluster, recent runs | no |
 | `la_lint_project` | The warnings of the UI lint panel: placement, cluster sizes, services that need each other, releases the dependency matrix rejects. Never `clean` when the matrix could not be read | no |
-| `la_create_project` | A new docker-compose portal on 1-3 hosts from domain, names, hosts and ssh key, built on a la-docker-compose topology its CI checks (`1host`, `2host`, `default-3host` by host count, or the one named). Previews by default (validation, lint, public names, the `skipServices` to deploy with); `save` + `confirm` store it | only with `save` + `confirm`: adds the project to the toolkit, touches no server |
+| `la_create_project` | A new docker-compose portal on 1-3 hosts from domain, names, hosts and ssh key, built on a la-docker-compose topology its CI checks (`1host`, `2host`, `default-3host` by host count, or the one named). `nameSuffix` (`uk` gives `records-uk.l-a.site`) keeps portals that share a domain apart. Previews by default (validation, lint, public names, the `skipServices` to deploy with); `save` + `confirm` store it | only with `save` + `confirm`: adds the project to the toolkit, touches no server |
 | `la_set_releases` | Change the generator / la-docker-compose (tag or `upstream`) / ala-install releases a portal pins, and with `serviceVersions` (e.g. `{"ala_hub": "8.3.0"}`) the version of each service in use, as the Tune page selectors do (the image tag on docker-compose). On a hub only `serviceVersions` apply: its releases are its portal's. Previews by default (before/after, generator configuration keys that change, hubs kept, lint); `save` + `confirm` back the project up (see Setup for where) and store it | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_set_variables` | Change the variables the Tune page of a portal or hub offers (e.g. a hub's `branding_source`), as `{name: value}`; `null` puts the default back. The same filter as the Tune page: a hub only gets those of hub-capable services in use. Previews by default (each variable before and after, secrets hidden, generator keys, lint delta); `save` + `confirm` back the project up and store it | only with `save` + `confirm`: the project in the toolkit, no server |
 | `la_set_servers` | Add, change (ip, ssh user/port/key, aliases, gateways) or remove the servers of a project, as the servers page does. `remove` only takes servers that run nothing (an empty compose cluster goes with its server). Previews by default (servers, name clashes with other projects, missing ssh keys, what an IP change moves, integrity, lint delta, deploy notes); `save` + `confirm` back the project up and store it | only with `save` + `confirm`: the project in the toolkit, no server |
@@ -124,6 +124,11 @@ project uses) and the ansible user change; everything else, services, placement 
 versions, is what the CI deploys. Services it pins no version for get the newest known
 one from the backend, as the UI's template import does. The base's data hubs are left
 out.
+
+On a domain several portals share, such as the test domain `l-a.site`, pass `nameSuffix`.
+With `uk`, every public name goes from `records.l-a.site` to `records-uk.l-a.site`, the
+mail catcher's too, and the portal stops claiming the bare domain (`branding_as_home`).
+The suffix is not one more DNS level because the wildcard certificate covers only one.
 
 ### Changing servers and placement
 

@@ -742,6 +742,27 @@ void main() {
       );
     });
 
+    test('nameSuffix goes on every public name', () async {
+      final CallToolResult r = await call(
+        'la_create_project',
+        <String, Object?>{...intent, 'nameSuffix': 'uk'},
+      );
+      expect(r.isError, isNot(true), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      final List<dynamic> names = out['publicNames'] as List<dynamic>;
+      expect(names, contains('collections-uk.example.com'));
+      expect(names, isNot(contains('collections.example.com')));
+    });
+
+    test('a bad nameSuffix is refused', () async {
+      final CallToolResult r = await call(
+        'la_create_project',
+        <String, Object?>{...intent, 'nameSuffix': 'U.K'},
+      );
+      expect(r.isError, isTrue);
+      expect(text(r), contains('name suffix'));
+    });
+
     test('two hosts take the 2host topology, in slot order', () async {
       final CallToolResult r = await call(
         'la_create_project',

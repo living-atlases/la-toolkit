@@ -71,6 +71,80 @@ void main() {
     );
   });
 
+  group('nameSuffix', () {
+    const ProjectIntent suffixed = ProjectIntent(
+      domain: 'l-a.site',
+      longName: 'Example Portal',
+      shortName: 'Example',
+      hosts: <IntentHost>[IntentHost(name: 'ex-1', ip: '10.0.0.5')],
+      nameSuffix: 'uk',
+    );
+
+    Map<String, dynamic> conf() => _synth(intent: suffixed).toGeneratorJson();
+
+    test('every public name carries it, one level under the domain', () {
+      final List<dynamic> names =
+          (conf()['LA_nginx_docker_internal_aliases_by_host']
+                  as Map<String, dynamic>)['ex-1']
+              as List<dynamic>;
+      expect(names, isNotEmpty);
+      for (final dynamic n in names) {
+        expect(n, matches(RegExp(r'^[a-z-]+-uk\.l-a\.site$')));
+      }
+    });
+
+    test('the service urls and the mail catcher follow it', () {
+      final Map<String, dynamic> c = conf();
+      expect(c['LA_collectory_url'], 'collections-uk.l-a.site');
+      expect(c['LA_cas_url'], 'auth-uk.l-a.site');
+      final LAProject p = _synth(intent: suffixed);
+      expect(
+        p.getVariableValue('docker_mail_development_url'),
+        'mailhog-uk.l-a.site',
+      );
+    });
+
+    test('the portal does not claim the shared bare domain', () {
+      final LAProject p = _synth(intent: suffixed);
+      expect(p.getVariableValue('branding_as_home'), isFalse);
+      expect(conf()['LA_branding_as_home'], isFalse);
+    });
+
+    test('the plain names of the base are gone', () {
+      expect(json.encode(conf()), isNot(contains('"records.l-a.site"')));
+    });
+
+    test('without it the names are the plain ones', () {
+      expect(
+        _synth().toGeneratorJson()['LA_collectory_url'],
+        'collections.example.com',
+      );
+    });
+
+    test('a bad suffix is refused', () {
+      for (final String bad in <String>[
+        'UK',
+        'u.k',
+        '-uk',
+        'uk-',
+        'u--k',
+        '',
+      ]) {
+        expect(
+          ProjectIntent(
+            domain: 'l-a.site',
+            longName: 'Example Portal',
+            shortName: 'Example',
+            hosts: const <IntentHost>[IntentHost(name: 'ex-1', ip: '10.0.0.5')],
+            nameSuffix: bad,
+          ).problems(),
+          isNotEmpty,
+          reason: bad,
+        );
+      }
+    });
+  });
+
   test('services and versions are the base ones', () {
     final Map<String, dynamic> base = _promptValues(_base());
     final Map<String, dynamic> conf = _synth().toGeneratorJson();
