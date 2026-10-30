@@ -217,21 +217,25 @@ for it, instead of converting this one. Nothing here is for real users or real d
 
 | Instead of | Use | How |
 |---|---|---|
-| Our own domain | The shared test domain `l-a.site` | Pass `domain: "l-a.site"` to `la_create_project` |
+| Our own domain | The shared test domain `l-a.site`, with a suffix of our own on each name, such as `records-uk.l-a.site` and `collectory-uk.l-a.site` | Pass `domain: "l-a.site"` to `la_create_project`, then I set the names (see below) |
 | A TLS certificate | The test wildcard certificate | Automatic with that domain (`use_la_site_certs`). It downloads and renews with the `livingatlases/l-a-site-certs` image |
-| An SMTP relay | Mailhog, which catches every email and delivers none | `docker_mail_development_mode: true` with `la_set_variables`. Its web page is at `docker_mail_development_url`, by default `mail.<domain>` |
+| An SMTP relay | Mailhog, which catches every email and delivers none | `docker_mail_development_mode: true` with `la_set_variables`. Its web page is at `docker_mail_development_url`, by default `mail.<domain>`: give it a name with our suffix too |
 | Real data | Small fixtures from la-docker-compose | `e2e/fixtures/dr-test` (8 records, `scripts/e2e-airflow-ingest.sh`) and `e2e/fixtures/bie-taxonomy` (41 taxa, `scripts/e2e-bie-import.sh`) |
 
 Be clear with me about the limits:
 
-- **`l-a.site` is shared.** Its public names, such as `records.l-a.site`, belong to a public demo.
-  So each person who tests adds the portal's names to the hosts file of their own computer, and of
-  the toolkit machine, pointing at my host. Give me that list from the preview, with the Mailhog
-  name. Without it, my browser opens the public demo and not my portal. `la_check_preconditions`
-  does not block on this: it reports the addresses as not being project servers.
-- **The certificate covers one level only** (`*.l-a.site`). A subdomain like
-  `mynode.l-a.site` is accepted by the toolkit, but `records.mynode.l-a.site` gives a certificate
-  error in the browser, and it would also need DNS records from whoever runs `l-a.site`.
+- **`l-a.site` is shared, so each portal needs its own names.** The plain names, such as
+  `records.l-a.site`, belong to a public demo. Agree a suffix with me, usually the country code.
+  The MCP cannot set these names: after saving the project, I change each service's subdomain in
+  the toolkit's **Edit** page, from `records` to `records-uk` and so on. Give me the list. Then check
+  with `la_get_project` and repeat the `publicNames` check before the first deploy.
+- **The certificate covers one level only** (`*.l-a.site`). So use `records-uk.l-a.site`, never
+  `records.uk.l-a.site`, or a domain like `mynode.l-a.site`: the toolkit accepts them, but browsers
+  give a certificate error.
+- **These names need DNS.** Ask me to request records for them from the Living Atlas community,
+  who run `l-a.site`. Until they exist, each person who tests adds the names to the hosts file of
+  their computer and of the toolkit machine, Mailhog included. `la_check_preconditions` blocks on
+  names that do not resolve from the toolkit.
 - **The certificate's private key is public,** inside a public image. Never use real passwords,
   personal data or a public service on it.
 - **Mailhog has no login.** Anyone who reaches that name reads all the emails, password resets
