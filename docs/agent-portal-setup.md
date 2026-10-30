@@ -190,7 +190,9 @@ Tell me these things plainly:
 
 Give me this list once the topology is agreed. All of it is the sysadmin's job.
 
-- [ ] Ubuntu 22.04 on every machine (24.04 is under testing).
+- [ ] Ubuntu 24.04 or 22.04 on every machine. Container hosts run both: 24.04 in production, 22.04
+      in the la-docker-compose CI. Prefer 24.04 for new ones, as it is supported for longer. For
+      VMs deployed with ala-install, 22.04 is the proven choice.
 - [ ] One user on every machine (`ubuntu` by default) with **passwordless sudo**. The check
       runs `ssh -T <server> sudo hostname` with no terminal, so a sudo password fails it.
 - [ ] An ssh key in the toolkit UI, with its public part authorised on every machine. Tell me
