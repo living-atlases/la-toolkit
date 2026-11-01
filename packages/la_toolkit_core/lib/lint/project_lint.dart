@@ -245,6 +245,16 @@ List<LintFinding> lintProject(LAProject project, {required bool hasSshKeys}) {
         'pdfgen and biocollect must be in the same docker-compose server: pdfgen has no public url, biocollect reaches it inside the server',
         fix: LintFix.editProject,
       ),
+    if (project.dockerComposeAssignedServices.contains(ecodata) &&
+        project.dockerComposeAssignedServices.contains(biocollect) &&
+        !const SetEquality<String>().equals(
+          project.getHostnames(ecodata).toSet(),
+          project.getHostnames(biocollect).toSet(),
+        ))
+      const LintFinding(
+        'ecodata and biocollect must be in the same docker-compose server: ecodata only answers biocollect by its address on a network inside the server',
+        fix: LintFix.editProject,
+      ),
     if (!project.isHub &&
         !project.isPipelinesInUse &&
         !project.getServiceE(LAServiceName.biocache_backend).use)

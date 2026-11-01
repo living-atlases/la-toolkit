@@ -183,6 +183,34 @@ void main() {
         );
       });
 
+      test('ecodata away from biocollect is reported', () {
+        const String together =
+            'ecodata and biocollect must be in the same docker-compose server: ecodata only answers biocollect by its address on a network inside the server';
+        final LAProject same = composeProject(<String>[biocollect, ecodata]);
+        expect(
+          messages(lintProject(same, hasSshKeys: true)),
+          isNot(contains(together)),
+        );
+
+        final LAProject apart = composeProject(<String>[biocollect]);
+        final LAServer dc2 = LAServer(
+          id: 'dc2',
+          name: 'dc2',
+          ip: '10.0.0.2',
+          projectId: apart.id,
+        );
+        apart.upsertServer(dc2);
+        apart.serviceInUse(ecodata, true);
+        apart.assignByType(dc2.id, DeploymentType.dockerCompose, <String>[
+          dockerCompose,
+          ecodata,
+        ]);
+        expect(
+          messages(lintProject(apart, hasSshKeys: true)),
+          contains(together),
+        );
+      });
+
       test('turning events on leaves ecodata reporting alone', () {
         final LAProject p = LAProject();
         p.serviceInUse(events, true);
