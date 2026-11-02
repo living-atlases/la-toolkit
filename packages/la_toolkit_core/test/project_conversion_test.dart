@@ -62,6 +62,20 @@ void main() {
         portal.toGeneratorJson()['LA_docker_compose_hostname'],
         'prod, staging',
       );
+
+      // Tried on staging while it still runs on its VM: the hub inventory takes
+      // one host per service, and the other host broke its parsing.
+      hub.upsertServer(LAServer(name: 'vm', ip: '10.0.0.9', projectId: hub.id));
+      hub.assignByType(
+        hub.getServerByName('vm')!.id,
+        DeploymentType.vm,
+        <String>['ala_hub'],
+      );
+      expect(
+        hub.getHostnames('ala_hub'),
+        containsAll(<String>['vm', 'staging']),
+      );
+      expect(hub.toGeneratorJson()['LA_ala_hub_hostname'], 'staging');
     });
 
     test('Test Case 1: Mixed Deployment (VM + Docker Compose)', () {

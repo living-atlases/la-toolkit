@@ -297,6 +297,7 @@ void main() {
       'ala_hub',
     ];
     expect(composeHostNames(p), <String>['dc1', 'staging']);
+    expect(hubOnlyComposeHostNames(p), <String>['staging']);
   });
 
   test('refuses unknown servers in limitToServers', () {

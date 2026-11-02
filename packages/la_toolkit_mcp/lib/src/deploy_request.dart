@@ -109,6 +109,31 @@ List<String> composeHostNames(Json p) {
   ];
 }
 
+/// The compose hosts where [p] has nothing but `docker_compose` itself: the
+/// generator gives them no alias, whatever their hubs place there.
+List<String> hubOnlyComposeHostNames(Json p) {
+  final Map<String, dynamic> cs =
+      p['clusterServices'] as Map<String, dynamic>? ??
+      const <String, dynamic>{};
+  final Map<String, dynamic> ss =
+      p['serverServices'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+  final Set<String> busy = <String>{
+    for (final Json c
+        in (p['clusters'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>())
+      if ((cs[c['id']] as List<dynamic>?)?.isNotEmpty ?? false)
+        c['serverId'] as String,
+    for (final MapEntry<String, dynamic> e in ss.entries)
+      if (((e.value as List<dynamic>?)?.length ?? 0) > 1) e.key,
+  };
+  final List<String> hosts = composeHostNames(p);
+  return <String>[
+    for (final Json s
+        in (p['servers'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>())
+      if (hosts.contains(s['name']) && !busy.contains(s['id']))
+        s['name'] as String,
+  ];
+}
+
 /// Builds the backend command for [ref] from the tool arguments.
 ///
 /// Refuses what the app would never send: a hybrid project without a `leg`
@@ -244,10 +269,13 @@ DeployRequest buildDeployRequest(
     // The inventory lists each service as its own host alias,
     // `<server>.<group>` (ansible_host=<server>), and site.yml plays the
     // `docker_compose` group: a bare server name matches no host at all and
-    // ansible would skip everything with exit 0.
+    // ansible would skip everything with exit 0. The generator aliases a
+    // server with more than one service, so one that only carries a hub is
+    // the exception.
+    final List<String> hubOnly = hubOnlyComposeHostNames(checked);
     servers = <String>[
       for (final String s in servers.isEmpty ? composeHosts : servers)
-        '$s.$dockerComposeGroup',
+        hubOnly.contains(s) ? s : '$s.$dockerComposeGroup',
     ];
   }
 

@@ -2036,6 +2036,20 @@ check results length: ${checkResults.length}''';
         : '';
   }
 
+  /// The hosts the generator gets for [serviceName]. Its hub inventory takes one
+  /// host per service, so a hub tried on a compose host while it still runs on
+  /// its VM deploys from the compose host; [getHostnames] keeps both, for what
+  /// resolves the name.
+  List<String> _generatorHostnames(String serviceName) {
+    final List<String> compose = <String>[
+      if (isHub)
+        for (final LACluster c in placement.composeClusters)
+          if (clusterServices[c.id]?.contains(serviceName) ?? false)
+            ?placement.carrierOf(c)?.name,
+    ];
+    return compose.isNotEmpty ? compose : getHostnames(serviceName);
+  }
+
   List<String> getHostnames(String serviceName) {
     final Set<String> hostnames = <String>{};
 
@@ -2341,9 +2355,7 @@ check results length: ${checkResults.length}''';
       }
 
       conf[subdomainKey] = service.usesSubdomain;
-      conf[hostnameKey] = getHostnames(service.nameInt).isNotEmpty
-          ? getHostnames(service.nameInt).join(', ')
-          : '';
+      conf[hostnameKey] = _generatorHostnames(service.nameInt).join(', ');
 
       conf[urlKey] = service.url(domain);
       conf[pathKey] = service.path;
