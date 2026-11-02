@@ -49,6 +49,9 @@ with the skipServices the preview recommends).
    the inventories were never generated: retry with prepare: true, which
    checks out the project's pinned releases in the toolkit (shared by all
    projects) and regenerates them; ask the user first.
+   stagingWarning in the answer means the run reaches production on a portal
+   with a staging host: tell the user, placements and la-docker-compose changes
+   go there first.
 3. Only if the user agrees, la_deploy with dryRun: false and confirm: true. It
    returns a runId immediately; deploys take from minutes to hours.
 4. Poll la_deploy_status (every few minutes, not seconds). When the verdict is
@@ -1839,11 +1842,17 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         // A leaked viewer is not worth failing a deploy that already started.
       }
     }
+    final String? staging = stagingWarning(
+      ref.project,
+      (req.cmd['limitToServers'] as List<dynamic>? ?? <dynamic>[])
+          .cast<String>(),
+    );
     final Json out = <String, dynamic>{
       'runId': entry['id'],
       'dryRun': req.dryRun,
       'prepared': req.prepare,
       'command': entry['rawCmd'],
+      if (staging != null) 'stagingWarning': staging,
     };
     if (!req.dryRun) {
       return <String, dynamic>{

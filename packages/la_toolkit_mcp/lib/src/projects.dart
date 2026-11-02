@@ -191,6 +191,39 @@ Map<String, String> _composeStages(Json p, Map<String, String> serverNames) {
   return out.containsValue('staging') ? out : <String, String>{};
 }
 
+/// What a docker run reaching production should tell the user when the portal
+/// has a staging host: placement and la-docker-compose changes go there first.
+/// [limit] is the run's `--limit`, `<server>.docker_compose` or a bare server.
+/// Null when the run touches no production host, or the portal has no staging.
+String? stagingWarning(Json p, List<String> limit) {
+  final Map<String, String> names = <String, String>{
+    for (final Json s in _list(p, 'servers'))
+      s['id'] as String: s['name'] as String,
+  };
+  final Map<String, String> stages = _composeStages(p, names);
+  final List<String> hosts = limit
+      .map((String h) => h.replaceFirst(RegExp(r'\.docker_compose$'), ''))
+      .toList();
+  final List<String> staging = stages.keys
+      .where((String h) => stages[h] == 'staging')
+      .toList();
+  if (!hosts.any((String h) => stages[h] == 'production')) return null;
+  final List<Json> tried = List<Json>.of(_list(p, 'cmdHistoryEntries'))
+    ..retainWhere((Json e) {
+      final String cmd = e['rawCmd'] as String? ?? '';
+      return cmd.contains('--nodryrun') && staging.any(cmd.contains);
+    })
+    ..sort(
+      (Json a, Json b) => ((b['createdAt'] as num?) ?? 0).compareTo(
+        (a['createdAt'] as num?) ?? 0,
+      ),
+    );
+  return 'This run reaches production. New placements and la-docker-compose '
+      'changes go to staging (${staging.join(', ')}) first; '
+      '${tried.isEmpty ? 'no run there yet' : 'last run there: ${tried.first['logsSuffix']}, "${tried.first['desc']}"'}. '
+      'Tell the user before a real run.';
+}
+
 /// Command history, newest first.
 List<Json> runs(Json p, {int limit = 10}) {
   final List<Json> entries = List<Json>.of(_list(p, 'cmdHistoryEntries'))

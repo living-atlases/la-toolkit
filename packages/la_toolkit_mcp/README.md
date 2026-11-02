@@ -83,6 +83,8 @@ shows up in the project history like any other.
   whose inventories were never generated ends with exit 127 and a hint to retry with
   `prepare: true`. Either way the tool refuses to prepare while any run of the last 24 h
   is still going.
+- **Production after staging.** On a portal with a staging host, a run reaching production
+  answers with `stagingWarning`, which names the last real run on staging.
 - **Hybrid portals deploy one leg at a time**, built by the core exactly as the UI builds
   them (`buildDockerLegDeployCmd` / `buildVmLegDeployCmd`). The docker leg never reaches a
   VM: `limitToServers` defaults to the hosts that carry a compose cluster and any other
