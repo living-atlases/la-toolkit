@@ -10,6 +10,60 @@ import 'package:test/test.dart';
 
 void main() {
   group('LAProject Conversion Tests', () {
+    test('A compose host that only carries a hub is a compose host', () {
+      final LAProject portal = LAProject(
+        longName: 'Portal',
+        shortName: 'P',
+        domain: 'example.org',
+      );
+      for (final String name in <String>['prod', 'staging']) {
+        portal.upsertServer(
+          LAServer(
+            name: name,
+            ip: '10.0.0.${name.length}',
+            projectId: portal.id,
+          ),
+        );
+      }
+      final LAServer prod = portal.getServerByName('prod')!;
+      final LAServer staging = portal.getServerByName('staging')!;
+      for (final String s in <String>[
+        'ala_hub',
+        'collectory',
+        'docker_compose',
+      ]) {
+        portal.getService(s).use = true;
+      }
+      for (final LAServer s in <LAServer>[prod, staging]) {
+        portal.assignByType(s.id, DeploymentType.vm, <String>[
+          'docker_compose',
+        ]);
+      }
+      portal.assignByType(prod.id, DeploymentType.dockerCompose, <String>[
+        'collectory',
+      ]);
+      final LAProject hub = LAProject(
+        longName: 'Hub',
+        shortName: 'hub1',
+        domain: 'hub.example.org',
+        isHub: true,
+        parent: portal,
+      );
+      hub.serviceInUse('ala_hub', true);
+      portal.hubs.add(hub);
+      final LACluster onStaging = portal.clusters.firstWhere(
+        (LACluster c) => c.serverId == staging.id,
+      );
+      hub.assignByType(onStaging.id, DeploymentType.dockerCompose, <String>[
+        'ala_hub',
+      ]);
+
+      expect(
+        portal.toGeneratorJson()['LA_docker_compose_hostname'],
+        'prod, staging',
+      );
+    });
+
     test('Test Case 1: Mixed Deployment (VM + Docker Compose)', () {
       final LAProject project = LAProject(
         longName: 'Test Project',
@@ -780,9 +834,10 @@ void main() {
         // Without stages the stack wins, as before: the VM is shadowed.
         final Map<String, dynamic> before = project.toGeneratorJson();
         expect(
-          extraOf(before, 'espacial')
-              .where((String e) => e.startsWith('$collections:'))
-              .toList(),
+          extraOf(
+            before,
+            'espacial',
+          ).where((String e) => e.startsWith('$collections:')).toList(),
           <String>['$collections:10.0.0.207'],
         );
         expect(before.containsKey('LA_docker_stage_by_host'), isFalse);
@@ -794,16 +849,23 @@ void main() {
         final Map<String, dynamic> json = project.toGeneratorJson();
 
         expect(
-          extraOf(json, 'espacial')
-              .where((String e) => e.startsWith('$collections:'))
-              .toList(),
+          extraOf(
+            json,
+            'espacial',
+          ).where((String e) => e.startsWith('$collections:')).toList(),
           <String>['$collections:10.0.0.154'],
           reason: 'production reaches the VM that holds the data, not staging',
         );
         // The staging host stays reachable by its own name.
-        expect(extraOf(json, 'espacial'), contains('docker-staging:10.0.0.207'));
+        expect(
+          extraOf(json, 'espacial'),
+          contains('docker-staging:10.0.0.207'),
+        );
         // Staging still sees production.
-        expect(extraOf(json, 'docker-staging'), contains('$spatial:10.0.0.135'));
+        expect(
+          extraOf(json, 'docker-staging'),
+          contains('$spatial:10.0.0.135'),
+        );
         expect(json['LA_docker_stage_by_host'], <String, String>{
           'docker-staging': 'staging',
           'espacial': 'production',

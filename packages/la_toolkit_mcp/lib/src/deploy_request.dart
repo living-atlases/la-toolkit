@@ -80,18 +80,26 @@ class DeployRequest {
 /// The inventory group site.yml plays, and the suffix of its host aliases.
 const String dockerComposeGroup = 'docker_compose';
 
-/// The hosts that carry a docker-compose cluster with services: the only ones
-/// a docker leg may reach.
+/// The hosts that carry a docker-compose cluster with services, of [p] or of
+/// its hubs: the only ones a docker leg may reach.
 List<String> composeHostNames(Json p) {
-  final Map<String, dynamic> cs =
-      p['clusterServices'] as Map<String, dynamic>? ??
-      const <String, dynamic>{};
+  final List<Map<String, dynamic>> placements = <Map<String, dynamic>>[
+    for (final Json q in <Json>[
+      p,
+      ...(p['hubs'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>(),
+    ])
+      q['clusterServices'] as Map<String, dynamic>? ??
+          const <String, dynamic>{},
+  ];
   final Set<String> ids = <String>{
     for (final Json c
         in (p['clusters'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>())
       if (c['type'] == 'dockerCompose' &&
           c['serverId'] is String &&
-          ((cs[c['id']] as List<dynamic>?)?.isNotEmpty ?? false))
+          placements.any(
+            (Map<String, dynamic> cs) =>
+                (cs[c['id']] as List<dynamic>?)?.isNotEmpty ?? false,
+          ))
         c['serverId'] as String,
   };
   return <String>[

@@ -281,6 +281,24 @@ void main() {
     expect(composeHostNames(project(compose: false, vm: true)), isEmpty);
   });
 
+  test('composeHostNames counts a compose host only a hub uses', () {
+    final Json p = portalWithHub();
+    (p['servers'] as List<dynamic>).add(<String, dynamic>{
+      'id': 'stg',
+      'name': 'staging',
+    });
+    (p['clusters'] as List<dynamic>).add(<String, dynamic>{
+      'id': 'cstg',
+      'type': 'dockerCompose',
+      'serverId': 'stg',
+    });
+    final Json hub = (p['hubs'] as List<dynamic>).single as Json;
+    (hub['clusterServices'] as Map<String, dynamic>)['cstg'] = <String>[
+      'ala_hub',
+    ];
+    expect(composeHostNames(p), <String>['dc1', 'staging']);
+  });
+
   test('refuses unknown servers in limitToServers', () {
     expect(
       () => build(project(), <String, Object?>{

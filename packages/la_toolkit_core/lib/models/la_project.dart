@@ -363,7 +363,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
       if (p.getService(events).use) {
         p.serviceInUse(eventsElasticSearch, true);
       }
-      final String? biocacheHostname = a('biocache_backend_hostname') as String?;
+      final String? biocacheHostname =
+          a('biocache_backend_hostname') as String?;
       // Present but empty means "not deployed": the generator always writes the
       // key. Treating that as "biocache-store is in use" turned pipelines off on
       // every modern inventory, docker-compose ones included.
@@ -781,7 +782,8 @@ class LAProject implements IsJsonSerializable<LAProject> {
       return <String>[];
     }
     final bool someServerTakesVMServices = servers.any(
-      (LAServer s) => !getServerServices(serverId: s.id).contains(dockerCompose),
+      (LAServer s) =>
+          !getServerServices(serverId: s.id).contains(dockerCompose),
     );
     if (someServerTakesVMServices) {
       return <String>[];
@@ -1115,7 +1117,9 @@ class LAProject implements IsJsonSerializable<LAProject> {
       s.aliases = s.aliases
           .map((String alias) => '$alias-$serverSuffix')
           .toList();
-      s.gateways = s.gateways.map((String gwId) => idMap[gwId] ?? gwId).toList();
+      s.gateways = s.gateways
+          .map((String gwId) => idMap[gwId] ?? gwId)
+          .toList();
       s.reachable = ServiceStatus.unknown;
       s.sshReachable = ServiceStatus.unknown;
       s.sudoEnabled = ServiceStatus.unknown;
@@ -1156,10 +1160,11 @@ class LAProject implements IsJsonSerializable<LAProject> {
           MapEntry<String, List<String>>(idMap[serverId] ?? serverId, services),
     );
     p.clusterServices = p.clusterServices.map(
-      (String clusterId, List<String> services) => MapEntry<String, List<String>>(
-        idMap[clusterId] ?? clusterId,
-        services,
-      ),
+      (String clusterId, List<String> services) =>
+          MapEntry<String, List<String>>(
+            idMap[clusterId] ?? clusterId,
+            services,
+          ),
     );
     p.dirName = newDirName ?? p.suggestDirName();
     return idMap;
@@ -1784,8 +1789,8 @@ check results length: ${checkResults.length}''';
   /// Distinct from [hasAnyServerWithDockerCompose], which only looks at the
   /// docker_compose service's serviceDeploys rows.
   bool hasComposeCarrierHost() => placement.composeClusters.any(
-        (LACluster c) => placement.carrierOf(c) != null,
-      );
+    (LACluster c) => placement.carrierOf(c) != null,
+  );
 
   /// Defensive check for a hub's compose placement: living-atlases/la-docker-compose#14
   /// lifted both fase-1 constraints (a hub may now spread its compose-placed
@@ -2353,7 +2358,10 @@ check results length: ${checkResults.length}''';
       // alias, so the hub's own JVM resolves it through public DNS from inside the
       // stack and its wait-for-branding gate polls the public IP.
       final LAProject aliasRoot = isHub ? parent! : this;
-      for (final LAProject current in <LAProject>[aliasRoot, ...aliasRoot.hubs]) {
+      for (final LAProject current in <LAProject>[
+        aliasRoot,
+        ...aliasRoot.hubs,
+      ]) {
         // `current` stays the owner of the domain and the services; the
         // cluster and its carrier resolve through its placement, which for a
         // hub reaches the portal's clusters.
@@ -2477,9 +2485,12 @@ check results length: ${checkResults.length}''';
       final List<String> composeHosts = <String>[];
       bool anyServiceInDockerCompose = false;
 
+      // A hub places its services on its portal's compose hosts, and one host may
+      // carry nothing but a hub: it still has to be in [docker_compose].
       for (final LACluster cluster in placement.composeClusters) {
-        final List<String>? servicesInCluster = clusterServices[cluster.id];
-        if (servicesInCluster != null && servicesInCluster.isNotEmpty) {
+        if (<LAProject>[this, ...hubs].any(
+          (LAProject p) => p.clusterServices[cluster.id]?.isNotEmpty ?? false,
+        )) {
           anyServiceInDockerCompose = true;
           final LAServer? s = placement.carrierOf(cluster);
           if (s != null) {
@@ -3245,9 +3256,7 @@ check results length: ${checkResults.length}''';
       }
       clusters.removeWhere((LACluster c) => c.serverId == own.id);
       serverServices.remove(own.id);
-      serviceDeploys.removeWhere(
-        (LAServiceDeploy sd) => sd.serverId == own.id,
-      );
+      serviceDeploys.removeWhere((LAServiceDeploy sd) => sd.serverId == own.id);
       servers.removeWhere((LAServer s) => s.id == own.id);
       if (moved.isNotEmpty) {
         assignByType(
@@ -3538,7 +3547,8 @@ check results length: ${checkResults.length}''';
     for (final LACluster cluster in clusters.where(
       (LACluster c) => c.type == DeploymentType.dockerCompose,
     )) {
-      final List<String> onHost = serverServices[cluster.serverId] ?? <String>[];
+      final List<String> onHost =
+          serverServices[cluster.serverId] ?? <String>[];
       result.addAll(
         onHost.where(
           (String n) =>
@@ -3556,9 +3566,7 @@ check results length: ${checkResults.length}''';
     for (final String name in names) {
       expanded.addAll(
         LAServiceDesc.list(false)
-            .where(
-              (LAServiceDesc desc) => desc.parentService?.toS() == name,
-            )
+            .where((LAServiceDesc desc) => desc.parentService?.toS() == name)
             .map((LAServiceDesc desc) => desc.nameInt),
       );
     }
@@ -3583,10 +3591,7 @@ check results length: ${checkResults.length}''';
         (selection.isEmpty || selection.contains('all'))
         ? vmSelectable
         : selection.where(vmSelectable.contains).toList();
-    return userCmd.copyWith(
-      dockerCompose: false,
-      deployServices: vmSelected,
-    );
+    return userCmd.copyWith(dockerCompose: false, deployServices: vmSelected);
   }
 
   /// Docker leg of a hybrid deploy: the la-docker-compose run. Compose is `all`
