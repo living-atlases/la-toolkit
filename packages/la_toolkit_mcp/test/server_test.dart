@@ -42,6 +42,13 @@ class _Backend {
 
   final List<Json> patches = <Json>[];
 
+  /// The whole run history of the portal, newest first, as cmd-history pages
+  /// it. Null: the backend predates the route (404).
+  List<Json>? fullHistory;
+
+  /// An answer to cmd-history that is not JSON (a SPA page, for instance).
+  bool historyServesHtml = false;
+
   /// serverServices / clusterServices from the deploy rows, as the backend's
   /// populate-project builds them on every read.
   static Json withDerivedMaps(Json p) {
@@ -171,6 +178,22 @@ class _Backend {
     calls.add('${r.method} $path');
     Json? body() => r.body.isEmpty ? null : json.decode(r.body) as Json;
     switch (path) {
+      case 'cmd-history':
+        if (historyServesHtml) {
+          return http.Response(
+            '<!doctype html>',
+            200,
+            headers: <String, String>{'content-type': 'text/html'},
+          );
+        }
+        final List<Json>? all = fullHistory;
+        if (all == null) return http.Response('Not Found', 404);
+        final int skip = int.parse(r.url.queryParameters['skip']!);
+        final int limit = int.parse(r.url.queryParameters['limit']!);
+        return _json(<String, dynamic>{
+          'entries': all.skip(skip).take(limit).toList(),
+          'total': all.length,
+        });
       case 'get-conf':
         return _json(<String, dynamic>{'projects': projects});
       case 'ansiblew':
@@ -657,6 +680,99 @@ void main() {
             as List<dynamic>;
     expect(out, hasLength(2));
     expect((out.first as Json)['runId'], 'r4');
+  });
+
+  group('run history beyond the five embedded runs', () {
+    // Twelve runs, newest first; get-conf embeds only the newest five.
+    void withHistory() {
+      final List<Json> history = <Json>[
+        for (int i = 11; i >= 0; i--) run('r$i', 1000 + i),
+      ];
+      fake.fullHistory = history;
+      fake.projects.first['cmdHistoryEntries'] = history.take(5).toList();
+    }
+
+    test('la_list_runs pages the backend history past the five', () async {
+      withHistory();
+      final List<dynamic> out =
+          json.decode(
+                text(
+                  await call('la_list_runs', <String, Object?>{
+                    'project': 'demo',
+                    'limit': 12,
+                  }),
+                ),
+              )
+              as List<dynamic>;
+      expect(out.map((dynamic r) => (r as Json)['runId']), <String>[
+        for (int i = 11; i >= 0; i--) 'r$i',
+      ]);
+      expect(fake.calls, contains('GET cmd-history'));
+    });
+
+    test('a deploy status finds a run older than the five', () async {
+      withHistory();
+      final Json s =
+          json.decode(
+                text(
+                  await call('la_deploy_status', <String, Object?>{
+                    'project': 'demo',
+                    'runId': 'r2',
+                  }),
+                ),
+              )
+              as Json;
+      expect(s['runId'], 'r2');
+    });
+
+    test('an unknown run id is still refused', () async {
+      withHistory();
+      final CallToolResult r = await call('la_deploy_status', <String, Object?>{
+        'project': 'demo',
+        'runId': 'nope',
+      });
+      expect(r.isError, isTrue);
+      expect(text(r), contains('No run "nope"'));
+    });
+
+    test(
+      'an older backend without the route gives the embedded runs',
+      () async {
+        fake.projects.first['cmdHistoryEntries'] = <Json>[
+          for (int i = 0; i < 5; i++) run('r$i', 1000 + i),
+        ];
+        final List<dynamic> out =
+            json.decode(
+                  text(
+                    await call('la_list_runs', <String, Object?>{
+                      'project': 'demo',
+                      'limit': 12,
+                    }),
+                  ),
+                )
+                as List<dynamic>;
+        expect(out, hasLength(5));
+      },
+    );
+
+    test(
+      'a backend answering HTML instead of JSON gives the embedded runs',
+      () async {
+        withHistory();
+        fake.historyServesHtml = true;
+        final List<dynamic> out =
+            json.decode(
+                  text(
+                    await call('la_list_runs', <String, Object?>{
+                      'project': 'demo',
+                      'limit': 12,
+                    }),
+                  ),
+                )
+                as List<dynamic>;
+        expect(out, hasLength(5));
+      },
+    );
   });
 
   test('la_check_connectivity sends the servers and sums up each', () async {

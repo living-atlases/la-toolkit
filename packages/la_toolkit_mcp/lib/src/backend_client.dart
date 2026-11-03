@@ -223,6 +223,29 @@ class BackendClient {
     return r['running'] == true;
   }
 
+  /// One page of a portal's run history, newest first: `{entries, total}`.
+  /// Null when the backend cannot page: a build without the route (404), or
+  /// an answer that is not a JSON object. Callers then use the embedded runs.
+  Future<Map<String, dynamic>?> cmdHistory(
+    String projectId, {
+    required int skip,
+    required int limit,
+  }) async {
+    final Uri uri = baseUri
+        .resolve('/api/v1/cmd-history')
+        .replace(
+          queryParameters: <String, String>{
+            'projectId': projectId,
+            'skip': '$skip',
+            'limit': '$limit',
+          },
+        );
+    final http.Response r = await _client.get(uri).timeout(_timeout);
+    if (r.statusCode == 404) return null;
+    final Object? body = _decode('cmd-history', r);
+    return body is Map<String, dynamic> ? body : null;
+  }
+
   /// `{code, results, logs (base64), logsColorized (base64), running, duration?}`
   Future<Map<String, dynamic>> cmdResults({
     required String cmdHistoryEntryId,

@@ -189,8 +189,19 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
         required: <String>['project'],
       ),
       readOnly: true,
-      (Map<String, Object?> a) async =>
-          runs((await _resolve(a)).project, limit: (a['limit'] as int?) ?? 10),
+      (Map<String, Object?> a) async {
+        final ProjectRef ref = await _resolve(a);
+        final int limit = (a['limit'] as int?) ?? 10;
+        // The backend pages the whole history; get-conf embeds only the newest
+        // five, which is all an older backend can give.
+        final List<Json>? paged = await pagedRuns(
+          _historyPage(ref),
+          limit: limit,
+        );
+        return paged != null
+            ? paged.map(runSummary).toList()
+            : runs(ref.project, limit: limit);
+      },
     );
 
     _tool(
@@ -733,7 +744,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
           );
         }
         final ProjectRef ref = await _resolve(a);
-        final Json entry = _entry(ref, a['runId'] as String?);
+        final Json entry = await _entry(ref, a['runId'] as String?);
         final bool killed = await backend.deployCancel(
           entry['logsPrefix'] as String,
           entry['logsSuffix'] as String,
@@ -1932,8 +1943,23 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
     return found;
   }
 
-  Json _entry(ProjectRef ref, String? runId) {
-    final Json? e = findRun(ref.project, runId);
+  /// Pages of the portal's run history from the backend, for [pagedRuns] and
+  /// [findRunPaged].
+  HistoryPage _historyPage(ProjectRef ref) => (int skip, int limit) async {
+    final Map<String, dynamic>? page = await backend.cmdHistory(
+      ref.id,
+      skip: skip,
+      limit: limit,
+    );
+    return page;
+  };
+
+  /// The run [runId], or the newest embedded run when it is null. An id older
+  /// than the five embedded runs is looked up in the backend's history.
+  Future<Json> _entry(ProjectRef ref, String? runId) async {
+    final Json? e =
+        findRun(ref.project, runId) ??
+        (runId == null ? null : await findRunPaged(runId, _historyPage(ref)));
     if (e == null) {
       throw InvalidRequest(
         runId == null
@@ -1946,7 +1972,7 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
 
   Future<(Json, Json)> _runResults(Map<String, Object?> a) async {
     final ProjectRef ref = await _resolve(a);
-    final Json entry = _entry(ref, a['runId'] as String?);
+    final Json entry = await _entry(ref, a['runId'] as String?);
     final Json r = await backend.cmdResults(
       cmdHistoryEntryId: entry['id'] as String,
       logsPrefix: entry['logsPrefix'] as String,

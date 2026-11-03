@@ -232,21 +232,69 @@ List<Json> runs(Json p, {int limit = 10}) {
         (a['createdAt'] as num?) ?? 0,
       ),
     );
-  return entries
-      .take(limit)
-      .map(
-        (Json e) => <String, dynamic>{
-          'runId': e['id'],
-          'desc': e['desc'],
-          'started': e['logsSuffix'],
-          'result': e['result'],
-          if (e['duration'] is num)
-            'durationMin': ((e['duration'] as num) / 60000).round(),
-          'cmd': e['rawCmd'],
-        },
-      )
-      .toList();
+  return entries.take(limit).map(runSummary).toList();
 }
+
+/// One history entry as `la_list_runs` shows it.
+Json runSummary(Json e) => <String, dynamic>{
+  'runId': e['id'],
+  'desc': e['desc'],
+  'started': e['logsSuffix'],
+  'result': e['result'],
+  if (e['duration'] is num)
+    'durationMin': ((e['duration'] as num) / 60000).round(),
+  'cmd': e['rawCmd'],
+};
+
+/// One page of a portal's history from the backend's `cmd-history`:
+/// `{entries, total}`, newest first. Null when the backend cannot page (an
+/// older build without the route, or an answer that is not JSON).
+typedef HistoryPage = Future<Json?> Function(int skip, int limit);
+
+/// Up to [limit] history entries, newest first, paged from the backend.
+/// Null when the backend cannot page, so the caller can use the five entries
+/// that get-conf embeds.
+Future<List<Json>?> pagedRuns(
+  HistoryPage page, {
+  required int limit,
+  int pageSize = 100,
+}) async {
+  final List<Json> out = <Json>[];
+  while (out.length < limit) {
+    final int want = limit - out.length;
+    final Json? r = await page(out.length, want < pageSize ? want : pageSize);
+    if (r == null) return null;
+    final List<Json> entries = _entriesOf(r);
+    out.addAll(entries);
+    if (entries.isEmpty || out.length >= _totalOf(r)) break;
+  }
+  return out;
+}
+
+/// The history entry with [runId] somewhere in the backend's history, paging
+/// through it. Null when there is none, or when the backend cannot page.
+Future<Json?> findRunPaged(
+  String runId,
+  HistoryPage page, {
+  int pageSize = 100,
+}) async {
+  int skip = 0;
+  while (true) {
+    final Json? r = await page(skip, pageSize);
+    if (r == null) return null;
+    final List<Json> entries = _entriesOf(r);
+    for (final Json e in entries) {
+      if (e['id'] == runId) return e;
+    }
+    skip += entries.length;
+    if (entries.isEmpty || skip >= _totalOf(r)) return null;
+  }
+}
+
+List<Json> _entriesOf(Json page) =>
+    (page['entries'] as List<dynamic>? ?? const <dynamic>[]).cast<Json>();
+
+int _totalOf(Json page) => (page['total'] as num?)?.toInt() ?? 0;
 
 /// The history entry for [runId], or the newest one when it is null.
 Json? findRun(Json p, String? runId) {
