@@ -24,7 +24,6 @@ class _BrandingSelectorState extends State<BrandingSelector> {
     Branding(name: 'cosmo', desc: ''),
     Branding(name: 'darkly', desc: 'Flatly night mode theme'),
     Branding(name: 'flatly', desc: 'Flat and modern theme'),
-    Branding(name: 'material', desc: 'Material-Bootstrap experimental theme'),
     Branding(name: 'paper', desc: 'Material inspired theme'),
     Branding(name: 'sandstone', desc: ''),
     Branding(name: 'simplex', desc: 'Minimalist theme that works great'),

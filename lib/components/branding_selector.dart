@@ -114,7 +114,6 @@ class _BrandingSelectorState extends State<BrandingSelector> {
     Branding(name: 'cosmo', desc: ''),
     Branding(name: 'darkly', desc: 'Flatly night mode theme'),
     Branding(name: 'flatly', desc: 'Flat and modern theme'),
-    Branding(name: 'material', desc: 'Material-Bootstrap experimental theme'),
     Branding(name: 'paper', desc: 'Material inspired theme'),
     Branding(name: 'sandstone', desc: ''),
     Branding(name: 'simplex', desc: 'Minimalist theme that works great'),
@@ -137,6 +136,8 @@ class _BrandingSelectorState extends State<BrandingSelector> {
   void initState() {
     final Branding currentBranding = _brandings.firstWhere(
       (Branding b) => b.name == widget.initialValue,
+      // A theme that is gone (material) is built as clean by base-branding
+      orElse: () => _brandings.firstWhere((Branding b) => b.name == 'clean'),
     );
     _selected = <Branding>[currentBranding];
 

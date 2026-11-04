@@ -203,7 +203,6 @@ flutter:
     - assets/images/themes/cosmo.png
     - assets/images/themes/darkly.png
     - assets/images/themes/flatly.png
-    - assets/images/themes/material.png
     - assets/images/themes/paper.png
     - assets/images/themes/sandstone.png
     - assets/images/themes/simplex.png
