@@ -1287,6 +1287,96 @@ void main() {
     );
   });
 
+  group('la_set_extras', () {
+    setUp(() => fake.projects.add(portalWithHub()));
+
+    const String extras =
+        '[hub-hub1:vars]\n'
+        '\n'
+        '[regions-hub1:vars]\n'
+        'menu_config_json = {{ inventory_dir }}/../hubportal/files/menu.json\n';
+
+    test('reads the text and its sections, and stores nothing', () async {
+      final CallToolResult r = await call('la_set_extras', <String, Object?>{
+        'project': 'hub1',
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['extras'], '');
+      expect(out['sections'], isEmpty);
+      expect(out['shownInTunePage'], isFalse);
+      expect(fake.patches, isEmpty);
+    });
+
+    test('previews the lines and sections that come and go', () async {
+      final CallToolResult r = await call('la_set_extras', <String, Object?>{
+        'project': 'hub1',
+        'extras': extras,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['saved'], isNot(isTrue));
+      final Json diff = out['extras'] as Json;
+      expect(diff['removed'], isEmpty);
+      expect(
+        diff['added'],
+        contains(
+          'menu_config_json = {{ inventory_dir }}/../hubportal/files/menu.json',
+        ),
+      );
+      expect((diff['sections'] as Json)['after'], <String>[
+        '[hub-hub1:vars]',
+        '[regions-hub1:vars]',
+      ]);
+      expect(out['advancedTunePageTurnedOn'], isTrue);
+      expect(
+        (out['genConfChanges'] as Json)['added'],
+        contains('LA_additionalVariables'),
+      );
+      expect(fake.patches, isEmpty);
+    });
+
+    test('saves the text and shows it in the Tune page', () async {
+      final CallToolResult r = await call('la_set_extras', <String, Object?>{
+        'project': 'hub1',
+        'extras': extras,
+        'save': true,
+        'confirm': true,
+      });
+      expect(r.isError, isNot(isTrue), reason: text(r));
+      final Json out = json.decode(text(r)) as Json;
+      expect(out['saved'], isTrue);
+      expect(File(out['backup'] as String).existsSync(), isTrue);
+      final Json stored = fake.updatedProjects.first;
+      expect(stored['isHub'], isTrue);
+      expect(
+        utf8.decode(base64.decode(stored['additionalVariables'] as String)),
+        extras,
+      );
+      expect(stored['advancedTune'], isTrue);
+      expect((stored['genConf'] as Json)['LA_additionalVariables'], isNotNull);
+    });
+
+    test(
+      'refuses a save without confirm, the same text, and a non-string',
+      () async {
+        for (final Map<String, Object?> bad in <Map<String, Object?>>[
+          <String, Object?>{'extras': extras, 'save': true},
+          <String, Object?>{'extras': ''},
+          <String, Object?>{'extras': 42},
+          <String, Object?>{'save': true, 'confirm': true},
+        ]) {
+          final CallToolResult r = await call(
+            'la_set_extras',
+            <String, Object?>{'project': 'hub1', ...bad},
+          );
+          expect(r.isError, isTrue, reason: '$bad');
+        }
+        expect(fake.patches, isEmpty);
+      },
+    );
+  });
+
   // Saves send what changed (patch-project), so a browser saving while the
   // tool works is merged, unless it changed the same setting.
   group('saving while another session saves', () {

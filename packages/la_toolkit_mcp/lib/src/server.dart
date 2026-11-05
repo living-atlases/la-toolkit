@@ -20,6 +20,7 @@ import 'package:la_toolkit_core/synth/synthesize_project.dart';
 import 'backend_client.dart';
 import 'deploy_outcome.dart';
 import 'deploy_request.dart';
+import 'extras.dart';
 import 'lint.dart';
 import 'placement.dart';
 import 'preconditions.dart';
@@ -63,6 +64,9 @@ la_set_releases changes the releases a portal pins (preview, then save and
 confirm); the next la_deploy with prepare: true applies them.
 la_set_variables changes the Tune page variables of a portal or hub (a hub's
 branding_source, for one), the same way.
+la_set_extras reads and writes the Ansible Extras of a portal or hub: the
+inventory text that carries what no form offers (docker_config_files,
+menu_config_json, per-service overrides). Without `extras` it reads them.
 la_set_servers adds, changes or removes machines, and la_set_placement moves,
 assigns or unassigns services on them (docker_compose included), both the same
 way (preview, then save and confirm); a later deploy of the servers involved
@@ -514,6 +518,41 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       ),
       openWorld: true,
       _setVariables,
+    );
+
+    _tool(
+      'la_set_extras',
+      'Read and write the Ansible Extras of a portal or hub: the free-form '
+          'inventory text of its Tune page ("Other variables"), where the '
+          'variables no form offers live (docker_config_files, '
+          'menu_config_json, per-service overrides), in [<group>:vars] '
+          'sections, [<group>-<hub>:vars] for a hub. Without `extras` it '
+          'returns the text and its sections. With `extras` (the whole new '
+          'text) it previews which lines and sections come and go, plus the '
+          'generator keys and the lint. save: true AND confirm: true store '
+          'it (after a backup of the project), and turn the Tune page\'s '
+          'advanced switch on so the text is visible there; only once the '
+          'user agreed. Touches no server: the next la_deploy with prepare: '
+          'true regenerates the inventories with them.',
+      Schema.object(
+        properties: <String, Schema>{
+          'project': _projectArg,
+          'extras': Schema.string(
+            description:
+                'The whole new text, as the Tune page holds it (not a patch, '
+                'and an empty string clears it). Read it first and send it '
+                'back changed, or sections of it are lost.',
+          ),
+          'save': Schema.bool(description: 'Store it (default false).'),
+          'confirm': Schema.bool(
+            description:
+                'Required with save: true. Set it only when the user agreed.',
+          ),
+        },
+        required: <String>['project'],
+      ),
+      openWorld: true,
+      _setExtras,
     );
 
     _tool(
@@ -1223,6 +1262,51 @@ base class LaToolkitMcpServer extends MCPServer with ToolsSupport {
       before,
       p,
       head: <String, dynamic>{'variables': changes},
+      touched: const <String>[],
+      removesComposeServices: false,
+    );
+    return save ? _saveChange(ref, p, preview) : preview;
+  }
+
+  Future<Object?> _setExtras(Map<String, Object?> a) async {
+    final Object? raw = a['extras'];
+    final ProjectRef ref = await _resolve(a);
+    final LAProject before = projectModel(ref);
+    final String was = before.additionalVariablesDecoded();
+    if (raw == null) {
+      if (a['save'] == true) {
+        throw InvalidRequest('Nothing to save: pass `extras` with the text.');
+      }
+      return <String, dynamic>{
+        'project': ref.dirName,
+        'extras': was,
+        'sections': extrasSections(was),
+        'shownInTunePage': before.advancedTune,
+      };
+    }
+    if (raw is! String) {
+      throw InvalidRequest('`extras` must be the whole text, as a string.');
+    }
+    final bool save = _saveArgs(a, 'changes the Ansible Extras');
+    if (raw == was) {
+      throw InvalidRequest(
+        'The Ansible Extras of "${ref.dirName}" already say that.',
+      );
+    }
+    final LAProject p = projectModel(ref);
+    p.additionalVariables = raw.isEmpty ? '' : base64.encode(utf8.encode(raw));
+    // A text nobody can see in the UI is a trap: the Tune page only shows it
+    // with its advanced switch on.
+    final bool showing = p.advancedTune;
+    if (!showing) p.advancedTune = true;
+    final Json preview = await _previewChange(
+      ref,
+      before,
+      p,
+      head: <String, dynamic>{
+        'extras': extrasDiff(was, raw),
+        if (!showing) 'advancedTunePageTurnedOn': true,
+      },
       touched: const <String>[],
       removesComposeServices: false,
     );

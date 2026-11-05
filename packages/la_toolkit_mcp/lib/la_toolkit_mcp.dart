@@ -4,6 +4,7 @@ library;
 export 'src/backend_client.dart';
 export 'src/deploy_outcome.dart';
 export 'src/deploy_request.dart';
+export 'src/extras.dart';
 export 'src/preconditions.dart';
 export 'src/projects.dart';
 export 'src/releases.dart';

@@ -131,9 +131,10 @@ result back to you.
 - **Inside a server.** You have no shell on the machines, and no health-check tool. Reading
   logs, `docker inspect`, `curl`, database dumps, data imports and stopping a VM are mine.
 - **Toolkit UI only.** Creating or importing ssh keys, importing an existing portal with the
-  (+) button, creating hubs, and the **Ansible Extras** box: Tune page, **Advanced options**.
+  (+) button, and creating hubs.
   `la_set_variables` refuses anything that is not a Tune variable, such as `la_env`,
-  `docker_config_files` or the TLS variables.
+  `docker_config_files` or the TLS variables: those live in the **Ansible Extras** box
+  (Tune page, **Advanced options**), which `la_set_extras` reads and writes as a whole text.
 - **Outside the toolkit.** Machines, DNS, the proxy in front, certificates and their
   renewal, the mail relay, the backup destination and external monitoring.
 
