@@ -1,6 +1,7 @@
 // The project lint: what the LA Toolkit warns about a project before it is
 // deployed. It used to live inside the LintProjectPanel widget; it is here so
 // the app, the CLI and the MCP server all judge a project the same way.
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 
@@ -219,13 +220,40 @@ List<LintFinding> lintProject(LAProject project, {required bool hasSshKeys}) {
       const LintFinding(
         'The collections and the occurrences front-end (biocache-hub) services are in the same server. This can cause start-up problems when caches are enabled',
       ),
-    if (!project.servicesInDifferentServers(ecodata, spatial))
+    if (!project.servicesInDifferentServers(ecodata, spatial) &&
+        !project.hasAnyServerWithDockerCompose())
       const LintFinding(
         'The ecodata and spatial services are in the same server. This can cause deploy problems',
       ),
-    if (!project.servicesInDifferentServers(ecodataReporting, spatial))
+    if (!project.servicesInDifferentServers(ecodataReporting, spatial) &&
+        !project.hasAnyServerWithDockerCompose())
       const LintFinding(
         'The ecodata reporting and spatial services are in the same server. This can cause deploy problems',
+      ),
+    if (project.dockerComposeAssignedServices.contains(ecodataReporting))
+      const LintFinding(
+        'ecodata reporting only runs on a VM: la-docker-compose has no service for it. Move it to a VM or stop using it',
+        fix: LintFix.editProject,
+      ),
+    if (project.dockerComposeAssignedServices.contains(pdfgen) &&
+        project.dockerComposeAssignedServices.contains(biocollect) &&
+        !const SetEquality<String>().equals(
+          project.getHostnames(pdfgen).toSet(),
+          project.getHostnames(biocollect).toSet(),
+        ))
+      const LintFinding(
+        'pdfgen and biocollect must be in the same docker-compose server: pdfgen has no public url, biocollect reaches it inside the server',
+        fix: LintFix.editProject,
+      ),
+    if (project.dockerComposeAssignedServices.contains(ecodata) &&
+        project.dockerComposeAssignedServices.contains(biocollect) &&
+        !const SetEquality<String>().equals(
+          project.getHostnames(ecodata).toSet(),
+          project.getHostnames(biocollect).toSet(),
+        ))
+      const LintFinding(
+        'ecodata and biocollect must be in the same docker-compose server: ecodata only answers biocollect by its address on a network inside the server',
+        fix: LintFix.editProject,
       ),
     if (!project.isHub &&
         !project.isPipelinesInUse &&

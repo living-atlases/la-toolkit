@@ -721,7 +721,6 @@ class LAServiceDesc {
       depends: LAServiceName.biocollect,
       desc: 'provides reporting service for ecodata',
       optional: true,
-      parentService: LAServiceName.events,
       path: '',
     ),
     dockerCommon: LAServiceDesc(

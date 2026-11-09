@@ -73,9 +73,9 @@ void main() {
         alaHub,
       ]);
       p.status = LAProjectStatus.basicDefined;
-      String? finding() => messages(lintProject(p, hasSshKeys: true))
-          .where((String m) => m.contains('only on staging'))
-          .firstOrNull;
+      String? finding() => messages(
+        lintProject(p, hasSshKeys: true),
+      ).where((String m) => m.contains('only on staging')).firstOrNull;
 
       // Without stages everything is production.
       expect(p.servicesOnlyInStaging(), isEmpty);
@@ -99,6 +99,123 @@ void main() {
         messages(lintProject(p, hasSshKeys: true)),
         contains('You should use solrcloud for indexing pipelines'),
       );
+    });
+
+    group('ecodata on docker-compose', () {
+      const String reportingVmOnly =
+          'ecodata reporting only runs on a VM: la-docker-compose has no service for it. Move it to a VM or stop using it';
+
+      LAProject composeProject(List<String> services) {
+        final LAProject p = LAProject();
+        final LAServer dc1 = LAServer(
+          id: 'dc1',
+          name: 'dc1',
+          ip: '10.0.0.1',
+          projectId: p.id,
+        );
+        p.upsertServer(dc1);
+        p.serviceInUse(dockerCompose, true);
+        p.serviceInUse(biocollect, true);
+        for (final String service in services) {
+          p.serviceInUse(service, true);
+        }
+        p.assignByType(dc1.id, DeploymentType.dockerCompose, <String>[
+          dockerCompose,
+          ...services,
+        ]);
+        return p;
+      }
+
+      test('ecodata next to spatial is only a problem on a VM', () {
+        final List<String> found = messages(
+          lintProject(
+            composeProject(<String>[ecodata, spatial]),
+            hasSshKeys: true,
+          ),
+        );
+        expect(
+          found,
+          isNot(
+            contains(
+              'The ecodata and spatial services are in the same server. This can cause deploy problems',
+            ),
+          ),
+        );
+      });
+
+      test('ecodata reporting on a compose host is reported', () {
+        expect(
+          messages(
+            lintProject(
+              composeProject(<String>[ecodataReporting]),
+              hasSshKeys: true,
+            ),
+          ),
+          contains(reportingVmOnly),
+        );
+      });
+
+      test('pdfgen away from biocollect is reported', () {
+        const String together =
+            'pdfgen and biocollect must be in the same docker-compose server: pdfgen has no public url, biocollect reaches it inside the server';
+        final LAProject same = composeProject(<String>[biocollect, pdfgen]);
+        expect(
+          messages(lintProject(same, hasSshKeys: true)),
+          isNot(contains(together)),
+        );
+
+        final LAProject apart = composeProject(<String>[biocollect]);
+        final LAServer dc2 = LAServer(
+          id: 'dc2',
+          name: 'dc2',
+          ip: '10.0.0.2',
+          projectId: apart.id,
+        );
+        apart.upsertServer(dc2);
+        apart.serviceInUse(pdfgen, true);
+        apart.assignByType(dc2.id, DeploymentType.dockerCompose, <String>[
+          dockerCompose,
+          pdfgen,
+        ]);
+        expect(
+          messages(lintProject(apart, hasSshKeys: true)),
+          contains(together),
+        );
+      });
+
+      test('ecodata away from biocollect is reported', () {
+        const String together =
+            'ecodata and biocollect must be in the same docker-compose server: ecodata only answers biocollect by its address on a network inside the server';
+        final LAProject same = composeProject(<String>[biocollect, ecodata]);
+        expect(
+          messages(lintProject(same, hasSshKeys: true)),
+          isNot(contains(together)),
+        );
+
+        final LAProject apart = composeProject(<String>[biocollect]);
+        final LAServer dc2 = LAServer(
+          id: 'dc2',
+          name: 'dc2',
+          ip: '10.0.0.2',
+          projectId: apart.id,
+        );
+        apart.upsertServer(dc2);
+        apart.serviceInUse(ecodata, true);
+        apart.assignByType(dc2.id, DeploymentType.dockerCompose, <String>[
+          dockerCompose,
+          ecodata,
+        ]);
+        expect(
+          messages(lintProject(apart, hasSshKeys: true)),
+          contains(together),
+        );
+      });
+
+      test('turning events on leaves ecodata reporting alone', () {
+        final LAProject p = LAProject();
+        p.serviceInUse(events, true);
+        expect(p.getService(ecodataReporting).use, isFalse);
+      });
     });
 
     test('a compose hub with no server points to its portal', () {
