@@ -803,6 +803,43 @@ class Api {
     return false;
   }
 
+  /// Is this run still going? A deploy that hasn't finished has no exit code and
+  /// no ansible recap, so asking for its results would report it as aborted with
+  /// an empty summary. Defaults to false: if we can't tell, showing the results
+  /// we do have beats blocking on a run that may well be over.
+  static Future<bool> deployStatus({
+    required String logsPrefix,
+    required String logsSuffix,
+  }) async {
+    if (AppUtils.isDemo()) {
+      return false;
+    }
+    final Uri url = AppUtils.uri(
+      dotenv.env['BACKEND']!,
+      '/api/v1/deploy-status',
+    );
+    try {
+      final Response response = await http.post(
+        url,
+        headers: <String, String>{'Content-type': 'application/json'},
+        body: utf8.encode(
+          json.encode(<String, String>{
+            'logsPrefix': logsPrefix,
+            'logsSuffix': logsSuffix,
+          }),
+        ),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> l =
+            json.decode(response.body) as Map<String, dynamic>;
+        return (l['running'] as bool?) ?? false;
+      }
+    } catch (e) {
+      debugPrint('deploy-status failed: $e');
+    }
+    return false;
+  }
+
   static void deployBranding(BrandingDeploy action) {
     if (AppUtils.isDemo()) {
       return;

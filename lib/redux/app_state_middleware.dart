@@ -784,7 +784,12 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       CmdHistoryDetails? lastCmdDet = store.state.currentProject.lastCmdDetails;
       if (lastCmdDet != null &&
           lastCmdDet.cmd != null &&
-          lastCmdDet.cmd!.id == action.cmdHistoryEntry.id) {
+          lastCmdDet.cmd!.id == action.cmdHistoryEntry.id &&
+          // A run with no known outcome is exactly the one worth asking about
+          // again: it was still going, or its exit code hadn't been recorded
+          // yet, when we last looked. Caching that answer froze the empty
+          // summary in place forever.
+          !lastCmdDet.outcomeUnknown) {
         // Don't load results again we have this already
       } else {
         lastCmdDet = await Api.getCmdResults(
@@ -796,17 +801,26 @@ class AppStateMiddleware implements MiddlewareClass<AppState> {
       if (lastCmdDet != null) {
         lastCmdDet.fstRetrieved = action.fstRetrieved;
         lastCmdDet.cmd = action.cmdHistoryEntry;
-        if (action.fstRetrieved ||
-            action.cmdHistoryEntry.result == CmdResult.unknown) {
+        action.cmdHistoryEntry.duration = lastCmdDet.duration;
+        // Don't write down a verdict we don't have: it would be stored as
+        // `aborted` and stay that way in the history even after the run
+        // finished cleanly. Leaving it `unknown` lets a later look settle it.
+        //
+        // When we do know, write it whenever it disagrees with what is stored.
+        // These details are the fresher source, so this also repairs entries
+        // that an earlier look mislabelled — a run whose exit code only became
+        // readable later reads as failed here but is still filed as aborted.
+        if (!lastCmdDet.outcomeUnknown) {
           // Compute result with ansible + code
           final CmdResult result = lastCmdDet.result;
-          action.cmdHistoryEntry.result = result;
-          action.cmdHistoryEntry.duration = lastCmdDet.duration;
-          // Update backend
-          await EntityApis.cmdHistoryEntryApi.update(
-            action.cmdHistoryEntry.id,
-            <String, String>{'result': result.toS()},
-          );
+          if (result != action.cmdHistoryEntry.result) {
+            action.cmdHistoryEntry.result = result;
+            // Update backend
+            await EntityApis.cmdHistoryEntryApi.update(
+              action.cmdHistoryEntry.id,
+              <String, String>{'result': result.toS()},
+            );
+          }
         }
         if (lastCmdDet.logsColorized.isEmpty) {
           // No log file for this run (e.g. a dry-run/generator that produced no

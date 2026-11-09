@@ -70,6 +70,11 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
           final String title = cmdEntry.getTitle();
           final String desc = cmdEntry.getDesc();
           final bool isAnsibleDeploy = cmdEntry.isAnsibleDeploy();
+          // Ansible never reached its recap, so there are no stats to draw.
+          // Drawing them anyway put every counter at zero, and an all-zero
+          // chart under "the command didn't finished correctly" described a
+          // deploy that was in fact still running as a broken one.
+          final bool noSummary = isAnsibleDeploy && cmdHistoryDetails.noSummary;
           final String pageTitle = '${vm.project.shortName} $title';
           return Title(
             title: pageTitle,
@@ -119,7 +124,9 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                             children: <Widget>[
                               if (isAnsibleDeploy)
                                 Icon(
-                                  noFailedButDone
+                                  noSummary
+                                      ? MdiIcons.helpCircleOutline
+                                      : noFailedButDone
                                       ? MdiIcons.checkboxMarkedCircleOutline
                                       : result == CmdResult.aborted
                                       ? MdiIcons.heartBroken
@@ -127,7 +134,8 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                                   size: 60,
                                   color: noFailedButDone
                                       ? LAColorTheme.up
-                                      : nothingDone ||
+                                      : noSummary ||
+                                            nothingDone ||
                                             result == CmdResult.aborted
                                       ? LAColorTheme.inactive
                                       : LAColorTheme.down,
@@ -145,7 +153,9 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                               const SizedBox(width: 20),
                               Text(
                                 isAnsibleDeploy
-                                    ? noFailedButDone
+                                    ? noSummary
+                                          ? 'This run left no task summary'
+                                          : noFailedButDone
                                           ? 'All steps ok'
                                           : nothingDone
                                           ? 'No steps were executed'
@@ -164,13 +174,30 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                             ],
                           ),
                           const SizedBox(height: 20),
-                          if (isAnsibleDeploy)
+                          // Ansible only writes its stats at the play recap, so
+                          // an unresolved run has none — every counter would sit
+                          // at zero and read as "nothing happened", which is a
+                          // claim we can't make. Say what we know instead.
+                          if (noSummary)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(
+                                'Ansible never reached its final summary here, '
+                                'so there are no task stats to show — this run '
+                                'was cancelled, killed, or is still going. '
+                                'The log below is the full record of what it '
+                                'did manage to do.',
+                                textAlign: TextAlign.center,
+                                style: UiUtils.dateStyle,
+                              ),
+                            ),
+                          if (isAnsibleDeploy && !noSummary)
                             const Text(
                               'Tasks summary:',
                               style: UiUtils.subtitleStyle,
                             ),
                           // ignore: sized_box_for_whitespace
-                          if (isAnsibleDeploy)
+                          if (isAnsibleDeploy && !noSummary)
                             SizedBox(
                               width: 400,
                               height: 300,
@@ -179,7 +206,7 @@ class _CmdResultsPageState extends State<CmdResultsPage> {
                               ),
                             ),
                           const SizedBox(height: 20),
-                          if (isAnsibleDeploy)
+                          if (isAnsibleDeploy && !noSummary)
                             const Text(
                               'Tasks details:',
                               style: UiUtils.subtitleStyle,
